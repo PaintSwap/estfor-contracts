@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
-// import "./Player.sol";
 import "./interfaces/ItemStat.sol";
 import "./interfaces/IBrushToken.sol";
 import "./World.sol";
@@ -25,9 +24,11 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   //             130 (rightArm)
   //             160 (leftArm)
   //             190 (legs)
-  //             220 (dummy)
-  //        222 - 250 (dummy1)
+  //             220 (boots)
+  //       222 - 250 (aux)
   // 251 - 255 reserved
+
+  mapping(uint => uint) totalBalances; // tokenId => total
 
   uint16 public mysteryBoxsMinted;
   IBrushToken immutable brush;
@@ -35,8 +36,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   Users immutable users;
   address playerNFT;
   uint256 public mintMysteryBoxCost;
-
-  //  mapping(address => mapping(uint256 => uint256)) public numEquipped; // user => tokenId => num equipped
 
   constructor(
     IBrushToken _brush,
@@ -81,6 +80,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     uint256 _tokenId,
     uint256 _amount
   ) external onlyPlayerNFT {
+    totalBalances[_tokenId] += _amount;
     _mint(_to, _tokenId, _amount, "");
   }
 
@@ -89,6 +89,9 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     uint256[] calldata _ids,
     uint256[] calldata _amounts
   ) external onlyPlayerNFT {
+    for (uint i = 0; i < _ids.length; ++i) {
+      totalBalances[_ids[i]] += _amounts[i];
+    }
     _mintBatch(_to, _ids, _amounts, "");
   }
 
@@ -126,38 +129,49 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   function _beforeTokenTransfer(
-    address operator,
-    address from,
-    address to,
-    uint256[] memory ids,
-    uint256[] memory amounts,
-    bytes memory data
+    address, /*_operator*/
+    address _from,
+    address _to,
+    uint256[] memory _ids,
+    uint256[] memory _amounts,
+    bytes memory /*_data*/
   ) internal virtual override {
-    if (from == address(0) || amounts.length == 0) {
+    if (_from == address(0) || _amounts.length == 0) {
       // When minting do nothing
       return;
     }
 
+    uint256 i = _ids.length;
+    if (_to == address(0)) {
+      // burning
+      do {
+        unchecked {
+          --i;
+        }
+        totalBalances[_ids[i]] += _amounts[i];
+      } while (i > 0);
+    }
+
     // Don't allow users to transfer any if they would have a balance less than equiped.
     // i.e if equipped they cannot transfer it, but can transfer any excess unequipped
-    uint256 i = ids.length;
+    i = _ids.length;
 
-    address[] memory accounts = new address[](ids.length);
+    address[] memory accounts = new address[](_ids.length);
     do {
       unchecked {
         --i;
       }
-      accounts[i] = from;
+      accounts[i] = _from;
     } while (i > 0);
 
-    i = ids.length;
-    uint256[] memory balances = balanceOfBatch(accounts, ids);
+    i = _ids.length;
+    uint256[] memory balances = balanceOfBatch(accounts, _ids);
 
     do {
-      uint256 tokenId = ids[i];
+      uint256 tokenId = _ids[i];
       // Transferring less than is equipped
-      uint256 unavailable = users.itemAmountUnavailable(from, tokenId);
-      require(balances[i] - unavailable >= amounts[i]);
+      uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
+      require(balances[i] - unavailable >= _amounts[i]);
       unchecked {
         --i;
       }
@@ -188,6 +202,65 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     brush.burn(shopItems[_tokenId]);
 
     _mint(msg.sender, _tokenId, _quantity, "");
+  }
+
+  uint numItems;
+
+  function getPriceForItem(uint _tokenId) public view returns (uint price) {
+    uint totalBrush = brush.balanceOf(address(this));
+    uint totalBrushForItem = totalBrush / numItems;
+    uint totalOfThisItem = totalBalances[_tokenId];
+    if (totalOfThisItem < 100) {
+      // Need to be a minimum of an item before any can be sold.
+      return 0;
+    }
+    return totalBrushForItem / totalOfThisItem;
+  }
+
+  function getPriceForItems(uint[] calldata _tokenIds) public view returns (uint[] memory prices) {
+    if (_tokenIds.length == 0) {
+      return prices;
+    }
+
+    uint totalBrush = brush.balanceOf(address(this));
+    uint totalBrushForItem = totalBrush / numItems;
+
+    prices = new uint[](_tokenIds.length);
+    uint i;
+    do {
+      uint totalOfThisItem = totalBalances[_tokenIds[i]];
+      if (totalOfThisItem < 100) {
+        // Need to be a minimum of an item before any can be sold.
+        prices[i] = 0;
+      } else {
+        prices[i] = totalBrushForItem / totalOfThisItem;
+      }
+
+      unchecked {
+        ++i;
+      }
+    } while (i < prices.length);
+  }
+
+  // Slippage as a % base 10000
+  function sell(
+    uint _tokenId,
+    uint _quantity,
+    uint _slippage
+  ) public {
+    uint brushPerToken = getPriceForItem(_tokenId);
+    _burn(msg.sender, _tokenId, _quantity);
+    brush.transfer(msg.sender, brushPerToken * _quantity);
+  }
+
+  function setllBatch(
+    uint[] calldata _tokenIds,
+    uint[] calldata _quantities,
+    uint _slippage
+  ) external {
+    for (uint i = 0; i < _tokenIds.length; ++i) {
+      sell(_tokenIds[i], _quantities[i], _slippage);
+    }
   }
 
   /* Raids */

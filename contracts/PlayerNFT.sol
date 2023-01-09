@@ -13,7 +13,7 @@ import "./ItemNFT.sol";
 import "./Users.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
-// The NFT representing a player
+// Each NFT represents a player
 contract PlayerNFT is ERC1155, Multicall, Ownable {
   event NewPlayer(uint tokenId);
 
@@ -24,8 +24,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   event Equip(uint tokenId, uint bonusAdded);
   event RemoveAllEquipment(uint tokenId);
   event AddSkillPoints(Skill action, uint points);
-
-  error SkillsArrayZero();
 
   struct SkillInfo {
     uint actionId;
@@ -45,7 +43,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // These are extra from the items equipped
     uint8 attackBonus;
     uint8 defenceBonus;
-    bool sex; // male = true
     SkillInfo[] actionQueue;
     uint256 slotsUsed;
     mapping(Skill => uint256) skillPoints;
@@ -98,8 +95,17 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   mapping(uint => AvatarInfo) private avatars; // avatar id => avatarInfo
 
+  error SkillsArrayZero();
+  error NotOwner();
+  error AvatarNotExists();
+  error EquipSameItem();
+  error NotEquipped();
+  error ArgumentLengthMismatch();
+
   modifier isOwnerOfPlayer(uint tokenId) {
-    require(itemNFT.balanceOf(msg.sender, tokenId) == 1, "Not the owner of this player");
+    if (balanceOf(msg.sender, tokenId) != 1) {
+      revert NotOwner();
+    }
     _;
   }
 
@@ -121,15 +127,27 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     users = _users;
   }
 
+  function _mintStartingItems() private {
+    // Give the player some starting items
+    uint[] memory itemNFTs = new uint[](2);
+    itemNFTs[0] = uint(Items.BRONZE_PICKAXE);
+    itemNFTs[1] = uint(Items.SHIELD);
+    uint[] memory quantities = new uint[](2);
+    quantities[0] = 1;
+    quantities[1] = 1;
+    itemNFT.mintBatch(msg.sender, itemNFTs, quantities);
+  }
+
   // Costs nothing to mint, only gas
-  function mintPlayer(bool _isMale, uint _avatarId) external {
+  function mintPlayer(uint _avatarId) external {
     uint currentPlayerId = latestPlayerId;
     _mint(msg.sender, currentPlayerId, 1, "");
-    Player storage player = players[currentPlayerId];
-    player.sex = _isMale;
 
-    // Set avatar
-    require(bytes(avatars[_avatarId].name).length > 0, "Avatar doesn't exist");
+    _mintStartingItems();
+
+    if (bytes(avatars[_avatarId].name).length == 0) {
+      revert AvatarNotExists();
+    }
     tokenIdToAvatar[currentPlayerId] = _avatarId;
     ++latestPlayerId;
     emit NewPlayer(currentPlayerId);
@@ -367,7 +385,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     EquipPosition position = stats.equipPosition;
 
-    // Unequip anything that is already there.
     uint8 equippedTokenId;
     /// @solidity memory-safe-assembly
     assembly {
@@ -381,7 +398,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       sstore(player.slot, val)
     }
 
-    require(_itemTokenId != equippedTokenId, "Equipping same item");
+    if (_itemTokenId == equippedTokenId) {
+      revert EquipSameItem();
+    }
 
     if (equippedTokenId > 0) {
       // Unequip current item and remove bonus
@@ -423,7 +442,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       let val := sload(player.slot)
       equipped := shr(mul(_position, 8), val)
     }
-    require(equipped > 0, "Equipping same item");
+    if (equipped == 0) {
+      revert NotEquipped();
+    }
 
     users.unequip(msg.sender, equipped);
     // Continue last skill queue (if there's anything remaining)
@@ -474,7 +495,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint256 itemSlot = _getEquipmentSlot(player);
     uint8 itemTokenId = uint8(itemSlot >> (itemPosition * 8));
     require(itemTokenId >= itemTokenIdRangeMin && itemTokenId < itemTokenIdRangeMax);
-    require(world.availableActions(_actionId), "Action is not available");
+    require(world.availableActions(_actionId));
     player.actionQueue.push(SkillInfo({actionId: _actionId, startTime: uint40(block.timestamp), timespan: _timespan}));
   }
 
@@ -499,7 +520,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint[] calldata actionIds,
     uint40[] calldata timespans
   ) external isOwnerOfPlayer(_tokenId) {
-    require(actionIds.length == timespans.length, "Argument length mismatch");
+    if (actionIds.length != timespans.length) {
+      revert ArgumentLengthMismatch();
+    }
 
     if (actionIds.length == 0) {
       revert SkillsArrayZero();
