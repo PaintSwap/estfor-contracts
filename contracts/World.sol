@@ -41,6 +41,15 @@ contract World is VRFConsumerBaseV2, Ownable {
   uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
+  struct ActionInfo {
+    Skill skill;
+    uint8 baseXPPerHour;
+    uint32 minSkillPoints;
+    uint8 itemPosition;
+    uint8 itemTokenIdRangeMin; // Inclusive
+    uint8 itemTokenIdRangeMax; // Exclusive
+  }
+
   constructor(VRFCoordinatorV2Interface coordinator, uint64 _subscriptionId) VRFConsumerBaseV2(address(coordinator)) {
     COORDINATOR = coordinator;
     subscriptionId = _subscriptionId;
@@ -123,6 +132,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {
     require(_actionInfo.itemTokenIdRangeMax < 256);
     require(_actionInfo.itemTokenIdRangeMin < _actionInfo.itemTokenIdRangeMax);
+    require(_actionInfo.itemPosition < 8);
     actions[_actionId] = _actionInfo;
   }
 

@@ -39,6 +39,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   struct Player {
     Equipped equipment; // Keep this first
+    uint256 dummy; // TODO: Needed?
     // Attributes
     uint16 health;
     // These are extra from the items equipped
@@ -48,6 +49,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     SkillInfo[] actionQueue;
     uint256 slotsUsed;
     mapping(Skill => uint256) skillPoints;
+    uint totalSkillPoints;
     EnumerableMap.UintToUintMap inventoryItems;
   }
 
@@ -66,10 +68,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint8 rightArm;
     uint8 leftArm;
     uint8 legs;
-    uint8 dummy;
-    uint8 dummy1; // To keep it aligned
+    uint8 boots;
+    uint8 auxilary; // Fishing rod, axe etc
     // These are stored in case individual items are changed later, but also prevents having to read them loads
-
     EquipmentBonus headBonus; // atk // Maximum 3, first byte is a mask of the attribute, next 3 are 0-255 the increase they provide.
     EquipmentBonus necklaceBonus; // atk
     EquipmentBonus bodyBonus; // defence
@@ -212,7 +213,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   ) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(player);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
 
     ItemStat memory stats = itemNFT.getItemStats(_itemTokenId);
     uint256 weight = stats.weight;
@@ -250,7 +251,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint numInventory = player.inventoryItems.get(_tokenId);
     require(numInventory >= _amount);
 
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(player);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
 
     ItemStat memory stats = itemNFT.getItemStats(_tokenId);
     uint256 weight = stats.weight;
@@ -273,7 +274,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     Player storage _player,
     uint _tokenId
   ) private {
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(_player);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(_from, _player, _tokenId);
     _clearInventory(_from, _player, _tokenId);
     _clearEquipment(_from, _player, _tokenId);
 
@@ -305,8 +306,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function clearInventory(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(player);
-    _clearInventory(msg.sender, player, _tokenId);
+    address from = msg.sender;
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, player, _tokenId);
+    _clearInventory(from, player, _tokenId);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
@@ -342,8 +344,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function clearEquipment(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(player);
-    _clearEquipment(msg.sender, player, _tokenId);
+    address from = msg.sender;
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, player, _tokenId);
+    _clearEquipment(from, player, _tokenId);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
@@ -355,7 +358,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function equip(uint _tokenId, uint256 _itemTokenId) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(player);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
 
     ItemStat memory stats = itemNFT.getItemStats(_itemTokenId);
     require(stats.attribute != Attribute.NONE);
@@ -412,9 +415,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function unequip(uint _tokenId, uint8 _position) external isOwnerOfPlayer(_tokenId) {
     // This requires checking that we have it equipped
-
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(player);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
     uint8 equipped;
     /// @solidity memory-safe-assembly
     assembly {
@@ -434,6 +436,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   // TODO:
   //    }
 
+  function _getEquipmentSlot(Player storage _player) private view returns (uint256 slot) {
+    assembly {
+      slot := sload(_player.slot)
+    }
+  }
+
   function startAction(
     uint _actionId,
     uint40 _timespan,
@@ -441,7 +449,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     bool _append
   ) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(player);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
 
     require(_timespan <= MAX_TIME);
     if (_append) {
@@ -453,9 +461,20 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       player.actionQueue = remainingSkillQueue;
     }
 
-    //    ActionInfo storage actionInfo = world.actions(_actionId);
-    require(world.availableActions(_actionId), "Action is not available");
+    (
+      Skill skill,
+      uint8 baseXPPerHour,
+      uint32 minSkillPoints,
+      uint8 itemPosition,
+      uint8 itemTokenIdRangeMin,
+      uint8 itemTokenIdRangeMax
+    ) = world.actions(_actionId);
 
+    // Equipment just check left and right arm, needed?
+    uint256 itemSlot = _getEquipmentSlot(player);
+    uint8 itemTokenId = uint8(itemSlot >> (itemPosition * 8));
+    require(itemTokenId >= itemTokenIdRangeMin && itemTokenId < itemTokenIdRangeMax);
+    require(world.availableActions(_actionId), "Action is not available");
     player.actionQueue.push(SkillInfo({actionId: _actionId, startTime: uint40(block.timestamp), timespan: _timespan}));
   }
 
@@ -471,7 +490,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   } */
 
   function consumeSkills(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
-    _consumeSkills(players[_tokenId]);
+    _consumeSkills(msg.sender, players[_tokenId], _tokenId);
   }
 
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
@@ -489,7 +508,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     require(actionIds.length <= 3);
 
     Player storage player = players[_tokenId];
-    _consumeSkills(player);
+    _consumeSkills(msg.sender, player, _tokenId);
 
     // Clear the action queue if something is in it
     if (players[_tokenId].actionQueue.length > 0) {
@@ -537,7 +556,56 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     return 2;
   }
 
-  function _consumeSkills(Player storage _player) private returns (SkillInfo[] memory remainingSkills) {
+  uint constant LEVEL_5_BOUNDARY = 500;
+  uint constant LEVEL_10_BOUNDARY = 10000;
+  uint constant LEVEL_15_BOUNDARY = 15000;
+  uint constant LEVEL_20_BOUNDARY = 20000;
+  uint constant LEVEL_30_BOUNDARY = 30000;
+  uint constant LEVEL_40_BOUNDARY = 400000;
+  uint constant LEVEL_50_BOUNDARY = 5000000;
+  uint constant LEVEL_60_BOUNDARY = 6000000;
+  uint constant LEVEL_70_BOUNDARY = 7000000;
+  uint constant LEVEL_80_BOUNDARY = 80000000;
+  uint constant LEVEL_90_BOUNDARY = 900000000;
+  uint constant LEVEL_99_BOUNDARY = 999999999;
+
+  event LevelUp(address _from, uint _tokenId, uint[] _itemTokenIdsRewarded, uint[] _amountTokenIdsRewarded);
+
+  function _handleLevelUpRewards(
+    address _from,
+    uint _tokenId,
+    uint oldOverallSkillPoints,
+    uint newOverallSkillPoints
+  ) private {
+    // Level 99
+    if (oldOverallSkillPoints < LEVEL_99_BOUNDARY && newOverallSkillPoints >= LEVEL_99_BOUNDARY) {
+      // Mint rewards
+      uint[] memory itemTokenIds = new uint[](1);
+      itemTokenIds[0] = uint16(Items.SHIELD);
+
+      uint[] memory amounts = new uint[](1);
+      amounts[0] = 1;
+
+      itemNFT.mintBatch(_from, itemTokenIds, amounts);
+      emit LevelUp(_from, _tokenId, itemTokenIds, amounts);
+    } else if (oldOverallSkillPoints < LEVEL_90_BOUNDARY && newOverallSkillPoints >= LEVEL_90_BOUNDARY) {} else if (
+      oldOverallSkillPoints < LEVEL_80_BOUNDARY && newOverallSkillPoints >= LEVEL_80_BOUNDARY
+    ) {} else if (oldOverallSkillPoints < LEVEL_70_BOUNDARY && newOverallSkillPoints >= LEVEL_70_BOUNDARY) {} else if (
+      oldOverallSkillPoints < LEVEL_60_BOUNDARY && newOverallSkillPoints >= LEVEL_60_BOUNDARY
+    ) {} else if (oldOverallSkillPoints < LEVEL_50_BOUNDARY && newOverallSkillPoints >= LEVEL_50_BOUNDARY) {} else if (
+      oldOverallSkillPoints < LEVEL_40_BOUNDARY && newOverallSkillPoints >= LEVEL_40_BOUNDARY
+    ) {} else if (oldOverallSkillPoints < LEVEL_30_BOUNDARY && newOverallSkillPoints >= LEVEL_30_BOUNDARY) {} else if (
+      oldOverallSkillPoints < LEVEL_20_BOUNDARY && newOverallSkillPoints >= LEVEL_20_BOUNDARY
+    ) {} else if (oldOverallSkillPoints < LEVEL_10_BOUNDARY && newOverallSkillPoints >= LEVEL_10_BOUNDARY) {} else if (
+      oldOverallSkillPoints < LEVEL_5_BOUNDARY && newOverallSkillPoints >= LEVEL_5_BOUNDARY
+    ) {}
+  }
+
+  function _consumeSkills(
+    address _from,
+    Player storage _player,
+    uint _tokenId
+  ) private returns (SkillInfo[] memory remainingSkills) {
     uint queueLength = _player.actionQueue.length;
     if (queueLength == 0) {
       // No actions remaining
@@ -545,6 +613,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
 
     // TODO: Check they have the equipment/inventory available
+    uint previousSkillPoints = _player.totalSkillPoints;
+    uint allPointsAccured;
 
     remainingSkills = new SkillInfo[](queueLength); // Max
     uint length = 0;
@@ -578,7 +648,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         Skill skill = world.getSkill(skillInfo.actionId);
         _player.skillPoints[skill] += pointsAccured; // Update this later, just base it on time elapsed
         emit AddSkillPoints(skill, pointsAccured);
+        allPointsAccured += pointsAccured;
       }
+    }
+
+    if (allPointsAccured > 0) {
+      // Check if they have levelled up
+      _handleLevelUpRewards(_from, _tokenId, previousSkillPoints, previousSkillPoints + allPointsAccured);
     }
 
     if (remainingSkills.length == 0) {

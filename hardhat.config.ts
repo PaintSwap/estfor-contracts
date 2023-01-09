@@ -43,6 +43,11 @@ const config: HardhatUserConfig = {
       gasPrice: 36000000000,
     },
   },
+  contractSizer: {
+    alphaSort: true,
+    runOnCompile: true,
+    disambiguatePaths: false,
+  },
 };
 
 export default config;

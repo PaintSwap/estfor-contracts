@@ -33,6 +33,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   IBrushToken immutable brush;
   World immutable world;
   Users immutable users;
+  address playerNFT;
   uint256 public mintMysteryBoxCost;
 
   //  mapping(address => mapping(uint256 => uint256)) public numEquipped; // user => tokenId => num equipped
@@ -47,11 +48,14 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     users = _users;
   }
 
-  /*
-  modifier onlyPlayer() {
-    require(players[msg.sender] > 0);
+  function setPlayerNFT(address _playerNFT) external onlyOwner {
+    playerNFT = _playerNFT;
+  }
+
+  modifier onlyPlayerNFT() {
+    require(playerNFT == msg.sender);
     _;
-  } */
+  }
 
   // Up to 1000, get a random item
   function mintMysteryBox(uint16 _num) external {
@@ -72,12 +76,11 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     // Fetch random values from chainlink
   }
 
-  /*
-  function mintItem(
+  function mint(
     address _to,
     uint256 _tokenId,
     uint256 _amount
-  ) external onlyPlayer {
+  ) external onlyPlayerNFT {
     _mint(_to, _tokenId, _amount, "");
   }
 
@@ -85,9 +88,9 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     address _to,
     uint256[] calldata _ids,
     uint256[] calldata _amounts
-  ) external onlyPlayer {
+  ) external onlyPlayerNFT {
     _mintBatch(_to, _ids, _amounts, "");
-  } */
+  }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     if (_tokenId == 0) {

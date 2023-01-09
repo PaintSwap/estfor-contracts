@@ -22,11 +22,3 @@ enum Items {
   IGNORE_NOW_OTHER_ITEMS,
   COD
 }
-
-struct ActionInfo {
-  Skill skill;
-  uint8 baseXPPerHour;
-  uint32 minSkillPoints;
-  uint8 itemTokenIdRangeMin; // Inclusive
-  uint8 itemTokenIdRangeMax; // Exclusive
-}
