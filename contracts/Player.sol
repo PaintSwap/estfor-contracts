@@ -1,7 +1,7 @@
 import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import "./interfaces/ItemStat.sol";
 
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
 interface IPaintScapeNFT {

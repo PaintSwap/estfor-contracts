@@ -4,11 +4,7 @@ import {ethers} from "hardhat";
 import {Attribute, createPlayer, EquipPosition, FEMALE, Items, MALE, Skill} from "../scripts/utils";
 
 describe("Player", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
-  async function deployOneYearLockFixture() {
-    // Contracts are deployed using the first signer/account by default
+  async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
 
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
@@ -36,7 +32,7 @@ describe("Player", function () {
   }
 
   it("Skill points", async function () {
-    const {player, alice} = await loadFixture(deployOneYearLockFixture);
+    const {player, alice} = await loadFixture(deployContracts);
 
     expect(await player.skillPoints(Skill.PAINT)).to.eq(0);
     await player.connect(alice).paint();
@@ -46,7 +42,7 @@ describe("Player", function () {
   });
 
   it("Skill points, max range", async function () {
-    const {player, alice, maxTime} = await loadFixture(deployOneYearLockFixture);
+    const {player, alice, maxTime} = await loadFixture(deployContracts);
 
     expect(await player.skillPoints(Skill.PAINT)).to.eq(0);
     await player.connect(alice).paint();
@@ -60,7 +56,7 @@ describe("Player", function () {
   });
 
   it("Sex", async function () {
-    const {player, nft} = await loadFixture(deployOneYearLockFixture);
+    const {player, nft} = await loadFixture(deployContracts);
     const Player = await ethers.getContractFactory("Player");
     expect(await player.sex()).to.eq(MALE);
     const playerFemale = await Player.deploy(nft.address, 1, FEMALE);
@@ -68,7 +64,7 @@ describe("Player", function () {
   });
 
   it("Equipment", async () => {
-    const {player, alice, nft, maxWeight} = await loadFixture(deployOneYearLockFixture);
+    const {player, alice, nft, maxWeight} = await loadFixture(deployContracts);
     await nft.testMint(alice.address, Items.SHIELD, 1);
     expect(await nft.balanceOf(alice.address, Items.SHIELD)).to.eq(1);
 
@@ -110,7 +106,7 @@ describe("Player", function () {
   });
 
   it("Inventory", async () => {
-    const {player, nft, alice} = await loadFixture(deployOneYearLockFixture);
+    const {player, nft, alice} = await loadFixture(deployContracts);
 
     // Max inventory of 16 items
     await nft.testMint(alice.address, Items.SHIELD, 1);
