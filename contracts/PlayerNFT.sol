@@ -43,11 +43,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // These are extra from the items equipped
     uint8 attackBonus;
     uint8 defenceBonus;
+    uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
     SkillInfo[] actionQueue;
     uint256 slotsUsed;
     mapping(Skill => uint256) skillPoints;
     uint totalSkillPoints;
     EnumerableMap.UintToUintMap inventoryItems;
+    bytes32 name;
   }
 
   uint32 public constant MAX_TIME = 1 days;
@@ -139,9 +141,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   // Costs nothing to mint, only gas
-  function mintPlayer(uint _avatarId) external {
+  function mintPlayer(uint _avatarId, bytes32 _name) external {
     uint currentPlayerId = latestPlayerId;
     _mint(msg.sender, currentPlayerId, 1, "");
+
+    Player storage player = players[currentPlayerId];
+    player.name = _name;
 
     _mintStartingItems();
 
@@ -165,6 +170,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     string memory attributes = string(
       abi.encodePacked(
+        '{"trait_type":"Player name","value":"',
+        player.name,
         '{"trait_type":"Attack","value":"',
         player.skillPoints[Skill.PAINT],
         '"}, {"trait_type":"Defence","value":"',
@@ -610,6 +617,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       amounts[0] = 1;
 
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
+
+      // Consume an XP boost immediately
+      // TODO
+
       emit LevelUp(_from, _tokenId, itemTokenIds, amounts);
     } else if (oldOverallSkillPoints < LEVEL_90_BOUNDARY && newOverallSkillPoints >= LEVEL_90_BOUNDARY) {} else if (
       oldOverallSkillPoints < LEVEL_80_BOUNDARY && newOverallSkillPoints >= LEVEL_80_BOUNDARY
@@ -622,6 +633,31 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     ) {} else if (oldOverallSkillPoints < LEVEL_10_BOUNDARY && newOverallSkillPoints >= LEVEL_10_BOUNDARY) {} else if (
       oldOverallSkillPoints < LEVEL_5_BOUNDARY && newOverallSkillPoints >= LEVEL_5_BOUNDARY
     ) {}
+  }
+
+  struct PendingLoot {
+    uint actionId;
+    uint40 timestamp;
+  }
+
+  PendingLoot[] private pendingLoot; // queue, will be sorted by timestamp
+
+  function getLoot(uint actionId, uint seed) external view returns (uint[] memory tokenIds) {
+    if (seed == 0) {
+      return tokenIds;
+    }
+
+    tokenIds = new uint[](3); // max
+    uint length;
+    if (seed % 2 == 0) {
+      tokenIds[0] = uint(Items.SHIELD);
+    } else {
+      tokenIds[0] = uint(Items.BRONZE_PICKAXE);
+    }
+
+    assembly {
+      mstore(tokenIds, length)
+    }
   }
 
   function _consumeSkills(
@@ -644,12 +680,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     for (uint i = 0; i < queueLength; ++i) {
       SkillInfo storage skillInfo = _player.actionQueue[i];
       uint pointsAccured;
-      if (skillInfo.startTime + skillInfo.timespan <= block.timestamp) {
+      uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
+      if (skillEndTime <= block.timestamp) {
         // Fully consume this skill
         pointsAccured = MAX_TIME;
       } else {
         // partially consume
         uint40 elapsedTime = uint40(block.timestamp - skillInfo.startTime);
+        skillEndTime = uint40(block.timestamp);
         pointsAccured = elapsedTime; // TODO: This should be based on something else
         uint40 end = skillInfo.startTime + skillInfo.timespan;
         /*        if (_discardRestOfQueue) {
@@ -671,6 +709,19 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         Skill skill = world.getSkill(skillInfo.actionId);
         _player.skillPoints[skill] += pointsAccured; // Update this later, just base it on time elapsed
         emit AddSkillPoints(skill, pointsAccured);
+
+        // What about loot, this gets pushed into the next day if there's no seed
+        uint seed = world.getSeed(skillEndTime);
+        if (seed == 0) {
+          // There's no seed for this yet, so add it to the loot queue. (They can force)
+          pendingLoot.push(PendingLoot({actionId: skillInfo.actionId, timestamp: skillEndTime}));
+        } else {
+          // Mint loot (TODO Update this later)
+          uint tokenId = seed ^ ((skillInfo.actionId % 10) + 1);
+          uint amount = seed ^ ((skillInfo.actionId % 2) + 1);
+          itemNFT.mint(_from, tokenId, amount);
+        }
+
         allPointsAccured += pointsAccured;
       }
     }

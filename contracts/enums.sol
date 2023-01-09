@@ -14,6 +14,8 @@ enum Items {
   DUMMY,
   MYSTERY_BOX,
   RAID_PASS,
+  XP_BOOST,
+  MEGA_XP_BOOST,
   BRUSH,
   WAND,
   SHIELD,
