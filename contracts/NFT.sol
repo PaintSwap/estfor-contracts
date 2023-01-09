@@ -5,16 +5,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Player.sol";
 import "./interfaces/ItemStat.sol";
-
-interface Brush {
-  function burn(uint256 _amount) external;
-
-  function transferFrom(
-    address sender,
-    address recipient,
-    uint256 amount
-  ) external returns (bool);
-}
+import "./interfaces/IBrushToken.sol";
 
 // The NFT contract contains data related to the users (not players)
 contract PaintScapeNFT is ERC1155, Ownable {
@@ -48,7 +39,7 @@ contract PaintScapeNFT is ERC1155, Ownable {
   }
 
   uint16 public mysteryBoxsMinted;
-  Brush immutable brush;
+  IBrushToken immutable brush;
   uint256 public mintMysteryBoxCost;
 
   mapping(address => uint) public players; // player => tokenId
@@ -57,7 +48,7 @@ contract PaintScapeNFT is ERC1155, Ownable {
   mapping(address => mapping(uint256 => uint256)) public numEquipped; // user => tokenId => num equipped
 
   constructor(address _brush) ERC1155("") {
-    brush = Brush(_brush);
+    brush = IBrushToken(_brush);
   }
 
   modifier onlyPlayer() {
@@ -201,5 +192,31 @@ contract PaintScapeNFT is ERC1155, Ownable {
 
     // TODO: Get player and consume any actions before transferring, so if
     // they die the new person getting the NFT doesn't lose anything.
+  }
+
+  /* Shop */
+  mapping(uint => uint) shopItems;
+
+  event AddShopItem(uint tokenId, uint cost);
+  event RemoveShopItem(uint tokenId);
+
+  // Spend brush to buy some things from the shop
+  function addShopItem(uint _tokenId, uint _cost) external onlyOwner {
+    shopItems[_tokenId] = _cost;
+    emit AddShopItem(_tokenId, _cost);
+  }
+
+  function removeShopItem(uint _tokenId) external onlyOwner {
+    delete shopItems[_tokenId];
+    emit RemoveShopItem(_tokenId);
+  }
+
+  function buy(uint _tokenId, uint _quantity) external {
+    require(shopItems[_tokenId] != 0, "Item cannot be bought");
+    // Pay and burn brush
+    brush.transferFrom(msg.sender, address(this), shopItems[_tokenId]);
+    brush.burn(shopItems[_tokenId]);
+
+    _mint(msg.sender, _tokenId, _quantity, "");
   }
 }

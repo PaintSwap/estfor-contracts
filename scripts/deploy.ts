@@ -7,6 +7,8 @@ async function main() {
   const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
   const mockBrushToken = await MockBrushToken.deploy();
 
+  // TODO: Shop
+
   // Create NFT contract which contains all items & players
   const NFT = await ethers.getContractFactory("TestPaintScapeNFT");
   const nft = await NFT.deploy(mockBrushToken.address);
