@@ -3,70 +3,55 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Player.sol";
+import "@openzeppelin/contracts/utils/Multicall.sol";
+// import "./Player.sol";
 import "./interfaces/ItemStat.sol";
 import "./interfaces/IBrushToken.sol";
+import "./World.sol";
+import "./Users.sol";
+import "./enums.sol";
 
-// The NFT contract contains data related to the users (not players)
-contract PaintScapeNFT is ERC1155, Ownable {
+// The NFT contract contains data related to the items and users (not players)
+contract ItemNFT is ERC1155, Multicall, Ownable {
   // Mystery box is id 1
-  // Wearable items take ids 2-255
-  // Other items (fish) take ids (256 - 1023)
-  // Players are id 1024 onwards
+  // Raid pass is id 2
+  // Reserved up to 3-10
+  // Wearable items take ids 11-255
+  // Other items (e.g fish) take ids (256 - 65535)
 
-  // Equippable Items, 2 - 31 (head)
-  //             12 - 61 (necklace)
-  //             91 (body)
-  //             121 (rightArm)
-  //             151 (leftArm)
-  //             181 (legs)
-  //             211 (dummy)
-  //             241 (dummy1)
-
-  event NewPlayer(address player, uint tokenId);
-
-  // Dummy is there so that we start at 1
-  enum Items {
-    DUMMY,
-    MYSTERY_BOX,
-    BRUSH,
-    WAND,
-    SHIELD,
-    BRONZE_NECKLACE,
-    WOODEN_FISHING_ROD,
-    IGNORE_NOW_OTHER_ITEMS,
-    COD
-  }
+  // Equippable Items, 11 - 40 (head)
+  //             70 (necklace)
+  //             100 (body)
+  //             130 (rightArm)
+  //             160 (leftArm)
+  //             190 (legs)
+  //             220 (dummy)
+  //        222 - 250 (dummy1)
+  // 251 - 255 reserved
 
   uint16 public mysteryBoxsMinted;
   IBrushToken immutable brush;
+  World immutable world;
+  Users immutable users;
   uint256 public mintMysteryBoxCost;
 
-  mapping(address => uint) public players; // player => tokenId
-  //    mapping(uint => address) public  // tokenId => player too?
-  uint public latestPlayerId = 1024;
-  mapping(address => mapping(uint256 => uint256)) public numEquipped; // user => tokenId => num equipped
+  //  mapping(address => mapping(uint256 => uint256)) public numEquipped; // user => tokenId => num equipped
 
-  constructor(address _brush) ERC1155("") {
-    brush = IBrushToken(_brush);
+  constructor(
+    IBrushToken _brush,
+    World _world,
+    Users _users
+  ) ERC1155("") {
+    brush = _brush;
+    world = _world;
+    users = _users;
   }
 
+  /*
   modifier onlyPlayer() {
     require(players[msg.sender] > 0);
     _;
-  }
-
-  function mintPlayer(bool _isMale) external {
-    // Costs 5000 brush
-    // brush.transferFrom(msg.sender, address(this), 1000 * 1 ether);
-    // brush.burn(1000 * 1 ether);
-    uint currentPlayerId = latestPlayerId;
-    _mint(msg.sender, currentPlayerId, 1, "");
-    Player player = new Player(address(this), currentPlayerId, _isMale);
-    players[address(player)] = currentPlayerId;
-    emit NewPlayer(address(player), currentPlayerId);
-    ++latestPlayerId;
-  }
+  } */
 
   // Up to 1000, get a random item
   function mintMysteryBox(uint16 _num) external {
@@ -87,6 +72,7 @@ contract PaintScapeNFT is ERC1155, Ownable {
     // Fetch random values from chainlink
   }
 
+  /*
   function mintItem(
     address _to,
     uint256 _tokenId,
@@ -101,7 +87,7 @@ contract PaintScapeNFT is ERC1155, Ownable {
     uint256[] calldata _amounts
   ) external onlyPlayer {
     _mintBatch(_to, _ids, _amounts, "");
-  }
+  } */
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     if (_tokenId == 0) {
@@ -130,26 +116,10 @@ contract PaintScapeNFT is ERC1155, Ownable {
     itemStats[_item] = _itemStat;
   }
 
-  // Need to think about this one
-  //    function removeItem() onlyOwner {
-  //    }
-
   function getItemStats(uint256 _tokenId) external view returns (ItemStat memory) {
     // Should be between 2 and 255
     require(_tokenId > 1 && _tokenId < 256);
     return itemStats[uint8(_tokenId)];
-  }
-
-  // This will revert if there is not enough free balance to equip
-  function equip(uint256 _tokenId, address _from) external onlyPlayer {
-    uint256 balance = balanceOf(_from, _tokenId);
-    require(balance >= numEquipped[_from][_tokenId] + 1, "Do not have enough quantity to equip");
-    require(_tokenId > 1 && _tokenId < 256);
-    numEquipped[_from][_tokenId] += 1;
-  }
-
-  function unequip(uint256 _tokenId, address _from) external onlyPlayer {
-    numEquipped[_from][_tokenId] -= 1;
   }
 
   function _beforeTokenTransfer(
@@ -160,7 +130,7 @@ contract PaintScapeNFT is ERC1155, Ownable {
     uint256[] memory amounts,
     bytes memory data
   ) internal virtual override {
-    if (from == address(0)) {
+    if (from == address(0) || amounts.length == 0) {
       // When minting do nothing
       return;
     }
@@ -183,15 +153,12 @@ contract PaintScapeNFT is ERC1155, Ownable {
     do {
       uint256 tokenId = ids[i];
       // Transferring less than is equipped
-      uint256 equipped = numEquipped[from][tokenId];
-      require(balances[i] - equipped >= amounts[i]);
+      uint256 unavailable = users.itemAmountUnavailable(from, tokenId);
+      require(balances[i] - unavailable >= amounts[i]);
       unchecked {
         --i;
       }
     } while (i > 0);
-
-    // TODO: Get player and consume any actions before transferring, so if
-    // they die the new person getting the NFT doesn't lose anything.
   }
 
   /* Shop */
@@ -219,4 +186,90 @@ contract PaintScapeNFT is ERC1155, Ownable {
 
     _mint(msg.sender, _tokenId, _quantity, "");
   }
+
+  /* Raids */
+  /*
+  function joinRaid(address _owner, uint _raidId) external onlyPlayer {
+    // Check that it's not finished yet
+    address player = msg.sender;
+    require(raids[_raidId].startTime + raids[_raidId].timespan < block.timestamp, "Already finished");
+    require(raids[_raidId].startTime > 0, "Raid does not exist");
+
+    // Needs a raid pass which gets burnt.
+    _burn(_owner, uint(Items.RAID_PASS), 1);
+
+    raids[_raidId].numMembers += 1;
+    raids[_raidId].members[player] = true;
+
+    emit JoinedRaid(player, _raidId);
+  }
+
+  function leaveRaid(uint _raidId) external onlyPlayer {
+    address player = msg.sender;
+
+    // Raid must not have started yet
+    require(raids[_raidId].startTime + raids[_raidId].timespan < block.timestamp, "Already finished");
+
+    raids[_raidId].numMembers -= 1;
+    delete raids[_raidId].members[player];
+
+    emit LeaveRaid(player, _raidId);
+  }
+
+  function loot() external view {}
+
+  struct Loot {
+    Items item;
+    uint amount;
+  }
+
+  function availableLoot(uint _raidId, Player _player) external view returns (Loot[] memory loot) {
+    uint40 timestamp = raids[_raidId].startTime + raids[_raidId].timespan + 1 days;
+    uint seed = world.getSeed(timestamp); // Can only get it after the next day
+
+    uint randomNumber = uint(uint40(bytes5(bytes32(seed) ^ bytes32(bytes20(address(_player)))))); // High most 12 bytes are not affected so don't use those.
+
+    uint multiplier = _player.getLootBonusMultiplier();
+
+    uint adjustedRandomNumber = randomNumber / multiplier;
+
+    loot = new Loot[](5); // MAX
+
+    uint lootNum = 1;
+
+    // This is only 5 bytes long
+    if (randomNumber % 2 == 0) {
+      // If even you at least get this
+      loot[0] = Loot({item: Items.SHIELD, amount: 1});
+    } else {
+      // If off you at least get that
+      loot[0] = Loot({item: Items.WAND, amount: 1});
+    }
+
+    if (adjustedRandomNumber <= 2 ^ 4) {
+      loot[1] = Loot({item: Items.SHIELD, amount: 1});
+      if (adjustedRandomNumber <= 2 ^ 3) {
+        loot[2] = Loot({item: Items.SHIELD, amount: 1});
+        if (adjustedRandomNumber <= 2 ^ 2) {
+          loot[3] = Loot({item: Items.SHIELD, amount: 1});
+          if (adjustedRandomNumber <= 2) {
+            // Ultimate item
+            loot[4] = Loot({item: Items.SHIELD, amount: 1});
+            lootNum = 5;
+          } else {
+            lootNum = 4;
+          }
+        } else {
+          lootNum = 3;
+        }
+      } else {
+        lootNum = 2;
+      }
+    }
+    /// @solidity memory-safe-assembly
+    assembly {
+      mstore(loot, lootNum)
+    }
+  }
+*/
 }

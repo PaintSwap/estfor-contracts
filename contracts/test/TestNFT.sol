@@ -1,10 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../NFT.sol";
+import "../ItemNFT.sol";
+import "../interfaces/IBrushToken.sol";
+import "../World.sol";
+import "../Users.sol";
 
-contract TestPaintScapeNFT is PaintScapeNFT {
-  constructor(address _brush) PaintScapeNFT(_brush) {}
+contract TestItemNFT is ItemNFT {
+  constructor(IBrushToken _brush, World _world, Users _users) ItemNFT(_brush, _world, _users) {}
 
   function testMint(
     address _to,

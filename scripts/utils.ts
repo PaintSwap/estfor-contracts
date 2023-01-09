@@ -1,6 +1,6 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ethers} from "hardhat";
-import {PaintScapeNFT, Player} from "../typechain-types";
+import {PaintScapeNFT, Player, PlayerNFT} from "../typechain-types";
 
 // Should match contract
 export enum Skill {
@@ -43,8 +43,8 @@ export enum EquipPosition {
 export const MALE = true;
 export const FEMALE = false;
 
-export const createPlayer = async (nft: PaintScapeNFT, account: SignerWithAddress): Promise<Player> => {
-  const tx = await nft.connect(account).mintPlayer(MALE);
+export const createPlayer = async (nft: PlayerNFT, avatarId: number, account: SignerWithAddress): Promise<Player> => {
+  const tx = await nft.connect(account).mintPlayer(MALE, avatarId);
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
     return x.event == "NewPlayer";
