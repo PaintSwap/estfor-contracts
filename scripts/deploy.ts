@@ -28,8 +28,8 @@ async function main() {
   await player.connect(alice).consumeLastSkill();
   await player.connect(alice).paint();
 
-  await nft.testMint(alice.address, Items.SHIELD, 1);
-  await player.connect(alice).addToInventory(Items.SHIELD, 1);
+  await nft.testMint(alice.address, Item.SHIELD, 1);
+  await player.connect(alice).addToInventory(Item.SHIELD, 1);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

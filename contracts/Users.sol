@@ -11,7 +11,7 @@ contract Users is Ownable {
   ItemNFT private itemNFT;
   PlayerNFT private playerNFT;
 
-  mapping(address => mapping(Items => uint256)) public numEquipped; // user => tokenId => num equipped
+  mapping(address => mapping(Item => uint256)) public numEquipped; // user => item tokenId => num equipped
 
   modifier onlyPlayerNFT() {
     require(address(playerNFT) == msg.sender);
@@ -26,18 +26,18 @@ contract Users is Ownable {
   }
 
   // This will revert if there is not enough free balance to equip
-  function equip(address _from, Items _item) external onlyPlayerNFT {
+  function equip(address _from, Item _item) external onlyPlayerNFT {
     uint256 balance = itemNFT.balanceOf(_from, uint(_item));
     require(balance >= numEquipped[_from][_item] + 1, "Do not have enough quantity to equip");
     //    require(_tokenId > 1 && _tokenId < 256);
     numEquipped[_from][_item] += 1;
   }
 
-  function unequip(address _from, Items _item) external onlyPlayerNFT {
+  function unequip(address _from, Item _item) external onlyPlayerNFT {
     numEquipped[_from][_item] -= 1;
   }
 
-  function itemAmountUnavailable(address _from, Items _item) external view returns (uint) {
+  function itemAmountUnavailable(address _from, Item _item) external view returns (uint) {
     return numEquipped[_from][_item];
   }
 }

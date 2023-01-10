@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import { Items } from "../scripts/utils";
+import { Item } from "../scripts/utils";
 
 describe("Raid", function () {
   async function deployContracts() {
@@ -30,8 +30,8 @@ describe("Raid", function () {
     await brush.mint(alice.address, 1000);
     await brush.connect(alice).approve(nft.address, 1000);
     const quantityBought = 2;
-    await nft.connect(alice).buy(Items.SHIELD, quantityBought);
-    expect(await nft.balanceOf(alice.address, Items.SHIELD)).to.eq(quantityBought);
+    await nft.connect(alice).buy(Item.SHIELD, quantityBought);
+    expect(await nft.balanceOf(alice.address, Item.SHIELD)).to.eq(quantityBought);
 
     // Need a raid pass
   });

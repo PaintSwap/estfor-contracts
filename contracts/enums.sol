@@ -9,7 +9,7 @@ enum Skill {
   COOK
 }
 
-enum Items {
+enum Item {
   NONE,
   MYSTERY_BOX,
   RAID_PASS,

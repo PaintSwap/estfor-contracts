@@ -28,7 +28,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   //       222 - 250 (aux)
   // 251 - 255 reserved
 
-  mapping(uint => uint) public itemBalances; // tokenId => total
+  mapping(Item => uint) public itemBalances; // tokenId => total
 
   uint16 public mysteryBoxsMinted;
   IBrushToken immutable brush;
@@ -47,11 +47,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   event BuyFromShop(uint tokenId, uint quantity);
   event BuyBatchFromShop(uint[] tokenIds, uint[] quantities);
 
-  constructor(
-    IBrushToken _brush,
-    World _world,
-    Users _users
-  ) ERC1155("") {
+  constructor(IBrushToken _brush, World _world, Users _users) ERC1155("") {
     brush = _brush;
     world = _world;
     users = _users;
@@ -93,17 +89,13 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     uint seed = world.getSeed(timestamp);
     //    seed ^ _tokenId
     // Burn them, this will check approval/allowance etc
-    _burn(msg.sender, uint256(Items.MYSTERY_BOX), 1);
+    _burn(msg.sender, uint256(Item.MYSTERY_BOX), 1);
 
     // Fetch random values from chainlink
   }
 
   // Make sure changes here are reflected in TestItemNFT.sol
-  function mint(
-    address _to,
-    uint256 _tokenId,
-    uint256 _amount
-  ) external onlyPlayerNFT {
+  function mint(address _to, Item _tokenId, uint256 _amount) external onlyPlayerNFT {
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
       // Brand new item
@@ -111,48 +103,46 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     }
 
     itemBalances[_tokenId] = existingBalance + _amount;
-    _mint(_to, _tokenId, _amount, "");
+    _mint(_to, uint(_tokenId), _amount, "");
   }
 
-  function mintBatch(
-    address _to,
-    uint256[] calldata _ids,
-    uint256[] calldata _amounts
-  ) external onlyPlayerNFT {
+  // Can't use Item[] array unfortunately so they don't support array casts
+  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
     for (uint i = 0; i < _ids.length; ++i) {
-      uint existingBalance = itemBalances[_ids[i]];
+      uint existingBalance = itemBalances[Item(_ids[i])];
       if (existingBalance == 0) {
         // Brand new item
         ++numItems;
       }
 
-      itemBalances[_ids[i]] = existingBalance + _amounts[i];
+      itemBalances[Item(_ids[i])] = existingBalance + _amounts[i];
     }
     _mintBatch(_to, _ids, _amounts, "");
   }
 
-  function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    if (_tokenId == 0) {
-      // Mystery box
-    } else if (_tokenId < 200) {
-      // Item
-    } else {
-      // Player
-      // It might also not exist (require)
-    }
+  string private constant baseURI = "ipfs://";
+  mapping(Item => string) private tokenURIs;
 
-    return "empty";
+  function uri(uint256 _tokenId) public view virtual override returns (string memory) {
+    require(_exists(Item(_tokenId)), "Token does not exist");
+    return string(abi.encodePacked(baseURI, tokenURIs[Item(_tokenId)]));
   }
 
-  mapping(Items => ItemStat) itemStats;
+  function _exists(Item _tokenId) private view returns (bool) {
+    return bytes(tokenURIs[_tokenId]).length != 0;
+  }
+
+  mapping(Item => ItemStat) itemStats;
 
   // Or make it constants and redeploy the contracts
-  function addItem(Items _item, ItemStat calldata _itemStat) external onlyOwner {
-    require(itemStats[_item].bonus == 0, "This item was already added");
+  function addItem(Item _item, ItemStat calldata _itemStat, string calldata metadataURI) external onlyOwner {
+    require(!itemStats[_item].exists, "This item was already added");
+    require(_itemStat.exists);
     itemStats[_item] = _itemStat;
+    tokenURIs[_item] = metadataURI;
   }
 
-  function editItem(Items _item, ItemStat calldata _itemStat) external onlyOwner {
+  function editItem(Item _item, ItemStat calldata _itemStat) external onlyOwner {
     require(itemStats[_item].bonus != 0, "This item was not added yet");
     require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
     if (itemStats[_item].canEquip) {
@@ -161,13 +151,13 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     itemStats[_item] = _itemStat;
   }
 
-  function getItemStats(Items _item) external view returns (ItemStat memory) {
+  function getItemStats(Item _item) external view returns (ItemStat memory) {
     require(itemStats[_item].exists);
     return itemStats[_item];
   }
 
   function _beforeTokenTransfer(
-    address, /*_operator*/
+    address /*_operator*/,
     address _from,
     address _to,
     uint256[] memory _ids,
@@ -186,7 +176,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
         unchecked {
           --i;
         }
-        itemBalances[_ids[i]] -= _amounts[i];
+        itemBalances[Item(_ids[i])] -= _amounts[i];
       } while (i > 0);
     }
 
@@ -212,7 +202,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
       uint256 tokenId = _ids[i];
       // Transferring less than is equipped
-      uint256 unavailable = users.itemAmountUnavailable(_from, Items(tokenId));
+      uint256 unavailable = users.itemAmountUnavailable(_from, Item(tokenId));
       require(balances[i] - unavailable >= _amounts[i]);
     } while (i > 0);
   }
@@ -273,7 +263,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit BuyBatchFromShop(_tokenIds, _quantities);
   }
 
-  function getPriceForItem(uint _tokenId) public view returns (uint price) {
+  function getPriceForItem(Item _tokenId) public view returns (uint price) {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / numItems;
     uint totalOfThisItem = itemBalances[_tokenId];
@@ -284,7 +274,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     return totalBrushForItem / totalOfThisItem;
   }
 
-  function getPriceForItems(uint[] calldata _tokenIds) public view returns (uint[] memory prices) {
+  function getPriceForItems(Item[] calldata _tokenIds) public view returns (uint[] memory prices) {
     if (_tokenIds.length == 0) {
       return prices;
     }
@@ -309,28 +299,20 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     } while (i < prices.length);
   }
 
-  function sell(
-    uint _tokenId,
-    uint _quantity,
-    uint _minExpectedBrush
-  ) public {
+  function sell(Item _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
     require(totalBrush >= _minExpectedBrush);
-    _burn(msg.sender, _tokenId, _quantity);
+    _burn(msg.sender, uint(_tokenId), _quantity);
     brush.transfer(msg.sender, totalBrush);
   }
 
-  function sellBatch(
-    uint[] calldata _tokenIds,
-    uint[] calldata _quantities,
-    uint _minExpectedBrush
-  ) external {
+  function sellBatch(Item[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
     uint totalBrush;
     for (uint i = 0; i < _tokenIds.length; ++i) {
       uint brushPerToken = getPriceForItem(_tokenIds[i]);
       totalBrush += brushPerToken * _quantities[i];
-      _burn(msg.sender, _tokenIds[i], _quantities[i]);
+      _burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
     }
     require(totalBrush >= _minExpectedBrush);
     brush.transfer(msg.sender, totalBrush);
@@ -345,7 +327,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     require(raids[_raidId].startTime > 0, "Raid does not exist");
 
     // Needs a raid pass which gets burnt.
-    _burn(_owner, uint(Items.RAID_PASS), 1);
+    _burn(_owner, uint(Item.RAID_PASS), 1);
 
     raids[_raidId].numMembers += 1;
     raids[_raidId].members[player] = true;
@@ -368,7 +350,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   function loot() external view {}
 
   struct Loot {
-    Items item;
+    Item item;
     uint amount;
   }
 
@@ -389,21 +371,21 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     // This is only 5 bytes long
     if (randomNumber % 2 == 0) {
       // If even you at least get this
-      loot[0] = Loot({item: Items.SHIELD, amount: 1});
+      loot[0] = Loot({item: Item.SHIELD, amount: 1});
     } else {
       // If off you at least get that
-      loot[0] = Loot({item: Items.WAND, amount: 1});
+      loot[0] = Loot({item: Item.WAND, amount: 1});
     }
 
     if (adjustedRandomNumber <= 2 ^ 4) {
-      loot[1] = Loot({item: Items.SHIELD, amount: 1});
+      loot[1] = Loot({item: Item.SHIELD, amount: 1});
       if (adjustedRandomNumber <= 2 ^ 3) {
-        loot[2] = Loot({item: Items.SHIELD, amount: 1});
+        loot[2] = Loot({item: Item.SHIELD, amount: 1});
         if (adjustedRandomNumber <= 2 ^ 2) {
-          loot[3] = Loot({item: Items.SHIELD, amount: 1});
+          loot[3] = Loot({item: Item.SHIELD, amount: 1});
           if (adjustedRandomNumber <= 2) {
             // Ultimate item
-            loot[4] = Loot({item: Items.SHIELD, amount: 1});
+            loot[4] = Loot({item: Item.SHIELD, amount: 1});
             lootNum = 5;
           } else {
             lootNum = 4;

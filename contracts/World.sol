@@ -93,6 +93,11 @@ contract World is VRFConsumerBaseV2, Ownable {
     emit RequestFulfilled(_requestId, random);
   }
 
+  function hasSeed(uint timestamp) external view returns (bool) {
+    uint offset = (timestamp - startTime) / MIN_SEED_UPDATE_TIME;
+    return offset > 0 && requestIds.length >= offset;
+  }
+
   function getSeed(uint timestamp) public view returns (uint seed) {
     uint offset = (timestamp - startTime) / MIN_SEED_UPDATE_TIME;
     seed = randomWords[requestIds[offset - 1]];

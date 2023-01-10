@@ -1,5 +1,5 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "ethers";
+import {ContractTransaction, ethers} from "ethers";
 import {PlayerNFT} from "../typechain-types";
 
 // Should match contract
@@ -11,7 +11,7 @@ export enum Skill {
   COOK,
 }
 
-export enum Items {
+export enum Item {
   DUMMY,
   MYSTERY_BOX,
   BRUSH,
@@ -52,4 +52,12 @@ export const createPlayer = async (
     return x.event == "NewPlayer";
   })[0].args;
   return event?.tokenId;
+};
+
+export const getActionId = async (tx: ContractTransaction): Promise<ethers.BigNumber> => {
+  const receipt = await tx.wait();
+  const event = receipt?.events?.filter((x) => {
+    return x.event == "AddAction";
+  })[0].args;
+  return event?.actionId;
 };

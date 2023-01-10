@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {EquipPosition, Items, Skill} from "../scripts/utils";
+import {EquipPosition, getActionId, Item, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -94,14 +94,10 @@ describe("World", () => {
         minSkillPoints: 0,
         isDynamic: false,
         itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: Items.BRUSH,
-        itemTokenIdRangeMax: Items.WAND,
+        itemTokenIdRangeMin: Item.BRUSH,
+        itemTokenIdRangeMax: Item.WAND,
       });
-      const receipt = await tx.wait();
-      const event = receipt?.events?.filter((x) => {
-        return x.event == "AddAction";
-      })[0].args;
-      const actionId = event?.actionId;
+      const actionId = getActionId(tx);
       expect(await (await world.actions(actionId)).skill).to.eq(Skill.PAINT);
       await world.editAction(actionId, {
         skill: Skill.PAINT,
@@ -109,8 +105,8 @@ describe("World", () => {
         minSkillPoints: 0,
         isDynamic: false,
         itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: Items.BRUSH,
-        itemTokenIdRangeMax: Items.WAND,
+        itemTokenIdRangeMin: Item.BRUSH,
+        itemTokenIdRangeMax: Item.WAND,
       });
       expect(await (await world.actions(actionId)).baseXPPerHour).to.eq(20);
       expect(await world.availableActions(actionId)).to.be.false;
@@ -126,8 +122,8 @@ describe("World", () => {
         minSkillPoints: 0,
         isDynamic: true,
         itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: Items.BRUSH,
-        itemTokenIdRangeMax: Items.WAND,
+        itemTokenIdRangeMin: Item.BRUSH,
+        itemTokenIdRangeMax: Item.WAND,
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });
