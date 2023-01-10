@@ -17,11 +17,11 @@ import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 contract PlayerNFT is ERC1155, Multicall, Ownable {
   event NewPlayer(uint tokenId);
 
-  event AddInventory(uint tokenId, uint amount);
-  event RemoveInventory(uint tokenId, uint amount);
+  event AddInventory(uint tokenId, uint itemTokenId, uint amount);
+  event RemoveInventory(uint tokenId, uint itemTokenId, uint amount);
   event RemoveAllInventory(uint tokenId);
-  event Unequip(uint tokenId, uint bonusRemoved);
-  event Equip(uint tokenId, uint bonusAdded);
+  event Unequip(uint tokenId, uint itemTokenId, uint bonusRemoved);
+  event Equip(uint tokenId, uint itemTokenId, uint bonusAdded);
   event RemoveAllEquipment(uint tokenId);
   event AddSkillPoints(Skill action, uint points);
 
@@ -46,11 +46,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
     SkillInfo[] actionQueue;
     uint256 slotsUsed;
-    mapping(Skill => uint256) skillPoints;
     uint totalSkillPoints;
-    EnumerableMap.UintToUintMap inventoryItems;
     bytes32 name;
   }
+
+  // Can't put it in the player as it's a nested mapping which can't be made public
+  mapping(uint => EnumerableMap.UintToUintMap) private inventoryItems;
+  mapping(uint => mapping(Skill => uint256)) public skillPoints; // player id => skill => point
 
   uint32 public constant MAX_TIME = 1 days;
 
@@ -85,7 +87,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   uint256 public constant MAX_WEIGHT_PER_SLOT = 12000; // Each slot weighs MAX_WEIGHT / MAX_ITEMS, single item slots weigh that amount.
 
   mapping(uint => uint) private tokenIdToAvatar; // tokenId => avatar id?
-  mapping(uint => Player) private players; // tokenId => player too?
+  mapping(uint => Player) public players; // tokenId => player too?
   uint public latestPlayerId = 1;
   ItemNFT public itemNFT;
   Users private users;
@@ -190,9 +192,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         '{"trait_type":"Player name","value":"',
         player.name,
         '{"trait_type":"Attack","value":"',
-        player.skillPoints[Skill.PAINT],
+        skillPoints[_tokenId][Skill.PAINT],
         '"}, {"trait_type":"Defence","value":"',
-        player.skillPoints[Skill.DEFENCE],
+        skillPoints[_tokenId][Skill.DEFENCE],
         '"}, {"trait_type":"Max health","value":"',
         player.health,
         '"}'
@@ -260,7 +262,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     ItemStat memory stats = itemNFT.getItemStats(_itemTokenId);
     uint256 weight = stats.weight;
 
-    (bool success, uint existingAmount) = player.inventoryItems.tryGet(_itemTokenId);
+    (bool success, uint existingAmount) = inventoryItems[_tokenId].tryGet(_itemTokenId);
     uint256 remainder = (existingAmount * weight) % MAX_WEIGHT_PER_SLOT;
 
     // Update number of slots used in the inventory
@@ -278,19 +280,23 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
 
     // Update the inventory
-    player.inventoryItems.set(_itemTokenId, existingAmount + _amount);
+    inventoryItems[_tokenId].set(_itemTokenId, existingAmount + _amount);
     users.addInventory(msg.sender, _itemTokenId, _amount); // This will check they have enough balance to do so
-    emit AddInventory(_itemTokenId, _amount);
+    emit AddInventory(_tokenId, _itemTokenId, _amount);
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
     }
   }
 
-  function removeFromInventory(uint256 _tokenId, uint256 _amount) external isOwnerOfPlayer(_tokenId) {
+  function removeFromInventory(
+    uint256 _tokenId,
+    uint _itemTokenId,
+    uint256 _amount
+  ) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
     // Check that they have the item in their inventory
-    uint numInventory = player.inventoryItems.get(_tokenId);
+    uint numInventory = inventoryItems[_tokenId].get(_itemTokenId);
     require(numInventory >= _amount);
 
     SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
@@ -302,10 +308,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     player.slotsUsed -= numFullSlotsUsed;
 
     unchecked {
-      player.inventoryItems.set(_tokenId, numInventory - _amount);
+      inventoryItems[_tokenId].set(_itemTokenId, numInventory - _amount);
     }
     users.removeInventory(msg.sender, _tokenId, _amount);
-    emit RemoveInventory(_tokenId, _amount);
+    emit RemoveInventory(_tokenId, _itemTokenId, _amount);
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
     }
@@ -335,11 +341,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     Player storage _player,
     uint _tokenId
   ) private {
-    uint length = _player.inventoryItems.length();
+    uint length = inventoryItems[_tokenId].length();
 
     for (uint i = 0; i < length; i++) {
-      (uint itemTokenId, uint amount) = _player.inventoryItems.at(i);
-      _player.inventoryItems.remove(itemTokenId);
+      (uint itemTokenId, uint amount) = inventoryItems[_tokenId].at(i);
+      inventoryItems[_tokenId].remove(itemTokenId);
       users.removeInventory(_from, itemTokenId, amount);
     }
     emit RemoveAllInventory(_tokenId);
@@ -438,7 +444,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       bonus -= existingBonus.bonus;
 
       users.unequip(msg.sender, equippedTokenId);
-      emit Unequip(equippedTokenId, existingBonus.bonus);
+      emit Unequip(_tokenId, equippedTokenId, existingBonus.bonus);
     }
 
     if (stats.attribute == Attribute.ATTACK) {
@@ -449,7 +455,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     // This will check the user has enough balance inside
     users.equip(msg.sender, _itemTokenId);
-    emit Equip(_itemTokenId, stats.bonus);
+    emit Equip(_tokenId, _itemTokenId, stats.bonus);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
@@ -510,6 +516,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       Skill skill,
       uint8 baseXPPerHour,
       uint32 minSkillPoints,
+      bool isDynamic,
       uint8 itemPosition,
       uint8 itemTokenIdRangeMin,
       uint8 itemTokenIdRangeMax
@@ -518,9 +525,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // Equipment just check left and right arm, needed?
     uint256 itemSlot = _getEquipmentSlot(player);
     uint8 itemTokenId = uint8(itemSlot >> (itemPosition * 8));
-    require(itemTokenId >= itemTokenIdRangeMin && itemTokenId < itemTokenIdRangeMax);
+    /*    require(itemTokenId >= itemTokenIdRangeMin && itemTokenId < itemTokenIdRangeMax);
     require(world.availableActions(_actionId));
-    player.actionQueue.push(SkillInfo({actionId: _actionId, startTime: uint40(block.timestamp), timespan: _timespan}));
+    player.actionQueue.push(SkillInfo({actionId: _actionId, startTime: uint40(block.timestamp), timespan: _timespan})); */
   }
 
   //    mapping(uint, claimable);
@@ -686,7 +693,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         pointsAccured = elapsedTime; // TODO: This should be based on something else
         uint40 end = skillInfo.startTime + skillInfo.timespan;
         /*        if (_discardRestOfQueue) {
-          _player.skillPoints[skillInfo.skill] += pointsAccured; // Update this later, just base it on time elapsed
+          _skillPoints[_tokenId][skillInfo.skill] += pointsAccured; // Update this later, just base it on time elapsed
           emit AddSkillPoints(skillInfo.skill, pointsAccured);
           length = 0;
           break;
@@ -702,7 +709,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
       if (pointsAccured > 0) {
         Skill skill = world.getSkill(skillInfo.actionId);
-        _player.skillPoints[skill] += pointsAccured; // Update this later, just base it on time elapsed
+        skillPoints[_tokenId][skill] += pointsAccured; // Update this later, just base it on time elapsed
         emit AddSkillPoints(skill, pointsAccured);
 
         // What about loot, this gets pushed into the next day if there's no seed

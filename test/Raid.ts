@@ -25,7 +25,7 @@ describe("Raid", function () {
     };
   }
 
-  it("Public Raid", async function () {
+  it("Public Raid", async () => {
     const {nft, brush, alice} = await loadFixture(deployContracts);
     await brush.mint(alice.address, 1000);
     await brush.connect(alice).approve(nft.address, 1000);

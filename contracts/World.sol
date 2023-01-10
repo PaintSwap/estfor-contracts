@@ -45,6 +45,7 @@ contract World is VRFConsumerBaseV2, Ownable {
     Skill skill;
     uint8 baseXPPerHour;
     uint32 minSkillPoints;
+    bool isDynamic;
     uint8 itemPosition;
     uint8 itemTokenIdRangeMin; // Inclusive
     uint8 itemTokenIdRangeMax; // Exclusive
@@ -104,8 +105,8 @@ contract World is VRFConsumerBaseV2, Ownable {
   uint[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  event AddAction(uint _actionId, ActionInfo actionInfo);
-  event EditAction(uint _actionId, ActionInfo actionInfo);
+  event AddAction(uint actionId, ActionInfo actionInfo);
+  event EditAction(uint actionId, ActionInfo actionInfo);
 
   event AddAvailableAction(uint actionId);
   event RemoveAvailabelAction(uint actionId);
@@ -122,6 +123,12 @@ contract World is VRFConsumerBaseV2, Ownable {
   function editAction(uint _actionId, ActionInfo calldata _actionInfo) external onlyOwner {
     _setAction(_actionId, _actionInfo);
     emit EditAction(_actionId, _actionInfo);
+  }
+
+  function setAvailable(uint _actionId, bool _available) external onlyOwner {
+    require(actions[_actionId].skill != Skill.NONE, "Action does not exist");
+    require(!actions[_actionId].isDynamic, "Action is dynamic");
+    availableActions[_actionId] = _available;
   }
 
   function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {

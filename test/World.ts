@@ -1,6 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
+import {EquipPosition, Items, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -75,11 +76,64 @@ describe("World", () => {
       const blockNum = await ethers.provider.getBlockNumber();
       const currentBlock = await ethers.provider.getBlock(blockNum);
       const currentTimestamp = currentBlock.timestamp;
-      // Before
-      await world.getSeed(currentTimestamp + minSeedUpdateTime); // Works
+      await world.getSeed(currentTimestamp + minSeedUpdateTime);
       // Gives unhandled project rejection for some reason
+      // Before offset
       await expect(world.getSeed(currentTimestamp)).to.be.reverted;
+      // After offset
       await expect(world.getSeed(currentTimestamp + minSeedUpdateTime * 2)).to.be.reverted;
+    });
+  });
+
+  describe("Actions", () => {
+    it("Add/Edit/Delete normal", async () => {
+      const {world} = await loadFixture(deployContracts);
+      let tx = await world.addAction({
+        skill: Skill.PAINT,
+        baseXPPerHour: 10,
+        minSkillPoints: 0,
+        isDynamic: false,
+        itemPosition: EquipPosition.RIGHT_ARM,
+        itemTokenIdRangeMin: Items.BRUSH,
+        itemTokenIdRangeMax: Items.WAND,
+      });
+      const receipt = await tx.wait();
+      const event = receipt?.events?.filter((x) => {
+        return x.event == "AddAction";
+      })[0].args;
+      const actionId = event?.actionId;
+      expect(await (await world.actions(actionId)).skill).to.eq(Skill.PAINT);
+      await world.editAction(actionId, {
+        skill: Skill.PAINT,
+        baseXPPerHour: 20,
+        minSkillPoints: 0,
+        isDynamic: false,
+        itemPosition: EquipPosition.RIGHT_ARM,
+        itemTokenIdRangeMin: Items.BRUSH,
+        itemTokenIdRangeMax: Items.WAND,
+      });
+      expect(await (await world.actions(actionId)).baseXPPerHour).to.eq(20);
+      expect(await world.availableActions(actionId)).to.be.false;
+      await world.setAvailable(actionId, true);
+      expect(await world.availableActions(actionId)).to.be.true;
+      await world.setAvailable(actionId, false);
+      expect(await world.availableActions(actionId)).to.be.false;
+
+      // Set available on an action that is dynamic (this should be random only)
+      await world.editAction(actionId, {
+        skill: Skill.PAINT,
+        baseXPPerHour: 20,
+        minSkillPoints: 0,
+        isDynamic: true,
+        itemPosition: EquipPosition.RIGHT_ARM,
+        itemTokenIdRangeMin: Items.BRUSH,
+        itemTokenIdRangeMax: Items.WAND,
+      });
+      await expect(world.setAvailable(actionId, false)).to.be.reverted;
+    });
+
+    it("Dynamic actions", async () => {
+      // Dynamic actions TODO
     });
   });
 });
