@@ -9,9 +9,8 @@ enum Skill {
   COOK
 }
 
-// Dummy is there so that we start at 1
 enum Items {
-  DUMMY,
+  NONE,
   MYSTERY_BOX,
   RAID_PASS,
   XP_BOOST,

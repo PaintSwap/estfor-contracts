@@ -40,7 +40,6 @@ describe("Player", () => {
     // Create player
     const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
     const maxTime = await playerNFT.MAX_TIME();
-    const maxWeight = await playerNFT.MAX_WEIGHT_PER_SLOT();
 
     return {
       playerId,
@@ -48,23 +47,40 @@ describe("Player", () => {
       itemNFT,
       brush,
       maxTime,
-      maxWeight,
       owner,
       alice,
     };
   }
 
+  it.only("Equip", async() => {
+    const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
+
+    // Does not have the right equipment
+    await expect(playerNFT.connect(alice).startAction(Skill.PAINT, 100, playerId, false)).to.be.reverted;
+
+    // Item doesn't exist yet
+    await expect(playerNFT.connect(alice).equip(playerId, Items.BRUSH)).to.be.reverted;
+    await itemNFT.addItem(Items.BRUSH, { attribute: Attribute.ATTACK, equipPosition: EquipPosition.AUX, canEquip: true, bonus: 0});
+    await playerNFT.connect(alice).equip(playerId, Items.BRUSH);
+  });
+
   it.only("Skill points", async () => {
     const {playerId, playerNFT, alice} = await loadFixture(deployContracts);
 
     expect(await playerNFT.skillPoints(playerId, Skill.PAINT)).to.eq(0);
+    // Does not have the right equipment
+    await expect(playerNFT.connect(alice).startAction(Skill.PAINT, 100, playerId, false)).to.be.reverted;
+
+    await playerNFT.connect(alice).equip(playerId, Items.BRUSH);
+
     await playerNFT.connect(alice).startAction(Skill.PAINT, 100, playerId, false);
     await ethers.provider.send("evm_increaseTime", [1]);
-    //    await playerNFT.connect(alice).consumeLastSkill();
-//    expect((await playerNFT.skillPoints(playerId, Skill.PAINT)).toNumber()).to.be.oneOf([1, 2, 3]);
+    await playerNFT.connect(alice).consumeSkills(playerId);
+    expect((await playerNFT.skillPoints(playerId, Skill.PAINT)).toNumber()).to.be.oneOf([1, 2, 3]);
   });
+
   /*
-  it("Skill points, max range", async () => {
+  it.only("Skill points, max range", async () => {
     const {player, alice, maxTime} = await loadFixture(deployContracts);
 
     expect(await player.skillPoints(Skill.PAINT)).to.eq(0);
@@ -73,12 +89,13 @@ describe("Player", () => {
     await player.connect(alice).consumeLastSkill();
     expect((await player.skillPoints(Skill.PAINT)).toNumber()).to.eq(maxTime);
   });
-
+  */
+  /*
   it("Multi-skill points", async () => {
     // TODO:
   });
 
-  it("Sex", async () => {
+  it.only("Sex", async () => {
     const {player, itemNFT} = await loadFixture(deployContracts);
     const Player = await ethers.getContractFactory("Player");
     expect(await player.sex()).to.eq(MALE);
@@ -86,7 +103,7 @@ describe("Player", () => {
     expect(await playerFemale.sex()).to.eq(FEMALE);
   });
 
-  it("Equipment", async () => {
+  it.only("Equipment", async () => {
     const {player, alice, itemNFT, playerNFT, maxWeight} = await loadFixture(deployContracts);
     await itemNFT.testMint(alice.address, Items.SHIELD, 1);
     expect(await itemNFT.balanceOf(alice.address, Items.SHIELD)).to.eq(1);
@@ -124,11 +141,11 @@ describe("Player", () => {
     expect(await itemNFT.numEquipped(alice.address, Items.SHIELD)).to.eq(2);
   });
 
-  it("Equipment Many", async () => {
+  it.only("Equipment Many", async () => {
     // TODO:
   });
 
-  it("Inventory", async () => {
+  it.only("Inventory", async () => {
     const {player, itemNFT, alice} = await loadFixture(deployContracts);
 
     // Max inventory of 16 items
@@ -138,7 +155,7 @@ describe("Player", () => {
     expect(await player.inventoryAmount(Items.SHIELD)).to.eq(1);
   });
 
-  it("uri", async () => {
+  it.only("uri", async () => {
     //    await robotzBoostMultiplierNFT.mint(alice.address, 1, { value: mintCost });
     //   const tokenId = 1;
     // level 1 (TODO: Update when we have the multipliers ready)

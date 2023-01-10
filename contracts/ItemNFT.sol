@@ -144,24 +144,26 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     return "empty";
   }
 
-  mapping(uint8 => ItemStat) itemStats;
+  mapping(Items => ItemStat) itemStats;
 
   // Or make it constants and redeploy the contracts
-  function addItem(uint8 _item, ItemStat calldata _itemStat) external onlyOwner {
+  function addItem(Items _item, ItemStat calldata _itemStat) external onlyOwner {
     require(itemStats[_item].bonus == 0, "This item was already added");
     itemStats[_item] = _itemStat;
   }
 
-  function editItem(uint8 _item, ItemStat calldata _itemStat) external onlyOwner {
+  function editItem(Items _item, ItemStat calldata _itemStat) external onlyOwner {
     require(itemStats[_item].bonus != 0, "This item was not added yet");
     require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
+    if (itemStats[_item].canEquip) {
+      require(_itemStat.canEquip, "Cannot change equippable item to non equippable");
+    }
     itemStats[_item] = _itemStat;
   }
 
-  function getItemStats(uint256 _tokenId) external view returns (ItemStat memory) {
-    // Should be between 2 and 255
-    require(_tokenId > 1 && _tokenId < 256);
-    return itemStats[uint8(_tokenId)];
+  function getItemStats(Items _item) external view returns (ItemStat memory) {
+    require(itemStats[_item].exists);
+    return itemStats[_item];
   }
 
   function _beforeTokenTransfer(
@@ -210,7 +212,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
       uint256 tokenId = _ids[i];
       // Transferring less than is equipped
-      uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
+      uint256 unavailable = users.itemAmountUnavailable(_from, Items(tokenId));
       require(balances[i] - unavailable >= _amounts[i]);
     } while (i > 0);
   }

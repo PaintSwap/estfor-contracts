@@ -11,8 +11,7 @@ contract Users is Ownable {
   ItemNFT private itemNFT;
   PlayerNFT private playerNFT;
 
-  mapping(address => mapping(uint256 => uint256)) public numEquipped; // user => tokenId => num equipped
-  mapping(address => mapping(uint256 => uint256)) public numInventory; // user => tokenId => num inventory
+  mapping(address => mapping(Items => uint256)) public numEquipped; // user => tokenId => num equipped
 
   modifier onlyPlayerNFT() {
     require(address(playerNFT) == msg.sender);
@@ -27,43 +26,18 @@ contract Users is Ownable {
   }
 
   // This will revert if there is not enough free balance to equip
-  function equip(address _from, uint256 _tokenId) external onlyPlayerNFT {
-    uint256 balance = itemNFT.balanceOf(_from, _tokenId);
-    require(
-      balance >= numEquipped[_from][_tokenId] + 1 + numInventory[_from][_tokenId],
-      "Do not have enough quantity to equip"
-    );
-    require(_tokenId > 1 && _tokenId < 256);
-    numEquipped[_from][_tokenId] += 1;
+  function equip(address _from, Items _item) external onlyPlayerNFT {
+    uint256 balance = itemNFT.balanceOf(_from, uint(_item));
+    require(balance >= numEquipped[_from][_item] + 1, "Do not have enough quantity to equip");
+    //    require(_tokenId > 1 && _tokenId < 256);
+    numEquipped[_from][_item] += 1;
   }
 
-  function unequip(address _from, uint256 _tokenId) external onlyPlayerNFT {
-    numEquipped[_from][_tokenId] -= 1;
+  function unequip(address _from, Items _item) external onlyPlayerNFT {
+    numEquipped[_from][_item] -= 1;
   }
 
-  function addInventory(
-    address _from,
-    uint256 _tokenId,
-    uint256 _amount
-  ) external onlyPlayerNFT {
-    uint256 balance = itemNFT.balanceOf(_from, _tokenId);
-    require(
-      balance >= numInventory[_from][_tokenId] + numEquipped[_from][_tokenId] + _amount,
-      "Do not have enough quantity to add to inventory"
-    );
-    require(_tokenId > 1 && _tokenId < 256);
-    numInventory[_from][_tokenId] += _amount;
-  }
-
-  function removeInventory(
-    address _from,
-    uint256 _tokenId,
-    uint256 _amount
-  ) external onlyPlayerNFT {
-    numInventory[_from][_tokenId] -= _amount;
-  }
-
-  function itemAmountUnavailable(address _from, uint _tokenId) external view returns (uint) {
-    return numEquipped[_from][_tokenId] + numInventory[_from][_tokenId];
+  function itemAmountUnavailable(address _from, Items _item) external view returns (uint) {
+    return numEquipped[_from][_item];
   }
 }

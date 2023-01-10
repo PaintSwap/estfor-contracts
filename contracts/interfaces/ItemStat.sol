@@ -8,8 +8,9 @@ enum EquipPosition {
     RIGHT_ARM,
     LEFT_ARM,
     LEGS,
-    DUMMY,
-    DUMMY1
+    BOOTS,
+    AUX,
+    FOOD
 }
 
 enum Attribute {
@@ -19,8 +20,9 @@ enum Attribute {
 }
 
 struct ItemStat {
+    bool exists;
+    bool canEquip;
     Attribute attribute;
     EquipPosition equipPosition;
-    uint16 weight;
     uint8 bonus;
 }
