@@ -56,17 +56,12 @@ contract World is VRFConsumerBaseV2, Ownable {
   }
 
   function requestSeedUpdate() external returns (uint256 requestId) {
-    // Can only request if there has
     // Last one has not been fulfilled yet
     if (requestIds.length > 0) {
       require(requestIds[requestIds.length - 1] != 0);
     }
 
-    require(
-      (lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME <= block.timestamp) ||
-        (block.timestamp - startTime) / MIN_SEED_UPDATE_TIME >= requestIds.length,
-      "Can only request after 1 day has passed or the random seeds have fallen too far behind"
-    );
+    require(lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME <= block.timestamp, "Can only request after 1 day has passed");
 
     // Will revert if subscription is not set and funded.
     requestId = COORDINATOR.requestRandomWords(
@@ -78,7 +73,7 @@ contract World is VRFConsumerBaseV2, Ownable {
     );
 
     requestIds.push(requestId);
-    lastSeedUpdatedTime = block.timestamp;
+    lastSeedUpdatedTime = lastSeedUpdatedTime == 0 ? block.timestamp : lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME;
     emit RequestSent(requestId, numWords);
     return requestId;
   }
@@ -99,7 +94,7 @@ contract World is VRFConsumerBaseV2, Ownable {
 
   function getSeed(uint timestamp) public view returns (uint seed) {
     uint offset = (timestamp - startTime) / MIN_SEED_UPDATE_TIME;
-    seed = randomWords[requestIds[offset]];
+    seed = randomWords[requestIds[offset - 1]];
     require(seed > 0);
   }
 

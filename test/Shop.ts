@@ -4,7 +4,7 @@ import {ethers} from "hardhat";
 import {Items} from "../scripts/utils";
 
 describe("Shop", function () {
-  async function deployContracts() {
+  const deployContracts = async () => {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice] = await ethers.getSigners();
 
@@ -40,7 +40,7 @@ describe("Shop", function () {
       owner,
       alice,
     };
-  }
+  };
 
   it("Set up shop", async () => {
     const {itemNFT} = await loadFixture(deployContracts);
