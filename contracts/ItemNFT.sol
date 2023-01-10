@@ -28,7 +28,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   //       222 - 250 (aux)
   // 251 - 255 reserved
 
-  mapping(uint => uint) totalBalances; // tokenId => total
+  mapping(uint => uint) public itemBalances; // tokenId => total
 
   uint16 public mysteryBoxsMinted;
   IBrushToken immutable brush;
@@ -37,8 +37,10 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   address playerNFT;
   uint256 public mintMysteryBoxCost;
 
+  uint public numItems; // unique number of items
+
   /* Shop */
-  mapping(uint => uint) private shopItems;
+  mapping(uint => uint) public shopItems;
   event AddShopItem(uint tokenId, uint price);
   event AddShopItems(uint[] tokenIds, uint[] prices);
   event RemoveShopItem(uint tokenId);
@@ -86,8 +88,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     mysteryBoxStart += startTokenId + _num;
   }
 
-  //  function
-
   function openMysteryBox(uint _tokenId) external {
     uint timestamp = lockedItems[_tokenId];
     uint seed = world.getSeed(timestamp);
@@ -98,12 +98,19 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     // Fetch random values from chainlink
   }
 
+  // Make sure changes here are reflected in TestItemNFT.sol
   function mint(
     address _to,
     uint256 _tokenId,
     uint256 _amount
   ) external onlyPlayerNFT {
-    totalBalances[_tokenId] += _amount;
+    uint existingBalance = itemBalances[_tokenId];
+    if (existingBalance == 0) {
+      // Brand new item
+      ++numItems;
+    }
+
+    itemBalances[_tokenId] = existingBalance + _amount;
     _mint(_to, _tokenId, _amount, "");
   }
 
@@ -113,7 +120,13 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     uint256[] calldata _amounts
   ) external onlyPlayerNFT {
     for (uint i = 0; i < _ids.length; ++i) {
-      totalBalances[_ids[i]] += _amounts[i];
+      uint existingBalance = itemBalances[_ids[i]];
+      if (existingBalance == 0) {
+        // Brand new item
+        ++numItems;
+      }
+
+      itemBalances[_ids[i]] = existingBalance + _amounts[i];
     }
     _mintBatch(_to, _ids, _amounts, "");
   }
@@ -171,7 +184,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
         unchecked {
           --i;
         }
-        totalBalances[_ids[i]] += _amounts[i];
+        itemBalances[_ids[i]] -= _amounts[i];
       } while (i > 0);
     }
 
@@ -191,13 +204,14 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     uint256[] memory balances = balanceOfBatch(accounts, _ids);
 
     do {
+      unchecked {
+        --i;
+      }
+
       uint256 tokenId = _ids[i];
       // Transferring less than is equipped
       uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
       require(balances[i] - unavailable >= _amounts[i]);
-      unchecked {
-        --i;
-      }
     } while (i > 0);
   }
 
@@ -208,7 +222,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit AddShopItem(_tokenId, _price);
   }
 
-  function addShopBatchItem(uint[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
+  function addShopItems(uint[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
     require(_tokenIds.length == _prices.length);
     require(_tokenIds.length > 0);
     uint i;
@@ -257,12 +271,10 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit BuyBatchFromShop(_tokenIds, _quantities);
   }
 
-  uint numItems; // unique number of items
-
   function getPriceForItem(uint _tokenId) public view returns (uint price) {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / numItems;
-    uint totalOfThisItem = totalBalances[_tokenId];
+    uint totalOfThisItem = itemBalances[_tokenId];
     if (totalOfThisItem < 100) {
       // Need to be a minimum of an item before any can be sold.
       return 0;
@@ -281,7 +293,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     prices = new uint[](_tokenIds.length);
     uint i;
     do {
-      uint totalOfThisItem = totalBalances[_tokenIds[i]];
+      uint totalOfThisItem = itemBalances[_tokenIds[i]];
       if (totalOfThisItem < 100) {
         // Need to be a minimum of an item before any can be sold.
         prices[i] = 0;
@@ -295,25 +307,31 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     } while (i < prices.length);
   }
 
-  // Slippage as a % base 10000
   function sell(
     uint _tokenId,
     uint _quantity,
-    uint _slippage
+    uint _minExpectedBrush
   ) public {
     uint brushPerToken = getPriceForItem(_tokenId);
+    uint totalBrush = brushPerToken * _quantity;
+    require(totalBrush >= _minExpectedBrush);
     _burn(msg.sender, _tokenId, _quantity);
-    brush.transfer(msg.sender, brushPerToken * _quantity);
+    brush.transfer(msg.sender, totalBrush);
   }
 
-  function setllBatch(
+  function sellBatch(
     uint[] calldata _tokenIds,
     uint[] calldata _quantities,
-    uint _slippage
+    uint _minExpectedBrush
   ) external {
+    uint totalBrush;
     for (uint i = 0; i < _tokenIds.length; ++i) {
-      sell(_tokenIds[i], _quantities[i], _slippage);
+      uint brushPerToken = getPriceForItem(_tokenIds[i]);
+      totalBrush += brushPerToken * _quantities[i];
+      _burn(msg.sender, _tokenIds[i], _quantities[i]);
     }
+    require(totalBrush >= _minExpectedBrush);
+    brush.transfer(msg.sender, totalBrush);
   }
 
   /* Raids */

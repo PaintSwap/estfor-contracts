@@ -8,7 +8,7 @@ import "./PlayerNFT.sol";
 // This contains things related to addresses (EOAs & contracts) representing a user
 // which may be in control of many players. For instance keep track of how many items this user has equipped
 contract Users is Ownable {
-  ItemNFT private itemsNFT;
+  ItemNFT private itemNFT;
   PlayerNFT private playerNFT;
 
   mapping(address => mapping(uint256 => uint256)) public numEquipped; // user => tokenId => num equipped
@@ -19,17 +19,16 @@ contract Users is Ownable {
     _;
   }
 
-  function setItemsNFT(ItemNFT _itemsNFT) external onlyOwner {
-    itemsNFT = _itemsNFT;
-  }
-
-  function setPlayerNFT(PlayerNFT _playerNFT) external onlyOwner {
+  function setNFTs(PlayerNFT _playerNFT, ItemNFT _itemNFT) external onlyOwner {
+    require(address(_playerNFT) != address(0));
+    require(address(_itemNFT) != address(0));
     playerNFT = _playerNFT;
+    itemNFT = _itemNFT;
   }
 
   // This will revert if there is not enough free balance to equip
   function equip(address _from, uint256 _tokenId) external onlyPlayerNFT {
-    uint256 balance = itemsNFT.balanceOf(_from, _tokenId);
+    uint256 balance = itemNFT.balanceOf(_from, _tokenId);
     require(
       balance >= numEquipped[_from][_tokenId] + 1 + numInventory[_from][_tokenId],
       "Do not have enough quantity to equip"
@@ -47,7 +46,7 @@ contract Users is Ownable {
     uint256 _tokenId,
     uint256 _amount
   ) external onlyPlayerNFT {
-    uint256 balance = itemsNFT.balanceOf(_from, _tokenId);
+    uint256 balance = itemNFT.balanceOf(_from, _tokenId);
     require(
       balance >= numInventory[_from][_tokenId] + numEquipped[_from][_tokenId] + _amount,
       "Do not have enough quantity to add to inventory"

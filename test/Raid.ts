@@ -27,8 +27,8 @@ describe("Raid", function () {
 
   it("Public Raid", async function () {
     const {nft, brush, alice} = await loadFixture(deployContracts);
-    brush.mint(alice.address, 1000);
-    brush.connect(alice).approve(nft.address, 1000);
+    await brush.mint(alice.address, 1000);
+    await brush.connect(alice).approve(nft.address, 1000);
     const quantityBought = 2;
     await nft.connect(alice).buy(Items.SHIELD, quantityBought);
     expect(await nft.balanceOf(alice.address, Items.SHIELD)).to.eq(quantityBought);

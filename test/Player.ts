@@ -15,18 +15,18 @@ describe("Player", () => {
     const mockOracleClient = await MockOracleClient.deploy();
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World");
-    const world = await World.deploy(mockOracleClient.address, subscriptionId);    
+    const world = await World.deploy(mockOracleClient.address, subscriptionId);
 
     // Create NFT contract which contains all the items
     const ItemNFT = await ethers.getContractFactory("TestItemNFT");
-    const itemNFT = await ItemNFT.deploy(mockBrushToken.address,  world.address);
+    const itemNFT = await ItemNFT.deploy(mockBrushToken.address, world.address);
 
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const playerNFT = await PlayerNFT.deploy(mockBrushToken.address, itemNFT.address,  world.address);
+    const playerNFT = await PlayerNFT.deploy(mockBrushToken.address, itemNFT.address, world.address);
 
     const avatarId = 1;
-    const avatarInfo = { name: "Name goes here", description: "Hi I'm a description", imageURI: "1234.png" };
+    const avatarInfo = {name: "Name goes here", description: "Hi I'm a description", imageURI: "1234.png"};
     await playerNFT.addAvatar(avatarId, avatarInfo);
 
     // Create player
@@ -132,14 +132,12 @@ describe("Player", () => {
   });
 
   it("uri", async () => {
-//    await robotzBoostMultiplierNFT.mint(alice.address, 1, { value: mintCost });
- //   const tokenId = 1;
-
+    //    await robotzBoostMultiplierNFT.mint(alice.address, 1, { value: mintCost });
+    //   const tokenId = 1;
     // level 1 (TODO: Update when we have the multipliers ready)
- //   const base64URI =
-  //    "data:application/json;base64,eyJuYW1lIjogIlJvYm90eiBNdWx0aXBsaWVyIE5GVCAjMSIsImRlc2NyaXB0aW9uIjogIkdpdmVzIGJvb3N0cyBmb3IgdGhlIFJvYm90eiBwcm90b2NvbC4iLCJhdHRyaWJ1dGVzIjpbeyJ0cmFpdF90eXBlIjoiTGV2ZWwiLCJ2YWx1ZSI6IiMxIn0seyJ0cmFpdF90eXBlIjoiQm9vc3QgbXVsdGlwbGllciIsInZhbHVlIjoiMjAwMDB4In0seyJ0cmFpdF90eXBlIjoiVGltZSByZW1haW5pbmcgdGlsbCBuZXh0IHVwZ3JhZGUiLCJ2YWx1ZSI6IjEwMCJ9XSwiaW1hZ2UiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCcFpEMGlUR0Y1WlhKZk1TSWdaR0YwWVMxdVlXMWxQU0pNWVhsbGNpQXhJaUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBME5qY3VNellnTVRBeU9TNHpNU0krUEdSbFpuTStQSE4wZVd4bFBpNWpiSE10TVh0bWIyNTBMWE5wZW1VNk9UUTJjSGc3Wm1sc2JEb2pOV0prTXpRMk8zTjBjbTlyWlRvak1EQXdPM04wY205clpTMXRhWFJsY214cGJXbDBPakV3TzJadmJuUXRabUZ0YVd4NU9rMTVjbWxoWkZCeWJ5MVNaV2QxYkdGeUxDQk5lWEpwWVdRZ1VISnZPMnhsZEhSbGNpMXpjR0ZqYVc1bk9pMHdMakF5WlcwN2ZUd3ZjM1I1YkdVK1BDOWtaV1p6UGp4MFpYaDBJR05zWVhOelBTSmpiSE10TVNJZ2RISmhibk5tYjNKdFBTSjBjbUZ1YzJ4aGRHVW9NQzQxSURjNU1pNHpNU2tpUGpFOEwzUmxlSFErUEM5emRtYysifQ==";
-  //  expect(await robotzBoostMultiplierNFT.tokenURI(tokenId)).to.equal(
- //     base64URI
-   // );
-
+    //   const base64URI =
+    //    "data:application/json;base64,eyJuYW1lIjogIlJvYm90eiBNdWx0aXBsaWVyIE5GVCAjMSIsImRlc2NyaXB0aW9uIjogIkdpdmVzIGJvb3N0cyBmb3IgdGhlIFJvYm90eiBwcm90b2NvbC4iLCJhdHRyaWJ1dGVzIjpbeyJ0cmFpdF90eXBlIjoiTGV2ZWwiLCJ2YWx1ZSI6IiMxIn0seyJ0cmFpdF90eXBlIjoiQm9vc3QgbXVsdGlwbGllciIsInZhbHVlIjoiMjAwMDB4In0seyJ0cmFpdF90eXBlIjoiVGltZSByZW1haW5pbmcgdGlsbCBuZXh0IHVwZ3JhZGUiLCJ2YWx1ZSI6IjEwMCJ9XSwiaW1hZ2UiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCcFpEMGlUR0Y1WlhKZk1TSWdaR0YwWVMxdVlXMWxQU0pNWVhsbGNpQXhJaUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBME5qY3VNellnTVRBeU9TNHpNU0krUEdSbFpuTStQSE4wZVd4bFBpNWpiSE10TVh0bWIyNTBMWE5wZW1VNk9UUTJjSGc3Wm1sc2JEb2pOV0prTXpRMk8zTjBjbTlyWlRvak1EQXdPM04wY205clpTMXRhWFJsY214cGJXbDBPakV3TzJadmJuUXRabUZ0YVd4NU9rMTVjbWxoWkZCeWJ5MVNaV2QxYkdGeUxDQk5lWEpwWVdRZ1VISnZPMnhsZEhSbGNpMXpjR0ZqYVc1bk9pMHdMakF5WlcwN2ZUd3ZjM1I1YkdVK1BDOWtaV1p6UGp4MFpYaDBJR05zWVhOelBTSmpiSE10TVNJZ2RISmhibk5tYjNKdFBTSjBjbUZ1YzJ4aGRHVW9NQzQxSURjNU1pNHpNU2tpUGpFOEwzUmxlSFErUEM5emRtYysifQ==";
+    //  expect(await robotzBoostMultiplierNFT.tokenURI(tokenId)).to.equal(
+    //     base64URI
+  });
 });

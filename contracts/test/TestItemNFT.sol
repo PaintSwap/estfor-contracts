@@ -14,6 +14,13 @@ contract TestItemNFT is ItemNFT {
     uint256 _tokenId,
     uint256 _amount
   ) external {
+    uint existingBalance = itemBalances[_tokenId];
+    if (existingBalance == 0) {
+      // Brand new item
+      ++numItems;
+    }
+
+    itemBalances[_tokenId] = existingBalance + _amount;
     _mint(_to, _tokenId, _amount, "");
   }
 }

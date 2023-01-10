@@ -81,18 +81,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   using EnumerableMap for EnumerableMap.UintToUintMap;
 
-  function inventoryAmount(uint _tokenId) external view returns (uint) {
-    //    (bool success, uint amount) = inventoryItems.tryGet(_tokenId);
-    //    return amount;
-  }
-
   uint256 public constant MAX_SLOTS = 16; //
   uint256 public constant MAX_WEIGHT_PER_SLOT = 12000; // Each slot weighs MAX_WEIGHT / MAX_ITEMS, single item slots weigh that amount.
 
   mapping(uint => uint) private tokenIdToAvatar; // tokenId => avatar id?
   mapping(uint => Player) private players; // tokenId => player too?
   uint public latestPlayerId = 1;
-  ItemNFT private itemNFT;
+  ItemNFT public itemNFT;
   Users private users;
 
   mapping(uint => AvatarInfo) private avatars; // avatar id => avatarInfo
@@ -116,6 +111,28 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     string description;
     string imageURI;
   }
+
+  uint constant LEVEL_5_BOUNDARY = 500;
+  uint constant LEVEL_10_BOUNDARY = 10000;
+  uint constant LEVEL_15_BOUNDARY = 15000;
+  uint constant LEVEL_20_BOUNDARY = 20000;
+  uint constant LEVEL_30_BOUNDARY = 30000;
+  uint constant LEVEL_40_BOUNDARY = 400000;
+  uint constant LEVEL_50_BOUNDARY = 5000000;
+  uint constant LEVEL_60_BOUNDARY = 6000000;
+  uint constant LEVEL_70_BOUNDARY = 7000000;
+  uint constant LEVEL_80_BOUNDARY = 80000000;
+  uint constant LEVEL_90_BOUNDARY = 900000000;
+  uint constant LEVEL_99_BOUNDARY = 999999999;
+
+  event LevelUp(address _from, uint _tokenId, uint[] _itemTokenIdsRewarded, uint[] _amountTokenIdsRewarded);
+
+  struct PendingLoot {
+    uint actionId;
+    uint40 timestamp;
+  }
+
+  PendingLoot[] private pendingLoot; // queue, will be sorted by timestamp
 
   constructor(
     IBrushToken _brush,
@@ -586,21 +603,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     return 2;
   }
 
-  uint constant LEVEL_5_BOUNDARY = 500;
-  uint constant LEVEL_10_BOUNDARY = 10000;
-  uint constant LEVEL_15_BOUNDARY = 15000;
-  uint constant LEVEL_20_BOUNDARY = 20000;
-  uint constant LEVEL_30_BOUNDARY = 30000;
-  uint constant LEVEL_40_BOUNDARY = 400000;
-  uint constant LEVEL_50_BOUNDARY = 5000000;
-  uint constant LEVEL_60_BOUNDARY = 6000000;
-  uint constant LEVEL_70_BOUNDARY = 7000000;
-  uint constant LEVEL_80_BOUNDARY = 80000000;
-  uint constant LEVEL_90_BOUNDARY = 900000000;
-  uint constant LEVEL_99_BOUNDARY = 999999999;
-
-  event LevelUp(address _from, uint _tokenId, uint[] _itemTokenIdsRewarded, uint[] _amountTokenIdsRewarded);
-
   function _handleLevelUpRewards(
     address _from,
     uint _tokenId,
@@ -634,13 +636,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       oldOverallSkillPoints < LEVEL_5_BOUNDARY && newOverallSkillPoints >= LEVEL_5_BOUNDARY
     ) {}
   }
-
-  struct PendingLoot {
-    uint actionId;
-    uint40 timestamp;
-  }
-
-  PendingLoot[] private pendingLoot; // queue, will be sorted by timestamp
 
   function getLoot(uint actionId, uint seed) external view returns (uint[] memory tokenIds) {
     if (seed == 0) {
@@ -738,6 +733,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     assembly {
       mstore(remainingSkills, length)
     }
+  }
+
+  function inventoryAmount(uint _tokenId) external view returns (uint) {
+    //    (bool success, uint amount) = inventoryItems.tryGet(_tokenId);
+    //    return amount;
   }
 
   function addAvatar(uint avatarId, AvatarInfo calldata avatarInfo) external onlyOwner {
