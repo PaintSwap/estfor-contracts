@@ -9,7 +9,7 @@ import "../Users.sol";
 contract TestItemNFT is ItemNFT {
   constructor(IBrushToken _brush, World _world, Users _users) ItemNFT(_brush, _world, _users) {}
 
-  function testMint(address _to, Item _tokenId, uint256 _amount) external {
+  function testMint(address _to, uint _tokenId, uint _amount) external {
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
       // Brand new item

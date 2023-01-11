@@ -177,6 +177,22 @@ describe("Player", () => {
     await playerNFT.connect(alice).equip(newPlayerId, Item.SHIELD);
     expect(await users.numEquipped(alice.address, Item.SHIELD)).to.eq(2);
   });
+
+  it("Edit Name", async () => {
+    const {playerId, playerNFT, alice, brush} = await loadFixture(deployContracts);
+    await expect(
+      playerNFT.connect(alice).editName(playerId, ethers.utils.formatBytes32String("My name is edited, woo"))
+    ).to.be.reverted; // Haven't got the brush
+
+    await brush.mint(alice.address, 5000);
+    await brush.connect(alice).approve(playerNFT.address, 5000);
+
+    await expect(playerNFT.editName(playerId, ethers.utils.formatBytes32String("My name is edited, woo"))).to.be
+      .reverted; // Not the owner
+
+    await playerNFT.connect(alice).editName(playerId, ethers.utils.formatBytes32String("My name is edited, woo"));
+  });
+
   /*
   it.only("Equipment Many", async () => {
     // TODO:

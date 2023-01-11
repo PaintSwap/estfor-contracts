@@ -28,7 +28,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   //       222 - 250 (aux)
   // 251 - 255 reserved
 
-  mapping(Item => uint) public itemBalances; // tokenId => total
+  mapping(uint => uint) public itemBalances; // tokenId => total
 
   uint16 public mysteryBoxsMinted;
   IBrushToken immutable brush;
@@ -89,13 +89,14 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     uint seed = world.getSeed(timestamp);
     //    seed ^ _tokenId
     // Burn them, this will check approval/allowance etc
-    _burn(msg.sender, uint256(Item.MYSTERY_BOX), 1);
+    _burn(msg.sender, MYSTERY_BOX, 1);
 
     // Fetch random values from chainlink
   }
 
   // Make sure changes here are reflected in TestItemNFT.sol
-  function mint(address _to, Item _tokenId, uint256 _amount) external onlyPlayerNFT {
+  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayerNFT {
+    require(_tokenId < type(uint16).max);
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
       // Brand new item
@@ -109,40 +110,41 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   // Can't use Item[] array unfortunately so they don't support array casts
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
     for (uint i = 0; i < _ids.length; ++i) {
-      uint existingBalance = itemBalances[Item(_ids[i])];
+      require(_ids[i] < type(uint16).max);
+      uint existingBalance = itemBalances[_ids[i]];
       if (existingBalance == 0) {
         // Brand new item
         ++numItems;
       }
 
-      itemBalances[Item(_ids[i])] = existingBalance + _amounts[i];
+      itemBalances[_ids[i]] = existingBalance + _amounts[i];
     }
     _mintBatch(_to, _ids, _amounts, "");
   }
 
   string private constant baseURI = "ipfs://";
-  mapping(Item => string) private tokenURIs;
+  mapping(uint => string) private tokenURIs;
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    require(_exists(Item(_tokenId)), "Token does not exist");
-    return string(abi.encodePacked(baseURI, tokenURIs[Item(_tokenId)]));
+    require(_exists(_tokenId), "Token does not exist");
+    return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
 
-  function _exists(Item _tokenId) private view returns (bool) {
+  function _exists(uint _tokenId) private view returns (bool) {
     return bytes(tokenURIs[_tokenId]).length != 0;
   }
 
-  mapping(Item => ItemStat) itemStats;
+  mapping(uint16 => ItemStat) itemStats;
 
   // Or make it constants and redeploy the contracts
-  function addItem(Item _item, ItemStat calldata _itemStat, string calldata metadataURI) external onlyOwner {
+  function addItem(uint16 _item, ItemStat calldata _itemStat, string calldata metadataURI) external onlyOwner {
     require(!itemStats[_item].exists, "This item was already added");
     require(_itemStat.exists);
     itemStats[_item] = _itemStat;
     tokenURIs[_item] = metadataURI;
   }
 
-  function editItem(Item _item, ItemStat calldata _itemStat) external onlyOwner {
+  function editItem(uint16 _item, ItemStat calldata _itemStat) external onlyOwner {
     require(itemStats[_item].bonus != 0, "This item was not added yet");
     require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
     if (itemStats[_item].canEquip) {
@@ -151,7 +153,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     itemStats[_item] = _itemStat;
   }
 
-  function getItemStats(Item _item) external view returns (ItemStat memory) {
+  function getItemStats(uint16 _item) external view returns (ItemStat memory) {
     require(itemStats[_item].exists);
     return itemStats[_item];
   }
@@ -176,7 +178,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
         unchecked {
           --i;
         }
-        itemBalances[Item(_ids[i])] -= _amounts[i];
+        itemBalances[_ids[i]] -= _amounts[i];
       } while (i > 0);
     }
 
@@ -202,7 +204,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
       uint256 tokenId = _ids[i];
       // Transferring less than is equipped
-      uint256 unavailable = users.itemAmountUnavailable(_from, Item(tokenId));
+      uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
       require(balances[i] - unavailable >= _amounts[i]);
     } while (i > 0);
   }
@@ -263,7 +265,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit BuyBatchFromShop(_tokenIds, _quantities);
   }
 
-  function getPriceForItem(Item _tokenId) public view returns (uint price) {
+  function getPriceForItem(uint16 _tokenId) public view returns (uint price) {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / numItems;
     uint totalOfThisItem = itemBalances[_tokenId];
@@ -274,7 +276,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     return totalBrushForItem / totalOfThisItem;
   }
 
-  function getPriceForItems(Item[] calldata _tokenIds) public view returns (uint[] memory prices) {
+  function getPriceForItems(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
     if (_tokenIds.length == 0) {
       return prices;
     }
@@ -299,7 +301,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     } while (i < prices.length);
   }
 
-  function sell(Item _tokenId, uint _quantity, uint _minExpectedBrush) public {
+  function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
     require(totalBrush >= _minExpectedBrush);
@@ -307,7 +309,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     brush.transfer(msg.sender, totalBrush);
   }
 
-  function sellBatch(Item[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
+  function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
     uint totalBrush;
     for (uint i = 0; i < _tokenIds.length; ++i) {
       uint brushPerToken = getPriceForItem(_tokenIds[i]);

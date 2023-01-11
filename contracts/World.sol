@@ -5,6 +5,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "./enums.sol";
+import "./interfaces/ItemStat.sol";
 
 // Fantom VRF
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634
@@ -13,6 +14,14 @@ import "./enums.sol";
 contract World is VRFConsumerBaseV2, Ownable {
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
+
+  event AddAction(uint actionId, ActionInfo actionInfo);
+  event EditAction(uint actionId, ActionInfo actionInfo);
+
+  event SetAvailableAction(uint actionId, bool available);
+
+  event AddDynamicActions(uint[] actionIds);
+  event RemoveDynamicActions(uint[] actionIds);
 
   VRFCoordinatorV2Interface COORDINATOR;
 
@@ -46,10 +55,16 @@ contract World is VRFConsumerBaseV2, Ownable {
     uint8 baseXPPerHour;
     uint32 minSkillPoints;
     bool isDynamic;
-    uint8 itemPosition;
+    EquipPosition itemPosition;
     uint8 itemTokenIdRangeMin; // Inclusive
     uint8 itemTokenIdRangeMax; // Exclusive
   }
+
+  mapping(uint => ActionInfo) public actions; // action id => action info
+  uint public lastActionId = 1;
+  mapping(uint => bool) public availableActions; // action id => available
+  uint[] private lastAddedDynamicActions;
+  uint public lastDynamicUpdatedTime;
 
   constructor(VRFCoordinatorV2Interface coordinator, uint64 _subscriptionId) VRFConsumerBaseV2(address(coordinator)) {
     COORDINATOR = coordinator;
@@ -104,21 +119,6 @@ contract World is VRFConsumerBaseV2, Ownable {
     require(seed > 0);
   }
 
-  mapping(uint => ActionInfo) public actions; // action id => action info
-  uint public lastActionId = 1;
-  mapping(uint => bool) public availableActions; // action id => available
-  uint[] private lastAddedDynamicActions;
-  uint public lastDynamicUpdatedTime;
-
-  event AddAction(uint actionId, ActionInfo actionInfo);
-  event EditAction(uint actionId, ActionInfo actionInfo);
-
-  event AddAvailableAction(uint actionId);
-  event RemoveAvailabelAction(uint actionId);
-
-  event AddDynamicActions(uint[] actionIds);
-  event RemoveDynamicActions(uint[] actionIds);
-
   function addAction(ActionInfo calldata _actionInfo) external onlyOwner {
     _setAction(lastActionId, _actionInfo);
     emit AddAction(lastActionId, _actionInfo);
@@ -139,7 +139,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {
     require(_actionInfo.itemTokenIdRangeMax < 256);
     require(_actionInfo.itemTokenIdRangeMin < _actionInfo.itemTokenIdRangeMax);
-    require(_actionInfo.itemPosition < 8);
+    require(uint(_actionInfo.itemPosition) < 16);
     actions[_actionId] = _actionInfo;
   }
 

@@ -15,15 +15,15 @@ import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
 // Each NFT represents a player
 contract PlayerNFT is ERC1155, Multicall, Ownable {
-  event NewPlayer(uint tokenId);
+  event NewPlayer(uint tokenId, uint avatarId, bytes32 name);
+  event EditPlayer(uint tokenId, bytes32 newName);
 
-  //  event AddInventory(uint tokenId, Item itemTokenId, uint amount);
-  //  event RemoveInventory(uint tokenId, Item itemTokenId, uint amount);
-  //  event RemoveAllInventory(uint tokenId);
-  event Unequip(uint tokenId, Item itemTokenId, uint bonusRemoved);
-  event Equip(uint tokenId, Item itemTokenId, uint bonusAdded);
+  event Unequip(uint tokenId, uint16 itemTokenId, uint bonusRemoved);
+  event Equip(uint tokenId, uint16 itemTokenId, uint bonusAdded);
   event RemoveAllEquipment(uint tokenId);
-  event AddSkillPoints(Skill action, uint points);
+  event AddSkillPoints(uint tokenId, Skill action, uint points);
+
+  event LevelUp(uint _tokenId, uint[] _itemTokenIdsRewarded, uint[] _amountTokenIdsRewarded);
 
   struct SkillInfo {
     uint actionId;
@@ -36,8 +36,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   string private constant baseURI = "ipfs://";
 
   struct InventorySlots {
-    Item food;
-    uint248 rest;
+    uint16 food;
+    uint240 rest;
     uint8 quantityFood; // Can only hold up to 256
   }
 
@@ -68,14 +68,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   // Equipment (leave at the bottom to allow for further ones)
   struct Equipped {
-    Item head; // tokenId for the head
-    Item necklace;
-    Item body;
-    Item rightArm;
-    Item leftArm;
-    Item legs;
-    Item boots;
-    Item auxilary; // Fishing rod, axe etc
+    uint8 head; // tokenId for the head
+    uint8 necklace;
+    uint8 body;
+    uint8 rightArm;
+    uint8 leftArm;
+    uint8 legs;
+    uint8 boots;
+    uint8 auxilary; // Fishing rod, axe etc
     // These are stored in case individual items are changed later, but also prevents having to read them loads
     EquipmentBonus headBonus; // atk // Maximum 3, first byte is a mask of the attribute, next 3 are 0-255 the increase they provide.
     EquipmentBonus necklaceBonus; // atk
@@ -130,8 +130,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   uint constant LEVEL_90_BOUNDARY = 900000000;
   uint constant LEVEL_99_BOUNDARY = 999999999;
 
-  event LevelUp(address _from, uint _tokenId, uint[] _itemTokenIdsRewarded, uint[] _amountTokenIdsRewarded);
-
   struct PendingLoot {
     uint actionId;
     uint40 timestamp;
@@ -149,8 +147,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function _mintStartingItems() private {
     // Give the player some starting items
     uint[] memory itemNFTs = new uint[](2);
-    itemNFTs[0] = uint(Item.BRONZE_PICKAXE);
-    itemNFTs[1] = uint(Item.SHIELD);
+    itemNFTs[0] = BRONZE_PICKAXE;
+    itemNFTs[1] = SHIELD;
     uint[] memory quantities = new uint[](2);
     quantities[0] = 1;
     quantities[1] = 1;
@@ -160,6 +158,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   // Costs nothing to mint, only gas
   function mintPlayer(uint _avatarId, bytes32 _name) external {
     uint currentPlayerId = latestPlayerId;
+    emit NewPlayer(currentPlayerId, _avatarId, _name);
+
     _mint(msg.sender, currentPlayerId, 1, "");
 
     Player storage player = players[currentPlayerId];
@@ -172,7 +172,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
     tokenIdToAvatar[currentPlayerId] = _avatarId;
     ++latestPlayerId;
-    emit NewPlayer(currentPlayerId);
   }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
@@ -269,8 +268,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // Unequip each item one by one
     uint i = 0;
     do {
-      Item equipmentTokenId = Item(uint8(uint256(equippedSlot) >> (i * 8)));
-      if (equipmentTokenId != Item.NONE) {
+      uint8 equipmentTokenId = uint8(uint256(equippedSlot) >> (i * 8));
+      if (equipmentTokenId != NONE) {
         users.unequip(_from, equipmentTokenId);
       }
 
@@ -280,8 +279,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     } while (i < 8);
 
     // Also remove food
-    Item food = _player.inventorySlots.food;
-    if (food != Item.NONE) {
+    uint16 food = _player.inventorySlots.food;
+    if (food != NONE) {
       users.unequip(_from, food);
     }
 
@@ -302,7 +301,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   // Cannot be transferred while equipped.  Check if the NFT is being transferred and unequip from this user.
   // Replace old one
-  function equip(uint _tokenId, Item _item) external isOwnerOfPlayer(_tokenId) {
+  function equip(uint _tokenId, uint16 _item) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
     SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
@@ -314,7 +313,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     EquipPosition position = stats.equipPosition;
 
-    Item equippedTokenId;
+    uint8 equippedTokenId; // Update later
     /// @solidity memory-safe-assembly
     assembly {
       let val := sload(player.slot)
@@ -331,7 +330,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       revert EquipSameItem();
     }
 
-    if (equippedTokenId != Item.NONE) {
+    if (equippedTokenId != NONE) {
       // Unequip current item and remove bonus
       EquipmentBonus memory existingBonus;
       /// @solidity memory-safe-assembly
@@ -365,13 +364,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // This requires checking that we have it equipped
     Player storage player = players[_tokenId];
     SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
-    Item equipped;
+    uint8 equipped; // TODO: Update later
     /// @solidity memory-safe-assembly
     assembly {
       let val := sload(player.slot)
       equipped := shr(mul(_position, 8), val)
     }
-    if (equipped == Item.NONE) {
+    if (equipped == NONE) {
       revert NotEquipped();
     }
 
@@ -416,14 +415,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint8 baseXPPerHour,
       uint32 minSkillPoints,
       bool isDynamic,
-      uint8 itemPosition,
+      EquipPosition itemPosition,
       uint8 itemTokenIdRangeMin,
       uint8 itemTokenIdRangeMax
     ) = world.actions(_actionId);
 
     // Equipment just check left and right arm, needed?
     uint256 itemSlot = _getEquipmentSlot(player);
-    uint8 itemTokenId = uint8(itemSlot >> (itemPosition * 8));
+    uint8 itemTokenId = uint8(itemSlot >> (uint(itemPosition) * 8));
     require(itemTokenId >= itemTokenIdRangeMin && itemTokenId < itemTokenIdRangeMax);
     require(world.availableActions(_actionId));
     player.actionQueue.push(SkillInfo({actionId: _actionId, startTime: uint40(block.timestamp), timespan: _timespan}));
@@ -519,7 +518,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     if (oldOverallSkillPoints < LEVEL_99_BOUNDARY && newOverallSkillPoints >= LEVEL_99_BOUNDARY) {
       // Mint rewards
       uint[] memory itemTokenIds = new uint[](1);
-      itemTokenIds[0] = uint16(Item.SHIELD);
+      itemTokenIds[0] = SHIELD;
 
       uint[] memory amounts = new uint[](1);
       amounts[0] = 1;
@@ -529,7 +528,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       // Consume an XP boost immediately
       // TODO
 
-      emit LevelUp(_from, _tokenId, itemTokenIds, amounts);
+      emit LevelUp(_tokenId, itemTokenIds, amounts);
     } else if (oldOverallSkillPoints < LEVEL_90_BOUNDARY && newOverallSkillPoints >= LEVEL_90_BOUNDARY) {} else if (
       oldOverallSkillPoints < LEVEL_80_BOUNDARY && newOverallSkillPoints >= LEVEL_80_BOUNDARY
     ) {} else if (oldOverallSkillPoints < LEVEL_70_BOUNDARY && newOverallSkillPoints >= LEVEL_70_BOUNDARY) {} else if (
@@ -551,9 +550,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     tokenIds = new uint[](3); // max
     uint length;
     if (seed % 2 == 0) {
-      tokenIds[0] = uint(Item.SHIELD);
+      tokenIds[0] = SHIELD;
     } else {
-      tokenIds[0] = uint(Item.BRONZE_PICKAXE);
+      tokenIds[0] = BRONZE_PICKAXE;
     }
 
     assembly {
@@ -610,7 +609,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       if (pointsAccured > 0) {
         Skill skill = world.getSkill(skillInfo.actionId);
         skillPoints[_tokenId][skill] += pointsAccured; // Update this later, just base it on time elapsed
-        emit AddSkillPoints(skill, pointsAccured);
+        emit AddSkillPoints(_tokenId, skill, pointsAccured);
 
         // What about loot, this gets pushed into the next day if there's no seed
         bool hasSeed = world.hasSeed(skillEndTime);
@@ -620,14 +619,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           pendingLoot.push(PendingLoot({actionId: skillInfo.actionId, timestamp: skillEndTime}));
 
           if (skill == Skill.PAINT) {
-            itemNFT.mint(_from, Item.BRUSH, 1);
+            itemNFT.mint(_from, BRUSH, 1);
           }
         } else {
           // Mint loot (TODO Update this later)
           uint seed = world.getSeed(skillEndTime);
           uint tokenId = seed ^ ((skillInfo.actionId % 10) + 1);
           uint amount = seed ^ ((skillInfo.actionId % 2) + 1);
-          itemNFT.mint(_from, Item(tokenId), amount);
+          itemNFT.mint(_from, tokenId, amount);
         }
 
         allPointsAccured += pointsAccured;
@@ -646,6 +645,17 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     assembly {
       mstore(remainingSkills, length)
     }
+  }
+
+  function editName(uint _playerId, bytes32 _newName) external isOwnerOfPlayer(_playerId) {
+    uint brushCost = 5000;
+    // Pay
+    brush.transferFrom(msg.sender, address(this), brushCost);
+    // Burn half, the rest goes into the pool
+    brush.burn(brushCost / 2);
+
+    players[_playerId].name = _newName;
+    emit EditPlayer(_playerId, _newName);
   }
 
   function inventoryAmount(uint _tokenId) external view returns (uint) {

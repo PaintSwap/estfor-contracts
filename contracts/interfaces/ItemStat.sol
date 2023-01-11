@@ -10,7 +10,9 @@ enum EquipPosition {
     LEGS,
     BOOTS,
     AUX,
-    FOOD
+    FOOD,
+    ARROWS,
+    RUNES
 }
 
 enum Attribute {
