@@ -21,7 +21,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   event Unequip(uint tokenId, uint16 itemTokenId, uint bonusRemoved);
   event Equip(uint tokenId, uint16 itemTokenId, uint bonusAdded);
   event RemoveAllEquipment(uint tokenId);
-  event AddSkillPoints(uint tokenId, Skill action, uint points);
+  event AddSkillPoints(uint tokenId, Skill skill, uint points);
 
   event LevelUp(uint _tokenId, uint[] _itemTokenIdsRewarded, uint[] _amountTokenIdsRewarded);
 

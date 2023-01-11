@@ -39,12 +39,20 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   uint public numItems; // unique number of items
 
+  string private constant baseURI = "ipfs://";
+  mapping(uint => string) private tokenURIs;
+
+  /* Items */
+  mapping(uint16 => ItemStat) itemStats;
+  event AddItem(uint16 tokenId, ItemStat itemStats);
+  event EditItem(uint16 tokenId, ItemStat itemStats);
+
   /* Shop */
-  mapping(uint => uint) public shopItems;
-  event AddShopItem(uint tokenId, uint price);
-  event AddShopItems(uint[] tokenIds, uint[] prices);
-  event RemoveShopItem(uint tokenId);
-  event BuyFromShop(uint tokenId, uint quantity);
+  mapping(uint16 => uint) public shopItems; // id => price
+  event AddShopItem(uint16 tokenId, uint price);
+  event AddShopItems(uint16[] tokenIds, uint[] prices);
+  event RemoveShopItem(uint16 tokenId);
+  event BuyFromShop(uint16 tokenId, uint quantity);
   event BuyBatchFromShop(uint[] tokenIds, uint[] quantities);
 
   constructor(IBrushToken _brush, World _world, Users _users) ERC1155("") {
@@ -122,9 +130,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     _mintBatch(_to, _ids, _amounts, "");
   }
 
-  string private constant baseURI = "ipfs://";
-  mapping(uint => string) private tokenURIs;
-
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     require(_exists(_tokenId), "Token does not exist");
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
@@ -134,23 +139,24 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     return bytes(tokenURIs[_tokenId]).length != 0;
   }
 
-  mapping(uint16 => ItemStat) itemStats;
-
   // Or make it constants and redeploy the contracts
-  function addItem(uint16 _item, ItemStat calldata _itemStat, string calldata metadataURI) external onlyOwner {
+  function addItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
     require(!itemStats[_item].exists, "This item was already added");
     require(_itemStat.exists);
     itemStats[_item] = _itemStat;
-    tokenURIs[_item] = metadataURI;
+    tokenURIs[_item] = _metadataURI;
+    emit AddItem(_item, _itemStat);
   }
 
-  function editItem(uint16 _item, ItemStat calldata _itemStat) external onlyOwner {
+  function editItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
     require(itemStats[_item].bonus != 0, "This item was not added yet");
     require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
     if (itemStats[_item].canEquip) {
       require(_itemStat.canEquip, "Cannot change equippable item to non equippable");
     }
     itemStats[_item] = _itemStat;
+    tokenURIs[_item] = _metadataURI;
+    emit EditItem(_item, _itemStat);
   }
 
   function getItemStats(uint16 _item) external view returns (ItemStat memory) {
@@ -211,12 +217,12 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   /* Shop */
   // Spend brush to buy some things from the shop
-  function addShopItem(uint _tokenId, uint _price) external onlyOwner {
+  function addShopItem(uint16 _tokenId, uint _price) external onlyOwner {
     shopItems[_tokenId] = _price;
     emit AddShopItem(_tokenId, _price);
   }
 
-  function addShopItems(uint[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
+  function addShopItems(uint16[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
     require(_tokenIds.length == _prices.length);
     require(_tokenIds.length > 0);
     uint i;
@@ -229,13 +235,13 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit AddShopItems(_tokenIds, _prices);
   }
 
-  function removeShopItem(uint _tokenId) external onlyOwner {
+  function removeShopItem(uint16 _tokenId) external onlyOwner {
     delete shopItems[_tokenId];
     emit RemoveShopItem(_tokenId);
   }
 
   // Buy simple items and XP boosts using brush
-  function buy(uint _tokenId, uint _quantity) external {
+  function buy(uint16 _tokenId, uint _quantity) external {
     uint price = shopItems[_tokenId];
     require(price != 0, "Item cannot be bought");
     // Pay
@@ -251,7 +257,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     require(_tokenIds.length == _quantities.length);
     uint totalBrush;
     for (uint i = 0; i < _tokenIds.length; ++i) {
-      uint price = shopItems[_tokenIds[i]];
+      uint price = shopItems[uint16(_tokenIds[i])];
       require(price != 0, "Item cannot be bought");
       totalBrush += price * _quantities[i];
     }

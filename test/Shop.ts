@@ -54,7 +54,7 @@ describe("Shop", function () {
     expect(await itemNFT.shopItems(Item.SHIELD)).to.eq(400);
 
     // Doesn't exist
-    expect(await itemNFT.shopItems(99999)).to.eq(0);
+    expect(await itemNFT.shopItems(9999)).to.eq(0);
   });
 
   it("Set up shop batch ", async () => {
