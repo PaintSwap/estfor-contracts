@@ -134,6 +134,7 @@ contract World is VRFConsumerBaseV2, Ownable {
     require(actions[_actionId].skill != Skill.NONE, "Action does not exist");
     require(!actions[_actionId].isDynamic, "Action is dynamic");
     availableActions[_actionId] = _available;
+    emit SetAvailableAction(_actionId, _available);
   }
 
   function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {
