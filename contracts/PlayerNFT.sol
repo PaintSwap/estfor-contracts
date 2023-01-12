@@ -18,12 +18,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   event NewPlayer(uint tokenId, uint avatarId, bytes32 name);
   event EditPlayer(uint tokenId, bytes32 newName);
 
-  event Unequip(uint tokenId, uint16 itemTokenId, uint bonusRemoved);
-  event Equip(uint tokenId, uint16 itemTokenId, uint bonusAdded);
+  event Unequip(uint tokenId, uint16 itemTokenId, uint8 bonusRemoved, uint amount);
+  event Equip(uint tokenId, uint16 itemTokenId, uint8 bonusAdded, uint amount);
   event RemoveAllEquipment(uint tokenId);
   event AddSkillPoints(uint tokenId, Skill skill, uint points);
 
-  event LevelUp(uint _tokenId, uint[] _itemTokenIdsRewarded, uint[] _amountTokenIdsRewarded);
+  event LevelUp(uint tokenId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
 
   struct SkillInfo {
     uint actionId;
@@ -342,7 +342,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       bonus -= existingBonus.bonus;
 
       users.unequip(msg.sender, equippedTokenId);
-      emit Unequip(_tokenId, equippedTokenId, existingBonus.bonus);
+      emit Unequip(_tokenId, equippedTokenId, existingBonus.bonus, 1);
     }
 
     if (stats.attribute == Attribute.ATTACK) {
@@ -353,7 +353,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     // This will check the user has enough balance inside
     users.equip(msg.sender, _item);
-    emit Equip(_tokenId, _item, stats.bonus);
+    emit Equip(_tokenId, _item, stats.bonus, 1);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
