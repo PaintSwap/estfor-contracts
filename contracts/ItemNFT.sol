@@ -52,8 +52,10 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   event AddShopItem(uint16 tokenId, uint price);
   event AddShopItems(uint16[] tokenIds, uint[] prices);
   event RemoveShopItem(uint16 tokenId);
-  event BuyFromShop(uint16 tokenId, uint quantity);
-  event BuyBatchFromShop(uint[] tokenIds, uint[] quantities);
+  event Buy(address buyer, uint16 tokenId, uint quantity, uint price);
+  event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
+  event Sell(address seller, uint16 tokenId, uint quantity, uint price);
+  event SellBatch(address seller, uint16[] tokenIds, uint[] quantities, uint[] prices);
 
   constructor(IBrushToken _brush, World _world, Users _users) ERC1155("") {
     brush = _brush;
@@ -211,7 +213,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
       uint256 tokenId = _ids[i];
       // Transferring less than is equipped
       uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
-      require(balances[i] - unavailable >= _amounts[i]);
+      require(balances[i] - unavailable >= _amounts[i]); // TODO: 
     } while (i > 0);
   }
 
@@ -238,37 +240,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   function removeShopItem(uint16 _tokenId) external onlyOwner {
     delete shopItems[_tokenId];
     emit RemoveShopItem(_tokenId);
-  }
-
-  // Buy simple items and XP boosts using brush
-  function buy(uint16 _tokenId, uint _quantity) external {
-    uint price = shopItems[_tokenId];
-    require(price != 0, "Item cannot be bought");
-    // Pay
-    brush.transferFrom(msg.sender, address(this), price);
-    // Burn half, the rest goes into the pool for sellable items
-    brush.burn(price / 2);
-
-    _mint(msg.sender, _tokenId, _quantity, "");
-    emit BuyFromShop(_tokenId, _quantity);
-  }
-
-  function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
-    require(_tokenIds.length == _quantities.length);
-    uint totalBrush;
-    for (uint i = 0; i < _tokenIds.length; ++i) {
-      uint price = shopItems[uint16(_tokenIds[i])];
-      require(price != 0, "Item cannot be bought");
-      totalBrush += price * _quantities[i];
-    }
-
-    // Pay
-    brush.transferFrom(msg.sender, address(this), totalBrush);
-    // Burn half, the rest goes into the pool for sellable items
-    brush.burn(totalBrush / 2);
-
-    _mintBatch(msg.sender, _tokenIds, _quantities, "");
-    emit BuyBatchFromShop(_tokenIds, _quantities);
   }
 
   function getPriceForItem(uint16 _tokenId) public view returns (uint price) {
@@ -307,23 +278,62 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     } while (i < prices.length);
   }
 
+  // Buy simple items and XP boosts using brush
+  function buy(uint16 _tokenId, uint _quantity) external {
+    uint price = shopItems[_tokenId];
+    require(price != 0, "Item cannot be bought");
+    // Pay
+    brush.transferFrom(msg.sender, address(this), price);
+    // Burn half, the rest goes into the pool for sellable items
+    brush.burn(price / 2);
+
+    _mint(msg.sender, _tokenId, _quantity, "");
+    emit Buy(msg.sender, _tokenId, _quantity, price);
+  }
+
+  function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
+    require(_tokenIds.length == _quantities.length);
+    uint totalBrush;
+    uint[] memory prices = new uint[](_tokenIds.length);
+    for (uint i = 0; i < _tokenIds.length; ++i) {
+      uint price = shopItems[uint16(_tokenIds[i])];
+      require(price != 0, "Item cannot be bought");
+      totalBrush += price * _quantities[i];
+      prices[i] = price;
+    }
+
+    // Pay
+    brush.transferFrom(msg.sender, address(this), totalBrush);
+    // Burn half, the rest goes into the pool for sellable items
+    brush.burn(totalBrush / 2);
+
+    _mintBatch(msg.sender, _tokenIds, _quantities, "");
+    emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
+  }
+
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
     require(totalBrush >= _minExpectedBrush);
     _burn(msg.sender, uint(_tokenId), _quantity);
     brush.transfer(msg.sender, totalBrush);
+    emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
   }
 
   function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
+    require(_tokenIds.length == _quantities.length);
+    require(_tokenIds.length > 0);
     uint totalBrush;
+    uint[] memory prices = new uint[](_tokenIds.length);
     for (uint i = 0; i < _tokenIds.length; ++i) {
       uint brushPerToken = getPriceForItem(_tokenIds[i]);
       totalBrush += brushPerToken * _quantities[i];
       _burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
+      prices[i] = brushPerToken;
     }
     require(totalBrush >= _minExpectedBrush);
     brush.transfer(msg.sender, totalBrush);
+    emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
   /* Raids */
