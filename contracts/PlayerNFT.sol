@@ -21,7 +21,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   event Unequip(uint tokenId, uint16 itemTokenId, uint8 bonusRemoved, uint amount);
   event Equip(uint tokenId, uint16 itemTokenId, uint8 bonusAdded, uint amount);
   event RemoveAllEquipment(uint tokenId);
-  event AddSkillPoints(uint tokenId, Skill skill, uint points);
+  event AddSkillPoints(uint tokenId, Skill skill, uint32 points);
 
   event LevelUp(uint tokenId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
 
@@ -573,14 +573,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     // TODO: Check they have the equipment available
     uint previousSkillPoints = _player.totalSkillPoints;
-    uint allPointsAccured;
+    uint32 allPointsAccured;
 
     remainingSkills = new SkillInfo[](queueLength); // Max
     uint length = 0;
 
     for (uint i = 0; i < queueLength; ++i) {
       SkillInfo storage skillInfo = _player.actionQueue[i];
-      uint pointsAccured;
+      uint32 pointsAccured;
       uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
       if (skillEndTime <= block.timestamp) {
         // Fully consume this skill
@@ -589,7 +589,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         // partially consume
         uint40 elapsedTime = uint40(block.timestamp - skillInfo.startTime);
         skillEndTime = uint40(block.timestamp);
-        pointsAccured = elapsedTime; // TODO: This should be based on something else
+        pointsAccured = uint32(elapsedTime); // TODO: This should be based on something else
         uint40 end = skillInfo.startTime + skillInfo.timespan;
         //        if (_discardRestOfQueue) {
         //    _skillPoints[_tokenId][skillInfo.skill] += pointsAccured; // Update this later, just base it on time elapsed
