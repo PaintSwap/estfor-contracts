@@ -119,24 +119,6 @@ contract World is VRFConsumerBaseV2, Ownable {
     require(seed > 0);
   }
 
-  function addAction(ActionInfo calldata _actionInfo) external onlyOwner {
-    _setAction(lastActionId, _actionInfo);
-    emit AddAction(lastActionId, _actionInfo);
-    ++lastActionId;
-  }
-
-  function editAction(uint _actionId, ActionInfo calldata _actionInfo) external onlyOwner {
-    _setAction(_actionId, _actionInfo);
-    emit EditAction(_actionId, _actionInfo);
-  }
-
-  function setAvailable(uint _actionId, bool _available) external onlyOwner {
-    require(actions[_actionId].skill != Skill.NONE, "Action does not exist");
-    require(!actions[_actionId].isDynamic, "Action is dynamic");
-    availableActions[_actionId] = _available;
-    emit SetAvailableAction(_actionId, _available);
-  }
-
   function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {
     require(_actionInfo.itemTokenIdRangeMax < 256);
     require(_actionInfo.itemTokenIdRangeMin < _actionInfo.itemTokenIdRangeMax);
@@ -184,43 +166,21 @@ contract World is VRFConsumerBaseV2, Ownable {
     return actions[_actionId].skill;
   }
 
-  // What things are available to do?
-
-  /* Raids */
-  /*  event NewRaid(uint raidId);
-  event JoinedRaid(address player, uint raidId);
-  event LeaveRaid(address player, uint raidId);
-
-  // Up to 100 people can join a raid, level difficulty (easy, medium, hard)
-
-  // A share of the spoils
-  uint raidId = 1;
-
-  mapping(uint => RaidInfo) raids; // Raid id
-
-  function newRaid(uint40 _startTime, uint40 _timespan) external onlyOwner {
-    require(_startTime > block.timestamp);
-    require(_timespan <= 12 hours);
-
-    uint _raidId = raidId;
-    RaidInfo storage raidInfo = raids[_raidId];
-    raidInfo.startTime = _startTime;
-    raidInfo.timespan = _timespan;
-
-    emit NewRaid(raidId);
-    unchecked {
-      raidId = _raidId + 1;
-    }
+  function addAction(ActionInfo calldata _actionInfo) external onlyOwner {
+    _setAction(lastActionId, _actionInfo);
+    emit AddAction(lastActionId, _actionInfo);
+    ++lastActionId;
   }
 
-  uint public constant MAX_MEMBERS = 1000;
+  function editAction(uint _actionId, ActionInfo calldata _actionInfo) external onlyOwner {
+    _setAction(_actionId, _actionInfo);
+    emit EditAction(_actionId, _actionInfo);
+  }
 
-  struct RaidInfo {
-    uint40 startTime;
-    uint40 timespan;
-    uint numMembers;
-    //    uint totalAttack;
-    //    uint totalDefence;
-    mapping(address => bool) members;
-  } */
+  function setAvailable(uint _actionId, bool _available) external onlyOwner {
+    require(actions[_actionId].skill != Skill.NONE, "Action does not exist");
+    require(!actions[_actionId].isDynamic, "Action is dynamic");
+    availableActions[_actionId] = _available;
+    emit SetAvailableAction(_actionId, _available);
+  }
 }

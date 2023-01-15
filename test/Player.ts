@@ -151,14 +151,14 @@ describe("Player", () => {
     );
 
     // Check bonuses before
-    expect(await (await playerNFT.players(playerId)).attackBonus).to.eq(0);
-    expect(await (await playerNFT.players(playerId)).defenceBonus).to.eq(0);
+    expect((await playerNFT.players(playerId)).attackBonus).to.eq(0);
+    expect((await playerNFT.players(playerId)).defenceBonus).to.eq(0);
 
     await playerNFT.connect(alice).equip(playerId, Item.SHIELD);
 
     // Check bonuses after
-    expect(await (await playerNFT.players(playerId)).attackBonus).to.eq(0);
-    expect(await (await playerNFT.players(playerId)).defenceBonus).to.eq(1);
+    expect((await playerNFT.players(playerId)).attackBonus).to.eq(0);
+    expect((await playerNFT.players(playerId)).defenceBonus).to.eq(1);
 
     expect(await users.numEquipped(alice.address, Item.SHIELD)).to.eq(1);
 

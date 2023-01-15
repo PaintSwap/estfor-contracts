@@ -10,13 +10,6 @@ contract TestItemNFT is ItemNFT {
   constructor(IBrushToken _brush, World _world, Users _users) ItemNFT(_brush, _world, _users) {}
 
   function testMint(address _to, uint _tokenId, uint _amount) external {
-    uint existingBalance = itemBalances[_tokenId];
-    if (existingBalance == 0) {
-      // Brand new item
-      ++numItems;
-    }
-
-    itemBalances[_tokenId] = existingBalance + _amount;
-    _mint(_to, uint(_tokenId), _amount, "");
+    _mintItem(_to, uint(_tokenId), _amount);
   }
 }

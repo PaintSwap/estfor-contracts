@@ -98,7 +98,7 @@ describe("World", () => {
         itemTokenIdRangeMax: Item.WAND,
       });
       const actionId = getActionId(tx);
-      expect(await (await world.actions(actionId)).skill).to.eq(Skill.PAINT);
+      expect((await world.actions(actionId)).skill).to.eq(Skill.PAINT);
       await world.editAction(actionId, {
         skill: Skill.PAINT,
         baseXPPerHour: 20,
@@ -108,7 +108,7 @@ describe("World", () => {
         itemTokenIdRangeMin: Item.BRUSH,
         itemTokenIdRangeMax: Item.WAND,
       });
-      expect(await (await world.actions(actionId)).baseXPPerHour).to.eq(20);
+      expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
       expect(await world.availableActions(actionId)).to.be.false;
       await world.setAvailable(actionId, true);
       expect(await world.availableActions(actionId)).to.be.true;

@@ -80,6 +80,13 @@ async function main() {
   await tx.wait();
   console.log("testMint2");
 
+  tx = await itemNFT.testMint(owner.address, Item.BRONZE_NECKLACE, 100);
+  await tx.wait();
+  console.log("testMintShopItem1");
+  tx = await itemNFT.testMint(owner.address, Item.COD, 100);
+  await tx.wait();
+  console.log("testMintShopItem2");
+
   tx = await playerNFT.equip(playerId, Item.BRUSH);
   await tx.wait();
   console.log("equip");

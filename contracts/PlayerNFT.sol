@@ -663,10 +663,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     //    return amount;
   }
 
-  function addAvatar(uint avatarId, AvatarInfo calldata avatarInfo) external onlyOwner {
-    avatars[avatarId] = avatarInfo;
-  }
-
   /**
    * @dev Returns whether `tokenId` exists.
    *
@@ -675,5 +671,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
    */
   function _exists(uint256 tokenId) private view returns (bool) {
     return tokenIdToAvatar[tokenId] != 0;
+  }
+
+  function addAvatar(uint avatarId, AvatarInfo calldata avatarInfo) external onlyOwner {
+    avatars[avatarId] = avatarInfo;
   }
 }

@@ -63,10 +63,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     users = _users;
   }
 
-  function setPlayerNFT(address _playerNFT) external onlyOwner {
-    playerNFT = _playerNFT;
-  }
-
   modifier onlyPlayerNFT() {
     require(playerNFT == msg.sender);
     _;
@@ -87,7 +83,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     uint startTokenId = mysteryBoxStart;
 
     for (uint i = 0; i < _num; ++i) {
-      _mint(msg.sender, startTokenId + i, 1, "");
+      _mintItem(msg.sender, startTokenId + i, 1);
       // Each mystery box will have a unlock date 1 day over the
       lockedItems[startTokenId + i] = block.timestamp + 1 days;
     }
@@ -104,8 +100,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     // Fetch random values from chainlink
   }
 
-  // Make sure changes here are reflected in TestItemNFT.sol
-  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayerNFT {
+  function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
     require(_tokenId < type(uint16).max);
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
@@ -115,6 +110,11 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
     itemBalances[_tokenId] = existingBalance + _amount;
     _mint(_to, uint(_tokenId), _amount, "");
+  }
+
+  // Make sure changes here are reflected in TestItemNFT.sol
+  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayerNFT {
+    _mintItem(_to, _tokenId, _amount);
   }
 
   // Can't use Item[] array unfortunately so they don't support array casts
@@ -139,26 +139,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   function _exists(uint _tokenId) private view returns (bool) {
     return bytes(tokenURIs[_tokenId]).length != 0;
-  }
-
-  // Or make it constants and redeploy the contracts
-  function addItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
-    require(!itemStats[_item].exists, "This item was already added");
-    require(_itemStat.exists);
-    itemStats[_item] = _itemStat;
-    tokenURIs[_item] = _metadataURI;
-    emit AddItem(_item, _itemStat);
-  }
-
-  function editItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
-    require(itemStats[_item].bonus != 0, "This item was not added yet");
-    require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
-    if (itemStats[_item].canEquip) {
-      require(_itemStat.canEquip, "Cannot change equippable item to non equippable");
-    }
-    itemStats[_item] = _itemStat;
-    tokenURIs[_item] = _metadataURI;
-    emit EditItem(_item, _itemStat);
   }
 
   function getItemStats(uint16 _item) external view returns (ItemStat memory) {
@@ -204,7 +184,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
     i = _ids.length;
     uint256[] memory balances = balanceOfBatch(accounts, _ids);
-
     do {
       unchecked {
         --i;
@@ -213,43 +192,16 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
       uint256 tokenId = _ids[i];
       // Transferring less than is equipped
       uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
-      require(balances[i] - unavailable >= _amounts[i]); // TODO: 
+      require(balances[i] - unavailable >= _amounts[i]); // TODO:
     } while (i > 0);
   }
 
   /* Shop */
-  // Spend brush to buy some things from the shop
-  function addShopItem(uint16 _tokenId, uint _price) external onlyOwner {
-    shopItems[_tokenId] = _price;
-    emit AddShopItem(_tokenId, _price);
-  }
-
-  function addShopItems(uint16[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
-    require(_tokenIds.length == _prices.length);
-    require(_tokenIds.length > 0);
-    uint i;
-    do {
-      shopItems[_tokenIds[i]] = _prices[i];
-      unchecked {
-        ++i;
-      }
-    } while (i < _tokenIds.length);
-    emit AddShopItems(_tokenIds, _prices);
-  }
-
-  function removeShopItem(uint16 _tokenId) external onlyOwner {
-    delete shopItems[_tokenId];
-    emit RemoveShopItem(_tokenId);
-  }
-
   function getPriceForItem(uint16 _tokenId) public view returns (uint price) {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / numItems;
     uint totalOfThisItem = itemBalances[_tokenId];
-    if (totalOfThisItem < 100) {
-      // Need to be a minimum of an item before any can be sold.
-      return 0;
-    }
+    // Needs to have a minimum of an item before any can be sold.
     return totalBrushForItem / totalOfThisItem;
   }
 
@@ -287,7 +239,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     // Burn half, the rest goes into the pool for sellable items
     brush.burn(price / 2);
 
-    _mint(msg.sender, _tokenId, _quantity, "");
+    _mintItem(msg.sender, _tokenId, _quantity);
     emit Buy(msg.sender, _tokenId, _quantity, price);
   }
 
@@ -336,89 +288,51 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
-  /* Raids */
-  /*
-  function joinRaid(address _owner, uint _raidId) external onlyPlayer {
-    // Check that it's not finished yet
-    address player = msg.sender;
-    require(raids[_raidId].startTime + raids[_raidId].timespan < block.timestamp, "Already finished");
-    require(raids[_raidId].startTime > 0, "Raid does not exist");
-
-    // Needs a raid pass which gets burnt.
-    _burn(_owner, uint(Item.RAID_PASS), 1);
-
-    raids[_raidId].numMembers += 1;
-    raids[_raidId].members[player] = true;
-
-    emit JoinedRaid(player, _raidId);
+  function setPlayerNFT(address _playerNFT) external onlyOwner {
+    playerNFT = _playerNFT;
   }
 
-  function leaveRaid(uint _raidId) external onlyPlayer {
-    address player = msg.sender;
-
-    // Raid must not have started yet
-    require(raids[_raidId].startTime + raids[_raidId].timespan < block.timestamp, "Already finished");
-
-    raids[_raidId].numMembers -= 1;
-    delete raids[_raidId].members[player];
-
-    emit LeaveRaid(player, _raidId);
+  // Or make it constants and redeploy the contracts
+  function addItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
+    require(!itemStats[_item].exists, "This item was already added");
+    require(_itemStat.exists);
+    itemStats[_item] = _itemStat;
+    tokenURIs[_item] = _metadataURI;
+    emit AddItem(_item, _itemStat);
   }
 
-  function loot() external view {}
-
-  struct Loot {
-    Item item;
-    uint amount;
-  }
-
-  function availableLoot(uint _raidId, Player _player) external view returns (Loot[] memory loot) {
-    uint40 timestamp = raids[_raidId].startTime + raids[_raidId].timespan + 1 days;
-    uint seed = world.getSeed(timestamp); // Can only get it after the next day
-
-    uint randomNumber = uint(uint40(bytes5(bytes32(seed) ^ bytes32(bytes20(address(_player)))))); // High most 12 bytes are not affected so don't use those.
-
-    uint multiplier = _player.getLootBonusMultiplier();
-
-    uint adjustedRandomNumber = randomNumber / multiplier;
-
-    loot = new Loot[](5); // MAX
-
-    uint lootNum = 1;
-
-    // This is only 5 bytes long
-    if (randomNumber % 2 == 0) {
-      // If even you at least get this
-      loot[0] = Loot({item: Item.SHIELD, amount: 1});
-    } else {
-      // If off you at least get that
-      loot[0] = Loot({item: Item.WAND, amount: 1});
+  function editItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
+    require(itemStats[_item].bonus != 0, "This item was not added yet");
+    require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
+    if (itemStats[_item].canEquip) {
+      require(_itemStat.canEquip, "Cannot change equippable item to non equippable");
     }
+    itemStats[_item] = _itemStat;
+    tokenURIs[_item] = _metadataURI;
+    emit EditItem(_item, _itemStat);
+  }
 
-    if (adjustedRandomNumber <= 2 ^ 4) {
-      loot[1] = Loot({item: Item.SHIELD, amount: 1});
-      if (adjustedRandomNumber <= 2 ^ 3) {
-        loot[2] = Loot({item: Item.SHIELD, amount: 1});
-        if (adjustedRandomNumber <= 2 ^ 2) {
-          loot[3] = Loot({item: Item.SHIELD, amount: 1});
-          if (adjustedRandomNumber <= 2) {
-            // Ultimate item
-            loot[4] = Loot({item: Item.SHIELD, amount: 1});
-            lootNum = 5;
-          } else {
-            lootNum = 4;
-          }
-        } else {
-          lootNum = 3;
-        }
-      } else {
-        lootNum = 2;
+  // Spend brush to buy some things from the shop
+  function addShopItem(uint16 _tokenId, uint _price) external onlyOwner {
+    shopItems[_tokenId] = _price;
+    emit AddShopItem(_tokenId, _price);
+  }
+
+  function addShopItems(uint16[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
+    require(_tokenIds.length == _prices.length);
+    require(_tokenIds.length > 0);
+    uint i;
+    do {
+      shopItems[_tokenIds[i]] = _prices[i];
+      unchecked {
+        ++i;
       }
-    }
-    /// @solidity memory-safe-assembly
-    assembly {
-      mstore(loot, lootNum)
-    }
+    } while (i < _tokenIds.length);
+    emit AddShopItems(_tokenIds, _prices);
   }
-*/
+
+  function removeShopItem(uint16 _tokenId) external onlyOwner {
+    delete shopItems[_tokenId];
+    emit RemoveShopItem(_tokenId);
+  }
 }
