@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "./interfaces/ItemStat.sol";
 import "./interfaces/IBrushToken.sol";
@@ -13,78 +12,105 @@ import "./ItemNFT.sol";
 import "./Users.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
+import {PlayerNFTLibrary} from "./PlayerNFTLibrary.sol";
+
 // Each NFT represents a player
 contract PlayerNFT is ERC1155, Multicall, Ownable {
   event NewPlayer(uint tokenId, uint avatarId, bytes32 name);
   event EditPlayer(uint tokenId, bytes32 newName);
 
-  event Unequip(uint tokenId, uint16 itemTokenId, uint8 bonusRemoved, uint amount);
-  event Equip(uint tokenId, uint16 itemTokenId, uint8 bonusAdded, uint amount);
+  event Equip(uint tokenId, uint16 itemTokenId, Stats statChanges, uint amount);
+  event Unequip(uint tokenId, uint16 itemTokenId, Stats statChanges, uint amount);
   event RemoveAllEquipment(uint tokenId);
   event AddSkillPoints(uint tokenId, Skill skill, uint32 points);
 
   event LevelUp(uint tokenId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
 
+  // A queued action
   struct SkillInfo {
-    uint actionId;
+    uint16 actionId;
+    Skill actionType;
     uint40 startTime;
-    uint40 timespan;
+    uint16 timespan;
+    uint itemEquipped; // Sword, Bow, staff, fishing rod
+  }
+
+  struct MeleeInfo {
+    uint16 otherItem; // Shield, or nothing if 2 handed, token id
+    uint16 food;
+    uint16 numFood;
+  }
+
+  struct RangedInfo {
+    uint16 arrows; // item token id
+    uint8 numEquipped; // Number of arrows, number of lobsters etc..
+    uint16 food; // item token id
+    uint16 numFood;
+  }
+
+  struct MagicInfo {
+    // All the different runes used
+    uint8 numAirRunes;
+    uint16 food; // item token id
+    uint16 numFood;
   }
 
   IBrushToken immutable brush;
   World immutable world;
   string private constant baseURI = "ipfs://";
 
-  struct InventorySlots {
-    uint16 food;
-    uint240 rest;
-    uint8 quantityFood; // Can only hold up to 256
-  }
-
   struct Player {
-    Equipped equipment; // Keep this first
-    InventorySlots inventorySlots; // Currently stored at Player + 10 slots
-    // Attributes
-    uint16 health;
-    // These are extra from the items equipped
-    uint8 attackBonus;
-    uint8 defenceBonus;
-    uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
+    Armour equipment; // Keep this first
+    // These are stored in case individual items are changed later, but also prevents having to read them loads
+    Stats headBonus;
+    Stats necklaceBonus;
+    Stats bodyBonus;
+    Stats gauntletBonus;
+    Stats tassetsBonus;
+    Stats bootsBonus;
+    Stats spare1Bonus;
+    Stats spare2Bonus;
+    // Base attributes
+    Stats totalStats;
     SkillInfo[] actionQueue;
-    uint256 slotsUsed;
-    uint totalSkillPoints;
+    uint240 totalSkillPoints;
+    uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
     bytes32 name;
   }
 
-  mapping(uint => mapping(Skill => uint256)) public skillPoints; // player id => skill => point
+  uint queuedActionId = 1; // Global queued action id
+  mapping(uint => MeleeInfo) meleeQueuedActions; // queued action id => melee info
+  mapping(uint => RangedInfo) rangedQueuedActions; // queued action id => ranged info
+  mapping(uint => MagicInfo) magicQueuedActions; // queued action id => magic info
+
+  mapping(uint => mapping(Skill => uint32)) public skillPoints; // player id => skill => point
+
+  // This is kept separate in case we want to remove this being used and instead read attributes on demand.
+  mapping(uint => ArmourAttributes) armourAttributes; // player id => attributes from armour
 
   uint32 public constant MAX_TIME = 1 days;
 
-  /* TODO Needed? If not needed then check inventorySlots usage */
-  struct EquipmentBonus {
-    Attribute attribute;
-    uint8 bonus;
+  // Equipment (leave at the bottom to allow for further ones)
+  struct Armour {
+    uint8 helmet; // tokenId for the head (1 - 255)
+    uint8 amulet; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
+    uint8 chestplate;
+    uint8 gauntlets;
+    uint8 tassets;
+    uint8 boots;
+    uint8 reserved1;
+    uint8 reserved2;
   }
 
-  // Equipment (leave at the bottom to allow for further ones)
-  struct Equipped {
-    uint8 head; // tokenId for the head
-    uint8 necklace;
-    uint8 body;
-    uint8 rightArm;
-    uint8 leftArm;
-    uint8 legs;
-    uint8 boots;
-    uint8 auxilary; // Fishing rod, axe etc
-    // These are stored in case individual items are changed later, but also prevents having to read them loads
-    EquipmentBonus headBonus; // atk // Maximum 3, first byte is a mask of the attribute, next 3 are 0-255 the increase they provide.
-    EquipmentBonus necklaceBonus; // atk
-    EquipmentBonus bodyBonus; // defence
-    EquipmentBonus rightArmBonus; //atk
-    EquipmentBonus leftArmBonus; // atk
-    EquipmentBonus legsBonus; // defence
-    EquipmentBonus bootsBonus; // Hmmm
-    EquipmentBonus auxBonus;
+  struct ArmourAttributes {
+    Stats helmet;
+    Stats amulet;
+    Stats chestplate;
+    Stats tassets;
+    Stats gauntlets;
+    Stats boots;
+    Stats reserved1;
+    Stats reserved2;
   }
 
   using EnumerableMap for EnumerableMap.UintToUintMap;
@@ -112,7 +138,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   struct AvatarInfo {
-    string name;
+    bytes32 name;
     string description;
     string imageURI;
   }
@@ -167,7 +193,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     _mintStartingItems();
 
-    if (bytes(avatars[_avatarId].name).length == 0) {
+    if (bytes(avatars[_avatarId].description).length == 0) {
       revert AvatarNotExists();
     }
     tokenIdToAvatar[currentPlayerId] = _avatarId;
@@ -176,51 +202,18 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     require(_exists(_tokenId));
-
     Player storage player = players[_tokenId];
-
     AvatarInfo storage avatarInfo = avatars[tokenIdToAvatar[_tokenId]];
-
-    // Show all the player stats, return metadata json
     bytes memory imageURI = abi.encodePacked(baseURI, avatarInfo.imageURI);
-
-    string memory attributes = string(
-      abi.encodePacked(
-        '{"trait_type":"Player name","value":"',
+    return
+      PlayerNFTLibrary.uri(
         player.name,
-        '{"trait_type":"Attack","value":"',
-        skillPoints[_tokenId][Skill.PAINT],
-        '"}, {"trait_type":"Defence","value":"',
-        skillPoints[_tokenId][Skill.DEFENCE],
-        '"}, {"trait_type":"Max health","value":"',
-        player.health,
-        '"}'
-      )
-    );
-
-    string memory json = Base64.encode(
-      bytes(
-        string(
-          abi.encodePacked(
-            '{"name": "',
-            avatarInfo.name,
-            '", "description": "',
-            avatarInfo.description,
-            '", attributes":[',
-            attributes,
-            ', "image": "',
-            imageURI,
-            '"}'
-          )
-        )
-      )
-    );
-
-    // Base64
-    string memory output = string(abi.encodePacked("data:application/json;base64,", json));
-
-    // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-    return output;
+        skillPoints[_tokenId],
+        player.totalStats,
+        avatarInfo.name,
+        avatarInfo.description,
+        imageURI
+      );
   }
 
   function _beforeTokenTransfer(
@@ -238,31 +231,32 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     do {
       // Get player and consume any actions & unequip all items before transferring the whole player
       uint tokenId = ids[i];
-      _clearEverything(from, players[tokenId], tokenId);
+      _clearEverything(from, tokenId);
       unchecked {
         ++i;
       }
     } while (i < ids.length);
   }
 
-  function _clearEverything(address _from, Player storage _player, uint _tokenId) private {
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(_from, _player, _tokenId);
-    _clearEquipment(_from, _player, _tokenId);
+  function _clearEverything(address _from, uint _tokenId) private {
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(_from, _tokenId);
+    _clearEquipment(_from, _tokenId);
 
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
-      _player.actionQueue = remainingSkillQueue;
+      players[_tokenId].actionQueue = remainingSkillQueue;
     }
   }
 
   function clearEverything(uint _tokenId) public isOwnerOfPlayer(_tokenId) {
-    _clearEverything(msg.sender, players[_tokenId], _tokenId);
+    _clearEverything(msg.sender, _tokenId);
   }
 
-  function _clearEquipment(address _from, Player storage _player, uint _tokenId) private {
+  function _clearEquipment(address _from, uint _tokenId) private {
+    Player storage player = players[_tokenId];
     bytes32 equippedSlot;
-    assembly {
-      equippedSlot := sload(_player.slot)
+    assembly ("memory-safe") {
+      equippedSlot := sload(player.slot)
     }
 
     // Unequip each item one by one
@@ -278,25 +272,40 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       }
     } while (i < 8);
 
-    // Also remove food
-    uint16 food = _player.inventorySlots.food;
-    if (food != NONE) {
-      users.unequip(_from, food);
-    }
-
     emit RemoveAllEquipment(_tokenId);
-    delete _player.equipment;
+    delete player.equipment;
   }
 
   function clearEquipment(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
-    Player storage player = players[_tokenId];
     address from = msg.sender;
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, player, _tokenId);
-    _clearEquipment(from, player, _tokenId);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    _clearEquipment(from, _tokenId);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
-      player.actionQueue = remainingSkillQueue;
+      players[_tokenId].actionQueue = remainingSkillQueue;
     }
+  }
+
+  function updatePlayerStats(Player storage _player, Stats memory _stats, bool _add) private {
+    PlayerNFTLibrary.updatePlayerStats(_player.totalStats, _stats, _add);
+  }
+
+  function _unequipMainItem(uint _tokenId, uint16 _equippedTokenId, EquipPosition _position) private {
+    Player storage player = players[_tokenId];
+
+    // Unequip current item and remove any bonuses
+    Stats memory itemStats;
+    assembly ("memory-safe") {
+      let slotPosition := add(player.slot, mul(add(_position, 1), 32))
+      let val := sload(slotPosition)
+      itemStats := mload(0x40)
+      mstore(itemStats, val)
+    }
+
+    updatePlayerStats(player, itemStats, false);
+
+    users.unequip(msg.sender, _equippedTokenId);
+    emit Unequip(_tokenId, _equippedTokenId, itemStats, 1);
   }
 
   // Cannot be transferred while equipped.  Check if the NFT is being transferred and unequip from this user.
@@ -304,18 +313,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function equip(uint _tokenId, uint16 _item) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
 
-    ItemStat memory stats = itemNFT.getItemStats(_item);
-    require(stats.attribute != Attribute.NONE);
-
-    uint8 bonus = stats.bonus;
-
-    EquipPosition position = stats.equipPosition;
-
-    uint8 equippedTokenId; // Update later
-    /// @solidity memory-safe-assembly
-    assembly {
+    ItemStat memory itemStats = itemNFT.getItemStats(_item);
+    require(itemStats.exists);
+    EquipPosition position = itemStats.equipPosition;
+    uint8 equippedTokenId;
+    assembly ("memory-safe") {
       let val := sload(player.slot)
       equippedTokenId := shr(mul(position, 8), val)
 
@@ -331,50 +335,34 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
 
     if (equippedTokenId != NONE) {
-      // Unequip current item and remove bonus
-      EquipmentBonus memory existingBonus;
-      /// @solidity memory-safe-assembly
-      assembly {
-        let val := sload(player.slot)
-        existingBonus := shr(mul(add(8, mul(position, 2)), 8), val)
-      }
-
-      bonus -= existingBonus.bonus;
-
-      users.unequip(msg.sender, equippedTokenId);
-      emit Unequip(_tokenId, equippedTokenId, existingBonus.bonus, 1);
-    }
-
-    if (stats.attribute == Attribute.ATTACK) {
-      player.attackBonus += bonus;
-    } else if (stats.attribute == Attribute.DEFENCE) {
-      player.defenceBonus += bonus;
+      _unequipMainItem(_tokenId, equippedTokenId, position);
     }
 
     // This will check the user has enough balance inside
+    updatePlayerStats(player, itemStats.stats, true);
     users.equip(msg.sender, _item);
-    emit Equip(_tokenId, _item, stats.bonus, 1);
+    emit Equip(_tokenId, _item, itemStats.stats, 1);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
     }
   }
 
-  function unequip(uint _tokenId, uint8 _position) external isOwnerOfPlayer(_tokenId) {
+  function unequip(uint _tokenId, EquipPosition _position) external isOwnerOfPlayer(_tokenId) {
     // This requires checking that we have it equipped
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
-    uint8 equipped; // TODO: Update later
-    /// @solidity memory-safe-assembly
-    assembly {
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
+    uint8 equippedTokenId;
+    assembly ("memory-safe") {
       let val := sload(player.slot)
-      equipped := shr(mul(_position, 8), val)
+      equippedTokenId := shr(mul(_position, 8), val)
     }
-    if (equipped == NONE) {
+    if (equippedTokenId == NONE) {
       revert NotEquipped();
     }
 
-    users.unequip(msg.sender, equipped);
+    _unequipMainItem(_tokenId, equippedTokenId, _position);
+
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
@@ -386,108 +374,148 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   //    }
 
   function _getEquipmentSlot(Player storage _player) private view returns (uint256 slot) {
-    assembly {
+    assembly ("memory-safe") {
       slot := sload(_player.slot)
     }
   }
 
+  struct Equipment {
+    uint16 itemTokenId;
+    uint8 numToEquip;
+  }
+
+  struct QueuedAction {
+    uint16 actionId;
+    Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill
+    uint16 timespan;
+    Equipment[] extraEquipment; // Order should be arrows/magic last
+  }
+
+  function _addToQueue(Player storage _player, QueuedAction calldata _queuedAction, uint _queuedActionId) private {
+    Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
+    require(world.availableActions(_queuedAction.actionId));
+    // Extra equipment should contain an item to equip
+    uint16 itemEquipped;
+    uint16 otherItemEquipped;
+    Equipment memory food; // item token id
+    for (uint i; i < _queuedAction.extraEquipment.length; ++i) {
+      Equipment calldata equipment = _queuedAction.extraEquipment[i];
+
+      ItemStat memory itemStats = itemNFT.getItemStats(equipment.itemTokenId);
+      require(itemStats.exists);
+      if (itemStats.equipPosition == EquipPosition.RIGHT_ARM) {
+        itemEquipped = equipment.itemTokenId;
+      } else if (itemStats.equipPosition == EquipPosition.LEFT_ARM) {
+        // Shield
+        otherItemEquipped = equipment.itemTokenId;
+      } else if (itemStats.equipPosition == EquipPosition.FOOD) {
+        food = equipment;
+      } else if (itemStats.equipPosition == EquipPosition.ARROW_SATCHEL) {
+        rangedQueuedActions[_queuedActionId] = RangedInfo({
+          arrows: equipment.itemTokenId,
+          numEquipped: equipment.numToEquip,
+          food: food.itemTokenId,
+          numFood: food.numToEquip
+        });
+      }
+    }
+
+    require(itemEquipped > 0);
+
+    if (
+      _queuedAction.skill == Skill.ATTACK ||
+      _queuedAction.skill == Skill.DEFENCE ||
+      _queuedAction.skill == Skill.STRENGTH
+    ) {
+      meleeQueuedActions[_queuedActionId] = MeleeInfo({
+        otherItem: otherItemEquipped,
+        food: food.itemTokenId,
+        numFood: food.numToEquip
+      });
+    }
+
+    // Compare skill with queuedAction to make sure it is appropriate
+    if (skill == Skill.COMBAT) {
+      require(
+        _queuedAction.skill == Skill.ATTACK ||
+          _queuedAction.skill == Skill.DEFENCE ||
+          _queuedAction.skill == Skill.STRENGTH ||
+          _queuedAction.skill == Skill.MAGIC ||
+          _queuedAction.skill == Skill.RANGED
+      );
+    } else {
+      require(skill == _queuedAction.skill);
+    }
+
+    _player.actionQueue.push(
+      SkillInfo({
+        actionId: _queuedAction.actionId,
+        startTime: uint40(block.timestamp),
+        timespan: _queuedAction.timespan,
+        itemEquipped: itemEquipped,
+        actionType: _queuedAction.skill
+      })
+    );
+  }
+
   function startAction(
-    uint _actionId,
-    uint40 _timespan,
+    QueuedAction calldata _queuedAction,
     uint _tokenId,
     bool _append
   ) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, player, _tokenId);
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
 
-    require(_timespan <= MAX_TIME);
+    require(_queuedAction.timespan <= MAX_TIME);
     if (_append) {
       uint totalTimeUsed;
       for (uint i = 0; i < remainingSkillQueue.length; ++i) {
         totalTimeUsed += remainingSkillQueue[i].timespan;
       }
-      require(totalTimeUsed + _timespan <= MAX_TIME);
+      require(totalTimeUsed + _queuedAction.timespan <= MAX_TIME);
       player.actionQueue = remainingSkillQueue;
     }
 
-    (
-      Skill skill,
-      uint8 baseXPPerHour,
-      uint32 minSkillPoints,
-      bool isDynamic,
-      EquipPosition itemPosition,
-      uint8 itemTokenIdRangeMin,
-      uint8 itemTokenIdRangeMax
-    ) = world.actions(_actionId);
-
-    // Equipment just check left and right arm, needed?
-    uint256 itemSlot = _getEquipmentSlot(player);
-    uint8 itemTokenId = uint8(itemSlot >> (uint(itemPosition) * 8));
-    require(itemTokenId >= itemTokenIdRangeMin && itemTokenId < itemTokenIdRangeMax);
-    require(world.availableActions(_actionId));
-    player.actionQueue.push(SkillInfo({actionId: _actionId, startTime: uint40(block.timestamp), timespan: _timespan}));
+    _addToQueue(player, _queuedAction, queuedActionId);
+    ++queuedActionId;
   }
-
-  //    mapping(uint, claimable);
-  /*  function claimables() external isOwnerOfPlayer {}
-
-  function die() private {
-    // Lose 1 minor equipment and all of your inventory.
-  }
-
-  function randomEvent() private {
-    //
-  } */
 
   function consumeSkills(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
-    _consumeSkills(msg.sender, players[_tokenId], _tokenId);
+    _consumeSkills(msg.sender, _tokenId);
   }
 
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
-  function multiskill(
-    uint _tokenId,
-    uint[] calldata actionIds,
-    uint40[] calldata timespans
-  ) external isOwnerOfPlayer(_tokenId) {
-    if (actionIds.length != timespans.length) {
-      revert ArgumentLengthMismatch();
-    }
-
-    if (actionIds.length == 0) {
+  function multiskill(uint _tokenId, QueuedAction[] calldata _queuedActions) external isOwnerOfPlayer(_tokenId) {
+    if (_queuedActions.length == 0) {
       revert SkillsArrayZero();
     }
 
-    require(actionIds.length <= 3);
+    require(_queuedActions.length <= 3);
 
-    Player storage player = players[_tokenId];
-    _consumeSkills(msg.sender, player, _tokenId);
+    _consumeSkills(msg.sender, _tokenId);
 
     // Clear the action queue if something is in it
-    if (players[_tokenId].actionQueue.length > 0) {
-      delete players[_tokenId].actionQueue;
+    Player storage player = players[_tokenId];
+    if (player.actionQueue.length > 0) {
+      delete player.actionQueue;
     }
 
     uint256 i;
     uint totalTimespan;
-    uint40 prevEndTime = uint40(block.timestamp);
+
+    uint currentQueuedActionId = queuedActionId;
     do {
-      // Map skill to function
-      //      if (skills[i] == Skill.PAINT) {} else if (skills[i] == Skill.DEFENCE) {} else {
-      // ....
-      //      }
-
-      players[_tokenId].actionQueue.push(
-        SkillInfo({actionId: actionIds[i], startTime: prevEndTime, timespan: timespans[i]})
-      );
-
+      QueuedAction calldata queuedAction = _queuedActions[i];
+      _addToQueue(player, queuedAction, currentQueuedActionId);
       unchecked {
         ++i;
+        ++currentQueuedActionId;
       }
-      totalTimespan += timespans[i];
-      prevEndTime += timespans[i];
-    } while (i < actionIds.length);
+      totalTimespan += queuedAction.timespan;
+    } while (i < _queuedActions.length);
 
     require(totalTimespan <= MAX_TIME);
+    queuedActionId = currentQueuedActionId;
   }
 
   //    function view() external {
@@ -555,31 +583,28 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       tokenIds[0] = BRONZE_PICKAXE;
     }
 
-    assembly {
+    assembly ("memory-safe") {
       mstore(tokenIds, length)
     }
   }
 
-  function _consumeSkills(
-    address _from,
-    Player storage _player,
-    uint _tokenId
-  ) private returns (SkillInfo[] memory remainingSkills) {
-    uint queueLength = _player.actionQueue.length;
+  function _consumeSkills(address _from, uint _tokenId) private returns (SkillInfo[] memory remainingSkills) {
+    Player storage player = players[_tokenId];
+    uint queueLength = player.actionQueue.length;
     if (queueLength == 0) {
       // No actions remaining
       return remainingSkills;
     }
 
     // TODO: Check they have the equipment available
-    uint previousSkillPoints = _player.totalSkillPoints;
+    uint previousSkillPoints = player.totalSkillPoints;
     uint32 allPointsAccured;
 
     remainingSkills = new SkillInfo[](queueLength); // Max
     uint length = 0;
 
     for (uint i = 0; i < queueLength; ++i) {
-      SkillInfo storage skillInfo = _player.actionQueue[i];
+      SkillInfo storage skillInfo = player.actionQueue[i];
       uint32 pointsAccured;
       uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
       if (skillEndTime <= block.timestamp) {
@@ -597,12 +622,16 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         //    length = 0;
         //    break;
         //  }
+
         // Build a list of the skills queued that remain
         remainingSkills[length] = SkillInfo({
           actionId: skillInfo.actionId,
           startTime: uint40(block.timestamp),
-          timespan: uint40(end - block.timestamp)
+          timespan: uint16(end - block.timestamp),
+          itemEquipped: skillInfo.itemEquipped,
+          actionType: skillInfo.actionType
         });
+
         length = i + 1;
       }
 
@@ -639,10 +668,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
 
     if (remainingSkills.length == 0) {
-      delete _player.actionQueue;
+      delete player.actionQueue;
     }
 
-    assembly {
+    assembly ("memory-safe") {
       mstore(remainingSkills, length)
     }
   }

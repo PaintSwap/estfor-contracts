@@ -2,29 +2,35 @@
 pragma solidity ^0.8.17;
 
 enum EquipPosition {
-    HEAD,
-    NECK,
-    BODY,
-    RIGHT_ARM,
-    LEFT_ARM,
-    LEGS,
-    BOOTS,
-    AUX,
-    FOOD,
-    ARROWS,
-    RUNES
+  HEAD,
+  NECK,
+  BODY,
+  ARMS,
+  LEGS,
+  BOOTS,
+  SPARE1,
+  SPARE2,
+  LEFT_ARM,
+  RIGHT_ARM,
+  ARROW_SATCHEL,
+  MAGIC_BAG,
+  FOOD,
+  NONE
 }
 
-enum Attribute {
-    NONE,
-    ATTACK,
-    DEFENCE
+struct Stats {
+  int8 attack;
+  int8 magic;
+  int8 range;
+  int8 meleeDefence;
+  int8 magicDefence;
+  int8 rangeDefence;
+  int8 health;
+  // Spare
 }
 
 struct ItemStat {
-    bool exists;
-    bool canEquip;
-    Attribute attribute;
-    EquipPosition equipPosition;
-    uint8 bonus;
+  Stats stats;
+  EquipPosition equipPosition; // If for main equipment
+  bool exists;
 }

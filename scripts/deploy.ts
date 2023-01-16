@@ -40,8 +40,12 @@ async function main() {
   await itemNFT.deployed();
   console.log(`Item NFT deployed at ${itemNFT.address.toLowerCase()}`);
 
+  const PlayerNFTLibrary = await ethers.getContractFactory("PlayerNFTLibrary");
+  const playerNFTLibrary = await PlayerNFTLibrary.deploy();
   // Create NFT contract which contains all the players
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {PlayerNFTLibrary: playerNFTLibrary.address},
+  });
   const playerNFT = await PlayerNFT.deploy(brushAddress, itemNFT.address, world.address, users.address);
   await playerNFT.deployed();
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
@@ -54,7 +58,7 @@ async function main() {
   console.log("setNFTs");
 
   const avatarId = 1;
-  const avatarInfo = {name: "Name goes here", description: "Hi I'm a description", imageURI: "1234.png"};
+  const avatarInfo = {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"};
   tx = await playerNFT.addAvatar(avatarId, avatarInfo);
   await tx.wait();
   console.log("addAvatar");

@@ -27,8 +27,13 @@ describe("Shop", function () {
     const ItemNFT = await ethers.getContractFactory("TestItemNFT");
     const itemNFT = await ItemNFT.deploy(brush.address, world.address, users.address);
 
+    const PlayerNFTLibrary = await ethers.getContractFactory("PlayerNFTLibrary");
+    const playerNFTLibrary = await PlayerNFTLibrary.deploy();
+
     // Create NFT contract which contains all the players
-    const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+      libraries: {PlayerNFTLibrary: playerNFTLibrary.address},
+    });
     const playerNFT = await PlayerNFT.deploy(brush.address, itemNFT.address, world.address, users.address);
 
     await itemNFT.setPlayerNFT(playerNFT.address);

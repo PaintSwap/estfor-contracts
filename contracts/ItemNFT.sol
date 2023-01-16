@@ -302,11 +302,8 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   function editItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
-    require(itemStats[_item].bonus != 0, "This item was not added yet");
+    require(itemStats[_item].exists, "This item was not added yet");
     require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
-    if (itemStats[_item].canEquip) {
-      require(_itemStat.canEquip, "Cannot change equippable item to non equippable");
-    }
     itemStats[_item] = _itemStat;
     tokenURIs[_item] = _metadataURI;
     emit EditItem(_item, _itemStat);

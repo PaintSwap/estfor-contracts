@@ -4,9 +4,14 @@ pragma solidity ^0.8.17;
 enum Skill {
   NONE,
   PAINT,
-  DEFENCE,
   FISH,
-  COOK
+  COOK,
+  ATTACK,
+  DEFENCE,
+  STRENGTH,
+  RANGED,
+  MAGIC,
+  COMBAT // This is a helper which incorporates attack <-> magic
 }
 
 uint16 constant NONE = 0;

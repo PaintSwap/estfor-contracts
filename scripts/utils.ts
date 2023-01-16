@@ -33,12 +33,41 @@ export enum EquipPosition {
   HEAD,
   NECK,
   BODY,
-  RIGHT_ARM,
-  LEFT_ARM,
+  ARMS,
   LEGS,
   BOOTS,
-  AUX,
+  SPARE1,
+  SPARE2,
+  LEFT_ARM,
+  RIGHT_ARM,
+  ARROW_SATCHEL,
+  MAGIC_BAG,
+  FOOD,
+  NONE,
 }
+
+export type Stats = {
+  attack: number;
+  magic: number;
+  range: number;
+  meleeDefence: number;
+  magicDefence: number;
+  rangeDefence: number;
+  health: number;
+  // Spare
+};
+
+export type Equipment = {
+  itemTokenId: number;
+  numToEquip: number;
+};
+
+export type QueuedAction = {
+  actionId: number;
+  skill: Skill;
+  timespan: number;
+  extraEquipment: Equipment[];
+};
 
 export const createPlayer = async (
   nft: PlayerNFT,

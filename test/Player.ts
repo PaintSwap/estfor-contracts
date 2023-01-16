@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {Attribute, createPlayer, EquipPosition, getActionId, Item, Skill} from "../scripts/utils";
+import {Attribute, createPlayer, EquipPosition, getActionId, Item, QueuedAction, Skill, Stats} from "../scripts/utils";
 
 describe("Player", () => {
   async function deployContracts() {
@@ -26,15 +26,24 @@ describe("Player", () => {
     const ItemNFT = await ethers.getContractFactory("TestItemNFT");
     const itemNFT = await ItemNFT.deploy(brush.address, world.address, users.address);
 
+    const PlayerNFTLibrary = await ethers.getContractFactory("PlayerNFTLibrary");
+    const playerNFTLibrary = await PlayerNFTLibrary.deploy();
+
     // Create NFT contract which contains all the players
-    const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+      libraries: {PlayerNFTLibrary: playerNFTLibrary.address},
+    });
     const playerNFT = await PlayerNFT.deploy(brush.address, itemNFT.address, world.address, users.address);
 
     await itemNFT.setPlayerNFT(playerNFT.address);
     await users.setNFTs(playerNFT.address, itemNFT.address);
 
     const avatarId = 1;
-    const avatarInfo = {name: "Name goes here", description: "Hi I'm a description", imageURI: "1234.png"};
+    const avatarInfo = {
+      name: ethers.utils.formatBytes32String("Name goes here"),
+      description: "Hi I'm a description",
+      imageURI: "1234.png",
+    };
     await playerNFT.addAvatar(avatarId, avatarInfo);
 
     // Create player
@@ -58,10 +67,19 @@ describe("Player", () => {
     const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
 
     await expect(playerNFT.connect(alice).equip(playerId, Item.BRUSH)).to.be.reverted; // item doesn't exist yet
+    const stats: Stats = {
+      attack: 2,
+      magic: 0,
+      range: 0,
+      meleeDefence: -1,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 12,
+    };
     await itemNFT.addItem(
       Item.BRUSH,
-      {attribute: Attribute.ATTACK, equipPosition: EquipPosition.AUX, exists: true, canEquip: true, bonus: 0},
-      "someIPFSURI.png"
+      {stats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+      "someIPFSURI.json"
     );
     await expect(playerNFT.connect(alice).equip(playerId, Item.BRUSH)).to.be.reverted; // Don't own any
     await itemNFT.testMint(alice.address, Item.BRUSH, 1);
@@ -71,44 +89,69 @@ describe("Player", () => {
   it("Skill points", async () => {
     const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
+    const stats: Stats = {
+      attack: 2,
+      magic: 0,
+      range: 0,
+      meleeDefence: -1,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 12,
+    };
     await itemNFT.addItem(
       Item.BRUSH,
-      {attribute: Attribute.ATTACK, equipPosition: EquipPosition.AUX, exists: true, canEquip: true, bonus: 0},
-      "someIPFSURI.png"
+      {stats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+      "someIPFSURI.json"
     );
     await expect(playerNFT.connect(alice).equip(playerId, Item.BRUSH)).to.be.reverted; // Don't own any
     await itemNFT.testMint(alice.address, Item.BRUSH, 1);
     await playerNFT.connect(alice).equip(playerId, Item.BRUSH);
 
-    await expect(playerNFT.connect(alice).startAction(Skill.PAINT, 100, playerId, false)).to.be.reverted; // No action added yet
+    const queuedAction: QueuedAction = {
+      actionId: 1,
+      skill: Skill.PAINT,
+      timespan: 100,
+      extraEquipment: [{itemTokenId: Item.BRUSH, numToEquip: 1}],
+    };
+
+    await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // No action added yet
 
     const tx = await world.addAction({
       skill: Skill.PAINT,
       baseXPPerHour: 10,
       minSkillPoints: 0,
       isDynamic: false,
-      itemPosition: EquipPosition.AUX,
+      itemPosition: EquipPosition.RIGHT_ARM,
       itemTokenIdRangeMin: Item.BRUSH,
       itemTokenIdRangeMax: Item.WAND,
     });
     const actionId = getActionId(tx);
-    await expect(playerNFT.connect(alice).startAction(Skill.PAINT, 100, playerId, false)).to.be.reverted; // Action not set to available yet
+    await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // Action not set to available yet
 
     await world.setAvailable(actionId, true);
 
-    await playerNFT.connect(alice).startAction(Skill.PAINT, 100, playerId, false);
+    await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
     await ethers.provider.send("evm_increaseTime", [1]);
     await playerNFT.connect(alice).consumeSkills(playerId);
-    expect((await playerNFT.skillPoints(playerId, Skill.PAINT)).toNumber()).to.be.oneOf([1, 2, 3]);
+    expect((await playerNFT.skillPoints(playerId, Skill.PAINT))).to.be.oneOf([1, 2, 3]);
   });
 
   it("Skill points, max range", async () => {
     const {playerId, playerNFT, itemNFT, world, alice, maxTime} = await loadFixture(deployContracts);
 
+    const stats: Stats = {
+      attack: 2,
+      magic: 0,
+      range: 0,
+      meleeDefence: -1,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 12,
+    };
     await itemNFT.addItem(
       Item.BRUSH,
-      {attribute: Attribute.ATTACK, equipPosition: EquipPosition.AUX, exists: true, canEquip: true, bonus: 0},
-      "someIPFSURI.png"
+      {stats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+      "someIPFSURI.json"
     );
     await itemNFT.testMint(alice.address, Item.BRUSH, 1);
     await playerNFT.connect(alice).equip(playerId, Item.BRUSH);
@@ -118,18 +161,25 @@ describe("Player", () => {
       baseXPPerHour: 10,
       minSkillPoints: 0,
       isDynamic: false,
-      itemPosition: EquipPosition.AUX,
+      itemPosition: EquipPosition.RIGHT_ARM,
       itemTokenIdRangeMin: Item.BRUSH,
       itemTokenIdRangeMax: Item.WAND,
     });
     const actionId = getActionId(tx);
     await world.setAvailable(actionId, true);
 
-    await playerNFT.connect(alice).startAction(Skill.PAINT, 100, playerId, false);
+    const queuedAction: QueuedAction = {
+      actionId: 1,
+      skill: Skill.PAINT,
+      timespan: 100,
+      extraEquipment: [{itemTokenId: Item.BRUSH, numToEquip: 1}],
+    };
+
+    await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
 
     await ethers.provider.send("evm_increaseTime", [maxTime + 1]);
     await playerNFT.connect(alice).consumeSkills(playerId);
-    expect((await playerNFT.skillPoints(playerId, Skill.PAINT)).toNumber()).to.eq(maxTime);
+    expect((await playerNFT.skillPoints(playerId, Skill.PAINT))).to.eq(maxTime);
   });
 
   it("Multi-skill points", async () => {
@@ -144,28 +194,53 @@ describe("Player", () => {
     // Shield doesn't exist yet
     await expect(playerNFT.equip(playerId, Item.SHIELD)).to.be.reverted;
 
+    const stats: Stats = {
+      attack: 2,
+      magic: 0,
+      range: 0,
+      meleeDefence: -1,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 12,
+    };
     await itemNFT.addItem(
       Item.SHIELD,
-      {attribute: Attribute.DEFENCE, equipPosition: EquipPosition.LEFT_ARM, exists: true, canEquip: true, bonus: 1},
-      "someIPFSURI.png"
+      {stats, equipPosition: EquipPosition.BODY, exists: true},
+      "someIPFSURI.json"
     );
 
     // Check bonuses before
-    expect((await playerNFT.players(playerId)).attackBonus).to.eq(0);
-    expect((await playerNFT.players(playerId)).defenceBonus).to.eq(0);
+    const beforeStats = (await playerNFT.players(playerId)).totalStats;
+    expect(beforeStats.attack).to.eq(0);
+    expect(beforeStats.range).to.eq(0);
+    expect(beforeStats.magic).to.eq(0);
+    expect(beforeStats.meleeDefence).to.eq(0);
+    expect(beforeStats.rangeDefence).to.eq(0);
+    expect(beforeStats.magicDefence).to.eq(0);
+    expect(beforeStats.health).to.eq(0);
 
     await playerNFT.connect(alice).equip(playerId, Item.SHIELD);
 
     // Check bonuses after
-    expect((await playerNFT.players(playerId)).attackBonus).to.eq(0);
-    expect((await playerNFT.players(playerId)).defenceBonus).to.eq(1);
+    const afterStats = (await playerNFT.players(playerId)).totalStats;
+    expect(afterStats.attack).to.eq(2);
+    expect(afterStats.range).to.eq(0);
+    expect(afterStats.magic).to.eq(0);
+    expect(afterStats.meleeDefence).to.eq(-1);
+    expect(afterStats.rangeDefence).to.eq(0);
+    expect(afterStats.magicDefence).to.eq(0);
+    expect(afterStats.health).to.eq(12);
 
     expect(await users.numEquipped(alice.address, Item.SHIELD)).to.eq(1);
 
     // Try equip it on someone else, should fail as we don't have enough
 
     const avatarId = 1;
-    const avatarInfo = {name: "Name goes here", description: "Hi I'm a description", imageURI: "1234.png"};
+    const avatarInfo = {
+      name: ethers.utils.formatBytes32String("Name goes here1"),
+      description: "Hi I'm a description",
+      imageURI: "1234.png",
+    };
     await playerNFT.addAvatar(avatarId, avatarInfo);
 
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
