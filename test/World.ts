@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {EquipPosition, getActionId, Item, Skill} from "../scripts/utils";
+import {COMBAT_BASE, COMBAT_MAX, EquipPosition, getActionId, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -89,24 +89,24 @@ describe("World", () => {
     it("Add/Edit/Delete normal", async () => {
       const {world} = await loadFixture(deployContracts);
       let tx = await world.addAction({
-        skill: Skill.PAINT,
+        skill: Skill.ATTACK,
         baseXPPerHour: 10,
         minSkillPoints: 0,
         isDynamic: false,
         itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: Item.BRUSH,
-        itemTokenIdRangeMax: Item.WAND,
+        itemTokenIdRangeMin: COMBAT_BASE,
+        itemTokenIdRangeMax: COMBAT_MAX,
       });
       const actionId = getActionId(tx);
-      expect((await world.actions(actionId)).skill).to.eq(Skill.PAINT);
+      expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
       await world.editAction(actionId, {
-        skill: Skill.PAINT,
+        skill: Skill.ATTACK,
         baseXPPerHour: 20,
         minSkillPoints: 0,
         isDynamic: false,
         itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: Item.BRUSH,
-        itemTokenIdRangeMax: Item.WAND,
+        itemTokenIdRangeMin: COMBAT_BASE,
+        itemTokenIdRangeMax: COMBAT_MAX,
       });
       expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
       expect(await world.availableActions(actionId)).to.be.false;
@@ -117,13 +117,13 @@ describe("World", () => {
 
       // Set available on an action that is dynamic (this should be random only)
       await world.editAction(actionId, {
-        skill: Skill.PAINT,
+        skill: Skill.ATTACK,
         baseXPPerHour: 20,
         minSkillPoints: 0,
         isDynamic: true,
         itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: Item.BRUSH,
-        itemTokenIdRangeMax: Item.WAND,
+        itemTokenIdRangeMin: COMBAT_BASE,
+        itemTokenIdRangeMax: COMBAT_MAX,
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });

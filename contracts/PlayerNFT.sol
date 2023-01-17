@@ -172,12 +172,20 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function _mintStartingItems() private {
     // Give the player some starting items
-    uint[] memory itemNFTs = new uint[](2);
-    itemNFTs[0] = BRONZE_PICKAXE;
-    itemNFTs[1] = SHIELD;
-    uint[] memory quantities = new uint[](2);
+    uint[] memory itemNFTs = new uint[](6);
+    itemNFTs[0] = BRONZE_SWORD;
+    itemNFTs[1] = BRONZE_AXE;
+    itemNFTs[2] = FIRE_LIGHTER;
+    itemNFTs[3] = SMALL_NET;
+    itemNFTs[4] = BRONZE_AXE;
+    itemNFTs[5] = BRONZE_PICKAXE;
+    uint[] memory quantities = new uint[](6);
     quantities[0] = 1;
     quantities[1] = 1;
+    quantities[2] = 1;
+    quantities[3] = 1;
+    quantities[4] = 1;
+    quantities[5] = 1;
     itemNFT.mintBatch(msg.sender, itemNFTs, quantities);
   }
 
@@ -308,6 +316,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     emit Unequip(_tokenId, _equippedTokenId, itemStats, 1);
   }
 
+  // function setEquipment ()
+
   // Cannot be transferred while equipped.  Check if the NFT is being transferred and unequip from this user.
   // Replace old one
   function equip(uint _tokenId, uint16 _item) external isOwnerOfPlayer(_tokenId) {
@@ -318,23 +328,26 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     ItemStat memory itemStats = itemNFT.getItemStats(_item);
     require(itemStats.exists);
     EquipPosition position = itemStats.equipPosition;
-    uint8 equippedTokenId;
+    require(uint8(position) < 8);
+    uint8 relativeItem = uint8(_item - (256 * uint8(position))); // Between 0 -> 256
+    uint8 relativeEquippedTokenId;
     assembly ("memory-safe") {
       let val := sload(player.slot)
-      equippedTokenId := shr(mul(position, 8), val)
+      relativeEquippedTokenId := shr(mul(position, 8), val)
 
       // Clear the byte position
       val := and(val, not(shl(mul(position, 8), 0xff)))
       // Now set it
-      val := or(val, shl(mul(position, 8), _item))
+      val := or(val, shl(mul(position, 8), relativeItem))
       sstore(player.slot, val)
     }
 
-    if (_item == equippedTokenId) {
+    uint16 equippedTokenId = relativeEquippedTokenId + (256 * uint8(position));
+    if (_item == equippedTokenId && relativeEquippedTokenId != NONE) {
       revert EquipSameItem();
     }
 
-    if (equippedTokenId != NONE) {
+    if (relativeEquippedTokenId != NONE) {
       _unequipMainItem(_tokenId, equippedTokenId, position);
     }
 
@@ -352,12 +365,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // This requires checking that we have it equipped
     Player storage player = players[_tokenId];
     SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
-    uint8 equippedTokenId;
+    uint8 relativeEquippedTokenId;
     assembly ("memory-safe") {
       let val := sload(player.slot)
-      equippedTokenId := shr(mul(_position, 8), val)
+      relativeEquippedTokenId := shr(mul(_position, 8), val)
     }
-    if (equippedTokenId == NONE) {
+    uint16 equippedTokenId = relativeEquippedTokenId + (256 * uint8(_position));
+    if (relativeEquippedTokenId == NONE) {
       revert NotEquipped();
     }
 
@@ -546,7 +560,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     if (oldOverallSkillPoints < LEVEL_99_BOUNDARY && newOverallSkillPoints >= LEVEL_99_BOUNDARY) {
       // Mint rewards
       uint[] memory itemTokenIds = new uint[](1);
-      itemTokenIds[0] = SHIELD;
+      itemTokenIds[0] = BRONZE_AMULET;
 
       uint[] memory amounts = new uint[](1);
       amounts[0] = 1;
@@ -578,7 +592,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     tokenIds = new uint[](3); // max
     uint length;
     if (seed % 2 == 0) {
-      tokenIds[0] = SHIELD;
+      tokenIds[0] = BRONZE_AMULET;
     } else {
       tokenIds[0] = BRONZE_PICKAXE;
     }
@@ -644,11 +658,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         bool hasSeed = world.hasSeed(skillEndTime);
         if (!hasSeed) {
           // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
-          // TODO: Some won't have loot
+          // TODO: Some won't have loot (add it to action?)
           pendingLoot.push(PendingLoot({actionId: skillInfo.actionId, timestamp: skillEndTime}));
 
-          if (skill == Skill.PAINT) {
-            itemNFT.mint(_from, BRUSH, 1);
+          if (skill == Skill.WOODCUTTING) {
+            itemNFT.mint(_from, BRONZE_PICKAXE, 1);
           }
         } else {
           // Mint loot (TODO Update this later)

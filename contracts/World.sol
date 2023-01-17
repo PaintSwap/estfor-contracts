@@ -56,8 +56,8 @@ contract World is VRFConsumerBaseV2, Ownable {
     uint32 minSkillPoints;
     bool isDynamic;
     EquipPosition itemPosition;
-    uint8 itemTokenIdRangeMin; // Inclusive
-    uint8 itemTokenIdRangeMax; // Exclusive
+    uint16 itemTokenIdRangeMin; // Inclusive
+    uint16 itemTokenIdRangeMax; // Inclusive
   }
 
   mapping(uint => ActionInfo) public actions; // action id => action info
@@ -120,8 +120,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   }
 
   function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {
-    require(_actionInfo.itemTokenIdRangeMax < 256);
-    require(_actionInfo.itemTokenIdRangeMin < _actionInfo.itemTokenIdRangeMax);
+    require(_actionInfo.itemTokenIdRangeMin <= _actionInfo.itemTokenIdRangeMax);
     require(uint(_actionInfo.itemPosition) < 16);
     actions[_actionId] = _actionInfo;
   }
