@@ -2,14 +2,16 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
+  BRONZE_AXE,
   BRONZE_GAUNTLETS,
-  BRONZE_SHIELD,
+  BRONZE_PICKAXE,
   BRONZE_SWORD,
   COMBAT_BASE,
   COMBAT_MAX,
   createPlayer,
   EquipPosition,
   getActionId,
+  MINING_MAX,
   QueuedAction,
   Skill,
   Stats,
@@ -147,7 +149,7 @@ describe("Player", () => {
       itemTokenIdRangeMin: COMBAT_BASE,
       itemTokenIdRangeMax: COMBAT_MAX,
     });
-    const actionId = getActionId(tx);
+    const actionId = await getActionId(tx);
     await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // Action not set to available yet
 
     await world.setAvailable(actionId, true);
@@ -194,7 +196,7 @@ describe("Player", () => {
       itemTokenIdRangeMin: COMBAT_BASE,
       itemTokenIdRangeMax: COMBAT_MAX,
     });
-    const actionId = getActionId(tx);
+    const actionId = await getActionId(tx);
     await world.setAvailable(actionId, true);
 
     const queuedAction: QueuedAction = {
@@ -206,9 +208,9 @@ describe("Player", () => {
 
     await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
 
-    await ethers.provider.send("evm_increaseTime", [maxTime + 1]);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await playerNFT.connect(alice).consumeSkills(playerId);
-    expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.eq(maxTime);
+    expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.eq(queuedAction.timespan);
   });
 
   it("Multi-skill points", async () => {
@@ -233,7 +235,11 @@ describe("Player", () => {
       health: 12,
     };
 
-    await itemNFT.addItem(BRONZE_GAUNTLETS, {stats, equipPosition: EquipPosition.ARMS, exists: true}, "someIPFSURI.json");
+    await itemNFT.addItem(
+      BRONZE_GAUNTLETS,
+      {stats, equipPosition: EquipPosition.ARMS, exists: true},
+      "someIPFSURI.json"
+    );
 
     // Check bonuses before
     const beforeStats = (await playerNFT.players(playerId)).totalStats;
@@ -294,7 +300,21 @@ describe("Player", () => {
   });
 
   describe("Actions", () => {
-    it("Cut wood", async () => {
+    // Test minSkillPoints
+    // Test isDynamic
+    // Test incorrect item position and range
+
+    const emptyStats = {
+      attack: 0,
+      magic: 0,
+      range: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 0,
+    };
+
+    it("Woodcutting", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const tx = await world.addAction({
@@ -303,10 +323,71 @@ describe("Player", () => {
         minSkillPoints: 0,
         isDynamic: false,
         itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: WOODCUTTING_BASE,
+        itemTokenIdRangeMin: BRONZE_AXE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
       });
+      const actionId = await getActionId(tx);
+      await world.setAvailable(actionId, true);
+
+      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.WOODCUTTING,
+        timespan: 100,
+        extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
+      };
+
+      await itemNFT.addItem(
+        BRONZE_AXE,
+        {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        "someIPFSURI.json"
+      );
+
+      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     });
+
+    it("Mining", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const tx = await world.addAction({
+        skill: Skill.MINING,
+        baseXPPerHour: 10,
+        minSkillPoints: 0,
+        isDynamic: false,
+        itemPosition: EquipPosition.RIGHT_ARM,
+        itemTokenIdRangeMin: BRONZE_PICKAXE,
+        itemTokenIdRangeMax: MINING_MAX,
+      });
+
+      const actionId = await getActionId(tx);
+      await world.setAvailable(actionId, true);
+
+      await itemNFT.testMint(alice.address, BRONZE_PICKAXE, 1);
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.MINING,
+        timespan: 100,
+        extraEquipment: [{itemTokenId: BRONZE_PICKAXE, numToEquip: 1}],
+      };
+
+      await itemNFT.addItem(
+        BRONZE_PICKAXE,
+        {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        "someIPFSURI.json"
+      );
+
+      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.MINING)).to.eq(queuedAction.timespan);
+    });
+
+    // Rest of the actions
   });
 
   /*

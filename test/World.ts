@@ -97,7 +97,7 @@ describe("World", () => {
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
       });
-      const actionId = getActionId(tx);
+      const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
       await world.editAction(actionId, {
         skill: Skill.ATTACK,

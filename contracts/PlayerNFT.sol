@@ -623,7 +623,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
       if (skillEndTime <= block.timestamp) {
         // Fully consume this skill
-        pointsAccured = MAX_TIME;
+        pointsAccured = skillInfo.timespan;
       } else {
         // partially consume
         uint40 elapsedTime = uint40(block.timestamp - skillInfo.startTime);
