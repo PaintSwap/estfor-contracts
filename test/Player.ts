@@ -64,7 +64,7 @@ describe("Player", () => {
       description: "Hi I'm a description",
       imageURI: "1234.png",
     };
-    await playerNFT.addAvatar(avatarId, avatarInfo);
+    await playerNFT.setAvatar(avatarId, avatarInfo);
 
     // Create player
     const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
@@ -280,7 +280,7 @@ describe("Player", () => {
       description: "Hi I'm a description",
       imageURI: "1234.png",
     };
-    await playerNFT.addAvatar(avatarId, avatarInfo);
+    await playerNFT.setAvatar(avatarId, avatarInfo);
 
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
     await expect(playerNFT.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS)).to.be.reverted;

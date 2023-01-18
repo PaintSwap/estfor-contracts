@@ -116,9 +116,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   using EnumerableMap for EnumerableMap.UintToUintMap;
 
   mapping(uint => uint) private tokenIdToAvatar; // tokenId => avatar id?
-  mapping(uint => Player) public players; // tokenId => player too?
-  uint public latestPlayerId = 1;
-  ItemNFT public itemNFT;
+  mapping(uint => Player) public players;
+  uint private latestPlayerId = 1;
+  ItemNFT private itemNFT;
   Users private users;
 
   mapping(uint => AvatarInfo) private avatars; // avatar id => avatarInfo
@@ -173,20 +173,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function _mintStartingItems() private {
     // Give the player some starting items
-    uint[] memory itemNFTs = new uint[](6);
-    itemNFTs[0] = BRONZE_SWORD;
-    itemNFTs[1] = BRONZE_AXE;
-    itemNFTs[2] = FIRE_LIGHTER;
-    itemNFTs[3] = SMALL_NET;
-    itemNFTs[4] = BRONZE_AXE;
-    itemNFTs[5] = BRONZE_PICKAXE;
-    uint[] memory quantities = new uint[](6);
-    quantities[0] = 1;
-    quantities[1] = 1;
-    quantities[2] = 1;
-    quantities[3] = 1;
-    quantities[4] = 1;
-    quantities[5] = 1;
+    (uint[] memory itemNFTs, uint[] memory quantities) = PlayerNFTLibrary.getInitialStartingItems();
     itemNFT.mintBatch(msg.sender, itemNFTs, quantities);
   }
 
@@ -755,7 +742,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     return tokenIdToAvatar[tokenId] != 0;
   }
 
-  function addAvatar(uint avatarId, AvatarInfo calldata avatarInfo) external onlyOwner {
-    avatars[avatarId] = avatarInfo;
+  function setAvatar(uint avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
+    avatars[avatarId] = _avatarInfo;
+  }
+
+  function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
+    for (uint i; i < _avatarInfos.length; ++i) {
+      avatars[_startAvatarId + i] = _avatarInfos[i];
+    }
   }
 }

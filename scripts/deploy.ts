@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {Attribute, createPlayer, EquipPosition, getActionId, Item, Skill} from "./utils";
+import {createPlayer, EquipPosition, getActionId, Skill} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -57,14 +57,22 @@ async function main() {
   await tx.wait();
   console.log("setNFTs");
 
-  const avatarId = 1;
-  const avatarInfo = {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"};
-  tx = await playerNFT.addAvatar(avatarId, avatarInfo);
+  const startAvatarId = 1;
+  const avatarInfos = [{name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
+  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
+  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
+  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
+  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
+  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
+  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
+  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"}];
+
+  tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
   await tx.wait();
-  console.log("addAvatar");
+  console.log("addAvatars");
 
   // Create player
-  const playerId = await createPlayer(playerNFT, avatarId, owner, ethers.utils.formatBytes32String("0xSamWitch"));
+  const playerId = await createPlayer(playerNFT, startAvatarId, owner, ethers.utils.formatBytes32String("0xSamWitch"));
   console.log("createPlayer");
 
   // === Test stuff ===
@@ -84,7 +92,7 @@ async function main() {
   await tx.wait();
   console.log("testMint2");
 
-  tx = await itemNFT.testMint(owner.address, Item.BRONZE_NECKLACE, 100);
+  tx = await itemNFT.testMint(owner.address, Item.BRONZE_AMULET, 100);
   await tx.wait();
   console.log("testMintShopItem1");
   tx = await itemNFT.testMint(owner.address, Item.COD, 100);
@@ -95,17 +103,18 @@ async function main() {
   await tx.wait();
   console.log("equip");
 
+  const availableAction = true;
   tx = await world.addAction({
-    skill: Skill.PAINT,
+    skill: Skill.WOODCUTTING,
     baseXPPerHour: 10,
     minSkillPoints: 0,
     isDynamic: false,
-    itemPosition: EquipPosition.AUX,
-    itemTokenIdRangeMin: Item.BRUSH,
+    itemPosition: EquipPosition.RIGHT_ARM,
+    itemTokenIdRangeMin: ,
     itemTokenIdRangeMax: Item.WAND,
-  });
-  const actionId = getActionId(tx);
-  tx = await world.setAvailable(actionId, true);
+  }, availableAction);
+//  const actionId = getActionId(tx);
+//  tx = await world.setAvailable(actionId, true);
   await tx.wait();
   console.log("setAvailable");
 
@@ -118,7 +127,7 @@ async function main() {
   console.log("consume skills");
 
   // Add shop item
-  tx = await itemNFT.addShopItems([Item.BRONZE_NECKLACE, Item.COD], [30, 20]);
+  tx = await itemNFT.addShopItems([Item.BRONZE_AMULET, Item.COD], [30, 20]);
   await tx.wait();
   console.log("add shop");
 
@@ -128,7 +137,7 @@ async function main() {
   await tx.wait();
   console.log("Approve brush");
 
-  tx = await itemNFT.buy(Item.BRONZE_NECKLACE, 1);
+  tx = await itemNFT.buy(Item.BRONZE_AMULET, 1);
   await tx.wait();
   console.log("buy from shop");
 
