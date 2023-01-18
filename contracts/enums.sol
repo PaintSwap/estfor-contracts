@@ -32,13 +32,12 @@ uint16 constant ORCHALCUM_HELMET = HEAD_BASE + 6;
 uint16 constant HEAD_MAX = HEAD_BASE + 254; // Inclusive
 // 257 - 511 (neck)
 uint16 constant NECK_BASE = 257;
-uint16 constant BRONZE_AMULET = NECK_BASE;
-uint16 constant IRON_AMULET = NECK_BASE + 1;
-uint16 constant MITHRIL_AMULET = NECK_BASE + 2;
-uint16 constant ADAMANTINE_AMULET = NECK_BASE + 3;
-uint16 constant RUNITE_AMULET = NECK_BASE + 4;
-uint16 constant TITANIUM_AMULET = NECK_BASE + 5;
-uint16 constant ORCHALCUM_AMULET = NECK_BASE + 6;
+uint16 constant SAPPHIRE_AMULET = NECK_BASE;
+uint16 constant EMERALD_AMULET = NECK_BASE + 1;
+uint16 constant RUBT_AMULET = NECK_BASE + 2;
+uint16 constant AMETHYST_AMULET = NECK_BASE + 3;
+uint16 constant DIAMOND_AMULET = NECK_BASE + 4;
+uint16 constant DRAGONSTONE_AMULET = NECK_BASE + 5;
 uint16 constant NECK_MAX = NECK_BASE + 254;
 
 // 513 - 767 (body)

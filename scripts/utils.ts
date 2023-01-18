@@ -34,13 +34,12 @@ export const ORCHALCUM_HELMET = HEAD_BASE + 6;
 export const HEAD_MAX = HEAD_BASE + 254; // Inclusive
 // 257 - 511 (neck)
 export const NECK_BASE = 257;
-export const BRONZE_AMULET = NECK_BASE;
-export const IRON_AMULET = NECK_BASE + 1;
-export const MITHRIL_AMULET = NECK_BASE + 2;
-export const ADAMANTINE_AMULET = NECK_BASE + 3;
-export const RUNITE_AMULET = NECK_BASE + 4;
-export const TITANIUM_AMULET = NECK_BASE + 5;
-export const ORCHALCUM_AMULET = NECK_BASE + 6;
+export const SAPPHIRE_AMULET = NECK_BASE;
+export const EMERALD_AMULET = NECK_BASE + 1;
+export const RUBT_AMULET = NECK_BASE + 2;
+export const AMETHYST_AMULET = NECK_BASE + 3;
+export const DIAMOND_AMULET = NECK_BASE + 4;
+export const DRAGONSTONE_AMULET = NECK_BASE + 5;
 export const NECK_MAX = NECK_BASE + 254;
 
 // 513 - 767 (body)

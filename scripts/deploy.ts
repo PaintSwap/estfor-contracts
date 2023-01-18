@@ -84,6 +84,36 @@ async function main() {
   await tx.wait();
   console.log("add item");
 
+  function addItems(
+    [BRONZE_GAUNTLETS,SAPPHIRE_AMULET,BRONZE_AXE],
+    [{stats:  { attack: 2,
+      magic: 0,
+      range: 0,
+      meleeDefence: -1,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 12}, equipPosition: EquipPosition.ARMS, exists: true},    {stats: {    attack: 2,
+        magic: 0,
+        range: 0,
+        meleeDefence: -1,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 12,}, equipPosition: EquipPosition.ARMS, exists: true},
+      {stats:{    attack: 2,
+        magic: 0,
+        range: 0,
+        meleeDefence: -1,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 12,}, equipPosition: EquipPosition.ARMS, exists: true},
+
+    ],
+    ["someIPFSURI_1.json", "someIPFSURI_2.json", "someIPFSURI_3.json]
+    uint16[] calldata _itemTokenIds,
+    ItemStat[] calldata _itemStats,
+    string[] calldata _metadataURIs
+  ) external onlyOwner {
+
   tx = await itemNFT.testMint(owner.address, Item.BRUSH, 1);
   await tx.wait();
   console.log("testMint1");
@@ -92,7 +122,7 @@ async function main() {
   await tx.wait();
   console.log("testMint2");
 
-  tx = await itemNFT.testMint(owner.address, Item.BRONZE_AMULET, 100);
+  tx = await itemNFT.testMint(owner.address, Item.SAPPHIRE_AMULET, 100);
   await tx.wait();
   console.log("testMintShopItem1");
   tx = await itemNFT.testMint(owner.address, Item.COD, 100);
@@ -127,7 +157,7 @@ async function main() {
   console.log("consume skills");
 
   // Add shop item
-  tx = await itemNFT.addShopItems([Item.BRONZE_AMULET, Item.COD], [30, 20]);
+  tx = await itemNFT.addShopItems([Item.SAPPHIRE_AMULET, Item.COD], [30, 20]);
   await tx.wait();
   console.log("add shop");
 
@@ -137,7 +167,7 @@ async function main() {
   await tx.wait();
   console.log("Approve brush");
 
-  tx = await itemNFT.buy(Item.BRONZE_AMULET, 1);
+  tx = await itemNFT.buy(Item.SAPPHIRE_AMULET, 1);
   await tx.wait();
   console.log("buy from shop");
 

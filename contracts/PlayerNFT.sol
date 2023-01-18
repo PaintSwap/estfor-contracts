@@ -537,7 +537,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     if (oldOverallSkillPoints < LEVEL_99_BOUNDARY && newOverallSkillPoints >= LEVEL_99_BOUNDARY) {
       // Mint rewards
       uint[] memory itemTokenIds = new uint[](1);
-      itemTokenIds[0] = BRONZE_AMULET;
+      itemTokenIds[0] = SAPPHIRE_AMULET;
 
       uint[] memory amounts = new uint[](1);
       amounts[0] = 1;
@@ -569,7 +569,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     tokenIds = new uint[](3); // max
     uint length;
     if (seed % 2 == 0) {
-      tokenIds[0] = BRONZE_AMULET;
+      tokenIds[0] = SAPPHIRE_AMULET;
     } else {
       tokenIds[0] = BRONZE_PICKAXE;
     }
