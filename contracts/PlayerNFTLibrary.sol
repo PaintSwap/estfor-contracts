@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "./enums.sol";
 import "./interfaces/ItemStat.sol";
+import "./World.sol";
 
 // Show all the player stats, return metadata json
 library PlayerNFTLibrary {
@@ -110,5 +111,84 @@ library PlayerNFTLibrary {
     quantities[3] = 1;
     quantities[4] = 1;
     quantities[5] = 1;
+  }
+
+  function getLoot(
+    address _from,
+    uint actionId,
+    uint40 skillEndTime,
+    uint16 elapsedTime,
+    World world,
+    PendingLoot[] storage pendingLoot
+  ) external returns (uint[] memory ids, uint[] memory amounts) {
+    (ActionReward[] memory dropRewards, ActionLoot[] memory lootChances) = world.getDropAndLoot(actionId);
+
+    ids = new uint[](dropRewards.length + lootChances.length);
+    amounts = new uint[](dropRewards.length + lootChances.length);
+    uint lootLength;
+
+    // Guarenteed drops
+    for (uint i; i < dropRewards.length; ++i) {
+      uint num = (uint(elapsedTime) * dropRewards[i].rate) / (3600 * 100);
+      if (num > 0) {
+        ids[lootLength] = dropRewards[i].itemTokenId;
+        amounts[lootLength] = num;
+        ++lootLength;
+      }
+    }
+
+    // Random chance loot
+    if (lootChances.length > 0) {
+      bool hasSeed = world.hasSeed(skillEndTime);
+      if (!hasSeed) {
+        // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
+        // TODO: Some won't have loot (add it to action?)
+        pendingLoot.push(PendingLoot({actionId: actionId, timestamp: skillEndTime, elapsedTime: elapsedTime}));
+      } else {
+        uint seed = world.getSeed(skillEndTime);
+
+        // Figure out how many chances they get (1 per hour spent)
+        uint numTickets = elapsedTime / 3600;
+
+        bytes32 randomComponent = bytes32(seed) ^ bytes20(_from);
+        uint startLootLength = lootLength;
+        for (uint i; i < numTickets; ++i) {
+          // Percentage out of 256
+          uint8 rand = uint8(uint256(randomComponent >> (i * 8)));
+
+          // Take each byte and check
+          for (uint j; j < lootChances.length; ++j) {
+            ActionLoot memory potentialLoot = lootChances[j];
+            if (rand < potentialLoot.chance) {
+              // Get the lowest chance one
+
+              // Compare with previous and append amounts if an entry already exists
+              bool found;
+              for (uint k = startLootLength; k < ids.length; ++k) {
+                if (potentialLoot.itemTokenId == ids[k]) {
+                  // exists
+                  amounts[k] += 1;
+                  found = true;
+                  break;
+                }
+              }
+
+              if (!found) {
+                // New item
+                ids[lootLength] = potentialLoot.itemTokenId;
+                amounts[lootLength] = 1;
+                ++lootLength;
+              }
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(ids, lootLength)
+      mstore(amounts, lootLength)
+    }
   }
 }

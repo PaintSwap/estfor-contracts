@@ -156,12 +156,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   uint constant LEVEL_90_BOUNDARY = 900000000;
   uint constant LEVEL_99_BOUNDARY = 999999999;
 
-  struct PendingLoot {
-    uint actionId;
-    uint40 timestamp;
-    uint16 elapsedTime;
-  }
-
   PendingLoot[] private pendingLoot; // queue, will be sorted by timestamp
 
   constructor(IBrushToken _brush, ItemNFT _itemNFT, World _world, Users _users) ERC1155("") {
@@ -645,50 +639,20 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         skillPoints[_tokenId][skill] += pointsAccured; // Update this later, just base it on time elapsed
         emit AddSkillPoints(_tokenId, skill, pointsAccured);
 
-        (ActionReward[] memory dropRewards, ActionLoot[] memory lootChances) = world.getDropAndLoot(actionId);
-        // Guarenteed drops
-        for (uint j; j < dropRewards.length; ++j) {
-          uint num = (uint(elapsedTime) * dropRewards[j].rate) / (3600 * 100);
-          if (num > 0) {
-            ids[lootLength] = dropRewards[j].itemTokenId;
-            amounts[lootLength] = num;
-            ++lootLength;
-          }
+        // Should just do the new ones
+        (uint[] memory newIds, uint[] memory newAmounts) = PlayerNFTLibrary.getLoot(
+          _from,
+          actionId,
+          skillEndTime,
+          elapsedTime,
+          world,
+          pendingLoot
+        );
+        for (uint j = 0; j < newIds.length; ++j) {
+          ids[lootLength + j] = newIds[j];
+          amounts[lootLength + j] = newAmounts[j];
         }
-
-        // Random chance loot
-        if (lootChances.length > 0) {
-          bool hasSeed = world.hasSeed(skillEndTime);
-          if (!hasSeed) {
-            // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
-            // TODO: Some won't have loot (add it to action?)
-            pendingLoot.push(PendingLoot({actionId: actionId, timestamp: skillEndTime, elapsedTime: elapsedTime}));
-          } else {
-            uint seed = world.getSeed(skillEndTime);
-
-            // Figure out how many chances they get (1 per hour spent)
-            uint numTickets = elapsedTime / 3600;
-
-            bytes32 randomComponent = bytes32(seed) ^ bytes20(_from);
-            for (uint j; j < numTickets; ++j) {
-              // Percentage out of 256
-              uint8 rand = uint8(uint256(randomComponent >> (j * 8)));
-
-              // Take each byte and check
-              for (uint k; k < lootChances.length; ++k) {
-                ActionLoot memory potentialLoot = lootChances[k];
-                if (rand < potentialLoot.chance) {
-                  // Get the lowest chance one
-                  // Could probably collapse these if you can hit the same drops
-                  ids[lootLength] = potentialLoot.itemTokenId;
-                  amounts[lootLength] = 1;
-                  ++lootLength;
-                  break;
-                }
-              }
-            }
-          }
-        }
+        lootLength += newIds.length;
 
         allPointsAccured += pointsAccured;
       }

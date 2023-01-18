@@ -273,9 +273,14 @@ Lossuth Teeth */
 // Loot
 struct ActionReward {
   uint16 itemTokenId;
-  uint16 rate; // num per hour, base 1000 (2 decimals)
+  uint16 rate; // num per hour, base 100 (2 decimals)
 }
 struct ActionLoot {
   uint16 itemTokenId;
   uint8 chance; // change to get an item (out of 256)
+}
+struct PendingLoot {
+  uint actionId;
+  uint40 timestamp;
+  uint16 elapsedTime;
 }
