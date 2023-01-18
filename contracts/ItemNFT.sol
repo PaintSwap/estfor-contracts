@@ -29,6 +29,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   /* Items */
   mapping(uint16 => ItemStat) itemStats;
   event AddItem(uint16 tokenId, ItemStat itemStats);
+  event AddItems(uint16[] tokenIds, ItemStat[] itemStats);
   event EditItem(uint16 tokenId, ItemStat itemStats);
 
   /* Shop */
@@ -276,21 +277,37 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     playerNFT = _playerNFT;
   }
 
-  // Or make it constants and redeploy the contracts
-  function addItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
-    require(!itemStats[_item].exists, "This item was already added");
-    require(_itemStat.exists);
-    itemStats[_item] = _itemStat;
-    tokenURIs[_item] = _metadataURI;
-    emit AddItem(_item, _itemStat);
+  function addItems(
+    uint16[] calldata _itemTokenIds,
+    ItemStat[] calldata _itemStats,
+    string[] calldata _metadataURIs
+  ) external onlyOwner {
+    for (uint i; i < _itemTokenIds.length; ++i) {
+      uint16 itemTokenId = _itemTokenIds[i];
+      require(!itemStats[itemTokenId].exists, "This item was already added");
+      require(_itemStats[i].exists);
+      itemStats[itemTokenId] = _itemStats[i];
+      tokenURIs[itemTokenId] = _metadataURIs[i];
+    }
+
+    emit AddItems(_itemTokenIds, _itemStats);
   }
 
-  function editItem(uint16 _item, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
-    require(itemStats[_item].exists, "This item was not added yet");
-    require(itemStats[_item].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
-    itemStats[_item] = _itemStat;
-    tokenURIs[_item] = _metadataURI;
-    emit EditItem(_item, _itemStat);
+  // Or make it constants and redeploy the contracts
+  function addItem(uint16 _tokenId, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
+    require(!itemStats[_tokenId].exists, "This item was already added");
+    require(_itemStat.exists);
+    itemStats[_tokenId] = _itemStat;
+    tokenURIs[_tokenId] = _metadataURI;
+    emit AddItem(_tokenId, _itemStat);
+  }
+
+  function editItem(uint16 _tokenId, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
+    require(itemStats[_tokenId].exists, "This item was not added yet");
+    require(itemStats[_tokenId].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
+    itemStats[_tokenId] = _itemStat;
+    tokenURIs[_tokenId] = _metadataURI;
+    emit EditItem(_tokenId, _itemStat);
   }
 
   // Spend brush to buy some things from the shop
