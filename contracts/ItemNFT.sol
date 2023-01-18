@@ -12,22 +12,6 @@ import "./enums.sol";
 
 // The NFT contract contains data related to the items and users (not players)
 contract ItemNFT is ERC1155, Multicall, Ownable {
-  // Mystery box is id 1
-  // Raid pass is id 2
-  // Reserved up to 3-10
-  // Wearable items take ids 11-255
-  // Other items (e.g fish) take ids (256 - 65535)
-
-  // Equippable Items, 11 - 40 (head)
-  //             70 (necklace)
-  //             100 (body)
-  //             130 (rightArm)
-  //             160 (leftArm)
-  //             190 (legs)
-  //             220 (boots)
-  //       222 - 250 (aux)
-  // 251 - 255 reserved
-
   mapping(uint => uint) public itemBalances; // tokenId => total
 
   uint16 public mysteryBoxsMinted;

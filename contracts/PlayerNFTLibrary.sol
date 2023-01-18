@@ -23,8 +23,6 @@ library PlayerNFTLibrary {
         skillPoints[Skill.ATTACK],
         '"}, {"trait_type":"Defence","value":"',
         skillPoints[Skill.DEFENCE],
-        '{"trait_type":"Strength","value":"',
-        skillPoints[Skill.STRENGTH],
         '"}, {"trait_type":"Mining","value":"',
         skillPoints[Skill.MINING],
         '{"trait_type":"WoodCutting","value":"',

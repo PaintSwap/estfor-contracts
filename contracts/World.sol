@@ -55,9 +55,13 @@ contract World is VRFConsumerBaseV2, Ownable {
     uint8 baseXPPerHour;
     uint32 minSkillPoints;
     bool isDynamic;
+    // If a specific item is required in the right arm
     EquipPosition itemPosition;
     uint16 itemTokenIdRangeMin; // Inclusive
     uint16 itemTokenIdRangeMax; // Inclusive
+    // Possible loot and percentage
+    ActionReward[] dropRewards;
+    ActionLoot[] lootChances;
   }
 
   mapping(uint => ActionInfo) public actions; // action id => action info
@@ -163,6 +167,10 @@ contract World is VRFConsumerBaseV2, Ownable {
 
   function getSkill(uint _actionId) external view returns (Skill) {
     return actions[_actionId].skill;
+  }
+
+  function getDropAndLoot(uint _actionId) external view returns (ActionReward[] memory, ActionLoot[] memory) {
+    return (actions[_actionId].dropRewards, actions[_actionId].lootChances);
   }
 
   function addAction(ActionInfo calldata _actionInfo, bool _available) external onlyOwner {

@@ -6,7 +6,6 @@ import {PlayerNFT} from "../typechain-types";
 export enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates attack <-> magic
-  STRENGTH,
   ATTACK,
   DEFENCE,
   RANGED,
@@ -85,7 +84,6 @@ export const RUNITE_BOOTS = BOOTS_BASE + 4;
 export const TITANIUM_BOOTS = BOOTS_BASE + 5;
 export const ORCHALCUM_BOOTS = BOOTS_BASE + 6;
 export const BOOTS_MAX = BOOTS_BASE + 254;
-
 
 // 1536 - 1791 spare(1)
 // 1792 - 2047 spare(2)
@@ -230,6 +228,24 @@ export const COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 
 // Farming
 export const BONEMEAL = 11264;
+
+// Mining
+export const ORE_BASE = 11520;
+export const COPPER_ORE = ORE_BASE;
+export const TIN_ORE = ORE_BASE + 1;
+export const IRON_ORE = ORE_BASE + 2;
+export const SAPPHIRE_ORE = ORE_BASE + 3;
+export const COAL_ORE = ORE_BASE + 4;
+export const EMERALD_ORE = ORE_BASE + 5;
+export const MITHRIL_ORE = ORE_BASE + 6;
+export const RUBY_ORE = ORE_BASE + 7;
+export const ADAMANTINE_ORE = ORE_BASE + 8;
+export const AMETHYST_ORE = ORE_BASE + 9;
+export const DIAMOND_ORE = ORE_BASE + 10;
+export const RUNITE_ORE = ORE_BASE + 11;
+export const DRAGONSTONE_ORE = ORE_BASE + 12;
+export const TITANIUM_ORE = ORE_BASE + 13;
+export const ORCHALCUM_ORE = ORE_BASE + 14;
 
 // MISC
 export const MYSTERY_BOX = 65535;

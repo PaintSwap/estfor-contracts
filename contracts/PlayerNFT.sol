@@ -159,6 +159,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   struct PendingLoot {
     uint actionId;
     uint40 timestamp;
+    uint16 elapsedTime;
   }
 
   PendingLoot[] private pendingLoot; // queue, will be sorted by timestamp
@@ -436,11 +437,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     require(itemEquipped > 0);
 
-    if (
-      _queuedAction.skill == Skill.ATTACK ||
-      _queuedAction.skill == Skill.DEFENCE ||
-      _queuedAction.skill == Skill.STRENGTH
-    ) {
+    if (_queuedAction.skill == Skill.ATTACK || _queuedAction.skill == Skill.DEFENCE) {
       meleeQueuedActions[_queuedActionId] = MeleeInfo({
         otherItem: otherItemEquipped,
         food: food.itemTokenId,
@@ -453,7 +450,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       require(
         _queuedAction.skill == Skill.ATTACK ||
           _queuedAction.skill == Skill.DEFENCE ||
-          _queuedAction.skill == Skill.STRENGTH ||
           _queuedAction.skill == Skill.MAGIC ||
           _queuedAction.skill == Skill.RANGED
       );
@@ -602,6 +598,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
   }
 
+  uint private constant MAX_LOOT_PER_ACTION = 5;
+
   function _consumeSkills(address _from, uint _tokenId) private returns (SkillInfo[] memory remainingSkills) {
     Player storage player = players[_tokenId];
     uint queueLength = player.actionQueue.length;
@@ -615,20 +613,26 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint32 allPointsAccured;
 
     remainingSkills = new SkillInfo[](queueLength); // Max
-    uint length = 0;
-
+    uint length;
+    uint lootLength;
+    // ids & amounts which will be used to batch mint once later
+    uint[] memory ids = new uint[](MAX_LOOT_PER_ACTION * queueLength);
+    uint[] memory amounts = new uint[](MAX_LOOT_PER_ACTION * queueLength);
     for (uint i = 0; i < queueLength; ++i) {
       SkillInfo storage skillInfo = player.actionQueue[i];
       uint32 pointsAccured;
       uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
+      uint16 actionId = skillInfo.actionId;
+      uint16 elapsedTime;
       if (skillEndTime <= block.timestamp) {
         // Fully consume this skill
         pointsAccured = skillInfo.timespan;
+        elapsedTime = skillInfo.timespan;
       } else {
         // partially consume
-        uint40 elapsedTime = uint40(block.timestamp - skillInfo.startTime);
+        elapsedTime = uint16(block.timestamp - skillInfo.startTime);
         skillEndTime = uint40(block.timestamp);
-        pointsAccured = uint32(elapsedTime); // TODO: This should be based on something else
+        pointsAccured = elapsedTime; // TODO: This should be based on something else
         uint40 end = skillInfo.startTime + skillInfo.timespan;
         //        if (_discardRestOfQueue) {
         //    _skillPoints[_tokenId][skillInfo.skill] += pointsAccured; // Update this later, just base it on time elapsed
@@ -639,7 +643,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
         // Build a list of the skills queued that remain
         remainingSkills[length] = SkillInfo({
-          actionId: skillInfo.actionId,
+          actionId: actionId,
           startTime: uint40(block.timestamp),
           timespan: uint16(end - block.timestamp),
           itemEquipped: skillInfo.itemEquipped,
@@ -650,31 +654,66 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       }
 
       if (pointsAccured > 0) {
-        Skill skill = world.getSkill(skillInfo.actionId);
+        Skill skill = world.getSkill(actionId);
         skillPoints[_tokenId][skill] += pointsAccured; // Update this later, just base it on time elapsed
         emit AddSkillPoints(_tokenId, skill, pointsAccured);
 
-        // What about loot, this gets pushed into the next day if there's no seed
-        bool hasSeed = world.hasSeed(skillEndTime);
-        if (!hasSeed) {
-          // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
-          // TODO: Some won't have loot (add it to action?)
-          pendingLoot.push(PendingLoot({actionId: skillInfo.actionId, timestamp: skillEndTime}));
-
-          if (skill == Skill.WOODCUTTING) {
-            itemNFT.mint(_from, BRONZE_PICKAXE, 1);
+        (ActionReward[] memory dropRewards, ActionLoot[] memory lootChances) = world.getDropAndLoot(actionId);
+        // Guarenteed drops
+        for (uint j; j < dropRewards.length; ++j) {
+          uint num = (uint(elapsedTime) * dropRewards[j].rate) / (3600 * 100);
+          if (num > 0) {
+            ids[lootLength] = dropRewards[j].itemTokenId;
+            amounts[lootLength] = num;
+            ++lootLength;
           }
-        } else {
-          // Mint loot (TODO Update this later)
-          uint seed = world.getSeed(skillEndTime);
-          uint tokenId = seed ^ ((skillInfo.actionId % 10) + 1);
-          uint amount = seed ^ ((skillInfo.actionId % 2) + 1);
-          itemNFT.mint(_from, tokenId, amount);
+        }
+
+        // Random chance loot
+        if (lootChances.length > 0) {
+          bool hasSeed = world.hasSeed(skillEndTime);
+          if (!hasSeed) {
+            // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
+            // TODO: Some won't have loot (add it to action?)
+            pendingLoot.push(PendingLoot({actionId: actionId, timestamp: skillEndTime, elapsedTime: elapsedTime}));
+          } else {
+            uint seed = world.getSeed(skillEndTime);
+
+            // Figure out how many chances they get (1 per hour spent)
+            uint numTickets = elapsedTime / 3600;
+
+            bytes32 randomComponent = bytes32(seed) ^ bytes20(_from);
+            for (uint j; j < numTickets; ++j) {
+              // Percentage out of 256
+              uint8 rand = uint8(uint256(randomComponent >> (j * 8)));
+
+              // Take each byte and check
+              for (uint k; k < lootChances.length; ++k) {
+                ActionLoot memory potentialLoot = lootChances[k];
+                if (rand < potentialLoot.chance) {
+                  // Get the lowest chance one
+                  // Could probably collapse these if you can hit the same drops
+                  ids[lootLength] = potentialLoot.itemTokenId;
+                  amounts[lootLength] = 1;
+                  ++lootLength;
+                  break;
+                }
+              }
+            }
+          }
         }
 
         allPointsAccured += pointsAccured;
       }
     }
+
+    assembly ("memory-safe") {
+      mstore(ids, lootLength)
+      mstore(amounts, lootLength)
+    }
+
+    // Mint all items
+    itemNFT.mintBatch(_from, ids, amounts);
 
     if (allPointsAccured > 0) {
       // Check if they have levelled up

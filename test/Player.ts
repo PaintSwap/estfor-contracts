@@ -8,9 +8,11 @@ import {
   BRONZE_SWORD,
   COMBAT_BASE,
   COMBAT_MAX,
+  COPPER_ORE,
   createPlayer,
   EquipPosition,
   getActionId,
+  LOG,
   MINING_MAX,
   QueuedAction,
   Skill,
@@ -151,6 +153,8 @@ describe("Player", () => {
         itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
+        dropRewards: [],
+        lootChances: [],
       },
       actionIsAvailable
     );
@@ -197,6 +201,8 @@ describe("Player", () => {
         itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
+        dropRewards: [],
+        lootChances: [],
       },
       actionIsAvailable
     );
@@ -319,6 +325,7 @@ describe("Player", () => {
     it("Woodcutting", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
+      const rate = 100; // per hour
       const tx = await world.addAction(
         {
           skill: Skill.WOODCUTTING,
@@ -328,16 +335,19 @@ describe("Player", () => {
           itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
+          dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+          lootChances: [],
         },
         actionIsAvailable
       );
       const actionId = await getActionId(tx);
 
       await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      const timespan = 3600;
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.WOODCUTTING,
-        timespan: 100,
+        timespan: timespan,
         extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
       };
 
@@ -352,6 +362,8 @@ describe("Player", () => {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await playerNFT.connect(alice).consumeSkills(playerId);
       expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
     });
 
     it("Mining", async () => {
@@ -366,6 +378,8 @@ describe("Player", () => {
           itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: BRONZE_PICKAXE,
           itemTokenIdRangeMax: MINING_MAX,
+          dropRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
+          lootChances: [],
         },
         actionIsAvailable
       );

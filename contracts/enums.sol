@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates attack <-> magic
-  STRENGTH,
   ATTACK,
   DEFENCE,
   RANGED,
@@ -228,6 +227,24 @@ uint16 constant COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 // Farming
 uint16 constant BONEMEAL = 11264;
 
+// Mining
+uint16 constant ORE_BASE = 11520;
+uint16 constant COPPER_ORE = ORE_BASE;
+uint16 constant TIN_ORE = ORE_BASE + 1;
+uint16 constant IRON_ORE = ORE_BASE + 2;
+uint16 constant SAPPHIRE_ORE = ORE_BASE + 3;
+uint16 constant COAL_ORE = ORE_BASE + 4;
+uint16 constant EMERALD_ORE = ORE_BASE + 5;
+uint16 constant MITHRIL_ORE = ORE_BASE + 6;
+uint16 constant RUBY_ORE = ORE_BASE + 7;
+uint16 constant ADAMANTINE_ORE = ORE_BASE + 8;
+uint16 constant AMETHYST_ORE = ORE_BASE + 9;
+uint16 constant DIAMOND_ORE = ORE_BASE + 10;
+uint16 constant RUNITE_ORE = ORE_BASE + 11;
+uint16 constant DRAGONSTONE_ORE = ORE_BASE + 12;
+uint16 constant TITANIUM_ORE = ORE_BASE + 13;
+uint16 constant ORCHALCUM_ORE = ORE_BASE + 14;
+
 // MISC
 uint16 constant MYSTERY_BOX = 65535;
 uint16 constant RAID_PASS = MYSTERY_BOX - 1;
@@ -252,3 +269,13 @@ Leaf Fragment
 Venom Pouch
 Bat Wing
 Lossuth Teeth */
+
+// Loot
+struct ActionReward {
+  uint16 itemTokenId;
+  uint16 rate; // num per hour, base 1000 (2 decimals)
+}
+struct ActionLoot {
+  uint16 itemTokenId;
+  uint8 chance; // change to get an item (out of 256)
+}
