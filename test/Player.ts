@@ -19,6 +19,8 @@ import {
   WOODCUTTING_MAX,
 } from "../scripts/utils";
 
+const actionIsAvailable = true;
+
 describe("Player", () => {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
@@ -140,19 +142,18 @@ describe("Player", () => {
 
     await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // No action added yet
 
-    const tx = await world.addAction({
-      skill: Skill.ATTACK,
-      baseXPPerHour: 10,
-      minSkillPoints: 0,
-      isDynamic: false,
-      itemPosition: EquipPosition.RIGHT_ARM,
-      itemTokenIdRangeMin: COMBAT_BASE,
-      itemTokenIdRangeMax: COMBAT_MAX,
-    });
-    const actionId = await getActionId(tx);
-    await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // Action not set to available yet
-
-    await world.setAvailable(actionId, true);
+    await world.addAction(
+      {
+        skill: Skill.ATTACK,
+        baseXPPerHour: 10,
+        minSkillPoints: 0,
+        isDynamic: false,
+        itemPosition: EquipPosition.RIGHT_ARM,
+        itemTokenIdRangeMin: COMBAT_BASE,
+        itemTokenIdRangeMax: COMBAT_MAX,
+      },
+      actionIsAvailable
+    );
 
     await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
     await ethers.provider.send("evm_increaseTime", [1]);
@@ -187,17 +188,18 @@ describe("Player", () => {
       "someIPFSURI.json"
     );
 
-    const tx = await world.addAction({
-      skill: Skill.ATTACK,
-      baseXPPerHour: 10,
-      minSkillPoints: 0,
-      isDynamic: false,
-      itemPosition: EquipPosition.RIGHT_ARM,
-      itemTokenIdRangeMin: COMBAT_BASE,
-      itemTokenIdRangeMax: COMBAT_MAX,
-    });
-    const actionId = await getActionId(tx);
-    await world.setAvailable(actionId, true);
+    await world.addAction(
+      {
+        skill: Skill.ATTACK,
+        baseXPPerHour: 10,
+        minSkillPoints: 0,
+        isDynamic: false,
+        itemPosition: EquipPosition.RIGHT_ARM,
+        itemTokenIdRangeMin: COMBAT_BASE,
+        itemTokenIdRangeMax: COMBAT_MAX,
+      },
+      actionIsAvailable
+    );
 
     const queuedAction: QueuedAction = {
       actionId: 1,
@@ -317,17 +319,19 @@ describe("Player", () => {
     it("Woodcutting", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-      const tx = await world.addAction({
-        skill: Skill.WOODCUTTING,
-        baseXPPerHour: 10,
-        minSkillPoints: 0,
-        isDynamic: false,
-        itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: BRONZE_AXE,
-        itemTokenIdRangeMax: WOODCUTTING_MAX,
-      });
+      const tx = await world.addAction(
+        {
+          skill: Skill.WOODCUTTING,
+          baseXPPerHour: 10,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemPosition: EquipPosition.RIGHT_ARM,
+          itemTokenIdRangeMin: BRONZE_AXE,
+          itemTokenIdRangeMax: WOODCUTTING_MAX,
+        },
+        actionIsAvailable
+      );
       const actionId = await getActionId(tx);
-      await world.setAvailable(actionId, true);
 
       await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
       const queuedAction: QueuedAction = {
@@ -353,18 +357,20 @@ describe("Player", () => {
     it("Mining", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-      const tx = await world.addAction({
-        skill: Skill.MINING,
-        baseXPPerHour: 10,
-        minSkillPoints: 0,
-        isDynamic: false,
-        itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: BRONZE_PICKAXE,
-        itemTokenIdRangeMax: MINING_MAX,
-      });
+      const tx = await world.addAction(
+        {
+          skill: Skill.MINING,
+          baseXPPerHour: 10,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemPosition: EquipPosition.RIGHT_ARM,
+          itemTokenIdRangeMin: BRONZE_PICKAXE,
+          itemTokenIdRangeMax: MINING_MAX,
+        },
+        actionIsAvailable
+      );
 
       const actionId = await getActionId(tx);
-      await world.setAvailable(actionId, true);
 
       await itemNFT.testMint(alice.address, BRONZE_PICKAXE, 1);
       const queuedAction: QueuedAction = {

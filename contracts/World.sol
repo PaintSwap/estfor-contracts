@@ -15,7 +15,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
 
-  event AddAction(uint actionId, ActionInfo actionInfo);
+  event AddAction(uint actionId, ActionInfo actionInfo, bool available);
   event EditAction(uint actionId, ActionInfo actionInfo);
 
   event SetAvailableAction(uint actionId, bool available);
@@ -165,9 +165,12 @@ contract World is VRFConsumerBaseV2, Ownable {
     return actions[_actionId].skill;
   }
 
-  function addAction(ActionInfo calldata _actionInfo) external onlyOwner {
-    _setAction(lastActionId, _actionInfo);
-    emit AddAction(lastActionId, _actionInfo);
+  function addAction(ActionInfo calldata _actionInfo, bool _available) external onlyOwner {
+    uint currentActionId = lastActionId;
+    _setAction(currentActionId, _actionInfo);
+    availableActions[currentActionId] = _available;
+    emit AddAction(currentActionId, _actionInfo, _available);
+    require(!_actionInfo.isDynamic, "Action is dynamic");
     ++lastActionId;
   }
 

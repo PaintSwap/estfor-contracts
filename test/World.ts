@@ -88,6 +88,7 @@ describe("World", () => {
   describe("Actions", () => {
     it("Add/Edit/Delete normal", async () => {
       const {world} = await loadFixture(deployContracts);
+      const actionAvailable = false;
       let tx = await world.addAction({
         skill: Skill.ATTACK,
         baseXPPerHour: 10,
@@ -96,7 +97,7 @@ describe("World", () => {
         itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
-      });
+      }, actionAvailable);
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
       await world.editAction(actionId, {
