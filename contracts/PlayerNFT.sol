@@ -32,7 +32,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     Skill actionType;
     uint40 startTime;
     uint16 timespan;
-    uint itemEquipped; // Sword, Bow, staff, fishing rod
+    uint16 itemEquipped; // Sword, Bow, staff, fishing rod
   }
 
   struct MeleeInfo {
@@ -62,14 +62,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   struct Player {
     Armour equipment; // Keep this first
     // These are stored in case individual items are changed later, but also prevents having to read them loads
-    Stats headBonus;
-    Stats necklaceBonus;
-    Stats bodyBonus;
-    Stats gauntletBonus;
-    Stats tassetsBonus;
-    Stats bootsBonus;
-    Stats spare1Bonus;
-    Stats spare2Bonus;
     // Base attributes
     Stats totalStats;
     SkillInfo[] actionQueue;
@@ -244,23 +236,27 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function _clearEquipment(address _from, uint _tokenId) private {
     Player storage player = players[_tokenId];
-    bytes32 equippedSlot;
-    assembly ("memory-safe") {
-      equippedSlot := sload(player.slot)
-    }
-
     // Unequip each item one by one
-    uint i = 0;
+    uint position = 0;
+    bytes32 empty;
     do {
-      uint8 equipmentTokenId = uint8(uint256(equippedSlot) >> (i * 8));
-      if (equipmentTokenId != NONE) {
-        users.unequip(_from, equipmentTokenId);
+      _unequip(_from, _tokenId, EquipPosition(position));
+      assembly ("memory-safe") {
+        // This trashes the combat bonus stats for each slot
+        let slotPosition := add(player.slot, add(position, 1))
+        sstore(slotPosition, empty)
       }
 
       unchecked {
-        ++i;
+        ++position;
       }
-    } while (i < 8);
+    } while (position < 8);
+
+    assembly ("memory-safe") {
+      // This trashes the combat bonuses for each slot
+      let slotPosition := player.slot
+      sstore(slotPosition, empty)
+    }
 
     emit RemoveAllEquipment(_tokenId);
     delete player.equipment;
@@ -280,43 +276,86 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     PlayerNFTLibrary.updatePlayerStats(_player.totalStats, _stats, _add);
   }
 
-  function _unequipMainItem(uint _tokenId, uint16 _equippedTokenId, EquipPosition _position) private {
+  function _unequipMainItem(address _from, uint _tokenId, uint16 _equippedTokenId, EquipPosition _position) private {
     Player storage player = players[_tokenId];
 
-    // Unequip current item and remove any bonuses
-    Stats memory itemStats;
-    assembly ("memory-safe") {
-      let slotPosition := add(player.slot, mul(add(_position, 1), 32))
-      let val := sload(slotPosition)
-      itemStats := mload(0x40)
-      mstore(itemStats, val)
-    }
-
-    updatePlayerStats(player, itemStats, false);
-
-    users.unequip(msg.sender, _equippedTokenId);
-    emit Unequip(_tokenId, _equippedTokenId, itemStats, 1);
+    // Unequip current item and remove any stats given from the item
+    ItemStat memory itemStats = itemNFT.getItemStats(_equippedTokenId);
+    updatePlayerStats(player, itemStats.stats, false);
+    users.unequip(_from, _equippedTokenId);
+    emit Unequip(_tokenId, _equippedTokenId, itemStats.stats, 1);
   }
 
-  // function setEquipment ()
+  // Absolute setting of equipment
+  function setEquipment(uint _tokenId, uint16[] calldata _itemTokenIds) external isOwnerOfPlayer(_tokenId) {
+    Player storage player = players[_tokenId];
+    address from = msg.sender;
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+
+    // Unequip everything
+    for (uint position; position < 8; ++position) {
+      _unequip(from, _tokenId, EquipPosition(position));
+    }
+
+    // Equip necessary items
+    bytes32 val;
+    for (uint i; i < _itemTokenIds.length; ++i) {
+      uint16 itemTokenId = _itemTokenIds[i];
+
+      ItemStat memory itemStats = itemNFT.getItemStats(itemTokenId);
+      EquipPosition position = itemStats.equipPosition;
+      require(itemStats.exists);
+      require(uint8(position) < 8);
+      uint8 relativeItem = uint8(itemTokenId - (256 * uint8(position))); // Between 0 -> 256
+
+      assembly ("memory-safe") {
+        // Set the equipped item
+        val := or(val, shl(mul(position, 8), relativeItem))
+      }
+
+      Stats memory stats = itemStats.stats;
+      // This will check the user has enough balance inside
+      // TODO: Bulk add all these
+      updatePlayerStats(player, stats, true);
+      users.equip(from, itemTokenId);
+      emit Equip(_tokenId, itemTokenId, stats, 1);
+    }
+
+    // Now set the slot once
+    assembly ("memory-safe") {
+      sstore(player.slot, val)
+    }
+
+    if (remainingSkillQueue.length > 0) {
+      player.actionQueue = remainingSkillQueue;
+    }
+  }
+
+  function _getRelativeEquippedTokenId(
+    EquipPosition _position,
+    Player storage _player
+  ) private view returns (uint8 relativeEquippedTokenId) {
+    assembly ("memory-safe") {
+      let val := sload(_player.slot)
+      relativeEquippedTokenId := shr(mul(_position, 8), val)
+    }
+  }
 
   // Cannot be transferred while equipped.  Check if the NFT is being transferred and unequip from this user.
   // Replace old one
-  function equip(uint _tokenId, uint16 _item) external isOwnerOfPlayer(_tokenId) {
+  function equip(uint _tokenId, uint16 _itemTokenId) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
     SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
-
-    ItemStat memory itemStats = itemNFT.getItemStats(_item);
-    require(itemStats.exists);
+    ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
     EquipPosition position = itemStats.equipPosition;
+    require(itemStats.exists);
     require(uint8(position) < 8);
-    uint8 relativeItem = uint8(_item - (256 * uint8(position))); // Between 0 -> 256
-    uint8 relativeEquippedTokenId;
+    uint8 relativeEquippedTokenId = _getRelativeEquippedTokenId(position, player);
+
+    uint8 relativeItem = uint8(_itemTokenId - (256 * uint8(position))); // Between 0 -> 256
     assembly ("memory-safe") {
       let val := sload(player.slot)
-      relativeEquippedTokenId := shr(mul(position, 8), val)
-
       // Clear the byte position
       val := and(val, not(shl(mul(position, 8), 0xff)))
       // Now set it
@@ -325,49 +364,51 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
 
     uint16 equippedTokenId = relativeEquippedTokenId + (256 * uint8(position));
-    if (_item == equippedTokenId && relativeEquippedTokenId != NONE) {
+    if (_itemTokenId == equippedTokenId && relativeEquippedTokenId != NONE) {
       revert EquipSameItem();
     }
 
+    // Already something equipped there so unequip
     if (relativeEquippedTokenId != NONE) {
-      _unequipMainItem(_tokenId, equippedTokenId, position);
+      _unequipMainItem(msg.sender, _tokenId, equippedTokenId, position);
     }
 
+    Stats memory stats = itemStats.stats;
     // This will check the user has enough balance inside
-    updatePlayerStats(player, itemStats.stats, true);
-    users.equip(msg.sender, _item);
-    emit Equip(_tokenId, _item, itemStats.stats, 1);
+    updatePlayerStats(player, stats, true);
+    users.equip(msg.sender, _itemTokenId);
+    emit Equip(_tokenId, _itemTokenId, stats, 1);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
+    }
+  }
+
+  function _unequip(address _from, uint _tokenId, EquipPosition _position) private {
+    Player storage player = players[_tokenId];
+    uint8 relativeEquippedItemTokenId = _getRelativeEquippedTokenId(_position, player);
+    uint16 equippedItemTokenId = relativeEquippedItemTokenId + (256 * uint8(_position));
+    if (relativeEquippedItemTokenId != NONE) {
+      _unequipMainItem(_from, _tokenId, equippedItemTokenId, _position);
     }
   }
 
   function unequip(uint _tokenId, EquipPosition _position) external isOwnerOfPlayer(_tokenId) {
-    // This requires checking that we have it equipped
+    address from = msg.sender;
+    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    _unequip(from, _tokenId, _position);
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
-    uint8 relativeEquippedTokenId;
+    // Update the storage slot
     assembly ("memory-safe") {
       let val := sload(player.slot)
-      relativeEquippedTokenId := shr(mul(_position, 8), val)
+      // Clear the byte position
+      val := and(val, not(shl(mul(_position, 8), 0xff)))
     }
-    uint16 equippedTokenId = relativeEquippedTokenId + (256 * uint8(_position));
-    if (relativeEquippedTokenId == NONE) {
-      revert NotEquipped();
-    }
-
-    _unequipMainItem(_tokenId, equippedTokenId, _position);
-
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
     }
   }
-
-  //    function equipMany(uint256 _tokenIds) external {
-  // TODO:
-  //    }
 
   function _getEquipmentSlot(Player storage _player) private view returns (uint256 slot) {
     assembly ("memory-safe") {

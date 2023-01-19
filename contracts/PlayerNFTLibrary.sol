@@ -96,21 +96,19 @@ library PlayerNFTLibrary {
   }
 
   function getInitialStartingItems() external pure returns (uint[] memory itemNFTs, uint[] memory quantities) {
-    itemNFTs = new uint[](6);
+    itemNFTs = new uint[](5);
     itemNFTs[0] = BRONZE_SWORD;
     itemNFTs[1] = BRONZE_AXE;
     itemNFTs[2] = FIRE_LIGHTER;
     itemNFTs[3] = SMALL_NET;
-    itemNFTs[4] = BRONZE_AXE;
-    itemNFTs[5] = BRONZE_PICKAXE;
+    itemNFTs[4] = BRONZE_PICKAXE;
 
-    quantities = new uint[](6);
+    quantities = new uint[](5);
     quantities[0] = 1;
     quantities[1] = 1;
     quantities[2] = 1;
     quantities[3] = 1;
     quantities[4] = 1;
-    quantities[5] = 1;
   }
 
   function getLoot(
