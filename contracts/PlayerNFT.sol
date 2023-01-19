@@ -276,7 +276,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     PlayerNFTLibrary.updatePlayerStats(_player.totalStats, _stats, _add);
   }
 
-  function _unequipMainItem(address _from, uint _tokenId, uint16 _equippedTokenId, EquipPosition _position) private {
+  function _unequipMainItem(address _from, uint _tokenId, uint16 _equippedTokenId) private {
     Player storage player = players[_tokenId];
 
     // Unequip current item and remove any stats given from the item
@@ -370,7 +370,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     // Already something equipped there so unequip
     if (relativeEquippedTokenId != NONE) {
-      _unequipMainItem(msg.sender, _tokenId, equippedTokenId, position);
+      _unequipMainItem(msg.sender, _tokenId, equippedTokenId);
     }
 
     Stats memory stats = itemStats.stats;
@@ -389,7 +389,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint8 relativeEquippedItemTokenId = _getRelativeEquippedTokenId(_position, player);
     uint16 equippedItemTokenId = relativeEquippedItemTokenId + (256 * uint8(_position));
     if (relativeEquippedItemTokenId != NONE) {
-      _unequipMainItem(_from, _tokenId, equippedItemTokenId, _position);
+      _unequipMainItem(_from, _tokenId, equippedItemTokenId);
     }
   }
 
@@ -428,7 +428,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     Equipment[] extraEquipment; // Order should be arrows/magic last
   }
 
-  function _addToQueue(Player storage _player, QueuedAction calldata _queuedAction, uint _queuedActionId) private {
+  function _addToQueue(uint _tokenId, QueuedAction calldata _queuedAction, uint _queuedActionId) private {
+    Player storage _player = players[_tokenId];
     Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
     require(world.availableActions(_queuedAction.actionId));
     // Extra equipment should contain an item to equip
@@ -455,6 +456,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           numFood: food.numToEquip
         });
       }
+      users.equip(msg.sender, equipment.itemTokenId);
+      emit Equip(_tokenId, equipment.itemTokenId, itemStats.stats, equipment.numToEquip);
     }
 
     require(itemEquipped > 0);
@@ -508,7 +511,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       player.actionQueue = remainingSkillQueue;
     }
 
-    _addToQueue(player, _queuedAction, queuedActionId);
+    _addToQueue(_tokenId, _queuedAction, queuedActionId);
     ++queuedActionId;
   }
 
@@ -538,7 +541,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint currentQueuedActionId = queuedActionId;
     do {
       QueuedAction calldata queuedAction = _queuedActions[i];
-      _addToQueue(player, queuedAction, currentQueuedActionId);
+      _addToQueue(_tokenId, queuedAction, currentQueuedActionId);
       unchecked {
         ++i;
         ++currentQueuedActionId;
@@ -696,6 +699,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         lootLength += newIds.length;
 
         allPointsAccured += pointsAccured;
+      }
+
+      if (elapsedTime == skillInfo.timespan) {
+        // Fully consume this skill so unequip w.e we had equiped
+        // TODO: This would also remove it if you had same action queued up later though
+        ItemStat memory itemStats = itemNFT.getItemStats(skillInfo.itemEquipped); // Sword, Bow, staff, fishing rod
+        users.unequip(_from, skillInfo.itemEquipped);
+        emit Unequip(_tokenId, skillInfo.itemEquipped, itemStats.stats, 1);
       }
     }
 

@@ -6,6 +6,7 @@ import {
   BRONZE_GAUNTLETS,
   BRONZE_PICKAXE,
   BRONZE_SWORD,
+  BRONZE_TASSETS,
   COMBAT_BASE,
   COMBAT_MAX,
   COPPER_ORE,
@@ -84,7 +85,6 @@ describe("Player", () => {
   }
 
   it("Equip", async () => {
-    const {} = await loadFixture(deployContracts);
     const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
 
     await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // item doesn't exist yet
@@ -105,6 +105,98 @@ describe("Player", () => {
     await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // Don't own any
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
     await playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
+  });
+
+  it("Unequip", async () => {
+    const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
+
+    const stats: Stats = {
+      attack: 2,
+      magic: 0,
+      range: 0,
+      meleeDefence: -1,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 12,
+    };
+    await itemNFT.addItem(
+      BRONZE_GAUNTLETS,
+      {stats, equipPosition: EquipPosition.ARMS, exists: true},
+      "someIPFSURI.json"
+    );
+
+    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
+
+    {
+      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      expect(afterStats.attack).to.eq(2);
+      expect(afterStats.meleeDefence).to.eq(-1);
+    }
+    // Remove a piece of equipment and check the stats are appropriately updated
+    await playerNFT.connect(alice).unequip(playerId, EquipPosition.ARMS);
+    {
+      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      expect(afterStats.attack).to.eq(0);
+      expect(afterStats.meleeDefence).to.eq(0);
+    }
+  });
+
+  it("SetEquipment", async () => {
+    const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
+
+    await expect(playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // items don't exist yet
+    {
+      const stats: Stats = {
+        attack: 2,
+        magic: 0,
+        range: 0,
+        meleeDefence: -1,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 12,
+      };
+      await itemNFT.addItem(
+        BRONZE_GAUNTLETS,
+        {stats, equipPosition: EquipPosition.ARMS, exists: true},
+        "someIPFSURI.json"
+      );
+    }
+    {
+      const stats: Stats = {
+        attack: 0,
+        magic: 0,
+        range: 0,
+        meleeDefence: 10,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 0,
+      };
+      await itemNFT.addItem(
+        BRONZE_TASSETS,
+        {stats, equipPosition: EquipPosition.LEGS, exists: true},
+        "someIPFSURI.json"
+      );
+    }
+
+    await expect(playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // Don't own any
+    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await itemNFT.testMint(alice.address, BRONZE_TASSETS, 1);
+    await playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS]);
+
+    // Check they are both equipped (and stats?)
+    {
+      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      expect(afterStats.attack).to.eq(2);
+      expect(afterStats.meleeDefence).to.eq(9);
+    }
+    // Remove a piece of equipment and check the stats are appropriately updated
+    await playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS]);
+    {
+      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      expect(afterStats.attack).to.eq(2);
+      expect(afterStats.meleeDefence).to.eq(-1);
+    }
   });
 
   it("Skill points", async () => {
@@ -225,12 +317,12 @@ describe("Player", () => {
     // TODO:
   });
 
-  it("Equipment", async () => {
+  it("Equipment stats", async () => {
     const {playerId, playerNFT, itemNFT, users, alice} = await loadFixture(deployContracts);
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
     expect(await itemNFT.balanceOf(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
 
-    // Shield doesn't exist yet
+    // Gauntlet doesn't exist yet
     await expect(playerNFT.equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
 
     const stats: Stats = {
@@ -407,7 +499,11 @@ describe("Player", () => {
       expect(await playerNFT.skillPoints(playerId, Skill.MINING)).to.eq(queuedAction.timespan);
     });
 
-    // Rest of the actions
+    // TODO Rest of the actions
+
+    it("Action pipelining", async () => {
+      // Try wood cut, and then burning them when having none equipped
+    });
   });
 
   /*
