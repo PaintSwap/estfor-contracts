@@ -284,7 +284,7 @@ export enum EquipPosition {
   RIGHT_ARM,
   ARROW_SATCHEL,
   MAGIC_BAG,
-  FOOD,
+  AUX,
   NONE,
 }
 

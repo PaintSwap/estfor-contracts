@@ -56,9 +56,11 @@ contract World is VRFConsumerBaseV2, Ownable {
     uint32 minSkillPoints;
     bool isDynamic;
     // If a specific item is required in the right arm
-    EquipPosition itemPosition;
+    EquipPosition itemPosition; // TODO: Is this strictly required? seems always right atm
     uint16 itemTokenIdRangeMin; // Inclusive
     uint16 itemTokenIdRangeMax; // Inclusive
+    uint16 auxItemTokenIdRangeMin;
+    uint16 auxItemTokenIdRangeMax;
     // Possible loot and percentage
     ActionReward[] dropRewards;
     ActionLoot[] lootChances;
@@ -78,7 +80,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   function requestSeedUpdate() external returns (uint256 requestId) {
     // Last one has not been fulfilled yet
     if (requestIds.length > 0) {
-      require(requestIds[requestIds.length - 1] != 0);
+      require(requestIds[requestIds.length - 1] != 0, "Seed can't be updated");
     }
 
     require(lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME <= block.timestamp, "Can only request after 1 day has passed");
@@ -120,7 +122,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   function getSeed(uint timestamp) public view returns (uint seed) {
     uint offset = (timestamp - startTime) / MIN_SEED_UPDATE_TIME;
     seed = randomWords[requestIds[offset - 1]];
-    require(seed > 0);
+    require(seed > 0, "No valid seed");
   }
 
   function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {
@@ -172,6 +174,30 @@ contract World is VRFConsumerBaseV2, Ownable {
   function getDropAndLoot(uint _actionId) external view returns (ActionReward[] memory, ActionLoot[] memory) {
     return (actions[_actionId].dropRewards, actions[_actionId].lootChances);
   }
+
+  function getPermissibleItemsForAction(
+    uint _actionId
+  )
+    external
+    view
+    returns (
+      uint16 itemTokenIdRangeMin,
+      uint16 itemTokenIdRangeMax,
+      uint16 auxItemTokenIdRangeMin,
+      uint16 auxItemTokenIdRangeMax
+    )
+  {
+    ActionInfo storage actionInfo = actions[_actionId];
+    return (
+      actionInfo.itemTokenIdRangeMin,
+      actionInfo.itemTokenIdRangeMax,
+      actionInfo.auxItemTokenIdRangeMin,
+      actionInfo.auxItemTokenIdRangeMax
+    );
+  }
+
+  // TODO bulk  function addActions() external onlyOwner {
+  //  }
 
   function addAction(ActionInfo calldata _actionInfo, bool _available) external onlyOwner {
     uint currentActionId = lastActionId;

@@ -14,10 +14,11 @@ enum EquipPosition {
   RIGHT_ARM,
   ARROW_SATCHEL,
   MAGIC_BAG,
-  FOOD,
+  AUX, // wood, seeds, food etc..
   NONE
 }
 
+// CombatStats
 struct Stats {
   int8 attack;
   int8 magic;

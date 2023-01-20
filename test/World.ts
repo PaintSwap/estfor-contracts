@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {COMBAT_BASE, COMBAT_MAX, EquipPosition, getActionId, Skill} from "../scripts/utils";
+import {COMBAT_BASE, COMBAT_MAX, EquipPosition, getActionId, NONE, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -89,15 +89,22 @@ describe("World", () => {
     it("Add/Edit/Delete normal", async () => {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
-      let tx = await world.addAction({
-        skill: Skill.ATTACK,
-        baseXPPerHour: 10,
-        minSkillPoints: 0,
-        isDynamic: false,
-        itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: COMBAT_BASE,
-        itemTokenIdRangeMax: COMBAT_MAX,
-      }, actionAvailable);
+      let tx = await world.addAction(
+        {
+          skill: Skill.ATTACK,
+          baseXPPerHour: 10,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemPosition: EquipPosition.RIGHT_ARM,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          dropRewards: [],
+          lootChances: [],
+        },
+        actionAvailable
+      );
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
       await world.editAction(actionId, {
@@ -108,6 +115,10 @@ describe("World", () => {
         itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
+        auxItemTokenIdRangeMin: NONE,
+        auxItemTokenIdRangeMax: NONE,
+        dropRewards: [],
+        lootChances: [],
       });
       expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
       expect(await world.availableActions(actionId)).to.be.false;
@@ -125,6 +136,10 @@ describe("World", () => {
         itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
+        auxItemTokenIdRangeMin: NONE,
+        auxItemTokenIdRangeMax: NONE,
+        dropRewards: [],
+        lootChances: [],
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });

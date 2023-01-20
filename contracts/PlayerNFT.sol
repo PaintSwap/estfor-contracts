@@ -33,26 +33,21 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint40 startTime;
     uint16 timespan;
     uint16 itemEquipped; // Sword, Bow, staff, fishing rod
+    Equipment auxEquipment; // wood, food etc..
   }
 
   struct MeleeInfo {
     uint16 otherItem; // Shield, or nothing if 2 handed, token id
-    uint16 food;
-    uint16 numFood;
   }
 
   struct RangedInfo {
     uint16 arrows; // item token id
     uint8 numEquipped; // Number of arrows, number of lobsters etc..
-    uint16 food; // item token id
-    uint16 numFood;
   }
 
   struct MagicInfo {
     // All the different runes used
     uint8 numAirRunes;
-    uint16 food; // item token id
-    uint16 numFood;
   }
 
   IBrushToken immutable brush;
@@ -183,7 +178,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    require(_exists(_tokenId));
+    require(_exists(_tokenId), "No uri");
     Player storage player = players[_tokenId];
     AvatarInfo storage avatarInfo = avatars[tokenIdToAvatar[_tokenId]];
     bytes memory imageURI = abi.encodePacked(baseURI, avatarInfo.imageURI);
@@ -304,8 +299,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
       ItemStat memory itemStats = itemNFT.getItemStats(itemTokenId);
       EquipPosition position = itemStats.equipPosition;
-      require(itemStats.exists);
-      require(uint8(position) < 8);
+      require(itemStats.exists, "Item doesn't exist");
+      require(uint8(position) < 8, "Incorrect equip position");
       uint8 relativeItem = uint8(itemTokenId - (256 * uint8(position))); // Between 0 -> 256
 
       assembly ("memory-safe") {
@@ -349,8 +344,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
     ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
     EquipPosition position = itemStats.equipPosition;
-    require(itemStats.exists);
-    require(uint8(position) < 8);
+    require(itemStats.exists, "Item doesn't exist");
+    require(uint8(position) < 8, "Incorrect equip position");
     uint8 relativeEquippedTokenId = _getRelativeEquippedTokenId(position, player);
 
     uint8 relativeItem = uint8(_itemTokenId - (256 * uint8(position))); // Between 0 -> 256
@@ -431,42 +426,55 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function _addToQueue(uint _tokenId, QueuedAction calldata _queuedAction, uint _queuedActionId) private {
     Player storage _player = players[_tokenId];
     Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
-    require(world.availableActions(_queuedAction.actionId));
+
+    (
+      uint16 itemTokenIdRangeMin,
+      uint16 itemTokenIdRangeMax,
+      uint16 auxItemTokenIdRangeMin,
+      uint16 auxItemTokenIdRangeMax
+    ) = world.getPermissibleItemsForAction(_queuedAction.actionId);
+
+    require(world.availableActions(_queuedAction.actionId), "Action is not available");
+
     // Extra equipment should contain an item to equip
     uint16 itemEquipped;
     uint16 otherItemEquipped;
-    Equipment memory food; // item token id
+    Equipment memory auxEquipment; // item token id
     for (uint i; i < _queuedAction.extraEquipment.length; ++i) {
       Equipment calldata equipment = _queuedAction.extraEquipment[i];
 
       ItemStat memory itemStats = itemNFT.getItemStats(equipment.itemTokenId);
-      require(itemStats.exists);
+      require(itemStats.exists, "Item doesn't exist");
       if (itemStats.equipPosition == EquipPosition.RIGHT_ARM) {
         itemEquipped = equipment.itemTokenId;
       } else if (itemStats.equipPosition == EquipPosition.LEFT_ARM) {
         // Shield
         otherItemEquipped = equipment.itemTokenId;
-      } else if (itemStats.equipPosition == EquipPosition.FOOD) {
-        food = equipment;
       } else if (itemStats.equipPosition == EquipPosition.ARROW_SATCHEL) {
         rangedQueuedActions[_queuedActionId] = RangedInfo({
           arrows: equipment.itemTokenId,
-          numEquipped: equipment.numToEquip,
-          food: food.itemTokenId,
-          numFood: food.numToEquip
+          numEquipped: equipment.numToEquip
         });
+      } else if (itemStats.equipPosition == EquipPosition.AUX) {
+        // wood for burning, seeds
+        auxEquipment = equipment;
+        require(
+          equipment.itemTokenId >= auxItemTokenIdRangeMin && equipment.itemTokenId <= auxItemTokenIdRangeMax,
+          "Aux is not valid"
+        );
       }
-      users.equip(msg.sender, equipment.itemTokenId);
+      require(equipment.numToEquip > 0, "Trying to equip nothing");
+      // TODO If not right arm?
+      users.minorEquip(msg.sender, equipment.itemTokenId);
       emit Equip(_tokenId, equipment.itemTokenId, itemStats.stats, equipment.numToEquip);
     }
 
-    require(itemEquipped > 0);
+    require(itemEquipped > 0, "Item equipped doesn't exist");
+    require(itemEquipped >= itemTokenIdRangeMin && itemEquipped <= itemTokenIdRangeMax, "item equipped not within expected range");
 
     if (_queuedAction.skill == Skill.ATTACK || _queuedAction.skill == Skill.DEFENCE) {
       meleeQueuedActions[_queuedActionId] = MeleeInfo({
-        otherItem: otherItemEquipped,
-        food: food.itemTokenId,
-        numFood: food.numToEquip
+        otherItem: otherItemEquipped
       });
     }
 
@@ -476,10 +484,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         _queuedAction.skill == Skill.ATTACK ||
           _queuedAction.skill == Skill.DEFENCE ||
           _queuedAction.skill == Skill.MAGIC ||
-          _queuedAction.skill == Skill.RANGED
+          _queuedAction.skill == Skill.RANGED,
+        "Incorrect combat skill matching "
       );
     } else {
-      require(skill == _queuedAction.skill);
+      require(skill == _queuedAction.skill, "Non-combat skill doens't match");
     }
 
     _player.actionQueue.push(
@@ -488,6 +497,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         startTime: uint40(block.timestamp),
         timespan: _queuedAction.timespan,
         itemEquipped: itemEquipped,
+        auxEquipment: auxEquipment,
         actionType: _queuedAction.skill
       })
     );
@@ -501,13 +511,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     Player storage player = players[_tokenId];
     SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
 
-    require(_queuedAction.timespan <= MAX_TIME);
+    require(_queuedAction.timespan <= MAX_TIME, "Time is above max");
     if (_append) {
       uint totalTimeUsed;
       for (uint i = 0; i < remainingSkillQueue.length; ++i) {
         totalTimeUsed += remainingSkillQueue[i].timespan;
       }
-      require(totalTimeUsed + _queuedAction.timespan <= MAX_TIME);
+      require(totalTimeUsed + _queuedAction.timespan <= MAX_TIME, "Total time too high");
       player.actionQueue = remainingSkillQueue;
     }
 
@@ -525,7 +535,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       revert SkillsArrayZero();
     }
 
-    require(_queuedActions.length <= 3);
+    require(_queuedActions.length <= 3, "Too many queued up items");
 
     _consumeSkills(msg.sender, _tokenId);
 
@@ -549,7 +559,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       totalTimespan += queuedAction.timespan;
     } while (i < _queuedActions.length);
 
-    require(totalTimespan <= MAX_TIME);
+    require(totalTimespan <= MAX_TIME, "Total time is longer than max");
     queuedActionId = currentQueuedActionId;
   }
 
@@ -624,11 +634,16 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   uint private constant MAX_LOOT_PER_ACTION = 5;
+  mapping(uint => uint32) speedMultiplier; // player id => multiplier, 0 or 1 is diabled
+
+  function setSpeedMultiplier(uint _tokenId, uint8 multiplier) external {
+    // Disable for production code
+    speedMultiplier[_tokenId] = multiplier;
+  }
 
   function _consumeSkills(address _from, uint _tokenId) private returns (SkillInfo[] memory remainingSkills) {
     Player storage player = players[_tokenId];
-    uint queueLength = player.actionQueue.length;
-    if (queueLength == 0) {
+    if (player.actionQueue.length == 0) {
       // No actions remaining
       return remainingSkills;
     }
@@ -637,67 +652,57 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint previousSkillPoints = player.totalSkillPoints;
     uint32 allPointsAccured;
 
-    remainingSkills = new SkillInfo[](queueLength); // Max
+    remainingSkills = new SkillInfo[](player.actionQueue.length); // Max
     uint length;
-    uint lootLength;
-    // ids & amounts which will be used to batch mint once later
-    uint[] memory ids = new uint[](MAX_LOOT_PER_ACTION * queueLength);
-    uint[] memory amounts = new uint[](MAX_LOOT_PER_ACTION * queueLength);
-    for (uint i = 0; i < queueLength; ++i) {
+    for (uint i = 0; i < player.actionQueue.length; ++i) {
       SkillInfo storage skillInfo = player.actionQueue[i];
       uint32 pointsAccured;
       uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
-      uint16 actionId = skillInfo.actionId;
       uint16 elapsedTime;
       if (skillEndTime <= block.timestamp) {
         // Fully consume this skill
-        pointsAccured = skillInfo.timespan;
+        pointsAccured = speedMultiplier[_tokenId] == 0
+          ? skillInfo.timespan
+          : skillInfo.timespan * speedMultiplier[_tokenId];
         elapsedTime = skillInfo.timespan;
       } else {
         // partially consume
         elapsedTime = uint16(block.timestamp - skillInfo.startTime);
         skillEndTime = uint40(block.timestamp);
-        pointsAccured = elapsedTime; // TODO: This should be based on something else
+        pointsAccured = speedMultiplier[_tokenId] == 0 ? elapsedTime : elapsedTime * speedMultiplier[_tokenId];
+        //        pointsAccured = elapsedTime; // TODO: This should be based on something else
         uint40 end = skillInfo.startTime + skillInfo.timespan;
-        //        if (_discardRestOfQueue) {
-        //    _skillPoints[_tokenId][skillInfo.skill] += pointsAccured; // Update this later, just base it on time elapsed
-        //   emit AddSkillPoints(skillInfo.skill, pointsAccured);
-        //    length = 0;
-        //    break;
-        //  }
 
         // Build a list of the skills queued that remain
         remainingSkills[length] = SkillInfo({
-          actionId: actionId,
+          actionId: skillInfo.actionId,
           startTime: uint40(block.timestamp),
           timespan: uint16(end - block.timestamp),
           itemEquipped: skillInfo.itemEquipped,
-          actionType: skillInfo.actionType
+          actionType: skillInfo.actionType,
+          auxEquipment: skillInfo.auxEquipment
         });
 
         length = i + 1;
       }
 
       if (pointsAccured > 0) {
-        Skill skill = world.getSkill(actionId);
+        Skill skill = world.getSkill(skillInfo.actionId);
         skillPoints[_tokenId][skill] += pointsAccured; // Update this later, just base it on time elapsed
         emit AddSkillPoints(_tokenId, skill, pointsAccured);
 
         // Should just do the new ones
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerNFTLibrary.getLoot(
           _from,
-          actionId,
+          skillInfo.actionId,
           skillEndTime,
           elapsedTime,
           world,
           pendingLoot
         );
-        for (uint j = 0; j < newIds.length; ++j) {
-          ids[lootLength + j] = newIds[j];
-          amounts[lootLength + j] = newAmounts[j];
-        }
-        lootLength += newIds.length;
-
+        // This loot might be needed for a future task so mint now rather than later
+        // But this could be improved
+        itemNFT.mintBatch(_from, newIds, newAmounts);
         allPointsAccured += pointsAccured;
       }
 
@@ -707,16 +712,31 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         ItemStat memory itemStats = itemNFT.getItemStats(skillInfo.itemEquipped); // Sword, Bow, staff, fishing rod
         users.unequip(_from, skillInfo.itemEquipped);
         emit Unequip(_tokenId, skillInfo.itemEquipped, itemStats.stats, 1);
+      } else {
+        // TODO unequip some consumables like food
+      }
+
+      // Consumeables (burn rate), need to think about food
+      (ActionReward[] memory dropRewards, ActionLoot[] memory loot) = world.getDropAndLoot(skillInfo.actionId);
+      for (uint j; j < dropRewards.length; ++j) {
+        if (dropRewards[j].itemTokenId == NONE) {
+          // Unequip aux equipment
+          // BURN
+          uint burnNum = (uint(elapsedTime) * dropRewards[j].rate) / (3600 * 100);
+          //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
+          // Before burning, unequip
+          users.unequip(_from, skillInfo.auxEquipment.itemTokenId);
+          emit Unequip(
+            _tokenId,
+            skillInfo.auxEquipment.itemTokenId,
+            itemNFT.getItemStats(skillInfo.auxEquipment.itemTokenId).stats,
+            burnNum
+          );
+
+          itemNFT.burn(_from, skillInfo.auxEquipment.itemTokenId, burnNum);
+        }
       }
     }
-
-    assembly ("memory-safe") {
-      mstore(ids, lootLength)
-      mstore(amounts, lootLength)
-    }
-
-    // Mint all items
-    itemNFT.mintBatch(_from, ids, amounts);
 
     if (allPointsAccured > 0) {
       // Check if they have levelled up

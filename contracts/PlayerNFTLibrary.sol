@@ -127,6 +127,9 @@ library PlayerNFTLibrary {
 
     // Guarenteed drops
     for (uint i; i < dropRewards.length; ++i) {
+      if (dropRewards[i].itemTokenId == NONE) {
+        continue;
+      }
       uint num = (uint(elapsedTime) * dropRewards[i].rate) / (3600 * 100);
       if (num > 0) {
         ids[lootLength] = dropRewards[i].itemTokenId;

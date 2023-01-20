@@ -49,7 +49,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   modifier onlyPlayerNFT() {
-    require(playerNFT == msg.sender);
+    require(playerNFT == msg.sender, "Not player");
     _;
   }
 
@@ -86,7 +86,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
-    require(_tokenId < type(uint16).max);
+    require(_tokenId < type(uint16).max, "id too high");
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
       // Brand new item
@@ -105,7 +105,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   // Can't use Item[] array unfortunately so they don't support array casts
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
     for (uint i = 0; i < _ids.length; ++i) {
-      require(_ids[i] < type(uint16).max);
+      require(_ids[i] < type(uint16).max, "id too high");
       uint existingBalance = itemBalances[_ids[i]];
       if (existingBalance == 0) {
         // Brand new item
@@ -127,7 +127,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   function getItemStats(uint16 _item) external view returns (ItemStat memory) {
-    require(itemStats[_item].exists);
+    require(itemStats[_item].exists, "Item doesn't exist");
     return itemStats[_item];
   }
 
@@ -177,7 +177,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
       uint256 tokenId = _ids[i];
       // Transferring less than is equipped
       uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
-      require(balances[i] - unavailable >= _amounts[i]); // TODO:
+      require(balances[i] - unavailable >= _amounts[i], "Transferring more than you have equipped"); // TODO:
     } while (i > 0);
   }
 
@@ -248,6 +248,10 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
+  function burn(address _from, uint16 _tokenId, uint _quantity) external onlyPlayerNFT {
+    _burn(_from, _tokenId, _quantity);
+  }
+
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
@@ -285,7 +289,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     for (uint i; i < _itemTokenIds.length; ++i) {
       uint16 itemTokenId = _itemTokenIds[i];
       require(!itemStats[itemTokenId].exists, "This item was already added");
-      require(_itemStats[i].exists);
+      require(_itemStats[i].exists, "Item should exist");
       itemStats[itemTokenId] = _itemStats[i];
       tokenURIs[itemTokenId] = _metadataURIs[i];
     }
@@ -296,7 +300,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   // Or make it constants and redeploy the contracts
   function addItem(uint16 _tokenId, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
     require(!itemStats[_tokenId].exists, "This item was already added");
-    require(_itemStat.exists);
+    require(_itemStat.exists, "Item doesn't exist");
     itemStats[_tokenId] = _itemStat;
     tokenURIs[_tokenId] = _metadataURI;
     emit AddItem(_tokenId, _itemStat);
@@ -317,8 +321,8 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   function addShopItems(uint16[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
-    require(_tokenIds.length == _prices.length);
-    require(_tokenIds.length > 0);
+    require(_tokenIds.length == _prices.length, "Argument length mismatch");
+    require(_tokenIds.length > 0, "length empty");
     uint i;
     do {
       shopItems[_tokenIds[i]] = _prices[i];

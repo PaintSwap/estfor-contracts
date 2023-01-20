@@ -12,9 +12,14 @@ import {
   COPPER_ORE,
   createPlayer,
   EquipPosition,
+  FIRE_LIGHTER,
+  FIRE_MAX,
   getActionId,
   LOG,
+  LOG_BASE,
+  LOG_MAX,
   MINING_MAX,
+  NONE,
   QueuedAction,
   Skill,
   Stats,
@@ -245,6 +250,8 @@ describe("Player", () => {
         itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
+        auxItemTokenIdRangeMin: NONE,
+        auxItemTokenIdRangeMax: NONE,
         dropRewards: [],
         lootChances: [],
       },
@@ -293,6 +300,8 @@ describe("Player", () => {
         itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
+        auxItemTokenIdRangeMin: NONE,
+        auxItemTokenIdRangeMax: NONE,
         dropRewards: [],
         lootChances: [],
       },
@@ -427,6 +436,8 @@ describe("Player", () => {
           itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
           dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
           lootChances: [],
         },
@@ -458,6 +469,154 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
     });
 
+    it("Firemaking", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const rate = 100; // per hour
+
+      const tx = await world.addAction(
+        {
+          skill: Skill.FIREMAKING,
+          baseXPPerHour: 10,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemPosition: EquipPosition.RIGHT_ARM,
+          itemTokenIdRangeMin: FIRE_LIGHTER,
+          itemTokenIdRangeMax: FIRE_MAX,
+          auxItemTokenIdRangeMin: LOG_BASE,
+          auxItemTokenIdRangeMax: LOG_MAX,
+          dropRewards: [{itemTokenId: NONE, rate: rate * 100}], // burn rate 100.00
+          lootChances: [],
+        },
+        actionIsAvailable
+      );
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.FIREMAKING,
+        timespan: timespan,
+        extraEquipment: [
+          {itemTokenId: FIRE_LIGHTER, numToEquip: 1},
+          {itemTokenId: LOG, numToEquip: 255},
+        ],
+      };
+
+      await itemNFT.addItem(
+        FIRE_LIGHTER,
+        {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        "someIPFSURI.json"
+      );
+
+      await itemNFT.addItem(
+        LOG,
+        {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        "someIPFSURI.json"
+      );
+
+      //      await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // Doesn't have any logs
+      await itemNFT.testMint(alice.address, LOG, 255);
+      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedAction.timespan);
+
+      // Check how many logs they have now, 100 logs burnt per hour
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(255 - Math.floor((timespan * rate) / 3600));
+    });
+
+    it("Multi skill, woodcutting + firemaking", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const queuedActions: QueuedAction[] = [];
+      const rate = 100; // per hour
+      {
+        const tx = await world.addAction(
+          {
+            skill: Skill.WOODCUTTING,
+            baseXPPerHour: 10,
+            minSkillPoints: 0,
+            isDynamic: false,
+            itemPosition: EquipPosition.RIGHT_ARM,
+            itemTokenIdRangeMin: BRONZE_AXE,
+            itemTokenIdRangeMax: WOODCUTTING_MAX,
+            auxItemTokenIdRangeMin: NONE,
+            auxItemTokenIdRangeMax: NONE,
+            dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+            lootChances: [],
+          },
+          actionIsAvailable
+        );
+        const actionId = await getActionId(tx);
+        await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+        await itemNFT.addItem(
+          BRONZE_AXE,
+          {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+          "someIPFSURI.json"
+        );
+        const timespan = 7200;
+        queuedActions.push({
+          actionId,
+          skill: Skill.WOODCUTTING,
+          timespan,
+          extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
+        });
+      }
+      {
+        const tx = await world.addAction(
+          {
+            skill: Skill.FIREMAKING,
+            baseXPPerHour: 10,
+            minSkillPoints: 0,
+            isDynamic: false,
+            itemPosition: EquipPosition.RIGHT_ARM,
+            itemTokenIdRangeMin: FIRE_LIGHTER,
+            itemTokenIdRangeMax: FIRE_MAX,
+            auxItemTokenIdRangeMin: LOG_BASE,
+            auxItemTokenIdRangeMax: LOG_MAX,
+            dropRewards: [{itemTokenId: NONE, rate: rate * 100}], // burn rate 100.00
+            lootChances: [],
+          },
+          actionIsAvailable
+        );
+        const actionId = await getActionId(tx);
+        await itemNFT.testMint(alice.address, FIRE_LIGHTER, 1);
+        await itemNFT.addItem(
+          FIRE_LIGHTER,
+          {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+          "someIPFSURI.json"
+        );
+        const timespan = 3600;
+        queuedActions.push({
+          actionId,
+          skill: Skill.FIREMAKING,
+          timespan: timespan,
+          extraEquipment: [
+            {itemTokenId: FIRE_LIGHTER, numToEquip: 1},
+            {itemTokenId: LOG, numToEquip: 255},
+          ],
+        });
+      }
+
+      await itemNFT.addItem(
+        LOG,
+        {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        "someIPFSURI.json"
+      );
+
+      await playerNFT.connect(alice).multiskill(playerId, queuedActions);
+
+      // multi-skill queue
+      await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
+      expect(await playerNFT.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
+      // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
+        Math.floor((queuedActions[0].timespan * rate) / 3600) - Math.floor((queuedActions[1].timespan * rate) / 3600)
+      );
+    });
+
     it("Mining", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
@@ -470,6 +629,8 @@ describe("Player", () => {
           itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: BRONZE_PICKAXE,
           itemTokenIdRangeMax: MINING_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
           dropRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
           lootChances: [],
         },
