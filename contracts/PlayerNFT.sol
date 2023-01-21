@@ -677,39 +677,57 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
       uint16 elapsedTime;
 
-      uint8 auxNumToEquip1;
-      uint8 auxNumToEquip2;
-      uint8 auxNumToEquip3;
-
       uint16 xpPerHour = world.getXPPerHour(skillInfo.actionId, skillInfo.ioId, skillInfo.ioId > 0);
-
-      if (skillEndTime <= block.timestamp) {
+      bool consumeAll = skillEndTime <= block.timestamp;
+      if (consumeAll) {
         // Fully consume this skill
+        elapsedTime = skillInfo.timespan;
         pointsAccured = (uint32(skillInfo.timespan) * xpPerHour) / 3600;
         if (speedMultiplier[_tokenId] > 1) {
           pointsAccured *= speedMultiplier[_tokenId];
         }
-
-        elapsedTime = skillInfo.timespan;
-
-        auxNumToEquip1 = skillInfo.auxNumToEquip1;
-        auxNumToEquip2 = skillInfo.auxNumToEquip2;
-        auxNumToEquip3 = skillInfo.auxNumToEquip3;
       } else {
         // partially consume
         elapsedTime = uint16(block.timestamp - skillInfo.startTime);
         skillEndTime = uint40(block.timestamp);
-        pointsAccured = (elapsedTime * xpPerHour) / 3600;
+        pointsAccured = (uint32(elapsedTime) * xpPerHour) / 3600;
         if (speedMultiplier[_tokenId] > 1) {
           pointsAccured *= speedMultiplier[_tokenId];
         }
+      }
 
+      // TODO: Check the maximum that might be done
+      //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
+      //    if (inputTokenId1 > NONE) {
+
+      // Create some items if necessary (smithing ores to bars for instance)
+      uint16 numRemaining1;
+      uint16 numRemaining2;
+      uint16 numRemaining3;
+      if (skillInfo.ioId != 0) {
+        uint16 modifiedElapsedTime = speedMultiplier[_tokenId] > 1
+          ? elapsedTime * speedMultiplier[_tokenId]
+          : elapsedTime;
+
+        // This also unequips.
+        (numRemaining1, numRemaining2, numRemaining3) = PlayerNFTLibrary.processIO(
+          _from,
+          _tokenId,
+          skillInfo.actionId,
+          skillInfo.auxNumToEquip1,
+          skillInfo.auxNumToEquip2,
+          skillInfo.auxNumToEquip3,
+          skillInfo.ioId,
+          modifiedElapsedTime,
+          world,
+          itemNFT,
+          users,
+          consumeAll
+        );
+      }
+
+      if (skillEndTime > block.timestamp) {
         uint40 end = skillInfo.startTime + skillInfo.timespan;
-
-        // TODO: How many used, this should be a diff
-        auxNumToEquip1 = skillInfo.auxNumToEquip1;
-        auxNumToEquip2 = skillInfo.auxNumToEquip2;
-        auxNumToEquip3 = skillInfo.auxNumToEquip3;
 
         // Build a list of the skills queued that remain
         remainingSkills[length] = SkillInfo({
@@ -719,9 +737,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           itemEquipped: skillInfo.itemEquipped,
           actionType: skillInfo.actionType,
           ioId: skillInfo.ioId,
-          auxNumToEquip1: auxNumToEquip1,
-          auxNumToEquip2: auxNumToEquip2,
-          auxNumToEquip3: auxNumToEquip3
+          auxNumToEquip1: uint8(numRemaining1),
+          auxNumToEquip2: uint8(numRemaining2),
+          auxNumToEquip3: uint8(numRemaining3)
         });
 
         length = i + 1;
@@ -763,23 +781,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         } else {
           // TODO unequip some consumables like food
         }
-      }
-
-      // Create some items if necessary (smithing ores to bars for instance)
-      if (skillInfo.ioId != 0) {
-        PlayerNFTLibrary.processIO(
-          _from,
-          _tokenId,
-          skillInfo.actionId,
-          auxNumToEquip1,
-          auxNumToEquip2,
-          auxNumToEquip3,
-          skillInfo.ioId,
-          speedMultiplier[_tokenId] > 1 ? elapsedTime * speedMultiplier[_tokenId] : elapsedTime,
-          world,
-          itemNFT,
-          users
-        );
       }
     }
 

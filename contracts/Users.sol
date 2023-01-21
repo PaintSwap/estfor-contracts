@@ -41,7 +41,7 @@ contract Users is Ownable {
     numEquipped[_from][_itemTokenId] -= 1;
   }
 
-  function minorUnequip(address _from, uint16 _itemTokenId, uint8 _amount) external onlyPlayerNFT {
+  function minorUnequip(address _from, uint16 _itemTokenId, uint16 _amount) external onlyPlayerNFT {
     numEquipped[_from][_itemTokenId] -= _amount;
   }
 
