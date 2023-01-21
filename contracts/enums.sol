@@ -243,6 +243,7 @@ uint16 constant RUNITE_ORE = ORE_BASE + 11;
 uint16 constant DRAGONSTONE_ORE = ORE_BASE + 12;
 uint16 constant TITANIUM_ORE = ORE_BASE + 13;
 uint16 constant ORCHALCUM_ORE = ORE_BASE + 14;
+uint16 constant ORE_MAX = ORE_BASE + 255;
 
 // MISC
 uint16 constant MYSTERY_BOX = 65535;
@@ -269,6 +270,41 @@ Venom Pouch
 Bat Wing
 Lossuth Teeth */
 
+enum EquipPosition {
+  HEAD,
+  NECK,
+  BODY,
+  ARMS,
+  LEGS,
+  BOOTS,
+  SPARE1,
+  SPARE2,
+  LEFT_ARM,
+  RIGHT_ARM,
+  ARROW_SATCHEL,
+  MAGIC_BAG,
+  AUX, // wood, seeds, food etc..
+  NONE
+}
+
+// CombatStats
+struct Stats {
+  int8 attack;
+  int8 magic;
+  int8 range;
+  int8 meleeDefence;
+  int8 magicDefence;
+  int8 rangeDefence;
+  int8 health;
+  // Spare
+}
+
+struct ItemStat {
+  Stats stats;
+  EquipPosition equipPosition; // If for main equipment
+  bool exists;
+}
+
 // Loot
 struct ActionReward {
   uint16 itemTokenId;
@@ -282,4 +318,35 @@ struct PendingLoot {
   uint actionId;
   uint40 timestamp;
   uint16 elapsedTime;
+}
+struct Equipment {
+  uint16 itemTokenId;
+  uint8 numToEquip;
+}
+
+// This is effectively a ratio to produce 1 of outputTokenId
+struct NonCombat {
+  uint8 baseXPPerHour;
+  uint32 minSkillPoints;
+  uint16 inputTokenId1;
+  uint8 num1;
+  uint16 inputTokenId2;
+  uint8 num2;
+  uint16 inputTokenId3;
+  uint8 num3;
+  uint16 outputTokenId; // Always 1
+  uint16 rate; // rate of output produced per hour
+}
+
+struct ActionInfo {
+  Skill skill;
+  uint8 baseXPPerHour;
+  bool isAvailable;
+  bool isDynamic;
+  uint32 minSkillPoints;
+  // These are put here for efficiency even if not needed
+  uint16 itemTokenIdRangeMin; // Inclusive
+  uint16 itemTokenIdRangeMax; // Inclusive
+  uint16 auxItemTokenIdRangeMin; // arrows, food
+  uint16 auxItemTokenIdRangeMax;
 }

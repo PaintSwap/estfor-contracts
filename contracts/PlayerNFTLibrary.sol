@@ -3,11 +3,15 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "./enums.sol";
-import "./interfaces/ItemStat.sol";
 import "./World.sol";
+import "./ItemNFT.sol";
+import "./Users.sol";
 
 // Show all the player stats, return metadata json
 library PlayerNFTLibrary {
+  // Same as in PlayerNFT
+  event Unequip(uint tokenId, uint16 itemTokenId, Stats statChanges, uint amount);
+
   function uri(
     bytes32 name,
     mapping(Skill => uint32) storage skillPoints,
@@ -127,9 +131,6 @@ library PlayerNFTLibrary {
 
     // Guarenteed drops
     for (uint i; i < dropRewards.length; ++i) {
-      if (dropRewards[i].itemTokenId == NONE) {
-        continue;
-      }
       uint num = (uint(elapsedTime) * dropRewards[i].rate) / (3600 * 100);
       if (num > 0) {
         ids[lootLength] = dropRewards[i].itemTokenId;
@@ -190,6 +191,59 @@ library PlayerNFTLibrary {
     assembly ("memory-safe") {
       mstore(ids, lootLength)
       mstore(amounts, lootLength)
+    }
+  }
+
+  function processIO(
+    address _from,
+    uint _tokenId,
+    uint16 actionId,
+    uint8 auxNumToUnequip1,
+    uint8 auxNumToUnequip2,
+    uint8 auxNumToUnequip3,
+    uint16 ioId,
+    uint16 elapsedTime,
+    World world,
+    ItemNFT itemNFT,
+    Users users
+  ) external {
+    // Fetch the requirements for it
+    (
+      uint8 baseXPPerHour,
+      uint32 minSkillPoints,
+      uint16 inputTokenId1,
+      uint8 num1,
+      uint16 inputTokenId2,
+      uint8 num2,
+      uint16 inputTokenId3,
+      uint8 num3,
+      uint16 outputTokenId,
+      uint16 rate
+    ) = world.nonCombatCrafting(actionId, ioId);
+    uint8 numProduced = uint8((uint(elapsedTime) * rate) / (3600 * 100));
+    // TODO: Check the maximum that might be done
+    //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
+
+    if (inputTokenId1 > NONE) {
+      uint8 numBurn = numProduced * num1;
+      users.minorUnequip(_from, inputTokenId1, auxNumToUnequip1); // Should be the num attached
+      emit Unequip(_tokenId, inputTokenId1, itemNFT.getItemStats(inputTokenId1).stats, auxNumToUnequip1);
+      itemNFT.burn(_from, inputTokenId1, numBurn);
+    }
+    if (inputTokenId2 > NONE) {
+      uint8 numBurn = numProduced * num2;
+      users.minorUnequip(_from, inputTokenId2, auxNumToUnequip2);
+      emit Unequip(_tokenId, inputTokenId2, itemNFT.getItemStats(inputTokenId2).stats, auxNumToUnequip2);
+      itemNFT.burn(_from, inputTokenId2, numBurn);
+    }
+    if (inputTokenId3 > NONE) {
+      uint8 numBurn = numProduced * num3;
+      users.minorUnequip(_from, inputTokenId3, auxNumToUnequip3);
+      emit Unequip(_tokenId, inputTokenId3, itemNFT.getItemStats(inputTokenId3).stats, auxNumToUnequip3);
+      itemNFT.burn(_from, inputTokenId3, numBurn);
+    }
+    if (outputTokenId != NONE) {
+      itemNFT.mint(_from, outputTokenId, numProduced);
     }
   }
 }

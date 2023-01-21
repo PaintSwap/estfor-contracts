@@ -95,52 +95,57 @@ describe("World", () => {
           baseXPPerHour: 10,
           minSkillPoints: 0,
           isDynamic: false,
-          itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
-          dropRewards: [],
-          lootChances: [],
+          isAvailable: actionAvailable,
         },
-        actionAvailable
+        [],
+        []
       );
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
-      await world.editAction(actionId, {
-        skill: Skill.ATTACK,
-        baseXPPerHour: 20,
-        minSkillPoints: 0,
-        isDynamic: false,
-        itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: COMBAT_BASE,
-        itemTokenIdRangeMax: COMBAT_MAX,
-        auxItemTokenIdRangeMin: NONE,
-        auxItemTokenIdRangeMax: NONE,
-        dropRewards: [],
-        lootChances: [],
-      });
+      await world.editAction(
+        actionId,
+        {
+          skill: Skill.ATTACK,
+          baseXPPerHour: 20,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          isAvailable: actionAvailable,
+        },
+        [],
+        []
+      );
       expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
-      expect(await world.availableActions(actionId)).to.be.false;
+      expect((await world.actions(actionId)).isAvailable).to.be.false;
       await world.setAvailable(actionId, true);
-      expect(await world.availableActions(actionId)).to.be.true;
+      expect((await world.actions(actionId)).isAvailable).to.be.true;
       await world.setAvailable(actionId, false);
-      expect(await world.availableActions(actionId)).to.be.false;
+      expect((await world.actions(actionId)).isAvailable).to.be.false;
 
       // Set available on an action that is dynamic (this should be random only)
-      await world.editAction(actionId, {
-        skill: Skill.ATTACK,
-        baseXPPerHour: 20,
-        minSkillPoints: 0,
-        isDynamic: true,
-        itemPosition: EquipPosition.RIGHT_ARM,
-        itemTokenIdRangeMin: COMBAT_BASE,
-        itemTokenIdRangeMax: COMBAT_MAX,
-        auxItemTokenIdRangeMin: NONE,
-        auxItemTokenIdRangeMax: NONE,
-        dropRewards: [],
-        lootChances: [],
-      });
+      await world.editAction(
+        actionId,
+        {
+          skill: Skill.ATTACK,
+          baseXPPerHour: 20,
+          minSkillPoints: 0,
+          isDynamic: true,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          isAvailable: actionAvailable,
+        },
+        [],
+        []
+      );
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });
 

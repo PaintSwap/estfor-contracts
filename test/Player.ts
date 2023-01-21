@@ -7,6 +7,7 @@ import {
   BRONZE_PICKAXE,
   BRONZE_SWORD,
   BRONZE_TASSETS,
+  COAL_ORE,
   COMBAT_BASE,
   COMBAT_MAX,
   COPPER_ORE,
@@ -15,14 +16,20 @@ import {
   FIRE_LIGHTER,
   FIRE_MAX,
   getActionId,
+  getIOId,
   LOG,
   LOG_BASE,
   LOG_MAX,
   MINING_MAX,
+  MITHRIL_BAR,
+  MITHRIL_ORE,
   NONE,
+  ORE_BASE,
+  ORE_MAX,
   QueuedAction,
   Skill,
   Stats,
+  TIN_ORE,
   WOODCUTTING_BASE,
   WOODCUTTING_MAX,
 } from "../scripts/utils";
@@ -235,6 +242,7 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId: 1,
       skill: Skill.ATTACK,
+      ioId: 0,
       timespan: 100,
       extraEquipment: [{itemTokenId: BRONZE_SWORD, numToEquip: 1}],
     };
@@ -247,15 +255,14 @@ describe("Player", () => {
         baseXPPerHour: 10,
         minSkillPoints: 0,
         isDynamic: false,
-        itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
         auxItemTokenIdRangeMin: NONE,
         auxItemTokenIdRangeMax: NONE,
-        dropRewards: [],
-        lootChances: [],
+        isAvailable: actionIsAvailable,
       },
-      actionIsAvailable
+      [],
+      []
     );
 
     await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
@@ -297,20 +304,20 @@ describe("Player", () => {
         baseXPPerHour: 10,
         minSkillPoints: 0,
         isDynamic: false,
-        itemPosition: EquipPosition.RIGHT_ARM,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
         auxItemTokenIdRangeMin: NONE,
         auxItemTokenIdRangeMax: NONE,
-        dropRewards: [],
-        lootChances: [],
+        isAvailable: actionIsAvailable,
       },
-      actionIsAvailable
+      [],
+      []
     );
 
     const queuedAction: QueuedAction = {
       actionId: 1,
       skill: Skill.ATTACK,
+      ioId: 0,
       timespan: 100,
       extraEquipment: [{itemTokenId: BRONZE_SWORD, numToEquip: 1}],
     };
@@ -433,15 +440,14 @@ describe("Player", () => {
           baseXPPerHour: 10,
           minSkillPoints: 0,
           isDynamic: false,
-          itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
-          dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
-          lootChances: [],
+          isAvailable: actionIsAvailable,
         },
-        actionIsAvailable
+        [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+        []
       );
       const actionId = await getActionId(tx);
 
@@ -450,6 +456,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.WOODCUTTING,
+        ioId: 0,
         timespan: timespan,
         extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
       };
@@ -472,29 +479,43 @@ describe("Player", () => {
     it("Firemaking", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
       const rate = 100; // per hour
-
-      const tx = await world.addAction(
+      let tx = await world.addAction(
         {
           skill: Skill.FIREMAKING,
-          baseXPPerHour: 10,
+          baseXPPerHour: 0,
           minSkillPoints: 0,
           isDynamic: false,
-          itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: FIRE_LIGHTER,
           itemTokenIdRangeMax: FIRE_MAX,
           auxItemTokenIdRangeMin: LOG_BASE,
           auxItemTokenIdRangeMax: LOG_MAX,
-          dropRewards: [{itemTokenId: NONE, rate: rate * 100}], // burn rate 100.00
-          lootChances: [],
+          isAvailable: actionIsAvailable,
         },
-        actionIsAvailable
+        [],
+        []
       );
       const actionId = await getActionId(tx);
+
+      // Logs go in, nothing comes out
+      tx = await world.addIO(actionId, {
+        baseXPPerHour: 10,
+        minSkillPoints: 0,
+        rate: rate * 100,
+        inputTokenId1: LOG,
+        num1: 1,
+        inputTokenId2: NONE,
+        num2: 0,
+        inputTokenId3: NONE,
+        num3: 0,
+        outputTokenId: NONE,
+      });
+      const ioId = await getIOId(tx);
 
       const timespan = 3600;
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.FIREMAKING,
+        ioId,
         timespan: timespan,
         extraEquipment: [
           {itemTokenId: FIRE_LIGHTER, numToEquip: 1},
@@ -514,7 +535,6 @@ describe("Player", () => {
         "someIPFSURI.json"
       );
 
-      //      await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // Doesn't have any logs
       await itemNFT.testMint(alice.address, LOG, 255);
       await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
 
@@ -537,15 +557,14 @@ describe("Player", () => {
             baseXPPerHour: 10,
             minSkillPoints: 0,
             isDynamic: false,
-            itemPosition: EquipPosition.RIGHT_ARM,
             itemTokenIdRangeMin: BRONZE_AXE,
             itemTokenIdRangeMax: WOODCUTTING_MAX,
             auxItemTokenIdRangeMin: NONE,
             auxItemTokenIdRangeMax: NONE,
-            dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
-            lootChances: [],
+            isAvailable: actionIsAvailable,
           },
-          actionIsAvailable
+          [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+          []
         );
         const actionId = await getActionId(tx);
         await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
@@ -558,28 +577,44 @@ describe("Player", () => {
         queuedActions.push({
           actionId,
           skill: Skill.WOODCUTTING,
+          ioId: 0,
           timespan,
           extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
         });
       }
       {
-        const tx = await world.addAction(
+        let tx = await world.addAction(
           {
             skill: Skill.FIREMAKING,
-            baseXPPerHour: 10,
+            baseXPPerHour: 0,
             minSkillPoints: 0,
             isDynamic: false,
-            itemPosition: EquipPosition.RIGHT_ARM,
             itemTokenIdRangeMin: FIRE_LIGHTER,
             itemTokenIdRangeMax: FIRE_MAX,
             auxItemTokenIdRangeMin: LOG_BASE,
             auxItemTokenIdRangeMax: LOG_MAX,
-            dropRewards: [{itemTokenId: NONE, rate: rate * 100}], // burn rate 100.00
-            lootChances: [],
+            isAvailable: actionIsAvailable,
           },
-          actionIsAvailable
+          [],
+          []
         );
         const actionId = await getActionId(tx);
+
+        // Logs go in, nothing comes out
+        tx = await world.addIO(actionId, {
+          baseXPPerHour: 10,
+          minSkillPoints: 0,
+          rate: rate * 100,
+          inputTokenId1: LOG,
+          num1: 1,
+          inputTokenId2: NONE,
+          num2: 0,
+          inputTokenId3: NONE,
+          num3: 0,
+          outputTokenId: NONE,
+        });
+        const ioId = await getIOId(tx);
+
         await itemNFT.testMint(alice.address, FIRE_LIGHTER, 1);
         await itemNFT.addItem(
           FIRE_LIGHTER,
@@ -590,6 +625,7 @@ describe("Player", () => {
         queuedActions.push({
           actionId,
           skill: Skill.FIREMAKING,
+          ioId,
           timespan: timespan,
           extraEquipment: [
             {itemTokenId: FIRE_LIGHTER, numToEquip: 1},
@@ -626,15 +662,14 @@ describe("Player", () => {
           baseXPPerHour: 10,
           minSkillPoints: 0,
           isDynamic: false,
-          itemPosition: EquipPosition.RIGHT_ARM,
           itemTokenIdRangeMin: BRONZE_PICKAXE,
           itemTokenIdRangeMax: MINING_MAX,
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
-          dropRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
-          lootChances: [],
+          isAvailable: actionIsAvailable,
         },
-        actionIsAvailable
+        [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
+        []
       );
 
       const actionId = await getActionId(tx);
@@ -643,6 +678,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.MINING,
+        ioId: 0,
         timespan: 100,
         extraEquipment: [{itemTokenId: BRONZE_PICKAXE, numToEquip: 1}],
       };
@@ -658,6 +694,80 @@ describe("Player", () => {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await playerNFT.connect(alice).consumeSkills(playerId);
       expect(await playerNFT.skillPoints(playerId, Skill.MINING)).to.eq(queuedAction.timespan);
+    });
+
+    it("Smithing", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const rate = 100; // per hour
+
+      let tx = await world.addAction(
+        {
+          skill: Skill.SMITHING,
+          baseXPPerHour: 10,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: NONE,
+          itemTokenIdRangeMax: NONE,
+          auxItemTokenIdRangeMin:  ORE_BASE,
+          auxItemTokenIdRangeMax: ORE_MAX,
+          isAvailable: actionIsAvailable,
+        },
+        [],
+        []
+      );
+      const actionId = await getActionId(tx);
+
+        // Ores go in, bars come out
+        tx = await world.addIO(actionId, {
+          baseXPPerHour: 10,
+          minSkillPoints: 0,
+          rate: rate * 100,
+          inputTokenId1: COAL_ORE,
+          num1: 2,
+          inputTokenId2: MITHRIL_ORE,
+          num2: 1,
+          inputTokenId3: NONE,
+          num3: 0,
+          outputTokenId: MITHRIL_BAR,
+        });
+        const ioId = await getIOId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.SMITHING,
+        ioId,
+        timespan: timespan,
+        extraEquipment: [
+          {itemTokenId: COAL_ORE, numToEquip: 200},
+          {itemTokenId: MITHRIL_ORE, numToEquip: 100},
+        ],
+      };
+
+      await itemNFT.addItem(
+        COAL_ORE,
+        {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        "someIPFSURI.json"
+      );
+
+      await itemNFT.addItem(
+        MITHRIL_ORE,
+        {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        "someIPFSURI.json"
+      );
+
+      await itemNFT.testMint(alice.address, COAL_ORE, 255);
+      await itemNFT.testMint(alice.address, MITHRIL_ORE, 255);
+      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.SMITHING)).to.eq(queuedAction.timespan);
+
+      // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
+      expect(await itemNFT.balanceOf(alice.address, MITHRIL_BAR)).to.eq(Math.floor((timespan * rate) / 3600));
+      expect(await itemNFT.balanceOf(alice.address, COAL_ORE)).to.eq(255 - Math.floor((timespan * rate) / 3600) * 2);
+      expect(await itemNFT.balanceOf(alice.address, MITHRIL_ORE)).to.eq(255 - Math.floor((timespan * rate) / 3600));
     });
 
     // TODO Rest of the actions

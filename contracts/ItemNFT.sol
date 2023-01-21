@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
-import "./interfaces/ItemStat.sol";
 import "./interfaces/IBrushToken.sol";
 import "./World.sol";
 import "./Users.sol";

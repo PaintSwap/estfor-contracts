@@ -25,8 +25,8 @@ contract Users is Ownable {
     itemNFT = _itemNFT;
   }
 
-  function minorEquip(address _from, uint16 _itemTokenId) external onlyPlayerNFT {
-    numEquipped[_from][_itemTokenId] += 1;
+  function minorEquip(address _from, uint16 _itemTokenId, uint8 _amount) external onlyPlayerNFT {
+    numEquipped[_from][_itemTokenId] += _amount;
   }
 
   // This will revert if there is not enough free balance to equip
@@ -39,6 +39,10 @@ contract Users is Ownable {
 
   function unequip(address _from, uint _itemTokenId) external onlyPlayerNFT {
     numEquipped[_from][_itemTokenId] -= 1;
+  }
+
+  function minorUnequip(address _from, uint16 _itemTokenId, uint8 _amount) external onlyPlayerNFT {
+    numEquipped[_from][_itemTokenId] -= _amount;
   }
 
   function itemAmountUnavailable(address _from, uint _itemTokenId) external view returns (uint) {

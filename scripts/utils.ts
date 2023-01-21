@@ -245,6 +245,7 @@ export const RUNITE_ORE = ORE_BASE + 11;
 export const DRAGONSTONE_ORE = ORE_BASE + 12;
 export const TITANIUM_ORE = ORE_BASE + 13;
 export const ORCHALCUM_ORE = ORE_BASE + 14;
+export const ORE_MAX = ORE_BASE + 255;
 
 // MISC
 export const MYSTERY_BOX = 65535;
@@ -307,6 +308,7 @@ export type Equipment = {
 export type QueuedAction = {
   actionId: number;
   skill: Skill;
+  ioId: number;
   timespan: number;
   extraEquipment: Equipment[];
 };
@@ -331,4 +333,12 @@ export const getActionId = async (tx: ContractTransaction): Promise<number> => {
     return x.event == "AddAction";
   })[0].args;
   return event?.actionId.toNumber();
+};
+
+export const getIOId = async (tx: ContractTransaction): Promise<number> => {
+  const receipt = await tx.wait();
+  const event = receipt?.events?.filter((x) => {
+    return x.event == "AddIO";
+  })[0].args;
+  return event?.ioId.toNumber();
 };

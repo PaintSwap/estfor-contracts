@@ -5,7 +5,6 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "./enums.sol";
-import "./interfaces/ItemStat.sol";
 
 // Fantom VRF
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634
@@ -15,13 +14,16 @@ contract World is VRFConsumerBaseV2, Ownable {
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
 
-  event AddAction(uint actionId, ActionInfo actionInfo, bool available);
-  event EditAction(uint actionId, ActionInfo actionInfo);
+  event AddAction(uint actionId, ActionInfo actionInfo, ActionReward[] dropRewards, ActionLoot[] lootChances);
+  event EditAction(uint actionId, ActionInfo actionInfo, ActionReward[] dropRewards, ActionLoot[] lootChances);
 
   event SetAvailableAction(uint actionId, bool available);
 
   event AddDynamicActions(uint[] actionIds);
   event RemoveDynamicActions(uint[] actionIds);
+
+  event AddIO(uint actionId, uint ioId, NonCombat craftDetails);
+  event AddIOs(uint actionId, uint startIoId, NonCombat[] craftDetails);
 
   VRFCoordinatorV2Interface COORDINATOR;
 
@@ -50,27 +52,15 @@ contract World is VRFConsumerBaseV2, Ownable {
   uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
-  struct ActionInfo {
-    Skill skill;
-    uint8 baseXPPerHour;
-    uint32 minSkillPoints;
-    bool isDynamic;
-    // If a specific item is required in the right arm
-    EquipPosition itemPosition; // TODO: Is this strictly required? seems always right atm
-    uint16 itemTokenIdRangeMin; // Inclusive
-    uint16 itemTokenIdRangeMax; // Inclusive
-    uint16 auxItemTokenIdRangeMin;
-    uint16 auxItemTokenIdRangeMax;
-    // Possible loot and percentage
-    ActionReward[] dropRewards;
-    ActionLoot[] lootChances;
-  }
-
-  mapping(uint => ActionInfo) public actions; // action id => action info
+  mapping(uint => ActionInfo) public actions; // action id => base action info
   uint public lastActionId = 1;
-  mapping(uint => bool) public availableActions; // action id => available
+  uint public ioId = 1;
   uint[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
+
+  mapping(uint => mapping(uint => NonCombat)) public nonCombatCrafting; // action id => (craft id => craft details). Crafting isn't the skill but general
+  mapping(uint => ActionReward[]) dropRewards; // action id => dropRewards
+  mapping(uint => ActionLoot[]) lootChances; // action id => loot chances
 
   constructor(VRFCoordinatorV2Interface coordinator, uint64 _subscriptionId) VRFConsumerBaseV2(address(coordinator)) {
     COORDINATOR = coordinator;
@@ -125,12 +115,6 @@ contract World is VRFConsumerBaseV2, Ownable {
     require(seed > 0, "No valid seed");
   }
 
-  function _setAction(uint _actionId, ActionInfo calldata _actionInfo) private {
-    require(_actionInfo.itemTokenIdRangeMin <= _actionInfo.itemTokenIdRangeMax);
-    require(uint(_actionInfo.itemPosition) < 16);
-    actions[_actionId] = _actionInfo;
-  }
-
   // Can be called by anyone as long as over 1 day has passed since the last call
   function updateDynamicActions() external {
     require(
@@ -142,7 +126,7 @@ contract World is VRFConsumerBaseV2, Ownable {
 
     // These are no longer available as existing actions
     for (uint i = 0; i < lastAddedDynamicActions.length; ++i) {
-      delete availableActions[lastAddedDynamicActions[i]];
+      actions[lastAddedDynamicActions[i]].isAvailable = false;
     }
 
     delete lastAddedDynamicActions;
@@ -160,7 +144,7 @@ contract World is VRFConsumerBaseV2, Ownable {
     lastAddedDynamicActions = actionIdsToAdd;
 
     for (uint i; i < actionIdsToAdd.length; ++i) {
-      availableActions[actionIdsToAdd[i]] = true;
+      actions[actionIdsToAdd[i]].isAvailable = false;
     }
 
     lastDynamicUpdatedTime = block.timestamp;
@@ -172,7 +156,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   }
 
   function getDropAndLoot(uint _actionId) external view returns (ActionReward[] memory, ActionLoot[] memory) {
-    return (actions[_actionId].dropRewards, actions[_actionId].lootChances);
+    return (dropRewards[_actionId], lootChances[_actionId]);
   }
 
   function getPermissibleItemsForAction(
@@ -196,27 +180,95 @@ contract World is VRFConsumerBaseV2, Ownable {
     );
   }
 
-  // TODO bulk  function addActions() external onlyOwner {
-  //  }
+  function _setAction(
+    uint _actionId,
+    ActionInfo calldata _actionInfo,
+    ActionReward[] calldata _dropRewards,
+    ActionLoot[] calldata _lootChances
+  ) private {
+    require(_actionInfo.itemTokenIdRangeMin <= _actionInfo.itemTokenIdRangeMax);
+    actions[_actionId] = _actionInfo;
+    if (_dropRewards.length > 0) {
+      dropRewards[_actionId] = _dropRewards;
+    }
+    if (_lootChances.length > 0) {
+      lootChances[_actionId] = _lootChances;
+    }
+  }
 
-  function addAction(ActionInfo calldata _actionInfo, bool _available) external onlyOwner {
-    uint currentActionId = lastActionId;
-    _setAction(currentActionId, _actionInfo);
-    availableActions[currentActionId] = _available;
-    emit AddAction(currentActionId, _actionInfo, _available);
+  function _addAction(
+    ActionInfo calldata _actionInfo,
+    uint _actionId,
+    ActionReward[] calldata _dropRewards,
+    ActionLoot[] calldata _lootChances
+  ) private {
+    _setAction(_actionId, _actionInfo, _dropRewards, _lootChances);
+    emit AddAction(_actionId, _actionInfo, _dropRewards, _lootChances);
     require(!_actionInfo.isDynamic, "Action is dynamic");
+  }
+
+  function addActions(
+    ActionInfo[] calldata _actionInfos,
+    ActionReward[][] calldata _dropRewards,
+    ActionLoot[][] calldata _lootChances
+  ) external onlyOwner {
+    uint currentActionId = lastActionId;
+    for (uint i; i < _actionInfos.length; ++i) {
+      _addAction(_actionInfos[i], currentActionId + i, _dropRewards[i], _lootChances[i]);
+    }
+    lastActionId += _actionInfos.length;
+  }
+
+  function addAction(
+    ActionInfo calldata _actionInfo,
+    ActionReward[] calldata _dropRewards,
+    ActionLoot[] calldata _lootChances
+  ) external onlyOwner {
+    _addAction(_actionInfo, lastActionId, _dropRewards, _lootChances);
     ++lastActionId;
   }
 
-  function editAction(uint _actionId, ActionInfo calldata _actionInfo) external onlyOwner {
-    _setAction(_actionId, _actionInfo);
-    emit EditAction(_actionId, _actionInfo);
+  function editAction(
+    uint _actionId,
+    ActionInfo calldata _actionInfo,
+    ActionReward[] calldata _dropRewards,
+    ActionLoot[] calldata _lootChances
+  ) external onlyOwner {
+    _setAction(_actionId, _actionInfo, _dropRewards, _lootChances);
+    emit EditAction(_actionId, _actionInfo, _dropRewards, _lootChances);
   }
 
-  function setAvailable(uint _actionId, bool _available) external onlyOwner {
+  function addIO(uint _actionId, NonCombat calldata _craftDetails) external onlyOwner {
+    uint currentIoId = ioId;
+    nonCombatCrafting[_actionId][currentIoId] = _craftDetails;
+    emit AddIO(_actionId, currentIoId, _craftDetails);
+    ioId = currentIoId + 1;
+  }
+
+  function addIOs(uint _actionId, NonCombat[] calldata _craftingDetails) external onlyOwner {
+    require(_craftingDetails.length > 0);
+    uint currentIoId = ioId;
+    for (uint i; i < _craftingDetails.length; ++i) {
+      nonCombatCrafting[_actionId][currentIoId] = _craftingDetails[i];
+    }
+    emit AddIOs(_actionId, currentIoId, _craftingDetails);
+    ioId = currentIoId + _craftingDetails.length;
+  }
+
+  /*
+  function removeCrafting(uint _actionId, uint16 _craftId) external onlyOwner {
+  } */
+
+  // function addMagicAttack
+
+  function setAvailable(uint _actionId, bool _isAvailable) external onlyOwner {
     require(actions[_actionId].skill != Skill.NONE, "Action does not exist");
     require(!actions[_actionId].isDynamic, "Action is dynamic");
-    availableActions[_actionId] = _available;
-    emit SetAvailableAction(_actionId, _available);
+    actions[_actionId].isAvailable = _isAvailable;
+    emit SetAvailableAction(_actionId, _isAvailable);
+  }
+
+  function actionIsAvailable(uint _actionId) external view returns (bool) {
+    return actions[_actionId].isAvailable;
   }
 }

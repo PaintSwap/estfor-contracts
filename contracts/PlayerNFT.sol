@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
-import "./interfaces/ItemStat.sol";
 import "./interfaces/IBrushToken.sol";
 import "./World.sol";
 import "./enums.sol";
@@ -32,8 +31,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     Skill actionType;
     uint40 startTime;
     uint16 timespan;
+    uint16 ioId; // type of spell, bar to create with input/outputs
     uint16 itemEquipped; // Sword, Bow, staff, fishing rod
-    Equipment auxEquipment; // wood, food etc..
+    uint8 auxNumToEquip1;
+    uint8 auxNumToEquip2;
+    uint8 auxNumToEquip3;
+    // 136 bits up to here
   }
 
   struct MeleeInfo {
@@ -411,13 +414,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
   }
 
-  struct Equipment {
-    uint16 itemTokenId;
-    uint8 numToEquip;
-  }
-
   struct QueuedAction {
     uint16 actionId;
+    uint16 ioId;
     Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill
     uint16 timespan;
     Equipment[] extraEquipment; // Order should be arrows/magic last
@@ -434,12 +433,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint16 auxItemTokenIdRangeMax
     ) = world.getPermissibleItemsForAction(_queuedAction.actionId);
 
-    require(world.availableActions(_queuedAction.actionId), "Action is not available");
+    require(world.actionIsAvailable(_queuedAction.actionId), "Action is not available");
 
     // Extra equipment should contain an item to equip
     uint16 itemEquipped;
     uint16 otherItemEquipped;
-    Equipment memory auxEquipment; // item token id
+    uint auxLength;
+    Equipment[3] memory auxEquipment;
     for (uint i; i < _queuedAction.extraEquipment.length; ++i) {
       Equipment calldata equipment = _queuedAction.extraEquipment[i];
 
@@ -457,25 +457,39 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         });
       } else if (itemStats.equipPosition == EquipPosition.AUX) {
         // wood for burning, seeds
-        auxEquipment = equipment;
-        require(
-          equipment.itemTokenId >= auxItemTokenIdRangeMin && equipment.itemTokenId <= auxItemTokenIdRangeMax,
-          "Aux is not valid"
-        );
+        auxEquipment[auxLength] = equipment;
+        if (auxItemTokenIdRangeMin != NONE && auxItemTokenIdRangeMax != NONE) {
+          // Type of arrow for instance
+          require(
+            equipment.itemTokenId >= auxItemTokenIdRangeMin && equipment.itemTokenId <= auxItemTokenIdRangeMax,
+            "Aux is not valid"
+          );
+        } else {
+          // Check the combinations
+          // This is checked later too NonCombat memory nonCombatCraft = world.nonCombatCrafting(actionId, ioId);
+          // world.nonCombatCrafting()
+        }
+
+        ++auxLength;
       }
       require(equipment.numToEquip > 0, "Trying to equip nothing");
       // TODO If not right arm?
-      users.minorEquip(msg.sender, equipment.itemTokenId);
+      users.minorEquip(msg.sender, equipment.itemTokenId, equipment.numToEquip);
       emit Equip(_tokenId, equipment.itemTokenId, itemStats.stats, equipment.numToEquip);
     }
 
-    require(itemEquipped > 0, "Item equipped doesn't exist");
-    require(itemEquipped >= itemTokenIdRangeMin && itemEquipped <= itemTokenIdRangeMax, "item equipped not within expected range");
+    //    if (auxEquipment.length > 0) {
+    // Confirm they have all the required ones
+    //    }
+
+//    require(itemEquipped > 0, "Item equipped doesn't exist");
+    require(
+      itemEquipped >= itemTokenIdRangeMin && itemEquipped <= itemTokenIdRangeMax,
+      "item equipped not within expected range"
+    );
 
     if (_queuedAction.skill == Skill.ATTACK || _queuedAction.skill == Skill.DEFENCE) {
-      meleeQueuedActions[_queuedActionId] = MeleeInfo({
-        otherItem: otherItemEquipped
-      });
+      meleeQueuedActions[_queuedActionId] = MeleeInfo({otherItem: otherItemEquipped});
     }
 
     // Compare skill with queuedAction to make sure it is appropriate
@@ -497,7 +511,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         startTime: uint40(block.timestamp),
         timespan: _queuedAction.timespan,
         itemEquipped: itemEquipped,
-        auxEquipment: auxEquipment,
+        ioId: _queuedAction.ioId,
+        auxNumToEquip1: auxEquipment[0].numToEquip,
+        auxNumToEquip2: auxEquipment[1].numToEquip,
+        auxNumToEquip3: auxEquipment[2].numToEquip,
         actionType: _queuedAction.skill
       })
     );
@@ -659,19 +676,32 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint32 pointsAccured;
       uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
       uint16 elapsedTime;
+
+      uint8 auxNumToEquip1;
+      uint8 auxNumToEquip2;
+      uint8 auxNumToEquip3;
+
       if (skillEndTime <= block.timestamp) {
         // Fully consume this skill
         pointsAccured = speedMultiplier[_tokenId] == 0
           ? skillInfo.timespan
           : skillInfo.timespan * speedMultiplier[_tokenId];
         elapsedTime = skillInfo.timespan;
+
+        auxNumToEquip1 = skillInfo.auxNumToEquip1;
+        auxNumToEquip2 = skillInfo.auxNumToEquip2;
+        auxNumToEquip3 = skillInfo.auxNumToEquip3;
       } else {
         // partially consume
         elapsedTime = uint16(block.timestamp - skillInfo.startTime);
         skillEndTime = uint40(block.timestamp);
-        pointsAccured = speedMultiplier[_tokenId] == 0 ? elapsedTime : elapsedTime * speedMultiplier[_tokenId];
-        //        pointsAccured = elapsedTime; // TODO: This should be based on something else
+        pointsAccured = speedMultiplier[_tokenId] == 0 ? elapsedTime : elapsedTime * speedMultiplier[_tokenId]; // TODO: This should be based on something else
         uint40 end = skillInfo.startTime + skillInfo.timespan;
+
+        // TODO: How many used, this should be a diff
+        auxNumToEquip1 = skillInfo.auxNumToEquip1;
+        auxNumToEquip2 = skillInfo.auxNumToEquip2;
+        auxNumToEquip3 = skillInfo.auxNumToEquip3;
 
         // Build a list of the skills queued that remain
         remainingSkills[length] = SkillInfo({
@@ -680,7 +710,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           timespan: uint16(end - block.timestamp),
           itemEquipped: skillInfo.itemEquipped,
           actionType: skillInfo.actionType,
-          auxEquipment: skillInfo.auxEquipment
+          ioId: skillInfo.ioId,
+          auxNumToEquip1: auxNumToEquip1,
+          auxNumToEquip2: auxNumToEquip2,
+          auxNumToEquip3: auxNumToEquip3
         });
 
         length = i + 1;
@@ -706,35 +739,33 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         allPointsAccured += pointsAccured;
       }
 
-      if (elapsedTime == skillInfo.timespan) {
-        // Fully consume this skill so unequip w.e we had equiped
-        // TODO: This would also remove it if you had same action queued up later though
-        ItemStat memory itemStats = itemNFT.getItemStats(skillInfo.itemEquipped); // Sword, Bow, staff, fishing rod
-        users.unequip(_from, skillInfo.itemEquipped);
-        emit Unequip(_tokenId, skillInfo.itemEquipped, itemStats.stats, 1);
-      } else {
-        // TODO unequip some consumables like food
+      if (skillInfo.itemEquipped != NONE) {
+        if (elapsedTime == skillInfo.timespan) {
+          // Fully consume this skill so unequip w.e we had equiped
+          // TODO: This would also remove it if you had same action queued up later though
+          ItemStat memory itemStats = itemNFT.getItemStats(skillInfo.itemEquipped); // Sword, Bow, staff, fishing rod
+          users.unequip(_from, skillInfo.itemEquipped);
+          emit Unequip(_tokenId, skillInfo.itemEquipped, itemStats.stats, 1);
+        } else {
+          // TODO unequip some consumables like food
+        }
       }
 
-      // Consumeables (burn rate), need to think about food
-      (ActionReward[] memory dropRewards, ActionLoot[] memory loot) = world.getDropAndLoot(skillInfo.actionId);
-      for (uint j; j < dropRewards.length; ++j) {
-        if (dropRewards[j].itemTokenId == NONE) {
-          // Unequip aux equipment
-          // BURN
-          uint burnNum = (uint(elapsedTime) * dropRewards[j].rate) / (3600 * 100);
-          //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
-          // Before burning, unequip
-          users.unequip(_from, skillInfo.auxEquipment.itemTokenId);
-          emit Unequip(
-            _tokenId,
-            skillInfo.auxEquipment.itemTokenId,
-            itemNFT.getItemStats(skillInfo.auxEquipment.itemTokenId).stats,
-            burnNum
-          );
-
-          itemNFT.burn(_from, skillInfo.auxEquipment.itemTokenId, burnNum);
-        }
+      // Create some items if necessary (smithing ores to bars for instance)
+      if (skillInfo.ioId != 0) {
+        PlayerNFTLibrary.processIO(
+          _from,
+          _tokenId,
+          skillInfo.actionId,
+          auxNumToEquip1,
+          auxNumToEquip2,
+          auxNumToEquip3,
+          skillInfo.ioId,
+          elapsedTime,
+          world,
+          itemNFT,
+          users
+        );
       }
     }
 
