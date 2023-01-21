@@ -11,11 +11,17 @@ import "./enums.sol";
 // LINK token 0x6F43FF82CCA38001B6699a8AC47A2d0E66939407
 // PREMIUM 0.0005 LINK
 contract World is VRFConsumerBaseV2, Ownable {
+  struct Action {
+    ActionInfo info;
+    ActionReward[] dropRewards;
+    ActionLoot[] lootChances;
+  }
+
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
 
-  event AddAction(uint actionId, ActionInfo actionInfo, ActionReward[] dropRewards, ActionLoot[] lootChances);
-  event EditAction(uint actionId, ActionInfo actionInfo, ActionReward[] dropRewards, ActionLoot[] lootChances);
+  event AddAction(uint actionId, Action action);
+  event EditAction(uint actionId, Action action);
 
   event SetAvailableAction(uint actionId, bool available);
 
@@ -184,62 +190,39 @@ contract World is VRFConsumerBaseV2, Ownable {
     return fromIoId ? ios[_actionId][_ioId].baseXPPerHour : actions[_actionId].baseXPPerHour;
   }
 
-  function _setAction(
-    uint _actionId,
-    ActionInfo calldata _actionInfo,
-    ActionReward[] calldata _dropRewards,
-    ActionLoot[] calldata _lootChances
-  ) private {
-    require(_actionInfo.itemTokenIdRangeMin <= _actionInfo.itemTokenIdRangeMax);
-    actions[_actionId] = _actionInfo;
-    if (_dropRewards.length > 0) {
-      dropRewards[_actionId] = _dropRewards;
+  function _setAction(uint _actionId, Action calldata _action) private {
+    require(_action.info.itemTokenIdRangeMin <= _action.info.itemTokenIdRangeMax);
+    actions[_actionId] = _action.info;
+    if (_action.dropRewards.length > 0) {
+      dropRewards[_actionId] = _action.dropRewards;
     }
-    if (_lootChances.length > 0) {
-      lootChances[_actionId] = _lootChances;
+    if (_action.lootChances.length > 0) {
+      lootChances[_actionId] = _action.lootChances;
     }
   }
 
-  function _addAction(
-    ActionInfo calldata _actionInfo,
-    uint _actionId,
-    ActionReward[] calldata _dropRewards,
-    ActionLoot[] calldata _lootChances
-  ) private {
-    _setAction(_actionId, _actionInfo, _dropRewards, _lootChances);
-    emit AddAction(_actionId, _actionInfo, _dropRewards, _lootChances);
-    require(!_actionInfo.isDynamic, "Action is dynamic");
+  function _addAction(uint _actionId, Action calldata _action) private {
+    _setAction(_actionId, _action);
+    emit AddAction(_actionId, _action);
+    require(!_action.info.isDynamic, "Action is dynamic");
   }
 
-  function addActions(
-    ActionInfo[] calldata _actionInfos,
-    ActionReward[][] calldata _dropRewards,
-    ActionLoot[][] calldata _lootChances
-  ) external onlyOwner {
+  function addActions(Action[] calldata _actions) external onlyOwner {
     uint currentActionId = lastActionId;
-    for (uint i; i < _actionInfos.length; ++i) {
-      _addAction(_actionInfos[i], currentActionId + i, _dropRewards[i], _lootChances[i]);
+    for (uint i; i < _actions.length; ++i) {
+      _addAction(currentActionId + i, _actions[i]);
     }
-    lastActionId += _actionInfos.length;
+    lastActionId += _actions.length;
   }
 
-  function addAction(
-    ActionInfo calldata _actionInfo,
-    ActionReward[] calldata _dropRewards,
-    ActionLoot[] calldata _lootChances
-  ) external onlyOwner {
-    _addAction(_actionInfo, lastActionId, _dropRewards, _lootChances);
+  function addAction(Action calldata _action) external onlyOwner {
+    _addAction(lastActionId, _action);
     ++lastActionId;
   }
 
-  function editAction(
-    uint _actionId,
-    ActionInfo calldata _actionInfo,
-    ActionReward[] calldata _dropRewards,
-    ActionLoot[] calldata _lootChances
-  ) external onlyOwner {
-    _setAction(_actionId, _actionInfo, _dropRewards, _lootChances);
-    emit EditAction(_actionId, _actionInfo, _dropRewards, _lootChances);
+  function editAction(uint _actionId, Action calldata _action) external onlyOwner {
+    _setAction(_actionId, _action);
+    emit EditAction(_actionId, _action);
   }
 
   function addIO(uint _actionId, NonCombat calldata _craftDetails) external onlyOwner {

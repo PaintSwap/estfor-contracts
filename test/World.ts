@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {COMBAT_BASE, COMBAT_MAX, EquipPosition, getActionId, NONE, Skill} from "../scripts/utils";
+import {COMBAT_BASE, COMBAT_MAX, getActionId, NONE, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -89,8 +89,8 @@ describe("World", () => {
     it("Add/Edit/Delete normal", async () => {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
-      let tx = await world.addAction(
-        {
+      let tx = await world.addAction({
+        info: {
           skill: Skill.ATTACK,
           baseXPPerHour: 3600,
           minSkillPoints: 0,
@@ -101,14 +101,13 @@ describe("World", () => {
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionAvailable,
         },
-        [],
-        []
-      );
+        dropRewards: [],
+        lootChances: [],
+      });
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
-      await world.editAction(
-        actionId,
-        {
+      await world.editAction(actionId, {
+        info: {
           skill: Skill.ATTACK,
           baseXPPerHour: 20,
           minSkillPoints: 0,
@@ -119,9 +118,9 @@ describe("World", () => {
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionAvailable,
         },
-        [],
-        []
-      );
+        dropRewards: [],
+        lootChances: [],
+      });
       expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
       await world.setAvailable(actionId, true);
@@ -130,9 +129,8 @@ describe("World", () => {
       expect((await world.actions(actionId)).isAvailable).to.be.false;
 
       // Set available on an action that is dynamic (this should be random only)
-      await world.editAction(
-        actionId,
-        {
+      await world.editAction(actionId, {
+        info: {
           skill: Skill.ATTACK,
           baseXPPerHour: 3600,
           minSkillPoints: 0,
@@ -143,9 +141,9 @@ describe("World", () => {
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionAvailable,
         },
-        [],
-        []
-      );
+        dropRewards: [],
+        lootChances: [],
+      });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });
 

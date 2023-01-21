@@ -1,5 +1,6 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ContractTransaction, ethers} from "ethers";
+import {boolean} from "hardhat/internal/core/params/argumentTypes";
 import {PlayerNFT} from "../typechain-types";
 
 // Should match contract
@@ -342,3 +343,113 @@ export const getIOId = async (tx: ContractTransaction): Promise<number> => {
   })[0].args;
   return event?.ioId.toNumber();
 };
+
+// Items
+
+// Actions
+
+type ActionInfo = {
+  skill: Skill;
+  baseXPPerHour: number;
+  isAvailable: boolean;
+  isDynamic: boolean;
+  minSkillPoints: number;
+  itemTokenIdRangeMin: number;
+  itemTokenIdRangeMax: number;
+  auxItemTokenIdRangeMin: number;
+  auxItemTokenIdRangeMax: number;
+};
+
+type ActionReward = {
+  itemTokenId: number;
+  rate: number;
+};
+
+type ActionLoot = {
+  itemTokenId: number;
+  chance: number;
+};
+
+type Action = {
+  actionInfo: ActionInfo;
+  dropRewards: ActionReward[];
+  lootChances: ActionLoot[];
+};
+
+export const allActions: Action[] = [
+  {
+    actionInfo: {
+      skill: Skill.WOODCUTTING,
+      baseXPPerHour: 25,
+      minSkillPoints: 0,
+      isDynamic: false,
+      itemTokenIdRangeMin: BRONZE_AXE,
+      itemTokenIdRangeMax: WOODCUTTING_MAX,
+      auxItemTokenIdRangeMin: NONE,
+      auxItemTokenIdRangeMax: NONE,
+      isAvailable: true,
+    },
+    dropRewards: [{itemTokenId: LOG, rate: 1220 * 100}],
+    lootChances: [],
+  },
+  {
+    actionInfo: {
+      skill: Skill.FIREMAKING,
+      baseXPPerHour: 0, // Decided by the type of log burned
+      minSkillPoints: 0,
+      isDynamic: false,
+      itemTokenIdRangeMin: FIRE_LIGHTER,
+      itemTokenIdRangeMax: FIRE_MAX,
+      auxItemTokenIdRangeMin: LOG_BASE,
+      auxItemTokenIdRangeMax: LOG_MAX,
+      isAvailable: true,
+    },
+    dropRewards: [],
+    lootChances: [],
+  },
+  {
+    actionInfo: {
+      skill: Skill.MINING,
+      baseXPPerHour: 25,
+      minSkillPoints: 0,
+      isDynamic: false,
+      itemTokenIdRangeMin: BRONZE_PICKAXE,
+      itemTokenIdRangeMax: MINING_MAX,
+      auxItemTokenIdRangeMin: NONE,
+      auxItemTokenIdRangeMax: NONE,
+      isAvailable: true,
+    },
+    dropRewards: [{itemTokenId: COPPER_ORE, rate: 1220 * 100}],
+    lootChances: [],
+  },
+  {
+    actionInfo: {
+      skill: Skill.MINING,
+      baseXPPerHour: 35,
+      minSkillPoints: 274,
+      isDynamic: false,
+      itemTokenIdRangeMin: BRONZE_PICKAXE,
+      itemTokenIdRangeMax: MINING_MAX,
+      auxItemTokenIdRangeMin: NONE,
+      auxItemTokenIdRangeMax: NONE,
+      isAvailable: true,
+    },
+    dropRewards: [{itemTokenId: TIN_ORE, rate: 1220 * 100}],
+    lootChances: [],
+  },
+  {
+    actionInfo: {
+      skill: Skill.SMITHING,
+      baseXPPerHour: 0, // Decided by the ores smelted
+      minSkillPoints: 0,
+      isDynamic: false,
+      itemTokenIdRangeMin: NONE,
+      itemTokenIdRangeMax: NONE,
+      auxItemTokenIdRangeMin: ORE_BASE,
+      auxItemTokenIdRangeMax: ORE_MAX,
+      isAvailable: true,
+    },
+    dropRewards: [],
+    lootChances: [],
+  },
+];

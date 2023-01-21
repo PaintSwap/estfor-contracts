@@ -259,8 +259,8 @@ describe("Player", () => {
 
     await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // No action added yet
 
-    await world.addAction(
-      {
+    await world.addAction({
+      info: {
         skill: Skill.ATTACK,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
@@ -271,9 +271,9 @@ describe("Player", () => {
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
       },
-      [],
-      []
-    );
+      dropRewards: [],
+      lootChances: [],
+    });
 
     await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
     await ethers.provider.send("evm_increaseTime", [1]);
@@ -281,12 +281,12 @@ describe("Player", () => {
     expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([1, 2, 3]);
   });
 
-  it("Speed multiplier", async() => {
+  it("Speed multiplier", async () => {
     const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     const rate = 100; // per hour
-    const tx = await world.addAction(
-      {
+    const tx = await world.addAction({
+      info: {
         skill: Skill.WOODCUTTING,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
@@ -297,9 +297,9 @@ describe("Player", () => {
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
       },
-      [{itemTokenId: LOG, rate: rate * 100}], // 100.00
-      []
-    );
+      dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+      lootChances: [],
+    });
     const actionId = await getActionId(tx);
 
     await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
@@ -325,15 +325,15 @@ describe("Player", () => {
     await playerNFT.connect(alice).consumeSkills(playerId);
     expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan * 2);
     // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor(((queuedAction.timespan * 2) * rate) / 3600));
-  })
+    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((queuedAction.timespan * 2 * rate) / 3600));
+  });
 
   it("Partial consume aux items", async () => {
     const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     const rate = 100; // per hour
-    const tx = await world.addAction(
-      {
+    const tx = await world.addAction({
+      info: {
         skill: Skill.WOODCUTTING,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
@@ -344,9 +344,9 @@ describe("Player", () => {
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
       },
-      [{itemTokenId: LOG, rate: rate * 100}], // 100.00
-      []
-    );
+      dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+      lootChances: [],
+    });
     const actionId = await getActionId(tx);
 
     await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
@@ -401,8 +401,8 @@ describe("Player", () => {
       "someIPFSURI.json"
     );
 
-    await world.addAction(
-      {
+    await world.addAction({
+      info: {
         skill: Skill.ATTACK,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
@@ -413,9 +413,9 @@ describe("Player", () => {
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
       },
-      [],
-      []
-    );
+      dropRewards: [],
+      lootChances: [],
+    });
 
     const queuedAction: QueuedAction = {
       actionId: 1,
@@ -526,8 +526,8 @@ describe("Player", () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const rate = 100; // per hour
-      const tx = await world.addAction(
-        {
+      const tx = await world.addAction({
+        info: {
           skill: Skill.WOODCUTTING,
           baseXPPerHour: 3600,
           minSkillPoints: 0,
@@ -538,9 +538,9 @@ describe("Player", () => {
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionIsAvailable,
         },
-        [{itemTokenId: LOG, rate: rate * 100}], // 100.00
-        []
-      );
+        dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+        lootChances: [],
+      });
       const actionId = await getActionId(tx);
 
       await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
@@ -571,8 +571,8 @@ describe("Player", () => {
     it("Firemaking", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
       const rate = 100; // per hour
-      let tx = await world.addAction(
-        {
+      let tx = await world.addAction({
+        info: {
           skill: Skill.FIREMAKING,
           baseXPPerHour: 0,
           minSkillPoints: 0,
@@ -583,9 +583,9 @@ describe("Player", () => {
           auxItemTokenIdRangeMax: LOG_MAX,
           isAvailable: actionIsAvailable,
         },
-        [],
-        []
-      );
+        dropRewards: [],
+        lootChances: [],
+      });
       const actionId = await getActionId(tx);
 
       // Logs go in, nothing comes out
@@ -643,8 +643,8 @@ describe("Player", () => {
       const queuedActions: QueuedAction[] = [];
       const rate = 100; // per hour
       {
-        const tx = await world.addAction(
-          {
+        const tx = await world.addAction({
+          info: {
             skill: Skill.WOODCUTTING,
             baseXPPerHour: 3600,
             minSkillPoints: 0,
@@ -655,9 +655,9 @@ describe("Player", () => {
             auxItemTokenIdRangeMax: NONE,
             isAvailable: actionIsAvailable,
           },
-          [{itemTokenId: LOG, rate: rate * 100}], // 100.00
-          []
-        );
+          dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+          lootChances: [],
+        });
         const actionId = await getActionId(tx);
         await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
         await itemNFT.addItem(
@@ -675,8 +675,8 @@ describe("Player", () => {
         });
       }
       {
-        let tx = await world.addAction(
-          {
+        let tx = await world.addAction({
+          info: {
             skill: Skill.FIREMAKING,
             baseXPPerHour: 0,
             minSkillPoints: 0,
@@ -687,9 +687,9 @@ describe("Player", () => {
             auxItemTokenIdRangeMax: LOG_MAX,
             isAvailable: actionIsAvailable,
           },
-          [],
-          []
-        );
+          dropRewards: [],
+          lootChances: [],
+        });
         const actionId = await getActionId(tx);
 
         // Logs go in, nothing comes out
@@ -748,8 +748,8 @@ describe("Player", () => {
     it("Mining", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-      const tx = await world.addAction(
-        {
+      const tx = await world.addAction({
+        info: {
           skill: Skill.MINING,
           baseXPPerHour: 3600,
           minSkillPoints: 0,
@@ -760,9 +760,9 @@ describe("Player", () => {
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionIsAvailable,
         },
-        [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
-        []
-      );
+        dropRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
+        lootChances: [],
+      });
 
       const actionId = await getActionId(tx);
 
@@ -792,8 +792,8 @@ describe("Player", () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
       const rate = 100; // per hour
 
-      let tx = await world.addAction(
-        {
+      let tx = await world.addAction({
+        info: {
           skill: Skill.SMITHING,
           baseXPPerHour: 0,
           minSkillPoints: 0,
@@ -804,9 +804,9 @@ describe("Player", () => {
           auxItemTokenIdRangeMax: ORE_MAX,
           isAvailable: actionIsAvailable,
         },
-        [],
-        []
-      );
+        dropRewards: [],
+        lootChances: [],
+      });
       const actionId = await getActionId(tx);
 
       // Ores go in, bars come out
