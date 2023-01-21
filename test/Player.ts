@@ -252,7 +252,7 @@ describe("Player", () => {
     await world.addAction(
       {
         skill: Skill.ATTACK,
-        baseXPPerHour: 10,
+        baseXPPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
         itemTokenIdRangeMin: COMBAT_BASE,
@@ -301,7 +301,7 @@ describe("Player", () => {
     await world.addAction(
       {
         skill: Skill.ATTACK,
-        baseXPPerHour: 10,
+        baseXPPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
         itemTokenIdRangeMin: COMBAT_BASE,
@@ -437,7 +437,7 @@ describe("Player", () => {
       const tx = await world.addAction(
         {
           skill: Skill.WOODCUTTING,
-          baseXPPerHour: 10,
+          baseXPPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
           itemTokenIdRangeMin: BRONZE_AXE,
@@ -498,7 +498,7 @@ describe("Player", () => {
 
       // Logs go in, nothing comes out
       tx = await world.addIO(actionId, {
-        baseXPPerHour: 10,
+        baseXPPerHour: 3600,
         minSkillPoints: 0,
         rate: rate * 100,
         inputTokenId1: LOG,
@@ -554,7 +554,7 @@ describe("Player", () => {
         const tx = await world.addAction(
           {
             skill: Skill.WOODCUTTING,
-            baseXPPerHour: 10,
+            baseXPPerHour: 3600,
             minSkillPoints: 0,
             isDynamic: false,
             itemTokenIdRangeMin: BRONZE_AXE,
@@ -602,7 +602,7 @@ describe("Player", () => {
 
         // Logs go in, nothing comes out
         tx = await world.addIO(actionId, {
-          baseXPPerHour: 10,
+          baseXPPerHour: 3600,
           minSkillPoints: 0,
           rate: rate * 100,
           inputTokenId1: LOG,
@@ -659,7 +659,7 @@ describe("Player", () => {
       const tx = await world.addAction(
         {
           skill: Skill.MINING,
-          baseXPPerHour: 10,
+          baseXPPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
           itemTokenIdRangeMin: BRONZE_PICKAXE,
@@ -703,7 +703,7 @@ describe("Player", () => {
       let tx = await world.addAction(
         {
           skill: Skill.SMITHING,
-          baseXPPerHour: 10,
+          baseXPPerHour: 0,
           minSkillPoints: 0,
           isDynamic: false,
           itemTokenIdRangeMin: NONE,
@@ -719,7 +719,7 @@ describe("Player", () => {
 
         // Ores go in, bars come out
         tx = await world.addIO(actionId, {
-          baseXPPerHour: 10,
+          baseXPPerHour: 3600,
           minSkillPoints: 0,
           rate: rate * 100,
           inputTokenId1: COAL_ORE,

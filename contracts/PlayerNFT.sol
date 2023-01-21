@@ -482,7 +482,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // Confirm they have all the required ones
     //    }
 
-//    require(itemEquipped > 0, "Item equipped doesn't exist");
+    //    require(itemEquipped > 0, "Item equipped doesn't exist");
     require(
       itemEquipped >= itemTokenIdRangeMin && itemEquipped <= itemTokenIdRangeMax,
       "item equipped not within expected range"
@@ -651,7 +651,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   uint private constant MAX_LOOT_PER_ACTION = 5;
-  mapping(uint => uint32) speedMultiplier; // player id => multiplier, 0 or 1 is diabled
+  mapping(uint => uint16) speedMultiplier; // player id => multiplier, 0 or 1 is diabled
 
   function setSpeedMultiplier(uint _tokenId, uint8 multiplier) external {
     // Disable for production code
@@ -681,11 +681,15 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint8 auxNumToEquip2;
       uint8 auxNumToEquip3;
 
+      uint16 xpPerHour = world.getXPPerHour(skillInfo.actionId, skillInfo.ioId, skillInfo.ioId > 0);
+
       if (skillEndTime <= block.timestamp) {
         // Fully consume this skill
-        pointsAccured = speedMultiplier[_tokenId] == 0
-          ? skillInfo.timespan
-          : skillInfo.timespan * speedMultiplier[_tokenId];
+        pointsAccured = (uint32(skillInfo.timespan) * xpPerHour) / 3600;
+        if (speedMultiplier[_tokenId] > 1) {
+          pointsAccured *= speedMultiplier[_tokenId];
+        }
+
         elapsedTime = skillInfo.timespan;
 
         auxNumToEquip1 = skillInfo.auxNumToEquip1;
@@ -695,7 +699,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         // partially consume
         elapsedTime = uint16(block.timestamp - skillInfo.startTime);
         skillEndTime = uint40(block.timestamp);
-        pointsAccured = speedMultiplier[_tokenId] == 0 ? elapsedTime : elapsedTime * speedMultiplier[_tokenId]; // TODO: This should be based on something else
+        pointsAccured = (elapsedTime * xpPerHour) / 3600;
+        if (speedMultiplier[_tokenId] > 1) {
+          pointsAccured *= speedMultiplier[_tokenId];
+        }
+
         uint40 end = skillInfo.startTime + skillInfo.timespan;
 
         // TODO: How many used, this should be a diff
@@ -733,6 +741,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           world,
           pendingLoot
         );
+        if (speedMultiplier[_tokenId] > 1) {
+          for (uint j; j < newAmounts.length; ++j) {
+            newAmounts[j] *= speedMultiplier[_tokenId];
+          }
+        }
+
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
         itemNFT.mintBatch(_from, newIds, newAmounts);
@@ -761,7 +775,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           auxNumToEquip2,
           auxNumToEquip3,
           skillInfo.ioId,
-          elapsedTime,
+          speedMultiplier[_tokenId] > 1 ? elapsedTime * speedMultiplier[_tokenId] : elapsedTime,
           world,
           itemNFT,
           users

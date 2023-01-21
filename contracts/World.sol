@@ -58,7 +58,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   uint[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  mapping(uint => mapping(uint => NonCombat)) public nonCombatCrafting; // action id => (craft id => craft details). Crafting isn't the skill but general
+  mapping(uint => mapping(uint => NonCombat)) public ios; // action id => (craft id => craft details). Crafting isn't the skill but general
   mapping(uint => ActionReward[]) dropRewards; // action id => dropRewards
   mapping(uint => ActionLoot[]) lootChances; // action id => loot chances
 
@@ -180,6 +180,10 @@ contract World is VRFConsumerBaseV2, Ownable {
     );
   }
 
+  function getXPPerHour(uint16 _actionId, uint16 _ioId, bool fromIoId) external view returns (uint16 xpPerHour) {
+    return fromIoId ? ios[_actionId][_ioId].baseXPPerHour : actions[_actionId].baseXPPerHour;
+  }
+
   function _setAction(
     uint _actionId,
     ActionInfo calldata _actionInfo,
@@ -240,7 +244,7 @@ contract World is VRFConsumerBaseV2, Ownable {
 
   function addIO(uint _actionId, NonCombat calldata _craftDetails) external onlyOwner {
     uint currentIoId = ioId;
-    nonCombatCrafting[_actionId][currentIoId] = _craftDetails;
+    ios[_actionId][currentIoId] = _craftDetails;
     emit AddIO(_actionId, currentIoId, _craftDetails);
     ioId = currentIoId + 1;
   }
@@ -249,7 +253,7 @@ contract World is VRFConsumerBaseV2, Ownable {
     require(_craftingDetails.length > 0);
     uint currentIoId = ioId;
     for (uint i; i < _craftingDetails.length; ++i) {
-      nonCombatCrafting[_actionId][currentIoId] = _craftingDetails[i];
+      ios[_actionId][currentIoId] = _craftingDetails[i];
     }
     emit AddIOs(_actionId, currentIoId, _craftingDetails);
     ioId = currentIoId + _craftingDetails.length;

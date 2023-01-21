@@ -326,7 +326,7 @@ struct Equipment {
 
 // This is effectively a ratio to produce 1 of outputTokenId
 struct NonCombat {
-  uint8 baseXPPerHour;
+  uint16 baseXPPerHour;
   uint32 minSkillPoints;
   uint16 inputTokenId1;
   uint8 num1;
@@ -340,7 +340,7 @@ struct NonCombat {
 
 struct ActionInfo {
   Skill skill;
-  uint8 baseXPPerHour;
+  uint16 baseXPPerHour;
   bool isAvailable;
   bool isDynamic;
   uint32 minSkillPoints;

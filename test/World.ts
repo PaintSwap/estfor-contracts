@@ -92,7 +92,7 @@ describe("World", () => {
       let tx = await world.addAction(
         {
           skill: Skill.ATTACK,
-          baseXPPerHour: 10,
+          baseXPPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
           itemTokenIdRangeMin: COMBAT_BASE,
@@ -134,7 +134,7 @@ describe("World", () => {
         actionId,
         {
           skill: Skill.ATTACK,
-          baseXPPerHour: 20,
+          baseXPPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: true,
           itemTokenIdRangeMin: COMBAT_BASE,

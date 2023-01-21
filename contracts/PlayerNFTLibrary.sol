@@ -209,7 +209,7 @@ library PlayerNFTLibrary {
   ) external {
     // Fetch the requirements for it
     (
-      uint8 baseXPPerHour,
+      uint16 baseXPPerHour,
       uint32 minSkillPoints,
       uint16 inputTokenId1,
       uint8 num1,
@@ -219,25 +219,24 @@ library PlayerNFTLibrary {
       uint8 num3,
       uint16 outputTokenId,
       uint16 rate
-    ) = world.nonCombatCrafting(actionId, ioId);
-    uint8 numProduced = uint8((uint(elapsedTime) * rate) / (3600 * 100));
+    ) = world.ios(actionId, ioId);
+    uint16 numProduced = uint16((uint(elapsedTime) * rate) / (3600 * 100));
     // TODO: Check the maximum that might be done
     //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
-
     if (inputTokenId1 > NONE) {
-      uint8 numBurn = numProduced * num1;
+      uint16 numBurn = numProduced * num1;
       users.minorUnequip(_from, inputTokenId1, auxNumToUnequip1); // Should be the num attached
       emit Unequip(_tokenId, inputTokenId1, itemNFT.getItemStats(inputTokenId1).stats, auxNumToUnequip1);
       itemNFT.burn(_from, inputTokenId1, numBurn);
     }
     if (inputTokenId2 > NONE) {
-      uint8 numBurn = numProduced * num2;
+      uint16 numBurn = numProduced * num2;
       users.minorUnequip(_from, inputTokenId2, auxNumToUnequip2);
       emit Unequip(_tokenId, inputTokenId2, itemNFT.getItemStats(inputTokenId2).stats, auxNumToUnequip2);
       itemNFT.burn(_from, inputTokenId2, numBurn);
     }
     if (inputTokenId3 > NONE) {
-      uint8 numBurn = numProduced * num3;
+      uint16 numBurn = numProduced * num3;
       users.minorUnequip(_from, inputTokenId3, auxNumToUnequip3);
       emit Unequip(_tokenId, inputTokenId3, itemNFT.getItemStats(inputTokenId3).stats, auxNumToUnequip3);
       itemNFT.burn(_from, inputTokenId3, numBurn);
