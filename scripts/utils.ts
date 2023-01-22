@@ -376,6 +376,19 @@ type Action = {
   lootChances: ActionLoot[];
 };
 
+type IO = {
+  baseXPPerHour: number;
+  minSkillPoints: number;
+  rate: number;
+  inputTokenId1: number;
+  num1: number;
+  inputTokenId2: number;
+  num2: number;
+  inputTokenId3: number;
+  num3: number;
+  outputTokenId: number;
+};
+
 export const allActions: Action[] = [
   {
     actionInfo: {
@@ -451,5 +464,59 @@ export const allActions: Action[] = [
     },
     dropRewards: [],
     lootChances: [],
+  },
+];
+
+export const firemakingIO: IO[] = [
+  {
+    baseXPPerHour: 25,
+    minSkillPoints: 0,
+    rate: 1220 * 100,
+    inputTokenId1: LOG,
+    num1: 1,
+    inputTokenId2: NONE,
+    num2: 0,
+    inputTokenId3: NONE,
+    num3: 0,
+    outputTokenId: NONE,
+  },
+  {
+    baseXPPerHour: 45,
+    minSkillPoints: 1021,
+    rate: 1220 * 100,
+    inputTokenId1: OAK_LOG,
+    num1: 1,
+    inputTokenId2: NONE,
+    num2: 0,
+    inputTokenId3: NONE,
+    num3: 0,
+    outputTokenId: NONE,
+  },
+];
+
+export const smithingIO: IO[] = [
+  {
+    baseXPPerHour: 25,
+    minSkillPoints: 0,
+    rate: 2440 * 100,
+    inputTokenId1: COPPER_ORE,
+    num1: 1,
+    inputTokenId2: TIN_ORE,
+    num2: 1,
+    inputTokenId3: NONE,
+    num3: 0,
+    outputTokenId: BRONZE_BAR,
+  },
+  {
+    baseXPPerHour: 35,
+    minSkillPoints: 0,
+    rate: 1220 * 100,
+    inputTokenId1: IRON_ORE,
+    num1: 1,
+    inputTokenId2: NONE,
+    num2: 0,
+    inputTokenId3: NONE,
+    num3: 0,
+    outputTokenId: IRON_BAR,
   },
 ];
