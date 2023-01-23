@@ -194,22 +194,42 @@ library PlayerNFTLibrary {
     }
   }
 
-  function processIO(
+  function _processConsumable(
     address _from,
     uint _tokenId,
-    uint16 actionId,
-    uint8 auxTotalEquipped1,
-    uint8 auxTotalEquipped2,
-    uint8 auxTotalEquipped3,
-    uint16 ioId,
+    ItemNFT itemNFT,
+    uint16 itemTokenId,
+    uint16 numProduced,
+    uint8 baseNum,
+    uint8 totalEquipped,
+    Users users,
+    bool _useAll
+  ) private {
+    if (itemTokenId == NONE) {
+      return;
+    }
+    uint16 numBurn = numProduced * baseNum;
+    uint16 numUnequip = _useAll ? totalEquipped : numBurn;
+    users.minorUnequip(_from, itemTokenId, numUnequip); // Should be the num attached if fully consumed
+    emit Unequip(_tokenId, itemTokenId, itemNFT.getItemStats(itemTokenId).stats, numUnequip);
+    itemNFT.burn(_from, itemTokenId, numBurn);
+  }
+
+  function processConsumables(
+    address _from,
+    uint _tokenId,
+    QueuedAction storage queuedAction,
     uint16 elapsedTime,
     World world,
     ItemNFT itemNFT,
     Users users,
     bool _useAll
-  ) external returns (uint16 numRemaining1, uint16 numRemaining2, uint16 numRemaining3) {
+  ) external returns (uint16 foodConsumed, uint16 numConsumed) {
     // Fetch the requirements for it
     (
+      Skill skill,
+      uint32 diff,
+      uint16 rate,
       uint16 baseXPPerHour,
       uint32 minSkillPoints,
       uint16 inputTokenId1,
@@ -218,37 +238,57 @@ library PlayerNFTLibrary {
       uint8 num2,
       uint16 inputTokenId3,
       uint8 num3,
-      uint16 outputTokenId,
-      uint16 rate
-    ) = world.ios(actionId, ioId);
-    uint16 numProduced = uint16((uint(elapsedTime) * rate) / (3600 * 100));
+      uint16 outputTokenId
+    ) = world.actionChoices(queuedAction.actionId, queuedAction.choiceId);
 
-    // TODO: Check the maximum that might be done
-    //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
-    if (inputTokenId1 > NONE) {
-      uint16 numBurn = numProduced * num1;
-      uint16 numUnequip = _useAll ? auxTotalEquipped1 : numBurn;
-      users.minorUnequip(_from, inputTokenId1, numUnequip); // Should be the num attached if fully consumed
-      emit Unequip(_tokenId, inputTokenId1, itemNFT.getItemStats(inputTokenId1).stats, numUnequip);
-      itemNFT.burn(_from, inputTokenId1, numBurn);
-      numRemaining1 = numUnequip - numBurn;
+    // TODO: This is based on the damage done from battling
+    //    uint16 numFoodUsed = uint16((uint(elapsedTime) * rate) / (3600 * 100));
+    foodConsumed = queuedAction.numRegenerate; // _processConsumable(_from, _tokenId, itemNFT, queuedAction.regenerateId, numProduced, num1, queuedAction.numRegenerate, users, _useAll);
+
+    uint16 numProduced = uint16((uint(elapsedTime) * rate) / (3600 * 100));
+    numConsumed = numProduced;
+
+    _processConsumable(
+      _from,
+      _tokenId,
+      itemNFT,
+      inputTokenId1,
+      numProduced,
+      num1,
+      queuedAction.num * num1,
+      users,
+      _useAll
+    );
+    _processConsumable(
+      _from,
+      _tokenId,
+      itemNFT,
+      inputTokenId2,
+      numProduced,
+      num2,
+      queuedAction.num * num2,
+      users,
+      _useAll
+    );
+    _processConsumable(
+      _from,
+      _tokenId,
+      itemNFT,
+      inputTokenId3,
+      numProduced,
+      num3,
+      queuedAction.num * num3,
+      users,
+      _useAll
+    );
+
+    if (_useAll && queuedAction.potionId != NONE) {
+      // Consume the potion
+      users.minorUnequip(_from, queuedAction.potionId, 1);
+      emit Unequip(_tokenId, queuedAction.potionId, itemNFT.getItemStats(queuedAction.potionId).stats, 1);
+      itemNFT.burn(_from, queuedAction.potionId, 1);
     }
-    if (inputTokenId2 > NONE) {
-      uint16 numBurn = numProduced * num2;
-      uint16 numUnequip = _useAll ? auxTotalEquipped2 : numBurn;
-      users.minorUnequip(_from, inputTokenId2, numUnequip);
-      emit Unequip(_tokenId, inputTokenId2, itemNFT.getItemStats(inputTokenId2).stats, numUnequip);
-      itemNFT.burn(_from, inputTokenId2, numBurn);
-      numRemaining2 = numUnequip - numBurn;
-    }
-    if (inputTokenId3 > NONE) {
-      uint16 numBurn = numProduced * num3;
-      uint16 numUnequip = _useAll ? auxTotalEquipped3 : numBurn;
-      users.minorUnequip(_from, inputTokenId3, numUnequip);
-      emit Unequip(_tokenId, inputTokenId3, itemNFT.getItemStats(inputTokenId3).stats, numUnequip);
-      itemNFT.burn(_from, inputTokenId3, numBurn);
-      numRemaining3 = numUnequip - numBurn;
-    }
+
     if (outputTokenId != NONE) {
       itemNFT.mint(_from, outputTokenId, numProduced);
     }

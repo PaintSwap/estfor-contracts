@@ -15,8 +15,8 @@ import {
   EquipPosition,
   FIRE_LIGHTER,
   FIRE_MAX,
+  getActionChoiceId,
   getActionId,
-  getIOId,
   LOG,
   LOG_BASE,
   LOG_MAX,
@@ -252,9 +252,19 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId: 1,
       skill: Skill.ATTACK,
-      ioId: 0,
+      potionId: NONE,
+      choiceId: NONE,
+      num: 0,
+      choiceId1: NONE,
+      num1: 0,
+      choiceId2: NONE,
+      num2: 0,
+      regenerateId: NONE,
+      numRegenerate: 0,
       timespan: 100,
-      extraEquipment: [{itemTokenId: BRONZE_SWORD, numToEquip: 1}],
+      rightArmEquipmentTokenId: BRONZE_SWORD,
+      leftArmEquipmentTokenId: NONE,
+      startTime: "0",
     };
 
     await expect(playerNFT.connect(alice).startAction(queuedAction, playerId, false)).to.be.reverted; // No action added yet
@@ -307,9 +317,19 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId,
       skill: Skill.WOODCUTTING,
-      ioId: 0,
-      timespan: timespan,
-      extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
+      potionId: NONE,
+      choiceId: NONE,
+      num: 0,
+      choiceId1: NONE,
+      num1: 0,
+      choiceId2: NONE,
+      num2: 0,
+      regenerateId: NONE,
+      numRegenerate: 0,
+      timespan,
+      rightArmEquipmentTokenId: BRONZE_AXE,
+      leftArmEquipmentTokenId: NONE,
+      startTime: "0",
     };
 
     await itemNFT.addItem(
@@ -354,9 +374,19 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId,
       skill: Skill.WOODCUTTING,
-      ioId: 0,
-      timespan: timespan,
-      extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
+      potionId: NONE,
+      choiceId: NONE,
+      num: 0,
+      choiceId1: NONE,
+      num1: 0,
+      choiceId2: NONE,
+      num2: 0,
+      regenerateId: NONE,
+      numRegenerate: 0,
+      timespan,
+      rightArmEquipmentTokenId: BRONZE_AXE,
+      leftArmEquipmentTokenId: NONE,
+      startTime: "0",
     };
 
     await itemNFT.addItem(
@@ -420,9 +450,19 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId: 1,
       skill: Skill.ATTACK,
-      ioId: 0,
+      potionId: NONE,
+      choiceId: NONE,
+      num: 0,
+      choiceId1: NONE,
+      num1: 0,
+      choiceId2: NONE,
+      num2: 0,
+      regenerateId: NONE,
+      numRegenerate: 0,
       timespan: 100,
-      extraEquipment: [{itemTokenId: BRONZE_SWORD, numToEquip: 1}],
+      rightArmEquipmentTokenId: BRONZE_SWORD,
+      leftArmEquipmentTokenId: NONE,
+      startTime: "0",
     };
 
     await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
@@ -518,7 +558,7 @@ describe("Player", () => {
     await playerNFT.connect(alice).editName(playerId, ethers.utils.formatBytes32String("My name is edited, woo"));
   });
 
-  describe("Actions", () => {
+  describe("Non-Combat Actions", () => {
     // Test minSkillPoints
     // Test isDynamic
     // Test incorrect item position and range
@@ -548,9 +588,19 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.WOODCUTTING,
-        ioId: 0,
-        timespan: timespan,
-        extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
+        potionId: NONE,
+        choiceId: NONE,
+        num: 0,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: NONE,
+        numRegenerate: 0,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_AXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
       };
 
       await itemNFT.addItem(
@@ -589,7 +639,9 @@ describe("Player", () => {
       const actionId = await getActionId(tx);
 
       // Logs go in, nothing comes out
-      tx = await world.addIO(actionId, {
+      tx = await world.addActionChoice(actionId, {
+        skill: Skill.FIREMAKING,
+        diff: 0,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
         rate: rate * 100,
@@ -601,18 +653,25 @@ describe("Player", () => {
         num3: 0,
         outputTokenId: NONE,
       });
-      const ioId = await getIOId(tx);
+      const choiceId = await getActionChoiceId(tx);
 
       const timespan = 3600;
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.FIREMAKING,
-        ioId,
-        timespan: timespan,
-        extraEquipment: [
-          {itemTokenId: FIRE_LIGHTER, numToEquip: 1},
-          {itemTokenId: LOG, numToEquip: 255},
-        ],
+        potionId: NONE,
+        choiceId,
+        num: 255,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: NONE,
+        numRegenerate: 0,
+        timespan,
+        rightArmEquipmentTokenId: FIRE_LIGHTER,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
       };
 
       await itemNFT.addItem(
@@ -666,13 +725,25 @@ describe("Player", () => {
           "someIPFSURI.json"
         );
         const timespan = 7200;
-        queuedActions.push({
+        const queuedAction: QueuedAction = {
           actionId,
           skill: Skill.WOODCUTTING,
-          ioId: 0,
+          potionId: NONE,
+          choiceId: NONE,
+          num: 0,
+          choiceId1: NONE,
+          num1: 0,
+          choiceId2: NONE,
+          num2: 0,
+          regenerateId: NONE,
+          numRegenerate: 0,
           timespan,
-          extraEquipment: [{itemTokenId: BRONZE_AXE, numToEquip: 1}],
-        });
+          rightArmEquipmentTokenId: BRONZE_AXE,
+          leftArmEquipmentTokenId: NONE,
+          startTime: "0",
+        };
+
+        queuedActions.push(queuedAction);
       }
       {
         let tx = await world.addAction({
@@ -693,7 +764,9 @@ describe("Player", () => {
         const actionId = await getActionId(tx);
 
         // Logs go in, nothing comes out
-        tx = await world.addIO(actionId, {
+        tx = await world.addActionChoice(actionId, {
+          skill: Skill.FIREMAKING,
+          diff: 0,
           baseXPPerHour: 3600,
           minSkillPoints: 0,
           rate: rate * 100,
@@ -705,7 +778,7 @@ describe("Player", () => {
           num3: 0,
           outputTokenId: NONE,
         });
-        const ioId = await getIOId(tx);
+        const choiceId = await getActionChoiceId(tx);
 
         await itemNFT.testMint(alice.address, FIRE_LIGHTER, 1);
         await itemNFT.addItem(
@@ -714,16 +787,26 @@ describe("Player", () => {
           "someIPFSURI.json"
         );
         const timespan = 3600;
-        queuedActions.push({
+
+        const queuedAction: QueuedAction = {
           actionId,
           skill: Skill.FIREMAKING,
-          ioId,
-          timespan: timespan,
-          extraEquipment: [
-            {itemTokenId: FIRE_LIGHTER, numToEquip: 1},
-            {itemTokenId: LOG, numToEquip: 255},
-          ],
-        });
+          potionId: NONE,
+          choiceId,
+          num: 255,
+          choiceId1: NONE,
+          num1: 0,
+          choiceId2: NONE,
+          num2: 0,
+          regenerateId: NONE,
+          numRegenerate: 0,
+          timespan,
+          rightArmEquipmentTokenId: FIRE_LIGHTER,
+          leftArmEquipmentTokenId: NONE,
+          startTime: "0",
+        };
+
+        queuedActions.push(queuedAction);
       }
 
       await itemNFT.addItem(
@@ -770,9 +853,19 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.MINING,
-        ioId: 0,
+        potionId: NONE,
+        choiceId: NONE,
+        num: 0,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: NONE,
+        numRegenerate: 0,
         timespan: 100,
-        extraEquipment: [{itemTokenId: BRONZE_PICKAXE, numToEquip: 1}],
+        rightArmEquipmentTokenId: BRONZE_PICKAXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
       };
 
       await itemNFT.addItem(
@@ -810,7 +903,9 @@ describe("Player", () => {
       const actionId = await getActionId(tx);
 
       // Ores go in, bars come out
-      tx = await world.addIO(actionId, {
+      tx = await world.addActionChoice(actionId, {
+        skill: Skill.SMITHING,
+        diff: 0,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
         rate: rate * 100,
@@ -822,18 +917,26 @@ describe("Player", () => {
         num3: 0,
         outputTokenId: MITHRIL_BAR,
       });
-      const ioId = await getIOId(tx);
+      const choiceId = await getActionChoiceId(tx);
 
       const timespan = 3600;
+
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.SMITHING,
-        ioId,
-        timespan: timespan,
-        extraEquipment: [
-          {itemTokenId: COAL_ORE, numToEquip: 200},
-          {itemTokenId: MITHRIL_ORE, numToEquip: 100},
-        ],
+        potionId: NONE,
+        choiceId,
+        num: 100,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: NONE,
+        numRegenerate: 0,
+        timespan,
+        rightArmEquipmentTokenId: NONE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
       };
 
       await itemNFT.addItem(
@@ -868,6 +971,65 @@ describe("Player", () => {
       // Try wood cut, and then burning them when having none equipped
     });
   });
+
+  /*
+  describe("Combat Actions", () => {
+    it("Ranged", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const rate = 100; // per hour
+      const tx = await world.addAction({
+        info: {
+          skill: Skill.COMBAT,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          isAvailable: actionIsAvailable,
+        },
+        dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+        lootChances: [],
+      });
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.WOODCUTTING,
+        potionId: NONE,
+        choiceId: NONE,
+        num: 0,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: NONE,
+        numRegenerate: 0,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_AXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await itemNFT.addItem(
+        BRONZE_AXE,
+        {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        "someIPFSURI.json"
+      );
+
+      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
+    }); 
+  });*/
 
   /*
   it("Equipment Many", async () => {

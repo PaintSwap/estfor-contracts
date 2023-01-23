@@ -248,6 +248,17 @@ export const TITANIUM_ORE = ORE_BASE + 13;
 export const ORCHALCUM_ORE = ORE_BASE + 14;
 export const ORE_MAX = ORE_BASE + 255;
 
+// Arrows
+export const ARROW_BASE = 11776;
+export const BRONZE_ARROW = ORE_BASE;
+export const ARROW_MAX = ARROW_BASE + 255;
+
+// Scrolls
+export const SCROLL_BASE = 12032;
+export const AIR_SCROLL = SCROLL_BASE;
+export const FIRE_SCROLL = SCROLL_BASE + 1;
+export const SCROLL_MAX = SCROLL_BASE + 255;
+
 // MISC
 export const MYSTERY_BOX = 65535;
 export const RAID_PASS = MYSTERY_BOX - 1;
@@ -308,10 +319,20 @@ export type Equipment = {
 
 export type QueuedAction = {
   actionId: number;
+  potionId: number;
+  regenerateId: number;
+  numRegenerate: number;
+  choiceId: number;
+  num: number;
+  choiceId1: number;
+  num1: number;
+  choiceId2: number;
+  num2: number;
   skill: Skill;
-  ioId: number;
   timespan: number;
-  extraEquipment: Equipment[];
+  rightArmEquipmentTokenId: number;
+  leftArmEquipmentTokenId: number;
+  startTime: string;
 };
 
 export const createPlayer = async (
@@ -336,12 +357,12 @@ export const getActionId = async (tx: ContractTransaction): Promise<number> => {
   return event?.actionId.toNumber();
 };
 
-export const getIOId = async (tx: ContractTransaction): Promise<number> => {
+export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddIO";
+    return x.event == "AddActionChoice";
   })[0].args;
-  return event?.ioId.toNumber();
+  return event?.actionChoiceId.toNumber();
 };
 
 // Items
@@ -374,6 +395,19 @@ type Action = {
   actionInfo: ActionInfo;
   dropRewards: ActionReward[];
   lootChances: ActionLoot[];
+};
+
+type CombatConsumables = {
+  skill: Skill;
+  diff: number;
+  minSkillPoints: number;
+  rate: number;
+  inputTokenId1: number;
+  num1: number;
+  inputTokenId2: number;
+  num2: number;
+  inputTokenId3: number;
+  num3: number;
 };
 
 type IO = {
@@ -518,5 +552,54 @@ export const smithingIO: IO[] = [
     inputTokenId3: NONE,
     num3: 0,
     outputTokenId: IRON_BAR,
+  },
+];
+
+// MELEE attack, defence, attack/defence
+// Range attack, defence, attack/defence, different types of arrows
+// Magic (), attack, defence, attack/defence. Different types of spells, composed of different types of runes.
+
+// Melee
+// Item used (changes combat stats)
+// Style used, attack, defence or attack/defence (XP split only)
+
+// Range
+// Bow used (changes combat stats)
+// Style used, attack, defence or attack/defence (XP split only)
+// Arrows used (changes combat stats), consumed 1 type of arrow
+
+// Magic
+// Staff used (changes combat stats)
+// Style used, attack, defence or attack/defence (XP split only)
+// Magic used (changes combat stats), consumed multiple scrolls
+
+// Shield optional
+
+// Options
+export const allCombatSubActions: CombatConsumables[] = [
+  {
+    skill: Skill.RANGED,
+    diff: 10, // 10 more ranged dmg/h
+    minSkillPoints: 0,
+    rate: 100 * 100, // 100 arrows used hour
+    inputTokenId1: BRONZE_ARROW,
+    num1: 1,
+    inputTokenId2: NONE,
+    num2: 0,
+    inputTokenId3: NONE,
+    num3: 0,
+  },
+  // Fire blast
+  {
+    skill: Skill.MAGIC,
+    diff: 5,
+    minSkillPoints: 0,
+    rate: 100 * 100, // 100 combinations used per hour
+    inputTokenId1: AIR_SCROLL,
+    num1: 2,
+    inputTokenId2: FIRE_SCROLL,
+    num2: 1,
+    inputTokenId3: NONE,
+    num3: 0,
   },
 ];

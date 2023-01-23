@@ -25,34 +25,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   event LevelUp(uint tokenId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
 
-  // A queued action
-  struct SkillInfo {
-    uint16 actionId;
-    Skill actionType;
-    uint40 startTime;
-    uint16 timespan;
-    uint16 ioId; // type of spell, bar to create with input/outputs
-    uint16 itemEquipped; // Sword, Bow, staff, fishing rod
-    uint8 auxNumToEquip1;
-    uint8 auxNumToEquip2;
-    uint8 auxNumToEquip3;
-    // 136 bits up to here
-  }
-
-  struct MeleeInfo {
-    uint16 otherItem; // Shield, or nothing if 2 handed, token id
-  }
-
-  struct RangedInfo {
-    uint16 arrows; // item token id
-    uint8 numEquipped; // Number of arrows, number of lobsters etc..
-  }
-
-  struct MagicInfo {
-    // All the different runes used
-    uint8 numAirRunes;
-  }
-
   IBrushToken immutable brush;
   World immutable world;
   string private constant baseURI = "ipfs://";
@@ -62,16 +34,13 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // These are stored in case individual items are changed later, but also prevents having to read them loads
     // Base attributes
     Stats totalStats;
-    SkillInfo[] actionQueue;
+    QueuedAction[] actionQueue;
     uint240 totalSkillPoints;
     uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
     bytes32 name;
   }
 
   uint queuedActionId = 1; // Global queued action id
-  mapping(uint => MeleeInfo) meleeQueuedActions; // queued action id => melee info
-  mapping(uint => RangedInfo) rangedQueuedActions; // queued action id => ranged info
-  mapping(uint => MagicInfo) magicQueuedActions; // queued action id => magic info
 
   mapping(uint => mapping(Skill => uint32)) public skillPoints; // player id => skill => point
 
@@ -219,7 +188,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   function _clearEverything(address _from, uint _tokenId) private {
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(_from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeSkills(_from, _tokenId);
     _clearEquipment(_from, _tokenId);
 
     // Continue last skill queue (if there's anything remaining)
@@ -262,7 +231,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function clearEquipment(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
     address from = msg.sender;
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
     _clearEquipment(from, _tokenId);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
@@ -288,7 +257,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function setEquipment(uint _tokenId, uint16[] calldata _itemTokenIds) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
     address from = msg.sender;
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
 
     // Unequip everything
     for (uint position; position < 8; ++position) {
@@ -344,7 +313,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function equip(uint _tokenId, uint16 _itemTokenId) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
     ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
     EquipPosition position = itemStats.equipPosition;
     require(itemStats.exists, "Item doesn't exist");
@@ -393,7 +362,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function unequip(uint _tokenId, EquipPosition _position) external isOwnerOfPlayer(_tokenId) {
     address from = msg.sender;
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
     _unequip(from, _tokenId, _position);
     Player storage player = players[_tokenId];
     // Update the storage slot
@@ -414,15 +383,48 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
   }
 
-  struct QueuedAction {
-    uint16 actionId;
-    uint16 ioId;
-    Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill
-    uint16 timespan;
-    Equipment[] extraEquipment; // Order should be arrows/magic last
+  function _addMinorEquipment(uint _tokenId, uint16 _itemTokenId, uint8 _amount) private {
+    if (_itemTokenId == NONE || _amount == 0) {
+      return;
+    }
+    ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
+    users.minorEquip(msg.sender, _itemTokenId, _amount);
+    emit Equip(_tokenId, _itemTokenId, itemStats.stats, _amount);
   }
 
-  function _addToQueue(uint _tokenId, QueuedAction calldata _queuedAction, uint _queuedActionId) private {
+  function _addQueueActionMinorEquipment(uint _tokenId, QueuedAction memory _queuedAction) private {
+    _addMinorEquipment(_tokenId, _queuedAction.rightArmEquipmentTokenId, 1);
+    _addMinorEquipment(_tokenId, _queuedAction.leftArmEquipmentTokenId, 1);
+    _addMinorEquipment(_tokenId, _queuedAction.potionId, 1);
+    _addMinorEquipment(_tokenId, _queuedAction.regenerateId, _queuedAction.numRegenerate);
+
+    if (_queuedAction.choiceId != NONE) {
+      // Get all items for this
+
+      (
+        Skill skill,
+        uint32 diff,
+        uint16 rate,
+        uint16 baseXPPerHour,
+        uint32 minSkillPoints,
+        uint16 inputTokenId1,
+        uint8 num1,
+        uint16 inputTokenId2,
+        uint8 num2,
+        uint16 inputTokenId3,
+        uint8 num3,
+        uint16 outputTokenId
+      ) = world.actionChoices(_queuedAction.actionId, _queuedAction.choiceId);
+
+      _addMinorEquipment(_tokenId, inputTokenId1, num1 * _queuedAction.num);
+      _addMinorEquipment(_tokenId, inputTokenId2, num2 * _queuedAction.num);
+      _addMinorEquipment(_tokenId, inputTokenId3, num3 * _queuedAction.num);
+    }
+    //    addMinorEquipment(_queuedAction.choiceId1, _queuedAction.num1);
+    //    addMinorEquipment(_queuedAction.choiceId2, _queuedAction.num2);
+  }
+
+  function _addToQueue(uint _tokenId, QueuedAction memory _queuedAction, uint _queuedActionId) private {
     Player storage _player = players[_tokenId];
     Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
 
@@ -435,63 +437,21 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     require(world.actionIsAvailable(_queuedAction.actionId), "Action is not available");
 
-    // Extra equipment should contain an item to equip
-    uint16 itemEquipped;
-    uint16 otherItemEquipped;
-    uint auxLength;
-    Equipment[3] memory auxEquipment;
-    for (uint i; i < _queuedAction.extraEquipment.length; ++i) {
-      Equipment calldata equipment = _queuedAction.extraEquipment[i];
+    _addQueueActionMinorEquipment(_tokenId, _queuedAction);
 
-      ItemStat memory itemStats = itemNFT.getItemStats(equipment.itemTokenId);
-      require(itemStats.exists, "Item doesn't exist");
-      if (itemStats.equipPosition == EquipPosition.RIGHT_ARM) {
-        itemEquipped = equipment.itemTokenId;
-      } else if (itemStats.equipPosition == EquipPosition.LEFT_ARM) {
-        // Shield
-        otherItemEquipped = equipment.itemTokenId;
-      } else if (itemStats.equipPosition == EquipPosition.ARROW_SATCHEL) {
-        rangedQueuedActions[_queuedActionId] = RangedInfo({
-          arrows: equipment.itemTokenId,
-          numEquipped: equipment.numToEquip
-        });
-      } else if (itemStats.equipPosition == EquipPosition.AUX) {
-        // wood for burning, seeds
-        auxEquipment[auxLength] = equipment;
-        if (auxItemTokenIdRangeMin != NONE && auxItemTokenIdRangeMax != NONE) {
-          // Type of arrow for instance
+    /*        if (auxItemTokenIdRangeMin != NONE && auxItemTokenIdRangeMax != NONE) {
+                    // Type of arrow for instance
           require(
             equipment.itemTokenId >= auxItemTokenIdRangeMin && equipment.itemTokenId <= auxItemTokenIdRangeMax,
             "Aux is not valid"
           );
-        } else {
-          // Check the combinations
-          // This is checked later too NonCombat memory nonCombatCraft = world.nonCombatCrafting(actionId, ioId);
-          // world.nonCombatCrafting()
-        }
+*/
 
-        ++auxLength;
-      }
-      require(equipment.numToEquip > 0, "Trying to equip nothing");
-      // TODO If not right arm?
-      users.minorEquip(msg.sender, equipment.itemTokenId, equipment.numToEquip);
-      emit Equip(_tokenId, equipment.itemTokenId, itemStats.stats, equipment.numToEquip);
-    }
-
-    //    if (auxEquipment.length > 0) {
-    // Confirm they have all the required ones
-    //    }
-
-    //    require(itemEquipped > 0, "Item equipped doesn't exist");
-    require(
-      itemEquipped >= itemTokenIdRangeMin && itemEquipped <= itemTokenIdRangeMax,
-      "item equipped not within expected range"
-    );
-
-    if (_queuedAction.skill == Skill.ATTACK || _queuedAction.skill == Skill.DEFENCE) {
-      meleeQueuedActions[_queuedActionId] = MeleeInfo({otherItem: otherItemEquipped});
-    }
-
+    //    require(
+    //      itemEquipped >= itemTokenIdRangeMin && itemEquipped <= itemTokenIdRangeMax,
+    //      "item equipped not within expected range"
+    //    );
+    /*
     // Compare skill with queuedAction to make sure it is appropriate
     if (skill == Skill.COMBAT) {
       require(
@@ -503,21 +463,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       );
     } else {
       require(skill == _queuedAction.skill, "Non-combat skill doens't match");
-    }
+    } */
 
-    _player.actionQueue.push(
-      SkillInfo({
-        actionId: _queuedAction.actionId,
-        startTime: uint40(block.timestamp),
-        timespan: _queuedAction.timespan,
-        itemEquipped: itemEquipped,
-        ioId: _queuedAction.ioId,
-        auxNumToEquip1: auxEquipment[0].numToEquip,
-        auxNumToEquip2: auxEquipment[1].numToEquip,
-        auxNumToEquip3: auxEquipment[2].numToEquip,
-        actionType: _queuedAction.skill
-      })
-    );
+    _queuedAction.startTime = uint40(block.timestamp);
+    _player.actionQueue.push(_queuedAction);
   }
 
   function startAction(
@@ -526,7 +475,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     bool _append
   ) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
-    SkillInfo[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
 
     require(_queuedAction.timespan <= MAX_TIME, "Time is above max");
     if (_append) {
@@ -585,7 +534,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   //        actionQueue
   //    }
 
-  function getActionQueue(uint _tokenId) external view returns (SkillInfo[] memory) {
+  function getActionQueue(uint _tokenId) external view returns (QueuedAction[] memory) {
     return players[_tokenId].actionQueue;
   }
 
@@ -658,7 +607,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     speedMultiplier[_tokenId] = multiplier;
   }
 
-  function _consumeSkills(address _from, uint _tokenId) private returns (SkillInfo[] memory remainingSkills) {
+  function _consumeSkills(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_tokenId];
     if (player.actionQueue.length == 0) {
       // No actions remaining
@@ -669,26 +618,27 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint previousSkillPoints = player.totalSkillPoints;
     uint32 allPointsAccured;
 
-    remainingSkills = new SkillInfo[](player.actionQueue.length); // Max
+    remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint length;
+    uint prevEndTime = block.timestamp;
     for (uint i = 0; i < player.actionQueue.length; ++i) {
-      SkillInfo storage skillInfo = player.actionQueue[i];
+      QueuedAction storage queuedAction = player.actionQueue[i];
       uint32 pointsAccured;
-      uint40 skillEndTime = skillInfo.startTime + skillInfo.timespan;
+      uint40 skillEndTime = queuedAction.startTime + queuedAction.timespan;
       uint16 elapsedTime;
 
-      uint16 xpPerHour = world.getXPPerHour(skillInfo.actionId, skillInfo.ioId, skillInfo.ioId > 0);
+      uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, queuedAction.choiceId);
       bool consumeAll = skillEndTime <= block.timestamp;
       if (consumeAll) {
         // Fully consume this skill
-        elapsedTime = skillInfo.timespan;
-        pointsAccured = (uint32(skillInfo.timespan) * xpPerHour) / 3600;
+        elapsedTime = queuedAction.timespan;
+        pointsAccured = (uint32(queuedAction.timespan) * xpPerHour) / 3600;
         if (speedMultiplier[_tokenId] > 1) {
           pointsAccured *= speedMultiplier[_tokenId];
         }
       } else {
         // partially consume
-        elapsedTime = uint16(block.timestamp - skillInfo.startTime);
+        elapsedTime = uint16(block.timestamp - queuedAction.startTime);
         skillEndTime = uint40(block.timestamp);
         pointsAccured = (uint32(elapsedTime) * xpPerHour) / 3600;
         if (speedMultiplier[_tokenId] > 1) {
@@ -701,23 +651,18 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       //    if (inputTokenId1 > NONE) {
 
       // Create some items if necessary (smithing ores to bars for instance)
-      uint16 numRemaining1;
-      uint16 numRemaining2;
-      uint16 numRemaining3;
-      if (skillInfo.ioId != 0) {
+      uint16 foodConsumed;
+      uint16 numConsumed;
+      if (queuedAction.choiceId != 0) {
         uint16 modifiedElapsedTime = speedMultiplier[_tokenId] > 1
           ? elapsedTime * speedMultiplier[_tokenId]
           : elapsedTime;
 
         // This also unequips.
-        (numRemaining1, numRemaining2, numRemaining3) = PlayerNFTLibrary.processIO(
+        (foodConsumed, numConsumed) = PlayerNFTLibrary.processConsumables(
           _from,
           _tokenId,
-          skillInfo.actionId,
-          skillInfo.auxNumToEquip1,
-          skillInfo.auxNumToEquip2,
-          skillInfo.auxNumToEquip3,
-          skillInfo.ioId,
+          queuedAction,
           modifiedElapsedTime,
           world,
           itemNFT,
@@ -727,33 +672,30 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       }
 
       if (skillEndTime > block.timestamp) {
-        uint40 end = skillInfo.startTime + skillInfo.timespan;
+        uint40 end = queuedAction.startTime + queuedAction.timespan;
+
+        QueuedAction memory remainingAction = queuedAction;
+        remainingAction.startTime = uint40(prevEndTime);
+        remainingAction.timespan = uint16(end - prevEndTime);
+        remainingAction.numRegenerate -= uint8(foodConsumed);
+        remainingAction.num -= uint8(numConsumed);
 
         // Build a list of the skills queued that remain
-        remainingSkills[length] = SkillInfo({
-          actionId: skillInfo.actionId,
-          startTime: uint40(block.timestamp),
-          timespan: uint16(end - block.timestamp),
-          itemEquipped: skillInfo.itemEquipped,
-          actionType: skillInfo.actionType,
-          ioId: skillInfo.ioId,
-          auxNumToEquip1: uint8(numRemaining1),
-          auxNumToEquip2: uint8(numRemaining2),
-          auxNumToEquip3: uint8(numRemaining3)
-        });
+        remainingSkills[length] = remainingAction;
 
+        prevEndTime = block.timestamp + remainingAction.timespan;
         length = i + 1;
       }
 
       if (pointsAccured > 0) {
-        Skill skill = world.getSkill(skillInfo.actionId);
+        Skill skill = world.getSkill(queuedAction.actionId);
         skillPoints[_tokenId][skill] += pointsAccured; // Update this later, just base it on time elapsed
         emit AddSkillPoints(_tokenId, skill, pointsAccured);
 
         // Should just do the new ones
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerNFTLibrary.getLoot(
           _from,
-          skillInfo.actionId,
+          queuedAction.actionId,
           skillEndTime,
           elapsedTime,
           world,
@@ -771,13 +713,24 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         allPointsAccured += pointsAccured;
       }
 
-      if (skillInfo.itemEquipped != NONE) {
-        if (elapsedTime == skillInfo.timespan) {
+      if (queuedAction.rightArmEquipmentTokenId != NONE) {
+        if (elapsedTime == queuedAction.timespan) {
           // Fully consume this skill so unequip w.e we had equiped
           // TODO: This would also remove it if you had same action queued up later though
-          ItemStat memory itemStats = itemNFT.getItemStats(skillInfo.itemEquipped); // Sword, Bow, staff, fishing rod
-          users.unequip(_from, skillInfo.itemEquipped);
-          emit Unequip(_tokenId, skillInfo.itemEquipped, itemStats.stats, 1);
+          ItemStat memory itemStats = itemNFT.getItemStats(queuedAction.rightArmEquipmentTokenId); // Sword, Bow, staff, fishing rod
+          users.unequip(_from, queuedAction.rightArmEquipmentTokenId);
+          emit Unequip(_tokenId, queuedAction.rightArmEquipmentTokenId, itemStats.stats, 1);
+        } else {
+          // TODO unequip some consumables like food
+        }
+      }
+      if (queuedAction.leftArmEquipmentTokenId != NONE) {
+        if (elapsedTime == queuedAction.timespan) {
+          // Fully consume this skill so unequip w.e we had equiped
+          // TODO: This would also remove it if you had same action queued up later though
+          ItemStat memory itemStats = itemNFT.getItemStats(queuedAction.leftArmEquipmentTokenId); // Shield
+          users.unequip(_from, queuedAction.leftArmEquipmentTokenId);
+          emit Unequip(_tokenId, queuedAction.leftArmEquipmentTokenId, itemStats.stats, 1);
         } else {
           // TODO unequip some consumables like food
         }

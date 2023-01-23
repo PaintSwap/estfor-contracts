@@ -28,8 +28,8 @@ contract World is VRFConsumerBaseV2, Ownable {
   event AddDynamicActions(uint[] actionIds);
   event RemoveDynamicActions(uint[] actionIds);
 
-  event AddIO(uint actionId, uint ioId, NonCombat craftDetails);
-  event AddIOs(uint actionId, uint startIoId, NonCombat[] craftDetails);
+  event AddActionChoice(uint actionId, uint actionChoiceId, ActionChoice choice);
+  event AddActionChoices(uint actionId, uint startActionChoice, ActionChoice[] choice);
 
   VRFCoordinatorV2Interface COORDINATOR;
 
@@ -60,11 +60,11 @@ contract World is VRFConsumerBaseV2, Ownable {
 
   mapping(uint => ActionInfo) public actions; // action id => base action info
   uint public lastActionId = 1;
-  uint public ioId = 1;
+  uint public actionChoiceId = 1;
   uint[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  mapping(uint => mapping(uint => NonCombat)) public ios; // action id => (craft id => craft details). Crafting isn't the skill but general
+  mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
   mapping(uint => ActionReward[]) dropRewards; // action id => dropRewards
   mapping(uint => ActionLoot[]) lootChances; // action id => loot chances
 
@@ -186,8 +186,11 @@ contract World is VRFConsumerBaseV2, Ownable {
     );
   }
 
-  function getXPPerHour(uint16 _actionId, uint16 _ioId, bool fromIoId) external view returns (uint16 xpPerHour) {
-    return fromIoId ? ios[_actionId][_ioId].baseXPPerHour : actions[_actionId].baseXPPerHour;
+  function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint16 xpPerHour) {
+    return
+      _actionChoiceId != NONE
+        ? actionChoices[_actionId][_actionChoiceId].baseXPPerHour
+        : actions[_actionId].baseXPPerHour;
   }
 
   function _setAction(uint _actionId, Action calldata _action) private {
@@ -225,28 +228,23 @@ contract World is VRFConsumerBaseV2, Ownable {
     emit EditAction(_actionId, _action);
   }
 
-  function addIO(uint _actionId, NonCombat calldata _craftDetails) external onlyOwner {
-    uint currentIoId = ioId;
-    ios[_actionId][currentIoId] = _craftDetails;
-    emit AddIO(_actionId, currentIoId, _craftDetails);
-    ioId = currentIoId + 1;
+  // actionId of 0 means it is not tied to a specific action
+  function addActionChoice(uint _actionId, ActionChoice calldata _actionChoice) external onlyOwner {
+    uint currentActionChoiceId = actionChoiceId;
+    actionChoices[_actionId][currentActionChoiceId] = _actionChoice;
+    emit AddActionChoice(_actionId, currentActionChoiceId, _actionChoice);
+    actionChoiceId = currentActionChoiceId + 1;
   }
 
-  function addIOs(uint _actionId, NonCombat[] calldata _craftingDetails) external onlyOwner {
-    require(_craftingDetails.length > 0);
-    uint currentIoId = ioId;
-    for (uint i; i < _craftingDetails.length; ++i) {
-      ios[_actionId][currentIoId] = _craftingDetails[i];
+  function addActionChoices(uint _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
+    require(_actionChoices.length > 0);
+    uint currentActionChoiceId = actionChoiceId;
+    for (uint i; i < _actionChoices.length; ++i) {
+      actionChoices[_actionId][currentActionChoiceId] = _actionChoices[i];
     }
-    emit AddIOs(_actionId, currentIoId, _craftingDetails);
-    ioId = currentIoId + _craftingDetails.length;
+    emit AddActionChoices(_actionId, currentActionChoiceId, _actionChoices);
+    actionChoiceId = currentActionChoiceId + _actionChoices.length;
   }
-
-  /*
-  function removeCrafting(uint _actionId, uint16 _craftId) external onlyOwner {
-  } */
-
-  // function addMagicAttack
 
   function setAvailable(uint _actionId, bool _isAvailable) external onlyOwner {
     require(actions[_actionId].skill != Skill.NONE, "Action does not exist");

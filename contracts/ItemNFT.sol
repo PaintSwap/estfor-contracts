@@ -125,9 +125,9 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     return bytes(tokenURIs[_tokenId]).length != 0;
   }
 
-  function getItemStats(uint16 _item) external view returns (ItemStat memory) {
-    require(itemStats[_item].exists, "Item doesn't exist");
-    return itemStats[_item];
+  function getItemStats(uint16 _tokenId) external view returns (ItemStat memory) {
+    require(itemStats[_tokenId].exists, "Item doesn't exist");
+    return itemStats[_tokenId];
   }
 
   function _beforeTokenTransfer(
