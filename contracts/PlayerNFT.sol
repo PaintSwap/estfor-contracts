@@ -80,8 +80,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   ItemNFT private itemNFT;
   Users private users;
 
-  mapping(uint => AvatarInfo) private avatars; // avatar id => avatarInfo
-
   error SkillsArrayZero();
   error NotOwner();
   error AvatarNotExists();
@@ -101,6 +99,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     string description;
     string imageURI;
   }
+
+  event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
+  event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
+
+  mapping(uint => AvatarInfo) private avatars; // avatar id => avatarInfo
 
   uint constant LEVEL_5_BOUNDARY = 500;
   uint constant LEVEL_10_BOUNDARY = 10000;
@@ -132,6 +135,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   // Costs nothing to mint, only gas
   function mintPlayer(uint _avatarId, bytes32 _name) external {
+    if (bytes(avatars[_avatarId].description).length == 0) {
+      revert AvatarNotExists();
+    }
     uint currentPlayerId = latestPlayerId;
     emit NewPlayer(currentPlayerId, _avatarId, _name);
 
@@ -142,9 +148,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     _mintStartingItems();
 
-    if (bytes(avatars[_avatarId].description).length == 0) {
-      revert AvatarNotExists();
-    }
     tokenIdToAvatar[currentPlayerId] = _avatarId;
     ++latestPlayerId;
   }
@@ -773,17 +776,19 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
    * Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
    *
    */
-  function _exists(uint256 tokenId) private view returns (bool) {
-    return tokenIdToAvatar[tokenId] != 0;
+  function _exists(uint256 _tokenId) private view returns (bool) {
+    return tokenIdToAvatar[_tokenId] != 0;
   }
 
-  function setAvatar(uint avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
-    avatars[avatarId] = _avatarInfo;
+  function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
+    avatars[_avatarId] = _avatarInfo;
+    emit SetAvatar(_avatarId, _avatarInfo);
   }
 
   function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
     for (uint i; i < _avatarInfos.length; ++i) {
       avatars[_startAvatarId + i] = _avatarInfos[i];
     }
+    emit SetAvatars(_startAvatarId, _avatarInfos);
   }
 }

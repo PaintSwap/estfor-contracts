@@ -423,6 +423,56 @@ type IO = {
   outputTokenId: number;
 };
 
+export const emptyStats = {
+  attack: 0,
+  magic: 0,
+  range: 0,
+  meleeDefence: 0,
+  magicDefence: 0,
+  rangeDefence: 0,
+  health: 0,
+};
+
+type ItemStat = {
+  stats: Stats;
+  equipPosition: EquipPosition;
+  exists: boolean;
+};
+
+type Item = {
+  tokenId: number;
+  itemStat: ItemStat;
+  metadataURI: "someIPFSURI.json";
+};
+
+export const allItems: Item[] = [
+  {
+    tokenId: FIRE_LIGHTER,
+    itemStat: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_AXE,
+    itemStat: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: LOG,
+    itemStat: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: COPPER_ORE,
+    itemStat: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: TIN_ORE,
+    itemStat: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+    metadataURI: "someIPFSURI.json",
+  },
+];
+
 export const allActions: Action[] = [
   {
     actionInfo: {

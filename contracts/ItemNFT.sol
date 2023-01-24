@@ -27,9 +27,9 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   /* Items */
   mapping(uint16 => ItemStat) itemStats;
-  event AddItem(uint16 tokenId, ItemStat itemStats);
-  event AddItems(uint16[] tokenIds, ItemStat[] itemStats);
-  event EditItem(uint16 tokenId, ItemStat itemStats);
+  event AddItem(Item item);
+  event AddItems(Item[] items);
+  event EditItem(Item item);
 
   /* Shop */
   mapping(uint16 => uint) public shopItems; // id => price
@@ -96,6 +96,24 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     _mint(_to, uint(_tokenId), _amount, "");
   }
 
+  function _mintBatchItems(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) internal {
+    uint numNewItems;
+    for (uint i = 0; i < _tokenIds.length; ++i) {
+      require(_tokenIds[i] < type(uint16).max, "id too high");
+      uint existingBalance = itemBalances[_tokenIds[i]];
+      if (existingBalance == 0) {
+        // Brand new item
+        ++numNewItems;
+      }
+
+      itemBalances[_tokenIds[i]] = existingBalance + _amounts[i];
+    }
+    if (numNewItems > 0) {
+      numItems += numNewItems;
+    }
+    _mintBatch(_to, _tokenIds, _amounts, "");
+  }
+
   // Make sure changes here are reflected in TestItemNFT.sol
   function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayerNFT {
     _mintItem(_to, _tokenId, _amount);
@@ -103,17 +121,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   // Can't use Item[] array unfortunately so they don't support array casts
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
-    for (uint i = 0; i < _ids.length; ++i) {
-      require(_ids[i] < type(uint16).max, "id too high");
-      uint existingBalance = itemBalances[_ids[i]];
-      if (existingBalance == 0) {
-        // Brand new item
-        ++numItems;
-      }
-
-      itemBalances[_ids[i]] = existingBalance + _amounts[i];
-    }
-    _mintBatch(_to, _ids, _amounts, "");
+    _mintBatchItems(_to, _ids, _amounts);
   }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
@@ -280,37 +288,43 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     playerNFT = _playerNFT;
   }
 
-  function addItems(
-    uint16[] calldata _itemTokenIds,
-    ItemStat[] calldata _itemStats,
-    string[] calldata _metadataURIs
-  ) external onlyOwner {
-    for (uint i; i < _itemTokenIds.length; ++i) {
-      uint16 itemTokenId = _itemTokenIds[i];
-      require(!itemStats[itemTokenId].exists, "This item was already added");
-      require(_itemStats[i].exists, "Item should exist");
-      itemStats[itemTokenId] = _itemStats[i];
-      tokenURIs[itemTokenId] = _metadataURIs[i];
-    }
-
-    emit AddItems(_itemTokenIds, _itemStats);
+  struct Item {
+    uint16 tokenId;
+    ItemStat stats;
+    string metadataURI;
   }
 
   // Or make it constants and redeploy the contracts
-  function addItem(uint16 _tokenId, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
-    require(!itemStats[_tokenId].exists, "This item was already added");
-    require(_itemStat.exists, "Item doesn't exist");
-    itemStats[_tokenId] = _itemStat;
-    tokenURIs[_tokenId] = _metadataURI;
-    emit AddItem(_tokenId, _itemStat);
+  function addItem(Item calldata _item) external onlyOwner {
+    require(!itemStats[_item.tokenId].exists, "This item was already added");
+    require(_item.stats.exists, "Item doesn't exist"); // TODO: This required?
+    itemStats[_item.tokenId] = _item.stats;
+    tokenURIs[_item.tokenId] = _item.metadataURI;
+    emit AddItem(_item);
   }
 
-  function editItem(uint16 _tokenId, ItemStat calldata _itemStat, string calldata _metadataURI) external onlyOwner {
-    require(itemStats[_tokenId].exists, "This item was not added yet");
-    require(itemStats[_tokenId].equipPosition == _itemStat.equipPosition, "Equipment position should not change");
-    itemStats[_tokenId] = _itemStat;
-    tokenURIs[_tokenId] = _metadataURI;
-    emit EditItem(_tokenId, _itemStat);
+  function addItems(Item[] calldata _items) external onlyOwner {
+    for (uint i; i < _items.length; ++i) {
+      Item calldata item = _items[i];
+      uint16 itemTokenId = item.tokenId;
+      require(!itemStats[itemTokenId].exists, "This item was already added");
+      require(item.stats.exists, "Item should exist");
+      itemStats[itemTokenId] = item.stats;
+      tokenURIs[itemTokenId] = item.metadataURI;
+    }
+
+    emit AddItems(_items);
+  }
+
+  function editItem(Item calldata _item) external onlyOwner {
+    require(itemStats[_item.tokenId].exists, "This item was not added yet");
+    require(
+      itemStats[_item.tokenId].equipPosition == _item.stats.equipPosition,
+      "Equipment position should not change"
+    );
+    itemStats[_item.tokenId] = _item.stats;
+    tokenURIs[_item.tokenId] = _item.metadataURI;
+    emit EditItem(_item);
   }
 
   // Spend brush to buy some things from the shop

@@ -8,7 +8,10 @@ enum Skill {
   DEFENCE,
   RANGED,
   MAGIC,
+  ATTACK_DEFENCE, // combo
+  RANGED_DEFENCE, // combo
   MINING,
+  MAGIC_DEFENCE, // combo
   WOODCUTTING,
   FISHING,
   SMITHING,
@@ -89,6 +92,7 @@ uint16 constant BOOTS_MAX = BOOTS_BASE + 254;
 
 // Combat (right arm) (2048 - 2303)
 uint16 constant COMBAT_BASE = 2048;
+uint16 constant MELEE_BASE = 2048;
 uint16 constant BRONZE_SWORD = COMBAT_BASE;
 uint16 constant IRON_SWORD = COMBAT_BASE + 1;
 uint16 constant MITHRIL_SWORD = COMBAT_BASE + 2;
@@ -96,6 +100,7 @@ uint16 constant ADAMANTINE_SWORD = COMBAT_BASE + 3;
 uint16 constant RUNITE_SWORD = COMBAT_BASE + 4;
 uint16 constant TITANIUM_SWORD = COMBAT_BASE + 5;
 uint16 constant ORCHALCUM_SWORD = COMBAT_BASE + 6;
+uint16 constant MELEE_MAX = COMBAT_BASE + 50;
 uint16 constant COMBAT_MAX = COMBAT_BASE + 255;
 
 // Combat (left arm, shields) (2304 - 2559)
@@ -245,6 +250,17 @@ uint16 constant TITANIUM_ORE = ORE_BASE + 13;
 uint16 constant ORCHALCUM_ORE = ORE_BASE + 14;
 uint16 constant ORE_MAX = ORE_BASE + 255;
 
+// Arrows
+uint16 constant ARROWS_BASE = 11776;
+uint16 constant BRONZE_ARROWS = ORE_BASE;
+uint16 constant ARROWS_MAX = ARROWS_BASE + 255;
+
+// Scrolls
+uint16 constant SCROLLS_BASE = 12032;
+uint16 constant AIR_SCROLLS = SCROLLS_BASE;
+uint16 constant FIRE_SCROLLS = SCROLLS_BASE + 1;
+uint16 constant SCROLLS_MAX = SCROLLS_BASE + 255;
+
 // MISC
 uint16 constant MYSTERY_BOX = 65535;
 uint16 constant RAID_PASS = MYSTERY_BOX - 1;
@@ -325,7 +341,10 @@ struct Equipment {
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId
-struct NonCombat {
+struct ActionChoice {
+  Skill skill;
+  uint32 diff;
+  uint16 rate; // rate of output produced per hour
   uint16 baseXPPerHour;
   uint32 minSkillPoints;
   uint16 inputTokenId1;
@@ -334,8 +353,25 @@ struct NonCombat {
   uint8 num2;
   uint16 inputTokenId3;
   uint8 num3;
-  uint16 outputTokenId; // Always 1
-  uint16 rate; // rate of output produced per hour
+  uint16 outputTokenId; // Always num of 1
+}
+
+struct QueuedAction {
+  uint16 actionId;
+  uint16 potionId; // Potion (combat, non-combat, can only equip 1)
+  uint16 regenerateId; // Food (combat), maybe something for non-combat later
+  uint8 numRegenerate;
+  uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
+  uint8 num;
+  uint16 choiceId1; // Reserved (TBD)
+  uint8 num1;
+  uint16 choiceId2; // Reserved (TBD)
+  uint8 num2;
+  Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill. Attack/defence can also be used
+  uint16 timespan; // How long to queue the action for
+  uint16 rightArmEquipmentTokenId; // Axe/Sword/bow, can be empty
+  uint16 leftArmEquipmentTokenId; // Shield, can be empty
+  uint40 startTime; // Filled in by the function
 }
 
 struct ActionInfo {
@@ -347,6 +383,6 @@ struct ActionInfo {
   // These are put here for efficiency even if not needed
   uint16 itemTokenIdRangeMin; // Inclusive
   uint16 itemTokenIdRangeMax; // Inclusive
-  uint16 auxItemTokenIdRangeMin; // arrows, food
+  uint16 auxItemTokenIdRangeMin; // Logs etc.. TODO Needed?
   uint16 auxItemTokenIdRangeMax;
 }
