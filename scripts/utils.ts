@@ -433,42 +433,42 @@ export const emptyStats = {
   health: 0,
 };
 
-type ItemStat = {
-  stats: Stats;
-  equipPosition: EquipPosition;
-  exists: boolean;
-};
-
 type Item = {
   tokenId: number;
-  itemStat: ItemStat;
+  equipPosition: EquipPosition;
+  stats: Stats;
   metadataURI: "someIPFSURI.json";
 };
 
 export const allItems: Item[] = [
   {
     tokenId: FIRE_LIGHTER,
-    itemStat: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+    stats: emptyStats,
+    equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
   {
     tokenId: BRONZE_AXE,
-    itemStat: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+    stats: emptyStats,
+    equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
   {
     tokenId: LOG,
-    itemStat: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+    stats: emptyStats,
+    equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
   },
   {
     tokenId: COPPER_ORE,
-    itemStat: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+    stats: emptyStats,
+    equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
   },
   {
     tokenId: TIN_ORE,
-    itemStat: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+    stats: emptyStats,
+    equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
   },
 ];

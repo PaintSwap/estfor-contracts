@@ -290,40 +290,35 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   struct Item {
     uint16 tokenId;
-    ItemStat stats;
+    Stats stats;
+    EquipPosition equipPosition;
     string metadataURI;
+  }
+
+  function _setItem(Item calldata _item) private {
+    itemStats[_item.tokenId] = ItemStat({stats: _item.stats, exists: true, equipPosition: _item.equipPosition});
+    tokenURIs[_item.tokenId] = _item.metadataURI;
   }
 
   // Or make it constants and redeploy the contracts
   function addItem(Item calldata _item) external onlyOwner {
-    require(!itemStats[_item.tokenId].exists, "This item was already added");
-    require(_item.stats.exists, "Item doesn't exist"); // TODO: This required?
-    itemStats[_item.tokenId] = _item.stats;
-    tokenURIs[_item.tokenId] = _item.metadataURI;
+    require(!_exists(_item.tokenId), "This item was already added");
+    _setItem(_item);
     emit AddItem(_item);
   }
 
   function addItems(Item[] calldata _items) external onlyOwner {
     for (uint i; i < _items.length; ++i) {
-      Item calldata item = _items[i];
-      uint16 itemTokenId = item.tokenId;
-      require(!itemStats[itemTokenId].exists, "This item was already added");
-      require(item.stats.exists, "Item should exist");
-      itemStats[itemTokenId] = item.stats;
-      tokenURIs[itemTokenId] = item.metadataURI;
+      require(!_exists(_items[i].tokenId), "This item was already added");
+      _setItem(_items[i]);
     }
-
     emit AddItems(_items);
   }
 
   function editItem(Item calldata _item) external onlyOwner {
-    require(itemStats[_item.tokenId].exists, "This item was not added yet");
-    require(
-      itemStats[_item.tokenId].equipPosition == _item.stats.equipPosition,
-      "Equipment position should not change"
-    );
-    itemStats[_item.tokenId] = _item.stats;
-    tokenURIs[_item.tokenId] = _item.metadataURI;
+    require(_exists(_item.tokenId), "This item was not added yet");
+    require(itemStats[_item.tokenId].equipPosition == _item.equipPosition, "Equipment position should not change");
+    _setItem(_item);
     emit EditItem(_item);
   }
 

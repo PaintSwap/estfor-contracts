@@ -112,7 +112,8 @@ describe("Player", () => {
     };
     await itemNFT.addItem({
       tokenId: BRONZE_GAUNTLETS,
-      stats: {stats, equipPosition: EquipPosition.ARMS, exists: true},
+      stats,
+      equipPosition: EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
     await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // Don't own any
@@ -134,7 +135,8 @@ describe("Player", () => {
     };
     await itemNFT.addItem({
       tokenId: BRONZE_GAUNTLETS,
-      stats: {stats, equipPosition: EquipPosition.ARMS, exists: true},
+      stats,
+      equipPosition: EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -171,7 +173,8 @@ describe("Player", () => {
       };
       await itemNFT.addItem({
         tokenId: BRONZE_GAUNTLETS,
-        stats: {stats, equipPosition: EquipPosition.ARMS, exists: true},
+        stats,
+        equipPosition: EquipPosition.ARMS,
         metadataURI: "someIPFSURI.json",
       });
     }
@@ -187,7 +190,8 @@ describe("Player", () => {
       };
       await itemNFT.addItem({
         tokenId: BRONZE_TASSETS,
-        stats: {stats, equipPosition: EquipPosition.LEGS, exists: true},
+        stats,
+        equipPosition: EquipPosition.LEGS,
         metadataURI: "someIPFSURI.json",
       });
     }
@@ -226,12 +230,14 @@ describe("Player", () => {
     };
     await itemNFT.addItem({
       tokenId: BRONZE_SWORD,
-      stats: {stats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+      stats,
+      equipPosition: EquipPosition.RIGHT_ARM,
       metadataURI: "someIPFSURI.json",
     });
     await itemNFT.addItem({
       tokenId: BRONZE_GAUNTLETS,
-      stats: {stats, equipPosition: EquipPosition.ARMS, exists: true},
+      stats,
+      equipPosition: EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
     await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // Don't own any
@@ -325,7 +331,8 @@ describe("Player", () => {
 
     await itemNFT.addItem({
       tokenId: BRONZE_AXE,
-      stats: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+      stats: emptyStats,
+      equipPosition: EquipPosition.RIGHT_ARM,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -382,7 +389,8 @@ describe("Player", () => {
 
     await itemNFT.addItem({
       tokenId: BRONZE_AXE,
-      stats: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+      stats: emptyStats,
+      equipPosition: EquipPosition.RIGHT_ARM,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -409,7 +417,8 @@ describe("Player", () => {
     };
     await itemNFT.addItem({
       tokenId: BRONZE_GAUNTLETS,
-      stats: {stats, equipPosition: EquipPosition.ARMS, exists: true},
+      stats,
+      equipPosition: EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
     await itemNFT.testMint(alice.address, BRONZE_SWORD, 1);
@@ -418,7 +427,8 @@ describe("Player", () => {
 
     await itemNFT.addItem({
       tokenId: BRONZE_SWORD,
-      stats: {stats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+      stats,
+      equipPosition: EquipPosition.RIGHT_ARM,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -487,7 +497,8 @@ describe("Player", () => {
 
     await itemNFT.addItem({
       tokenId: BRONZE_GAUNTLETS,
-      stats: {stats, equipPosition: EquipPosition.ARMS, exists: true},
+      stats,
+      equipPosition: EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -596,7 +607,8 @@ describe("Player", () => {
 
       await itemNFT.addItem({
         tokenId: BRONZE_AXE,
-        stats: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        stats: emptyStats,
+        equipPosition: EquipPosition.RIGHT_ARM,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -667,13 +679,15 @@ describe("Player", () => {
 
       await itemNFT.addItem({
         tokenId: FIRE_LIGHTER,
-        stats: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        stats: emptyStats,
+        equipPosition: EquipPosition.RIGHT_ARM,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         tokenId: LOG,
-        stats: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -712,7 +726,8 @@ describe("Player", () => {
         await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
         await itemNFT.addItem({
           tokenId: BRONZE_AXE,
-          stats: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+          stats: emptyStats,
+          equipPosition: EquipPosition.RIGHT_ARM,
           metadataURI: "someIPFSURI.json",
         });
         const timespan = 7200;
@@ -774,7 +789,8 @@ describe("Player", () => {
         await itemNFT.testMint(alice.address, FIRE_LIGHTER, 1);
         await itemNFT.addItem({
           tokenId: FIRE_LIGHTER,
-          stats: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+          stats: emptyStats,
+          equipPosition: EquipPosition.RIGHT_ARM,
           metadataURI: "someIPFSURI.json",
         });
         const timespan = 3600;
@@ -802,7 +818,8 @@ describe("Player", () => {
 
       await itemNFT.addItem({
         tokenId: LOG,
-        stats: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -861,7 +878,8 @@ describe("Player", () => {
 
       await itemNFT.addItem({
         tokenId: BRONZE_PICKAXE,
-        stats: {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        stats: emptyStats,
+        equipPosition: EquipPosition.RIGHT_ARM,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -932,13 +950,15 @@ describe("Player", () => {
 
       await itemNFT.addItem({
         tokenId: COAL_ORE,
-        stats: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         tokenId: MITHRIL_ORE,
-        stats: {stats: emptyStats, equipPosition: EquipPosition.AUX, exists: true},
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1008,7 +1028,7 @@ describe("Player", () => {
 
       await itemNFT.addItem(
         BRONZE_AXE,
-        {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, exists: true},
+        {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, 
         "someIPFSURI.json"
       );
 

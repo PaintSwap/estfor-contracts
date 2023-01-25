@@ -295,6 +295,7 @@ enum EquipPosition {
   BOOTS,
   SPARE1,
   SPARE2,
+
   LEFT_ARM,
   RIGHT_ARM,
   ARROW_SATCHEL,
