@@ -31,10 +31,15 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   event AddItems(Item[] items);
   event EditItem(Item item);
 
+  struct ShopItem {
+    uint16 tokenId;
+    uint128 price;
+  }
+
   /* Shop */
-  mapping(uint16 => uint) public shopItems; // id => price
-  event AddShopItem(uint16 tokenId, uint price);
-  event AddShopItems(uint16[] tokenIds, uint[] prices);
+  mapping(uint16 => uint256) public shopItems; // id => price
+  event AddShopItem(ShopItem shopItem);
+  event AddShopItems(ShopItem[] shopItems);
   event RemoveShopItem(uint16 tokenId);
   event Buy(address buyer, uint16 tokenId, uint quantity, uint price);
   event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
@@ -262,7 +267,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
-    require(totalBrush >= _minExpectedBrush);
+    require(totalBrush >= _minExpectedBrush, "Min expected brush not reached");
     _burn(msg.sender, uint(_tokenId), _quantity);
     brush.transfer(msg.sender, totalBrush);
     emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
@@ -323,22 +328,21 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   // Spend brush to buy some things from the shop
-  function addShopItem(uint16 _tokenId, uint _price) external onlyOwner {
-    shopItems[_tokenId] = _price;
-    emit AddShopItem(_tokenId, _price);
+  function addShopItem(ShopItem calldata _shopItem) external onlyOwner {
+    shopItems[_shopItem.tokenId] = _shopItem.price;
+    emit AddShopItem(_shopItem);
   }
 
-  function addShopItems(uint16[] calldata _tokenIds, uint[] calldata _prices) external onlyOwner {
-    require(_tokenIds.length == _prices.length, "Argument length mismatch");
-    require(_tokenIds.length > 0, "length empty");
+  function addShopItems(ShopItem[] calldata _shopItems) external onlyOwner {
+    require(_shopItems.length > 0, "length empty");
     uint i;
     do {
-      shopItems[_tokenIds[i]] = _prices[i];
+      shopItems[_shopItems[i].tokenId] = _shopItems[i].price;
       unchecked {
         ++i;
       }
-    } while (i < _tokenIds.length);
-    emit AddShopItems(_tokenIds, _prices);
+    } while (i < _shopItems.length);
+    emit AddShopItems(_shopItems);
   }
 
   function removeShopItem(uint16 _tokenId) external onlyOwner {

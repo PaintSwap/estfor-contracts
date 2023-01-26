@@ -16,7 +16,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 999999,
+        runs: 320,
         details: {
           yul: true,
         },
@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string],
-      gasPrice: 36000000000,
+      gasPrice: 900000000000,
     },
   },
   contractSizer: {

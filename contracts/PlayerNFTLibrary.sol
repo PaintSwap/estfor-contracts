@@ -229,7 +229,7 @@ library PlayerNFTLibrary {
     (
       Skill skill,
       uint32 diff,
-      uint16 rate,
+      uint32 rate,
       uint16 baseXPPerHour,
       uint32 minSkillPoints,
       uint16 inputTokenId1,

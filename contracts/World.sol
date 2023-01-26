@@ -240,10 +240,28 @@ contract World is VRFConsumerBaseV2, Ownable {
     require(_actionChoices.length > 0);
     uint currentActionChoiceId = actionChoiceId;
     for (uint i; i < _actionChoices.length; ++i) {
-      actionChoices[_actionId][currentActionChoiceId] = _actionChoices[i];
+      actionChoices[_actionId][currentActionChoiceId + i] = _actionChoices[i];
     }
     emit AddActionChoices(_actionId, currentActionChoiceId, _actionChoices);
     actionChoiceId = currentActionChoiceId + _actionChoices.length;
+  }
+
+  function addBulkActionChoices(
+    uint[] calldata _actionIds,
+    ActionChoice[][] calldata _actionChoices
+  ) external onlyOwner {
+    require(_actionChoices.length > 0);
+    uint currentActionChoiceId = actionChoiceId;
+    uint count;
+    for (uint i; i < _actionIds.length; ++i) {
+      uint actionId = _actionIds[i];
+      for (uint j; j < _actionChoices[i].length; ++j) {
+        actionChoices[actionId][currentActionChoiceId + count] = _actionChoices[i][j];
+        ++count;
+      }
+      emit AddActionChoices(actionId, currentActionChoiceId + count, _actionChoices[i]);
+    }
+    actionChoiceId = currentActionChoiceId + count;
   }
 
   function setAvailable(uint _actionId, bool _isAvailable) external onlyOwner {

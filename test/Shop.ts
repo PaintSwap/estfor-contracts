@@ -49,13 +49,13 @@ describe("Shop", function () {
 
   it("Set up shop", async () => {
     const {itemNFT} = await loadFixture(deployContracts);
-    await itemNFT.addShopItem(BRONZE_SHIELD, 500);
+    await itemNFT.addShopItem({tokenId: BRONZE_SHIELD, price: 500});
 
     // Check that it's in the shop
     expect(await itemNFT.shopItems(BRONZE_SHIELD)).to.eq(500);
 
     // Update price
-    await itemNFT.addShopItem(BRONZE_SHIELD, 400);
+    await itemNFT.addShopItem({tokenId: BRONZE_SHIELD, price: 400});
     expect(await itemNFT.shopItems(BRONZE_SHIELD)).to.eq(400);
 
     // Doesn't exist
@@ -64,14 +64,21 @@ describe("Shop", function () {
 
   it("Set up shop batch ", async () => {
     const {itemNFT} = await loadFixture(deployContracts);
-    await itemNFT.addShopItems([BRONZE_SHIELD, RAW_HUPPY], [500, 300]);
+    await itemNFT.addShopItems([
+      {tokenId: BRONZE_SHIELD, price: 500},
+      {tokenId: RAW_HUPPY, price: 300},
+    ]);
 
     // Check that it's in the shop
     expect(await itemNFT.shopItems(BRONZE_SHIELD)).to.eq(500);
     expect(await itemNFT.shopItems(RAW_HUPPY)).to.eq(300);
 
     // Replacing should work
-    await itemNFT.addShopItems([BRONZE_SHIELD, RAW_HUPPY, BRONZE_SWORD], [200, 400, 10]);
+    await itemNFT.addShopItems([
+      {tokenId: BRONZE_SHIELD, price: 200},
+      {tokenId: RAW_HUPPY, price: 400},
+      {tokenId: BRONZE_SWORD, price: 10},
+    ]);
 
     // Check that it's in the shop
     expect(await itemNFT.shopItems(BRONZE_SHIELD)).to.eq(200);
@@ -81,7 +88,7 @@ describe("Shop", function () {
 
   it("Buy", async () => {
     const {itemNFT, brush, alice} = await loadFixture(deployContracts);
-    await itemNFT.addShopItem(BRONZE_SHIELD, 500);
+    await itemNFT.addShopItem({tokenId: BRONZE_SHIELD, price: 500});
 
     const quantityBought = 2;
     // Hasn't approved brush yet
@@ -95,8 +102,8 @@ describe("Shop", function () {
 
   it("Buy batch", async () => {
     const {itemNFT, brush, alice} = await loadFixture(deployContracts);
-    await itemNFT.addShopItem(BRONZE_SHIELD, 500);
-    await itemNFT.addShopItem(SAPPHIRE_AMULET, 200);
+    await itemNFT.addShopItem({tokenId: BRONZE_SHIELD, price: 500});
+    await itemNFT.addShopItem({tokenId: SAPPHIRE_AMULET, price: 200});
 
     await brush.mint(alice.address, 900);
     await brush.connect(alice).approve(itemNFT.address, 900);

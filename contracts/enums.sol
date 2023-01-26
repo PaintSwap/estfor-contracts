@@ -325,7 +325,7 @@ struct ItemStat {
 // Loot
 struct ActionReward {
   uint16 itemTokenId;
-  uint16 rate; // num per hour, base 100 (2 decimals)
+  uint32 rate; // num per hour, base 100 (2 decimals)
 }
 struct ActionLoot {
   uint16 itemTokenId;
@@ -345,7 +345,7 @@ struct Equipment {
 struct ActionChoice {
   Skill skill;
   uint32 diff;
-  uint16 rate; // rate of output produced per hour
+  uint32 rate; // rate of output produced per hour
   uint16 baseXPPerHour;
   uint32 minSkillPoints;
   uint16 inputTokenId1;

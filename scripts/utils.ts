@@ -1,6 +1,6 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ContractTransaction, ethers} from "ethers";
-import {boolean} from "hardhat/internal/core/params/argumentTypes";
+import {boolean, string} from "hardhat/internal/core/params/argumentTypes";
 import {PlayerNFT} from "../typechain-types";
 
 // Should match contract
@@ -392,28 +392,17 @@ type ActionLoot = {
 };
 
 type Action = {
-  actionInfo: ActionInfo;
+  info: ActionInfo;
   dropRewards: ActionReward[];
   lootChances: ActionLoot[];
 };
 
-type CombatConsumables = {
+type ActionChoice = {
   skill: Skill;
   diff: number;
-  minSkillPoints: number;
   rate: number;
-  inputTokenId1: number;
-  num1: number;
-  inputTokenId2: number;
-  num2: number;
-  inputTokenId3: number;
-  num3: number;
-};
-
-type IO = {
   baseXPPerHour: number;
   minSkillPoints: number;
-  rate: number;
   inputTokenId1: number;
   num1: number;
   inputTokenId2: number;
@@ -440,7 +429,39 @@ type Item = {
   metadataURI: "someIPFSURI.json";
 };
 
+const bronzeHelmentStats = {
+  attack: 1,
+  magic: 0,
+  range: 0,
+  meleeDefence: 4,
+  magicDefence: 0,
+  rangeDefence: 1,
+  health: 1,
+};
+
+const bronzeGauntletStats = {
+  attack: 0,
+  magic: 0,
+  range: 0,
+  meleeDefence: 1,
+  magicDefence: 0,
+  rangeDefence: 1,
+  health: 0,
+};
+
 export const allItems: Item[] = [
+  {
+    tokenId: BRONZE_HELMET,
+    stats: bronzeHelmentStats,
+    equipPosition: EquipPosition.HEAD,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_GAUNTLETS,
+    stats: bronzeGauntletStats,
+    equipPosition: EquipPosition.ARMS,
+    metadataURI: "someIPFSURI.json",
+  },
   {
     tokenId: FIRE_LIGHTER,
     stats: emptyStats,
@@ -473,9 +494,25 @@ export const allItems: Item[] = [
   },
 ];
 
+type ShopItem = {
+  tokenId: number;
+  price: string;
+};
+
+export const allShopItems: ShopItem[] = [
+  {
+    tokenId: BRONZE_HELMET,
+    price: "20",
+  },
+  {
+    tokenId: BRONZE_AXE,
+    price: "20",
+  },
+];
+
 export const allActions: Action[] = [
   {
-    actionInfo: {
+    info: {
       skill: Skill.WOODCUTTING,
       baseXPPerHour: 25,
       minSkillPoints: 0,
@@ -490,7 +527,7 @@ export const allActions: Action[] = [
     lootChances: [],
   },
   {
-    actionInfo: {
+    info: {
       skill: Skill.FIREMAKING,
       baseXPPerHour: 0, // Decided by the type of log burned
       minSkillPoints: 0,
@@ -505,7 +542,7 @@ export const allActions: Action[] = [
     lootChances: [],
   },
   {
-    actionInfo: {
+    info: {
       skill: Skill.MINING,
       baseXPPerHour: 25,
       minSkillPoints: 0,
@@ -520,7 +557,7 @@ export const allActions: Action[] = [
     lootChances: [],
   },
   {
-    actionInfo: {
+    info: {
       skill: Skill.MINING,
       baseXPPerHour: 35,
       minSkillPoints: 274,
@@ -535,7 +572,7 @@ export const allActions: Action[] = [
     lootChances: [],
   },
   {
-    actionInfo: {
+    info: {
       skill: Skill.SMITHING,
       baseXPPerHour: 0, // Decided by the ores smelted
       minSkillPoints: 0,
@@ -551,11 +588,13 @@ export const allActions: Action[] = [
   },
 ];
 
-export const firemakingIO: IO[] = [
+export const firemakingChoices: ActionChoice[] = [
   {
+    skill: Skill.FIREMAKING,
+    diff: 0,
+    rate: 1220 * 100,
     baseXPPerHour: 25,
     minSkillPoints: 0,
-    rate: 1220 * 100,
     inputTokenId1: LOG,
     num1: 1,
     inputTokenId2: NONE,
@@ -565,9 +604,11 @@ export const firemakingIO: IO[] = [
     outputTokenId: NONE,
   },
   {
+    skill: Skill.FIREMAKING,
+    diff: 0,
+    rate: 1220 * 100,
     baseXPPerHour: 45,
     minSkillPoints: 1021,
-    rate: 1220 * 100,
     inputTokenId1: OAK_LOG,
     num1: 1,
     inputTokenId2: NONE,
@@ -578,11 +619,13 @@ export const firemakingIO: IO[] = [
   },
 ];
 
-export const smithingIO: IO[] = [
+export const smithingChoices: ActionChoice[] = [
   {
+    skill: Skill.SMITHING,
+    diff: 0,
+    rate: 2440 * 100,
     baseXPPerHour: 25,
     minSkillPoints: 0,
-    rate: 2440 * 100,
     inputTokenId1: COPPER_ORE,
     num1: 1,
     inputTokenId2: TIN_ORE,
@@ -592,9 +635,11 @@ export const smithingIO: IO[] = [
     outputTokenId: BRONZE_BAR,
   },
   {
+    skill: Skill.SMITHING,
+    diff: 0,
+    rate: 1220 * 100,
     baseXPPerHour: 35,
     minSkillPoints: 0,
-    rate: 1220 * 100,
     inputTokenId1: IRON_ORE,
     num1: 1,
     inputTokenId2: NONE,
@@ -626,6 +671,7 @@ export const smithingIO: IO[] = [
 // Shield optional
 
 // Options
+/*
 export const allCombatSubActions: CombatConsumables[] = [
   {
     skill: Skill.RANGED,
@@ -653,3 +699,4 @@ export const allCombatSubActions: CombatConsumables[] = [
     num3: 0,
   },
 ];
+*/

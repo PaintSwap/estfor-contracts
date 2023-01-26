@@ -18,8 +18,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   event NewPlayer(uint tokenId, uint avatarId, bytes32 name);
   event EditPlayer(uint tokenId, bytes32 newName);
 
-  event Equip(uint tokenId, uint16 itemTokenId, Stats statChanges, uint amount);
-  event Unequip(uint tokenId, uint16 itemTokenId, Stats statChanges, uint amount);
+  event Equip(uint tokenId, uint16 itemTokenId, uint amount);
+  event Unequip(uint tokenId, uint16 itemTokenId, uint amount);
   event RemoveAllEquipment(uint tokenId);
   event AddSkillPoints(uint tokenId, Skill skill, uint32 points);
 
@@ -253,7 +253,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     ItemStat memory itemStats = itemNFT.getItemStats(_equippedTokenId);
     updatePlayerStats(player, itemStats.stats, false);
     users.unequip(_from, _equippedTokenId);
-    emit Unequip(_tokenId, _equippedTokenId, itemStats.stats, 1);
+    emit Unequip(_tokenId, _equippedTokenId, 1);
   }
 
   // Absolute setting of equipment
@@ -288,7 +288,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       // TODO: Bulk add all these
       updatePlayerStats(player, stats, true);
       users.equip(from, itemTokenId);
-      emit Equip(_tokenId, itemTokenId, stats, 1);
+      emit Equip(_tokenId, itemTokenId, 1);
     }
 
     // Now set the slot once
@@ -347,7 +347,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // This will check the user has enough balance inside
     updatePlayerStats(player, stats, true);
     users.equip(msg.sender, _itemTokenId);
-    emit Equip(_tokenId, _itemTokenId, stats, 1);
+    emit Equip(_tokenId, _itemTokenId, 1);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
@@ -390,9 +390,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     if (_itemTokenId == NONE || _amount == 0) {
       return;
     }
-    ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
     users.minorEquip(msg.sender, _itemTokenId, _amount);
-    emit Equip(_tokenId, _itemTokenId, itemStats.stats, _amount);
+    emit Equip(_tokenId, _itemTokenId, _amount);
   }
 
   function _addQueueActionMinorEquipment(uint _tokenId, QueuedAction memory _queuedAction) private {
@@ -407,7 +406,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       (
         Skill skill,
         uint32 diff,
-        uint16 rate,
+        uint32 rate,
         uint16 baseXPPerHour,
         uint32 minSkillPoints,
         uint16 inputTokenId1,
@@ -720,9 +719,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         if (elapsedTime == queuedAction.timespan) {
           // Fully consume this skill so unequip w.e we had equiped
           // TODO: This would also remove it if you had same action queued up later though
-          ItemStat memory itemStats = itemNFT.getItemStats(queuedAction.rightArmEquipmentTokenId); // Sword, Bow, staff, fishing rod
           users.unequip(_from, queuedAction.rightArmEquipmentTokenId);
-          emit Unequip(_tokenId, queuedAction.rightArmEquipmentTokenId, itemStats.stats, 1);
+          emit Unequip(_tokenId, queuedAction.rightArmEquipmentTokenId, 1);
         } else {
           // TODO unequip some consumables like food
         }
@@ -731,9 +729,8 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         if (elapsedTime == queuedAction.timespan) {
           // Fully consume this skill so unequip w.e we had equiped
           // TODO: This would also remove it if you had same action queued up later though
-          ItemStat memory itemStats = itemNFT.getItemStats(queuedAction.leftArmEquipmentTokenId); // Shield
           users.unequip(_from, queuedAction.leftArmEquipmentTokenId);
-          emit Unequip(_tokenId, queuedAction.leftArmEquipmentTokenId, itemStats.stats, 1);
+          emit Unequip(_tokenId, queuedAction.leftArmEquipmentTokenId, 1);
         } else {
           // TODO unequip some consumables like food
         }

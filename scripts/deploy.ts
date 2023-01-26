@@ -1,5 +1,19 @@
 import {ethers} from "hardhat";
-import {createPlayer, EquipPosition, getActionId, Skill} from "./utils";
+import {
+  allActions,
+  allItems,
+  allShopItems,
+  BRONZE_AXE,
+  BRONZE_GAUNTLETS,
+  BRONZE_HELMET,
+  createPlayer,
+  firemakingChoices,
+  LOG,
+  NONE,
+  QueuedAction,
+  Skill,
+  smithingChoices,
+} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -10,7 +24,7 @@ async function main() {
   if (network.chainId == 31337) {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const brush = await MockBrushToken.deploy();
-    await brush.mint(owner.address, 10000);
+    await brush.mint(owner.address, 10000000000000);
     brushAddress = brush.address;
   } else if (network.chainId == 250) {
     // Fantom mainnet
@@ -58,14 +72,16 @@ async function main() {
   console.log("setNFTs");
 
   const startAvatarId = 1;
-  const avatarInfos = [{name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
-  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
-  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
-  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
-  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
-  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
-  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"},
-  {name: ethers.utils.formatBytes32String("Name goes here"), description: "Hi I'm a description", imageURI: "1234.png"}];
+  const avatarInfos = [
+    {name: ethers.utils.formatBytes32String("Name 1"), description: "Hi I'm a description1", imageURI: "1.png"},
+    {name: ethers.utils.formatBytes32String("Name 2"), description: "Hi I'm a description2", imageURI: "2.png"},
+    {name: ethers.utils.formatBytes32String("Name 3"), description: "Hi I'm a description3", imageURI: "3.png"},
+    {name: ethers.utils.formatBytes32String("Name 4"), description: "Hi I'm a description4", imageURI: "4.png"},
+    {name: ethers.utils.formatBytes32String("Name 5"), description: "Hi I'm a description5", imageURI: "5.png"},
+    {name: ethers.utils.formatBytes32String("Name 6"), description: "Hi I'm a description6", imageURI: "6.png"},
+    {name: ethers.utils.formatBytes32String("Name 7"), description: "Hi I'm a description7", imageURI: "7.png"},
+    {name: ethers.utils.formatBytes32String("Name 8"), description: "Hi I'm a description8", imageURI: "8.png"},
+  ];
 
   tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
   await tx.wait();
@@ -76,111 +92,88 @@ async function main() {
   console.log("createPlayer");
 
   // === Test stuff ===
-  tx = await itemNFT.addItem(
-    Item.BRUSH,
-    {attribute: Attribute.ATTACK, equipPosition: EquipPosition.AUX, exists: true, canEquip: true, bonus: 0},
-    "someIPFSURI.png"
-  );
+  tx = await itemNFT.addItems(allItems);
   await tx.wait();
   console.log("add item");
 
-  function addItems(
-    [BRONZE_GAUNTLETS,SAPPHIRE_AMULET,BRONZE_AXE],
-    [{stats:  { attack: 2,
-      magic: 0,
-      range: 0,
-      meleeDefence: -1,
-      magicDefence: 0,
-      rangeDefence: 0,
-      health: 12}, equipPosition: EquipPosition.ARMS, exists: true},    {stats: {    attack: 2,
-        magic: 0,
-        range: 0,
-        meleeDefence: -1,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 12,}, equipPosition: EquipPosition.ARMS, exists: true},
-      {stats:{    attack: 2,
-        magic: 0,
-        range: 0,
-        meleeDefence: -1,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 12,}, equipPosition: EquipPosition.ARMS, exists: true},
+  const tokenIds: number[] = [];
+  const amounts: number[] = [];
+  allItems.forEach((item) => {
+    tokenIds.push(item.tokenId);
+    amounts.push(200);
+  });
 
-    ],
-    ["someIPFSURI_1.json", "someIPFSURI_2.json", "someIPFSURI_3.json]
-    uint16[] calldata _itemTokenIds,
-    ItemStat[] calldata _itemStats,
-    string[] calldata _metadataURIs
-  ) external onlyOwner {
-
-  tx = await itemNFT.testMint(owner.address, Item.BRUSH, 1);
+  // Batch mint all the items
+  tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
   await tx.wait();
-  console.log("testMint1");
+  console.log("batch mint");
 
-  tx = await itemNFT.testMint(owner.address, Item.WOODEN_FISHING_ROD, 2);
-  await tx.wait();
-  console.log("testMint2");
-
-  tx = await itemNFT.testMint(owner.address, Item.SAPPHIRE_AMULET, 100);
-  await tx.wait();
-  console.log("testMintShopItem1");
-  tx = await itemNFT.testMint(owner.address, Item.COD, 100);
-  await tx.wait();
-  console.log("testMintShopItem2");
-
-  tx = await playerNFT.equip(playerId, Item.BRUSH);
+  tx = await playerNFT.setEquipment(playerId, [BRONZE_HELMET, BRONZE_GAUNTLETS]);
   await tx.wait();
   console.log("equip");
 
-  const availableAction = true;
-  tx = await world.addAction({
-    skill: Skill.WOODCUTTING,
-    baseXPPerHour: 10,
-    minSkillPoints: 0,
-    isDynamic: false,
-    itemPosition: EquipPosition.RIGHT_ARM,
-    itemTokenIdRangeMin: ,
-    itemTokenIdRangeMax: Item.WAND,
-  }, availableAction);
-//  const actionId = getActionId(tx);
-//  tx = await world.setAvailable(actionId, true);
+  tx = await world.addActions(allActions);
   await tx.wait();
-  console.log("setAvailable");
+  console.log("Add actions");
 
-  tx = await playerNFT.startAction(Skill.PAINT, 100, playerId, false);
+  const fireMakingActionId = allActions.findIndex(action => action.info.skill == Skill.FIREMAKING) + 1;
+  const smithMakingActionId = allActions.findIndex(action => action.info.skill == Skill.SMITHING) + 1;
+
+//  tx = await world.addActionChoices(fireMakingActionId, firemakingChoices);
+  //tx = await world.addActionChoices(smithMakingActionId, smithingChoices);
+  tx = await world.addBulkActionChoices([fireMakingActionId, smithMakingActionId], [firemakingChoices, smithingChoices]);
+
   await tx.wait();
-  console.log("setNFTs");
+  console.log("Add action choices");
+
+  const queuedAction: QueuedAction = {
+    actionId: 1,
+    skill: Skill.WOODCUTTING,
+    potionId: NONE,
+    choiceId: NONE,
+    num: 0,
+    choiceId1: NONE,
+    num1: 0,
+    choiceId2: NONE,
+    num2: 0,
+    regenerateId: NONE,
+    numRegenerate: 0,
+    timespan: 100,
+    rightArmEquipmentTokenId: BRONZE_AXE,
+    leftArmEquipmentTokenId: NONE,
+    startTime: "0",
+  };
+
+  tx = await playerNFT.startAction(queuedAction, playerId, false);
+  await tx.wait();
+  console.log("start actions");
 
   tx = await playerNFT.consumeSkills(playerId);
   await tx.wait();
   console.log("consume skills");
 
   // Add shop item
-  tx = await itemNFT.addShopItems([Item.SAPPHIRE_AMULET, Item.COD], [30, 20]);
+  tx = await itemNFT.addShopItems(allShopItems);
   await tx.wait();
   console.log("add shop");
 
   // Buy from shop
   const brush = await ethers.getContractAt("IBrushToken", brushAddress);
-  tx = await brush.approve(itemNFT.address, "1000");
+  tx = await brush.approve(itemNFT.address, "10000000");
   await tx.wait();
   console.log("Approve brush");
 
-  tx = await itemNFT.buy(Item.SAPPHIRE_AMULET, 1);
+  tx = await itemNFT.buy(BRONZE_HELMET, 1);
   await tx.wait();
   console.log("buy from shop");
 
   // Transfer some brush to the pool so we can sell something
-  tx = await brush.transfer(itemNFT.address, "1000");
+  tx = await brush.transfer(itemNFT.address, "100000");
   await tx.wait();
+  console.log("Transfer some brush");
 
   // Sell to shop (can be anything)
-  tx = await itemNFT.testMint(owner.address, Item.WOODEN_FISHING_ROD, 100);
-  await tx.wait();
-  console.log("testMint2");
-
-  tx = await itemNFT.sell(Item.WOODEN_FISHING_ROD, 1, 1);
+  tx = await itemNFT.sell(LOG, 1, 1);
   await tx.wait();
   console.log("Sell");
 }
