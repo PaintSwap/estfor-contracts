@@ -29,7 +29,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   event RemoveDynamicActions(uint[] actionIds);
 
   event AddActionChoice(uint actionId, uint actionChoiceId, ActionChoice choice);
-  event AddActionChoices(uint actionId, uint startActionChoice, ActionChoice[] choice);
+  event AddActionChoices(uint actionId, uint startActionChoice, ActionChoice[] choices);
 
   VRFCoordinatorV2Interface COORDINATOR;
 
