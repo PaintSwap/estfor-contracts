@@ -116,18 +116,20 @@ async function main() {
   await tx.wait();
   console.log("Add actions");
 
-  const fireMakingActionId = allActions.findIndex(action => action.info.skill == Skill.FIREMAKING) + 1;
-  const smithMakingActionId = allActions.findIndex(action => action.info.skill == Skill.SMITHING) + 1;
+  const fireMakingActionId = allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1;
+  const smithMakingActionId = allActions.findIndex((action) => action.info.skill == Skill.SMITHING) + 1;
 
-//  tx = await world.addActionChoices(fireMakingActionId, firemakingChoices);
-  //tx = await world.addActionChoices(smithMakingActionId, smithingChoices);
-  tx = await world.addBulkActionChoices([fireMakingActionId, smithMakingActionId], [firemakingChoices, smithingChoices]);
+  tx = await world.addBulkActionChoices(
+    [fireMakingActionId, smithMakingActionId],
+    [firemakingChoices, smithingChoices]
+  );
 
   await tx.wait();
   console.log("Add action choices");
 
+  // First woodcutting
   const queuedAction: QueuedAction = {
-    actionId: 1,
+    actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
     skill: Skill.WOODCUTTING,
     potionId: NONE,
     choiceId: NONE,
@@ -147,6 +149,9 @@ async function main() {
   tx = await playerNFT.startAction(queuedAction, playerId, false);
   await tx.wait();
   console.log("start actions");
+
+  tx = await playerNFT.setSpeedMultiplier(playerId, 3600); // Turns 1 hour into 1 second
+  await tx.wait();
 
   tx = await playerNFT.consumeSkills(playerId);
   await tx.wait();
@@ -173,7 +178,7 @@ async function main() {
   console.log("Transfer some brush");
 
   // Sell to shop (can be anything)
-  tx = await itemNFT.sell(LOG, 1, 1);
+  tx = await itemNFT.sell(BRONZE_HELMET, 1, 1);
   await tx.wait();
   console.log("Sell");
 }

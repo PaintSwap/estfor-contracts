@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
+  BRONZE_ARROW,
   BRONZE_AXE,
   BRONZE_GAUNTLETS,
   BRONZE_PICKAXE,
@@ -10,6 +11,7 @@ import {
   COAL_ORE,
   COMBAT_BASE,
   COMBAT_MAX,
+  COOKED_HUPPY,
   COPPER_ORE,
   createPlayer,
   emptyStats,
@@ -277,9 +279,11 @@ describe("Player", () => {
         auxItemTokenIdRangeMin: NONE,
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
+        isCombat: true,
       },
       dropRewards: [],
       lootChances: [],
+      combatStats: emptyStats,
     });
 
     await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
@@ -303,9 +307,11 @@ describe("Player", () => {
         auxItemTokenIdRangeMin: NONE,
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
+        isCombat: false,
       },
       dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
       lootChances: [],
+      combatStats: emptyStats,
     });
     const actionId = await getActionId(tx);
 
@@ -361,9 +367,11 @@ describe("Player", () => {
         auxItemTokenIdRangeMin: NONE,
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
+        isCombat: false,
       },
       dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
       lootChances: [],
+      combatStats: emptyStats,
     });
     const actionId = await getActionId(tx);
 
@@ -443,9 +451,11 @@ describe("Player", () => {
         auxItemTokenIdRangeMin: NONE,
         auxItemTokenIdRangeMax: NONE,
         isAvailable: actionIsAvailable,
+        isCombat: false,
       },
       dropRewards: [],
       lootChances: [],
+      combatStats: emptyStats,
     });
 
     const queuedAction: QueuedAction = {
@@ -579,9 +589,11 @@ describe("Player", () => {
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionIsAvailable,
+          isCombat: false,
         },
         dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
         lootChances: [],
+        combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
 
@@ -635,9 +647,11 @@ describe("Player", () => {
           auxItemTokenIdRangeMin: LOG_BASE,
           auxItemTokenIdRangeMax: LOG_MAX,
           isAvailable: actionIsAvailable,
+          isCombat: false,
         },
         dropRewards: [],
         lootChances: [],
+        combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
 
@@ -718,9 +732,11 @@ describe("Player", () => {
             auxItemTokenIdRangeMin: NONE,
             auxItemTokenIdRangeMax: NONE,
             isAvailable: actionIsAvailable,
+            isCombat: false,
           },
           dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
           lootChances: [],
+          combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
         await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
@@ -763,9 +779,11 @@ describe("Player", () => {
             auxItemTokenIdRangeMin: LOG_BASE,
             auxItemTokenIdRangeMax: LOG_MAX,
             isAvailable: actionIsAvailable,
+            isCombat: false,
           },
           dropRewards: [],
           lootChances: [],
+          combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
 
@@ -850,9 +868,11 @@ describe("Player", () => {
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionIsAvailable,
+          isCombat: false,
         },
         dropRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
         lootChances: [],
+        combatStats: emptyStats,
       });
 
       const actionId = await getActionId(tx);
@@ -905,9 +925,11 @@ describe("Player", () => {
           auxItemTokenIdRangeMin: ORE_BASE,
           auxItemTokenIdRangeMax: ORE_MAX,
           isAvailable: actionIsAvailable,
+          isCombat: false,
         },
         dropRewards: [],
         lootChances: [],
+        combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
 
@@ -983,12 +1005,11 @@ describe("Player", () => {
     });
   });
 
-  /*
   describe("Combat Actions", () => {
-    it("Ranged", async () => {
+    it("Melee", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-      const rate = 100; // per hour
+      const rate = 1; // per hour
       const tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
@@ -1000,17 +1021,20 @@ describe("Player", () => {
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionIsAvailable,
+          isCombat: true,
         },
-        dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: rate * 100}],
         lootChances: [],
+        combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      await itemNFT.testMint(alice.address, BRONZE_SWORD, 1);
+      await itemNFT.testMint(alice.address, COOKED_HUPPY, 255);
       const timespan = 3600;
       const queuedAction: QueuedAction = {
         actionId,
-        skill: Skill.WOODCUTTING,
+        skill: Skill.ATTACK,
         potionId: NONE,
         choiceId: NONE,
         num: 0,
@@ -1018,29 +1042,58 @@ describe("Player", () => {
         num1: 0,
         choiceId2: NONE,
         num2: 0,
-        regenerateId: NONE,
-        numRegenerate: 0,
+        regenerateId: COOKED_HUPPY,
+        numRegenerate: 255,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_AXE,
+        rightArmEquipmentTokenId: BRONZE_SWORD,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
       };
 
-      await itemNFT.addItem(
-        BRONZE_AXE,
-        {stats: emptyStats, equipPosition: EquipPosition.RIGHT_ARM, 
-        "someIPFSURI.json"
-      );
+      await itemNFT.addItem({
+        tokenId: BRONZE_SWORD,
+        stats: emptyStats,
+        equipPosition: EquipPosition.RIGHT_ARM,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        tokenId: BRONZE_ARROW,
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        tokenId: COOKED_HUPPY,
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX, // FOOD
+        metadataURI: "someIPFSURI.json",
+      });
 
       await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
 
-      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await playerNFT.connect(alice).consumeSkills(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.eq(queuedAction.timespan);
+      expect(await playerNFT.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+
       // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
-    }); 
-  });*/
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((timespan * rate) / 3600));
+
+      // TODO Check food is consumed
+    });
+
+    it("Drop rewards", async () => {});
+
+    it("Loot chance", async () => {});
+
+    it("Dead", async () => {
+      // Lose all the XP that would have been gained
+    });
+
+    it("Magic", async () => {});
+  });
 
   /*
   it("Equipment Many", async () => {

@@ -10,12 +10,12 @@ import "./Users.sol";
 // Show all the player stats, return metadata json
 library PlayerNFTLibrary {
   // Same as in PlayerNFT
-  event Unequip(uint tokenId, uint16 itemTokenId, Stats statChanges, uint amount);
+  event Unequip(uint tokenId, uint16 itemTokenId, uint amount);
 
   function uri(
     bytes32 name,
     mapping(Skill => uint32) storage skillPoints,
-    Stats calldata totalStats,
+    CombatStats calldata totalStats,
     bytes32 avatarName,
     string calldata avatarDescription,
     bytes calldata imageURI
@@ -75,7 +75,7 @@ library PlayerNFTLibrary {
     return output;
   }
 
-  function updatePlayerStats(Stats storage _totalStats, Stats memory _stats, bool _add) external {
+  function updatePlayerStats(CombatStats storage _totalStats, CombatStats memory _stats, bool _add) external {
     if (_stats.attack != 0) {
       _totalStats.attack += _add ? _stats.attack : -_stats.attack;
     }
@@ -211,7 +211,7 @@ library PlayerNFTLibrary {
     uint16 numBurn = numProduced * baseNum;
     uint16 numUnequip = _useAll ? totalEquipped : numBurn;
     users.minorUnequip(_from, itemTokenId, numUnequip); // Should be the num attached if fully consumed
-    emit Unequip(_tokenId, itemTokenId, itemNFT.getItemStats(itemTokenId).stats, numUnequip);
+    emit Unequip(_tokenId, itemTokenId, numUnequip);
     itemNFT.burn(_from, itemTokenId, numBurn);
   }
 
@@ -223,6 +223,7 @@ library PlayerNFTLibrary {
     World world,
     ItemNFT itemNFT,
     Users users,
+    CombatStats storage playerStats,
     bool _useAll
   ) external returns (uint16 foodConsumed, uint16 numConsumed) {
     // Fetch the requirements for it
@@ -241,9 +242,27 @@ library PlayerNFTLibrary {
       uint16 outputTokenId
     ) = world.actionChoices(queuedAction.actionId, queuedAction.choiceId);
 
-    // TODO: This is based on the damage done from battling
-    //    uint16 numFoodUsed = uint16((uint(elapsedTime) * rate) / (3600 * 100));
-    foodConsumed = queuedAction.numRegenerate; // _processConsumable(_from, _tokenId, itemNFT, queuedAction.regenerateId, numProduced, num1, queuedAction.numRegenerate, users, _useAll);
+    (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
+    // Figure out how much food should be consumed.
+    // This is based on the damage done from battling
+    if (isCombat) {
+      /* combatStats.attack, */
+      /* playerStats.meleeDefence */
+      foodConsumed = uint16((uint(elapsedTime) * rate) / (3600 * 100));
+
+      // Figure out how much food should be used
+      _processConsumable(
+        _from,
+        _tokenId,
+        itemNFT,
+        queuedAction.regenerateId,
+        foodConsumed,
+        1,
+        queuedAction.numRegenerate,
+        users,
+        _useAll
+      );
+    }
 
     uint16 numProduced = uint16((uint(elapsedTime) * rate) / (3600 * 100));
     numConsumed = numProduced;
@@ -285,7 +304,7 @@ library PlayerNFTLibrary {
     if (_useAll && queuedAction.potionId != NONE) {
       // Consume the potion
       users.minorUnequip(_from, queuedAction.potionId, 1);
-      emit Unequip(_tokenId, queuedAction.potionId, itemNFT.getItemStats(queuedAction.potionId).stats, 1);
+      emit Unequip(_tokenId, queuedAction.potionId, 1);
       itemNFT.burn(_from, queuedAction.potionId, 1);
     }
 

@@ -5,13 +5,13 @@ enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates attack <-> magic
   ATTACK,
-  DEFENCE,
   RANGED,
   MAGIC,
-  ATTACK_DEFENCE, // combo
-  RANGED_DEFENCE, // combo
+  DEFENCE,
+//  MELEE_ATTACK_DEFENCE, // combo
+//  RANGED_ATTACK_DEFENCE, // combo
+//  MAGIC_ATTACK_DEFENCE, // combo
   MINING,
-  MAGIC_DEFENCE, // combo
   WOODCUTTING,
   FISHING,
   SMITHING,
@@ -305,7 +305,7 @@ enum EquipPosition {
 }
 
 // CombatStats
-struct Stats {
+struct CombatStats {
   int8 attack;
   int8 magic;
   int8 range;
@@ -317,7 +317,7 @@ struct Stats {
 }
 
 struct ItemStat {
-  Stats stats;
+  CombatStats stats;
   EquipPosition equipPosition; // If for main equipment
   bool exists;
 }
@@ -380,6 +380,7 @@ struct ActionInfo {
   uint16 baseXPPerHour;
   bool isAvailable;
   bool isDynamic;
+  bool isCombat;
   uint32 minSkillPoints;
   // These are put here for efficiency even if not needed
   uint16 itemTokenIdRangeMin; // Inclusive

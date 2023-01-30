@@ -33,7 +33,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     Armour equipment; // Keep this first
     // These are stored in case individual items are changed later, but also prevents having to read them loads
     // Base attributes
-    Stats totalStats;
+    CombatStats totalStats;
     QueuedAction[] actionQueue;
     uint240 totalSkillPoints;
     uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
@@ -62,14 +62,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   struct ArmourAttributes {
-    Stats helmet;
-    Stats amulet;
-    Stats chestplate;
-    Stats tassets;
-    Stats gauntlets;
-    Stats boots;
-    Stats reserved1;
-    Stats reserved2;
+    CombatStats helmet;
+    CombatStats amulet;
+    CombatStats chestplate;
+    CombatStats tassets;
+    CombatStats gauntlets;
+    CombatStats boots;
+    CombatStats reserved1;
+    CombatStats reserved2;
   }
 
   using EnumerableMap for EnumerableMap.UintToUintMap;
@@ -242,7 +242,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
   }
 
-  function updatePlayerStats(Player storage _player, Stats memory _stats, bool _add) private {
+  function updatePlayerStats(Player storage _player, CombatStats memory _stats, bool _add) private {
     PlayerNFTLibrary.updatePlayerStats(_player.totalStats, _stats, _add);
   }
 
@@ -283,7 +283,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         val := or(val, shl(mul(position, 8), relativeItem))
       }
 
-      Stats memory stats = itemStats.stats;
+      CombatStats memory stats = itemStats.stats;
       // This will check the user has enough balance inside
       // TODO: Bulk add all these
       updatePlayerStats(player, stats, true);
@@ -343,7 +343,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       _unequipMainItem(msg.sender, _tokenId, equippedTokenId);
     }
 
-    Stats memory stats = itemStats.stats;
+    CombatStats memory stats = itemStats.stats;
     // This will check the user has enough balance inside
     updatePlayerStats(player, stats, true);
     users.equip(msg.sender, _itemTokenId);
@@ -604,7 +604,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   uint private constant MAX_LOOT_PER_ACTION = 5;
   mapping(uint => uint16) speedMultiplier; // player id => multiplier, 0 or 1 is diabled
 
-  function setSpeedMultiplier(uint _tokenId, uint8 multiplier) external {
+  function setSpeedMultiplier(uint _tokenId, uint16 multiplier) external {
     // Disable for production code
     speedMultiplier[_tokenId] = multiplier;
   }
@@ -618,14 +618,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     // TODO: Check they have the equipment available
     uint previousSkillPoints = player.totalSkillPoints;
-    uint32 allPointsAccured;
+    uint32 allpointsAccrued;
 
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint length;
     uint prevEndTime = block.timestamp;
     for (uint i = 0; i < player.actionQueue.length; ++i) {
       QueuedAction storage queuedAction = player.actionQueue[i];
-      uint32 pointsAccured;
+      uint32 pointsAccrued;
       uint40 skillEndTime = queuedAction.startTime + queuedAction.timespan;
       uint16 elapsedTime;
 
@@ -634,19 +634,15 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       if (consumeAll) {
         // Fully consume this skill
         elapsedTime = queuedAction.timespan;
-        pointsAccured = (uint32(queuedAction.timespan) * xpPerHour) / 3600;
-        if (speedMultiplier[_tokenId] > 1) {
-          pointsAccured *= speedMultiplier[_tokenId];
-        }
       } else {
         // partially consume
         elapsedTime = uint16(block.timestamp - queuedAction.startTime);
         skillEndTime = uint40(block.timestamp);
-        pointsAccured = (uint32(elapsedTime) * xpPerHour) / 3600;
-        if (speedMultiplier[_tokenId] > 1) {
-          pointsAccured *= speedMultiplier[_tokenId];
-        }
       }
+
+      pointsAccrued =
+        (uint32(elapsedTime) * xpPerHour * (speedMultiplier[_tokenId] > 1 ? speedMultiplier[_tokenId] : 1)) /
+        3600;
 
       // TODO: Check the maximum that might be done
       //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
@@ -669,6 +665,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           world,
           itemNFT,
           users,
+          player.totalStats,
           consumeAll
         );
       }
@@ -689,10 +686,15 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         length = i + 1;
       }
 
-      if (pointsAccured > 0) {
-        Skill skill = world.getSkill(queuedAction.actionId);
-        skillPoints[_tokenId][skill] += pointsAccured; // Update this later, just base it on time elapsed
-        emit AddSkillPoints(_tokenId, skill, pointsAccured);
+      if (pointsAccrued > 0) {
+        Skill skill = queuedAction.skill; // world.getSkill(queuedAction.actionId);
+
+        //        if (skill == Skill.ATTACK_DEFENCE || skill == Skill.RANGED_ATTACK_DEFENCE || skill == Skill.MAGIC_ATTACK_DEFENCE) {
+        // Split them up.
+        //       } else {
+        skillPoints[_tokenId][skill] += pointsAccrued; // Update this later, just base it on time elapsed
+        //       }
+        emit AddSkillPoints(_tokenId, skill, pointsAccrued);
 
         // Should just do the new ones
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerNFTLibrary.getLoot(
@@ -712,7 +714,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
         itemNFT.mintBatch(_from, newIds, newAmounts);
-        allPointsAccured += pointsAccured;
+        allpointsAccrued += pointsAccrued;
       }
 
       if (queuedAction.rightArmEquipmentTokenId != NONE) {
@@ -737,9 +739,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       }
     }
 
-    if (allPointsAccured > 0) {
+    if (allpointsAccrued > 0) {
       // Check if they have levelled up
-      _handleLevelUpRewards(_from, _tokenId, previousSkillPoints, previousSkillPoints + allPointsAccured);
+      _handleLevelUpRewards(_from, _tokenId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
     }
 
     if (remainingSkills.length == 0) {

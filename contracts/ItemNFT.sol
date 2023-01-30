@@ -294,8 +294,8 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   struct Item {
+    CombatStats stats;
     uint16 tokenId;
-    Stats stats;
     EquipPosition equipPosition;
     string metadataURI;
   }

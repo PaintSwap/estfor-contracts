@@ -1,6 +1,5 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ContractTransaction, ethers} from "ethers";
-import {boolean, string} from "hardhat/internal/core/params/argumentTypes";
 import {PlayerNFT} from "../typechain-types";
 
 // Should match contract
@@ -11,7 +10,10 @@ export enum Skill {
   DEFENCE,
   RANGED,
   MAGIC,
+  ATTACK_DEFENCE, // combo
+  RANGED_DEFENCE, // combo
   MINING,
+  MAGIC_DEFENCE, // combo
   WOODCUTTING,
   FISHING,
   SMITHING,
@@ -301,7 +303,7 @@ export enum EquipPosition {
   NONE,
 }
 
-export type Stats = {
+export type CombatStats = {
   attack: number;
   magic: number;
   range: number;
@@ -379,6 +381,7 @@ type ActionInfo = {
   itemTokenIdRangeMax: number;
   auxItemTokenIdRangeMin: number;
   auxItemTokenIdRangeMax: number;
+  isCombat: boolean;
 };
 
 type ActionReward = {
@@ -395,6 +398,7 @@ type Action = {
   info: ActionInfo;
   dropRewards: ActionReward[];
   lootChances: ActionLoot[];
+  combatStats: CombatStats;
 };
 
 type ActionChoice = {
@@ -425,7 +429,7 @@ export const emptyStats = {
 type Item = {
   tokenId: number;
   equipPosition: EquipPosition;
-  stats: Stats;
+  stats: CombatStats;
   metadataURI: "someIPFSURI.json";
 };
 
@@ -446,6 +450,16 @@ const bronzeGauntletStats = {
   meleeDefence: 1,
   magicDefence: 0,
   rangeDefence: 1,
+  health: 0,
+};
+
+const bronzeSwordStats = {
+  attack: 5,
+  magic: 0,
+  range: 0,
+  meleeDefence: 0,
+  magicDefence: 0,
+  rangeDefence: 0,
   health: 0,
 };
 
@@ -471,6 +485,24 @@ export const allItems: Item[] = [
   {
     tokenId: BRONZE_AXE,
     stats: emptyStats,
+    equipPosition: EquipPosition.RIGHT_ARM,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_PICKAXE,
+    stats: emptyStats,
+    equipPosition: EquipPosition.RIGHT_ARM,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: SMALL_NET,
+    stats: emptyStats,
+    equipPosition: EquipPosition.RIGHT_ARM,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_SWORD,
+    stats: bronzeSwordStats,
     equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
@@ -506,7 +538,7 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: BRONZE_AXE,
-    price: "20",
+    price: "30",
   },
 ];
 
@@ -522,9 +554,11 @@ export const allActions: Action[] = [
       auxItemTokenIdRangeMin: NONE,
       auxItemTokenIdRangeMax: NONE,
       isAvailable: true,
+      isCombat: false,
     },
     dropRewards: [{itemTokenId: LOG, rate: 1220 * 100}],
     lootChances: [],
+    combatStats: emptyStats,
   },
   {
     info: {
@@ -537,9 +571,11 @@ export const allActions: Action[] = [
       auxItemTokenIdRangeMin: LOG_BASE,
       auxItemTokenIdRangeMax: LOG_MAX,
       isAvailable: true,
+      isCombat: false,
     },
     dropRewards: [],
     lootChances: [],
+    combatStats: emptyStats,
   },
   {
     info: {
@@ -552,9 +588,11 @@ export const allActions: Action[] = [
       auxItemTokenIdRangeMin: NONE,
       auxItemTokenIdRangeMax: NONE,
       isAvailable: true,
+      isCombat: false,
     },
     dropRewards: [{itemTokenId: COPPER_ORE, rate: 1220 * 100}],
     lootChances: [],
+    combatStats: emptyStats,
   },
   {
     info: {
@@ -567,9 +605,11 @@ export const allActions: Action[] = [
       auxItemTokenIdRangeMin: NONE,
       auxItemTokenIdRangeMax: NONE,
       isAvailable: true,
+      isCombat: false,
     },
     dropRewards: [{itemTokenId: TIN_ORE, rate: 1220 * 100}],
     lootChances: [],
+    combatStats: emptyStats,
   },
   {
     info: {
@@ -582,10 +622,13 @@ export const allActions: Action[] = [
       auxItemTokenIdRangeMin: ORE_BASE,
       auxItemTokenIdRangeMax: ORE_MAX,
       isAvailable: true,
+      isCombat: false,
     },
     dropRewards: [],
     lootChances: [],
+    combatStats: emptyStats,
   },
+  // Combat
 ];
 
 export const firemakingChoices: ActionChoice[] = [

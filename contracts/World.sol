@@ -15,6 +15,7 @@ contract World is VRFConsumerBaseV2, Ownable {
     ActionInfo info;
     ActionReward[] dropRewards;
     ActionLoot[] lootChances;
+    CombatStats combatStats;
   }
 
   event RequestSent(uint256 requestId, uint32 numWords);
@@ -67,6 +68,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
   mapping(uint => ActionReward[]) dropRewards; // action id => dropRewards
   mapping(uint => ActionLoot[]) lootChances; // action id => loot chances
+  mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
 
   constructor(VRFCoordinatorV2Interface coordinator, uint64 _subscriptionId) VRFConsumerBaseV2(address(coordinator)) {
     COORDINATOR = coordinator;
@@ -202,6 +204,9 @@ contract World is VRFConsumerBaseV2, Ownable {
     if (_action.lootChances.length > 0) {
       lootChances[_actionId] = _action.lootChances;
     }
+    if (_action.info.isCombat) {
+      actionCombatStats[_actionId] = _action.combatStats;
+    }
   }
 
   function _addAction(uint _actionId, Action calldata _action) private {
@@ -273,5 +278,12 @@ contract World is VRFConsumerBaseV2, Ownable {
 
   function actionIsAvailable(uint _actionId) external view returns (bool) {
     return actions[_actionId].isAvailable;
+  }
+
+  function getCombatStats(uint _actionId) external view returns (bool isCombat, CombatStats memory stats) {
+    isCombat = actions[_actionId].isCombat;
+    if (isCombat) {
+      stats = actionCombatStats[_actionId];
+    }
   }
 }

@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {COMBAT_BASE, COMBAT_MAX, getActionId, NONE, Skill} from "../scripts/utils";
+import {COMBAT_BASE, COMBAT_MAX, emptyStats, getActionId, NONE, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -100,9 +100,11 @@ describe("World", () => {
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionAvailable,
+          isCombat: true,
         },
         dropRewards: [],
         lootChances: [],
+        combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
@@ -117,9 +119,11 @@ describe("World", () => {
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionAvailable,
+          isCombat: true,
         },
         dropRewards: [],
         lootChances: [],
+        combatStats: emptyStats,
       });
       expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
