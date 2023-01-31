@@ -144,9 +144,11 @@ describe("World", () => {
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionAvailable,
+          isCombat: true
         },
         dropRewards: [],
         lootChances: [],
+        combatStats: emptyStats
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });

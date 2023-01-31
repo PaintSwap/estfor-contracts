@@ -7,20 +7,20 @@ export enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates attack <-> magic
   ATTACK,
-  DEFENCE,
   RANGED,
   MAGIC,
-  ATTACK_DEFENCE, // combo
-  RANGED_DEFENCE, // combo
+  DEFENCE,
+//  MELEE_ATTACK_DEFENCE, // combo
+//  RANGED_ATTACK_DEFENCE, // combo
+//  MAGIC_ATTACK_DEFENCE, // combo
   MINING,
-  MAGIC_DEFENCE, // combo
   WOODCUTTING,
   FISHING,
   SMITHING,
   THIEVING,
   CRAFTING,
   COOKING,
-  FIREMAKING,
+  FIREMAKING
 }
 
 export const NONE = 0;
