@@ -227,6 +227,8 @@ library PlayerNFTLibrary {
     bool _useAll
   ) external returns (uint16 foodConsumed, uint16 numConsumed) {
     // Fetch the requirements for it
+    (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
+
     (
       Skill skill,
       uint32 diff,
@@ -240,15 +242,15 @@ library PlayerNFTLibrary {
       uint16 inputTokenId3,
       uint8 num3,
       uint16 outputTokenId
-    ) = world.actionChoices(queuedAction.actionId, queuedAction.choiceId);
+    ) = world.actionChoices(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
 
-    (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
+    // TODO Should probably move this out?
     if (isCombat) {
       /* combatStats.attack, */
       /* playerStats.meleeDefence */
-      foodConsumed = uint16((uint(elapsedTime) * rate) / (3600 * 100));
+      foodConsumed = uint16((uint(elapsedTime) * 100) / (3600 * 100));
 
       // Figure out how much food should be used
       _processConsumable(
@@ -266,40 +268,41 @@ library PlayerNFTLibrary {
 
     uint16 numProduced = uint16((uint(elapsedTime) * rate) / (3600 * 100));
     numConsumed = numProduced;
-
-    _processConsumable(
-      _from,
-      _tokenId,
-      itemNFT,
-      inputTokenId1,
-      numProduced,
-      num1,
-      queuedAction.num * num1,
-      users,
-      _useAll
-    );
-    _processConsumable(
-      _from,
-      _tokenId,
-      itemNFT,
-      inputTokenId2,
-      numProduced,
-      num2,
-      queuedAction.num * num2,
-      users,
-      _useAll
-    );
-    _processConsumable(
-      _from,
-      _tokenId,
-      itemNFT,
-      inputTokenId3,
-      numProduced,
-      num3,
-      queuedAction.num * num3,
-      users,
-      _useAll
-    );
+    if (numConsumed > 0) {
+      _processConsumable(
+        _from,
+        _tokenId,
+        itemNFT,
+        inputTokenId1,
+        numProduced,
+        num1,
+        queuedAction.num * num1,
+        users,
+        _useAll
+      );
+      _processConsumable(
+        _from,
+        _tokenId,
+        itemNFT,
+        inputTokenId2,
+        numProduced,
+        num2,
+        queuedAction.num * num2,
+        users,
+        _useAll
+      );
+      _processConsumable(
+        _from,
+        _tokenId,
+        itemNFT,
+        inputTokenId3,
+        numProduced,
+        num3,
+        queuedAction.num * num3,
+        users,
+        _useAll
+      );
+    }
 
     if (_useAll && queuedAction.potionId != NONE) {
       // Consume the potion

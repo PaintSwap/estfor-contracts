@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
+  AIR_SCROLL,
   BRONZE_ARROW,
   BRONZE_AXE,
   BRONZE_GAUNTLETS,
@@ -9,6 +10,7 @@ import {
   BRONZE_SWORD,
   BRONZE_TASSETS,
   COAL_ORE,
+  CombatStats,
   COMBAT_BASE,
   COMBAT_MAX,
   COOKED_HUPPY,
@@ -18,6 +20,7 @@ import {
   EquipPosition,
   FIRE_LIGHTER,
   FIRE_MAX,
+  FIRE_SCROLL,
   getActionChoiceId,
   getActionId,
   LOG,
@@ -31,6 +34,7 @@ import {
   ORE_MAX,
   QueuedAction,
   Skill,
+  STAFF,
   Stats,
   TIN_ORE,
   WOODCUTTING_BASE,
@@ -1009,8 +1013,18 @@ describe("Player", () => {
     it("Melee", async () => {
       const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
+      const monsterCombatStats: CombatStats = {
+        attack: 3,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 0,
+      };
+
       const rate = 1; // per hour
-      const tx = await world.addAction({
+      let tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
           baseXPPerHour: 3600,
@@ -1025,7 +1039,7 @@ describe("Player", () => {
         },
         dropRewards: [{itemTokenId: BRONZE_ARROW, rate: rate * 100}],
         lootChances: [],
-        combatStats: emptyStats,
+        combatStats: monsterCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1081,7 +1095,8 @@ describe("Player", () => {
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((timespan * rate) / 3600));
 
-      // TODO Check food is consumed
+      // Check food is consumed, update later
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 1);
     });
 
     it("Drop rewards", async () => {});
@@ -1092,7 +1107,128 @@ describe("Player", () => {
       // Lose all the XP that would have been gained
     });
 
-    it("Magic", async () => {});
+    it("Magic", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const monsterCombatStats: CombatStats = {
+        attack: 3,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 0,
+      };
+
+      const dropRate = 1; // per hour
+      let tx = await world.addAction({
+        info: {
+          skill: Skill.COMBAT,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          isAvailable: actionIsAvailable,
+          isCombat: true,
+        },
+        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate * 100}],
+        lootChances: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testMints(alice.address, [STAFF, COOKED_HUPPY, AIR_SCROLL, FIRE_SCROLL], [1, 255, 200, 100]);
+
+      const scrollsConsumedRate = 1;
+      // Combat uses none as it's not tied to a specific action (only combat ones)
+      // Fire blast
+      tx = await world.addActionChoice(NONE, {
+        skill: Skill.MAGIC,
+        diff: 0,
+        baseXPPerHour: 0,
+        minSkillPoints: 0,
+        rate: scrollsConsumedRate * 100,
+        inputTokenId1: AIR_SCROLL,
+        num1: 2,
+        inputTokenId2: FIRE_SCROLL,
+        num2: 1,
+        inputTokenId3: NONE,
+        num3: 0,
+        outputTokenId: NONE,
+      });
+      const choiceId = await getActionChoiceId(tx);
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.MAGIC,
+        potionId: NONE,
+        choiceId,
+        num: 100,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: COOKED_HUPPY,
+        numRegenerate: 255,
+        timespan,
+        rightArmEquipmentTokenId: STAFF,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await itemNFT.addItems([
+        {
+          tokenId: AIR_SCROLL,
+          stats: emptyStats,
+          equipPosition: EquipPosition.AUX,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          tokenId: FIRE_SCROLL,
+          stats: emptyStats,
+          equipPosition: EquipPosition.AUX,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          tokenId: STAFF,
+          stats: emptyStats,
+          equipPosition: EquipPosition.RIGHT_ARM,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          tokenId: BRONZE_ARROW,
+          stats: emptyStats,
+          equipPosition: EquipPosition.AUX,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          tokenId: COOKED_HUPPY,
+          stats: emptyStats,
+          equipPosition: EquipPosition.AUX, // FOOD
+          metadataURI: "someIPFSURI.json",
+        },
+      ]);
+
+      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.MAGIC)).to.eq(queuedAction.timespan);
+      expect(await playerNFT.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((timespan * dropRate) / 3600));
+
+      // Check food is consumed, update later
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 1);
+
+      // Check that scrolls are consumed
+      expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);
+      expect(await itemNFT.balanceOf(alice.address, FIRE_SCROLL)).to.eq(100 - 1);
+    });
   });
 
   /*

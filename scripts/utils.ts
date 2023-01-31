@@ -10,9 +10,9 @@ export enum Skill {
   RANGED,
   MAGIC,
   DEFENCE,
-//  MELEE_ATTACK_DEFENCE, // combo
-//  RANGED_ATTACK_DEFENCE, // combo
-//  MAGIC_ATTACK_DEFENCE, // combo
+  //  MELEE_ATTACK_DEFENCE, // combo
+  //  RANGED_ATTACK_DEFENCE, // combo
+  //  MAGIC_ATTACK_DEFENCE, // combo
   MINING,
   WOODCUTTING,
   FISHING,
@@ -20,7 +20,7 @@ export enum Skill {
   THIEVING,
   CRAFTING,
   COOKING,
-  FIREMAKING
+  FIREMAKING,
 }
 
 export const NONE = 0;
@@ -94,6 +94,7 @@ export const BOOTS_MAX = BOOTS_BASE + 254;
 
 // Combat (right arm) (2048 - 2303)
 export const COMBAT_BASE = 2048;
+// Melee
 export const BRONZE_SWORD = COMBAT_BASE;
 export const IRON_SWORD = COMBAT_BASE + 1;
 export const MITHRIL_SWORD = COMBAT_BASE + 2;
@@ -101,6 +102,10 @@ export const ADAMANTINE_SWORD = COMBAT_BASE + 3;
 export const RUNITE_SWORD = COMBAT_BASE + 4;
 export const TITANIUM_SWORD = COMBAT_BASE + 5;
 export const ORCHALCUM_SWORD = COMBAT_BASE + 6;
+// Magic
+export const STAFF = COMBAT_BASE + 50;
+// Ranged
+export const BOW = COMBAT_BASE + 100;
 export const COMBAT_MAX = COMBAT_BASE + 255;
 
 // Combat (left arm, shields) (2304 - 2559)

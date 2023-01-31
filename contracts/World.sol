@@ -210,9 +210,9 @@ contract World is VRFConsumerBaseV2, Ownable {
   }
 
   function _addAction(uint _actionId, Action calldata _action) private {
+    require(!_action.info.isDynamic, "Action is dynamic");
     _setAction(_actionId, _action);
     emit AddAction(_actionId, _action);
-    require(!_action.info.isDynamic, "Action is dynamic");
   }
 
   function addActions(Action[] calldata _actions) external onlyOwner {

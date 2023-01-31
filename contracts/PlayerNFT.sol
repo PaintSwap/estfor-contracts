@@ -394,6 +394,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     emit Equip(_tokenId, _itemTokenId, _amount);
   }
 
+  function _isCombat(Skill _skill) private pure returns (bool) {
+    return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
+  }
+
   function _addQueueActionMinorEquipment(uint _tokenId, QueuedAction memory _queuedAction) private {
     _addMinorEquipment(_tokenId, _queuedAction.rightArmEquipmentTokenId, 1);
     _addMinorEquipment(_tokenId, _queuedAction.leftArmEquipmentTokenId, 1);
@@ -416,7 +420,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         uint16 inputTokenId3,
         uint8 num3,
         uint16 outputTokenId
-      ) = world.actionChoices(_queuedAction.actionId, _queuedAction.choiceId);
+      ) = world.actionChoices(_isCombat(_queuedAction.skill) ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
 
       _addMinorEquipment(_tokenId, inputTokenId1, num1 * _queuedAction.num);
       _addMinorEquipment(_tokenId, inputTokenId2, num2 * _queuedAction.num);
@@ -629,7 +633,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint40 skillEndTime = queuedAction.startTime + queuedAction.timespan;
       uint16 elapsedTime;
 
-      uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, queuedAction.choiceId);
+      uint16 xpPerHour = world.getXPPerHour(
+        queuedAction.actionId,
+        _isCombat(queuedAction.skill) ? NONE : queuedAction.choiceId
+      );
       bool consumeAll = skillEndTime <= block.timestamp;
       if (consumeAll) {
         // Fully consume this skill
@@ -651,7 +658,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       // Create some items if necessary (smithing ores to bars for instance)
       uint16 foodConsumed;
       uint16 numConsumed;
-      if (queuedAction.choiceId != 0) {
+      if (queuedAction.choiceId != 0 || _isCombat(queuedAction.skill)) {
         uint16 modifiedElapsedTime = speedMultiplier[_tokenId] > 1
           ? elapsedTime * speedMultiplier[_tokenId]
           : elapsedTime;
