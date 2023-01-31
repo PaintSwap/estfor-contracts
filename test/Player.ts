@@ -35,9 +35,6 @@ import {
   QueuedAction,
   Skill,
   STAFF,
-  Stats,
-  TIN_ORE,
-  WOODCUTTING_BASE,
   WOODCUTTING_MAX,
 } from "../scripts/utils";
 
@@ -1105,6 +1102,88 @@ describe("Player", () => {
 
     it("Dead", async () => {
       // Lose all the XP that would have been gained
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const monsterCombatStats: CombatStats = {
+        attack: 3,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 0,
+      };
+
+      const rate = 1; // per hour
+      let tx = await world.addAction({
+        info: {
+          skill: Skill.COMBAT,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          isAvailable: actionIsAvailable,
+          isCombat: true,
+        },
+        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: rate * 100}],
+        lootChances: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testMint(alice.address, BRONZE_SWORD, 1);
+      await itemNFT.testMint(alice.address, COOKED_HUPPY, 2);
+      const timespan = 3600 * 3; // 3 hours
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.ATTACK,
+        potionId: NONE,
+        choiceId: NONE,
+        num: 0,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: COOKED_HUPPY,
+        numRegenerate: 2,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_SWORD,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await itemNFT.addItem({
+        tokenId: BRONZE_SWORD,
+        stats: emptyStats,
+        equipPosition: EquipPosition.RIGHT_ARM,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        tokenId: BRONZE_ARROW,
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        tokenId: COOKED_HUPPY,
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX, // FOOD
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await playerNFT.connect(alice).consumeSkills(playerId);
+      // Should die so doesn't get any attack skill points, and food should be consumed
+      expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(0);
     });
 
     it("Magic", async () => {
@@ -1232,10 +1311,6 @@ describe("Player", () => {
   });
 
   /*
-  it("Equipment Many", async () => {
-    // TODO:
-  });
-
   it("uri", async () => {
   }); */
 });

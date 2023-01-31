@@ -647,10 +647,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         skillEndTime = uint40(block.timestamp);
       }
 
-      pointsAccrued =
-        (uint32(elapsedTime) * xpPerHour * (speedMultiplier[_tokenId] > 1 ? speedMultiplier[_tokenId] : 1)) /
-        3600;
-
       // TODO: Check the maximum that might be done
       //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
       //    if (inputTokenId1 > NONE) {
@@ -658,13 +654,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       // Create some items if necessary (smithing ores to bars for instance)
       uint16 foodConsumed;
       uint16 numConsumed;
+      bool died;
       if (queuedAction.choiceId != 0 || _isCombat(queuedAction.skill)) {
         uint16 modifiedElapsedTime = speedMultiplier[_tokenId] > 1
           ? elapsedTime * speedMultiplier[_tokenId]
           : elapsedTime;
 
         // This also unequips.
-        (foodConsumed, numConsumed) = PlayerNFTLibrary.processConsumables(
+        (foodConsumed, numConsumed, died) = PlayerNFTLibrary.processConsumables(
           _from,
           _tokenId,
           queuedAction,
@@ -675,6 +672,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           player.totalStats,
           consumeAll
         );
+      }
+
+      if (!died) {
+        pointsAccrued =
+          (uint32(elapsedTime) * xpPerHour * (speedMultiplier[_tokenId] > 1 ? speedMultiplier[_tokenId] : 1)) /
+          3600;
       }
 
       if (skillEndTime > block.timestamp) {

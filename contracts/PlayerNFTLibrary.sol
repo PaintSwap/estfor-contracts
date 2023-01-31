@@ -225,7 +225,7 @@ library PlayerNFTLibrary {
     Users users,
     CombatStats storage playerStats,
     bool _useAll
-  ) external returns (uint16 foodConsumed, uint16 numConsumed) {
+  ) external returns (uint16 foodConsumed, uint16 numConsumed, bool died) {
     // Fetch the requirements for it
     (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
 
@@ -252,18 +252,21 @@ library PlayerNFTLibrary {
       /* playerStats.meleeDefence */
       foodConsumed = uint16((uint(elapsedTime) * 100) / (3600 * 100));
 
+      died = foodConsumed > queuedAction.numRegenerate;
+
       // Figure out how much food should be used
       _processConsumable(
         _from,
         _tokenId,
         itemNFT,
         queuedAction.regenerateId,
-        foodConsumed,
+        !died ? foodConsumed : queuedAction.numRegenerate,
         1,
         queuedAction.numRegenerate,
         users,
         _useAll
       );
+      // TODO use playerStats.health
     }
 
     uint16 numProduced = uint16((uint(elapsedTime) * rate) / (3600 * 100));
