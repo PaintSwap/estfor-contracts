@@ -35,6 +35,7 @@ import {
   QueuedAction,
   Skill,
   STAFF,
+  WOODCUTTING_BASE,
   WOODCUTTING_MAX,
 } from "../scripts/utils";
 
@@ -291,6 +292,61 @@ describe("Player", () => {
     await ethers.provider.send("evm_increaseTime", [1]);
     await playerNFT.connect(alice).consumeSkills(playerId);
     expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([1, 2, 3]);
+  });
+
+  it.only("Skill points partial", async () => {
+    const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+    await itemNFT.addItem({
+      tokenId: BRONZE_AXE,
+      stats: emptyStats,
+      equipPosition: EquipPosition.RIGHT_ARM,
+      metadataURI: "someIPFSURI.json",
+    });
+    await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+
+    const rate = 100; // per hour
+    const tx = await world.addAction({
+      info: {
+        skill: Skill.WOODCUTTING,
+        baseXPPerHour: 3600,
+        minSkillPoints: 0,
+        isDynamic: false,
+        itemTokenIdRangeMin: WOODCUTTING_BASE,
+        itemTokenIdRangeMax: WOODCUTTING_MAX,
+        auxItemTokenIdRangeMin: NONE,
+        auxItemTokenIdRangeMax: NONE,
+        isAvailable: actionIsAvailable,
+        isCombat: true,
+      },
+      dropRewards: [{itemTokenId: LOG, rate}],
+      lootChances: [],
+      combatStats: emptyStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const queuedAction: QueuedAction = {
+      actionId,
+      skill: Skill.WOODCUTTING,
+      potionId: NONE,
+      choiceId: NONE,
+      num: 0,
+      choiceId1: NONE,
+      num1: 0,
+      choiceId2: NONE,
+      num2: 0,
+      regenerateId: NONE,
+      numRegenerate: 0,
+      timespan: 3600,
+      rightArmEquipmentTokenId: BRONZE_AXE,
+      leftArmEquipmentTokenId: NONE,
+      startTime: "0",
+    };
+
+    await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+    await ethers.provider.send("evm_increaseTime", [361]);
+    await playerNFT.connect(alice).consumeSkills(playerId);
+    expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(361);
+    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down
   });
 
   it("Speed multiplier", async () => {
