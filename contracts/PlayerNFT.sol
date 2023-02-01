@@ -4,12 +4,13 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import "./interfaces/IBrushToken.sol";
 import "./World.sol";
-import "./enums.sol";
+import "./types.sol";
+import "./items.sol";
 import "./ItemNFT.sol";
 import "./Users.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
 import {PlayerNFTLibrary} from "./PlayerNFTLibrary.sol";
 
@@ -25,9 +26,16 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   event LevelUp(uint tokenId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
 
-  IBrushToken immutable brush;
-  World immutable world;
-  string private baseURI = "ipfs://";
+  event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
+  event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
+
+  struct PendingOutput {
+    Equipment[] consumables;
+    Equipment[] foodConsumed;
+    ActionReward[] dropRewards;
+    ActionLoot[] loot;
+    bool died;
+  }
 
   struct Player {
     Armour equipment; // Keep this first
@@ -39,15 +47,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
     bytes32 name;
   }
-
-  uint queuedActionId = 1; // Global queued action id
-
-  mapping(uint => mapping(Skill => uint32)) public skillPoints; // player id => skill => point
-
-  // This is kept separate in case we want to remove this being used and instead read attributes on demand.
-  mapping(uint => ArmourAttributes) armourAttributes; // player id => attributes from armour
-
-  uint32 public constant MAX_TIME = 1 days;
 
   // Equipment (leave at the bottom to allow for further ones)
   struct Armour {
@@ -72,13 +71,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     CombatStats reserved2;
   }
 
-  using EnumerableMap for EnumerableMap.UintToUintMap;
-
-  mapping(uint => uint) private tokenIdToAvatar; // tokenId => avatar id?
-  mapping(uint => Player) public players;
-  uint private latestPlayerId = 1;
-  ItemNFT private itemNFT;
-  Users private users;
+  struct AvatarInfo {
+    bytes32 name;
+    string description;
+    string imageURI;
+  }
 
   error SkillsArrayZero();
   error NotOwner();
@@ -87,23 +84,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   error NotEquipped();
   error ArgumentLengthMismatch();
 
-  modifier isOwnerOfPlayer(uint tokenId) {
-    if (balanceOf(msg.sender, tokenId) != 1) {
-      revert NotOwner();
-    }
-    _;
-  }
-
-  struct AvatarInfo {
-    bytes32 name;
-    string description;
-    string imageURI;
-  }
-
-  event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
-  event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
-
-  mapping(uint => AvatarInfo) private avatars; // avatar id => avatarInfo
+  uint private constant MAX_LOOT_PER_ACTION = 5;
+  uint32 public constant MAX_TIME = 1 days;
+  IBrushToken immutable brush;
+  World immutable world;
 
   uint constant LEVEL_5_BOUNDARY = 500;
   uint constant LEVEL_10_BOUNDARY = 10000;
@@ -118,7 +102,32 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   uint constant LEVEL_90_BOUNDARY = 900000000;
   uint constant LEVEL_99_BOUNDARY = 999999999;
 
+  mapping(uint => uint16) speedMultiplier; // player id => multiplier, 0 or 1 is diabled
+
+  using EnumerableMap for EnumerableMap.UintToUintMap;
+
+  uint queuedActionId = 1; // Global queued action id
+
+  mapping(uint => mapping(Skill => uint32)) public skillPoints; // player id => skill => point
+
+  // This is kept separate in case we want to remove this being used and instead read attributes on demand.
+  mapping(uint => ArmourAttributes) armourAttributes; // player id => attributes from armour
+
+  mapping(uint => uint) private tokenIdToAvatar; // tokenId => avatar id?
+  mapping(uint => Player) public players;
+  uint private latestPlayerId = 1;
+  ItemNFT private itemNFT;
+  Users private users;
+  mapping(uint => AvatarInfo) private avatars; // avatar id => avatarInfo
   PendingLoot[] private pendingLoot; // queue, will be sorted by timestamp
+  string private baseURI = "ipfs://";
+
+  modifier isOwnerOfPlayer(uint tokenId) {
+    if (balanceOf(msg.sender, tokenId) != 1) {
+      revert NotOwner();
+    }
+    _;
+  }
 
   constructor(IBrushToken _brush, ItemNFT _itemNFT, World _world, Users _users) ERC1155("") {
     brush = _brush;
@@ -129,7 +138,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function _mintStartingItems() private {
     // Give the player some starting items
-    (uint[] memory itemNFTs, uint[] memory quantities) = PlayerNFTLibrary.getInitialStartingItems();
+    (uint[] memory itemNFTs, uint[] memory quantities) = getInitialStartingItems();
     itemNFT.mintBatch(msg.sender, itemNFTs, quantities);
   }
 
@@ -524,14 +533,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     queuedActionId = currentQueuedActionId;
   }
 
-  struct PendingOutput {
-    Equipment[] consumables;
-    Equipment[] foodConsumed;
-    ActionReward[] dropRewards;
-    ActionLoot[] loot;
-    bool died;
-  }
-
   // Get any changes that are pending and not on the blockchain yet.
   function pending(uint _tokenId) external view returns (PendingOutput memory pendingOutput) {
     QueuedAction[] storage actionQueue = players[_tokenId].actionQueue;
@@ -650,12 +651,25 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     }
   }
 
-  uint private constant MAX_LOOT_PER_ACTION = 5;
-  mapping(uint => uint16) speedMultiplier; // player id => multiplier, 0 or 1 is diabled
-
   function setSpeedMultiplier(uint _tokenId, uint16 multiplier) external {
     // Disable for production code
     speedMultiplier[_tokenId] = multiplier;
+  }
+
+  function getInitialStartingItems() private pure returns (uint[] memory itemNFTs, uint[] memory quantities) {
+    itemNFTs = new uint[](5);
+    itemNFTs[0] = BRONZE_SWORD;
+    itemNFTs[1] = BRONZE_AXE;
+    itemNFTs[2] = FIRE_LIGHTER;
+    itemNFTs[3] = SMALL_NET;
+    itemNFTs[4] = BRONZE_PICKAXE;
+
+    quantities = new uint[](5);
+    quantities[0] = 1;
+    quantities[1] = 1;
+    quantities[2] = 1;
+    quantities[3] = 1;
+    quantities[4] = 1;
   }
 
   function _consumeSkills(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {

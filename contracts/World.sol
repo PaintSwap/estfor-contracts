@@ -4,33 +4,29 @@ pragma solidity ^0.8.17;
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
-import "./enums.sol";
+import "./types.sol";
 
 // Fantom VRF
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634
 // LINK token 0x6F43FF82CCA38001B6699a8AC47A2d0E66939407
 // PREMIUM 0.0005 LINK
 contract World is VRFConsumerBaseV2, Ownable {
+  event RequestSent(uint256 requestId, uint32 numWords);
+  event RequestFulfilled(uint256 requestId, uint256 randomWord);
+  event AddAction(uint actionId, Action action);
+  event EditAction(uint actionId, Action action);
+  event SetAvailableAction(uint actionId, bool available);
+  event AddDynamicActions(uint[] actionIds);
+  event RemoveDynamicActions(uint[] actionIds);
+  event AddActionChoice(uint actionId, uint actionChoiceId, ActionChoice choice);
+  event AddActionChoices(uint actionId, uint startActionChoice, ActionChoice[] choices);
+
   struct Action {
     ActionInfo info;
     ActionReward[] dropRewards;
     ActionLoot[] lootChances;
     CombatStats combatStats;
   }
-
-  event RequestSent(uint256 requestId, uint32 numWords);
-  event RequestFulfilled(uint256 requestId, uint256 randomWord);
-
-  event AddAction(uint actionId, Action action);
-  event EditAction(uint actionId, Action action);
-
-  event SetAvailableAction(uint actionId, bool available);
-
-  event AddDynamicActions(uint[] actionIds);
-  event RemoveDynamicActions(uint[] actionIds);
-
-  event AddActionChoice(uint actionId, uint actionChoiceId, ActionChoice choice);
-  event AddActionChoices(uint actionId, uint startActionChoice, ActionChoice[] choices);
 
   VRFCoordinatorV2Interface COORDINATOR;
 
@@ -190,9 +186,7 @@ contract World is VRFConsumerBaseV2, Ownable {
 
   function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint16 xpPerHour) {
     return
-      _actionChoiceId != NONE
-        ? actionChoices[_actionId][_actionChoiceId].baseXPPerHour
-        : actions[_actionId].baseXPPerHour;
+      _actionChoiceId != 0 ? actionChoices[_actionId][_actionChoiceId].baseXPPerHour : actions[_actionId].baseXPPerHour;
   }
 
   function _setAction(uint _actionId, Action calldata _action) private {

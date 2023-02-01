@@ -7,37 +7,16 @@ import "@openzeppelin/contracts/utils/Multicall.sol";
 import "./interfaces/IBrushToken.sol";
 import "./World.sol";
 import "./Users.sol";
-import "./enums.sol";
+import "./types.sol";
+import "./items.sol";
 
 // The NFT contract contains data related to the items and users (not players)
 contract ItemNFT is ERC1155, Multicall, Ownable {
-  mapping(uint => uint) public itemBalances; // tokenId => total
-
-  uint16 public mysteryBoxsMinted;
-  IBrushToken immutable brush;
-  World immutable world;
-  Users immutable users;
-  address playerNFT;
-  uint256 public mintMysteryBoxCost;
-
-  uint public numItems; // unique number of items
-
-  string private constant baseURI = "ipfs://";
-  mapping(uint => string) private tokenURIs;
-
-  /* Items */
-  mapping(uint16 => ItemStat) itemStats;
   event AddItem(Item item);
   event AddItems(Item[] items);
   event EditItem(Item item);
 
-  struct ShopItem {
-    uint16 tokenId;
-    uint128 price;
-  }
-
   /* Shop */
-  mapping(uint16 => uint256) public shopItems; // id => price
   event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);
   event RemoveShopItem(uint16 tokenId);
@@ -45,6 +24,38 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
   event Sell(address seller, uint16 tokenId, uint quantity, uint price);
   event SellBatch(address seller, uint16[] tokenIds, uint[] quantities, uint[] prices);
+
+  struct ShopItem {
+    uint16 tokenId;
+    uint128 price;
+  }
+
+  struct Item {
+    CombatStats stats;
+    string metadataURI;
+    uint16 tokenId;
+    EquipPosition equipPosition;
+  }
+
+  IBrushToken immutable brush;
+  World immutable world;
+  Users immutable users;
+  string private constant baseURI = "ipfs://";
+
+  mapping(uint => uint) public itemBalances; // tokenId => total
+
+  uint16 public mysteryBoxsMinted;
+
+  address playerNFT;
+  uint256 public mintMysteryBoxCost;
+
+  uint public numItems; // unique number of items
+
+  mapping(uint => string) private tokenURIs;
+
+  mapping(uint16 => ItemStat) itemStats;
+
+  mapping(uint16 => uint256) public shopItems; // id => price
 
   constructor(IBrushToken _brush, World _world, Users _users) ERC1155("") {
     brush = _brush;
@@ -291,13 +302,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   function setPlayerNFT(address _playerNFT) external onlyOwner {
     playerNFT = _playerNFT;
-  }
-
-  struct Item {
-    CombatStats stats;
-    uint16 tokenId;
-    EquipPosition equipPosition;
-    string metadataURI;
   }
 
   function _setItem(Item calldata _item) private {

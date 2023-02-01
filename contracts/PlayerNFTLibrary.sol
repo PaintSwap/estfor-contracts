@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
-import "./enums.sol";
+import "./types.sol";
 import "./World.sol";
 import "./ItemNFT.sol";
 import "./Users.sol";
@@ -99,22 +99,6 @@ library PlayerNFTLibrary {
     }
   }
 
-  function getInitialStartingItems() external pure returns (uint[] memory itemNFTs, uint[] memory quantities) {
-    itemNFTs = new uint[](5);
-    itemNFTs[0] = BRONZE_SWORD;
-    itemNFTs[1] = BRONZE_AXE;
-    itemNFTs[2] = FIRE_LIGHTER;
-    itemNFTs[3] = SMALL_NET;
-    itemNFTs[4] = BRONZE_PICKAXE;
-
-    quantities = new uint[](5);
-    quantities[0] = 1;
-    quantities[1] = 1;
-    quantities[2] = 1;
-    quantities[3] = 1;
-    quantities[4] = 1;
-  }
-
   function getLoot(
     address _from,
     uint actionId,
@@ -205,7 +189,7 @@ library PlayerNFTLibrary {
     Users users,
     bool _useAll
   ) private {
-    if (itemTokenId == NONE) {
+    if (itemTokenId == 0) {
       return;
     }
     uint16 numBurn = numProduced * baseNum;
@@ -224,7 +208,7 @@ library PlayerNFTLibrary {
     (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
 
     ActionChoice memory actionChoice = world.getActionChoice(
-      isCombat ? NONE : queuedAction.actionId,
+      isCombat ? 0 : queuedAction.actionId,
       queuedAction.choiceId
     );
 
@@ -253,7 +237,7 @@ library PlayerNFTLibrary {
     (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
 
     ActionChoice memory actionChoice = world.getActionChoice(
-      isCombat ? NONE : queuedAction.actionId,
+      isCombat ? 0 : queuedAction.actionId,
       queuedAction.choiceId
     );
 
@@ -320,14 +304,14 @@ library PlayerNFTLibrary {
       );
     }
 
-    if (_useAll && queuedAction.potionId != NONE) {
+    if (_useAll && queuedAction.potionId != 0) {
       // Consume the potion
       users.minorUnequip(_from, queuedAction.potionId, 1);
       emit Unequip(_tokenId, queuedAction.potionId, 1);
       itemNFT.burn(_from, queuedAction.potionId, 1);
     }
 
-    if (actionChoice.outputTokenId != NONE) {
+    if (actionChoice.outputTokenId != 0) {
       itemNFT.mint(_from, actionChoice.outputTokenId, numProduced);
     }
   }
