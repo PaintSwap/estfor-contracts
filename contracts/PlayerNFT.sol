@@ -672,6 +672,27 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     quantities[4] = 1;
   }
 
+  function _addRemainingSkill(
+    QueuedAction[] memory remainingSkills,
+    QueuedAction storage queuedAction,
+    uint prevEndTime,
+    uint16 foodConsumed,
+    uint16 numConsumed,
+    uint length
+  ) private view returns (uint) {
+    uint40 end = queuedAction.startTime + queuedAction.timespan;
+
+    QueuedAction memory remainingAction = queuedAction;
+    remainingAction.startTime = uint40(prevEndTime);
+    remainingAction.timespan = uint16(end - prevEndTime);
+    remainingAction.numRegenerate -= uint8(foodConsumed);
+    remainingAction.num -= uint8(numConsumed);
+
+    // Build a list of the skills queued that remain
+    remainingSkills[length] = remainingAction;
+    return block.timestamp + remainingAction.timespan;
+  }
+
   function _consumeSkills(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_tokenId];
     if (player.actionQueue.length == 0) {
@@ -742,18 +763,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       }
 
       if (skillEndTime > block.timestamp) {
-        uint40 end = queuedAction.startTime + queuedAction.timespan;
-
-        QueuedAction memory remainingAction = queuedAction;
-        remainingAction.startTime = uint40(prevEndTime);
-        remainingAction.timespan = uint16(end - prevEndTime);
-        remainingAction.numRegenerate -= uint8(foodConsumed);
-        remainingAction.num -= uint8(numConsumed);
-
-        // Build a list of the skills queued that remain
-        remainingSkills[length] = remainingAction;
-
-        prevEndTime = block.timestamp + remainingAction.timespan;
+        prevEndTime = _addRemainingSkill(remainingSkills, queuedAction, prevEndTime, foodConsumed, numConsumed, length);
         length = i + 1;
       }
 
@@ -788,25 +798,15 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
         allpointsAccrued += pointsAccrued;
       }
 
-      if (queuedAction.rightArmEquipmentTokenId != NONE) {
-        if (elapsedTime == queuedAction.timespan) {
-          // Fully consume this skill so unequip w.e we had equiped
-          // TODO: This would also remove it if you had same action queued up later though
-          users.unequip(_from, queuedAction.rightArmEquipmentTokenId);
-          emit Unequip(_tokenId, queuedAction.rightArmEquipmentTokenId, 1);
-        } else {
-          // TODO unequip some consumables like food
-        }
+      // Fully consume this skill so unequip w.e we had equiped
+      // TODO: This would also remove it if you had same action queued up later though
+      if (queuedAction.rightArmEquipmentTokenId != NONE && elapsedTime == queuedAction.timespan) {
+        users.unequip(_from, queuedAction.rightArmEquipmentTokenId);
+        emit Unequip(_tokenId, queuedAction.rightArmEquipmentTokenId, 1);
       }
-      if (queuedAction.leftArmEquipmentTokenId != NONE) {
-        if (elapsedTime == queuedAction.timespan) {
-          // Fully consume this skill so unequip w.e we had equiped
-          // TODO: This would also remove it if you had same action queued up later though
-          users.unequip(_from, queuedAction.leftArmEquipmentTokenId);
-          emit Unequip(_tokenId, queuedAction.leftArmEquipmentTokenId, 1);
-        } else {
-          // TODO unequip some consumables like food
-        }
+      if (queuedAction.leftArmEquipmentTokenId != NONE && elapsedTime == queuedAction.timespan) {
+        users.unequip(_from, queuedAction.leftArmEquipmentTokenId);
+        emit Unequip(_tokenId, queuedAction.leftArmEquipmentTokenId, 1);
       }
     }
 
