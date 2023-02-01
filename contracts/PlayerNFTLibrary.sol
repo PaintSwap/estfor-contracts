@@ -115,7 +115,7 @@ library PlayerNFTLibrary {
 
     // Guarenteed drops
     for (uint i; i < dropRewards.length; ++i) {
-      uint num = (uint(elapsedTime) * dropRewards[i].rate) / (3600 * 100);
+      uint num = (uint(elapsedTime) * dropRewards[i].rate) / 3600;
       if (num > 0) {
         ids[lootLength] = dropRewards[i].itemTokenId;
         amounts[lootLength] = num;
@@ -201,7 +201,7 @@ library PlayerNFTLibrary {
 
   function processConsumablesView(
     QueuedAction storage queuedAction,
-    uint16 elapsedTime,
+    uint elapsedTime,
     World world
   ) external view returns (uint16 numProduced, uint16 foodConsumed, bool died) {
     // Fetch the requirements for it
@@ -212,12 +212,12 @@ library PlayerNFTLibrary {
       queuedAction.choiceId
     );
 
-    numProduced = uint16((uint(elapsedTime) * actionChoice.rate) / (3600 * 100));
+    numProduced = uint16((elapsedTime * actionChoice.rate) / 3600);
 
     if (isCombat) {
       /* combatStats.attack, */
       /* playerStats.meleeDefence */
-      foodConsumed = uint16((uint(elapsedTime) * 100) / (3600 * 100));
+      foodConsumed = uint16(elapsedTime / 3600);
       died = foodConsumed > queuedAction.numRegenerate;
     }
   }
@@ -247,7 +247,7 @@ library PlayerNFTLibrary {
     if (isCombat) {
       /* combatStats.attack, */
       /* playerStats.meleeDefence */
-      foodConsumed = uint16((uint(elapsedTime) * 100) / (3600 * 100));
+      foodConsumed = uint16(elapsedTime / 3600);
 
       died = foodConsumed > queuedAction.numRegenerate;
 
@@ -266,7 +266,7 @@ library PlayerNFTLibrary {
       // TODO use playerStats.health
     }
 
-    uint16 numProduced = uint16((uint(elapsedTime) * actionChoice.rate) / (3600 * 100));
+    uint16 numProduced = uint16((uint(elapsedTime) * actionChoice.rate) / 3600);
     numConsumed = numProduced;
     if (numConsumed > 0) {
       _processConsumable(

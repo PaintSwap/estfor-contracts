@@ -561,7 +561,7 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [{itemTokenId: LOG, rate: 1220 * 100}],
+    dropRewards: [{itemTokenId: LOG, rate: 1220}],
     lootChances: [],
     combatStats: emptyStats,
   },
@@ -595,7 +595,7 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [{itemTokenId: COPPER_ORE, rate: 1220 * 100}],
+    dropRewards: [{itemTokenId: COPPER_ORE, rate: 1220}],
     lootChances: [],
     combatStats: emptyStats,
   },
@@ -612,7 +612,7 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [{itemTokenId: TIN_ORE, rate: 1220 * 100}],
+    dropRewards: [{itemTokenId: TIN_ORE, rate: 1220}],
     lootChances: [],
     combatStats: emptyStats,
   },
@@ -640,7 +640,7 @@ export const firemakingChoices: ActionChoice[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 1220 * 100,
+    rate: 1220,
     baseXPPerHour: 25,
     minSkillPoints: 0,
     inputTokenId1: LOG,
@@ -654,7 +654,7 @@ export const firemakingChoices: ActionChoice[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 1220 * 100,
+    rate: 1220,
     baseXPPerHour: 45,
     minSkillPoints: 1021,
     inputTokenId1: OAK_LOG,
@@ -671,7 +671,7 @@ export const smithingChoices: ActionChoice[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 2440 * 100,
+    rate: 2440,
     baseXPPerHour: 25,
     minSkillPoints: 0,
     inputTokenId1: COPPER_ORE,
@@ -685,7 +685,7 @@ export const smithingChoices: ActionChoice[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1220 * 100,
+    rate: 1220,
     baseXPPerHour: 35,
     minSkillPoints: 0,
     inputTokenId1: IRON_ORE,
@@ -725,7 +725,7 @@ export const allCombatSubActions: CombatConsumables[] = [
     skill: Skill.RANGED,
     diff: 10, // 10 more ranged dmg/h
     minSkillPoints: 0,
-    rate: 100 * 100, // 100 arrows used hour
+    rate: 100, // 100 arrows used hour
     inputTokenId1: BRONZE_ARROW,
     num1: 1,
     inputTokenId2: NONE,
@@ -738,7 +738,7 @@ export const allCombatSubActions: CombatConsumables[] = [
     skill: Skill.MAGIC,
     diff: 5,
     minSkillPoints: 0,
-    rate: 100 * 100, // 100 combinations used per hour
+    rate: 100, // 100 combinations used per hour
     inputTokenId1: AIR_SCROLL,
     num1: 2,
     inputTokenId2: FIRE_SCROLL,

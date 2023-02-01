@@ -104,7 +104,7 @@ describe("Player", () => {
     const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
 
     await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // item doesn't exist yet
-    const stats: Stats = {
+    const stats: CombatStats = {
       attack: 2,
       magic: 0,
       range: 0,
@@ -127,7 +127,7 @@ describe("Player", () => {
   it("Unequip", async () => {
     const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
 
-    const stats: Stats = {
+    const stats: CombatStats = {
       attack: 2,
       magic: 0,
       range: 0,
@@ -165,7 +165,7 @@ describe("Player", () => {
 
     await expect(playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // items don't exist yet
     {
-      const stats: Stats = {
+      const stats: CombatStats = {
         attack: 2,
         magic: 0,
         range: 0,
@@ -182,7 +182,7 @@ describe("Player", () => {
       });
     }
     {
-      const stats: Stats = {
+      const stats: CombatStats = {
         attack: 0,
         magic: 0,
         range: 0,
@@ -222,7 +222,7 @@ describe("Player", () => {
   it("Skill points", async () => {
     const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-    const stats: Stats = {
+    const stats: CombatStats = {
       attack: 2,
       magic: 0,
       range: 0,
@@ -310,7 +310,7 @@ describe("Player", () => {
         isAvailable: actionIsAvailable,
         isCombat: false,
       },
-      dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+      dropRewards: [{itemTokenId: LOG, rate}],
       lootChances: [],
       combatStats: emptyStats,
     });
@@ -370,7 +370,7 @@ describe("Player", () => {
         isAvailable: actionIsAvailable,
         isCombat: false,
       },
-      dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+      dropRewards: [{itemTokenId: LOG, rate}],
       lootChances: [],
       combatStats: emptyStats,
     });
@@ -415,7 +415,7 @@ describe("Player", () => {
   it("Skill points, max range", async () => {
     const {playerId, playerNFT, itemNFT, world, alice, maxTime} = await loadFixture(deployContracts);
 
-    const stats: Stats = {
+    const stats: CombatStats = {
       attack: 2,
       magic: 0,
       range: 0,
@@ -496,7 +496,7 @@ describe("Player", () => {
     // Gauntlet doesn't exist yet
     await expect(playerNFT.equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
 
-    const stats: Stats = {
+    const stats: CombatStats = {
       attack: 2,
       magic: 0,
       range: 0,
@@ -592,7 +592,7 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: false,
         },
-        dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+        dropRewards: [{itemTokenId: LOG, rate}],
         lootChances: [],
         combatStats: emptyStats,
       });
@@ -662,7 +662,7 @@ describe("Player", () => {
         diff: 0,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
-        rate: rate * 100,
+        rate,
         inputTokenId1: LOG,
         num1: 1,
         inputTokenId2: NONE,
@@ -735,7 +735,7 @@ describe("Player", () => {
             isAvailable: actionIsAvailable,
             isCombat: false,
           },
-          dropRewards: [{itemTokenId: LOG, rate: rate * 100}], // 100.00
+          dropRewards: [{itemTokenId: LOG, rate}],
           lootChances: [],
           combatStats: emptyStats,
         });
@@ -794,7 +794,7 @@ describe("Player", () => {
           diff: 0,
           baseXPPerHour: 3600,
           minSkillPoints: 0,
-          rate: rate * 100,
+          rate,
           inputTokenId1: LOG,
           num1: 1,
           inputTokenId2: NONE,
@@ -940,7 +940,7 @@ describe("Player", () => {
         diff: 0,
         baseXPPerHour: 3600,
         minSkillPoints: 0,
-        rate: rate * 100,
+        rate,
         inputTokenId1: COAL_ORE,
         num1: 2,
         inputTokenId2: MITHRIL_ORE,
@@ -1034,7 +1034,7 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: true,
         },
-        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: rate * 100}],
+        dropRewards: [{itemTokenId: BRONZE_ARROW, rate}],
         lootChances: [],
         combatStats: monsterCombatStats,
       });
@@ -1128,7 +1128,7 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: true,
         },
-        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: rate * 100}],
+        dropRewards: [{itemTokenId: BRONZE_ARROW, rate}],
         lootChances: [],
         combatStats: monsterCombatStats,
       });
@@ -1213,7 +1213,7 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: true,
         },
-        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate * 100}],
+        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate}],
         lootChances: [],
         combatStats: monsterCombatStats,
       });
@@ -1221,7 +1221,7 @@ describe("Player", () => {
 
       await itemNFT.testMints(alice.address, [STAFF, COOKED_HUPPY, AIR_SCROLL, FIRE_SCROLL], [1, 255, 200, 100]);
 
-      const scrollsConsumedRate = 1;
+      const scrollsConsumedRate = 1; // per hour
       // Combat uses none as it's not tied to a specific action (only combat ones)
       // Fire blast
       tx = await world.addActionChoice(NONE, {
@@ -1229,7 +1229,7 @@ describe("Player", () => {
         diff: 0,
         baseXPPerHour: 0,
         minSkillPoints: 0,
-        rate: scrollsConsumedRate * 100,
+        rate: scrollsConsumedRate,
         inputTokenId1: AIR_SCROLL,
         num1: 2,
         inputTokenId2: FIRE_SCROLL,
