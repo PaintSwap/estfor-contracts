@@ -286,4 +286,8 @@ contract World is VRFConsumerBaseV2, Ownable {
       stats = actionCombatStats[_actionId];
     }
   }
+
+  function getActionChoice(uint _actionId, uint _choiceId) external view returns (ActionChoice memory) {
+    return actionChoices[_actionId][_choiceId];
+  }
 }

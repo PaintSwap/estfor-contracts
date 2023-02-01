@@ -215,6 +215,29 @@ library PlayerNFTLibrary {
     itemNFT.burn(_from, itemTokenId, numBurn);
   }
 
+  function processConsumablesView(
+    QueuedAction storage queuedAction,
+    uint16 elapsedTime,
+    World world
+  ) external view returns (uint16 numProduced, uint16 foodConsumed, bool died) {
+    // Fetch the requirements for it
+    (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
+
+    ActionChoice memory actionChoice = world.getActionChoice(
+      isCombat ? NONE : queuedAction.actionId,
+      queuedAction.choiceId
+    );
+
+    numProduced = uint16((uint(elapsedTime) * actionChoice.rate) / (3600 * 100));
+
+    if (isCombat) {
+      /* combatStats.attack, */
+      /* playerStats.meleeDefence */
+      foodConsumed = uint16((uint(elapsedTime) * 100) / (3600 * 100));
+      died = foodConsumed > queuedAction.numRegenerate;
+    }
+  }
+
   function processConsumables(
     address _from,
     uint _tokenId,
@@ -229,20 +252,10 @@ library PlayerNFTLibrary {
     // Fetch the requirements for it
     (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
 
-    (
-      Skill skill,
-      uint32 diff,
-      uint32 rate,
-      uint16 baseXPPerHour,
-      uint32 minSkillPoints,
-      uint16 inputTokenId1,
-      uint8 num1,
-      uint16 inputTokenId2,
-      uint8 num2,
-      uint16 inputTokenId3,
-      uint8 num3,
-      uint16 outputTokenId
-    ) = world.actionChoices(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
+    ActionChoice memory actionChoice = world.getActionChoice(
+      isCombat ? NONE : queuedAction.actionId,
+      queuedAction.choiceId
+    );
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
@@ -269,17 +282,17 @@ library PlayerNFTLibrary {
       // TODO use playerStats.health
     }
 
-    uint16 numProduced = uint16((uint(elapsedTime) * rate) / (3600 * 100));
+    uint16 numProduced = uint16((uint(elapsedTime) * actionChoice.rate) / (3600 * 100));
     numConsumed = numProduced;
     if (numConsumed > 0) {
       _processConsumable(
         _from,
         _tokenId,
         itemNFT,
-        inputTokenId1,
+        actionChoice.inputTokenId1,
         numProduced,
-        num1,
-        queuedAction.num * num1,
+        actionChoice.num1,
+        queuedAction.num * actionChoice.num1,
         users,
         _useAll
       );
@@ -287,10 +300,10 @@ library PlayerNFTLibrary {
         _from,
         _tokenId,
         itemNFT,
-        inputTokenId2,
+        actionChoice.inputTokenId2,
         numProduced,
-        num2,
-        queuedAction.num * num2,
+        actionChoice.num2,
+        queuedAction.num * actionChoice.num2,
         users,
         _useAll
       );
@@ -298,10 +311,10 @@ library PlayerNFTLibrary {
         _from,
         _tokenId,
         itemNFT,
-        inputTokenId3,
+        actionChoice.inputTokenId3,
         numProduced,
-        num3,
-        queuedAction.num * num3,
+        actionChoice.num3,
+        queuedAction.num * actionChoice.num3,
         users,
         _useAll
       );
@@ -314,8 +327,8 @@ library PlayerNFTLibrary {
       itemNFT.burn(_from, queuedAction.potionId, 1);
     }
 
-    if (outputTokenId != NONE) {
-      itemNFT.mint(_from, outputTokenId, numProduced);
+    if (actionChoice.outputTokenId != NONE) {
+      itemNFT.mint(_from, actionChoice.outputTokenId, numProduced);
     }
   }
 }

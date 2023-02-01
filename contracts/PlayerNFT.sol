@@ -27,7 +27,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   IBrushToken immutable brush;
   World immutable world;
-  string private constant baseURI = "ipfs://";
+  string private baseURI = "ipfs://";
 
   struct Player {
     Armour equipment; // Keep this first
@@ -406,25 +406,14 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     if (_queuedAction.choiceId != NONE) {
       // Get all items for this
+      ActionChoice memory actionChoice = world.getActionChoice(
+        _isCombat(_queuedAction.skill) ? NONE : _queuedAction.actionId,
+        _queuedAction.choiceId
+      );
 
-      (
-        Skill skill,
-        uint32 diff,
-        uint32 rate,
-        uint16 baseXPPerHour,
-        uint32 minSkillPoints,
-        uint16 inputTokenId1,
-        uint8 num1,
-        uint16 inputTokenId2,
-        uint8 num2,
-        uint16 inputTokenId3,
-        uint8 num3,
-        uint16 outputTokenId
-      ) = world.actionChoices(_isCombat(_queuedAction.skill) ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
-
-      _addMinorEquipment(_tokenId, inputTokenId1, num1 * _queuedAction.num);
-      _addMinorEquipment(_tokenId, inputTokenId2, num2 * _queuedAction.num);
-      _addMinorEquipment(_tokenId, inputTokenId3, num3 * _queuedAction.num);
+      _addMinorEquipment(_tokenId, actionChoice.inputTokenId1, actionChoice.num1 * _queuedAction.num);
+      _addMinorEquipment(_tokenId, actionChoice.inputTokenId2, actionChoice.num2 * _queuedAction.num);
+      _addMinorEquipment(_tokenId, actionChoice.inputTokenId3, actionChoice.num3 * _queuedAction.num);
     }
     //    addMinorEquipment(_queuedAction.choiceId1, _queuedAction.num1);
     //    addMinorEquipment(_queuedAction.choiceId2, _queuedAction.num2);
@@ -535,10 +524,66 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     queuedActionId = currentQueuedActionId;
   }
 
-  //    function view() external {
-  // Get up to date stats that may still be pending and not on the blockchain yet.
-  //        actionQueue
-  //    }
+  struct PendingOutput {
+    Equipment[] consumables;
+    Equipment[] foodConsumed;
+    ActionReward[] dropRewards;
+    ActionLoot[] loot;
+    bool died;
+  }
+
+  // Get any changes that are pending and not on the blockchain yet.
+  function pending(uint _tokenId) external view returns (PendingOutput memory pendingOutput) {
+    QueuedAction[] storage actionQueue = players[_tokenId].actionQueue;
+
+    pendingOutput.consumables = new Equipment[](actionQueue.length * 3);
+    pendingOutput.foodConsumed = new Equipment[](actionQueue.length);
+    pendingOutput.dropRewards = new ActionReward[](actionQueue.length * 3);
+    pendingOutput.loot = new ActionLoot[](actionQueue.length * 3);
+
+    uint consumableLength;
+    uint foodConsumedLength;
+    uint dropRewardsLength;
+    uint lootLength;
+    for (uint i; i < actionQueue.length; ++i) {
+      QueuedAction storage queuedAction = actionQueue[i];
+
+      uint16 elapsedTime;
+      uint40 skillEndTime = queuedAction.startTime + queuedAction.timespan;
+      bool consumeAll = skillEndTime <= block.timestamp;
+      if (consumeAll) {
+        // Fully consume this skill
+        elapsedTime = queuedAction.timespan;
+      } else if (block.timestamp > queuedAction.startTime) {
+        // partially consume
+        elapsedTime = uint16(block.timestamp - queuedAction.startTime);
+        skillEndTime = uint40(block.timestamp);
+      } else {
+        break;
+      }
+
+      // Create some items if necessary (smithing ores to bars for instance)
+      uint16 modifiedElapsedTime = speedMultiplier[_tokenId] > 1
+        ? elapsedTime * speedMultiplier[_tokenId]
+        : elapsedTime;
+      (uint16 numProduced, uint16 foodConsumed, bool died) = PlayerNFTLibrary.processConsumablesView(
+        queuedAction,
+        modifiedElapsedTime,
+        world
+      );
+      /*
+      ActionChoice memory actionChoice = world.getActionChoice(
+        _isCombat ? NONE : queuedAction.actionId,
+        queuedAction.choiceId
+      );
+
+      if (actionChoice.itemTokenId1 > 0) {}
+      if (actionChoice.itemTokenId2 > 0) {}
+      if (actionChoice.itemTokenId3 > 0) {} */
+
+      // TODO Will also need dropRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
+    }
+  }
 
   function getActionQueue(uint _tokenId) external view returns (QueuedAction[] memory) {
     return players[_tokenId].actionQueue;
@@ -641,10 +686,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       if (consumeAll) {
         // Fully consume this skill
         elapsedTime = queuedAction.timespan;
-      } else {
+      } else if (block.timestamp > queuedAction.startTime) {
         // partially consume
         elapsedTime = uint16(block.timestamp - queuedAction.startTime);
         skillEndTime = uint40(block.timestamp);
+      } else {
+        break;
       }
 
       // TODO: Check the maximum that might be done
@@ -799,5 +846,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       avatars[_startAvatarId + i] = _avatarInfos[i];
     }
     emit SetAvatars(_startAvatarId, _avatarInfos);
+  }
+
+  function setBaseURI(string calldata _baseURI) external onlyOwner {
+    _setURI(_baseURI);
   }
 }
