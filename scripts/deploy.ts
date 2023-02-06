@@ -129,7 +129,7 @@ async function main() {
 
   // First woodcutting
   const queuedAction: QueuedAction = {
-    actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
+    actionId: (allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1).toString(),
     skill: Skill.WOODCUTTING,
     potionId: NONE,
     choiceId: NONE,
@@ -153,7 +153,7 @@ async function main() {
   tx = await playerNFT.setSpeedMultiplier(playerId, 3600); // Turns 1 hour into 1 second
   await tx.wait();
 
-  tx = await playerNFT.consumeSkills(playerId);
+  tx = await playerNFT.consumeActions(playerId);
   await tx.wait();
   console.log("consume skills");
 

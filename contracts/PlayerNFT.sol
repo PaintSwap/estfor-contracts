@@ -15,7 +15,7 @@ import "./Users.sol";
 import {PlayerNFTLibrary} from "./PlayerNFTLibrary.sol";
 
 // Each NFT represents a player
-contract PlayerNFT is ERC1155, Multicall, Ownable {
+contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
   event NewPlayer(uint tokenId, uint avatarId, bytes32 name);
   event EditPlayer(uint tokenId, bytes32 newName);
 
@@ -28,6 +28,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
+
+  event AddToActionQueue(uint tokenId, QueuedAction queuedAction);
+  event SetActionQueue(uint tokenId, QueuedAction[] queuedActions);
 
   struct PendingOutput {
     Equipment[] consumables;
@@ -200,7 +203,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   }
 
   function _clearEverything(address _from, uint _tokenId) private {
-    QueuedAction[] memory remainingSkillQueue = _consumeSkills(_from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(_from, _tokenId);
     _clearEquipment(_from, _tokenId);
 
     // Continue last skill queue (if there's anything remaining)
@@ -243,7 +246,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function clearEquipment(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
     address from = msg.sender;
-    QueuedAction[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
     _clearEquipment(from, _tokenId);
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
@@ -269,7 +272,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function setEquipment(uint _tokenId, uint16[] calldata _itemTokenIds) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
     address from = msg.sender;
-    QueuedAction[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
 
     // Unequip everything
     for (uint position; position < 8; ++position) {
@@ -307,6 +310,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
+      emit SetActionQueue(_tokenId, remainingSkillQueue);
     }
   }
 
@@ -325,7 +329,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
   function equip(uint _tokenId, uint16 _itemTokenId) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
 
-    QueuedAction[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _tokenId);
     ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
     EquipPosition position = itemStats.equipPosition;
     require(itemStats.exists, "Item doesn't exist");
@@ -360,6 +364,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
+      emit SetActionQueue(_tokenId, remainingSkillQueue);
     }
   }
 
@@ -374,7 +379,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
   function unequip(uint _tokenId, EquipPosition _position) external isOwnerOfPlayer(_tokenId) {
     address from = msg.sender;
-    QueuedAction[] memory remainingSkillQueue = _consumeSkills(from, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
     _unequip(from, _tokenId, _position);
     Player storage player = players[_tokenId];
     // Update the storage slot
@@ -386,6 +391,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     // Continue last skill queue (if there's anything remaining)
     if (remainingSkillQueue.length > 0) {
       player.actionQueue = remainingSkillQueue;
+      emit SetActionQueue(_tokenId, remainingSkillQueue);
     }
   }
 
@@ -471,6 +477,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     _queuedAction.startTime = uint40(block.timestamp);
     _player.actionQueue.push(_queuedAction);
+    emit AddToActionQueue(_tokenId, _queuedAction);
   }
 
   function startAction(
@@ -479,7 +486,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     bool _append
   ) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
-    QueuedAction[] memory remainingSkillQueue = _consumeSkills(msg.sender, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _tokenId);
 
     require(_queuedAction.timespan <= MAX_TIME, "Time is above max");
     if (_append) {
@@ -489,14 +496,18 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       }
       require(totalTimeUsed + _queuedAction.timespan <= MAX_TIME, "Total time too high");
       player.actionQueue = remainingSkillQueue;
+    } else {
+      delete player.actionQueue;
+      QueuedAction[] memory queuedActions;
+      emit SetActionQueue(_tokenId, queuedActions); // Clear it
     }
 
     _addToQueue(_tokenId, _queuedAction, queuedActionId);
     ++queuedActionId;
   }
 
-  function consumeSkills(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
-    _consumeSkills(msg.sender, _tokenId);
+  function consumeActions(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
+    _consumeActions(msg.sender, _tokenId);
   }
 
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
@@ -507,7 +518,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
 
     require(_queuedActions.length <= 3, "Too many queued up items");
 
-    _consumeSkills(msg.sender, _tokenId);
+    _consumeActions(msg.sender, _tokenId);
 
     // Clear the action queue if something is in it
     Player storage player = players[_tokenId];
@@ -594,10 +605,10 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     return players[_tokenId].actionQueue.length;
   }
 
-  function getLootBonusMultiplier(uint _tokenId) external view returns (uint256) {
+  /*  function getLootBonusMultiplier(uint _tokenId) external view returns (uint256) {
     // The higher the level the higher the multiplier?
     return 2;
-  }
+  } */
 
   function _handleLevelUpRewards(
     address _from,
@@ -633,6 +644,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     ) {}
   }
 
+  /*
   function getLoot(uint actionId, uint seed) external view returns (uint[] memory tokenIds) {
     if (seed == 0) {
       return tokenIds;
@@ -649,7 +661,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     assembly ("memory-safe") {
       mstore(tokenIds, length)
     }
-  }
+  } */
 
   function setSpeedMultiplier(uint _tokenId, uint16 multiplier) external {
     // Disable for production code
@@ -693,7 +705,9 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
     return block.timestamp + remainingAction.timespan;
   }
 
-  function _consumeSkills(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
+  error err(uint);
+
+  function _consumeActions(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_tokenId];
     if (player.actionQueue.length == 0) {
       // No actions remaining
@@ -724,6 +738,11 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       } else if (block.timestamp > queuedAction.startTime) {
         // partially consume
         elapsedTime = uint16(block.timestamp - queuedAction.startTime);
+        // Up to timespan
+        elapsedTime = speedMultiplier[_tokenId] > 1 ? elapsedTime * speedMultiplier[_tokenId] : elapsedTime;
+        if (elapsedTime > queuedAction.timespan) {
+          elapsedTime = queuedAction.timespan;
+        }
         skillEndTime = uint40(block.timestamp);
       } else {
         break;
@@ -738,16 +757,12 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       uint16 numConsumed;
       bool died;
       if (queuedAction.choiceId != 0 || _isCombat(queuedAction.skill)) {
-        uint16 modifiedElapsedTime = speedMultiplier[_tokenId] > 1
-          ? elapsedTime * speedMultiplier[_tokenId]
-          : elapsedTime;
-
         // This also unequips.
-        (foodConsumed, numConsumed, died) = PlayerNFTLibrary.processConsumables(
+        (foodConsumed, numConsumed, elapsedTime, died) = PlayerNFTLibrary.processConsumables(
           _from,
           _tokenId,
           queuedAction,
-          modifiedElapsedTime,
+          elapsedTime,
           world,
           itemNFT,
           users,
@@ -757,9 +772,7 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       }
 
       if (!died) {
-        pointsAccrued =
-          (uint32(elapsedTime) * xpPerHour * (speedMultiplier[_tokenId] > 1 ? speedMultiplier[_tokenId] : 1)) /
-          3600;
+        pointsAccrued = (uint32(elapsedTime) * xpPerHour) / 3600;
       }
 
       if (skillEndTime > block.timestamp) {
@@ -786,11 +799,6 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
           world,
           pendingLoot
         );
-        if (speedMultiplier[_tokenId] > 1) {
-          for (uint j; j < newAmounts.length; ++j) {
-            newAmounts[j] *= speedMultiplier[_tokenId];
-          }
-        }
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
@@ -815,29 +823,24 @@ contract PlayerNFT is ERC1155, Multicall, Ownable {
       _handleLevelUpRewards(_from, _tokenId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
     }
 
-    if (remainingSkills.length == 0) {
-      delete player.actionQueue;
-    }
-
     assembly ("memory-safe") {
       mstore(remainingSkills, length)
     }
   }
 
-  function editName(uint _playerId, bytes32 _newName) external isOwnerOfPlayer(_playerId) {
+  function editName(uint _tokenId, bytes32 _newName) external isOwnerOfPlayer(_tokenId) {
     uint brushCost = 5000;
     // Pay
     brush.transferFrom(msg.sender, address(this), brushCost);
     // Burn half, the rest goes into the pool
     brush.burn(brushCost / 2);
 
-    players[_playerId].name = _newName;
-    emit EditPlayer(_playerId, _newName);
+    players[_tokenId].name = _newName;
+    emit EditPlayer(_tokenId, _newName);
   }
 
-  function inventoryAmount(uint _tokenId) external view returns (uint) {
-    //    (bool success, uint amount) = inventoryItem.tryGet(_tokenId);
-    //    return amount;
+  function burn(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
+    _burn(msg.sender, _tokenId, 1);
   }
 
   /**

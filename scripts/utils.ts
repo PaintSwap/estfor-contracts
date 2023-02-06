@@ -39,7 +39,7 @@ export const HEAD_MAX = HEAD_BASE + 254; // Inclusive
 export const NECK_BASE = 257;
 export const SAPPHIRE_AMULET = NECK_BASE;
 export const EMERALD_AMULET = NECK_BASE + 1;
-export const RUBT_AMULET = NECK_BASE + 2;
+export const RUBY_AMULET = NECK_BASE + 2;
 export const AMETHYST_AMULET = NECK_BASE + 3;
 export const DIAMOND_AMULET = NECK_BASE + 4;
 export const DRAGONSTONE_AMULET = NECK_BASE + 5;
@@ -325,7 +325,7 @@ export type Equipment = {
 };
 
 export type QueuedAction = {
-  actionId: number;
+  actionId: string;
   potionId: number;
   regenerateId: number;
   numRegenerate: number;
@@ -356,12 +356,12 @@ export const createPlayer = async (
   return event?.tokenId;
 };
 
-export const getActionId = async (tx: ContractTransaction): Promise<number> => {
+export const getActionId = async (tx: ContractTransaction): Promise<string> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
     return x.event == "AddAction";
   })[0].args;
-  return event?.actionId.toNumber();
+  return event?.actionId.toString();
 };
 
 export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
@@ -468,6 +468,7 @@ const bronzeSwordStats = {
   health: 0,
 };
 
+// TODO This is just reusing the same stats for now
 export const allItems: Item[] = [
   {
     tokenId: BRONZE_HELMET,
@@ -479,6 +480,36 @@ export const allItems: Item[] = [
     tokenId: BRONZE_GAUNTLETS,
     stats: bronzeGauntletStats,
     equipPosition: EquipPosition.ARMS,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: IRON_HELMET,
+    stats: bronzeHelmentStats,
+    equipPosition: EquipPosition.HEAD,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: SAPPHIRE_AMULET,
+    stats: bronzeGauntletStats,
+    equipPosition: EquipPosition.NECK,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_CHESTPLATE,
+    stats: bronzeHelmentStats,
+    equipPosition: EquipPosition.BODY,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_TASSETS,
+    stats: bronzeGauntletStats,
+    equipPosition: EquipPosition.LEGS,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_BOOTS,
+    stats: bronzeHelmentStats,
+    equipPosition: EquipPosition.BOOTS,
     metadataURI: "someIPFSURI.json",
   },
   {

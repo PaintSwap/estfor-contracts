@@ -217,7 +217,7 @@ library PlayerNFTLibrary {
     if (isCombat) {
       /* combatStats.attack, */
       /* playerStats.meleeDefence */
-      foodConsumed = uint16(elapsedTime / 3600);
+      foodConsumed = uint16(elapsedTime / 3600) + (elapsedTime % 3600 == 0 ? 0 : 1);
       died = foodConsumed > queuedAction.numRegenerate;
     }
   }
@@ -232,9 +232,11 @@ library PlayerNFTLibrary {
     Users users,
     CombatStats storage playerStats,
     bool _useAll
-  ) external returns (uint16 foodConsumed, uint16 numConsumed, bool died) {
+  ) external returns (uint16 foodConsumed, uint16 numConsumed, uint16 actualElapsedTime, bool died) {
     // Fetch the requirements for it
     (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
+
+    actualElapsedTime = elapsedTime; // Can be updated
 
     ActionChoice memory actionChoice = world.getActionChoice(
       isCombat ? 0 : queuedAction.actionId,
@@ -247,9 +249,19 @@ library PlayerNFTLibrary {
     if (isCombat) {
       /* combatStats.attack, */
       /* playerStats.meleeDefence */
-      foodConsumed = uint16(elapsedTime / 3600);
+      uint _foodConsumed = elapsedTime / 3600 + (elapsedTime % 3600 == 0 ? 0 : 1); // TODO: Should be based on damage done
+      if (_foodConsumed > 255) {
+        foodConsumed = 255;
+      } else {
+        foodConsumed = uint16(_foodConsumed);
+      }
+      uint balance = itemNFT.balanceOf(_from, queuedAction.regenerateId);
+      uint16 maxFood = foodConsumed > balance ? uint16(balance) : queuedAction.numRegenerate;
 
-      died = foodConsumed > queuedAction.numRegenerate;
+      died = foodConsumed > maxFood;
+      if (died) {
+        foodConsumed = maxFood;
+      }
 
       // Figure out how much food should be used
       _processConsumable(
@@ -257,7 +269,7 @@ library PlayerNFTLibrary {
         _tokenId,
         itemNFT,
         queuedAction.regenerateId,
-        !died ? foodConsumed : queuedAction.numRegenerate,
+        foodConsumed,
         1,
         queuedAction.numRegenerate,
         users,
@@ -266,15 +278,65 @@ library PlayerNFTLibrary {
       // TODO use playerStats.health
     }
 
-    uint16 numProduced = uint16((uint(elapsedTime) * actionChoice.rate) / 3600);
-    numConsumed = numProduced;
+    // Check the max that can be used. To prevent overflow for sped up actions.
+    numConsumed = uint16((uint(elapsedTime) * actionChoice.rate) / 3600);
+    uint maxRequiredRatio = numConsumed;
+    if (numConsumed > 0) {
+      if (actionChoice.inputTokenId1 != 0) {
+        uint balance = itemNFT.balanceOf(_from, actionChoice.inputTokenId1);
+        uint numEquippedBase = queuedAction.num;
+        if (numConsumed > balance / actionChoice.num1) {
+          maxRequiredRatio = balance / actionChoice.num1;
+        }
+
+        if (maxRequiredRatio > numEquippedBase) {
+          maxRequiredRatio = numEquippedBase;
+        }
+      }
+      if (actionChoice.inputTokenId2 != 0) {
+        uint balance = itemNFT.balanceOf(_from, actionChoice.inputTokenId2);
+        uint numEquippedBase = queuedAction.num;
+        uint tempMaxRequiredRatio = maxRequiredRatio;
+        if (numConsumed > balance / actionChoice.num2) {
+          tempMaxRequiredRatio = balance / actionChoice.num2;
+        }
+        if (tempMaxRequiredRatio > numEquippedBase) {
+          tempMaxRequiredRatio = numEquippedBase;
+        }
+
+        if (tempMaxRequiredRatio < maxRequiredRatio) {
+          maxRequiredRatio = tempMaxRequiredRatio;
+        }
+      }
+      if (actionChoice.inputTokenId3 != 0) {
+        uint balance = itemNFT.balanceOf(_from, actionChoice.inputTokenId3);
+        uint numEquippedBase = queuedAction.num;
+        uint tempMaxRequiredRatio = maxRequiredRatio;
+        if (numConsumed > balance / actionChoice.num3) {
+          tempMaxRequiredRatio = balance / actionChoice.num3;
+        }
+
+        if (tempMaxRequiredRatio > numEquippedBase) {
+          tempMaxRequiredRatio = numEquippedBase;
+        }
+
+        if (tempMaxRequiredRatio < maxRequiredRatio) {
+          maxRequiredRatio = tempMaxRequiredRatio;
+        }
+      }
+    }
+
+    // Check the balances of all the items
+    if (numConsumed > maxRequiredRatio) {
+      numConsumed = uint16(maxRequiredRatio);
+    }
     if (numConsumed > 0) {
       _processConsumable(
         _from,
         _tokenId,
         itemNFT,
         actionChoice.inputTokenId1,
-        numProduced,
+        numConsumed,
         actionChoice.num1,
         queuedAction.num * actionChoice.num1,
         users,
@@ -285,7 +347,7 @@ library PlayerNFTLibrary {
         _tokenId,
         itemNFT,
         actionChoice.inputTokenId2,
-        numProduced,
+        numConsumed,
         actionChoice.num2,
         queuedAction.num * actionChoice.num2,
         users,
@@ -296,7 +358,7 @@ library PlayerNFTLibrary {
         _tokenId,
         itemNFT,
         actionChoice.inputTokenId3,
-        numProduced,
+        numConsumed,
         actionChoice.num3,
         queuedAction.num * actionChoice.num3,
         users,
@@ -312,7 +374,7 @@ library PlayerNFTLibrary {
     }
 
     if (actionChoice.outputTokenId != 0) {
-      itemNFT.mint(_from, actionChoice.outputTokenId, numProduced);
+      itemNFT.mint(_from, actionChoice.outputTokenId, numConsumed);
     }
   }
 }
