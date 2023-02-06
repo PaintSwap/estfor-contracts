@@ -152,10 +152,16 @@ async function main() {
 
   tx = await playerNFT.setSpeedMultiplier(playerId, 3600); // Turns 1 hour into 1 second
   await tx.wait();
+  console.log("Set speed multiiplier");
+
+  if (network.chainId == 31337) {
+    console.log("Increase time");
+    await ethers.provider.send("evm_increaseTime", [20]);
+  }
 
   tx = await playerNFT.consumeActions(playerId);
   await tx.wait();
-  console.log("consume skills");
+  console.log("consume actions");
 
   // Add shop item
   tx = await itemNFT.addShopItems(allShopItems);

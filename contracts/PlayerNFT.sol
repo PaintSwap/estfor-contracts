@@ -739,8 +739,8 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
         // partially consume
         elapsedTime = uint16(block.timestamp - queuedAction.startTime);
         // Up to timespan
-        elapsedTime = speedMultiplier[_tokenId] > 1 ? elapsedTime * speedMultiplier[_tokenId] : elapsedTime;
-        if (elapsedTime > queuedAction.timespan) {
+        uint modifiedElapsedTime  = speedMultiplier[_tokenId] > 1 ? uint(elapsedTime) * speedMultiplier[_tokenId] : elapsedTime;
+        if (modifiedElapsedTime > queuedAction.timespan) {
           elapsedTime = queuedAction.timespan;
         }
         skillEndTime = uint40(block.timestamp);
