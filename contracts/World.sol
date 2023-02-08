@@ -254,11 +254,11 @@ contract World is VRFConsumerBaseV2, Ownable {
     uint count;
     for (uint i; i < _actionIds.length; ++i) {
       uint actionId = _actionIds[i];
+      emit AddActionChoices(actionId, currentActionChoiceId + count, _actionChoices[i]);
       for (uint j; j < _actionChoices[i].length; ++j) {
         actionChoices[actionId][currentActionChoiceId + count] = _actionChoices[i][j];
         ++count;
       }
-      emit AddActionChoices(actionId, currentActionChoiceId + count, _actionChoices[i]);
     }
     actionChoiceId = currentActionChoiceId + count;
   }

@@ -325,7 +325,7 @@ export type Equipment = {
 };
 
 export type QueuedAction = {
-  actionId: string;
+  actionId: number;
   potionId: number;
   regenerateId: number;
   numRegenerate: number;
@@ -361,7 +361,7 @@ export const getActionId = async (tx: ContractTransaction): Promise<string> => {
   const event = receipt?.events?.filter((x) => {
     return x.event == "AddAction";
   })[0].args;
-  return event?.actionId.toString();
+  return event?.actionId.toNumber();
 };
 
 export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
@@ -556,6 +556,12 @@ export const allItems: Item[] = [
   },
   {
     tokenId: TIN_ORE,
+    stats: emptyStats,
+    equipPosition: EquipPosition.AUX,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    tokenId: BRONZE_BAR,
     stats: emptyStats,
     equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",

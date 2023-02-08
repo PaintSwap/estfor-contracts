@@ -75,7 +75,8 @@ struct Equipment {
   uint8 numToEquip;
 }
 
-// This is effectively a ratio to produce 1 of outputTokenId
+// This is effectively a ratio to produce 1 of outputTokenId.
+// Fixed based available actions that can be undertaken for an action
 struct ActionChoice {
   Skill skill;
   uint32 diff;
@@ -91,30 +92,32 @@ struct ActionChoice {
   uint16 outputTokenId; // Always num of 1
 }
 
+// The user chooses these
 struct QueuedAction {
   uint16 actionId;
   uint16 potionId; // Potion (combat, non-combat, can only equip 1)
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
   uint8 numRegenerate;
-  uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
-  uint8 num;
-  uint16 choiceId1; // Reserved (TBD)
-  uint8 num1;
-  uint16 choiceId2; // Reserved (TBD)
-  uint8 num2;
   Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill. Attack/defence can also be used
+  uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
+  uint16 num;
+  uint16 choiceId1; // Reserved (TBD)
+  uint16 num1;
+  uint16 choiceId2; // Reserved (TBD)
+  uint16 num2;
   uint16 timespan; // How long to queue the action for
   uint16 rightArmEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftArmEquipmentTokenId; // Shield, can be empty
   uint40 startTime; // Filled in by the function
+  // Only 8 bytes left, could re-duce potionId?
 }
 
 struct ActionInfo {
   Skill skill;
-  uint16 baseXPPerHour;
   bool isAvailable;
   bool isDynamic;
   bool isCombat;
+  uint16 baseXPPerHour;
   uint32 minSkillPoints;
   // These are put here for efficiency even if not needed
   uint16 itemTokenIdRangeMin; // Inclusive

@@ -184,8 +184,8 @@ library PlayerNFTLibrary {
     ItemNFT itemNFT,
     uint16 itemTokenId,
     uint16 numProduced,
-    uint8 baseNum,
-    uint8 totalEquipped,
+    uint16 baseNum,
+    uint16 totalEquipped,
     Users users,
     bool _useAll
   ) private {

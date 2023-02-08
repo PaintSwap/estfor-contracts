@@ -8,6 +8,7 @@ import {
   BRONZE_HELMET,
   createPlayer,
   firemakingChoices,
+  FIRE_LIGHTER,
   LOG,
   NONE,
   QueuedAction,
@@ -17,14 +18,24 @@ import {
 
 async function main() {
   const [owner] = await ethers.getSigners();
+  console.log(`Deploying contracts with the account: ${owner.address}`);
 
   const network = await ethers.provider.getNetwork();
+  //  console.log(`ChainId: ${network.chainId}`);
 
   let brushAddress;
+  let tx;
   if (network.chainId == 31337) {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const brush = await MockBrushToken.deploy();
     await brush.mint(owner.address, 10000000000000);
+    brushAddress = brush.address;
+  } else if (network.chainId == 4002) {
+    const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
+    const brush = await MockBrushToken.deploy();
+    tx = await brush.mint(owner.address, 10000000000000);
+    await tx.wait();
+    console.log("Minted brush");
     brushAddress = brush.address;
   } else if (network.chainId == 250) {
     // Fantom mainnet
@@ -33,8 +44,11 @@ async function main() {
     throw Error("Not a supported network");
   }
 
+  console.log(`Before calling MockOracleClient`);
   const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
   const mockOracleClient = await MockOracleClient.deploy();
+  await mockOracleClient.deployed();
+  console.log(`MockOracleClient deployed at ${mockOracleClient.address.toLowerCase()}`);
 
   // Create the world
   const subscriptionId = 2;
@@ -64,7 +78,7 @@ async function main() {
   await playerNFT.deployed();
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 
-  let tx = await itemNFT.setPlayerNFT(playerNFT.address);
+  tx = await itemNFT.setPlayerNFT(playerNFT.address);
   await tx.wait();
   console.log("setPlayerNFT");
   tx = await users.setNFTs(playerNFT.address, itemNFT.address);
@@ -129,7 +143,7 @@ async function main() {
 
   // First woodcutting
   const queuedAction: QueuedAction = {
-    actionId: (allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1).toString(),
+    actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
     skill: Skill.WOODCUTTING,
     potionId: NONE,
     choiceId: NONE,
@@ -140,13 +154,13 @@ async function main() {
     num2: 0,
     regenerateId: NONE,
     numRegenerate: 0,
-    timespan: 100,
+    timespan: 3600,
     rightArmEquipmentTokenId: BRONZE_AXE,
     leftArmEquipmentTokenId: NONE,
     startTime: "0",
   };
 
-  tx = await playerNFT.startAction(queuedAction, playerId, false);
+  tx = await playerNFT.startAction(playerId, queuedAction, false);
   await tx.wait();
   console.log("start actions");
 
@@ -156,12 +170,48 @@ async function main() {
 
   if (network.chainId == 31337) {
     console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [20]);
+    await ethers.provider.send("evm_increaseTime", [1]);
   }
 
   tx = await playerNFT.consumeActions(playerId);
   await tx.wait();
   console.log("consume actions");
+
+  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
+
+  // Next firemaking
+  const queuedActionFiremaking: QueuedAction = {
+    actionId: allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1,
+    skill: Skill.FIREMAKING,
+    potionId: NONE,
+    choiceId: 1,
+    num: 1220,
+    choiceId1: NONE,
+    num1: 0,
+    choiceId2: NONE,
+    num2: 0,
+    regenerateId: NONE,
+    numRegenerate: 0,
+    timespan: 3600,
+    rightArmEquipmentTokenId: FIRE_LIGHTER,
+    leftArmEquipmentTokenId: NONE,
+    startTime: "0",
+  };
+
+  tx = await playerNFT.startAction(playerId, queuedActionFiremaking, false);
+  await tx.wait();
+  console.log("start actions");
+
+  if (network.chainId == 31337) {
+    console.log("Increase time");
+    await ethers.provider.send("evm_increaseTime", [1]);
+  }
+
+  tx = await playerNFT.consumeActions(playerId);
+  await tx.wait();
+  console.log("consume actions (firemaking)");
+
+  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
 
   // Add shop item
   tx = await itemNFT.addShopItems(allShopItems);

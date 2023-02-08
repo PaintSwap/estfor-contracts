@@ -165,7 +165,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
   }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    require(_exists(_tokenId), "No uri");
+    require(_exists(_tokenId));
     Player storage player = players[_tokenId];
     AvatarInfo storage avatarInfo = avatars[tokenIdToAvatar[_tokenId]];
     bytes memory imageURI = abi.encodePacked(baseURI, avatarInfo.imageURI);
@@ -205,11 +205,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
   function _clearEverything(address _from, uint _tokenId) private {
     QueuedAction[] memory remainingSkillQueue = _consumeActions(_from, _tokenId);
     _clearEquipment(_from, _tokenId);
-
-    // Continue last skill queue (if there's anything remaining)
-    if (remainingSkillQueue.length > 0) {
-      players[_tokenId].actionQueue = remainingSkillQueue;
-    }
+    _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
   function clearEverything(uint _tokenId) public isOwnerOfPlayer(_tokenId) {
@@ -248,10 +244,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
     address from = msg.sender;
     QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
     _clearEquipment(from, _tokenId);
-    // Continue last skill queue (if there's anything remaining)
-    if (remainingSkillQueue.length > 0) {
-      players[_tokenId].actionQueue = remainingSkillQueue;
-    }
+    _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
   function updatePlayerStats(Player storage _player, CombatStats memory _stats, bool _add) private {
@@ -286,8 +279,8 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
 
       ItemStat memory itemStats = itemNFT.getItemStats(itemTokenId);
       EquipPosition position = itemStats.equipPosition;
-      require(itemStats.exists, "Item doesn't exist");
-      require(uint8(position) < 8, "Incorrect equip position");
+      require(itemStats.exists);
+      require(uint8(position) < 8);
       uint8 relativeItem = uint8(itemTokenId - (256 * uint8(position))); // Between 0 -> 256
 
       assembly ("memory-safe") {
@@ -308,10 +301,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
       sstore(player.slot, val)
     }
 
-    if (remainingSkillQueue.length > 0) {
-      player.actionQueue = remainingSkillQueue;
-      emit SetActionQueue(_tokenId, remainingSkillQueue);
-    }
+    _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
   function _getRelativeEquippedTokenId(
@@ -332,8 +322,8 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
     QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _tokenId);
     ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
     EquipPosition position = itemStats.equipPosition;
-    require(itemStats.exists, "Item doesn't exist");
-    require(uint8(position) < 8, "Incorrect equip position");
+    require(itemStats.exists);
+    require(uint8(position) < 8);
     uint8 relativeEquippedTokenId = _getRelativeEquippedTokenId(position, player);
 
     uint8 relativeItem = uint8(_itemTokenId - (256 * uint8(position))); // Between 0 -> 256
@@ -362,10 +352,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
     users.equip(msg.sender, _itemTokenId);
     emit Equip(_tokenId, _itemTokenId, 1);
     // Continue last skill queue (if there's anything remaining)
-    if (remainingSkillQueue.length > 0) {
-      player.actionQueue = remainingSkillQueue;
-      emit SetActionQueue(_tokenId, remainingSkillQueue);
-    }
+    _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
   function _unequip(address _from, uint _tokenId, EquipPosition _position) private {
@@ -389,10 +376,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
       val := and(val, not(shl(mul(_position, 8), 0xff)))
     }
     // Continue last skill queue (if there's anything remaining)
-    if (remainingSkillQueue.length > 0) {
-      player.actionQueue = remainingSkillQueue;
-      emit SetActionQueue(_tokenId, remainingSkillQueue);
-    }
+    _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
   function _getEquipmentSlot(Player storage _player) private view returns (uint256 slot) {
@@ -401,7 +385,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
     }
   }
 
-  function _addMinorEquipment(uint _tokenId, uint16 _itemTokenId, uint8 _amount) private {
+  function _addMinorEquipment(uint _tokenId, uint16 _itemTokenId, uint16 _amount) private {
     if (_itemTokenId == NONE || _amount == 0) {
       return;
     }
@@ -481,8 +465,8 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
   }
 
   function startAction(
-    QueuedAction calldata _queuedAction,
     uint _tokenId,
+    QueuedAction calldata _queuedAction,
     bool _append
   ) external isOwnerOfPlayer(_tokenId) {
     Player storage player = players[_tokenId];
@@ -496,6 +480,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
       }
       require(totalTimeUsed + _queuedAction.timespan <= MAX_TIME, "Total time too high");
       player.actionQueue = remainingSkillQueue;
+      emit SetActionQueue(_tokenId, player.actionQueue);
     } else {
       delete player.actionQueue;
       QueuedAction[] memory queuedActions;
@@ -506,8 +491,15 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
     ++queuedActionId;
   }
 
+  function _setActionQueue(uint _tokenId, QueuedAction[] memory _queuedActions) private {
+    Player storage player = players[_tokenId];
+    player.actionQueue = _queuedActions;
+    emit SetActionQueue(_tokenId, player.actionQueue);
+  }
+
   function consumeActions(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
-    _consumeActions(msg.sender, _tokenId);
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _tokenId);
+    _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
@@ -516,14 +508,15 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
       revert SkillsArrayZero();
     }
 
-    require(_queuedActions.length <= 3, "Too many queued up items");
+    require(_queuedActions.length <= 3);
 
     _consumeActions(msg.sender, _tokenId);
 
     // Clear the action queue if something is in it
     Player storage player = players[_tokenId];
     if (player.actionQueue.length > 0) {
-      delete player.actionQueue;
+      QueuedAction[] memory queuedActions;
+      _setActionQueue(_tokenId, queuedActions);
     }
 
     uint256 i;
@@ -691,7 +684,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
     uint16 foodConsumed,
     uint16 numConsumed,
     uint length
-  ) private view returns (uint) {
+  ) private view {
     uint40 end = queuedAction.startTime + queuedAction.timespan;
 
     QueuedAction memory remainingAction = queuedAction;
@@ -702,10 +695,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
 
     // Build a list of the skills queued that remain
     remainingSkills[length] = remainingAction;
-    return block.timestamp + remainingAction.timespan;
   }
-
-  error err(uint);
 
   function _consumeActions(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_tokenId];
@@ -720,11 +710,17 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
 
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint length;
-    uint prevEndTime = block.timestamp;
+    uint nextStartTime = block.timestamp;
     for (uint i = 0; i < player.actionQueue.length; ++i) {
       QueuedAction storage queuedAction = player.actionQueue[i];
       uint32 pointsAccrued;
-      uint40 skillEndTime = queuedAction.startTime + queuedAction.timespan;
+      uint skillEndTime = queuedAction.startTime +
+        (
+          speedMultiplier[_tokenId] > 1
+            ? uint(queuedAction.timespan) / speedMultiplier[_tokenId]
+            : queuedAction.timespan
+        );
+
       uint16 elapsedTime;
 
       uint16 xpPerHour = world.getXPPerHour(
@@ -738,14 +734,19 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
       } else if (block.timestamp > queuedAction.startTime) {
         // partially consume
         elapsedTime = uint16(block.timestamp - queuedAction.startTime);
+        uint modifiedElapsedTime = speedMultiplier[_tokenId] > 1
+          ? uint(elapsedTime) * speedMultiplier[_tokenId]
+          : elapsedTime;
         // Up to timespan
-        uint modifiedElapsedTime  = speedMultiplier[_tokenId] > 1 ? uint(elapsedTime) * speedMultiplier[_tokenId] : elapsedTime;
         if (modifiedElapsedTime > queuedAction.timespan) {
           elapsedTime = queuedAction.timespan;
         }
-        skillEndTime = uint40(block.timestamp);
       } else {
-        break;
+        // Haven't touched this action yet so add it all
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, 0, 0, length);
+        nextStartTime += queuedAction.timespan;
+        length = i + 1;
+        continue;
       }
 
       // TODO: Check the maximum that might be done
@@ -775,8 +776,10 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
         pointsAccrued = (uint32(elapsedTime) * xpPerHour) / 3600;
       }
 
-      if (skillEndTime > block.timestamp) {
-        prevEndTime = _addRemainingSkill(remainingSkills, queuedAction, prevEndTime, foodConsumed, numConsumed, length);
+      if (elapsedTime < queuedAction.timespan) {
+        // Add the remainder if this action is not fully consumed
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, foodConsumed, numConsumed, length);
+        nextStartTime += elapsedTime;
         length = i + 1;
       }
 
@@ -794,7 +797,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerNFTLibrary.getLoot(
           _from,
           queuedAction.actionId,
-          skillEndTime,
+          queuedAction.startTime + elapsedTime,
           elapsedTime,
           world,
           pendingLoot

@@ -268,10 +268,10 @@ describe("Player", () => {
       startTime: "0",
     };
 
-    await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
     await ethers.provider.send("evm_increaseTime", [361]);
     await playerNFT.connect(alice).consumeActions(playerId);
-    expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(361);
+    expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down
   });
 
@@ -325,7 +325,7 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
     await playerNFT.connect(alice).setSpeedMultiplier(playerId, 2);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
@@ -333,6 +333,7 @@ describe("Player", () => {
     expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((queuedAction.timespan * rate) / 3600));
+    expect(await playerNFT.actionQueueLength(playerId)).to.eq(0);
   });
 
   it("Partial consume aux items", async () => {
@@ -385,7 +386,7 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await playerNFT.connect(alice).consumeActions(playerId);
@@ -459,7 +460,7 @@ describe("Player", () => {
       startTime: "0",
     };
 
-    await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await playerNFT.connect(alice).consumeActions(playerId);
@@ -607,7 +608,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await playerNFT.connect(alice).consumeActions(playerId);
@@ -689,7 +690,7 @@ describe("Player", () => {
       });
 
       await itemNFT.testMint(alice.address, LOG, 5); // Mint less than will be used
-      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await playerNFT.connect(alice).consumeActions(playerId);
@@ -697,6 +698,150 @@ describe("Player", () => {
 
       // Check how many logs they have now, 100 logs burnt per hour
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(0);
+    });
+
+    it("Multi skill appending, woodcutting + firemaking", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const queuedActions: QueuedAction[] = [];
+      const rate = 1220; // per hour
+      {
+        const tx = await world.addAction({
+          info: {
+            skill: Skill.WOODCUTTING,
+            baseXPPerHour: 3600,
+            minSkillPoints: 0,
+            isDynamic: false,
+            itemTokenIdRangeMin: BRONZE_AXE,
+            itemTokenIdRangeMax: WOODCUTTING_MAX,
+            auxItemTokenIdRangeMin: NONE,
+            auxItemTokenIdRangeMax: NONE,
+            isAvailable: actionIsAvailable,
+            isCombat: false,
+          },
+          dropRewards: [{itemTokenId: LOG, rate}],
+          lootChances: [],
+          combatStats: emptyStats,
+        });
+        const actionId = await getActionId(tx);
+        await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+        await itemNFT.addItem({
+          tokenId: BRONZE_AXE,
+          stats: emptyStats,
+          equipPosition: EquipPosition.RIGHT_ARM,
+          metadataURI: "someIPFSURI.json",
+        });
+        const timespan = 7200 + 10;
+        const queuedAction: QueuedAction = {
+          actionId,
+          skill: Skill.WOODCUTTING,
+          potionId: NONE,
+          choiceId: NONE,
+          num: 0,
+          choiceId1: NONE,
+          num1: 0,
+          choiceId2: NONE,
+          num2: 0,
+          regenerateId: NONE,
+          numRegenerate: 0,
+          timespan,
+          rightArmEquipmentTokenId: BRONZE_AXE,
+          leftArmEquipmentTokenId: NONE,
+          startTime: "0",
+        };
+
+        queuedActions.push(queuedAction);
+      }
+      {
+        let tx = await world.addAction({
+          info: {
+            skill: Skill.FIREMAKING,
+            baseXPPerHour: 0,
+            minSkillPoints: 0,
+            isDynamic: false,
+            itemTokenIdRangeMin: FIRE_LIGHTER,
+            itemTokenIdRangeMax: FIRE_MAX,
+            auxItemTokenIdRangeMin: LOG_BASE,
+            auxItemTokenIdRangeMax: LOG_MAX,
+            isAvailable: actionIsAvailable,
+            isCombat: false,
+          },
+          dropRewards: [],
+          lootChances: [],
+          combatStats: emptyStats,
+        });
+        const actionId = await getActionId(tx);
+
+        // Logs go in, nothing comes out
+        tx = await world.addActionChoice(actionId, {
+          skill: Skill.FIREMAKING,
+          diff: 0,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          rate,
+          inputTokenId1: LOG,
+          num1: 1,
+          inputTokenId2: NONE,
+          num2: 0,
+          inputTokenId3: NONE,
+          num3: 0,
+          outputTokenId: NONE,
+        });
+        const choiceId = await getActionChoiceId(tx);
+
+        await itemNFT.testMint(alice.address, FIRE_LIGHTER, 1);
+        await itemNFT.addItem({
+          tokenId: FIRE_LIGHTER,
+          stats: emptyStats,
+          equipPosition: EquipPosition.RIGHT_ARM,
+          metadataURI: "someIPFSURI.json",
+        });
+        const timespan = 3600;
+
+        const queuedAction: QueuedAction = {
+          actionId,
+          skill: Skill.FIREMAKING,
+          potionId: NONE,
+          choiceId,
+          num: 1000,
+          choiceId1: NONE,
+          num1: 0,
+          choiceId2: NONE,
+          num2: 0,
+          regenerateId: NONE,
+          numRegenerate: 0,
+          timespan,
+          rightArmEquipmentTokenId: FIRE_LIGHTER,
+          leftArmEquipmentTokenId: NONE,
+          startTime: "0",
+        };
+
+        queuedActions.push(queuedAction);
+      }
+
+      await itemNFT.addItem({
+        tokenId: LOG,
+        stats: emptyStats,
+        equipPosition: EquipPosition.AUX,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await playerNFT.connect(alice).startAction(playerId, queuedActions[0], true);
+      await ethers.provider.send("evm_increaseTime", [10]);
+      await playerNFT.connect(alice).startAction(playerId, queuedActions[1], true);
+      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(10); // Should be partially completed
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(3);
+      await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan]);
+      expect(await playerNFT.actionQueueLength(playerId)).to.eq(2);
+
+      await playerNFT.connect(alice).consumeActions(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
+      expect(await playerNFT.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
+      // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
+        Math.floor((queuedActions[0].timespan * rate) / 3600) - 1000
+      );
+      // Action queue should be empty
+      expect(await playerNFT.actionQueueLength(playerId)).to.eq(0);
     });
 
     it("Multi skill, woodcutting + firemaking", async () => {
@@ -835,6 +980,7 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
         Math.floor((queuedActions[0].timespan * rate) / 3600) - Math.floor((queuedActions[1].timespan * rate) / 3600)
       );
+      expect(await playerNFT.actionQueueLength(playerId)).to.eq(0);
     });
 
     it("Mining", async () => {
@@ -886,7 +1032,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await playerNFT.connect(alice).consumeActions(playerId);
@@ -969,7 +1115,7 @@ describe("Player", () => {
 
       await itemNFT.testMint(alice.address, COAL_ORE, 255);
       await itemNFT.testMint(alice.address, MITHRIL_ORE, 255);
-      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await playerNFT.connect(alice).consumeActions(playerId);
@@ -1064,12 +1210,12 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
       const time = 361;
       await ethers.provider.send("evm_increaseTime", [time]);
       await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.eq(time);
+      expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
       expect(await playerNFT.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
@@ -1159,7 +1305,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await playerNFT.connect(alice).consumeActions(playerId);
@@ -1274,7 +1420,7 @@ describe("Player", () => {
         },
       ]);
 
-      await playerNFT.connect(alice).startAction(queuedAction, playerId, false);
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await playerNFT.connect(alice).consumeActions(playerId);

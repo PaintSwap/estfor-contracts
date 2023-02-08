@@ -25,7 +25,7 @@ contract Users is Ownable {
     itemNFT = _itemNFT;
   }
 
-  function minorEquip(address _from, uint16 _itemTokenId, uint8 _amount) external onlyPlayerNFT {
+  function minorEquip(address _from, uint16 _itemTokenId, uint16 _amount) external onlyPlayerNFT {
     numEquipped[_from][_itemTokenId] += _amount;
   }
 
