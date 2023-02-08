@@ -103,7 +103,7 @@ library PlayerNFTLibrary {
     address _from,
     uint actionId,
     uint40 skillEndTime,
-    uint16 elapsedTime,
+    uint elapsedTime,
     World world,
     PendingLoot[] storage pendingLoot
   ) external returns (uint[] memory ids, uint[] memory amounts) {
@@ -129,7 +129,7 @@ library PlayerNFTLibrary {
       if (!hasSeed) {
         // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
         // TODO: Some won't have loot (add it to action?)
-        pendingLoot.push(PendingLoot({actionId: actionId, timestamp: skillEndTime, elapsedTime: elapsedTime}));
+        pendingLoot.push(PendingLoot({actionId: actionId, timestamp: skillEndTime, elapsedTime: uint16(elapsedTime)}));
       } else {
         uint seed = world.getSeed(skillEndTime);
 
@@ -226,13 +226,13 @@ library PlayerNFTLibrary {
     address _from,
     uint _tokenId,
     QueuedAction storage queuedAction,
-    uint16 elapsedTime,
+    uint elapsedTime,
     World world,
     ItemNFT itemNFT,
     Users users,
     CombatStats storage playerStats,
     bool _useAll
-  ) external returns (uint16 foodConsumed, uint16 numConsumed, uint16 actualElapsedTime, bool died) {
+  ) external returns (uint16 foodConsumed, uint16 numConsumed, uint actualElapsedTime, bool died) {
     // Fetch the requirements for it
     (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
 

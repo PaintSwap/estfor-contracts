@@ -356,7 +356,7 @@ export const createPlayer = async (
   return event?.tokenId;
 };
 
-export const getActionId = async (tx: ContractTransaction): Promise<string> => {
+export const getActionId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
     return x.event == "AddAction";

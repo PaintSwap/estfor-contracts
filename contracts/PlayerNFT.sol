@@ -553,7 +553,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
 
-      uint16 elapsedTime;
+      uint24 elapsedTime;
       uint40 skillEndTime = queuedAction.startTime + queuedAction.timespan;
       bool consumeAll = skillEndTime <= block.timestamp;
       if (consumeAll) {
@@ -566,7 +566,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
       } else {
         break;
       }
-
+/*
       // Create some items if necessary (smithing ores to bars for instance)
       uint16 modifiedElapsedTime = speedMultiplier[_tokenId] > 1
         ? elapsedTime * speedMultiplier[_tokenId]
@@ -576,7 +576,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
         modifiedElapsedTime,
         world
       );
-      /*
+      
       ActionChoice memory actionChoice = world.getActionChoice(
         _isCombat ? NONE : queuedAction.actionId,
         queuedAction.choiceId
@@ -721,7 +721,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
             : queuedAction.timespan
         );
 
-      uint16 elapsedTime;
+      uint elapsedTime;
 
       uint16 xpPerHour = world.getXPPerHour(
         queuedAction.actionId,
@@ -733,7 +733,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
         elapsedTime = queuedAction.timespan;
       } else if (block.timestamp > queuedAction.startTime) {
         // partially consume
-        elapsedTime = uint16(block.timestamp - queuedAction.startTime);
+        elapsedTime = block.timestamp - queuedAction.startTime;
         uint modifiedElapsedTime = speedMultiplier[_tokenId] > 1
           ? uint(elapsedTime) * speedMultiplier[_tokenId]
           : elapsedTime;
@@ -773,7 +773,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
       }
 
       if (!died) {
-        pointsAccrued = (uint32(elapsedTime) * xpPerHour) / 3600;
+        pointsAccrued = uint32((elapsedTime * xpPerHour) / 3600);
       }
 
       if (elapsedTime < queuedAction.timespan) {
@@ -797,7 +797,7 @@ contract PlayerNFT is ERC1155, Ownable /* Multicall */ {
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerNFTLibrary.getLoot(
           _from,
           queuedAction.actionId,
-          queuedAction.startTime + elapsedTime,
+          uint40(queuedAction.startTime + elapsedTime),
           elapsedTime,
           world,
           pendingLoot

@@ -1127,6 +1127,67 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, MITHRIL_ORE)).to.eq(255 - Math.floor((timespan * rate) / 3600));
     });
 
+    it("Max timespan ", async () => {
+      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const rate = 100; // per hour
+      const tx = await world.addAction({
+        info: {
+          skill: Skill.WOODCUTTING,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: BRONZE_AXE,
+          itemTokenIdRangeMax: WOODCUTTING_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          isAvailable: actionIsAvailable,
+          isCombat: false,
+        },
+        dropRewards: [{itemTokenId: LOG, rate}],
+        lootChances: [],
+        combatStats: emptyStats,
+      });
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      const timespan = 3600 * 24 + 1; // Exceed maximum
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.WOODCUTTING,
+        potionId: NONE,
+        choiceId: NONE,
+        num: 0,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: NONE,
+        numRegenerate: 0,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_AXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await itemNFT.addItem({
+        tokenId: BRONZE_AXE,
+        stats: emptyStats,
+        equipPosition: EquipPosition.RIGHT_ARM,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await expect(playerNFT.connect(alice).startAction(playerId, queuedAction, false)).to.be.reverted;
+      queuedAction.timespan -= 1; // Set to the maximum
+      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await playerNFT.connect(alice).consumeActions(playerId);
+      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
+    });
+
     // TODO Rest of the actions
 
     it("Action pipelining", async () => {

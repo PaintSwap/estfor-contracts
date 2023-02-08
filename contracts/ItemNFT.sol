@@ -102,7 +102,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
     require(_tokenId < type(uint16).max, "id too high");
-//    require(_exists(_tokenId));
+    //    require(_exists(_tokenId));
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
       // Brand new item
@@ -118,7 +118,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     for (uint i = 0; i < _tokenIds.length; ++i) {
       uint tokenId = _tokenIds[i];
       require(tokenId < type(uint16).max, "id too high");
-//      require(_exists(_tokenIds[i]));
+      //      require(_exists(_tokenIds[i]));
       uint existingBalance = itemBalances[tokenId];
       if (existingBalance == 0) {
         // Brand new item
