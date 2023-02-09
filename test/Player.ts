@@ -54,15 +54,21 @@ describe("Player", () => {
     // Create the world
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World");
-    const world = await World.deploy(mockOracleClient.address, subscriptionId);
+    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+      kind: "uups",
+    });
 
-    // Create NFT contract which contains all items & players
     const Users = await ethers.getContractFactory("Users");
-    const users = await Users.deploy();
+    const users = await upgrades.deployProxy(Users, [], {
+      kind: "uups",
+    });
 
-    // Create NFT contract which contains all items & players
-    const ItemNFT = await ethers.getContractFactory("TestItemNFT");
-    const itemNFT = await ItemNFT.deploy(brush.address, world.address, users.address);
+    // Create NFT contract which contains all items
+    const ItemNFT = await ethers.getContractFactory("ItemNFT");
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [brush.address, world.address, users.address], {
+      kind: "uups",
+      unsafeAllow: ["delegatecall"],
+    });
 
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");

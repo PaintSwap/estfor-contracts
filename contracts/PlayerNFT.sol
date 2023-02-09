@@ -44,6 +44,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     _;
   }
 
+  modifier onlyPlayers() {
+    require(msg.sender == address(players));
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -56,15 +61,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     brush = _brush;
     latestPlayerId = 1;
     baseURI = "ipfs://";
-  }
-
-  function setPlayers(IPlayers _players) external onlyOwner {
-    players = _players;
-  }
-
-  modifier onlyPlayers() {
-    require(msg.sender == address(players));
-    _;
   }
 
   function _mintStartingItems() private {
@@ -173,8 +169,16 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     _setURI(_baseURI);
   }
 
-  function burn(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
-    _burn(msg.sender, _tokenId, 1);
+  function burn(address _from, uint _tokenId) external {
+    require(
+      _from == _msgSender() || isApprovedForAll(_from, _msgSender()),
+      "ERC1155: caller is not token owner or approved"
+    );
+    _burn(_from, _tokenId, 1);
+  }
+
+  function setPlayers(IPlayers _players) external onlyOwner {
+    players = _players;
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

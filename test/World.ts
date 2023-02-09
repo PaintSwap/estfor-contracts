@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 import {COMBAT_BASE, COMBAT_MAX, emptyStats, getActionId, NONE, Skill} from "../scripts/utils";
 
 describe("World", () => {
@@ -14,7 +14,9 @@ describe("World", () => {
     // Create the world
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World");
-    const world = await World.deploy(mockOracleClient.address, subscriptionId);
+    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+      kind: "uups",
+    });
 
     const minSeedUpdateTime = await world.MIN_SEED_UPDATE_TIME();
 
@@ -144,11 +146,11 @@ describe("World", () => {
           auxItemTokenIdRangeMin: NONE,
           auxItemTokenIdRangeMax: NONE,
           isAvailable: actionAvailable,
-          isCombat: true
+          isCombat: true,
         },
         dropRewards: [],
         lootChances: [],
-        combatStats: emptyStats
+        combatStats: emptyStats,
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });

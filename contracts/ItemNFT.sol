@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "./interfaces/IBrushToken.sol";
 import "./World.sol";
@@ -11,7 +12,7 @@ import "./types.sol";
 import "./items.sol";
 
 // The NFT contract contains data related to the items and users (not players)
-contract ItemNFT is ERC1155, Multicall, Ownable {
+contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgradeable {
   event AddItem(Item item);
   event AddItems(Item[] items);
   event EditItem(Item item);
@@ -37,10 +38,10 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     EquipPosition equipPosition;
   }
 
-  IBrushToken immutable brush;
-  World immutable world;
-  Users immutable users;
-  string private constant baseURI = "ipfs://";
+  IBrushToken brush;
+  World world;
+  Users users;
+  string private baseURI;
 
   mapping(uint => uint) public itemBalances; // tokenId => total
 
@@ -57,20 +58,29 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   mapping(uint16 => uint256) public shopItems; // id => price
 
-  constructor(IBrushToken _brush, World _world, Users _users) ERC1155("") {
-    brush = _brush;
-    world = _world;
-    users = _users;
-  }
+  mapping(uint => uint) lockedItems;
+  uint mysteryBoxStart;
 
   modifier onlyPlayers() {
     require(players == msg.sender, "Not player");
     _;
   }
 
-  // Map timestamp
-  mapping(uint => uint) lockedItems;
-  uint mysteryBoxStart = 100_000;
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
+  function initialize(IBrushToken _brush, World _world, Users _users) public initializer {
+    __ERC1155_init("");
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+    brush = _brush;
+    world = _world;
+    users = _users;
+    baseURI = "ipfs://";
+    mysteryBoxStart = 100_000;
+  }
 
   // Up to 1000, get a random item
   function mintMysteryBox(uint16 _num) external {
@@ -133,7 +143,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     _mintBatch(_to, _tokenIds, _amounts, "");
   }
 
-  // Make sure changes here are reflected in TestItemNFT.sol
   function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayers {
     _mintItem(_to, _tokenId, _amount);
   }
@@ -274,10 +283,6 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
-  function burn(address _from, uint16 _tokenId, uint _quantity) external onlyPlayers {
-    _burn(_from, _tokenId, _quantity);
-  }
-
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
@@ -303,13 +308,17 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
-  function setPlayers(address _players) external onlyOwner {
-    players = _players;
-  }
-
   function _setItem(Item calldata _item) private {
     itemStats[_item.tokenId] = ItemStat({stats: _item.stats, exists: true, equipPosition: _item.equipPosition});
     tokenURIs[_item.tokenId] = _item.metadataURI;
+  }
+
+  function burn(address _from, uint _tokenId, uint _quantity) external {
+    require(
+      _from == _msgSender() || isApprovedForAll(_from, _msgSender()) || players == _msgSender(),
+      "ERC1155: caller is not token owner or approved or players contracts"
+    );
+    _burn(_from, _tokenId, _quantity);
   }
 
   // Or make it constants and redeploy the contracts
@@ -355,5 +364,24 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   function removeShopItem(uint16 _tokenId) external onlyOwner {
     delete shopItems[_tokenId];
     emit RemoveShopItem(_tokenId);
+  }
+
+  function setPlayers(address _players) external onlyOwner {
+    players = _players;
+  }
+
+  function setBaseURI(string calldata _baseURI) external onlyOwner {
+    _setURI(_baseURI);
+  }
+
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
+  // TODO: Remove in live version
+  function testMint(address _to, uint _tokenId, uint _amount) external {
+    _mintItem(_to, _tokenId, _amount);
+  }
+
+  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external {
+    _mintBatchItems(_to, _tokenIds, _amounts);
   }
 }

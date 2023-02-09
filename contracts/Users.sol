@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "./ItemNFT.sol";
 
 // This contains things related to addresses (EOAs & contracts) representing a user
 // which may be in control of many players. For instance keep track of how many items this user has equipped
-contract Users is Ownable {
+contract Users is OwnableUpgradeable, UUPSUpgradeable {
   ItemNFT private itemNFT;
   address private players;
 
@@ -15,6 +16,16 @@ contract Users is Ownable {
   modifier onlyPlayers() {
     require(msg.sender == players, "Not a player");
     _;
+  }
+
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
+  function initialize() public initializer {
+    __Ownable_init();
+    __UUPSUpgradeable_init();
   }
 
   function set(address _players, ItemNFT _itemNFT) external onlyOwner {
@@ -47,4 +58,6 @@ contract Users is Ownable {
   function itemAmountUnavailable(address _from, uint _itemTokenId) external view returns (uint) {
     return numEquipped[_from][_itemTokenId];
   }
+
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

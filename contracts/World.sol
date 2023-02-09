@@ -2,15 +2,16 @@
 pragma solidity ^0.8.17;
 
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "./VRFConsumerBaseV2Upgradeable.sol";
 import "./types.sol";
 
 // Fantom VRF
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634
 // LINK token 0x6F43FF82CCA38001B6699a8AC47A2d0E66939407
 // PREMIUM 0.0005 LINK
-contract World is VRFConsumerBaseV2, Ownable {
+contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
   event AddAction(uint actionId, Action action);
@@ -38,7 +39,7 @@ contract World is VRFConsumerBaseV2, Ownable {
   mapping(uint256 => uint) public randomWords; /* requestId --> random word */
   uint public lastSeedUpdatedTime;
 
-  uint immutable startTime = block.timestamp;
+  uint startTime;
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
   // For a list of available gas lanes on each network, this is 10000gwei
@@ -56,8 +57,8 @@ contract World is VRFConsumerBaseV2, Ownable {
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
   mapping(uint => ActionInfo) public actions; // action id => base action info
-  uint public lastActionId = 1;
-  uint public actionChoiceId = 1;
+  uint public lastActionId;
+  uint public actionChoiceId;
   uint[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
@@ -66,9 +67,16 @@ contract World is VRFConsumerBaseV2, Ownable {
   mapping(uint => ActionLoot[]) lootChances; // action id => loot chances
   mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
 
-  constructor(VRFCoordinatorV2Interface coordinator, uint64 _subscriptionId) VRFConsumerBaseV2(address(coordinator)) {
-    COORDINATOR = coordinator;
+  function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
+    __VRFConsumerBaseV2_init(address(_coordinator));
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+
+    COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
+    lastActionId = 1;
+    actionChoiceId = 1;
+    startTime = block.timestamp;
   }
 
   function requestSeedUpdate() external returns (uint256 requestId) {
@@ -284,4 +292,6 @@ contract World is VRFConsumerBaseV2, Ownable {
   function getActionChoice(uint _actionId, uint _choiceId) external view returns (ActionChoice memory) {
     return actionChoices[_actionId][_choiceId];
   }
+
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
