@@ -348,7 +348,7 @@ export const createPlayer = async (
   account: SignerWithAddress,
   name: string
 ): Promise<ethers.BigNumber> => {
-  const tx = await nft.connect(account).mintPlayer(avatarId, name);
+  const tx = await nft.connect(account).mint(avatarId, name);
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
     return x.event == "NewPlayer";

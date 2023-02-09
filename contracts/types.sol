@@ -125,3 +125,25 @@ struct ActionInfo {
   uint16 auxItemTokenIdRangeMin; // Logs etc.. TODO Needed?
   uint16 auxItemTokenIdRangeMax;
 }
+
+// Equipment (leave at the bottom to allow for further ones)
+struct Armour {
+  uint8 helmet; // tokenId for the head (1 - 255)
+  uint8 amulet; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
+  uint8 chestplate;
+  uint8 gauntlets;
+  uint8 tassets;
+  uint8 boots;
+  uint8 reserved1;
+  uint8 reserved2;
+}
+
+struct Player {
+  Armour equipment; // Keep this first
+  // These are stored in case individual items are changed later, but also prevents having to read them loads
+  // Base attributes
+  CombatStats totalStats;
+  QueuedAction[] actionQueue;
+  uint240 totalSkillPoints;
+  uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
+}

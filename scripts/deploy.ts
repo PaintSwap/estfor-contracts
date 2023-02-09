@@ -1,4 +1,4 @@
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 import {
   allActions,
   allItems,
@@ -23,23 +23,21 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   //  console.log(`ChainId: ${network.chainId}`);
 
-  let brushAddress;
+  let brush: MockBrushToken;
   let tx;
   if (network.chainId == 31337) {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const brush = await MockBrushToken.deploy();
+    brush = await MockBrushToken.deploy();
     await brush.mint(owner.address, 10000000000000);
-    brushAddress = brush.address;
   } else if (network.chainId == 4002) {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const brush = await MockBrushToken.deploy();
+    brush = await MockBrushToken.deploy();
     tx = await brush.mint(owner.address, 10000000000000);
     await tx.wait();
     console.log("Minted brush");
-    brushAddress = brush.address;
   } else if (network.chainId == 250) {
     // Fantom mainnet
-    brushAddress = "0x85dec8c4B2680793661bCA91a8F129607571863d";
+    brush = await MockBrushToken.attach("0x85dec8c4B2680793661bCA91a8F129607571863d");
   } else {
     throw Error("Not a supported network");
   }
@@ -64,26 +62,39 @@ async function main() {
 
   // Create NFT contract which contains all items & players
   const ItemNFT = await ethers.getContractFactory("TestItemNFT");
-  const itemNFT = await ItemNFT.deploy(brushAddress, world.address, users.address);
+  const itemNFT = await ItemNFT.deploy(brush.address, world.address, users.address);
   await itemNFT.deployed();
   console.log(`Item NFT deployed at ${itemNFT.address.toLowerCase()}`);
 
-  const PlayerNFTLibrary = await ethers.getContractFactory("PlayerNFTLibrary");
-  const playerNFTLibrary = await PlayerNFTLibrary.deploy();
   // Create NFT contract which contains all the players
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {PlayerNFTLibrary: playerNFTLibrary.address},
-  });
-  const playerNFT = await PlayerNFT.deploy(brushAddress, itemNFT.address, world.address, users.address);
-  await playerNFT.deployed();
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+  const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address], {kind: "uups"});
+
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 
-  tx = await itemNFT.setPlayerNFT(playerNFT.address);
+  // This contains all the player data
+  const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
+  const playerLibrary = await PlayerLibrary.deploy();
+
+  const Players = await ethers.getContractFactory("Players", {
+    libraries: {PlayerLibrary: playerLibrary.address},
+  });
+
+  const players = await upgrades.deployProxy(
+    Players,
+    [itemNFT.address, playerNFT.address, world.address, users.address],
+    {kind: "uups", unsafeAllow: ["delegatecall", "external-library-linking"]}
+  );
+
+  tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
-  console.log("setPlayerNFT");
-  tx = await users.setNFTs(playerNFT.address, itemNFT.address);
+  console.log("setPlayers");
+  tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
-  console.log("setNFTs");
+  console.log("setPlayers");
+  tx = await users.set(players.address, itemNFT.address);
+  await tx.wait();
+  console.log("set");
 
   const startAvatarId = 1;
   const avatarInfos = [
@@ -122,7 +133,7 @@ async function main() {
   await tx.wait();
   console.log("batch mint");
 
-  tx = await playerNFT.setEquipment(playerId, [BRONZE_HELMET, BRONZE_GAUNTLETS]);
+  tx = await players.setEquipment(playerId, [BRONZE_HELMET, BRONZE_GAUNTLETS]);
   await tx.wait();
   console.log("equip");
 
@@ -160,11 +171,11 @@ async function main() {
     startTime: "0",
   };
 
-  tx = await playerNFT.startAction(playerId, queuedAction, false);
+  tx = await players.startAction(playerId, queuedAction, false);
   await tx.wait();
   console.log("start actions");
 
-  tx = await playerNFT.setSpeedMultiplier(playerId, 3600); // Turns 1 hour into 1 second
+  tx = await players.setSpeedMultiplier(playerId, 3600); // Turns 1 hour into 1 second
   await tx.wait();
   console.log("Set speed multiiplier");
 
@@ -173,7 +184,7 @@ async function main() {
     await ethers.provider.send("evm_increaseTime", [1]);
   }
 
-  tx = await playerNFT.consumeActions(playerId);
+  tx = await players.consumeActions(playerId);
   await tx.wait();
   console.log("consume actions");
 
@@ -198,7 +209,7 @@ async function main() {
     startTime: "0",
   };
 
-  tx = await playerNFT.startAction(playerId, queuedActionFiremaking, false);
+  tx = await players.startAction(playerId, queuedActionFiremaking, false);
   await tx.wait();
   console.log("start actions");
 
@@ -207,7 +218,7 @@ async function main() {
     await ethers.provider.send("evm_increaseTime", [1]);
   }
 
-  tx = await playerNFT.consumeActions(playerId);
+  tx = await players.consumeActions(playerId);
   await tx.wait();
   console.log("consume actions (firemaking)");
 
@@ -219,7 +230,6 @@ async function main() {
   console.log("add shop");
 
   // Buy from shop
-  const brush = await ethers.getContractAt("IBrushToken", brushAddress);
   tx = await brush.approve(itemNFT.address, "10000000");
   await tx.wait();
   console.log("Approve brush");

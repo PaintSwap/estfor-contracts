@@ -46,7 +46,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
 
   uint16 public mysteryBoxsMinted;
 
-  address playerNFT;
+  address players;
   uint256 public mintMysteryBoxCost;
 
   uint public numItems; // unique number of items
@@ -63,8 +63,8 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     users = _users;
   }
 
-  modifier onlyPlayerNFT() {
-    require(playerNFT == msg.sender, "Not player");
+  modifier onlyPlayers() {
+    require(players == msg.sender, "Not player");
     _;
   }
 
@@ -134,12 +134,12 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
   }
 
   // Make sure changes here are reflected in TestItemNFT.sol
-  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayerNFT {
+  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayers {
     _mintItem(_to, _tokenId, _amount);
   }
 
   // Can't use Item[] array unfortunately so they don't support array casts
-  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
+  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayers {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
@@ -274,7 +274,7 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
-  function burn(address _from, uint16 _tokenId, uint _quantity) external onlyPlayerNFT {
+  function burn(address _from, uint16 _tokenId, uint _quantity) external onlyPlayers {
     _burn(_from, _tokenId, _quantity);
   }
 
@@ -303,8 +303,8 @@ contract ItemNFT is ERC1155, Multicall, Ownable {
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
-  function setPlayerNFT(address _playerNFT) external onlyOwner {
-    playerNFT = _playerNFT;
+  function setPlayers(address _players) external onlyOwner {
+    players = _players;
   }
 
   function _setItem(Item calldata _item) private {

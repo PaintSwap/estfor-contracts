@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 import {
   AIR_SCROLL,
   BRONZE_ARROW,
@@ -64,17 +64,27 @@ describe("Player", () => {
     const ItemNFT = await ethers.getContractFactory("TestItemNFT");
     const itemNFT = await ItemNFT.deploy(brush.address, world.address, users.address);
 
-    const PlayerNFTLibrary = await ethers.getContractFactory("PlayerNFTLibrary");
-    const playerNFTLibrary = await PlayerNFTLibrary.deploy();
-
     // Create NFT contract which contains all the players
-    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-      libraries: {PlayerNFTLibrary: playerNFTLibrary.address},
-    });
-    const playerNFT = await PlayerNFT.deploy(brush.address, itemNFT.address, world.address, users.address);
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+    const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address], {kind: "uups"});
 
-    await itemNFT.setPlayerNFT(playerNFT.address);
-    await users.setNFTs(playerNFT.address, itemNFT.address);
+    // This contains all the player data
+    const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
+    const playerLibrary = await PlayerLibrary.deploy();
+
+    const Players = await ethers.getContractFactory("Players", {
+      libraries: {PlayerLibrary: playerLibrary.address},
+    });
+
+    const players = await upgrades.deployProxy(
+      Players,
+      [itemNFT.address, playerNFT.address, world.address, users.address],
+      {kind: "uups", unsafeAllow: ["delegatecall", "external-library-linking"]}
+    );
+
+    await itemNFT.setPlayers(players.address);
+    await playerNFT.setPlayers(players.address);
+    await users.set(players.address, itemNFT.address);
 
     const avatarId = 1;
     const avatarInfo = {
@@ -86,10 +96,11 @@ describe("Player", () => {
 
     // Create player
     const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
-    const maxTime = await playerNFT.MAX_TIME();
+    const maxTime = await players.MAX_TIME();
 
     return {
       playerId,
+      players,
       playerNFT,
       itemNFT,
       brush,
@@ -102,9 +113,9 @@ describe("Player", () => {
   }
 
   it("Equip", async () => {
-    const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, alice} = await loadFixture(deployContracts);
 
-    await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // item doesn't exist yet
+    await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // item doesn't exist yet
     const stats: CombatStats = {
       attack: 2,
       magic: 0,
@@ -120,13 +131,13 @@ describe("Player", () => {
       equipPosition: EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
-    await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // Don't own any
+    await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // Don't own any
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
+    await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
   });
 
   it("Unequip", async () => {
-    const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, alice} = await loadFixture(deployContracts);
 
     const stats: CombatStats = {
       attack: 2,
@@ -145,26 +156,26 @@ describe("Player", () => {
     });
 
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
+    await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
 
     {
-      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      const afterStats = (await players.players(playerId)).totalStats;
       expect(afterStats.attack).to.eq(2);
       expect(afterStats.meleeDefence).to.eq(-1);
     }
     // Remove a piece of equipment and check the stats are appropriately updated
-    await playerNFT.connect(alice).unequip(playerId, EquipPosition.ARMS);
+    await players.connect(alice).unequip(playerId, EquipPosition.ARMS);
     {
-      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      const afterStats = (await players.players(playerId)).totalStats;
       expect(afterStats.attack).to.eq(0);
       expect(afterStats.meleeDefence).to.eq(0);
     }
   });
 
   it("SetEquipment", async () => {
-    const {playerId, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, alice} = await loadFixture(deployContracts);
 
-    await expect(playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // items don't exist yet
+    await expect(players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // items don't exist yet
     {
       const stats: CombatStats = {
         attack: 2,
@@ -200,28 +211,28 @@ describe("Player", () => {
       });
     }
 
-    await expect(playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // Don't own any
+    await expect(players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // Don't own any
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
     await itemNFT.testMint(alice.address, BRONZE_TASSETS, 1);
-    await playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS]);
+    await players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS]);
 
     // Check they are both equipped (and stats?)
     {
-      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      const afterStats = (await players.players(playerId)).totalStats;
       expect(afterStats.attack).to.eq(2);
       expect(afterStats.meleeDefence).to.eq(9);
     }
     // Remove a piece of equipment and check the stats are appropriately updated
-    await playerNFT.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS]);
+    await players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS]);
     {
-      const afterStats = (await playerNFT.players(playerId)).totalStats;
+      const afterStats = (await players.players(playerId)).totalStats;
       expect(afterStats.attack).to.eq(2);
       expect(afterStats.meleeDefence).to.eq(-1);
     }
   });
 
   it("Skill points", async () => {
-    const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
     await itemNFT.addItem({
       tokenId: BRONZE_AXE,
       stats: emptyStats,
@@ -268,15 +279,15 @@ describe("Player", () => {
       startTime: "0",
     };
 
-    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).startAction(playerId, queuedAction, false);
     await ethers.provider.send("evm_increaseTime", [361]);
-    await playerNFT.connect(alice).consumeActions(playerId);
-    expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
+    await players.connect(alice).consumeActions(playerId);
+    expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down
   });
 
   it("Speed multiplier", async () => {
-    const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     const rate = 100; // per hour
     const tx = await world.addAction({
@@ -325,19 +336,19 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
-    await playerNFT.connect(alice).setSpeedMultiplier(playerId, 2);
+    await players.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).setSpeedMultiplier(playerId, 2);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
-    await playerNFT.connect(alice).consumeActions(playerId);
-    expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    await players.connect(alice).consumeActions(playerId);
+    expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((queuedAction.timespan * rate) / 3600));
-    expect(await playerNFT.actionQueueLength(playerId)).to.eq(0);
+    expect(await players.actionQueueLength(playerId)).to.eq(0);
   });
 
   it("Partial consume aux items", async () => {
-    const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     const rate = 100; // per hour
     const tx = await world.addAction({
@@ -386,17 +397,17 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).startAction(playerId, queuedAction, false);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
-    await playerNFT.connect(alice).consumeActions(playerId);
-    expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
+    await players.connect(alice).consumeActions(playerId);
+    expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor(((queuedAction.timespan / 2) * rate) / 3600));
   });
 
   it("Skill points, max range", async () => {
-    const {playerId, playerNFT, itemNFT, world, alice, maxTime} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(deployContracts);
 
     const stats: CombatStats = {
       attack: 2,
@@ -415,7 +426,7 @@ describe("Player", () => {
     });
     await itemNFT.testMint(alice.address, BRONZE_SWORD, 1);
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
+    await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
 
     await itemNFT.addItem({
       tokenId: BRONZE_SWORD,
@@ -443,7 +454,7 @@ describe("Player", () => {
     });
 
     const queuedAction: QueuedAction = {
-      actionId: "1",
+      actionId: 1,
       skill: Skill.ATTACK,
       potionId: NONE,
       choiceId: NONE,
@@ -460,11 +471,11 @@ describe("Player", () => {
       startTime: "0",
     };
 
-    await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).startAction(playerId, queuedAction, false);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-    await playerNFT.connect(alice).consumeActions(playerId);
-    expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.eq(queuedAction.timespan);
+    await players.connect(alice).consumeActions(playerId);
+    expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(queuedAction.timespan);
   });
 
   it("Multi-skill points", async () => {
@@ -472,12 +483,12 @@ describe("Player", () => {
   });
 
   it("Equipment stats", async () => {
-    const {playerId, playerNFT, itemNFT, users, alice} = await loadFixture(deployContracts);
+    const {playerId, players, playerNFT, itemNFT, users, alice} = await loadFixture(deployContracts);
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
     expect(await itemNFT.balanceOf(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
 
     // Gauntlet doesn't exist yet
-    await expect(playerNFT.equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
+    await expect(players.equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
 
     const stats: CombatStats = {
       attack: 2,
@@ -497,7 +508,7 @@ describe("Player", () => {
     });
 
     // Check bonuses before
-    const beforeStats = (await playerNFT.players(playerId)).totalStats;
+    const beforeStats = (await players.players(playerId)).totalStats;
     expect(beforeStats.attack).to.eq(0);
     expect(beforeStats.range).to.eq(0);
     expect(beforeStats.magic).to.eq(0);
@@ -506,10 +517,10 @@ describe("Player", () => {
     expect(beforeStats.magicDefence).to.eq(0);
     expect(beforeStats.health).to.eq(0);
 
-    await playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
+    await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
 
     // Check bonuses after
-    const afterStats = (await playerNFT.players(playerId)).totalStats;
+    const afterStats = (await players.players(playerId)).totalStats;
     expect(afterStats.attack).to.eq(2);
     expect(afterStats.range).to.eq(0);
     expect(afterStats.magic).to.eq(0);
@@ -530,12 +541,12 @@ describe("Player", () => {
     await playerNFT.setAvatar(avatarId, avatarInfo);
 
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
-    await expect(playerNFT.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS)).to.be.reverted;
+    await expect(players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS)).to.be.reverted;
 
     // Mint another one and try again, first trying to connect same item to the same player
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await expect(playerNFT.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
-    await playerNFT.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS);
+    await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
+    await players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS);
     expect(await users.numEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(2);
   });
 
@@ -559,7 +570,7 @@ describe("Player", () => {
     // Test isDynamic
     // Test incorrect item position and range
     it("Woodcutting", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const rate = 100; // per hour
       const tx = await world.addAction({
@@ -608,17 +619,17 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
     });
 
     it("Firemaking", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       const rate = 100; // per hour
       let tx = await world.addAction({
         info: {
@@ -690,18 +701,18 @@ describe("Player", () => {
       });
 
       await itemNFT.testMint(alice.address, LOG, 5); // Mint less than will be used
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedAction.timespan);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedAction.timespan);
 
       // Check how many logs they have now, 100 logs burnt per hour
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(0);
     });
 
     it("Multi skill appending, woodcutting + firemaking", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       const queuedActions: QueuedAction[] = [];
       const rate = 1220; // per hour
       {
@@ -825,27 +836,27 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(playerId, queuedActions[0], true);
+      await players.connect(alice).startAction(playerId, queuedActions[0], true);
       await ethers.provider.send("evm_increaseTime", [10]);
-      await playerNFT.connect(alice).startAction(playerId, queuedActions[1], true);
-      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(10); // Should be partially completed
+      await players.connect(alice).startAction(playerId, queuedActions[1], true);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(10); // Should be partially completed
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(3);
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan]);
-      expect(await playerNFT.actionQueueLength(playerId)).to.eq(2);
+      expect(await players.actionQueueLength(playerId)).to.eq(2);
 
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
-      expect(await playerNFT.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
+      expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
       // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
         Math.floor((queuedActions[0].timespan * rate) / 3600) - 1000
       );
       // Action queue should be empty
-      expect(await playerNFT.actionQueueLength(playerId)).to.eq(0);
+      expect(await players.actionQueueLength(playerId)).to.eq(0);
     });
 
     it("Multi skill, woodcutting + firemaking", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       const queuedActions: QueuedAction[] = [];
       const rate = 100; // per hour
       {
@@ -969,22 +980,22 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).multiskill(playerId, queuedActions);
+      await players.connect(alice).multiskill(playerId, queuedActions);
 
       // multi-skill queue
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
-      expect(await playerNFT.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
+      expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
       // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
         Math.floor((queuedActions[0].timespan * rate) / 3600) - Math.floor((queuedActions[1].timespan * rate) / 3600)
       );
-      expect(await playerNFT.actionQueueLength(playerId)).to.eq(0);
+      expect(await players.actionQueueLength(playerId)).to.eq(0);
     });
 
     it("Mining", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const tx = await world.addAction({
         info: {
@@ -1032,15 +1043,15 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.MINING)).to.eq(queuedAction.timespan);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.MINING)).to.eq(queuedAction.timespan);
     });
 
     it("Smithing", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       const rate = 100; // per hour
 
       let tx = await world.addAction({
@@ -1115,11 +1126,11 @@ describe("Player", () => {
 
       await itemNFT.testMint(alice.address, COAL_ORE, 255);
       await itemNFT.testMint(alice.address, MITHRIL_ORE, 255);
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.SMITHING)).to.eq(queuedAction.timespan);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.SMITHING)).to.eq(queuedAction.timespan);
 
       // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
       expect(await itemNFT.balanceOf(alice.address, MITHRIL_BAR)).to.eq(Math.floor((timespan * rate) / 3600));
@@ -1128,7 +1139,7 @@ describe("Player", () => {
     });
 
     it("Max timespan ", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const rate = 100; // per hour
       const tx = await world.addAction({
@@ -1177,13 +1188,13 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await expect(playerNFT.connect(alice).startAction(playerId, queuedAction, false)).to.be.reverted;
+      await expect(players.connect(alice).startAction(playerId, queuedAction, false)).to.be.reverted;
       queuedAction.timespan -= 1; // Set to the maximum
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
     });
@@ -1197,7 +1208,7 @@ describe("Player", () => {
 
   describe("Combat Actions", () => {
     it("Melee", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
         attack: 3,
@@ -1271,13 +1282,13 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       const time = 361;
       await ethers.provider.send("evm_increaseTime", [time]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
-      expect(await playerNFT.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
+      expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / 3600));
@@ -1292,7 +1303,7 @@ describe("Player", () => {
 
     it("Dead", async () => {
       // Lose all the XP that would have been gained
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
         attack: 3,
@@ -1366,18 +1377,18 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-      await playerNFT.connect(alice).consumeActions(playerId);
+      await players.connect(alice).consumeActions(playerId);
       // Should die so doesn't get any attack skill points, and food should be consumed
-      expect(await playerNFT.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
+      expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(0);
     });
 
     it("Magic", async () => {
-      const {playerId, playerNFT, itemNFT, world, alice} = await loadFixture(deployContracts);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
         attack: 3,
@@ -1481,12 +1492,12 @@ describe("Player", () => {
         },
       ]);
 
-      await playerNFT.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-      await playerNFT.connect(alice).consumeActions(playerId);
-      expect(await playerNFT.skillPoints(playerId, Skill.MAGIC)).to.eq(queuedAction.timespan);
-      expect(await playerNFT.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.MAGIC)).to.eq(queuedAction.timespan);
+      expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((timespan * dropRate) / 3600));

@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 import {SAPPHIRE_AMULET, BRONZE_SHIELD, BRONZE_SWORD, RAW_HUPPY} from "../scripts/utils";
 
 describe("Shop", function () {
@@ -26,18 +26,6 @@ describe("Shop", function () {
     // Create NFT contract which contains all items & players
     const ItemNFT = await ethers.getContractFactory("TestItemNFT");
     const itemNFT = await ItemNFT.deploy(brush.address, world.address, users.address);
-
-    const PlayerNFTLibrary = await ethers.getContractFactory("PlayerNFTLibrary");
-    const playerNFTLibrary = await PlayerNFTLibrary.deploy();
-
-    // Create NFT contract which contains all the players
-    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-      libraries: {PlayerNFTLibrary: playerNFTLibrary.address},
-    });
-    const playerNFT = await PlayerNFT.deploy(brush.address, itemNFT.address, world.address, users.address);
-
-    await itemNFT.setPlayerNFT(playerNFT.address);
-    await users.setNFTs(playerNFT.address, itemNFT.address);
 
     return {
       itemNFT,

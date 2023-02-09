@@ -8,8 +8,8 @@ import "./ItemNFT.sol";
 import "./Users.sol";
 
 // Show all the player stats, return metadata json
-library PlayerNFTLibrary {
-  // Same as in PlayerNFT
+library PlayerLibrary {
+  // Same as in Player
   event Unequip(uint tokenId, uint16 itemTokenId, uint amount);
 
   function uri(
@@ -18,7 +18,7 @@ library PlayerNFTLibrary {
     CombatStats calldata totalStats,
     bytes32 avatarName,
     string calldata avatarDescription,
-    bytes calldata imageURI
+    string calldata imageURI
   ) external view returns (string memory) {
     string memory attributes = string(
       abi.encodePacked(

@@ -1,5 +1,7 @@
 node_modules
 .env
+*.log
+unknown-*.json
 coverage
 coverage.json
 typechain
