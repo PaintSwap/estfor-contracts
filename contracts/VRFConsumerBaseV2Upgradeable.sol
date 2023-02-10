@@ -100,12 +100,12 @@ abstract contract VRFConsumerBaseV2Upgradeable is Initializable {
   error OnlyCoordinatorCanFulfill(address have, address want);
   address private vrfCoordinator;
 
-    /**
-     * @dev Initializes the contract setting the deployer as the initial owner.
-     */
-    function __VRFConsumerBaseV2_init(address _vrfCoordinator) internal onlyInitializing {
-        vrfCoordinator = _vrfCoordinator;
-    }
+  /**
+   * @dev Initializes the contract setting the deployer as the initial owner.
+   */
+  function __VRFConsumerBaseV2_init(address _vrfCoordinator) internal onlyInitializing {
+    vrfCoordinator = _vrfCoordinator;
+  }
 
   /**
    * @notice fulfillRandomness handles the VRF response. Your contract must

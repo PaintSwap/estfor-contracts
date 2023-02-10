@@ -6,13 +6,7 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 contract MockOracleClient {
   uint counter = 1;
 
-  function requestRandomWords(
-    bytes32,
-    uint64,
-    uint16,
-    uint32,
-    uint32
-  ) external returns (uint256 requestId) {
+  function requestRandomWords(bytes32, uint64, uint16, uint32, uint32) external returns (uint256 requestId) {
     requestId = counter;
     counter += 1;
   }
