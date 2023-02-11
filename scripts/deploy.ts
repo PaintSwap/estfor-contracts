@@ -244,7 +244,7 @@ async function main() {
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
 
   // Add shop item
-  tx = await shop.addShopItems(allShopItems);
+  tx = await shop.addBuyableItems(allShopItems);
   await tx.wait();
   console.log("add shop");
 

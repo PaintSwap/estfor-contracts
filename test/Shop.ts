@@ -52,13 +52,13 @@ describe("Shop", function () {
 
   it("Set up shop", async () => {
     const {shop} = await loadFixture(deployContracts);
-    await shop.addShopItem({tokenId: BRONZE_SHIELD, price: 500});
+    await shop.addBuyableItem({tokenId: BRONZE_SHIELD, price: 500});
 
     // Check that it's in the shop
     expect(await shop.shopItems(BRONZE_SHIELD)).to.eq(500);
 
     // Update price
-    await shop.addShopItem({tokenId: BRONZE_SHIELD, price: 400});
+    await shop.addBuyableItem({tokenId: BRONZE_SHIELD, price: 400});
     expect(await shop.shopItems(BRONZE_SHIELD)).to.eq(400);
 
     // Doesn't exist
@@ -67,7 +67,7 @@ describe("Shop", function () {
 
   it("Set up shop batch ", async () => {
     const {shop} = await loadFixture(deployContracts);
-    await shop.addShopItems([
+    await shop.addBuyableItems([
       {tokenId: BRONZE_SHIELD, price: 500},
       {tokenId: RAW_HUPPY, price: 300},
     ]);
@@ -77,7 +77,7 @@ describe("Shop", function () {
     expect(await shop.shopItems(RAW_HUPPY)).to.eq(300);
 
     // Replacing should work
-    await shop.addShopItems([
+    await shop.addBuyableItems([
       {tokenId: BRONZE_SHIELD, price: 200},
       {tokenId: RAW_HUPPY, price: 400},
       {tokenId: BRONZE_SWORD, price: 10},
@@ -91,7 +91,7 @@ describe("Shop", function () {
 
   it("Buy", async () => {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
-    await shop.addShopItem({tokenId: BRONZE_SHIELD, price: 500});
+    await shop.addBuyableItem({tokenId: BRONZE_SHIELD, price: 500});
 
     const quantityBought = 2;
     // Hasn't approved brush yet
@@ -105,8 +105,8 @@ describe("Shop", function () {
 
   it("Buy batch", async () => {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
-    await shop.addShopItem({tokenId: BRONZE_SHIELD, price: 500});
-    await shop.addShopItem({tokenId: SAPPHIRE_AMULET, price: 200});
+    await shop.addBuyableItem({tokenId: BRONZE_SHIELD, price: 500});
+    await shop.addBuyableItem({tokenId: SAPPHIRE_AMULET, price: 200});
 
     await brush.mint(alice.address, 900);
     await brush.connect(alice).approve(shop.address, 900);

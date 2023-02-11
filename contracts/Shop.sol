@@ -131,12 +131,12 @@ contract Shop is Multicall, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // Spend brush to buy some things from the shop
-  function addShopItem(ShopItem calldata _shopItem) external onlyOwner {
+  function addBuyableItem(ShopItem calldata _shopItem) external onlyOwner {
     shopItems[_shopItem.tokenId] = _shopItem.price;
     emit AddShopItem(_shopItem);
   }
 
-  function addShopItems(ShopItem[] calldata _shopItems) external onlyOwner {
+  function addBuyableItems(ShopItem[] calldata _shopItems) external onlyOwner {
     require(_shopItems.length > 0, "length empty");
     uint i;
     do {
@@ -148,7 +148,7 @@ contract Shop is Multicall, UUPSUpgradeable, OwnableUpgradeable {
     emit AddShopItems(_shopItems);
   }
 
-  function removeShopItem(uint16 _tokenId) external onlyOwner {
+  function removeItem(uint16 _tokenId) external onlyOwner {
     delete shopItems[_tokenId];
     emit RemoveShopItem(_tokenId);
   }
