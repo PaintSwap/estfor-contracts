@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -36,7 +36,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   // Past request ids
   uint[] public requestIds; // Each one is a seed for a day
-  mapping(uint256 => uint) public randomWords; /* requestId --> random word */
+  mapping(uint requestId => uint randomWord) public randomWords; /* requestId --> random word */
   uint public lastSeedUpdatedTime;
 
   uint startTime;
@@ -56,16 +56,16 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
-  mapping(uint => ActionInfo) public actions; // action id => base action info
+  mapping(uint actionId => ActionInfo actionInfo) public actions;
   uint public lastActionId;
   uint public actionChoiceId;
   uint[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
-  mapping(uint => ActionReward[]) dropRewards; // action id => dropRewards
-  mapping(uint => ActionLoot[]) lootChances; // action id => loot chances
-  mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
+  mapping(uint actionId => mapping(uint choiceId => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
+  mapping(uint actionId => ActionReward[] dropRewards) dropRewards; // action id => dropRewards
+  mapping(uint actionId => ActionLoot[] lootChance) lootChances; // action id => loot chances
+  mapping(uint actionId => CombatStats combatStats) actionCombatStats; // action id => combat stats
 
   function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
     __VRFConsumerBaseV2_init(address(_coordinator));

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -17,20 +17,6 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
   event AddItems(Item[] items);
   event EditItem(Item item);
 
-  /* Shop */
-  event AddShopItem(ShopItem shopItem);
-  event AddShopItems(ShopItem[] shopItems);
-  event RemoveShopItem(uint16 tokenId);
-  event Buy(address buyer, uint16 tokenId, uint quantity, uint price);
-  event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
-  event Sell(address seller, uint16 tokenId, uint quantity, uint price);
-  event SellBatch(address seller, uint16[] tokenIds, uint[] quantities, uint[] prices);
-
-  struct ShopItem {
-    uint16 tokenId;
-    uint128 price;
-  }
-
   struct Item {
     CombatStats stats;
     string metadataURI;
@@ -38,31 +24,27 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     EquipPosition equipPosition;
   }
 
-  IBrushToken brush;
   World world;
   Users users;
   string private baseURI;
 
-  mapping(uint => uint) public itemBalances; // tokenId => total
-
-  uint16 public mysteryBoxsMinted;
+  // How many of this item exist
+  mapping(uint tokenId => uint total) public itemBalances;
 
   address players;
-  uint256 public mintMysteryBoxCost;
+  address shop;
 
-  uint public numItems; // unique number of items
+  uint public uniqueItems; // unique number of items
 
-  mapping(uint => string) private tokenURIs;
+  mapping(uint tokenId => string uri) private tokenURIs;
+  mapping(uint tokenId => ItemStat stats) itemStats;
+  //  mapping(uint index => uint tokenId) lockedItems;
+  //  uint mysteryBoxStart;
+  //  uint public mintMysteryBoxCost;
+  //  uint16 public mysteryBoxsMinted;
 
-  mapping(uint16 => ItemStat) itemStats;
-
-  mapping(uint16 => uint256) public shopItems; // id => price
-
-  mapping(uint => uint) lockedItems;
-  uint mysteryBoxStart;
-
-  modifier onlyPlayers() {
-    require(players == msg.sender, "Not player");
+  modifier onlyPlayersOrShop() {
+    require(msg.sender == players || msg.sender == shop, "Not players OR shop");
     _;
   }
 
@@ -71,17 +53,18 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush, World _world, Users _users) public initializer {
+  function initialize(World _world, Users _users, address _shop) public initializer {
     __ERC1155_init("");
     __Ownable_init();
     __UUPSUpgradeable_init();
-    brush = _brush;
     world = _world;
     users = _users;
+    shop = _shop;
     baseURI = "ipfs://";
-    mysteryBoxStart = 100_000;
+    //    mysteryBoxStart = 100_000;
   }
 
+  /*
   // Up to 1000, get a random item
   function mintMysteryBox(uint16 _num) external {
     require(mysteryBoxStart < 101_000); // Can only have 1000 minted?
@@ -108,15 +91,14 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     _burn(msg.sender, MYSTERY_BOX, 1);
 
     // Fetch random values from chainlink
-  }
+  } */
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
     require(_tokenId < type(uint16).max, "id too high");
     //    require(_exists(_tokenId));
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
-      // Brand new item
-      ++numItems;
+      ++uniqueItems;
     }
 
     itemBalances[_tokenId] = existingBalance + _amount;
@@ -138,17 +120,17 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
       itemBalances[tokenId] = existingBalance + _amounts[i];
     }
     if (numNewItems > 0) {
-      numItems += numNewItems;
+      uniqueItems += numNewItems;
     }
     _mintBatch(_to, _tokenIds, _amounts, "");
   }
 
-  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayers {
+  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayersOrShop {
     _mintItem(_to, _tokenId, _amount);
   }
 
   // Can't use Item[] array unfortunately so they don't support array casts
-  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayers {
+  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayersOrShop {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
@@ -216,98 +198,6 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     } while (i > 0);
   }
 
-  /* Shop */
-  function getPriceForItem(uint16 _tokenId) public view returns (uint price) {
-    uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / numItems;
-    uint totalOfThisItem = itemBalances[_tokenId];
-    // Needs to have a minimum of an item before any can be sold.
-    return totalBrushForItem / totalOfThisItem;
-  }
-
-  function getPriceForItems(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
-    if (_tokenIds.length == 0) {
-      return prices;
-    }
-
-    uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / numItems;
-
-    prices = new uint[](_tokenIds.length);
-    uint i;
-    do {
-      uint totalOfThisItem = itemBalances[_tokenIds[i]];
-      if (totalOfThisItem < 100) {
-        // Need to be a minimum of an item before any can be sold.
-        prices[i] = 0;
-      } else {
-        prices[i] = totalBrushForItem / totalOfThisItem;
-      }
-
-      unchecked {
-        ++i;
-      }
-    } while (i < prices.length);
-  }
-
-  // Buy simple items and XP boosts using brush
-  function buy(uint16 _tokenId, uint _quantity) external {
-    uint price = shopItems[_tokenId];
-    require(price != 0, "Item cannot be bought");
-    // Pay
-    brush.transferFrom(msg.sender, address(this), price);
-    // Burn half, the rest goes into the pool for sellable items
-    brush.burn(price / 2);
-
-    _mintItem(msg.sender, _tokenId, _quantity);
-    emit Buy(msg.sender, _tokenId, _quantity, price);
-  }
-
-  function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
-    require(_tokenIds.length == _quantities.length);
-    uint totalBrush;
-    uint[] memory prices = new uint[](_tokenIds.length);
-    for (uint i = 0; i < _tokenIds.length; ++i) {
-      uint price = shopItems[uint16(_tokenIds[i])];
-      require(price != 0, "Item cannot be bought");
-      totalBrush += price * _quantities[i];
-      prices[i] = price;
-    }
-
-    // Pay
-    brush.transferFrom(msg.sender, address(this), totalBrush);
-    // Burn half, the rest goes into the pool for sellable items
-    brush.burn(totalBrush / 2);
-
-    _mintBatch(msg.sender, _tokenIds, _quantities, "");
-    emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
-  }
-
-  function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
-    uint brushPerToken = getPriceForItem(_tokenId);
-    uint totalBrush = brushPerToken * _quantity;
-    require(totalBrush >= _minExpectedBrush, "Min expected brush not reached");
-    _burn(msg.sender, uint(_tokenId), _quantity);
-    brush.transfer(msg.sender, totalBrush);
-    emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
-  }
-
-  function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
-    require(_tokenIds.length == _quantities.length);
-    require(_tokenIds.length > 0);
-    uint totalBrush;
-    uint[] memory prices = new uint[](_tokenIds.length);
-    for (uint i = 0; i < _tokenIds.length; ++i) {
-      uint brushPerToken = getPriceForItem(_tokenIds[i]);
-      totalBrush += brushPerToken * _quantities[i];
-      _burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
-      prices[i] = brushPerToken;
-    }
-    require(totalBrush >= _minExpectedBrush);
-    brush.transfer(msg.sender, totalBrush);
-    emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
-  }
-
   function _setItem(Item calldata _item) private {
     itemStats[_item.tokenId] = ItemStat({stats: _item.stats, exists: true, equipPosition: _item.equipPosition});
     tokenURIs[_item.tokenId] = _item.metadataURI;
@@ -315,8 +205,8 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
 
   function burn(address _from, uint _tokenId, uint _quantity) external {
     require(
-      _from == _msgSender() || isApprovedForAll(_from, _msgSender()) || players == _msgSender(),
-      "ERC1155: caller is not token owner or approved or players contracts"
+      _from == _msgSender() || isApprovedForAll(_from, _msgSender()) || players == _msgSender() || shop == _msgSender(),
+      "ERC1155: caller is not token owner, approved , players contract or shop contract"
     );
     _burn(_from, _tokenId, _quantity);
   }
@@ -341,29 +231,6 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     require(itemStats[_item.tokenId].equipPosition == _item.equipPosition, "Equipment position should not change");
     _setItem(_item);
     emit EditItem(_item);
-  }
-
-  // Spend brush to buy some things from the shop
-  function addShopItem(ShopItem calldata _shopItem) external onlyOwner {
-    shopItems[_shopItem.tokenId] = _shopItem.price;
-    emit AddShopItem(_shopItem);
-  }
-
-  function addShopItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    require(_shopItems.length > 0, "length empty");
-    uint i;
-    do {
-      shopItems[_shopItems[i].tokenId] = _shopItems[i].price;
-      unchecked {
-        ++i;
-      }
-    } while (i < _shopItems.length);
-    emit AddShopItems(_shopItems);
-  }
-
-  function removeShopItem(uint16 _tokenId) external onlyOwner {
-    delete shopItems[_tokenId];
-    emit RemoveShopItem(_tokenId);
   }
 
   function setPlayers(address _players) external onlyOwner {

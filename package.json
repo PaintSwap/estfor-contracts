@@ -44,7 +44,7 @@
     "console": "npx hardhat console",
     "compile": "npx hardhat compile",
     "clean": "npx hardhat clean",
-    "deploy": "npx hardhat run scripts/deploy.js",
+    "deploy": "npx hardhat run scripts/deploy.ts",
     "test": "npx hardhat test --network hardhat",
     "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol",
     "precommit": "pretty-quick --staged",

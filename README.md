@@ -1,11 +1,23 @@
 # Estfor Kingdom contracts
 
-To run the tests:
+Make sure `yarn` is installed.
+
+These contracts use hardhat and require solidity 0.8.18 at minimum.
+
+To compile run the tests:
+
 ```shell
-npx hardhat test
+yarn compile
+```
+
+To run the tests:
+
+```shell
+yarn test
 ```
 
 To deploy the contracts:
-```
-npx hardhat run scripts/deploy.ts
+
+```shell
+yarn deploy
 ```

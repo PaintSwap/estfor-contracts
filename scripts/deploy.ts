@@ -65,9 +65,18 @@ async function main() {
   await users.deployed();
   console.log(`Users deployed at ${users.address.toLowerCase()}`);
 
+  const Shop = await ethers.getContractFactory("Shop");
+  const shop = await upgrades.deployProxy(Shop, [brush.address], {
+    kind: "uups",
+    unsafeAllow: ["delegatecall"],
+  });
+
+  await shop.deployed();
+  console.log(`Shop deployed at ${shop.address.toLowerCase()}`);
+
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.deployProxy(ItemNFT, [brush.address, world.address, users.address], {
+  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, users.address, shop.address], {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
   });
@@ -103,6 +112,8 @@ async function main() {
   tx = await users.set(players.address, itemNFT.address);
   await tx.wait();
   console.log("set");
+  await shop.setItemNFT(itemNFT.address);
+  console.log("setItemNFT");
 
   const startAvatarId = 1;
   const avatarInfos = [
@@ -233,26 +244,26 @@ async function main() {
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
 
   // Add shop item
-  tx = await itemNFT.addShopItems(allShopItems);
+  tx = await shop.addShopItems(allShopItems);
   await tx.wait();
   console.log("add shop");
 
   // Buy from shop
-  tx = await brush.approve(itemNFT.address, "10000000");
+  tx = await brush.approve(shop.address, "10000000");
   await tx.wait();
   console.log("Approve brush");
 
-  tx = await itemNFT.buy(BRONZE_HELMET, 1);
+  tx = await shop.buy(BRONZE_HELMET, 1);
   await tx.wait();
   console.log("buy from shop");
 
   // Transfer some brush to the pool so we can sell something
-  tx = await brush.transfer(itemNFT.address, "100000");
+  tx = await brush.transfer(shop.address, "100000");
   await tx.wait();
   console.log("Transfer some brush");
 
   // Sell to shop (can be anything)
-  tx = await itemNFT.sell(BRONZE_HELMET, 1, 1);
+  tx = await shop.sell(BRONZE_HELMET, 1, 1);
   await tx.wait();
   console.log("Sell");
 }

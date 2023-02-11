@@ -63,13 +63,20 @@ describe("Player", () => {
       kind: "uups",
     });
 
-    // Create NFT contract which contains all items
-    const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [brush.address, world.address, users.address], {
+    const Shop = await ethers.getContractFactory("Shop");
+    const shop = await upgrades.deployProxy(Shop, [brush.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall"],
     });
 
+    // Create NFT contract which contains all items
+    const ItemNFT = await ethers.getContractFactory("ItemNFT");
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, users.address, shop.address], {
+      kind: "uups",
+      unsafeAllow: ["delegatecall"],
+    });
+
+    await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
     const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address], {kind: "uups"});
