@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "./types.sol";
@@ -14,7 +14,7 @@ library PlayerLibrary {
 
   function uri(
     bytes32 name,
-    mapping(Skill skill => uint32 skillPoints) storage skillPoints,
+    mapping(Skill => uint32) storage skillPoints,
     CombatStats calldata totalStats,
     bytes32 avatarName,
     string calldata avatarDescription,

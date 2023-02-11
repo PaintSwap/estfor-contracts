@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -64,17 +64,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   uint constant LEVEL_90_BOUNDARY = 554828;
   uint constant LEVEL_99_BOUNDARY = 1035476;
 
-  mapping(uint playerId => uint multiplier) speedMultiplier; // 0 or 1 is diabled, for testing only
+  mapping(uint => uint) speedMultiplier; // 0 or 1 is diabled, for testing only
 
   uint private queuedActionId; // Global queued action id
   World private world;
 
-  mapping(uint playerId => mapping(Skill skill => uint32 skillPoints)) public skillPoints;
+  mapping(uint => mapping(Skill => uint32)) public skillPoints;
 
   // This is kept separate in case we want to remove this being used and instead read attributes on demand.
-  mapping(uint playerId => ArmourAttributes attributes) armourAttributes; // player id => attributes from armour
+  mapping(uint => ArmourAttributes) armourAttributes; // player id => attributes from armour
 
-  mapping(uint playerId => Player player) public players;
+  mapping(uint => Player) public players;
   ItemNFT private itemNFT;
   Users private users;
   PlayerNFT private playerNFT;

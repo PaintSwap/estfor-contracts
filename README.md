@@ -2,7 +2,7 @@
 
 Make sure `yarn` is installed.
 
-These contracts use hardhat and require solidity 0.8.18 at minimum.
+These contracts use hardhat and require solidity 0.8.17 at minimum.
 
 To compile run the tests:
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -11,7 +11,7 @@ contract Users is OwnableUpgradeable, UUPSUpgradeable {
   ItemNFT private itemNFT;
   address private players;
 
-  mapping(address user => mapping(uint itemTokenId => uint numEquipped)) public numEquipped;
+  mapping(address => mapping(uint => uint)) public numEquipped;
 
   modifier onlyPlayers() {
     require(msg.sender == players, "Not a player");

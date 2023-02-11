@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -29,15 +29,15 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
   string private baseURI;
 
   // How many of this item exist
-  mapping(uint tokenId => uint total) public itemBalances;
+  mapping(uint => uint) public itemBalances;
 
   address players;
   address shop;
 
   uint public uniqueItems; // unique number of items
 
-  mapping(uint tokenId => string uri) private tokenURIs;
-  mapping(uint tokenId => ItemStat stats) itemStats;
+  mapping(uint => string) private tokenURIs;
+  mapping(uint => ItemStat) itemStats;
   //  mapping(uint index => uint tokenId) lockedItems;
   //  uint mysteryBoxStart;
   //  uint public mintMysteryBoxCost;

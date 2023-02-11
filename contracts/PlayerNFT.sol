@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -30,10 +30,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   uint private latestPlayerId;
 
-  mapping(uint avatarId => AvatarInfo avatarInfo) private avatars;
+  mapping(uint => AvatarInfo) private avatars;
   string private baseURI;
-  mapping(uint tokenId => uint avatarId) private tokenIdToAvatar; // tokenId => avatar id
-  mapping(uint tokenId => bytes32 name) private names;
+  mapping(uint => uint) private tokenIdToAvatar; // tokenId => avatar id
+  mapping(uint => bytes32) private names;
 
   IBrushToken brush;
   IPlayers private players;
