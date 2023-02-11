@@ -14,7 +14,7 @@ library PlayerLibrary {
 
   function uri(
     bytes32 name,
-    mapping(Skill => uint32) storage skillPoints,
+    mapping(Skill skill => uint32 skillPoints) storage skillPoints,
     CombatStats calldata totalStats,
     bytes32 avatarName,
     string calldata avatarDescription,

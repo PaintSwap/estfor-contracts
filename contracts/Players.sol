@@ -4,7 +4,6 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import "./World.sol";
 import "./types.sol";
 import "./items.sol";
@@ -52,33 +51,30 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
   uint private constant MAX_LOOT_PER_ACTION = 5;
   uint32 public constant MAX_TIME = 1 days;
-  World world;
+  uint constant LEVEL_5_BOUNDARY = 374;
+  uint constant LEVEL_10_BOUNDARY = 1021;
+  uint constant LEVEL_15_BOUNDARY = 1938;
+  uint constant LEVEL_20_BOUNDARY = 3236;
+  uint constant LEVEL_30_BOUNDARY = 7650;
+  uint constant LEVEL_40_BOUNDARY = 16432;
+  uint constant LEVEL_50_BOUNDARY = 33913;
+  uint constant LEVEL_60_BOUNDARY = 68761;
+  uint constant LEVEL_70_BOUNDARY = 138307;
+  uint constant LEVEL_80_BOUNDARY = 277219;
+  uint constant LEVEL_90_BOUNDARY = 554828;
+  uint constant LEVEL_99_BOUNDARY = 1035476;
 
-  uint constant LEVEL_5_BOUNDARY = 500;
-  uint constant LEVEL_10_BOUNDARY = 10000;
-  uint constant LEVEL_15_BOUNDARY = 15000;
-  uint constant LEVEL_20_BOUNDARY = 20000;
-  uint constant LEVEL_30_BOUNDARY = 30000;
-  uint constant LEVEL_40_BOUNDARY = 400000;
-  uint constant LEVEL_50_BOUNDARY = 5000000;
-  uint constant LEVEL_60_BOUNDARY = 6000000;
-  uint constant LEVEL_70_BOUNDARY = 7000000;
-  uint constant LEVEL_80_BOUNDARY = 80000000;
-  uint constant LEVEL_90_BOUNDARY = 900000000;
-  uint constant LEVEL_99_BOUNDARY = 999999999;
+  mapping(uint playerId => uint multiplier) speedMultiplier; // 0 or 1 is diabled, for testing only
 
-  mapping(uint => uint16) speedMultiplier; // player id => multiplier, 0 or 1 is diabled
+  uint private queuedActionId; // Global queued action id
+  World private world;
 
-  using EnumerableMap for EnumerableMap.UintToUintMap;
-
-  uint queuedActionId; // Global queued action id
-
-  mapping(uint => mapping(Skill => uint32)) public skillPoints; // player id => skill => point
+  mapping(uint playerId => mapping(Skill skill => uint32 skillPoints)) public skillPoints;
 
   // This is kept separate in case we want to remove this being used and instead read attributes on demand.
-  mapping(uint => ArmourAttributes) armourAttributes; // player id => attributes from armour
+  mapping(uint playerId => ArmourAttributes attributes) armourAttributes; // player id => attributes from armour
 
-  mapping(uint => Player) public players;
+  mapping(uint playerId => Player player) public players;
   ItemNFT private itemNFT;
   Users private users;
   PlayerNFT private playerNFT;
