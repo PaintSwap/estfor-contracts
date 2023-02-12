@@ -608,6 +608,75 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       PlayerLibrary.uri(_name, skillPoints[_tokenId], player.totalStats, _avatarName, _avatarDescription, imageURI);
   }
 
+  function _getElapsedTime(
+    uint _tokenId,
+    uint _skillEndTime,
+    QueuedAction storage _queuedAction
+  ) private view returns (uint elapsedTime) {
+    bool consumeAll = _skillEndTime <= block.timestamp;
+    if (consumeAll) {
+      // Fully consume this skill
+      elapsedTime = _queuedAction.timespan;
+    } else if (block.timestamp > _queuedAction.startTime) {
+      // partially consume
+      elapsedTime = block.timestamp - _queuedAction.startTime;
+      uint modifiedElapsedTime = speedMultiplier[_tokenId] > 1
+        ? uint(elapsedTime) * speedMultiplier[_tokenId]
+        : elapsedTime;
+      // Up to timespan
+      if (modifiedElapsedTime > _queuedAction.timespan) {
+        elapsedTime = _queuedAction.timespan;
+      }
+    }
+  }
+
+  function _unequipFinishedAction(
+    address _from,
+    uint _tokenId,
+    uint16 _itemTokenId,
+    uint _elapsedTime,
+    uint _timespan,
+    uint _offset,
+    QueuedAction[] storage _actionQueue
+  ) private {
+    if (_itemTokenId != NONE && _elapsedTime == _timespan) {
+      // Check that it is not equipped in a later action
+      bool usedLater = false;
+      for (uint j = _offset + 1; j < _actionQueue.length; ++j) {
+        QueuedAction storage _queuedAction = _actionQueue[j];
+        if (_itemTokenId == _queuedAction.rightArmEquipmentTokenId) {
+          usedLater = true;
+          break;
+        }
+      }
+
+      if (!usedLater) {
+        users.unequip(_from, _itemTokenId);
+        emit Unequip(_tokenId, _itemTokenId, 1);
+      }
+    }
+  }
+
+  function _unequipFromFinishedAction(
+    address _from,
+    uint _tokenId,
+    uint16 _leftArmEquipmentTokenId,
+    uint16 _rightArmEquipmentTokenId,
+    uint _elapsedTime,
+    uint _timespan,
+    uint _offset,
+    QueuedAction[] storage _actionQueue
+  ) private {
+    // Fully consumed this action so unequip w.e we had equiped as long as
+    _unequipFinishedAction(_from, _tokenId, _leftArmEquipmentTokenId, _elapsedTime, _timespan, _offset, _actionQueue);
+    _unequipFinishedAction(_from, _tokenId, _rightArmEquipmentTokenId, _elapsedTime, _timespan, _offset, _actionQueue);
+  }
+
+  function _updateSkillPoints(uint _tokenId, Skill _skill, uint32 _pointsAccrued) private {
+    skillPoints[_tokenId][_skill] += _pointsAccrued;
+    emit AddSkillPoints(_tokenId, _skill, _pointsAccrued);
+  }
+
   function _consumeActions(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_tokenId];
     if (player.actionQueue.length == 0) {
@@ -632,27 +701,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
             : queuedAction.timespan
         );
 
-      uint elapsedTime;
-
-      uint16 xpPerHour = world.getXPPerHour(
-        queuedAction.actionId,
-        _isCombat(queuedAction.skill) ? NONE : queuedAction.choiceId
-      );
-      bool consumeAll = skillEndTime <= block.timestamp;
-      if (consumeAll) {
-        // Fully consume this skill
-        elapsedTime = queuedAction.timespan;
-      } else if (block.timestamp > queuedAction.startTime) {
-        // partially consume
-        elapsedTime = block.timestamp - queuedAction.startTime;
-        uint modifiedElapsedTime = speedMultiplier[_tokenId] > 1
-          ? uint(elapsedTime) * speedMultiplier[_tokenId]
-          : elapsedTime;
-        // Up to timespan
-        if (modifiedElapsedTime > queuedAction.timespan) {
-          elapsedTime = queuedAction.timespan;
-        }
-      } else {
+      uint elapsedTime = _getElapsedTime(_tokenId, skillEndTime, queuedAction);
+      if (elapsedTime == 0) {
         // Haven't touched this action yet so add it all
         _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, 0, 0, length);
         nextStartTime += queuedAction.timespan;
@@ -670,6 +720,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       bool died;
       if (queuedAction.choiceId != 0 || _isCombat(queuedAction.skill)) {
         // This also unequips.
+        bool consumeAll = skillEndTime <= block.timestamp;
         (foodConsumed, numConsumed, elapsedTime, died) = PlayerLibrary.processConsumables(
           _from,
           _tokenId,
@@ -684,6 +735,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       }
 
       if (!died) {
+        uint16 xpPerHour = world.getXPPerHour(
+          queuedAction.actionId,
+          _isCombat(queuedAction.skill) ? NONE : queuedAction.choiceId
+        );
         pointsAccrued = uint32((elapsedTime * xpPerHour) / 3600);
       }
 
@@ -695,14 +750,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       }
 
       if (pointsAccrued > 0) {
-        Skill skill = queuedAction.skill; // world.getSkill(queuedAction.actionId);
-
-        //        if (skill == Skill.ATTACK_DEFENCE || skill == Skill.RANGED_ATTACK_DEFENCE || skill == Skill.MAGIC_ATTACK_DEFENCE) {
-        // Split them up.
-        //       } else {
-        skillPoints[_tokenId][skill] += pointsAccrued; // Update this later, just base it on time elapsed
-        //       }
-        emit AddSkillPoints(_tokenId, skill, pointsAccrued);
+        _updateSkillPoints(_tokenId, queuedAction.skill, pointsAccrued);
 
         // Should just do the new ones
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getLootAndAddPending(
@@ -720,16 +768,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         allpointsAccrued += pointsAccrued;
       }
 
-      // Fully consume this skill so unequip w.e we had equiped
-      // TODO: This would also remove it if you had same action queued up later though
-      if (queuedAction.rightArmEquipmentTokenId != NONE && elapsedTime == queuedAction.timespan) {
-        users.unequip(_from, queuedAction.rightArmEquipmentTokenId);
-        emit Unequip(_tokenId, queuedAction.rightArmEquipmentTokenId, 1);
-      }
-      if (queuedAction.leftArmEquipmentTokenId != NONE && elapsedTime == queuedAction.timespan) {
-        users.unequip(_from, queuedAction.leftArmEquipmentTokenId);
-        emit Unequip(_tokenId, queuedAction.leftArmEquipmentTokenId, 1);
-      }
+      _unequipFromFinishedAction(
+        _from,
+        _tokenId,
+        queuedAction.leftArmEquipmentTokenId,
+        queuedAction.rightArmEquipmentTokenId,
+        elapsedTime,
+        queuedAction.timespan,
+        i,
+        player.actionQueue
+      );
     }
 
     if (allpointsAccrued > 0) {

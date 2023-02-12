@@ -302,7 +302,7 @@ library PlayerLibrary {
     uint16 _numConsumed,
     uint _numEquippedBase,
     ItemNFT _itemNFT
-  ) private returns (uint maxRequiredRatio) {
+  ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _numConsumed;
     if (_numConsumed > 0) {
       if (_actionChoice.inputTokenId1 != 0) {
