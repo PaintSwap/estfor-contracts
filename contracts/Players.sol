@@ -677,6 +677,24 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     emit AddSkillPoints(_tokenId, _skill, _pointsAccrued);
   }
 
+  function _addPendingLoot(
+    PendingLoot[] storage _pendingLoot,
+    ActionReward[] memory _randomRewards,
+    uint _actionId,
+    uint _elapsedTime,
+    uint _skillEndTime
+  ) private {
+    if (_randomRewards.length > 0) {
+      bool hasSeed = world.hasSeed(_skillEndTime);
+      if (!hasSeed) {
+        // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
+        _pendingLoot.push(
+          PendingLoot({actionId: _actionId, timestamp: uint40(_skillEndTime), elapsedTime: uint16(_elapsedTime)})
+        );
+      }
+    }
+  }
+
   function _consumeActions(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_tokenId];
     if (player.actionQueue.length == 0) {
@@ -709,10 +727,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         length = i + 1;
         continue;
       }
-
-      // TODO: Check the maximum that might be done
-      //            itemNFT.balanceOf() // TODO also check balance of earlier in case they didn't have enough loot.
-      //    if (inputTokenId1 > NONE) {
 
       // Create some items if necessary (smithing ores to bars for instance)
       uint16 foodConsumed;
@@ -771,19 +785,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
           randomRewards
         );
 
-        if (randomRewards.length > 0) {
-          bool hasSeed = world.hasSeed(skillEndTime);
-          if (!hasSeed) {
-            // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
-            pendingLoot.push(
-              PendingLoot({
-                actionId: queuedAction.actionId,
-                timestamp: uint40(skillEndTime),
-                elapsedTime: uint16(elapsedTime)
-              })
-            );
-          }
-        }
+        _addPendingLoot(pendingLoot, randomRewards, queuedAction.actionId, elapsedTime, skillEndTime);
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
