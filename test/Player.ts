@@ -268,8 +268,8 @@ describe("Player", () => {
         isAvailable: actionIsAvailable,
         isCombat: true,
       },
-      dropRewards: [{itemTokenId: LOG, rate}],
-      lootChances: [],
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
       combatStats: emptyStats,
     });
 
@@ -316,8 +316,8 @@ describe("Player", () => {
         isAvailable: actionIsAvailable,
         isCombat: false,
       },
-      dropRewards: [{itemTokenId: LOG, rate}],
-      lootChances: [],
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
       combatStats: emptyStats,
     });
     const actionId = await getActionId(tx);
@@ -377,8 +377,8 @@ describe("Player", () => {
         isAvailable: actionIsAvailable,
         isCombat: false,
       },
-      dropRewards: [{itemTokenId: LOG, rate}],
-      lootChances: [],
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
       combatStats: emptyStats,
     });
     const actionId = await getActionId(tx);
@@ -461,8 +461,8 @@ describe("Player", () => {
         isAvailable: actionIsAvailable,
         isCombat: false,
       },
-      dropRewards: [],
-      lootChances: [],
+      guaranteedRewards: [],
+      randomRewards: [],
       combatStats: emptyStats,
     });
 
@@ -599,8 +599,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: false,
         },
-        dropRewards: [{itemTokenId: LOG, rate}],
-        lootChances: [],
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
         combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
@@ -657,8 +657,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: false,
         },
-        dropRewards: [],
-        lootChances: [],
+        guaranteedRewards: [],
+        randomRewards: [],
         combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
@@ -742,8 +742,8 @@ describe("Player", () => {
             isAvailable: actionIsAvailable,
             isCombat: false,
           },
-          dropRewards: [{itemTokenId: LOG, rate}],
-          lootChances: [],
+          guaranteedRewards: [{itemTokenId: LOG, rate}],
+          randomRewards: [],
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
@@ -789,8 +789,8 @@ describe("Player", () => {
             isAvailable: actionIsAvailable,
             isCombat: false,
           },
-          dropRewards: [],
-          lootChances: [],
+          guaranteedRewards: [],
+          randomRewards: [],
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
@@ -886,8 +886,8 @@ describe("Player", () => {
             isAvailable: actionIsAvailable,
             isCombat: false,
           },
-          dropRewards: [{itemTokenId: LOG, rate}],
-          lootChances: [],
+          guaranteedRewards: [{itemTokenId: LOG, rate}],
+          randomRewards: [],
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
@@ -933,8 +933,8 @@ describe("Player", () => {
             isAvailable: actionIsAvailable,
             isCombat: false,
           },
-          dropRewards: [],
-          lootChances: [],
+          guaranteedRewards: [],
+          randomRewards: [],
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
@@ -1023,8 +1023,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: false,
         },
-        dropRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
-        lootChances: [],
+        guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
+        randomRewards: [],
         combatStats: emptyStats,
       });
 
@@ -1080,8 +1080,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: false,
         },
-        dropRewards: [],
-        lootChances: [],
+        guaranteedRewards: [],
+        randomRewards: [],
         combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
@@ -1168,8 +1168,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: false,
         },
-        dropRewards: [{itemTokenId: LOG, rate}],
-        lootChances: [],
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
         combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
@@ -1247,8 +1247,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: true,
         },
-        dropRewards: [{itemTokenId: BRONZE_ARROW, rate}],
-        lootChances: [],
+        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
+        randomRewards: [],
         combatStats: monsterCombatStats,
       });
       const actionId = await getActionId(tx);
@@ -1342,8 +1342,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: true,
         },
-        dropRewards: [{itemTokenId: BRONZE_ARROW, rate}],
-        lootChances: [],
+        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
+        randomRewards: [],
         combatStats: monsterCombatStats,
       });
       const actionId = await getActionId(tx);
@@ -1427,8 +1427,8 @@ describe("Player", () => {
           isAvailable: actionIsAvailable,
           isCombat: true,
         },
-        dropRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate}],
-        lootChances: [],
+        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate}],
+        randomRewards: [],
         combatStats: monsterCombatStats,
       });
       const actionId = await getActionId(tx);

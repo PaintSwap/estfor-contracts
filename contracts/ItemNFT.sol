@@ -11,7 +11,7 @@ import "./Users.sol";
 import "./types.sol";
 import "./items.sol";
 
-// The NFT contract contains data related to the items and users (not players)
+// The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgradeable {
   event AddItem(Item item);
   event AddItems(Item[] items);
@@ -38,10 +38,6 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
 
   mapping(uint => string) private tokenURIs;
   mapping(uint => ItemStat) itemStats;
-  //  mapping(uint index => uint tokenId) lockedItems;
-  //  uint mysteryBoxStart;
-  //  uint public mintMysteryBoxCost;
-  //  uint16 public mysteryBoxsMinted;
 
   modifier onlyPlayersOrShop() {
     require(msg.sender == players || msg.sender == shop, "Not players OR shop");
@@ -61,37 +57,7 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     users = _users;
     shop = _shop;
     baseURI = "ipfs://";
-    //    mysteryBoxStart = 100_000;
   }
-
-  /*
-  // Up to 1000, get a random item
-  function mintMysteryBox(uint16 _num) external {
-    require(mysteryBoxStart < 101_000); // Can only have 1000 minted?
-
-    // Costs 1000 brush
-    brush.transferFrom(msg.sender, address(this), 1000 * _num * 1 ether);
-    brush.burn((1000 * _num * 1 ether) / 2); // Burn half
-
-    uint startTokenId = mysteryBoxStart;
-
-    for (uint i = 0; i < _num; ++i) {
-      _mintItem(msg.sender, startTokenId + i, 1);
-      // Each mystery box will have a unlock date 1 day over the
-      lockedItems[startTokenId + i] = block.timestamp + 1 days;
-    }
-    mysteryBoxStart += startTokenId + _num;
-  }
-
-  function openMysteryBox(uint _tokenId) external {
-    uint timestamp = lockedItems[_tokenId];
-    uint seed = world.getSeed(timestamp);
-    //    seed ^ _tokenId
-    // Burn them, this will check approval/allowance etc
-    _burn(msg.sender, MYSTERY_BOX, 1);
-
-    // Fetch random values from chainlink
-  } */
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
     require(_tokenId < type(uint16).max, "id too high");
@@ -148,20 +114,9 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     return itemStats[_tokenId];
   }
 
-  function _beforeTokenTransfer(
-    address /*_operator*/,
-    address _from,
-    address _to,
-    uint256[] memory _ids,
-    uint256[] memory _amounts,
-    bytes memory /*_data*/
-  ) internal virtual override {
-    if (_from == address(0) || _amounts.length == 0) {
-      // When minting do nothing
-      return;
-    }
-
-    uint256 i = _ids.length;
+  // If an item is burnt, remove it from the total
+  function _removeAnyBurntFromTotal(address _to, uint[] memory _ids, uint[] memory _amounts) internal {
+    uint i = _ids.length;
     if (_to == address(0)) {
       // burning
       do {
@@ -171,31 +126,22 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
         itemBalances[_ids[i]] -= _amounts[i];
       } while (i > 0);
     }
+  }
 
-    // Don't allow users to transfer any if they would have a balance less than equiped.
-    // i.e if equipped they cannot transfer it, but can transfer any excess unequipped
-    i = _ids.length;
+  function _beforeTokenTransfer(
+    address /*_operator*/,
+    address _from,
+    address _to,
+    uint[] memory _ids,
+    uint[] memory _amounts,
+    bytes memory /*_data*/
+  ) internal virtual override {
+    if (_from == address(0) || _amounts.length == 0) {
+      // When minting do nothing
+      return;
+    }
 
-    address[] memory accounts = new address[](_ids.length);
-    do {
-      unchecked {
-        --i;
-      }
-      accounts[i] = _from;
-    } while (i > 0);
-
-    i = _ids.length;
-    uint256[] memory balances = balanceOfBatch(accounts, _ids);
-    do {
-      unchecked {
-        --i;
-      }
-
-      uint256 tokenId = _ids[i];
-      // Transferring less than is equipped
-      uint256 unavailable = users.itemAmountUnavailable(_from, tokenId);
-      require(balances[i] - unavailable >= _amounts[i], "Transferring more than you have equipped"); // TODO:
-    } while (i > 0);
+    _removeAnyBurntFromTotal(_to, _ids, _amounts);
   }
 
   function _setItem(Item calldata _item) private {

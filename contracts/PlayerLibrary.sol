@@ -99,32 +99,37 @@ library PlayerLibrary {
     }
   }
 
-  function getLoot(
+  function _addGuarenteedRewards(
+    uint[] memory _ids,
+    uint[] memory _amounts,
+    uint _elapsedTime,
+    ActionReward[] memory _guaranteedRewards
+  ) private pure returns (uint lootLength) {
+    for (uint i; i < _guaranteedRewards.length; ++i) {
+      uint numRewards = (_elapsedTime * _guaranteedRewards[i].rate) / 3600;
+      if (numRewards > 0) {
+        _ids[lootLength] = _guaranteedRewards[i].itemTokenId;
+        _amounts[lootLength] = numRewards;
+        ++lootLength;
+      }
+    }
+  }
+
+  function _addRandomRewards(
     address _from,
     uint actionId,
     uint40 skillEndTime,
     uint elapsedTime,
     World world,
-    PendingLoot[] storage pendingLoot
-  ) external returns (uint[] memory ids, uint[] memory amounts) {
-    (ActionReward[] memory dropRewards, ActionLoot[] memory lootChances) = world.getDropAndLoot(actionId);
-
-    ids = new uint[](dropRewards.length + lootChances.length);
-    amounts = new uint[](dropRewards.length + lootChances.length);
-    uint lootLength;
-
-    // Guarenteed drops
-    for (uint i; i < dropRewards.length; ++i) {
-      uint num = (uint(elapsedTime) * dropRewards[i].rate) / 3600;
-      if (num > 0) {
-        ids[lootLength] = dropRewards[i].itemTokenId;
-        amounts[lootLength] = num;
-        ++lootLength;
-      }
-    }
-
+    PendingLoot[] storage pendingLoot,
+    uint[] memory _ids,
+    uint[] memory _amounts,
+    uint _lootLength,
+    ActionReward[] memory _randomRewards
+  ) private returns (uint lootLength) {
+    lootLength = _lootLength;
     // Random chance loot
-    if (lootChances.length > 0) {
+    if (_randomRewards.length > 0) {
       bool hasSeed = world.hasSeed(skillEndTime);
       if (!hasSeed) {
         // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
@@ -143,17 +148,17 @@ library PlayerLibrary {
           uint8 rand = uint8(uint256(randomComponent >> (i * 8)));
 
           // Take each byte and check
-          for (uint j; j < lootChances.length; ++j) {
-            ActionLoot memory potentialLoot = lootChances[j];
-            if (rand < potentialLoot.chance) {
+          for (uint j; j < _randomRewards.length; ++j) {
+            ActionReward memory potentialLoot = _randomRewards[j];
+            if (rand < potentialLoot.rate) {
               // Get the lowest chance one
 
               // Compare with previous and append amounts if an entry already exists
               bool found;
-              for (uint k = startLootLength; k < ids.length; ++k) {
-                if (potentialLoot.itemTokenId == ids[k]) {
+              for (uint k = startLootLength; k < _ids.length; ++k) {
+                if (potentialLoot.itemTokenId == _ids[k]) {
                   // exists
-                  amounts[k] += 1;
+                  _amounts[k] += 1;
                   found = true;
                   break;
                 }
@@ -161,8 +166,8 @@ library PlayerLibrary {
 
               if (!found) {
                 // New item
-                ids[lootLength] = potentialLoot.itemTokenId;
-                amounts[lootLength] = 1;
+                _ids[lootLength] = potentialLoot.itemTokenId;
+                _amounts[lootLength] = 1;
                 ++lootLength;
               }
               break;
@@ -171,6 +176,34 @@ library PlayerLibrary {
         }
       }
     }
+  }
+
+  function getLootAndAddPending(
+    address _from,
+    uint _actionId,
+    uint40 _skillEndTime,
+    uint _elapsedTime,
+    World _world,
+    PendingLoot[] storage _pendingLoot
+  ) external returns (uint[] memory ids, uint[] memory amounts) {
+    (ActionReward[] memory guaranteedRewards, ActionReward[] memory randomRewards) = _world.getDropAndLoot(_actionId);
+
+    ids = new uint[](guaranteedRewards.length + randomRewards.length);
+    amounts = new uint[](guaranteedRewards.length + randomRewards.length);
+
+    uint lootLength = _addGuarenteedRewards(ids, amounts, _elapsedTime, guaranteedRewards);
+    lootLength = _addRandomRewards(
+      _from,
+      _actionId,
+      _skillEndTime,
+      _elapsedTime,
+      _world,
+      _pendingLoot,
+      ids,
+      amounts,
+      lootLength,
+      randomRewards
+    );
 
     assembly ("memory-safe") {
       mstore(ids, lootLength)
@@ -222,159 +255,228 @@ library PlayerLibrary {
     }
   }
 
-  function processConsumables(
+  function _processCombatConsumables(
     address _from,
     uint _tokenId,
     QueuedAction storage queuedAction,
-    uint elapsedTime,
-    World world,
-    ItemNFT itemNFT,
-    Users users,
-    CombatStats storage playerStats,
+    uint _elapsedTime,
+    ItemNFT _itemNFT,
+    Users _users,
+    CombatStats storage _playerStats,
+    bool _useAll
+  ) private returns (uint16 foodConsumed, bool died) {
+    /* combatStats.attack, */
+    /* playerStats.meleeDefence */
+    uint _foodConsumed = _elapsedTime / 3600 + (_elapsedTime % 3600 == 0 ? 0 : 1); // TODO: Should be based on damage done
+    if (_foodConsumed > 9999) {
+      foodConsumed = 9999;
+    } else {
+      foodConsumed = uint16(_foodConsumed);
+    }
+    uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
+    uint16 maxFood = foodConsumed > balance ? uint16(balance) : queuedAction.numRegenerate;
+
+    died = foodConsumed > maxFood;
+    if (died) {
+      foodConsumed = maxFood;
+    }
+
+    // Figure out how much food should be used
+    _processConsumable(
+      _from,
+      _tokenId,
+      _itemNFT,
+      queuedAction.regenerateId,
+      foodConsumed,
+      1,
+      queuedAction.numRegenerate,
+      _users,
+      _useAll
+    );
+    // TODO use playerStats.health
+  }
+
+  function _getMaxRequiredRatio(
+    address _from,
+    ActionChoice memory _actionChoice,
+    uint16 _numConsumed,
+    uint _numEquippedBase,
+    ItemNFT _itemNFT
+  ) private returns (uint maxRequiredRatio) {
+    maxRequiredRatio = _numConsumed;
+    if (_numConsumed > 0) {
+      if (_actionChoice.inputTokenId1 != 0) {
+        maxRequiredRatio = _getMaxRequiredRatioPartial(
+          _from,
+          _actionChoice.inputTokenId1,
+          _actionChoice.num1,
+          _numConsumed,
+          _numEquippedBase,
+          maxRequiredRatio,
+          _itemNFT
+        );
+      }
+      if (_actionChoice.inputTokenId2 != 0) {
+        maxRequiredRatio = _getMaxRequiredRatioPartial(
+          _from,
+          _actionChoice.inputTokenId2,
+          _actionChoice.num2,
+          _numConsumed,
+          _numEquippedBase,
+          maxRequiredRatio,
+          _itemNFT
+        );
+      }
+      if (_actionChoice.inputTokenId3 != 0) {
+        maxRequiredRatio = _getMaxRequiredRatioPartial(
+          _from,
+          _actionChoice.inputTokenId3,
+          _actionChoice.num3,
+          _numConsumed,
+          _numEquippedBase,
+          maxRequiredRatio,
+          _itemNFT
+        );
+      }
+    }
+  }
+
+  function _getMaxRequiredRatioPartial(
+    address _from,
+    uint16 _inputTokenId,
+    uint16 _num,
+    uint16 _numConsumed,
+    uint _numEquippedBase,
+    uint _maxRequiredRatio,
+    ItemNFT _itemNFT
+  ) private view returns (uint maxRequiredRatio) {
+    uint balance = _itemNFT.balanceOf(_from, _inputTokenId);
+    uint tempMaxRequiredRatio = _maxRequiredRatio;
+    if (_numConsumed > balance / _num) {
+      tempMaxRequiredRatio = balance / _num;
+    }
+    if (tempMaxRequiredRatio > _numEquippedBase) {
+      tempMaxRequiredRatio = _numEquippedBase;
+    }
+
+    // Could be the first time
+    if (tempMaxRequiredRatio < _maxRequiredRatio || _maxRequiredRatio == _numConsumed) {
+      maxRequiredRatio = tempMaxRequiredRatio;
+    }
+  }
+
+  function _processInputConsumables(
+    address _from,
+    uint _tokenId,
+    ActionChoice memory _actionChoice,
+    uint16 _numConsumed,
+    uint16 _numEquippedBase,
+    ItemNFT _itemNFT,
+    Users _users,
+    bool _useAll
+  ) private {
+    _processConsumable(
+      _from,
+      _tokenId,
+      _itemNFT,
+      _actionChoice.inputTokenId1,
+      _numConsumed,
+      _actionChoice.num1,
+      _numEquippedBase * _actionChoice.num1,
+      _users,
+      _useAll
+    );
+    _processConsumable(
+      _from,
+      _tokenId,
+      _itemNFT,
+      _actionChoice.inputTokenId2,
+      _numConsumed,
+      _actionChoice.num2,
+      _numEquippedBase * _actionChoice.num2,
+      _users,
+      _useAll
+    );
+    _processConsumable(
+      _from,
+      _tokenId,
+      _itemNFT,
+      _actionChoice.inputTokenId3,
+      _numConsumed,
+      _actionChoice.num3,
+      _numEquippedBase * _actionChoice.num3,
+      _users,
+      _useAll
+    );
+  }
+
+  function processConsumables(
+    address _from,
+    uint _tokenId,
+    QueuedAction storage _queuedAction,
+    uint _elapsedTime,
+    World _world,
+    ItemNFT _itemNFT,
+    Users _users,
+    CombatStats storage _playerStats,
     bool _useAll
   ) external returns (uint16 foodConsumed, uint16 numConsumed, uint actualElapsedTime, bool died) {
     // Fetch the requirements for it
-    (bool isCombat, CombatStats memory combatStats) = world.getCombatStats(queuedAction.actionId);
+    (bool isCombat, CombatStats memory combatStats) = _world.getCombatStats(_queuedAction.actionId);
 
-    actualElapsedTime = elapsedTime; // Can be updated
+    actualElapsedTime = _elapsedTime; // Can be updated
 
-    ActionChoice memory actionChoice = world.getActionChoice(
-      isCombat ? 0 : queuedAction.actionId,
-      queuedAction.choiceId
+    ActionChoice memory actionChoice = _world.getActionChoice(
+      isCombat ? 0 : _queuedAction.actionId,
+      _queuedAction.choiceId
     );
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
     // TODO Should probably move this out?
     if (isCombat) {
-      /* combatStats.attack, */
-      /* playerStats.meleeDefence */
-      uint _foodConsumed = elapsedTime / 3600 + (elapsedTime % 3600 == 0 ? 0 : 1); // TODO: Should be based on damage done
-      if (_foodConsumed > 255) {
-        foodConsumed = 255;
-      } else {
-        foodConsumed = uint16(_foodConsumed);
-      }
-      uint balance = itemNFT.balanceOf(_from, queuedAction.regenerateId);
-      uint16 maxFood = foodConsumed > balance ? uint16(balance) : queuedAction.numRegenerate;
-
-      died = foodConsumed > maxFood;
-      if (died) {
-        foodConsumed = maxFood;
-      }
-
-      // Figure out how much food should be used
-      _processConsumable(
+      (foodConsumed, died) = _processCombatConsumables(
         _from,
         _tokenId,
-        itemNFT,
-        queuedAction.regenerateId,
-        foodConsumed,
-        1,
-        queuedAction.numRegenerate,
-        users,
+        _queuedAction,
+        _elapsedTime,
+        _itemNFT,
+        _users,
+        _playerStats,
         _useAll
       );
-      // TODO use playerStats.health
     }
 
     // Check the max that can be used. To prevent overflow for sped up actions.
-    numConsumed = uint16((uint(elapsedTime) * actionChoice.rate) / 3600);
-    uint maxRequiredRatio = numConsumed;
-    if (numConsumed > 0) {
-      if (actionChoice.inputTokenId1 != 0) {
-        uint balance = itemNFT.balanceOf(_from, actionChoice.inputTokenId1);
-        uint numEquippedBase = queuedAction.num;
-        if (numConsumed > balance / actionChoice.num1) {
-          maxRequiredRatio = balance / actionChoice.num1;
-        }
-
-        if (maxRequiredRatio > numEquippedBase) {
-          maxRequiredRatio = numEquippedBase;
-        }
-      }
-      if (actionChoice.inputTokenId2 != 0) {
-        uint balance = itemNFT.balanceOf(_from, actionChoice.inputTokenId2);
-        uint numEquippedBase = queuedAction.num;
-        uint tempMaxRequiredRatio = maxRequiredRatio;
-        if (numConsumed > balance / actionChoice.num2) {
-          tempMaxRequiredRatio = balance / actionChoice.num2;
-        }
-        if (tempMaxRequiredRatio > numEquippedBase) {
-          tempMaxRequiredRatio = numEquippedBase;
-        }
-
-        if (tempMaxRequiredRatio < maxRequiredRatio) {
-          maxRequiredRatio = tempMaxRequiredRatio;
-        }
-      }
-      if (actionChoice.inputTokenId3 != 0) {
-        uint balance = itemNFT.balanceOf(_from, actionChoice.inputTokenId3);
-        uint numEquippedBase = queuedAction.num;
-        uint tempMaxRequiredRatio = maxRequiredRatio;
-        if (numConsumed > balance / actionChoice.num3) {
-          tempMaxRequiredRatio = balance / actionChoice.num3;
-        }
-
-        if (tempMaxRequiredRatio > numEquippedBase) {
-          tempMaxRequiredRatio = numEquippedBase;
-        }
-
-        if (tempMaxRequiredRatio < maxRequiredRatio) {
-          maxRequiredRatio = tempMaxRequiredRatio;
-        }
-      }
-    }
+    numConsumed = uint16((_elapsedTime * actionChoice.rate) / 3600);
+    uint maxRequiredRatio = _getMaxRequiredRatio(_from, actionChoice, numConsumed, _queuedAction.num, _itemNFT);
 
     // Check the balances of all the items
     if (numConsumed > maxRequiredRatio) {
       numConsumed = uint16(maxRequiredRatio);
     }
     if (numConsumed > 0) {
-      _processConsumable(
+      _processInputConsumables(
         _from,
         _tokenId,
-        itemNFT,
-        actionChoice.inputTokenId1,
+        actionChoice,
         numConsumed,
-        actionChoice.num1,
-        queuedAction.num * actionChoice.num1,
-        users,
-        _useAll
-      );
-      _processConsumable(
-        _from,
-        _tokenId,
-        itemNFT,
-        actionChoice.inputTokenId2,
-        numConsumed,
-        actionChoice.num2,
-        queuedAction.num * actionChoice.num2,
-        users,
-        _useAll
-      );
-      _processConsumable(
-        _from,
-        _tokenId,
-        itemNFT,
-        actionChoice.inputTokenId3,
-        numConsumed,
-        actionChoice.num3,
-        queuedAction.num * actionChoice.num3,
-        users,
+        _queuedAction.num,
+        _itemNFT,
+        _users,
         _useAll
       );
     }
 
-    if (_useAll && queuedAction.potionId != 0) {
+    if (_useAll && _queuedAction.potionId != 0) {
       // Consume the potion
-      users.minorUnequip(_from, queuedAction.potionId, 1);
-      emit Unequip(_tokenId, queuedAction.potionId, 1);
-      itemNFT.burn(_from, queuedAction.potionId, 1);
+      _users.minorUnequip(_from, _queuedAction.potionId, 1);
+      emit Unequip(_tokenId, _queuedAction.potionId, 1);
+      _itemNFT.burn(_from, _queuedAction.potionId, 1);
     }
 
     if (actionChoice.outputTokenId != 0) {
-      itemNFT.mint(_from, actionChoice.outputTokenId, numConsumed);
+      _itemNFT.mint(_from, actionChoice.outputTokenId, numConsumed);
     }
   }
 }

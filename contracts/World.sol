@@ -24,8 +24,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   struct Action {
     ActionInfo info;
-    ActionReward[] dropRewards;
-    ActionLoot[] lootChances;
+    ActionReward[] guaranteedRewards;
+    ActionReward[] randomRewards;
     CombatStats combatStats;
   }
 
@@ -63,8 +63,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint public lastDynamicUpdatedTime;
 
   mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
-  mapping(uint => ActionReward[]) dropRewards; // action id => dropRewards
-  mapping(uint => ActionLoot[]) lootChances; // action id => loot chances
+  mapping(uint => ActionReward[]) guaranteedRewards; // action id => guaranteedRewards
+  mapping(uint => ActionReward[]) randomRewards; // action id => loot chances
   mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
 
   function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
@@ -167,8 +167,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actions[_actionId].skill;
   }
 
-  function getDropAndLoot(uint _actionId) external view returns (ActionReward[] memory, ActionLoot[] memory) {
-    return (dropRewards[_actionId], lootChances[_actionId]);
+  function getDropAndLoot(uint _actionId) external view returns (ActionReward[] memory, ActionReward[] memory) {
+    return (guaranteedRewards[_actionId], randomRewards[_actionId]);
   }
 
   function getPermissibleItemsForAction(
@@ -200,11 +200,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function _setAction(uint _actionId, Action calldata _action) private {
     require(_action.info.itemTokenIdRangeMin <= _action.info.itemTokenIdRangeMax);
     actions[_actionId] = _action.info;
-    if (_action.dropRewards.length > 0) {
-      dropRewards[_actionId] = _action.dropRewards;
+    if (_action.guaranteedRewards.length > 0) {
+      guaranteedRewards[_actionId] = _action.guaranteedRewards;
     }
-    if (_action.lootChances.length > 0) {
-      lootChances[_actionId] = _action.lootChances;
+    if (_action.randomRewards.length > 0) {
+      randomRewards[_actionId] = _action.randomRewards;
     }
     if (_action.info.isCombat) {
       actionCombatStats[_actionId] = _action.combatStats;

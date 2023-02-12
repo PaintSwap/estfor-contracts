@@ -394,15 +394,10 @@ type ActionReward = {
   rate: number;
 };
 
-type ActionLoot = {
-  itemTokenId: number;
-  chance: number;
-};
-
 type Action = {
   info: ActionInfo;
-  dropRewards: ActionReward[];
-  lootChances: ActionLoot[];
+  guaranteedRewards: ActionReward[];
+  randomRewards: ActionReward[];
   combatStats: CombatStats;
 };
 
@@ -598,8 +593,8 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [{itemTokenId: LOG, rate: 1220}],
-    lootChances: [],
+    guaranteedRewards: [{itemTokenId: LOG, rate: 1220}],
+    randomRewards: [],
     combatStats: emptyStats,
   },
   {
@@ -615,8 +610,8 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [],
-    lootChances: [],
+    guaranteedRewards: [],
+    randomRewards: [],
     combatStats: emptyStats,
   },
   {
@@ -632,8 +627,8 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [{itemTokenId: COPPER_ORE, rate: 1220}],
-    lootChances: [],
+    guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 1220}],
+    randomRewards: [],
     combatStats: emptyStats,
   },
   {
@@ -649,8 +644,8 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [{itemTokenId: TIN_ORE, rate: 1220}],
-    lootChances: [],
+    guaranteedRewards: [{itemTokenId: TIN_ORE, rate: 1220}],
+    randomRewards: [],
     combatStats: emptyStats,
   },
   {
@@ -666,8 +661,8 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    dropRewards: [],
-    lootChances: [],
+    guaranteedRewards: [],
+    randomRewards: [],
     combatStats: emptyStats,
   },
   // Combat

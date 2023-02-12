@@ -104,8 +104,8 @@ describe("World", () => {
           isAvailable: actionAvailable,
           isCombat: true,
         },
-        dropRewards: [],
-        lootChances: [],
+        guaranteedRewards: [],
+        randomRewards: [],
         combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
@@ -123,8 +123,8 @@ describe("World", () => {
           isAvailable: actionAvailable,
           isCombat: true,
         },
-        dropRewards: [],
-        lootChances: [],
+        guaranteedRewards: [],
+        randomRewards: [],
         combatStats: emptyStats,
       });
       expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
@@ -148,8 +148,8 @@ describe("World", () => {
           isAvailable: actionAvailable,
           isCombat: true,
         },
-        dropRewards: [],
-        lootChances: [],
+        guaranteedRewards: [],
+        randomRewards: [],
         combatStats: emptyStats,
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;

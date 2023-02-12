@@ -59,12 +59,9 @@ struct ItemStat {
 // Loot
 struct ActionReward {
   uint16 itemTokenId;
-  uint32 rate; // num per hour, base 100 (2 decimals)
+  uint32 rate; // num per hour, base 100 (2 decimals) or percentage chance
 }
-struct ActionLoot {
-  uint16 itemTokenId;
-  uint8 chance; // change to get an item (out of 256)
-}
+
 struct PendingLoot {
   uint actionId;
   uint40 timestamp;

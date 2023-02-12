@@ -55,9 +55,9 @@ contract Users is OwnableUpgradeable, UUPSUpgradeable {
     numEquipped[_from][_itemTokenId] -= _amount;
   }
 
-  function itemAmountUnavailable(address _from, uint _itemTokenId) external view returns (uint) {
-    return numEquipped[_from][_itemTokenId];
-  }
+  //  function itemAmountUnavailable(address _from, uint _itemTokenId) external view returns (uint) {
+  //    return numEquipped[_from][_itemTokenId];
+  //  }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

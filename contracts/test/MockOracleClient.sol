@@ -8,7 +8,7 @@ contract MockOracleClient {
 
   function requestRandomWords(bytes32, uint64, uint16, uint32, uint32) external returns (uint256 requestId) {
     requestId = counter;
-    counter += 1;
+    ++counter;
   }
 
   function fulfill(uint _requestId, address _consumer) external {

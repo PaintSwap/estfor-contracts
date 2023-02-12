@@ -27,8 +27,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   struct PendingOutput {
     Equipment[] consumables;
     Equipment[] foodConsumed;
-    ActionReward[] dropRewards;
-    ActionLoot[] loot;
+    ActionReward[] guaranteedRewards;
+    ActionReward[] loot;
     bool died;
   }
 
@@ -458,12 +458,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
     pendingOutput.consumables = new Equipment[](actionQueue.length * 3);
     pendingOutput.foodConsumed = new Equipment[](actionQueue.length);
-    pendingOutput.dropRewards = new ActionReward[](actionQueue.length * 3);
-    pendingOutput.loot = new ActionLoot[](actionQueue.length * 3);
+    pendingOutput.guaranteedRewards = new ActionReward[](actionQueue.length * 3);
+    pendingOutput.loot = new ActionReward[](actionQueue.length * 3);
 
     uint consumableLength;
     uint foodConsumedLength;
-    uint dropRewardsLength;
+    uint guaranteedRewardsLength;
     uint lootLength;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
@@ -501,7 +501,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       if (actionChoice.itemTokenId2 > 0) {}
       if (actionChoice.itemTokenId3 > 0) {} */
 
-      // TODO Will also need dropRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
+      // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
     }
   }
 
@@ -705,7 +705,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         emit AddSkillPoints(_tokenId, skill, pointsAccrued);
 
         // Should just do the new ones
-        (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getLoot(
+        (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getLootAndAddPending(
           _from,
           queuedAction.actionId,
           uint40(queuedAction.startTime + elapsedTime),
