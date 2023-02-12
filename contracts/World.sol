@@ -167,7 +167,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actions[_actionId].skill;
   }
 
-  function getDropAndLoot(uint _actionId) external view returns (ActionReward[] memory, ActionReward[] memory) {
+  function getActionRewards(uint _actionId) external view returns (ActionReward[] memory, ActionReward[] memory) {
     return (guaranteedRewards[_actionId], randomRewards[_actionId]);
   }
 

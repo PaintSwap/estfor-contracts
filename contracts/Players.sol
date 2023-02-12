@@ -718,7 +718,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       uint16 foodConsumed;
       uint16 numConsumed;
       bool died;
-      if (queuedAction.choiceId != 0 || _isCombat(queuedAction.skill)) {
+
+      ActionChoice memory actionChoice;
+      bool isCombat = _isCombat(queuedAction.skill);
+
+      if (queuedAction.choiceId != 0 || isCombat) {
+        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+
         // This also unequips.
         bool consumeAll = skillEndTime <= block.timestamp;
         (foodConsumed, numConsumed, elapsedTime, died) = PlayerLibrary.processConsumables(
@@ -730,7 +736,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
           itemNFT,
           users,
           player.totalStats,
-          consumeAll
+          consumeAll,
+          actionChoice
         );
       }
 
@@ -752,15 +759,31 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       if (pointsAccrued > 0) {
         _updateSkillPoints(_tokenId, queuedAction.skill, pointsAccrued);
 
-        // Should just do the new ones
-        (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getLootAndAddPending(
+        (ActionReward[] memory guaranteedRewards, ActionReward[] memory randomRewards) = world.getActionRewards(
+          queuedAction.actionId
+        );
+        (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getRewards(
           _from,
-          queuedAction.actionId,
           uint40(queuedAction.startTime + elapsedTime),
           elapsedTime,
           world,
-          pendingLoot
+          guaranteedRewards,
+          randomRewards
         );
+
+        if (randomRewards.length > 0) {
+          bool hasSeed = world.hasSeed(skillEndTime);
+          if (!hasSeed) {
+            // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
+            pendingLoot.push(
+              PendingLoot({
+                actionId: queuedAction.actionId,
+                timestamp: uint40(skillEndTime),
+                elapsedTime: uint16(elapsedTime)
+              })
+            );
+          }
+        }
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved

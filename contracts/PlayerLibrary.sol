@@ -117,25 +117,19 @@ library PlayerLibrary {
 
   function _addRandomRewards(
     address _from,
-    uint actionId,
     uint40 skillEndTime,
     uint elapsedTime,
     World world,
-    PendingLoot[] storage pendingLoot,
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _lootLength,
     ActionReward[] memory _randomRewards
-  ) private returns (uint lootLength) {
+  ) private view returns (uint lootLength) {
     lootLength = _lootLength;
     // Random chance loot
     if (_randomRewards.length > 0) {
       bool hasSeed = world.hasSeed(skillEndTime);
-      if (!hasSeed) {
-        // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
-        // TODO: Some won't have loot (add it to action?)
-        pendingLoot.push(PendingLoot({actionId: actionId, timestamp: skillEndTime, elapsedTime: uint16(elapsedTime)}));
-      } else {
+      if (hasSeed) {
         uint seed = world.getSeed(skillEndTime);
 
         // Figure out how many chances they get (1 per hour spent)
@@ -178,31 +172,27 @@ library PlayerLibrary {
     }
   }
 
-  function getLootAndAddPending(
+  function getRewards(
     address _from,
-    uint _actionId,
     uint40 _skillEndTime,
     uint _elapsedTime,
     World _world,
-    PendingLoot[] storage _pendingLoot
-  ) external returns (uint[] memory ids, uint[] memory amounts) {
-    (ActionReward[] memory guaranteedRewards, ActionReward[] memory randomRewards) = _world.getDropAndLoot(_actionId);
+    ActionReward[] memory _guaranteedRewards,
+    ActionReward[] memory _randomRewards
+  ) external view returns (uint[] memory ids, uint[] memory amounts) {
+    ids = new uint[](_guaranteedRewards.length + _randomRewards.length);
+    amounts = new uint[](_guaranteedRewards.length + _randomRewards.length);
 
-    ids = new uint[](guaranteedRewards.length + randomRewards.length);
-    amounts = new uint[](guaranteedRewards.length + randomRewards.length);
-
-    uint lootLength = _addGuarenteedRewards(ids, amounts, _elapsedTime, guaranteedRewards);
+    uint lootLength = _addGuarenteedRewards(ids, amounts, _elapsedTime, _guaranteedRewards);
     lootLength = _addRandomRewards(
       _from,
-      _actionId,
       _skillEndTime,
       _elapsedTime,
       _world,
-      _pendingLoot,
       ids,
       amounts,
       lootLength,
-      randomRewards
+      _randomRewards
     );
 
     assembly ("memory-safe") {
@@ -419,17 +409,13 @@ library PlayerLibrary {
     ItemNFT _itemNFT,
     Users _users,
     CombatStats storage _playerStats,
-    bool _useAll
+    bool _useAll,
+    ActionChoice memory actionChoice
   ) external returns (uint16 foodConsumed, uint16 numConsumed, uint actualElapsedTime, bool died) {
     // Fetch the requirements for it
     (bool isCombat, CombatStats memory combatStats) = _world.getCombatStats(_queuedAction.actionId);
 
     actualElapsedTime = _elapsedTime; // Can be updated
-
-    ActionChoice memory actionChoice = _world.getActionChoice(
-      isCombat ? 0 : _queuedAction.actionId,
-      _queuedAction.choiceId
-    );
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
