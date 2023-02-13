@@ -137,7 +137,12 @@ async function main() {
   });
 
   // Batch mint all the items
-  tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
+  if (network.chainId == 31337) {
+    tx = await itemNFT.testOnlyMints(owner.address, tokenIds, amounts);
+  } else {
+    // TODO: This should fail when we go live
+    tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
+  }
   await tx.wait();
   console.log("batch mint");
 

@@ -137,7 +137,7 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
     await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // Don't own any
-    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
     await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
   });
 
@@ -160,7 +160,7 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
     await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
 
     {
@@ -217,8 +217,8 @@ describe("Player", () => {
     }
 
     await expect(players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // Don't own any
-    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await itemNFT.testMint(alice.address, BRONZE_TASSETS, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_TASSETS, 1);
     await players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS]);
 
     // Check they are both equipped (and stats?)
@@ -244,7 +244,7 @@ describe("Player", () => {
       equipPosition: EquipPosition.RIGHT_ARM,
       metadataURI: "someIPFSURI.json",
     });
-    await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
@@ -313,7 +313,7 @@ describe("Player", () => {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
     const timespan = 3600;
     const queuedAction: QueuedAction = {
       actionId,
@@ -375,7 +375,7 @@ describe("Player", () => {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
     const timespan = 3600;
     const queuedAction: QueuedAction = {
       actionId,
@@ -430,8 +430,8 @@ describe("Player", () => {
       equipPosition: EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
-    await itemNFT.testMint(alice.address, BRONZE_SWORD, 1);
-    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
     await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
 
     await itemNFT.addItem({
@@ -489,7 +489,7 @@ describe("Player", () => {
 
   it("Equipment stats", async () => {
     const {playerId, players, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
-    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
     expect(await itemNFT.balanceOf(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
 
     // Gauntlet doesn't exist yet
@@ -549,7 +549,7 @@ describe("Player", () => {
     await expect(players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS)).to.be.reverted;
 
     // Mint another one and try again, first trying to connect same item to the same player
-    await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
     await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
     await players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS);
     expect(await players.mainItemsEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(2);
@@ -597,7 +597,7 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       const timespan = 3600;
       const queuedAction: QueuedAction = {
         actionId,
@@ -703,7 +703,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await itemNFT.testMint(alice.address, LOG, 5); // Mint less than will be used
+      await itemNFT.testOnlyMint(alice.address, LOG, 5); // Mint less than will be used
       await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -737,7 +737,7 @@ describe("Player", () => {
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
-        await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+        await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
         await itemNFT.addItem({
           tokenId: BRONZE_AXE,
           stats: emptyStats,
@@ -801,7 +801,7 @@ describe("Player", () => {
         });
         const choiceId = await getActionChoiceId(tx);
 
-        await itemNFT.testMint(alice.address, FIRE_LIGHTER, 1);
+        await itemNFT.testOnlyMint(alice.address, FIRE_LIGHTER, 1);
         await itemNFT.addItem({
           tokenId: FIRE_LIGHTER,
           stats: emptyStats,
@@ -879,7 +879,7 @@ describe("Player", () => {
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
-        await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+        await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
         await itemNFT.addItem({
           tokenId: BRONZE_AXE,
           stats: emptyStats,
@@ -943,7 +943,7 @@ describe("Player", () => {
         });
         const choiceId = await getActionChoiceId(tx);
 
-        await itemNFT.testMint(alice.address, FIRE_LIGHTER, 1);
+        await itemNFT.testOnlyMint(alice.address, FIRE_LIGHTER, 1);
         await itemNFT.addItem({
           tokenId: FIRE_LIGHTER,
           stats: emptyStats,
@@ -1017,7 +1017,7 @@ describe("Player", () => {
 
       const actionId = await getActionId(tx);
 
-      await itemNFT.testMint(alice.address, BRONZE_PICKAXE, 1);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_PICKAXE, 1);
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.MINING,
@@ -1122,8 +1122,8 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await itemNFT.testMint(alice.address, COAL_ORE, 255);
-      await itemNFT.testMint(alice.address, MITHRIL_ORE, 255);
+      await itemNFT.testOnlyMint(alice.address, COAL_ORE, 255);
+      await itemNFT.testOnlyMint(alice.address, MITHRIL_ORE, 255);
       await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -1163,7 +1163,7 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       const timespan = 3600 * 24 + 1; // Exceed maximum
       const queuedAction: QueuedAction = {
         actionId,
@@ -1210,7 +1210,7 @@ describe("Player", () => {
         equipPosition: EquipPosition.RIGHT_ARM,
         metadataURI: "someIPFSURI.json",
       });
-      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
 
       const rate = 0.1 * 100; // 0.1 per hour
       const tx = await world.addAction({
@@ -1296,8 +1296,8 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testMint(alice.address, BRONZE_SWORD, 1);
-      await itemNFT.testMint(alice.address, COOKED_HUPPY, 255);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
+      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
       const timespan = 3600;
       const queuedAction: QueuedAction = {
         actionId,
@@ -1390,8 +1390,8 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testMint(alice.address, BRONZE_SWORD, 1);
-      await itemNFT.testMint(alice.address, COOKED_HUPPY, 2);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
+      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 2);
       const timespan = 3600 * 3; // 3 hours
       const queuedAction: QueuedAction = {
         actionId,
@@ -1474,7 +1474,7 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testMints(alice.address, [STAFF, COOKED_HUPPY, AIR_SCROLL, FIRE_SCROLL], [1, 255, 200, 100]);
+      await itemNFT.testOnlyMints(alice.address, [STAFF, COOKED_HUPPY, AIR_SCROLL, FIRE_SCROLL], [1, 255, 200, 100]);
 
       const scrollsConsumedRate = 1 * 100; // per hour
       // Combat uses none as it's not tied to a specific action (only combat ones)

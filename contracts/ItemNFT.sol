@@ -186,12 +186,31 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  // TODO: Remove in live version
-  function testMint(address _to, uint _tokenId, uint _amount) external {
+  modifier isHardhat() {
+    require(block.chainid == 31337, "Only for hardhat");
+    _;
+  }
+
+  modifier isNotHardhat() {
+    require(block.chainid != 31337, "Not allowed hardhat");
+    _;
+  }
+
+  // TODO: Remove in live version!! Just using it for live testing atm
+  function testMint(address _to, uint _tokenId, uint _amount) external isNotHardhat {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external {
+  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isNotHardhat {
+    _mintBatchItems(_to, _tokenIds, _amounts);
+  }
+
+  // These are just to make tests easier to run by allowing arbitrary minting
+  function testOnlyMint(address _to, uint _tokenId, uint _amount) external isHardhat {
+    _mintItem(_to, _tokenId, _amount);
+  }
+
+  function testOnlyMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isHardhat {
     _mintBatchItems(_to, _tokenIds, _amounts);
   }
 }
