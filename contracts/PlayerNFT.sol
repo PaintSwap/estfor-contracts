@@ -9,7 +9,6 @@ import "./interfaces/IBrushToken.sol";
 import "./interfaces/IPlayers.sol";
 import "./types.sol";
 import "./items.sol";
-import "hardhat/console.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {

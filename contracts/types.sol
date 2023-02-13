@@ -77,7 +77,7 @@ struct Equipment {
 struct ActionChoice {
   Skill skill;
   uint32 diff;
-  uint32 rate; // rate of output produced per hour
+  uint32 rate; // rate of output produced per hour (base 100) 2 decimals
   uint16 baseXPPerHour;
   uint32 minSkillPoints;
   uint16 inputTokenId1;

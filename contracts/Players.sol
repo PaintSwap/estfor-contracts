@@ -26,7 +26,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event AddToActionQueue(uint tokenId, QueuedAction queuedAction);
   event SetActionQueue(uint tokenId, QueuedAction[] queuedActions);
 
-  // TODO: This is expensive to call, flatten
+  // This is only for viewing so doesn't need to be optimized
   struct PendingOutput {
     Equipment[] consumables;
     Equipment[] foodConsumed;

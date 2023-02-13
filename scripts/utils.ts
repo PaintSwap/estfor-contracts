@@ -390,7 +390,7 @@ type ActionInfo = {
 
 type ActionReward = {
   itemTokenId: number;
-  rate: number;
+  rate: number; // base 100, 2 decimal places
 };
 
 type Action = {
@@ -592,7 +592,7 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    guaranteedRewards: [{itemTokenId: LOG, rate: 1220}],
+    guaranteedRewards: [{itemTokenId: LOG, rate: 1220 * 100}],
     randomRewards: [],
     combatStats: emptyStats,
   },
@@ -626,7 +626,7 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 1220}],
+    guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 1220 * 100}],
     randomRewards: [],
     combatStats: emptyStats,
   },
@@ -643,7 +643,7 @@ export const allActions: Action[] = [
       isAvailable: true,
       isCombat: false,
     },
-    guaranteedRewards: [{itemTokenId: TIN_ORE, rate: 1220}],
+    guaranteedRewards: [{itemTokenId: TIN_ORE, rate: 1220 * 100}],
     randomRewards: [],
     combatStats: emptyStats,
   },
@@ -671,7 +671,7 @@ export const firemakingChoices: ActionChoice[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 1220,
+    rate: 1220 * 100,
     baseXPPerHour: 25,
     minSkillPoints: 0,
     inputTokenId1: LOG,
@@ -685,7 +685,7 @@ export const firemakingChoices: ActionChoice[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 1220,
+    rate: 1220 * 100,
     baseXPPerHour: 45,
     minSkillPoints: 1021,
     inputTokenId1: OAK_LOG,
@@ -702,7 +702,7 @@ export const smithingChoices: ActionChoice[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 2440,
+    rate: 2440 * 100,
     baseXPPerHour: 25,
     minSkillPoints: 0,
     inputTokenId1: COPPER_ORE,
@@ -716,7 +716,7 @@ export const smithingChoices: ActionChoice[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1220,
+    rate: 1220 * 100,
     baseXPPerHour: 35,
     minSkillPoints: 0,
     inputTokenId1: IRON_ORE,

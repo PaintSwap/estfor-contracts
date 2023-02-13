@@ -246,7 +246,7 @@ describe("Player", () => {
     });
     await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
 
-    const rate = 100; // per hour
+    const rate = 100 * 100; // per hour
     const tx = await world.addAction({
       info: {
         skill: Skill.WOODCUTTING,
@@ -293,7 +293,7 @@ describe("Player", () => {
   it("Speed multiplier", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-    const rate = 100; // per hour
+    const rate = 100 * 100; // per hour
     const tx = await world.addAction({
       info: {
         skill: Skill.WOODCUTTING,
@@ -346,14 +346,16 @@ describe("Player", () => {
     await players.connect(alice).consumeActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((queuedAction.timespan * rate) / 3600));
+    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
+      Math.floor((queuedAction.timespan * rate) / (3600 * 100))
+    );
     expect(await players.actionQueueLength(playerId)).to.eq(0);
   });
 
   it("Partial consume aux items", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-    const rate = 100; // per hour
+    const rate = 100 * 100; // per hour
     const tx = await world.addAction({
       info: {
         skill: Skill.WOODCUTTING,
@@ -405,7 +407,9 @@ describe("Player", () => {
     await players.connect(alice).consumeActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
     // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor(((queuedAction.timespan / 2) * rate) / 3600));
+    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
+      Math.floor(((queuedAction.timespan / 2) * rate) / (3600 * 100))
+    );
   });
 
   it("Skill points, max range", async () => {
@@ -573,7 +577,7 @@ describe("Player", () => {
     it("Woodcutting", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-      const rate = 100; // per hour
+      const rate = 100 * 100; // per hour
       const tx = await world.addAction({
         info: {
           skill: Skill.WOODCUTTING,
@@ -625,12 +629,12 @@ describe("Player", () => {
       await players.connect(alice).consumeActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
       // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
     });
 
     it("Firemaking", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
-      const rate = 100; // per hour
+      const rate = 100 * 100; // per hour
       let tx = await world.addAction({
         info: {
           skill: Skill.FIREMAKING,
@@ -713,7 +717,7 @@ describe("Player", () => {
     it("Multi skill appending, woodcutting + firemaking", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       const queuedActions: QueuedAction[] = [];
-      const rate = 1220; // per hour
+      const rate = 1220 * 100; // per hour
       {
         const tx = await world.addAction({
           info: {
@@ -846,7 +850,7 @@ describe("Player", () => {
       expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
       // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
-        Math.floor((queuedActions[0].timespan * rate) / 3600) - 1000
+        Math.floor((queuedActions[0].timespan * rate) / (3600 * 100)) - 1000
       );
       // Action queue should be empty
       expect(await players.actionQueueLength(playerId)).to.eq(0);
@@ -855,7 +859,7 @@ describe("Player", () => {
     it("Multi skill, woodcutting + firemaking", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       const queuedActions: QueuedAction[] = [];
-      const rate = 100; // per hour
+      const rate = 100 * 100; // per hour
       {
         const tx = await world.addAction({
           info: {
@@ -984,7 +988,8 @@ describe("Player", () => {
       expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
       // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
-        Math.floor((queuedActions[0].timespan * rate) / 3600) - Math.floor((queuedActions[1].timespan * rate) / 3600)
+        Math.floor((queuedActions[0].timespan * rate) / (3600 * 100)) -
+          Math.floor((queuedActions[1].timespan * rate) / (3600 * 100))
       );
       expect(await players.actionQueueLength(playerId)).to.eq(0);
     });
@@ -1046,7 +1051,7 @@ describe("Player", () => {
 
     it("Smithing", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
-      const rate = 100; // per hour
+      const rate = 100 * 100; // per hour
 
       let tx = await world.addAction({
         info: {
@@ -1126,15 +1131,19 @@ describe("Player", () => {
       expect(await players.skillPoints(playerId, Skill.SMITHING)).to.eq(queuedAction.timespan);
 
       // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
-      expect(await itemNFT.balanceOf(alice.address, MITHRIL_BAR)).to.eq(Math.floor((timespan * rate) / 3600));
-      expect(await itemNFT.balanceOf(alice.address, COAL_ORE)).to.eq(255 - Math.floor((timespan * rate) / 3600) * 2);
-      expect(await itemNFT.balanceOf(alice.address, MITHRIL_ORE)).to.eq(255 - Math.floor((timespan * rate) / 3600));
+      expect(await itemNFT.balanceOf(alice.address, MITHRIL_BAR)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
+      expect(await itemNFT.balanceOf(alice.address, COAL_ORE)).to.eq(
+        255 - Math.floor((timespan * rate) / (3600 * 100)) * 2
+      );
+      expect(await itemNFT.balanceOf(alice.address, MITHRIL_ORE)).to.eq(
+        255 - Math.floor((timespan * rate) / (3600 * 100))
+      );
     });
 
     it("Max timespan ", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-      const rate = 100; // per hour
+      const rate = 100 * 100; // per hour
       const tx = await world.addAction({
         info: {
           skill: Skill.WOODCUTTING,
@@ -1188,10 +1197,65 @@ describe("Player", () => {
       await players.connect(alice).consumeActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
       // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / 3600));
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
     });
 
     // TODO Rest of the actions
+
+    it("Low rate action (more than 1 hour needed)", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+      await itemNFT.addItem({
+        tokenId: BRONZE_AXE,
+        stats: emptyStats,
+        equipPosition: EquipPosition.RIGHT_ARM,
+        metadataURI: "someIPFSURI.json",
+      });
+      await itemNFT.testMint(alice.address, BRONZE_AXE, 1);
+
+      const rate = 0.1 * 100; // 0.1 per hour
+      const tx = await world.addAction({
+        info: {
+          skill: Skill.WOODCUTTING,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: WOODCUTTING_BASE,
+          itemTokenIdRangeMax: WOODCUTTING_MAX,
+          auxItemTokenIdRangeMin: NONE,
+          auxItemTokenIdRangeMax: NONE,
+          isAvailable: actionIsAvailable,
+          isCombat: true,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyStats,
+      });
+
+      const actionId = await getActionId(tx);
+      const timespan = 3600 * 19; // Should make 1
+      const queuedAction: QueuedAction = {
+        actionId,
+        skill: Skill.WOODCUTTING,
+        choiceId: NONE,
+        num: 0,
+        choiceId1: NONE,
+        num1: 0,
+        choiceId2: NONE,
+        num2: 0,
+        regenerateId: NONE,
+        numRegenerate: 0,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_AXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await ethers.provider.send("evm_increaseTime", [timespan]);
+      await players.connect(alice).consumeActions(playerId);
+      //      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(1); // Should be rounded down
+    });
 
     it("Action pipelining", async () => {
       // Try wood cut, and then burning them when having none equipped
@@ -1212,7 +1276,7 @@ describe("Player", () => {
         health: 0,
       };
 
-      const rate = 1; // per hour
+      const rate = 1 * 100; // per hour
       let tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
@@ -1282,7 +1346,7 @@ describe("Player", () => {
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / 3600));
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
       // Check food is consumed, update later
       expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 1);
@@ -1306,7 +1370,7 @@ describe("Player", () => {
         health: 0,
       };
 
-      const rate = 1; // per hour
+      const rate = 1 * 100; // per hour
       let tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
@@ -1390,7 +1454,7 @@ describe("Player", () => {
         health: 0,
       };
 
-      const dropRate = 1; // per hour
+      const dropRate = 1 * 100; // per hour
       let tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
@@ -1412,7 +1476,7 @@ describe("Player", () => {
 
       await itemNFT.testMints(alice.address, [STAFF, COOKED_HUPPY, AIR_SCROLL, FIRE_SCROLL], [1, 255, 200, 100]);
 
-      const scrollsConsumedRate = 1; // per hour
+      const scrollsConsumedRate = 1 * 100; // per hour
       // Combat uses none as it's not tied to a specific action (only combat ones)
       // Fire blast
       tx = await world.addActionChoice(NONE, {
@@ -1489,7 +1553,9 @@ describe("Player", () => {
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((timespan * dropRate) / 3600));
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(
+        Math.floor((timespan * dropRate) / (3600 * 100))
+      );
 
       // Check food is consumed, update later
       expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 1);

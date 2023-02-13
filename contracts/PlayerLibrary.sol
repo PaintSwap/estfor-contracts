@@ -105,7 +105,7 @@ library PlayerLibrary {
     ActionReward[] memory _guaranteedRewards
   ) private pure returns (uint lootLength) {
     for (uint i; i < _guaranteedRewards.length; ++i) {
-      uint numRewards = (_elapsedTime * _guaranteedRewards[i].rate) / 3600;
+      uint numRewards = (_elapsedTime * _guaranteedRewards[i].rate) / (3600 * 100);
       if (numRewards > 0) {
         _ids[lootLength] = _guaranteedRewards[i].itemTokenId;
         _amounts[lootLength] = numRewards;
@@ -232,7 +232,7 @@ library PlayerLibrary {
       queuedAction.choiceId
     );
 
-    numProduced = uint16((elapsedTime * actionChoice.rate) / 3600);
+    numProduced = uint16((elapsedTime * actionChoice.rate) / (3600 * 100));
 
     if (isCombat) {
       /* combatStats.attack, */
@@ -423,7 +423,7 @@ library PlayerLibrary {
     }
 
     // Check the max that can be used. To prevent overflow for sped up actions.
-    numConsumed = uint16((_elapsedTime * actionChoice.rate) / 3600);
+    numConsumed = uint16((_elapsedTime * actionChoice.rate) / (3600 * 100));
     uint maxRequiredRatio = _getMaxRequiredRatio(_from, actionChoice, numConsumed, _queuedAction.num, _itemNFT);
 
     // Check the balances of all the items
