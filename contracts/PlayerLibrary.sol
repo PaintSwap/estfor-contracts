@@ -5,12 +5,11 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "./types.sol";
 import "./World.sol";
 import "./ItemNFT.sol";
-import "./Users.sol";
+import "./Players.sol"; // Might not even be needed
 
 // Show all the player stats, return metadata json
 library PlayerLibrary {
-  // Same as in Player
-  event Unequip(uint tokenId, uint16 itemTokenId, uint amount);
+  event ActionUnequip(uint tokenId, uint16 itemTokenId, uint amount);
 
   function uri(
     bytes32 name,
@@ -209,7 +208,6 @@ library PlayerLibrary {
     uint16 numProduced,
     uint16 baseNum,
     uint16 totalEquipped,
-    Users users,
     bool _useAll
   ) private {
     if (itemTokenId == 0) {
@@ -217,8 +215,7 @@ library PlayerLibrary {
     }
     uint16 numBurn = numProduced * baseNum;
     uint16 numUnequip = _useAll ? totalEquipped : numBurn;
-    users.minorUnequip(_from, itemTokenId, numUnequip); // Should be the num attached if fully consumed
-    emit Unequip(_tokenId, itemTokenId, numUnequip);
+    emit ActionUnequip(_tokenId, itemTokenId, numUnequip);
     itemNFT.burn(_from, itemTokenId, numBurn);
   }
 
@@ -251,7 +248,6 @@ library PlayerLibrary {
     QueuedAction storage queuedAction,
     uint _elapsedTime,
     ItemNFT _itemNFT,
-    Users _users,
     CombatStats storage _playerStats,
     bool _useAll
   ) private returns (uint16 foodConsumed, bool died) {
@@ -280,7 +276,6 @@ library PlayerLibrary {
       foodConsumed,
       1,
       queuedAction.numRegenerate,
-      _users,
       _useAll
     );
     // TODO use playerStats.health
@@ -362,7 +357,6 @@ library PlayerLibrary {
     uint16 _numConsumed,
     uint16 _numEquippedBase,
     ItemNFT _itemNFT,
-    Users _users,
     bool _useAll
   ) private {
     _processConsumable(
@@ -373,7 +367,6 @@ library PlayerLibrary {
       _numConsumed,
       _actionChoice.num1,
       _numEquippedBase * _actionChoice.num1,
-      _users,
       _useAll
     );
     _processConsumable(
@@ -384,7 +377,6 @@ library PlayerLibrary {
       _numConsumed,
       _actionChoice.num2,
       _numEquippedBase * _actionChoice.num2,
-      _users,
       _useAll
     );
     _processConsumable(
@@ -395,7 +387,6 @@ library PlayerLibrary {
       _numConsumed,
       _actionChoice.num3,
       _numEquippedBase * _actionChoice.num3,
-      _users,
       _useAll
     );
   }
@@ -407,7 +398,6 @@ library PlayerLibrary {
     uint _elapsedTime,
     World _world,
     ItemNFT _itemNFT,
-    Users _users,
     CombatStats storage _playerStats,
     bool _useAll,
     ActionChoice memory actionChoice
@@ -427,7 +417,6 @@ library PlayerLibrary {
         _queuedAction,
         _elapsedTime,
         _itemNFT,
-        _users,
         _playerStats,
         _useAll
       );
@@ -442,24 +431,15 @@ library PlayerLibrary {
       numConsumed = uint16(maxRequiredRatio);
     }
     if (numConsumed > 0) {
-      _processInputConsumables(
-        _from,
-        _tokenId,
-        actionChoice,
-        numConsumed,
-        _queuedAction.num,
-        _itemNFT,
-        _users,
-        _useAll
-      );
+      _processInputConsumables(_from, _tokenId, actionChoice, numConsumed, _queuedAction.num, _itemNFT, _useAll);
     }
 
-    if (_useAll && _queuedAction.potionId != 0) {
+    /*    if (_useAll && _queuedAction.potionId != 0) {
       // Consume the potion
-      _users.minorUnequip(_from, _queuedAction.potionId, 1);
-      emit Unequip(_tokenId, _queuedAction.potionId, 1);
+      //      _users.actionUnequip(_from, _queuedAction.potionId, 1);
+      emit ActionUnequip(_tokenId, _queuedAction.potionId, 1);
       _itemNFT.burn(_from, _queuedAction.potionId, 1);
-    }
+    } */
 
     if (actionChoice.outputTokenId != 0) {
       _itemNFT.mint(_from, actionChoice.outputTokenId, numConsumed);

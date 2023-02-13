@@ -69,7 +69,7 @@ struct PendingLoot {
 }
 struct Equipment {
   uint16 itemTokenId;
-  uint8 numToEquip;
+  uint16 numToEquip;
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.
@@ -92,8 +92,8 @@ struct ActionChoice {
 // The user chooses these
 struct QueuedAction {
   uint16 actionId;
-  uint16 potionId; // Potion (combat, non-combat, can only equip 1)
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
+  uint16 numRegenerate;
   uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
   uint16 num;
   uint16 choiceId1; // Reserved (TBD)
@@ -103,10 +103,9 @@ struct QueuedAction {
   uint16 rightArmEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftArmEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  uint8 numRegenerate;
   Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill. Attack/defence can also be used
   uint40 startTime; // Filled in by the function
-  // No bytes left, uhhh could re-duce potionId?
+  // 1 byte left
 }
 
 struct ActionInfo {

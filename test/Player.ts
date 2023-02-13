@@ -58,11 +58,6 @@ describe("Player", () => {
       kind: "uups",
     });
 
-    const Users = await ethers.getContractFactory("Users");
-    const users = await upgrades.deployProxy(Users, [], {
-      kind: "uups",
-    });
-
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(Shop, [brush.address], {
       kind: "uups",
@@ -71,7 +66,7 @@ describe("Player", () => {
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, users.address, shop.address], {
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall"],
     });
@@ -89,15 +84,13 @@ describe("Player", () => {
       libraries: {PlayerLibrary: playerLibrary.address},
     });
 
-    const players = await upgrades.deployProxy(
-      Players,
-      [itemNFT.address, playerNFT.address, world.address, users.address],
-      {kind: "uups", unsafeAllow: ["delegatecall", "external-library-linking"]}
-    );
+    const players = await upgrades.deployProxy(Players, [itemNFT.address, playerNFT.address, world.address], {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    });
 
     await itemNFT.setPlayers(players.address);
     await playerNFT.setPlayers(players.address);
-    await users.set(players.address, itemNFT.address);
 
     const avatarId = 1;
     const avatarInfo = {
@@ -120,7 +113,6 @@ describe("Player", () => {
       maxTime,
       owner,
       world,
-      users,
       alice,
     };
   }
@@ -277,7 +269,6 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId,
       skill: Skill.WOODCUTTING,
-      potionId: NONE,
       choiceId: NONE,
       num: 0,
       choiceId1: NONE,
@@ -327,7 +318,6 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId,
       skill: Skill.WOODCUTTING,
-      potionId: NONE,
       choiceId: NONE,
       num: 0,
       choiceId1: NONE,
@@ -388,7 +378,6 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId,
       skill: Skill.WOODCUTTING,
-      potionId: NONE,
       choiceId: NONE,
       num: 0,
       choiceId1: NONE,
@@ -469,7 +458,6 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       actionId: 1,
       skill: Skill.ATTACK,
-      potionId: NONE,
       choiceId: NONE,
       num: 0,
       choiceId1: NONE,
@@ -496,7 +484,7 @@ describe("Player", () => {
   });
 
   it("Equipment stats", async () => {
-    const {playerId, players, playerNFT, itemNFT, users, alice} = await loadFixture(deployContracts);
+    const {playerId, players, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
     expect(await itemNFT.balanceOf(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
 
@@ -542,7 +530,7 @@ describe("Player", () => {
     expect(afterStats.magicDefence).to.eq(0);
     expect(afterStats.health).to.eq(12);
 
-    expect(await users.numEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
+    expect(await players.mainItemsEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
 
     // Try equip it on someone else, should fail as we don't have enough
     const avatarId = 1;
@@ -560,7 +548,7 @@ describe("Player", () => {
     await itemNFT.testMint(alice.address, BRONZE_GAUNTLETS, 1);
     await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
     await players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS);
-    expect(await users.numEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(2);
+    expect(await players.mainItemsEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(2);
   });
 
   it("Edit Name", async () => {
@@ -610,7 +598,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.WOODCUTTING,
-        potionId: NONE,
         choiceId: NONE,
         num: 0,
         choiceId1: NONE,
@@ -684,7 +671,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.FIREMAKING,
-        potionId: NONE,
         choiceId,
         num: 255,
         choiceId1: NONE,
@@ -758,7 +744,6 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           actionId,
           skill: Skill.WOODCUTTING,
-          potionId: NONE,
           choiceId: NONE,
           num: 0,
           choiceId1: NONE,
@@ -824,7 +809,6 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           actionId,
           skill: Skill.FIREMAKING,
-          potionId: NONE,
           choiceId,
           num: 1000,
           choiceId1: NONE,
@@ -902,7 +886,6 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           actionId,
           skill: Skill.WOODCUTTING,
-          potionId: NONE,
           choiceId: NONE,
           num: 0,
           choiceId1: NONE,
@@ -968,7 +951,6 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           actionId,
           skill: Skill.FIREMAKING,
-          potionId: NONE,
           choiceId,
           num: 255,
           choiceId1: NONE,
@@ -1034,7 +1016,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.MINING,
-        potionId: NONE,
         choiceId: NONE,
         num: 0,
         choiceId1: NONE,
@@ -1108,7 +1089,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.SMITHING,
-        potionId: NONE,
         choiceId,
         num: 100,
         choiceId1: NONE,
@@ -1179,7 +1159,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.WOODCUTTING,
-        potionId: NONE,
         choiceId: NONE,
         num: 0,
         choiceId1: NONE,
@@ -1259,7 +1238,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.ATTACK,
-        potionId: NONE,
         choiceId: NONE,
         num: 0,
         choiceId1: NONE,
@@ -1354,7 +1332,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.ATTACK,
-        potionId: NONE,
         choiceId: NONE,
         num: 0,
         choiceId1: NONE,
@@ -1457,7 +1434,6 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         actionId,
         skill: Skill.MAGIC,
-        potionId: NONE,
         choiceId,
         num: 100,
         choiceId1: NONE,

@@ -21,11 +21,6 @@ describe("Shop", function () {
       kind: "uups",
     });
 
-    const Users = await ethers.getContractFactory("Users");
-    const users = await upgrades.deployProxy(Users, [], {
-      kind: "uups",
-    });
-
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(Shop, [brush.address], {
       kind: "uups",
@@ -34,7 +29,7 @@ describe("Shop", function () {
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, users.address, shop.address], {
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall"],
     });

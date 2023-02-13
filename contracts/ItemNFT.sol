@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "./interfaces/IBrushToken.sol";
 import "./World.sol";
-import "./Users.sol";
 import "./types.sol";
 import "./items.sol";
 
@@ -25,7 +24,6 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
   }
 
   World world;
-  Users users;
   string private baseURI;
 
   // How many of this item exist
@@ -49,12 +47,11 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     _disableInitializers();
   }
 
-  function initialize(World _world, Users _users, address _shop) public initializer {
+  function initialize(World _world, address _shop) public initializer {
     __ERC1155_init("");
     __Ownable_init();
     __UUPSUpgradeable_init();
     world = _world;
-    users = _users;
     shop = _shop;
     baseURI = "ipfs://";
   }

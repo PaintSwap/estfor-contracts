@@ -326,7 +326,6 @@ export type Equipment = {
 
 export type QueuedAction = {
   actionId: number;
-  potionId: number;
   regenerateId: number;
   numRegenerate: number;
   choiceId: number;

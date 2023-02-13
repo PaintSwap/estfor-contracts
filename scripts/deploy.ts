@@ -58,13 +58,6 @@ async function main() {
   await world.deployed();
   console.log(`World deployed at ${world.address.toLowerCase()}`);
 
-  const Users = await ethers.getContractFactory("Users");
-  const users = await upgrades.deployProxy(Users, [], {
-    kind: "uups",
-  });
-  await users.deployed();
-  console.log(`Users deployed at ${users.address.toLowerCase()}`);
-
   const Shop = await ethers.getContractFactory("Shop");
   const shop = await upgrades.deployProxy(Shop, [brush.address], {
     kind: "uups",
@@ -76,7 +69,7 @@ async function main() {
 
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, users.address, shop.address], {
+  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
   });
@@ -97,11 +90,10 @@ async function main() {
     libraries: {PlayerLibrary: playerLibrary.address},
   });
 
-  const players = await upgrades.deployProxy(
-    Players,
-    [itemNFT.address, playerNFT.address, world.address, users.address],
-    {kind: "uups", unsafeAllow: ["delegatecall", "external-library-linking"]}
-  );
+  const players = await upgrades.deployProxy(Players, [itemNFT.address, playerNFT.address, world.address], {
+    kind: "uups",
+    unsafeAllow: ["delegatecall", "external-library-linking"],
+  });
 
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
@@ -109,9 +101,6 @@ async function main() {
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
   console.log("setPlayers");
-  tx = await users.set(players.address, itemNFT.address);
-  await tx.wait();
-  console.log("set");
   await shop.setItemNFT(itemNFT.address);
   console.log("setItemNFT");
 
@@ -175,7 +164,6 @@ async function main() {
   const queuedAction: QueuedAction = {
     actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
     skill: Skill.WOODCUTTING,
-    potionId: NONE,
     choiceId: NONE,
     num: 0,
     choiceId1: NONE,
@@ -213,7 +201,6 @@ async function main() {
   const queuedActionFiremaking: QueuedAction = {
     actionId: allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1,
     skill: Skill.FIREMAKING,
-    potionId: NONE,
     choiceId: 1,
     num: 1220,
     choiceId1: NONE,
