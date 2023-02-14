@@ -74,14 +74,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   // Left-right arm action, only 1 per action queue. Cannot be shared
   mapping(address => mapping(uint => uint)) public nonConsumableActionItemsEquipped;
 
-  struct PotionInfo {
+  struct PlayerPotionInfo {
     uint40 startTime;
     uint24 duration;
     uint16 potionId; // Get the effect of it
     // TODO: Add the effects here
+    //    PotitionType potionType;
+    //    Skill skill; // Can be Skill.ANY
   }
 
-  mapping(uint => PotionInfo) public activePotions;
+  mapping(uint => PlayerPotionInfo) public activePotions; // player id => potion info
 
   uint private queuedActionId; // Global queued action id
   World private world;
@@ -227,8 +229,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   function _unequipMainItem(address _from, uint _tokenId, uint16 _equippedTokenId) private {
     Player storage player = players[_tokenId];
     // Unequip current item and remove any stats given from the item
-    ItemStat memory itemStats = itemNFT.getItemStats(_equippedTokenId);
-    updatePlayerStats(player, itemStats.stats, false);
+    CombatStats memory combatStats = itemNFT.getCombatStats(_equippedTokenId);
+    updatePlayerStats(player, combatStats, false);
     _unequipMainItemUpdateBalance(_from, _equippedTokenId);
   }
 
@@ -248,9 +250,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     for (uint i; i < _itemTokenIds.length; ++i) {
       uint16 itemTokenId = _itemTokenIds[i];
 
-      ItemStat memory itemStats = itemNFT.getItemStats(itemTokenId);
-      EquipPosition position = itemStats.equipPosition;
-      require(itemStats.exists);
+      Item memory item = itemNFT.getItem(itemTokenId);
+      CombatStats memory combatStats = itemNFT.getCombatStats(itemTokenId);
+      EquipPosition position = item.equipPosition;
+      require(item.exists);
       require(uint8(position) < 8);
       uint8 relativeItem = uint8(itemTokenId - (256 * uint8(position))); // Between 0 -> 256
 
@@ -259,10 +262,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         val := or(val, shl(mul(position, 8), relativeItem))
       }
 
-      CombatStats memory stats = itemStats.stats;
       // This will check the user has enough balance inside
       // TODO: Bulk add all these
-      updatePlayerStats(player, stats, true);
+      updatePlayerStats(player, combatStats, true);
       _equipMainItemUpdateBalance(from, itemTokenId);
     }
 
@@ -317,9 +319,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     Player storage player = players[_tokenId];
 
     QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _tokenId);
-    ItemStat memory itemStats = itemNFT.getItemStats(_itemTokenId);
-    EquipPosition position = itemStats.equipPosition;
-    require(itemStats.exists);
+    Item memory item = itemNFT.getItem(_itemTokenId);
+    EquipPosition position = item.equipPosition;
+    require(item.exists);
     require(uint8(position) < 8);
     uint8 relativeEquippedTokenId = _getRelativeEquippedTokenId(position, player);
 
@@ -344,7 +346,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       emit Unequip(_tokenId, equippedTokenId);
     }
 
-    CombatStats memory stats = itemStats.stats;
+    CombatStats memory stats = itemNFT.getCombatStats(_itemTokenId);
     // This will check the user has enough balance inside
     updatePlayerStats(player, stats, true);
     _equipMainItemUpdateBalance(msg.sender, _itemTokenId);

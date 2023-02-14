@@ -126,8 +126,8 @@ uint16 constant LARGE_NET = FISHING_BASE + 4;
 uint16 constant MAGIC_NET = FISHING_BASE + 5;
 uint16 constant FISHING_MAX = FISHING_BASE + 255;
 
-// Firemaking (3072)
-uint16 constant FIRE_BASE = 3327;
+// Firemaking (3328)
+uint16 constant FIRE_BASE = 3328;
 uint16 constant FIRE_LIGHTER = FIRE_BASE;
 uint16 constant FIRE_MAX = FIRE_BASE + 255;
 

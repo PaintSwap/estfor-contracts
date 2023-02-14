@@ -151,8 +151,8 @@ export const LARGE_NET = FISHING_BASE + 4;
 export const MAGIC_NET = FISHING_BASE + 5;
 export const FISHING_MAX = FISHING_BASE + 255;
 
-// Firemaking (3072)
-export const FIRE_BASE = 3327;
+// Firemaking (3328)
+export const FIRE_BASE = 3328;
 export const FIRE_LIGHTER = FIRE_BASE;
 export const FIRE_MAX = FIRE_BASE + 255;
 
@@ -425,13 +425,6 @@ export const emptyStats = {
   health: 0,
 };
 
-type Item = {
-  tokenId: number;
-  equipPosition: EquipPosition;
-  stats: CombatStats;
-  metadataURI: "someIPFSURI.json";
-};
-
 const bronzeHelmentStats = {
   attack: 1,
   magic: 0,
@@ -462,101 +455,147 @@ const bronzeSwordStats = {
   health: 0,
 };
 
+enum PotionType {
+  NONE,
+  ANY_XP,
+  COMBAT_XP,
+  NON_COMBAT_XP,
+  GATHERING,
+  ABSENCE,
+}
+// Input only
+type NonCombatStat = {
+  skill: Skill;
+  diff: number;
+};
+// Contains everything you need to create an item
+type InputItem = {
+  combatStats: CombatStats;
+  nonCombatStats: NonCombatStat[];
+  tokenId: number;
+  equipPosition: EquipPosition;
+  // Food
+  healthRestored: number;
+  // Potion
+  potionType: PotionType;
+  val: number; // Varies, could be the % increase
+  duration: number; // How long the effect of the potion last
+  // uri
+  metadataURI: string;
+};
+
+export const inputItem = {
+  combatStats: emptyStats,
+  nonCombatStats: [],
+  healthRestored: 0,
+  potionType: PotionType.NONE,
+  val: 0,
+  duration: 0,
+};
+
 // TODO This is just reusing the same stats for now
-export const allItems: Item[] = [
+export const allItems: InputItem[] = [
   {
+    ...inputItem,
     tokenId: BRONZE_HELMET,
-    stats: bronzeHelmentStats,
+    combatStats: bronzeHelmentStats,
     equipPosition: EquipPosition.HEAD,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_GAUNTLETS,
-    stats: bronzeGauntletStats,
+    combatStats: bronzeGauntletStats,
     equipPosition: EquipPosition.ARMS,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: IRON_HELMET,
-    stats: bronzeHelmentStats,
+    combatStats: bronzeHelmentStats,
     equipPosition: EquipPosition.HEAD,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: SAPPHIRE_AMULET,
-    stats: bronzeGauntletStats,
+    combatStats: bronzeGauntletStats,
     equipPosition: EquipPosition.NECK,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_CHESTPLATE,
-    stats: bronzeHelmentStats,
+    combatStats: bronzeHelmentStats,
     equipPosition: EquipPosition.BODY,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_TASSETS,
-    stats: bronzeGauntletStats,
+    combatStats: bronzeGauntletStats,
     equipPosition: EquipPosition.LEGS,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_BOOTS,
-    stats: bronzeHelmentStats,
+    combatStats: bronzeHelmentStats,
     equipPosition: EquipPosition.BOOTS,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: FIRE_LIGHTER,
-    stats: emptyStats,
     equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_AXE,
-    stats: emptyStats,
     equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_PICKAXE,
-    stats: emptyStats,
     equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: SMALL_NET,
-    stats: emptyStats,
     equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_SWORD,
-    stats: bronzeSwordStats,
+    combatStats: bronzeSwordStats,
     equipPosition: EquipPosition.RIGHT_ARM,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: LOG,
-    stats: emptyStats,
     equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: COPPER_ORE,
-    stats: emptyStats,
     equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: TIN_ORE,
-    stats: emptyStats,
     equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
   },
   {
+    ...inputItem,
     tokenId: BRONZE_BAR,
-    stats: emptyStats,
     equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
   },

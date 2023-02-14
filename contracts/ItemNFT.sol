@@ -12,15 +12,29 @@ import "./items.sol";
 
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgradeable {
-  event AddItem(Item item);
-  event AddItems(Item[] items);
-  event EditItem(Item item);
+  event AddItem(Item item, uint16 tokenId, CombatStats combatStats);
+  event AddItems(Item[] items, uint16[] tokenIds, CombatStats[] combatStats);
+  event EditItem(Item item, uint16 tokenId, CombatStats combatStats);
 
-  struct Item {
-    CombatStats stats;
-    string metadataURI;
+  // Input only
+  struct NonCombatStat {
+    Skill skill;
+    int16 diff;
+  }
+  // Contains everything you need to create an item
+  struct InputItem {
+    CombatStats combatStats;
+    NonCombatStat[] nonCombatStats;
     uint16 tokenId;
     EquipPosition equipPosition;
+    // Food
+    uint16 healthRestored;
+    // Potion
+    PotionType potionType;
+    uint16 val; // Varies, could be the % increase
+    uint24 duration; // How long the effect of the potion last
+    // uri
+    string metadataURI;
   }
 
   World world;
@@ -35,7 +49,8 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
   uint public uniqueItems; // unique number of items
 
   mapping(uint => string) private tokenURIs;
-  mapping(uint => ItemStat) itemStats;
+  mapping(uint => CombatStats) combatStats;
+  mapping(uint => Item) items;
 
   modifier onlyPlayersOrShop() {
     require(msg.sender == players || msg.sender == shop, "Not players OR shop");
@@ -106,9 +121,14 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     return bytes(tokenURIs[_tokenId]).length != 0;
   }
 
-  function getItemStats(uint16 _tokenId) external view returns (ItemStat memory) {
-    require(itemStats[_tokenId].exists, "Item doesn't exist");
-    return itemStats[_tokenId];
+  function getCombatStats(uint16 _tokenId) external view returns (CombatStats memory) {
+    //    require(combatStats[_tokenId].exists, "Item doesn't exist");
+    return combatStats[_tokenId];
+  }
+
+  function getItem(uint16 _tokenId) external view returns (Item memory) {
+    require(items[_tokenId].exists, "Item doesn't exist");
+    return items[_tokenId];
   }
 
   // If an item is burnt, remove it from the total
@@ -141,11 +161,6 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     _removeAnyBurntFromTotal(_to, _ids, _amounts);
   }
 
-  function _setItem(Item calldata _item) private {
-    itemStats[_item.tokenId] = ItemStat({stats: _item.stats, exists: true, equipPosition: _item.equipPosition});
-    tokenURIs[_item.tokenId] = _item.metadataURI;
-  }
-
   function burn(address _from, uint _tokenId, uint _quantity) external {
     require(
       _from == _msgSender() || isApprovedForAll(_from, _msgSender()) || players == _msgSender() || shop == _msgSender(),
@@ -154,26 +169,67 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     _burn(_from, _tokenId, _quantity);
   }
 
-  // Or make it constants and redeploy the contracts
-  function addItem(Item calldata _item) external onlyOwner {
-    require(!_exists(_item.tokenId), "This item was already added");
-    _setItem(_item);
-    emit AddItem(_item);
-  }
-
-  function addItems(Item[] calldata _items) external onlyOwner {
-    for (uint i; i < _items.length; ++i) {
-      require(!_exists(_items[i].tokenId), "This item was already added");
-      _setItem(_items[i]);
+  function _setItem(InputItem calldata _item) private returns (Item storage item) {
+    bool hasCombat;
+    CombatStats calldata _combatStats = _item.combatStats;
+    assembly ("memory-safe") {
+      hasCombat := not(iszero(_combatStats))
     }
-    emit AddItems(_items);
+    bool hasNonCombat = _item.nonCombatStats.length > 0;
+    item = items[_item.tokenId];
+    item.exists = true;
+    item.hasCombatStats = hasCombat;
+    item.hasNonCombatStats = hasNonCombat;
+    item.equipPosition = _item.equipPosition;
+
+    if (hasCombat) {
+      combatStats[_item.tokenId] = _item.combatStats;
+    }
+    if (hasNonCombat) {
+      item.skill1 = _item.nonCombatStats[0].skill;
+      item.skillDiff1 = _item.nonCombatStats[0].diff;
+      // TODO: Add more later if necessary
+    }
+
+    if (_item.healthRestored > 0) {
+      item.healthRestored = _item.healthRestored;
+    }
+
+    if (_item.potionType != PotionType.NONE) {
+      item.potionType = _item.potionType;
+      item.val = _item.val;
+    }
+    tokenURIs[_item.tokenId] = _item.metadataURI;
   }
 
-  function editItem(Item calldata _item) external onlyOwner {
-    require(_exists(_item.tokenId), "This item was not added yet");
-    require(itemStats[_item.tokenId].equipPosition == _item.equipPosition, "Equipment position should not change");
-    _setItem(_item);
-    emit EditItem(_item);
+  // Or make it constants and redeploy the contracts
+  function addItem(InputItem calldata _inputItem) external onlyOwner {
+    require(!_exists(_inputItem.tokenId), "This item was already added");
+    Item storage item = _setItem(_inputItem);
+    emit AddItem(item, _inputItem.tokenId, _inputItem.combatStats);
+  }
+
+  function addItems(InputItem[] calldata _inputItems) external onlyOwner {
+    Item[] memory _items = new Item[](_inputItems.length);
+    uint16[] memory tokenIds = new uint16[](_items.length);
+    CombatStats[] memory _combatStats = new CombatStats[](_inputItems.length);
+    for (uint i; i < _inputItems.length; ++i) {
+      require(!_exists(_inputItems[i].tokenId), "This item was already added");
+      _items[i] = _setItem(_inputItems[i]);
+      tokenIds[i] = _inputItems[i].tokenId;
+      _combatStats[i] = _inputItems[i].combatStats;
+    }
+    emit AddItems(_items, tokenIds, _combatStats);
+  }
+
+  function editItem(InputItem calldata _inputItem) external onlyOwner {
+    require(_exists(_inputItem.tokenId), "This item was not added yet");
+    require(
+      items[_inputItem.tokenId].equipPosition == _inputItem.equipPosition,
+      "Equipment position should not change"
+    );
+    Item storage item = _setItem(_inputItem);
+    emit EditItem(item, _inputItem.tokenId, _inputItem.combatStats);
   }
 
   function setPlayers(address _players) external onlyOwner {
