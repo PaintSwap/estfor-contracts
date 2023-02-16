@@ -464,12 +464,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     Player storage _player = players[_tokenId];
     //    Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
 
-    (
-      uint16 itemTokenIdRangeMin,
-      uint16 itemTokenIdRangeMax,
-      uint16 auxItemTokenIdRangeMin,
-      uint16 auxItemTokenIdRangeMax
-    ) = world.getPermissibleItemsForAction(_queuedAction.actionId);
+    (uint16 itemTokenIdRangeMin, uint16 itemTokenIdRangeMax) = world.getPermissibleItemsForAction(
+      _queuedAction.actionId
+    );
 
     require(world.actionIsAvailable(_queuedAction.actionId), "Action is not available");
 

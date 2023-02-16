@@ -28,6 +28,35 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     ActionReward[] randomRewards;
     CombatStats combatStats;
   }
+  /*
+  struct Action {
+    // ActionInfo
+    Skill skill;
+    bool isAvailable;
+    bool isDynamic;
+    bool isCombat;
+    uint16 baseXPPerHour;
+    uint32 minSkillPoints;
+    // These are put here for efficiency even if not needed
+    uint16 itemTokenIdRangeMin; // Inclusive
+    uint16 itemTokenIdRangeMax; // Inclusive
+    // guaranteedRewards
+    uint16 itemTokenId1;
+    uint24 rate1; // num per hour, base 100 (2 decimals) or percentage chance
+    // randomRewards
+    uint16 randomRewardsItemTokenId1;
+    uint24 randomRewardsRate1; // rate per hour, base 100 (2 decimals) or percentage chance
+
+    // combatStats 
+    int8 attack;
+    int8 magic;
+    int8 range;
+    int8 meleeDefence;
+    int8 magicDefence;
+    int8 rangeDefence;
+    int8 health;
+    // Spare
+  } */
 
   VRFCoordinatorV2Interface COORDINATOR;
 
@@ -63,6 +92,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint public lastDynamicUpdatedTime;
 
   mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
+  // TODO: Combine these into a struct to save gas
   mapping(uint => ActionReward[]) guaranteedRewards; // action id => guaranteedRewards
   mapping(uint => ActionReward[]) randomRewards; // action id => loot chances
   mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
@@ -173,23 +203,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function getPermissibleItemsForAction(
     uint _actionId
-  )
-    external
-    view
-    returns (
-      uint16 itemTokenIdRangeMin,
-      uint16 itemTokenIdRangeMax,
-      uint16 auxItemTokenIdRangeMin,
-      uint16 auxItemTokenIdRangeMax
-    )
-  {
+  ) external view returns (uint16 itemTokenIdRangeMin, uint16 itemTokenIdRangeMax) {
     ActionInfo storage actionInfo = actions[_actionId];
-    return (
-      actionInfo.itemTokenIdRangeMin,
-      actionInfo.itemTokenIdRangeMax,
-      actionInfo.auxItemTokenIdRangeMin,
-      actionInfo.auxItemTokenIdRangeMax
-    );
+    return (actionInfo.itemTokenIdRangeMin, actionInfo.itemTokenIdRangeMax);
   }
 
   function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint16 xpPerHour) {

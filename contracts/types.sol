@@ -144,8 +144,6 @@ struct ActionInfo {
   // These are put here for efficiency even if not needed
   uint16 itemTokenIdRangeMin; // Inclusive
   uint16 itemTokenIdRangeMax; // Inclusive
-  uint16 auxItemTokenIdRangeMin; // Logs etc.. TODO Needed?
-  uint16 auxItemTokenIdRangeMax;
 }
 
 // Equipment (leave at the bottom to allow for further ones)

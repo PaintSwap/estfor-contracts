@@ -383,8 +383,6 @@ type ActionInfo = {
   minSkillPoints: number;
   itemTokenIdRangeMin: number;
   itemTokenIdRangeMax: number;
-  auxItemTokenIdRangeMin: number;
-  auxItemTokenIdRangeMax: number;
   isCombat: boolean;
 };
 
@@ -626,8 +624,6 @@ export const allActions: Action[] = [
       isDynamic: false,
       itemTokenIdRangeMin: BRONZE_AXE,
       itemTokenIdRangeMax: WOODCUTTING_MAX,
-      auxItemTokenIdRangeMin: NONE,
-      auxItemTokenIdRangeMax: NONE,
       isAvailable: true,
       isCombat: false,
     },
@@ -643,8 +639,6 @@ export const allActions: Action[] = [
       isDynamic: false,
       itemTokenIdRangeMin: FIRE_LIGHTER,
       itemTokenIdRangeMax: FIRE_MAX,
-      auxItemTokenIdRangeMin: LOG_BASE,
-      auxItemTokenIdRangeMax: LOG_MAX,
       isAvailable: true,
       isCombat: false,
     },
@@ -660,8 +654,6 @@ export const allActions: Action[] = [
       isDynamic: false,
       itemTokenIdRangeMin: BRONZE_PICKAXE,
       itemTokenIdRangeMax: MINING_MAX,
-      auxItemTokenIdRangeMin: NONE,
-      auxItemTokenIdRangeMax: NONE,
       isAvailable: true,
       isCombat: false,
     },
@@ -677,8 +669,6 @@ export const allActions: Action[] = [
       isDynamic: false,
       itemTokenIdRangeMin: BRONZE_PICKAXE,
       itemTokenIdRangeMax: MINING_MAX,
-      auxItemTokenIdRangeMin: NONE,
-      auxItemTokenIdRangeMax: NONE,
       isAvailable: true,
       isCombat: false,
     },
@@ -694,8 +684,6 @@ export const allActions: Action[] = [
       isDynamic: false,
       itemTokenIdRangeMin: NONE,
       itemTokenIdRangeMax: NONE,
-      auxItemTokenIdRangeMin: ORE_BASE,
-      auxItemTokenIdRangeMax: ORE_MAX,
       isAvailable: true,
       isCombat: false,
     },
