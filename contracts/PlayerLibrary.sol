@@ -74,27 +74,27 @@ library PlayerLibrary {
     return output;
   }
 
-  function updatePlayerStats(CombatStats storage _totalStats, CombatStats memory _stats, bool _add) external {
-    if (_stats.attack != 0) {
-      _totalStats.attack += _add ? _stats.attack : -_stats.attack;
+  function updatePlayerStats(CombatStats storage _totalStats, Item memory _item, bool _add) external {
+    if (_item.attack != 0) {
+      _totalStats.attack += _add ? _item.attack : -_item.attack;
     }
-    if (_stats.magic != 0) {
-      _totalStats.magic += _add ? _stats.magic : -_stats.magic;
+    if (_item.magic != 0) {
+      _totalStats.magic += _add ? _item.magic : -_item.magic;
     }
-    if (_stats.range != 0) {
-      _totalStats.range += _add ? _stats.range : -_stats.range;
+    if (_item.range != 0) {
+      _totalStats.range += _add ? _item.range : -_item.range;
     }
-    if (_stats.meleeDefence != 0) {
-      _totalStats.meleeDefence += _add ? _stats.meleeDefence : -_stats.meleeDefence;
+    if (_item.meleeDefence != 0) {
+      _totalStats.meleeDefence += _add ? _item.meleeDefence : -_item.meleeDefence;
     }
-    if (_stats.magicDefence != 0) {
-      _totalStats.magicDefence += _add ? _stats.magicDefence : -_stats.magicDefence;
+    if (_item.magicDefence != 0) {
+      _totalStats.magicDefence += _add ? _item.magicDefence : -_item.magicDefence;
     }
-    if (_stats.rangeDefence != 0) {
-      _totalStats.rangeDefence += _add ? _stats.rangeDefence : -_stats.rangeDefence;
+    if (_item.rangeDefence != 0) {
+      _totalStats.rangeDefence += _add ? _item.rangeDefence : -_item.rangeDefence;
     }
-    if (_stats.health != 0) {
-      _totalStats.health += _add ? _stats.health : -_stats.health;
+    if (_item.health != 0) {
+      _totalStats.health += _add ? _item.health : -_item.health;
     }
   }
 

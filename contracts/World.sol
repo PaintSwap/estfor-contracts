@@ -28,35 +28,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     ActionReward[] randomRewards;
     CombatStats combatStats;
   }
-  /*
-  struct Action {
-    // ActionInfo
-    Skill skill;
-    bool isAvailable;
-    bool isDynamic;
-    bool isCombat;
-    uint16 baseXPPerHour;
-    uint32 minSkillPoints;
-    // These are put here for efficiency even if not needed
-    uint16 itemTokenIdRangeMin; // Inclusive
-    uint16 itemTokenIdRangeMax; // Inclusive
-    // guaranteedRewards
-    uint16 itemTokenId1;
-    uint24 rate1; // num per hour, base 100 (2 decimals) or percentage chance
-    // randomRewards
-    uint16 randomRewardsItemTokenId1;
-    uint24 randomRewardsRate1; // rate per hour, base 100 (2 decimals) or percentage chance
-
-    // combatStats 
-    int8 attack;
-    int8 magic;
-    int8 range;
-    int8 meleeDefence;
-    int8 magicDefence;
-    int8 rangeDefence;
-    int8 health;
-    // Spare
-  } */
 
   VRFCoordinatorV2Interface COORDINATOR;
 

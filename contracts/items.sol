@@ -72,7 +72,7 @@ uint16 constant BOOTS_MAX = BOOTS_BASE + 254;
 
 // Combat (right arm) (2048 - 2303)
 uint16 constant COMBAT_BASE = 2048;
-uint16 constant MELEE_BASE = 2048;
+// Melee
 uint16 constant BRONZE_SWORD = COMBAT_BASE;
 uint16 constant IRON_SWORD = COMBAT_BASE + 1;
 uint16 constant MITHRIL_SWORD = COMBAT_BASE + 2;
@@ -80,19 +80,21 @@ uint16 constant ADAMANTINE_SWORD = COMBAT_BASE + 3;
 uint16 constant RUNITE_SWORD = COMBAT_BASE + 4;
 uint16 constant TITANIUM_SWORD = COMBAT_BASE + 5;
 uint16 constant ORCHALCUM_SWORD = COMBAT_BASE + 6;
-uint16 constant MELEE_MAX = COMBAT_BASE + 50;
-uint16 constant COMBAT_MAX = COMBAT_BASE + 255;
+// Magic
+uint16 constant STAFF = COMBAT_BASE + 50;
+// Ranged
+uint16 constant BOW = COMBAT_BASE + 100;
+// Combat (left arm)
+uint16 constant SHIELD_BASE = COMBAT_BASE + 150;
+uint16 constant BRONZE_SHIELD = SHIELD_BASE;
+uint16 constant IRON_SHIELD = SHIELD_BASE + 1;
+uint16 constant MITHRIL_SHIELD = SHIELD_BASE + 2;
+uint16 constant ADAMANTINE_SHIELD = SHIELD_BASE + 3;
+uint16 constant RUNITE_SHIELD = SHIELD_BASE + 4;
+uint16 constant TITANIUM_SHIELD = SHIELD_BASE + 5;
+uint16 constant ORCHALCUM_SHIELD = SHIELD_BASE + 6;
 
-// Combat (left arm, shields) (2304 - 2559)
-uint16 constant DEFENCE_COMBAT_BASE = 2304;
-uint16 constant BRONZE_SHIELD = DEFENCE_COMBAT_BASE;
-uint16 constant IRON_SHIELD = DEFENCE_COMBAT_BASE + 1;
-uint16 constant MITHRIL_SHIELD = DEFENCE_COMBAT_BASE + 2;
-uint16 constant ADAMANTINE_SHIELD = DEFENCE_COMBAT_BASE + 3;
-uint16 constant RUNITE_SHIELD = DEFENCE_COMBAT_BASE + 4;
-uint16 constant TITANIUM_SHIELD = DEFENCE_COMBAT_BASE + 5;
-uint16 constant ORCHALCUM_SHIELD = DEFENCE_COMBAT_BASE + 6;
-uint16 constant DEFENCE_COMBAT_MAX = DEFENCE_COMBAT_BASE + 255;
+uint16 constant COMBAT_MAX = COMBAT_BASE + 255;
 
 // Mining (2560 - 2815)
 uint16 constant MINING_BASE = 2560;
@@ -232,7 +234,7 @@ uint16 constant ORE_MAX = ORE_BASE + 255;
 
 // Arrows
 uint16 constant ARROWS_BASE = 11776;
-uint16 constant BRONZE_ARROWS = ORE_BASE;
+uint16 constant BRONZE_ARROWS = ARROWS_BASE;
 uint16 constant ARROWS_MAX = ARROWS_BASE + 255;
 
 // Scrolls
@@ -241,13 +243,15 @@ uint16 constant AIR_SCROLLS = SCROLLS_BASE;
 uint16 constant FIRE_SCROLLS = SCROLLS_BASE + 1;
 uint16 constant SCROLLS_MAX = SCROLLS_BASE + 255;
 
+// Boosts
+uint16 constant BOOST_VIAL_BASE = 60000;
+uint16 constant XP_BOOST = BOOST_VIAL_BASE;
+uint16 constant MEGA_XP_BOOST = BOOST_VIAL_BASE + 1;
+uint16 constant BOOST_VIAL_MAX = BOOST_VIAL_BASE + 255;
+
 // MISC
 uint16 constant MYSTERY_BOX = 65535;
 uint16 constant RAID_PASS = MYSTERY_BOX - 1;
-
-// Boosts
-uint16 constant XP_BOOST = 60000;
-uint16 constant MEGA_XP_BOOST = XP_BOOST - 1;
 
 // Other MISC
 /*Natuow Hide

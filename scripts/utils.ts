@@ -106,18 +106,17 @@ export const ORCHALCUM_SWORD = COMBAT_BASE + 6;
 export const STAFF = COMBAT_BASE + 50;
 // Ranged
 export const BOW = COMBAT_BASE + 100;
-export const COMBAT_MAX = COMBAT_BASE + 255;
+// Shields (left arm)
+export const SHIELD_BASE = COMBAT_BASE + 150;
+export const BRONZE_SHIELD = SHIELD_BASE;
+export const IRON_SHIELD = SHIELD_BASE + 1;
+export const MITHRIL_SHIELD = SHIELD_BASE + 2;
+export const ADAMANTINE_SHIELD = SHIELD_BASE + 3;
+export const RUNITE_SHIELD = SHIELD_BASE + 4;
+export const TITANIUM_SHIELD = SHIELD_BASE + 5;
+export const ORCHALCUM_SHIELD = SHIELD_BASE + 6;
 
-// Combat (left arm, shields) (2304 - 2559)
-export const DEFENCE_COMBAT_BASE = 2304;
-export const BRONZE_SHIELD = DEFENCE_COMBAT_BASE;
-export const IRON_SHIELD = DEFENCE_COMBAT_BASE + 1;
-export const MITHRIL_SHIELD = DEFENCE_COMBAT_BASE + 2;
-export const ADAMANTINE_SHIELD = DEFENCE_COMBAT_BASE + 3;
-export const RUNITE_SHIELD = DEFENCE_COMBAT_BASE + 4;
-export const TITANIUM_SHIELD = DEFENCE_COMBAT_BASE + 5;
-export const ORCHALCUM_SHIELD = DEFENCE_COMBAT_BASE + 6;
-export const DEFENCE_COMBAT_MAX = DEFENCE_COMBAT_BASE + 255;
+export const COMBAT_MAX = COMBAT_BASE + 255;
 
 // Mining (2560 - 2815)
 export const MINING_BASE = 2560;
@@ -300,8 +299,9 @@ export enum EquipPosition {
   BOOTS,
   SPARE1,
   SPARE2,
-  LEFT_ARM,
-  RIGHT_ARM,
+  LEFT_HAND,
+  RIGHT_HAND,
+  BOTH_HANDS,
   ARROW_SATCHEL,
   MAGIC_BAG,
   AUX,
@@ -453,7 +453,7 @@ const bronzeSwordStats = {
   health: 0,
 };
 
-enum PotionType {
+enum BoostType {
   NONE,
   ANY_XP,
   COMBAT_XP,
@@ -475,9 +475,9 @@ type InputItem = {
   // Food
   healthRestored: number;
   // Potion
-  potionType: PotionType;
-  val: number; // Varies, could be the % increase
-  duration: number; // How long the effect of the potion last
+  boostType: BoostType;
+  boostValue: number; // Varies, could be the % increase
+  boostDuration: number; // How long the effect of the potion last
   // uri
   metadataURI: string;
 };
@@ -486,9 +486,9 @@ export const inputItem = {
   combatStats: emptyStats,
   nonCombatStats: [],
   healthRestored: 0,
-  potionType: PotionType.NONE,
-  val: 0,
-  duration: 0,
+  boostType: BoostType.NONE,
+  boostValue: 0,
+  boostDuration: 0,
 };
 
 // TODO This is just reusing the same stats for now
@@ -545,32 +545,32 @@ export const allItems: InputItem[] = [
   {
     ...inputItem,
     tokenId: FIRE_LIGHTER,
-    equipPosition: EquipPosition.RIGHT_ARM,
+    equipPosition: EquipPosition.RIGHT_HAND,
     metadataURI: "someIPFSURI.json",
   },
   {
     ...inputItem,
     tokenId: BRONZE_AXE,
-    equipPosition: EquipPosition.RIGHT_ARM,
+    equipPosition: EquipPosition.RIGHT_HAND,
     metadataURI: "someIPFSURI.json",
   },
   {
     ...inputItem,
     tokenId: BRONZE_PICKAXE,
-    equipPosition: EquipPosition.RIGHT_ARM,
+    equipPosition: EquipPosition.RIGHT_HAND,
     metadataURI: "someIPFSURI.json",
   },
   {
     ...inputItem,
     tokenId: SMALL_NET,
-    equipPosition: EquipPosition.RIGHT_ARM,
+    equipPosition: EquipPosition.RIGHT_HAND,
     metadataURI: "someIPFSURI.json",
   },
   {
     ...inputItem,
     tokenId: BRONZE_SWORD,
     combatStats: bronzeSwordStats,
-    equipPosition: EquipPosition.RIGHT_ARM,
+    equipPosition: EquipPosition.RIGHT_HAND,
     metadataURI: "someIPFSURI.json",
   },
   {

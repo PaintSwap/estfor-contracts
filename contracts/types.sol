@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-// For optimization purposes this contains the data for everything except combat stats
+// For optimization purposes this contains a few data items, and everything except combat stats (although it could fit?)
 struct Item {
   // TODO: Type?
   EquipPosition equipPosition;
@@ -10,10 +10,18 @@ struct Item {
   bool exists;
   // Food
   uint16 healthRestored;
-  // Potion
-  PotionType potionType;
-  uint16 val; // Varies, could be the % increase
-  uint24 duration; // How long the effect of the potion last
+  // Boost vial
+  BoostType boostType;
+  uint16 boostValue; // Varies, could be the % increase
+  uint24 boostDuration; // How long the effect of the potion last
+  // Combat stats
+  int8 attack;
+  int8 magic;
+  int8 range;
+  int8 meleeDefence;
+  int8 magicDefence;
+  int8 rangeDefence;
+  int8 health;
   // Noncombat skills
   Skill skill1;
   int16 skillDiff1;
@@ -23,7 +31,7 @@ struct Item {
   //    int16 diff3;
 }
 
-enum PotionType {
+enum BoostType {
   NONE,
   ANY_XP,
   COMBAT_XP,
@@ -61,12 +69,13 @@ enum EquipPosition {
   BOOTS,
   SPARE1,
   SPARE2,
-  LEFT_ARM,
-  RIGHT_ARM,
+  LEFT_HAND,
+  RIGHT_HAND,
+  BOTH_HANDS,
   ARROW_SATCHEL,
   MAGIC_BAG,
   AUX, // wood, seeds, food etc..
-  POTION,
+  BOOST_VIAL,
   NONE
 }
 

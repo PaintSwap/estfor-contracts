@@ -246,7 +246,7 @@ describe("Player", () => {
     await itemNFT.addItem({
       ...inputItem,
       tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_ARM,
+      equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
     await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
@@ -336,7 +336,7 @@ describe("Player", () => {
     await itemNFT.addItem({
       ...inputItem,
       tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_ARM,
+      equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -396,7 +396,7 @@ describe("Player", () => {
     await itemNFT.addItem({
       ...inputItem,
       tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_ARM,
+      equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -438,7 +438,7 @@ describe("Player", () => {
       ...inputItem,
       tokenId: BRONZE_SWORD,
       combatStats,
-      equipPosition: EquipPosition.RIGHT_ARM,
+      equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -617,7 +617,7 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: BRONZE_AXE,
-        equipPosition: EquipPosition.RIGHT_ARM,
+        equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -688,7 +688,7 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: FIRE_LIGHTER,
-        equipPosition: EquipPosition.RIGHT_ARM,
+        equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -736,7 +736,7 @@ describe("Player", () => {
         await itemNFT.addItem({
           ...inputItem,
           tokenId: BRONZE_AXE,
-          equipPosition: EquipPosition.RIGHT_ARM,
+          equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
         });
         const timespan = 7200 + 10;
@@ -798,7 +798,7 @@ describe("Player", () => {
         await itemNFT.addItem({
           ...inputItem,
           tokenId: FIRE_LIGHTER,
-          equipPosition: EquipPosition.RIGHT_ARM,
+          equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
         });
         const timespan = 3600;
@@ -874,7 +874,7 @@ describe("Player", () => {
         await itemNFT.addItem({
           ...inputItem,
           tokenId: BRONZE_AXE,
-          equipPosition: EquipPosition.RIGHT_ARM,
+          equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
         });
         const timespan = 7200;
@@ -936,7 +936,7 @@ describe("Player", () => {
         await itemNFT.addItem({
           ...inputItem,
           tokenId: FIRE_LIGHTER,
-          equipPosition: EquipPosition.RIGHT_ARM,
+          equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
         });
         const timespan = 3600;
@@ -1025,7 +1025,7 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: BRONZE_PICKAXE,
-        equipPosition: EquipPosition.RIGHT_ARM,
+        equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1168,7 +1168,7 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: BRONZE_AXE,
-        equipPosition: EquipPosition.RIGHT_ARM,
+        equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1190,7 +1190,7 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: BRONZE_AXE,
-        equipPosition: EquipPosition.RIGHT_ARM,
+        equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
       await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
@@ -1298,7 +1298,7 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: BRONZE_SWORD,
-        equipPosition: EquipPosition.RIGHT_ARM,
+        equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1390,7 +1390,7 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: BRONZE_SWORD,
-        equipPosition: EquipPosition.RIGHT_ARM,
+        equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1503,7 +1503,7 @@ describe("Player", () => {
         {
           ...inputItem,
           tokenId: STAFF,
-          equipPosition: EquipPosition.RIGHT_ARM,
+          equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
         },
         {

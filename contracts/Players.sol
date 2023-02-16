@@ -26,6 +26,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event AddToActionQueue(uint tokenId, QueuedAction queuedAction);
   event SetActionQueue(uint tokenId, QueuedAction[] queuedActions);
 
+  event EquipBoostVial(uint _tokenId, PlayerPotionInfo playerPotionInfo);
+  event UnequipBoostVial(uint _tokenId);
+
   // This is only for viewing so doesn't need to be optimized
   struct PendingOutput {
     Equipment[] consumables;
@@ -35,6 +38,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     bool died;
   }
 
+  // TODO this could be packed better. As Combat stats are 8 bytes so could fit 4 of them
   struct ArmourAttributes {
     CombatStats helmet;
     CombatStats amulet;
@@ -77,12 +81,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   struct PlayerPotionInfo {
     uint40 startTime;
     uint24 duration;
-    uint16 potionId; // Get the effect of it
-    // TODO: Add the effects here
-    //    PotitionType potionType;
-    //    Skill skill; // Can be Skill.ANY
+    uint16 val;
+    uint16 tokenId; // Get the effect of it
+    BoostType boostType;
   }
-
   mapping(uint => PlayerPotionInfo) public activePotions; // player id => potion info
 
   uint private queuedActionId; // Global queued action id
@@ -222,15 +224,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     _setActionQueue(_tokenId, remainingSkillQueue);
   } */
 
-  function updatePlayerStats(Player storage _player, CombatStats memory _stats, bool _add) private {
-    PlayerLibrary.updatePlayerStats(_player.totalStats, _stats, _add);
+  function updatePlayerStats(Player storage _player, Item memory _item, bool _add) private {
+    PlayerLibrary.updatePlayerStats(_player.totalStats, _item, _add);
   }
 
   function _unequipMainItem(address _from, uint _tokenId, uint16 _equippedTokenId) private {
     Player storage player = players[_tokenId];
     // Unequip current item and remove any stats given from the item
-    CombatStats memory combatStats = itemNFT.getCombatStats(_equippedTokenId);
-    updatePlayerStats(player, combatStats, false);
+    Item memory item = itemNFT.getItem(_equippedTokenId);
+    updatePlayerStats(player, item, false);
     _unequipMainItemUpdateBalance(_from, _equippedTokenId);
   }
 
@@ -251,7 +253,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       uint16 itemTokenId = _itemTokenIds[i];
 
       Item memory item = itemNFT.getItem(itemTokenId);
-      CombatStats memory combatStats = itemNFT.getCombatStats(itemTokenId);
       EquipPosition position = item.equipPosition;
       require(item.exists);
       require(uint8(position) < 8);
@@ -264,7 +265,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
       // This will check the user has enough balance inside
       // TODO: Bulk add all these
-      updatePlayerStats(player, combatStats, true);
+      updatePlayerStats(player, item, true);
       _equipMainItemUpdateBalance(from, itemTokenId);
     }
 
@@ -346,9 +347,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       emit Unequip(_tokenId, equippedTokenId);
     }
 
-    CombatStats memory stats = itemNFT.getCombatStats(_itemTokenId);
     // This will check the user has enough balance inside
-    updatePlayerStats(player, stats, true);
+    updatePlayerStats(player, item, true);
     _equipMainItemUpdateBalance(msg.sender, _itemTokenId);
     emit Equip(_tokenId, _itemTokenId);
     // Continue last skill queue (if there's anything remaining)
@@ -410,11 +410,40 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
   }
 
-  function consumePotion(uint _tokenId, uint16 _itemTokenId, uint40 _startTime, uint24 _timespan) external {
-    // isPotion _itemTokenId
-    // burn it
+  function consumePotion(uint _tokenId, uint16 _itemTokenId, uint40 _startTime) external isOwnerOfPlayer(_tokenId) {
+    //    require(_itemTokenId >= BOOST_VIAL_BASE && _itemTokenId <= BOOST_VIAL_MAX, "Not a boost vial");
+    Item memory item = itemNFT.getItem(_itemTokenId);
+    require(item.boostType != BoostType.NONE, "Not a potion");
+    require(_startTime < block.timestamp + 7 days, "Start time too far in the future");
+    if (_startTime < block.timestamp) {
+      _startTime = uint40(block.timestamp);
+    }
+
+    // Burn it
+    address from = msg.sender;
+    itemNFT.burn(from, _itemTokenId, 1);
+
+    // If there's an active potion which hasn't been consumed yet, then we can mint it back
+    PlayerPotionInfo storage activePlayerVial = activePotions[_tokenId];
+    if (activePlayerVial.tokenId != NONE) {
+      itemNFT.mint(from, activePlayerVial.tokenId, 1);
+    }
+
+    activePlayerVial.startTime = _startTime;
+    activePlayerVial.duration = item.boostDuration;
+    activePlayerVial.val = item.boostValue;
+    activePlayerVial.boostType = item.boostType;
+    activePlayerVial.tokenId = _itemTokenId;
+
     // If there's an active potion which hasn't been consumed yet, then we can mint it
-    // activePotions[_tokenId] = ;
+    emit EquipBoostVial(_tokenId, activePlayerVial);
+  }
+
+  function unequipBoostVial(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
+    require(activePotions[_tokenId].startTime <= block.timestamp, "Boost vial time already started");
+    address from = msg.sender;
+    itemNFT.mint(from, activePotions[_tokenId].tokenId, 1);
+    emit UnequipBoostVial(_tokenId);
   }
 
   function _unequipActionConsumables(uint _tokenId, QueuedAction memory _queuedAction) private {
