@@ -103,6 +103,7 @@ describe("Player", () => {
 
     // Create player
     const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
+    await players.connect(alice).setActivePlayer(playerId);
     const maxTime = await players.MAX_TIME();
 
     return {
@@ -534,7 +535,7 @@ describe("Player", () => {
     expect(afterStats.magicDefence).to.eq(0);
     expect(afterStats.health).to.eq(12);
 
-    expect(await players.mainItemsEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
+    expect((await players.players(playerId)).equipment.gauntlets + 256 * EquipPosition.ARMS).to.eq(BRONZE_GAUNTLETS);
 
     // Try equip it on someone else, should fail as we don't have enough
     const avatarId = 1;
@@ -546,13 +547,14 @@ describe("Player", () => {
     await playerNFT.setAvatar(avatarId, avatarInfo);
 
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("0xSamWitch"));
-    await expect(players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS)).to.be.reverted;
+    await expect(players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS)).to.be.reverted; // Not active player
 
     // Mint another one and try again, first trying to connect same item to the same player
-    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
+    await players.connect(alice).setActivePlayer(newPlayerId);
     await players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS);
-    expect(await players.mainItemsEquipped(alice.address, BRONZE_GAUNTLETS)).to.eq(2);
+
+    expect((await players.players(playerId)).equipment.gauntlets).to.eq(NONE);
+    expect((await players.players(newPlayerId)).equipment.gauntlets + 256 * EquipPosition.ARMS).to.eq(BRONZE_GAUNTLETS);
   });
 
   it("Edit Name", async () => {

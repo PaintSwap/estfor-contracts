@@ -167,11 +167,13 @@ struct Armour {
   uint8 reserved2;
 }
 
+// TODO: Can pack this better, remove the structs
 struct Player {
   Armour equipment; // Keep this first
   // These are stored in case individual items are changed later, but also prevents having to read them loads
   // Base attributes
   CombatStats totalStats;
+  // TODO: Can be up to 7
   QueuedAction[] actionQueue;
   uint240 totalSkillPoints;
   uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP

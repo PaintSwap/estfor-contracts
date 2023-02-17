@@ -26,8 +26,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event AddToActionQueue(uint tokenId, QueuedAction queuedAction);
   event SetActionQueue(uint tokenId, QueuedAction[] queuedActions);
 
-  event EquipBoostVial(uint _tokenId, PlayerPotionInfo playerPotionInfo);
-  event UnequipBoostVial(uint _tokenId);
+  event EquipBoostVial(uint tokenId, PlayerPotionInfo playerPotionInfo);
+  event UnequipBoostVial(uint tokenId);
+
+  event SetActivePlayer(address account, uint tokenId);
 
   // This is only for viewing so doesn't need to be optimized
   struct PendingOutput {
@@ -52,6 +54,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
   error SkillsArrayZero();
   error NotOwner();
+  error NotActive();
   error EquipSameItem();
   error NotEquipped();
   error ArgumentLengthMismatch();
@@ -73,10 +76,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
   mapping(uint => uint) speedMultiplier; // 0 or 1 is diabled, for testing only
 
-  // Head, neck, chest, legs, hands, feet. Cannot be shared
-  mapping(address => mapping(uint => uint)) public mainItemsEquipped;
-  // Left-right arm action, only 1 per action queue. Cannot be shared
-  mapping(address => mapping(uint => uint)) public nonConsumableActionItemsEquipped;
+  mapping(address => uint) activePlayer;
 
   struct PlayerPotionInfo {
     uint40 startTime;
@@ -103,6 +103,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   modifier isOwnerOfPlayer(uint tokenId) {
     if (playerNFT.balanceOf(msg.sender, tokenId) != 1) {
       revert NotOwner();
+    }
+    _;
+  }
+
+  modifier isOwnerOfPlayerAndActive(uint _playerId) {
+    if (playerNFT.balanceOf(msg.sender, _playerId) != 1) {
+      revert NotOwner();
+    }
+    if (activePlayer[msg.sender] != _playerId) {
+      revert NotActive();
     }
     _;
   }
@@ -171,11 +181,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     //    if (activePotions[_tokenId].startTime < block.timestamp) {
     //      _unequipPotion(_from, _tokenId);
     //    }
-    _clearMainEquipment(_from, _tokenId);
+    _clearMainEquipment(_tokenId);
     _clearActionQueue(_tokenId);
   }
 
-  function clearEverything(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
+  function clearEverything(uint _tokenId) external isOwnerOfPlayerAndActive(_tokenId) {
     _clearEverything(msg.sender, _tokenId);
   }
 
@@ -187,13 +197,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     itemNFT.mintBatch(_to, _ids, _amounts);
   }
 
-  function _clearMainEquipment(address _from, uint _tokenId) private {
+  function _clearMainEquipment(uint _tokenId) private {
     Player storage player = players[_tokenId];
     // Unequip each item one by one
     uint position = 0;
     bytes32 empty;
     do {
-      _unequip(_from, _tokenId, EquipPosition(position));
+      _unequip(_tokenId, EquipPosition(position));
       assembly ("memory-safe") {
         // This trashes the combat bonus stats for each slot
         let slotPosition := add(player.slot, add(position, 1))
@@ -228,23 +238,22 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     PlayerLibrary.updatePlayerStats(_player.totalStats, _item, _add);
   }
 
-  function _unequipMainItem(address _from, uint _tokenId, uint16 _equippedTokenId) private {
+  function _unequipMainItem(uint _tokenId, uint16 _equippedTokenId) private {
     Player storage player = players[_tokenId];
     // Unequip current item and remove any stats given from the item
     Item memory item = itemNFT.getItem(_equippedTokenId);
     updatePlayerStats(player, item, false);
-    _unequipMainItemUpdateBalance(_from, _equippedTokenId);
   }
 
   // Absolute setting of equipment
-  function setEquipment(uint _tokenId, uint16[] calldata _itemTokenIds) external isOwnerOfPlayer(_tokenId) {
+  function setEquipment(uint _tokenId, uint16[] calldata _itemTokenIds) external isOwnerOfPlayerAndActive(_tokenId) {
     Player storage player = players[_tokenId];
     address from = msg.sender;
     QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
 
     // Unequip everything
     for (uint position; position < 8; ++position) {
-      _unequip(from, _tokenId, EquipPosition(position));
+      _unequip(_tokenId, EquipPosition(position));
     }
 
     // Equip necessary items
@@ -263,10 +272,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         val := or(val, shl(mul(position, 8), relativeItem))
       }
 
-      // This will check the user has enough balance inside
-      // TODO: Bulk add all these
+      uint256 balance = itemNFT.balanceOf(from, itemTokenId);
+      require(balance >= 1);
       updatePlayerStats(player, item, true);
-      _equipMainItemUpdateBalance(from, itemTokenId);
     }
 
     emit SetEquipment(_tokenId, _itemTokenIds);
@@ -289,37 +297,19 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     }
   }
 
-  // This will revert if there is not enough free balance to equip
-  function _equipMainItemUpdateBalance(address _from, uint16 _itemTokenId) private {
+  function _checkEquipActionEquipmentBalance(address _from, uint16 _itemTokenId) private view {
     uint256 balance = itemNFT.balanceOf(_from, _itemTokenId);
-    require(balance >= mainItemsEquipped[_from][_itemTokenId] + 1, "Do not have enough quantity to equip");
-    //    require(_tokenId > 1 && _tokenId < 256);
-    mainItemsEquipped[_from][_itemTokenId] += 1;
+    require(balance >= 1, "Do not have enough quantity to equip to action");
   }
 
-  function _unequipMainItemUpdateBalance(address _from, uint _itemTokenId) private {
-    mainItemsEquipped[_from][_itemTokenId] -= 1;
-  }
-
-  function _equipActionEquipment(address _from, uint16 _itemTokenId) private {
-    uint256 balance = itemNFT.balanceOf(_from, _itemTokenId);
-    require(
-      balance >= nonConsumableActionItemsEquipped[_from][_itemTokenId] + 1,
-      "Do not have enough quantity to equip to action"
-    );
-    nonConsumableActionItemsEquipped[_from][_itemTokenId] += 1;
-  }
-
-  function _unequipActionEquipment(address _from, uint _itemTokenId) private {
-    nonConsumableActionItemsEquipped[_from][_itemTokenId] -= 1;
-  }
+  error err(uint256);
 
   // Cannot be transferred while equipped.  Check if the NFT is being transferred and unequip from this user.
   // Replace old one
-  function equip(uint _tokenId, uint16 _itemTokenId) external isOwnerOfPlayer(_tokenId) {
+  function equip(uint _tokenId, uint16 _itemTokenId) external isOwnerOfPlayerAndActive(_tokenId) {
     Player storage player = players[_tokenId];
-
-    QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _tokenId);
+    address from = msg.sender;
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
     Item memory item = itemNFT.getItem(_itemTokenId);
     EquipPosition position = item.equipPosition;
     require(item.exists);
@@ -327,6 +317,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     uint8 relativeEquippedTokenId = _getRelativeEquippedTokenId(position, player);
 
     uint8 relativeItem = uint8(_itemTokenId - (256 * uint8(position))); // Between 0 -> 256
+    //    revert err(relativeItem);
     assembly ("memory-safe") {
       let val := sload(player.slot)
       // Clear the byte position
@@ -343,35 +334,31 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
     // Already something equipped there so unequip
     if (relativeEquippedTokenId != NONE) {
-      _unequipMainItem(msg.sender, _tokenId, equippedTokenId);
+      _unequipMainItem(_tokenId, equippedTokenId);
       emit Unequip(_tokenId, equippedTokenId);
     }
 
-    // This will check the user has enough balance inside
     updatePlayerStats(player, item, true);
-    _equipMainItemUpdateBalance(msg.sender, _itemTokenId);
+    uint256 balance = itemNFT.balanceOf(from, _itemTokenId);
+    require(balance >= 1);
     emit Equip(_tokenId, _itemTokenId);
     // Continue last skill queue (if there's anything remaining)
     _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
-  function _unequip(
-    address _from,
-    uint _tokenId,
-    EquipPosition _position
-  ) private returns (uint16 equippedItemTokenId) {
+  function _unequip(uint _tokenId, EquipPosition _position) private returns (uint16 equippedItemTokenId) {
     Player storage player = players[_tokenId];
     uint8 relativeEquippedItemTokenId = _getRelativeEquippedTokenId(_position, player);
     equippedItemTokenId = relativeEquippedItemTokenId + (256 * uint8(_position));
     if (relativeEquippedItemTokenId != NONE) {
-      _unequipMainItem(_from, _tokenId, equippedItemTokenId);
+      _unequipMainItem(_tokenId, equippedItemTokenId);
     }
   }
 
-  function unequip(uint _tokenId, EquipPosition _position) external isOwnerOfPlayer(_tokenId) {
+  function unequip(uint _tokenId, EquipPosition _position) external isOwnerOfPlayerAndActive(_tokenId) {
     address from = msg.sender;
     QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
-    uint16 equippedItemTokenId = _unequip(from, _tokenId, _position);
+    uint16 equippedItemTokenId = _unequip(_tokenId, _position);
     require(equippedItemTokenId != NONE);
     emit Unequip(_tokenId, equippedItemTokenId);
     Player storage player = players[_tokenId];
@@ -410,7 +397,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
   }
 
-  function consumePotion(uint _tokenId, uint16 _itemTokenId, uint40 _startTime) external isOwnerOfPlayer(_tokenId) {
+  function consumePotion(
+    uint _tokenId,
+    uint16 _itemTokenId,
+    uint40 _startTime
+  ) external isOwnerOfPlayerAndActive(_tokenId) {
     //    require(_itemTokenId >= BOOST_VIAL_BASE && _itemTokenId <= BOOST_VIAL_MAX, "Not a boost vial");
     Item memory item = itemNFT.getItem(_itemTokenId);
     require(item.boostType != BoostType.NONE, "Not a potion");
@@ -439,7 +430,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     emit EquipBoostVial(_tokenId, activePlayerVial);
   }
 
-  function unequipBoostVial(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
+  function unequipBoostVial(uint _tokenId) external isOwnerOfPlayerAndActive(_tokenId) {
     require(activePotions[_tokenId].startTime <= block.timestamp, "Boost vial time already started");
     address from = msg.sender;
     itemNFT.mint(from, activePotions[_tokenId].tokenId, 1);
@@ -512,10 +503,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       }
     }
     if (!leftArmExists && _queuedAction.leftArmEquipmentTokenId != NONE) {
-      _equipActionEquipment(_from, _queuedAction.leftArmEquipmentTokenId);
+      _checkEquipActionEquipmentBalance(_from, _queuedAction.leftArmEquipmentTokenId);
     }
     if (!rightArmExists && _queuedAction.rightArmEquipmentTokenId != NONE) {
-      _equipActionEquipment(_from, _queuedAction.rightArmEquipmentTokenId);
+      _checkEquipActionEquipmentBalance(_from, _queuedAction.rightArmEquipmentTokenId);
     }
 
     _equipActionConsumables(_tokenId, _queuedAction);
@@ -534,18 +525,18 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     uint _tokenId,
     QueuedAction calldata _queuedAction,
     bool _append
-  ) external isOwnerOfPlayer(_tokenId) {
+  ) external isOwnerOfPlayerAndActive(_tokenId) {
     Player storage player = players[_tokenId];
     address from = msg.sender;
     QueuedAction[] memory remainingSkillQueue = _consumeActions(from, _tokenId);
 
-    require(_queuedAction.timespan <= MAX_TIME, "Time is above max");
+    require(_queuedAction.timespan <= MAX_TIME);
     if (_append) {
       uint totalTimeUsed;
       for (uint i = 0; i < remainingSkillQueue.length; ++i) {
         totalTimeUsed += remainingSkillQueue[i].timespan;
       }
-      require(totalTimeUsed + _queuedAction.timespan <= MAX_TIME, "Total time too high");
+      require(totalTimeUsed + _queuedAction.timespan <= MAX_TIME);
       player.actionQueue = remainingSkillQueue;
       emit SetActionQueue(_tokenId, player.actionQueue);
     } else {
@@ -562,13 +553,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     emit SetActionQueue(_tokenId, player.actionQueue);
   }
 
-  function consumeActions(uint _tokenId) external isOwnerOfPlayer(_tokenId) {
+  function consumeActions(uint _tokenId) external isOwnerOfPlayerAndActive(_tokenId) {
     QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _tokenId);
     _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
-  function multiskill(uint _tokenId, QueuedAction[] calldata _queuedActions) external isOwnerOfPlayer(_tokenId) {
+  function multiskill(
+    uint _tokenId,
+    QueuedAction[] calldata _queuedActions
+  ) external isOwnerOfPlayerAndActive(_tokenId) {
     if (_queuedActions.length == 0) {
       revert SkillsArrayZero();
     }
@@ -840,6 +834,18 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         );
       }
     }
+  }
+
+  function setActivePlayer(uint _playerId) external isOwnerOfPlayer(_playerId) {
+    address from = msg.sender;
+    uint existingActivePlayer = activePlayer[from];
+    if (existingActivePlayer > 0) {
+      // If there is an existing active player, unequip all items
+      _clearEverything(from, existingActivePlayer);
+    }
+    // All equipment and actions can be made for this player
+    activePlayer[from] = _playerId;
+    emit SetActivePlayer(from, _playerId);
   }
 
   function _consumeActions(address _from, uint _tokenId) private returns (QueuedAction[] memory remainingSkills) {
