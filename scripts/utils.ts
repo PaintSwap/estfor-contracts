@@ -352,7 +352,7 @@ export const createPlayer = async (
   const event = receipt?.events?.filter((x) => {
     return x.event == "NewPlayer";
   })[0].args;
-  return event?.tokenId;
+  return event?.playerId;
 };
 
 export const getActionId = async (tx: ContractTransaction): Promise<number> => {

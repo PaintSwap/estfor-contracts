@@ -12,8 +12,8 @@ import "./items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
-  event NewPlayer(uint tokenId, uint avatarId, bytes32 name);
-  event EditPlayer(uint tokenId, bytes32 newName);
+  event NewPlayer(uint playerId, uint avatarId, bytes32 name);
+  event EditPlayer(uint playerId, bytes32 newName);
 
   event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
@@ -31,14 +31,14 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   mapping(uint => AvatarInfo) private avatars;
   string private baseURI;
-  mapping(uint => uint) private tokenIdToAvatar; // tokenId => avatar id
+  mapping(uint => uint) private playerIdToAvatar; // playerId => avatar id
   mapping(uint => bytes32) private names;
 
   IBrushToken brush;
   IPlayers private players;
 
-  modifier isOwnerOfPlayer(uint tokenId) {
-    if (balanceOf(msg.sender, tokenId) != 1) {
+  modifier isOwnerOfPlayer(uint playerId) {
+    if (balanceOf(msg.sender, playerId) != 1) {
       revert NotOwner();
     }
     _;
@@ -80,18 +80,18 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     ++latestPlayerId;
   }
 
-  function _setTokenIdToAvatar(uint _tokenId, uint _avatarId) private {
+  function _setTokenIdToAvatar(uint _playerId, uint _avatarId) private {
     if (bytes(avatars[_avatarId].description).length == 0) {
       revert AvatarNotExists();
     }
-    tokenIdToAvatar[_tokenId] = _avatarId;
+    playerIdToAvatar[_playerId] = _avatarId;
   }
 
-  function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    require(_exists(_tokenId));
-    AvatarInfo storage avatarInfo = avatars[tokenIdToAvatar[_tokenId]];
+  function uri(uint256 _playerId) public view virtual override returns (string memory) {
+    require(_exists(_playerId));
+    AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
     string memory imageURI = string(abi.encodePacked(baseURI, avatarInfo.imageURI));
-    return players.getURI(names[_tokenId], avatarInfo.name, avatarInfo.description, imageURI);
+    return players.getURI(names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
   }
 
   function _beforeTokenTransfer(
@@ -108,8 +108,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     uint i = 0;
     do {
       // Get player and consume any actions & unequip all items before transferring the whole player
-      uint tokenId = ids[i];
-      players.clearEverythingBeforeTokenTransfer(from, tokenId);
+      uint playerId = ids[i];
+      players.clearEverythingBeforeTokenTransfer(from, playerId);
       unchecked {
         ++i;
       }
@@ -117,13 +117,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   /**
-   * @dev Returns whether `tokenId` exists.
+   * @dev Returns whether `playerId` exists.
    *
    * Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
    *
    */
-  function _exists(uint256 _tokenId) private view returns (bool) {
-    return tokenIdToAvatar[_tokenId] != 0;
+  function _exists(uint256 _playerId) private view returns (bool) {
+    return playerIdToAvatar[_playerId] != 0;
   }
 
   function _getInitialStartingItems() private pure returns (uint[] memory itemNFTs, uint[] memory quantities) {
@@ -142,15 +142,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     quantities[4] = 1;
   }
 
-  function editName(uint _tokenId, bytes32 _newName) external isOwnerOfPlayer(_tokenId) {
+  function editName(uint _playerId, bytes32 _newName) external isOwnerOfPlayer(_playerId) {
     uint brushCost = 5000;
     // Pay
     brush.transferFrom(msg.sender, address(this), brushCost);
     // Burn half, the rest goes into the pool
     brush.burn(brushCost / 2);
 
-    names[_tokenId] = _newName;
-    emit EditPlayer(_tokenId, _newName);
+    names[_playerId] = _newName;
+    emit EditPlayer(_playerId, _newName);
   }
 
   function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
@@ -169,12 +169,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     _setURI(_baseURI);
   }
 
-  function burn(address _from, uint _tokenId) external {
+  function burn(address _from, uint _playerId) external {
     require(
       _from == _msgSender() || isApprovedForAll(_from, _msgSender()),
       "ERC1155: caller is not token owner or approved"
     );
-    _burn(_from, _tokenId, 1);
+    _burn(_from, _playerId, 1);
   }
 
   function setPlayers(IPlayers _players) external onlyOwner {
