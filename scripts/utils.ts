@@ -474,10 +474,10 @@ type InputItem = {
   equipPosition: EquipPosition;
   // Food
   healthRestored: number;
-  // Potion
+  // Boost
   boostType: BoostType;
   boostValue: number; // Varies, could be the % increase
-  boostDuration: number; // How long the effect of the potion last
+  boostDuration: number; // How long the effect of the boost last
   // uri
   metadataURI: string;
 };

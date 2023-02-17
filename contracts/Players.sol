@@ -26,8 +26,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event AddToActionQueue(uint tokenId, QueuedAction queuedAction);
   event SetActionQueue(uint tokenId, QueuedAction[] queuedActions);
 
-  event EquipBoostVial(uint tokenId, PlayerPotionInfo playerPotionInfo);
-  event UnequipBoostVial(uint tokenId);
+  event ConsumeBoostVial(uint tokenId, PlayerBoostInfo playerBoostInfo);
+  event UnconsumeBoostVial(uint tokenId);
 
   event SetActivePlayer(address account, uint tokenId);
 
@@ -80,14 +80,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
   mapping(address => uint) activePlayer;
 
-  struct PlayerPotionInfo {
+  struct PlayerBoostInfo {
     uint40 startTime;
     uint24 duration;
     uint16 val;
     uint16 tokenId; // Get the effect of it
     BoostType boostType;
   }
-  mapping(uint => PlayerPotionInfo) public activePotions; // player id => potion info
+  mapping(uint => PlayerBoostInfo) public activeBoosts; // player id => boost info
 
   uint private queuedActionId; // Global queued action id
   World private world;
@@ -178,16 +178,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   // Consumes all the actions in the queue up to this time.
   // Unequips everything else from main equipment
   // Unequips all consumables from all the actions
-  // Unequips the potion if it hasn't been consumed at all yet
+  // Mints the boost vial if it hasn't been consumed at all yet
   // Removes all the actions from the queue
   function _clearEverything(address _from, uint _tokenId) private {
     QueuedAction[] memory remainingSkillQueue = _consumeActions(_from, _tokenId);
     // Go through the remaining skill queue and unequip all the items
     _clearActionAttachments(_tokenId, remainingSkillQueue);
-    // Can unequip potion if it hasn't been consumed at all yet
-    //    if (activePotions[_tokenId].startTime < block.timestamp) {
-    //      _unequipPotion(_from, _tokenId);
-    //    }
+    // Can re-mint boost if it hasn't been consumed at all yet
+    if (activeBoosts[_tokenId].boostType != BoostType.NONE && activeBoosts[_tokenId].startTime < block.timestamp) {
+      itemNFT.mint(_from, activeBoosts[_tokenId].tokenId, 1);
+    }
     _clearMainEquipment(_tokenId);
     _clearActionQueue(_tokenId);
   }
@@ -443,14 +443,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
   }
 
-  function consumePotion(
+  function consumeBoost(
     uint _tokenId,
     uint16 _itemTokenId,
     uint40 _startTime
   ) external isOwnerOfPlayerAndActive(_tokenId) {
     //    require(_itemTokenId >= BOOST_VIAL_BASE && _itemTokenId <= BOOST_VIAL_MAX, "Not a boost vial");
     Item memory item = itemNFT.getItem(_itemTokenId);
-    require(item.boostType != BoostType.NONE, "Not a potion");
+    require(item.boostType != BoostType.NONE, "Not a boost vial");
     require(_startTime < block.timestamp + 7 days, "Start time too far in the future");
     if (_startTime < block.timestamp) {
       _startTime = uint40(block.timestamp);
@@ -461,26 +461,26 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     itemNFT.burn(from, _itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
-    PlayerPotionInfo storage activePlayerVial = activePotions[_tokenId];
-    if (activePlayerVial.tokenId != NONE) {
-      itemNFT.mint(from, activePlayerVial.tokenId, 1);
+    PlayerBoostInfo storage playerBoost = activeBoosts[_tokenId];
+    if (playerBoost.tokenId != NONE) {
+      itemNFT.mint(from, playerBoost.tokenId, 1);
     }
 
-    activePlayerVial.startTime = _startTime;
-    activePlayerVial.duration = item.boostDuration;
-    activePlayerVial.val = item.boostValue;
-    activePlayerVial.boostType = item.boostType;
-    activePlayerVial.tokenId = _itemTokenId;
+    playerBoost.startTime = _startTime;
+    playerBoost.duration = item.boostDuration;
+    playerBoost.val = item.boostValue;
+    playerBoost.boostType = item.boostType;
+    playerBoost.tokenId = _itemTokenId;
 
-    // If there's an active potion which hasn't been consumed yet, then we can mint it
-    emit EquipBoostVial(_tokenId, activePlayerVial);
+    emit ConsumeBoostVial(_tokenId, playerBoost);
   }
 
   function unequipBoostVial(uint _tokenId) external isOwnerOfPlayerAndActive(_tokenId) {
-    require(activePotions[_tokenId].startTime <= block.timestamp, "Boost vial time already started");
+    require(activeBoosts[_tokenId].boostType != BoostType.NONE, "No active boost");
+    require(activeBoosts[_tokenId].startTime <= block.timestamp, "Boost time already started");
     address from = msg.sender;
-    itemNFT.mint(from, activePotions[_tokenId].tokenId, 1);
-    emit UnequipBoostVial(_tokenId);
+    itemNFT.mint(from, activeBoosts[_tokenId].tokenId, 1);
+    emit UnconsumeBoostVial(_tokenId);
   }
 
   function _unequipActionConsumables(uint _tokenId, QueuedAction memory _queuedAction) private {

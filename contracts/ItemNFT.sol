@@ -30,10 +30,10 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     EquipPosition equipPosition;
     // Food
     uint16 healthRestored;
-    // Potion
+    // Boost
     BoostType boostType;
     uint16 boostValue; // Varies, could be the % increase
-    uint24 boostDuration; // How long the effect of the potion last
+    uint24 boostDuration; // How long the effect of the boost vial last
     // uri
     string metadataURI;
   }

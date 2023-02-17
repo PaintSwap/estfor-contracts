@@ -13,7 +13,7 @@ struct Item {
   // Boost vial
   BoostType boostType;
   uint16 boostValue; // Varies, could be the % increase
-  uint24 boostDuration; // How long the effect of the potion last
+  uint24 boostDuration; // How long the effect of the boost last
   // Combat stats
   int8 attack;
   int8 magic;
