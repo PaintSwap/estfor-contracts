@@ -129,6 +129,7 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
   // If an item is burnt, remove it from the total
   function _removeAnyBurntFromTotal(address _to, uint[] memory _ids, uint[] memory _amounts) internal {
     uint i = _ids.length;
+    // Precondition is that ids/amounts has some elements
     if (_to == address(0)) {
       // burning
       do {
@@ -148,8 +149,8 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     uint[] memory _amounts,
     bytes memory /*_data*/
   ) internal virtual override {
-    if (_from == address(0) || _amounts.length == 0) {
-      // When minting do nothing
+    if (_from == address(0) || _amounts.length == 0 || _from == _to) {
+      // When minting, self sending or transferring then no further processing is required
       return;
     }
 

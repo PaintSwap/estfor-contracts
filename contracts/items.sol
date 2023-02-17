@@ -65,8 +65,8 @@ uint16 constant TITANIUM_BOOTS = BOOTS_BASE + 5;
 uint16 constant ORCHALCUM_BOOTS = BOOTS_BASE + 6;
 uint16 constant BOOTS_MAX = BOOTS_BASE + 254;
 
-// 1536 - 1791 spare(1)
-// 1792 - 2047 spare(2)
+// 1537 - 1791 spare(1)
+// 1793 - 2047 spare(2)
 
 // All other ones for the first arm
 

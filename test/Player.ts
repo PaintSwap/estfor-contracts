@@ -535,7 +535,7 @@ describe("Player", () => {
     expect(afterStats.magicDefence).to.eq(0);
     expect(afterStats.health).to.eq(12);
 
-    expect((await players.players(playerId)).equipment.gauntlets + 256 * EquipPosition.ARMS).to.eq(BRONZE_GAUNTLETS);
+    expect((await players.players(playerId)).equipment.gauntlets).to.eq(BRONZE_GAUNTLETS);
 
     // Try equip it on someone else, should fail as we don't have enough
     const avatarId = 1;
@@ -554,7 +554,7 @@ describe("Player", () => {
     await players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS);
 
     expect((await players.players(playerId)).equipment.gauntlets).to.eq(NONE);
-    expect((await players.players(newPlayerId)).equipment.gauntlets + 256 * EquipPosition.ARMS).to.eq(BRONZE_GAUNTLETS);
+    expect((await players.players(newPlayerId)).equipment.gauntlets).to.eq(BRONZE_GAUNTLETS);
   });
 
   it("Edit Name", async () => {

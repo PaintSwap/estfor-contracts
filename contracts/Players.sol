@@ -122,6 +122,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     _;
   }
 
+  modifier onlyItemNFT() {
+    require(msg.sender == address(itemNFT));
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -265,11 +270,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       EquipPosition position = item.equipPosition;
       require(item.exists);
       require(uint8(position) < 8);
-      uint8 relativeItem = uint8(itemTokenId - (256 * uint8(position))); // Between 0 -> 256
 
       assembly ("memory-safe") {
         // Set the equipped item
-        val := or(val, shl(mul(position, 8), relativeItem))
+        val := or(val, shl(mul(position, 16), itemTokenId))
       }
 
       uint256 balance = itemNFT.balanceOf(from, itemTokenId);
@@ -287,13 +291,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     _setActionQueue(_tokenId, remainingSkillQueue);
   }
 
-  function _getRelativeEquippedTokenId(
+  function _getEquippedTokenId(
     EquipPosition _position,
     Player storage _player
-  ) private view returns (uint8 relativeEquippedTokenId) {
+  ) private view returns (uint16 equippedTokenId) {
     assembly ("memory-safe") {
       let val := sload(_player.slot)
-      relativeEquippedTokenId := shr(mul(_position, 8), val)
+      equippedTokenId := shr(mul(_position, 16), val)
     }
   }
 
@@ -301,8 +305,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     uint256 balance = itemNFT.balanceOf(_from, _itemTokenId);
     require(balance >= 1, "Do not have enough quantity to equip to action");
   }
-
-  error err(uint256);
 
   // Cannot be transferred while equipped.  Check if the NFT is being transferred and unequip from this user.
   // Replace old one
@@ -314,26 +316,23 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     EquipPosition position = item.equipPosition;
     require(item.exists);
     require(uint8(position) < 8);
-    uint8 relativeEquippedTokenId = _getRelativeEquippedTokenId(position, player);
+    uint16 equippedTokenId = _getEquippedTokenId(position, player);
 
-    uint8 relativeItem = uint8(_itemTokenId - (256 * uint8(position))); // Between 0 -> 256
-    //    revert err(relativeItem);
     assembly ("memory-safe") {
       let val := sload(player.slot)
       // Clear the byte position
-      val := and(val, not(shl(mul(position, 8), 0xff)))
+      val := and(val, not(shl(mul(position, 16), 0xffff)))
       // Now set it
-      val := or(val, shl(mul(position, 8), relativeItem))
+      val := or(val, shl(mul(position, 16), _itemTokenId))
       sstore(player.slot, val)
     }
 
-    uint16 equippedTokenId = relativeEquippedTokenId + (256 * uint8(position));
-    if (_itemTokenId == equippedTokenId && relativeEquippedTokenId != NONE) {
+    if (_itemTokenId == equippedTokenId && equippedTokenId != NONE) {
       revert EquipSameItem();
     }
 
     // Already something equipped there so unequip
-    if (relativeEquippedTokenId != NONE) {
+    if (equippedTokenId != NONE) {
       _unequipMainItem(_tokenId, equippedTokenId);
       emit Unequip(_tokenId, equippedTokenId);
     }
@@ -348,9 +347,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
   function _unequip(uint _tokenId, EquipPosition _position) private returns (uint16 equippedItemTokenId) {
     Player storage player = players[_tokenId];
-    uint8 relativeEquippedItemTokenId = _getRelativeEquippedTokenId(_position, player);
-    equippedItemTokenId = relativeEquippedItemTokenId + (256 * uint8(_position));
-    if (relativeEquippedItemTokenId != NONE) {
+    equippedItemTokenId = _getEquippedTokenId(_position, player);
+    if (equippedItemTokenId != NONE) {
       _unequipMainItem(_tokenId, equippedItemTokenId);
     }
   }
