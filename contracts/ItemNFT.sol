@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "./interfaces/IBrushToken.sol";
+import "./interfaces/IPlayers.sol";
 import "./World.sol";
 import "./types.sol";
 import "./items.sol";
@@ -155,6 +156,13 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     }
 
     _removeAnyBurntFromTotal(_to, _ids, _amounts);
+
+    // TODO Add checkpoints so we know exactly what items a player has at a given time
+
+    // Properly update the player inventory
+    if (_to != address(0)) {
+      IPlayers(players).itemBeforeTokenTransfer(_from, _ids, _amounts);
+    }
   }
 
   function burn(address _from, uint _tokenId, uint _quantity) external {

@@ -12,4 +12,6 @@ interface IPlayers {
   ) external view returns (string memory);
 
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external;
+
+  function itemBeforeTokenTransfer(address _from, uint[] calldata _tokenIds, uint256[] calldata _amounts) external;
 }

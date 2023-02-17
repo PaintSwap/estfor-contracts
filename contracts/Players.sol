@@ -74,6 +74,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   uint constant LEVEL_90_BOUNDARY = 554828;
   uint constant LEVEL_99_BOUNDARY = 1035476;
 
+  uint constant MAX_MAIN_EQUIPMENT_ID = 256 * 8;
+
   mapping(uint => uint) speedMultiplier; // 0 or 1 is diabled, for testing only
 
   mapping(address => uint) activePlayer;
@@ -196,6 +198,52 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
   function clearEverythingBeforeTokenTransfer(address _from, uint _tokenId) external onlyPlayerNFT {
     _clearEverything(_from, _tokenId);
+  }
+
+  function _isMainEquipped(uint _tokenId, uint _itemTokenId) private view returns (bool) {
+    EquipPosition position = _getMainEquipPosition(_itemTokenId);
+    Player storage player = players[_tokenId];
+    uint equippedTokenId = _getEquippedTokenId(position, player);
+    return equippedTokenId == _itemTokenId;
+  }
+
+  function _getMainEquipPosition(uint _itemTokenId) private pure returns (EquipPosition) {
+    if (_itemTokenId >= MAX_MAIN_EQUIPMENT_ID) {
+      return EquipPosition.NONE;
+    }
+
+    return EquipPosition(_itemTokenId / 256);
+  }
+
+  function itemBeforeTokenTransfer(
+    address _from,
+    uint[] calldata _itemTokenIds,
+    uint[] calldata _amounts
+  ) external onlyItemNFT {
+    uint tokenId = activePlayer[_from];
+    if (tokenId == 0) {
+      return;
+    }
+
+    // Check if any of these are equipped, if no unequip if they don't have sufficient balance
+    QueuedAction[] memory remainingSkillQueue = _consumeActions(_from, tokenId);
+
+    for (uint i = 0; i < _itemTokenIds.length; ++i) {
+      uint itemTokenId = _itemTokenIds[i];
+      uint amount = _amounts[i];
+      if (itemTokenId < MAX_MAIN_EQUIPMENT_ID) {
+        // Only have 1 and it's equipped so unequip it.
+        if (itemNFT.balanceOf(_from, itemTokenId) == 1 && _isMainEquipped(tokenId, itemTokenId)) {
+          _unequip(tokenId, _getMainEquipPosition(itemTokenId));
+        }
+      } else {
+        // This is potentially equipped in an action, need to check all the queued actions and action choices. Does it matter though?
+      }
+    }
+
+    // Any of these remaining actions requiring this and don't have appropriate outputs?
+
+    _setActionQueue(tokenId, remainingSkillQueue);
   }
 
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
