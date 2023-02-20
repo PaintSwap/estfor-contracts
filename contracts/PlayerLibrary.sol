@@ -10,7 +10,7 @@ import "./Players.sol"; // Might not even be needed
 // Show all the player stats, return metadata json
 library PlayerLibrary {
   // Should match the event in Players
-  event ActionUnequip(uint playerId, uint queuedActionId, uint16 itemTokenId, uint amount);
+  event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount);
 
   function uri(
     bytes32 name,
@@ -208,7 +208,7 @@ library PlayerLibrary {
     uint16 _itemTokenId,
     uint16 _numProduced,
     uint16 _baseNum,
-    uint64 _queuedActionId
+    uint64 _queueId
   ) private {
     if (_itemTokenId == 0) {
       return;
@@ -218,7 +218,7 @@ library PlayerLibrary {
 
     // TODO: Check balance
 
-    emit ActionUnequip(_playerId, _queuedActionId, _itemTokenId, numUnequip);
+    emit ActionUnequip(_playerId, _queueId, _itemTokenId, numUnequip);
     _itemNFT.burn(_from, _itemTokenId, numBurn);
   }
 
@@ -276,7 +276,7 @@ library PlayerLibrary {
       queuedAction.regenerateId,
       foodConsumed,
       1,
-      queuedAction.attire.queuedActionId
+      queuedAction.attire.queueId
     );
     // TODO use playerStats.health
   }
@@ -348,7 +348,7 @@ library PlayerLibrary {
     ActionChoice memory _actionChoice,
     uint16 _numConsumed,
     ItemNFT _itemNFT,
-    uint64 _queuedActionId
+    uint64 _queueId
   ) private {
     _processConsumable(
       _from,
@@ -357,7 +357,7 @@ library PlayerLibrary {
       _actionChoice.inputTokenId1,
       _numConsumed,
       _actionChoice.num1,
-      _queuedActionId
+      _queueId
     );
     _processConsumable(
       _from,
@@ -366,7 +366,7 @@ library PlayerLibrary {
       _actionChoice.inputTokenId2,
       _numConsumed,
       _actionChoice.num2,
-      _queuedActionId
+      _queueId
     );
     _processConsumable(
       _from,
@@ -375,7 +375,7 @@ library PlayerLibrary {
       _actionChoice.inputTokenId3,
       _numConsumed,
       _actionChoice.num3,
-      _queuedActionId
+      _queueId
     );
   }
 
@@ -419,14 +419,7 @@ library PlayerLibrary {
 
     // TODO: This will affect how much combat can be done
     if (numConsumed > 0) {
-      _processInputConsumables(
-        _from,
-        _playerId,
-        actionChoice,
-        numConsumed,
-        _itemNFT,
-        _queuedAction.attire.queuedActionId
-      );
+      _processInputConsumables(_from, _playerId, actionChoice, numConsumed, _itemNFT, _queuedAction.attire.queueId);
     }
 
     if (actionChoice.outputTokenId != 0) {

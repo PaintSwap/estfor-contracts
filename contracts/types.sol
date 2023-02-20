@@ -164,7 +164,7 @@ struct Attire {
   uint16 boots;
   uint16 ring;
   uint16 reserved1;
-  uint64 queuedActionId; // Just here for packing purposes
+  uint64 queueId; // Just here for packing purposes
 }
 
 // TODO: Can pack this better, remove the structs

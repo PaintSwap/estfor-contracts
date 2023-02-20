@@ -16,10 +16,10 @@ contract Players is
   OwnableUpgradeable,
   UUPSUpgradeable // , Multicall {
 {
-  event ActionUnequip(uint playerId, uint queuedActionId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary for  Should match the event in Players
+  event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary for  Should match the event in Players
 
   event ClearAll(uint playerId);
-  event ActionFinished(uint playerId, uint queuedActionId);
+  event ActionFinished(uint playerId, uint queueId);
 
   event AddSkillPoints(uint playerId, Skill skill, uint32 points);
 
@@ -91,7 +91,7 @@ contract Players is
   }
   mapping(uint => PlayerBoostInfo) public activeBoosts; // player id => boost info
 
-  uint private queuedActionId; // Global queued action id
+  uint private queueId; // Global queued action id
   World private world;
 
   mapping(uint => mapping(Skill => uint32)) public skillPoints;
@@ -148,7 +148,7 @@ contract Players is
     playerNFT = _playerNFT;
     world = _world;
 
-    queuedActionId = 1; // Global queued action id
+    queueId = 1; // Global queued action id
   }
 
   // Consumes all the actions in the queue up to this time.
@@ -403,12 +403,7 @@ contract Players is
     //     if (_queuedAction.choiceId2 != NONE) {
   }
 
-  function _addToQueue(
-    address _from,
-    uint _playerId,
-    QueuedAction memory _queuedAction,
-    uint64 _queuedActionId
-  ) private {
+  function _addToQueue(address _from, uint _playerId, QueuedAction memory _queuedAction, uint64 _queueId) private {
     Player storage _player = players[_playerId];
     //    Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
 
@@ -444,7 +439,7 @@ contract Players is
     _checkActionConsumables(_from, _playerId, _queuedAction);
 
     _queuedAction.startTime = uint40(block.timestamp);
-    _queuedAction.attire.queuedActionId = _queuedActionId;
+    _queuedAction.attire.queueId = _queueId;
     _player.actionQueue.push(_queuedAction);
     emit AddToActionQueue(_playerId, _queuedAction);
   }
@@ -490,7 +485,7 @@ contract Players is
     }
 
     uint256 i;
-    uint currentQueuedActionId = queuedActionId;
+    uint currentQueuedActionId = queueId;
     do {
       QueuedAction memory queuedAction = _queuedActions[i];
       _addToQueue(from, _playerId, queuedAction, uint64(currentQueuedActionId));
@@ -502,7 +497,7 @@ contract Players is
     } while (i < _queuedActions.length);
 
     require(totalTimespan <= MAX_TIME, "Total time is longer than max");
-    queuedActionId = currentQueuedActionId;
+    queueId = currentQueuedActionId;
   }
 
   function startAction(
@@ -834,7 +829,7 @@ contract Players is
         allpointsAccrued += pointsAccrued;
       }
 
-      emit ActionFinished(_playerId, queuedAction.attire.queuedActionId); // Action finished
+      emit ActionFinished(_playerId, queuedAction.attire.queueId); // Action finished
     }
 
     if (allpointsAccrued > 0) {

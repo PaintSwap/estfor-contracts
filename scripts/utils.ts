@@ -333,7 +333,7 @@ export type Attire = {
   boots: number;
   ring: number;
   reserved1: number;
-  queuedActionId: number;
+  queueId: number;
 };
 
 export const noAttire = {
@@ -345,7 +345,7 @@ export const noAttire = {
   boots: NONE,
   ring: NONE, // Always NONE for now
   reserved1: NONE, // Always NONE for now
-  queuedActionId: 0, // Doesn't matter
+  queueId: 0, // Doesn't matter
 };
 
 export type QueuedAction = {
