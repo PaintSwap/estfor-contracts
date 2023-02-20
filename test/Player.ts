@@ -431,6 +431,78 @@ describe("Player", () => {
     await playerNFT.connect(alice).editName(playerId, ethers.utils.formatBytes32String("My name is edited, woo"));
   });
 
+  it("Remove action", async () => {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+    // Can only remove an action if it hasn't started yet.
+    const queuedActions: QueuedAction[] = [];
+    const rate = 100 * 100; // per hour
+    const tx = await world.addAction({
+      info: {
+        skill: Skill.WOODCUTTING,
+        baseXPPerHour: 3600,
+        minSkillPoints: 0,
+        isDynamic: false,
+        itemTokenIdRangeMin: BRONZE_AXE,
+        itemTokenIdRangeMax: WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        isCombat: false,
+      },
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
+      combatStats: emptyStats,
+    });
+    const actionId = await getActionId(tx);
+    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
+    await itemNFT.addItem({
+      ...inputItem,
+      tokenId: BRONZE_AXE,
+      equipPosition: EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+    const timespan = 7200;
+    const queuedAction: QueuedAction = {
+      attire: noAttire,
+      actionId,
+      skill: Skill.WOODCUTTING,
+      choiceId: NONE,
+      choiceId1: NONE,
+      choiceId2: NONE,
+      regenerateId: NONE,
+      timespan,
+      rightArmEquipmentTokenId: BRONZE_AXE,
+      leftArmEquipmentTokenId: NONE,
+      startTime: "0",
+    };
+
+    // Queue same ones multiple times
+    queuedActions.push(queuedAction);
+    queuedActions.push(queuedAction);
+    queuedActions.push(queuedAction);
+
+    await itemNFT.addItem({
+      ...inputItem,
+      tokenId: LOG,
+      equipPosition: EquipPosition.AUX,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
+    await players.connect(alice).startActions(playerId, queuedActions, false);
+
+    // Cannot remove the first one because it's already started
+    let queueId = 1; // First one starts here
+    await expect(players.connect(alice).removeQueuedAction(playerId, queueId)).to.be.reverted;
+    expect(await players.actionQueueLength(playerId)).to.eq(3);
+    await players.connect(alice).removeQueuedAction(playerId, queueId + 1);
+    expect(await players.actionQueueLength(playerId)).to.eq(2);
+
+    // Check the correct one remains
+    const actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[0].attire.queueId).to.eq(queueId);
+    expect(actionQueue[1].attire.queueId).to.eq(queueId + 2);
+  });
+
   describe("Non-Combat Actions", () => {
     // Test minSkillPoints
     // Test isDynamic

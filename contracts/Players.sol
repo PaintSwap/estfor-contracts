@@ -14,7 +14,7 @@ import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 contract Players is
   OwnableUpgradeable,
-  UUPSUpgradeable // , Multicall {
+  UUPSUpgradeable // Multicall {
 {
   event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary for  Should match the event in Players
 
@@ -32,6 +32,8 @@ contract Players is
   event UnconsumeBoostVial(uint playerId);
 
   event SetActivePlayer(address account, uint playerId);
+
+  event RemoveQueuedAction(uint playerId, uint queueId);
 
   // This is only for viewing so doesn't need to be optimized
   struct PendingOutput {
@@ -316,8 +318,8 @@ contract Players is
   ) external isOwnerOfPlayerAndActive(_playerId) {
     //    require(_itemTokenId >= BOOST_VIAL_BASE && _itemTokenId <= BOOST_VIAL_MAX, "Not a boost vial");
     Item memory item = itemNFT.getItem(_itemTokenId);
-    require(item.boostType != BoostType.NONE, "Not a boost vial");
-    require(_startTime < block.timestamp + 7 days, "Start time too far in the future");
+    require(item.boostType != BoostType.NONE); // , "Not a boost vial");
+    require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
     if (_startTime < block.timestamp) {
       _startTime = uint40(block.timestamp);
     }
@@ -342,8 +344,8 @@ contract Players is
   }
 
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    require(activeBoosts[_playerId].boostType != BoostType.NONE, "No active boost");
-    require(activeBoosts[_playerId].startTime <= block.timestamp, "Boost time already started");
+    require(activeBoosts[_playerId].boostType != BoostType.NONE); // , "No active boost");
+    require(activeBoosts[_playerId].startTime <= block.timestamp); // "Boost time already started");
     address from = msg.sender;
     itemNFT.mint(from, activeBoosts[_playerId].playerId, 1);
     emit UnconsumeBoostVial(_playerId);
@@ -403,7 +405,13 @@ contract Players is
     //     if (_queuedAction.choiceId2 != NONE) {
   }
 
-  function _addToQueue(address _from, uint _playerId, QueuedAction memory _queuedAction, uint64 _queueId) private {
+  function _addToQueue(
+    address _from,
+    uint _playerId,
+    QueuedAction memory _queuedAction,
+    uint64 _queueId,
+    uint _startTime
+  ) private {
     Player storage _player = players[_playerId];
     //    Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
 
@@ -414,31 +422,31 @@ contract Players is
       _queuedAction.actionId
     );
 
-    require(world.actionIsAvailable(_queuedAction.actionId), "Action is not available");
+    require(world.actionIsAvailable(_queuedAction.actionId)); // , "Action is not available");
 
     // TODO: Check if it requires an action choice and that a valid one was specified
 
     if (_queuedAction.leftArmEquipmentTokenId != NONE) {
       require(
         _queuedAction.leftArmEquipmentTokenId >= itemTokenIdRangeMin &&
-          _queuedAction.leftArmEquipmentTokenId <= itemTokenIdRangeMax,
-        "Invalid item"
+          _queuedAction.leftArmEquipmentTokenId <= itemTokenIdRangeMax
       );
+      //        "Invalid item"
       _checkEquipActionEquipmentBalance(_from, _queuedAction.leftArmEquipmentTokenId);
     }
     if (_queuedAction.rightArmEquipmentTokenId != NONE) {
       require(
         _queuedAction.rightArmEquipmentTokenId >= itemTokenIdRangeMin &&
-          _queuedAction.rightArmEquipmentTokenId <= itemTokenIdRangeMax,
-        "Invalid item"
+          _queuedAction.rightArmEquipmentTokenId <= itemTokenIdRangeMax
       );
+      //        "Invalid item"
       _checkEquipActionEquipmentBalance(_from, _queuedAction.rightArmEquipmentTokenId);
     }
 
     _checkAttire(_from, _playerId, _queuedAction.attire);
     _checkActionConsumables(_from, _playerId, _queuedAction);
 
-    _queuedAction.startTime = uint40(block.timestamp);
+    _queuedAction.startTime = uint40(_startTime);
     _queuedAction.attire.queueId = _queueId;
     _player.actionQueue.push(_queuedAction);
     emit AddToActionQueue(_playerId, _queuedAction);
@@ -484,19 +492,22 @@ contract Players is
       }
     }
 
+    uint prevEndTime = block.timestamp + totalTimespan;
+
     uint256 i;
     uint currentQueuedActionId = queueId;
     do {
       QueuedAction memory queuedAction = _queuedActions[i];
-      _addToQueue(from, _playerId, queuedAction, uint64(currentQueuedActionId));
+      _addToQueue(from, _playerId, queuedAction, uint64(currentQueuedActionId), prevEndTime);
       unchecked {
         ++i;
         ++currentQueuedActionId;
       }
       totalTimespan += queuedAction.timespan;
+      prevEndTime += queuedAction.timespan;
     } while (i < _queuedActions.length);
 
-    require(totalTimespan <= MAX_TIME, "Total time is longer than max");
+    require(totalTimespan <= MAX_TIME); // , "Total time is longer than max");
     queueId = currentQueuedActionId;
   }
 
@@ -517,6 +528,34 @@ contract Players is
     bool _append
   ) external isOwnerOfPlayerAndActive(_playerId) {
     _startActions(_playerId, _queuedActions, _append);
+  }
+
+  function removeQueuedAction(uint _playerId, uint _queueId) external isOwnerOfPlayer(_playerId) {
+    // If the action is in progress, it can't be removed (allow later)
+    QueuedAction[] storage actionQueue = players[_playerId].actionQueue;
+    for (uint i; i < actionQueue.length; ++i) {
+      QueuedAction storage queuedAction = actionQueue[i];
+      if (queuedAction.attire.queueId == _queueId) {
+        uint skillEndTime = queuedAction.startTime +
+          (
+            speedMultiplier[_playerId] > 1
+              ? uint(queuedAction.timespan) / speedMultiplier[_playerId]
+              : queuedAction.timespan
+          );
+
+        uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
+        require(elapsedTime == 0);
+        // Action hasn't started yet so allow it to be removed.
+        for (uint j = i; j < actionQueue.length - 1; ++j) {
+          actionQueue[j] = actionQueue[j + 1];
+          // Shift start times
+          actionQueue[j].startTime -= queuedAction.timespan;
+        }
+        actionQueue.pop();
+        emit RemoveQueuedAction(_playerId, _queueId);
+        return;
+      }
+    }
   }
 
   // Get any changes that are pending and not on the blockchain yet.
