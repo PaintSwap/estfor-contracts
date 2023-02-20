@@ -208,15 +208,16 @@ library PlayerLibrary {
     uint16 _itemTokenId,
     uint16 _numProduced,
     uint16 _baseNum,
-    uint16 _totalEquipped,
-    uint64 _queuedActionId,
-    bool _useAll
+    uint64 _queuedActionId
   ) private {
     if (_itemTokenId == 0) {
       return;
     }
     uint16 numBurn = _numProduced * _baseNum;
-    uint16 numUnequip = _useAll ? _totalEquipped : numBurn;
+    uint16 numUnequip = numBurn;
+
+    // TODO: Check balance
+
     emit ActionUnequip(_playerId, _queuedActionId, _itemTokenId, numUnequip);
     _itemNFT.burn(_from, _itemTokenId, numBurn);
   }
@@ -240,7 +241,7 @@ library PlayerLibrary {
       /* combatStats.attack, */
       /* playerStats.meleeDefence */
       foodConsumed = uint16(elapsedTime / 3600) + (elapsedTime % 3600 == 0 ? 0 : 1);
-      died = foodConsumed > queuedAction.numRegenerate;
+      //      died = foodConsumed > itemNFT.balanceOf(queuedAction.regenerateId);
     }
   }
 
@@ -250,8 +251,7 @@ library PlayerLibrary {
     QueuedAction storage queuedAction,
     uint _elapsedTime,
     ItemNFT _itemNFT,
-    CombatStats storage _playerStats,
-    bool _useAll
+    CombatStats storage _playerStats
   ) private returns (uint16 foodConsumed, bool died) {
     /* combatStats.attack, */
     /* playerStats.meleeDefence */
@@ -262,11 +262,10 @@ library PlayerLibrary {
       foodConsumed = uint16(_foodConsumed);
     }
     uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
-    uint16 maxFood = foodConsumed > balance ? uint16(balance) : queuedAction.numRegenerate;
 
-    died = foodConsumed > maxFood;
+    died = foodConsumed > balance;
     if (died) {
-      foodConsumed = maxFood;
+      foodConsumed = uint16(balance);
     }
 
     // Figure out how much food should be used
@@ -277,9 +276,7 @@ library PlayerLibrary {
       queuedAction.regenerateId,
       foodConsumed,
       1,
-      queuedAction.numRegenerate,
-      queuedAction.attire.queuedActionId,
-      _useAll
+      queuedAction.attire.queuedActionId
     );
     // TODO use playerStats.health
   }
@@ -288,7 +285,6 @@ library PlayerLibrary {
     address _from,
     ActionChoice memory _actionChoice,
     uint16 _numConsumed,
-    uint _numEquippedBase,
     ItemNFT _itemNFT
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _numConsumed;
@@ -299,7 +295,6 @@ library PlayerLibrary {
           _actionChoice.inputTokenId1,
           _actionChoice.num1,
           _numConsumed,
-          _numEquippedBase,
           maxRequiredRatio,
           _itemNFT
         );
@@ -310,7 +305,6 @@ library PlayerLibrary {
           _actionChoice.inputTokenId2,
           _actionChoice.num2,
           _numConsumed,
-          _numEquippedBase,
           maxRequiredRatio,
           _itemNFT
         );
@@ -321,7 +315,6 @@ library PlayerLibrary {
           _actionChoice.inputTokenId3,
           _actionChoice.num3,
           _numConsumed,
-          _numEquippedBase,
           maxRequiredRatio,
           _itemNFT
         );
@@ -334,7 +327,6 @@ library PlayerLibrary {
     uint16 _inputTokenId,
     uint16 _num,
     uint16 _numConsumed,
-    uint _numEquippedBase,
     uint _maxRequiredRatio,
     ItemNFT _itemNFT
   ) private view returns (uint maxRequiredRatio) {
@@ -342,9 +334,6 @@ library PlayerLibrary {
     uint tempMaxRequiredRatio = _maxRequiredRatio;
     if (_numConsumed > balance / _num) {
       tempMaxRequiredRatio = balance / _num;
-    }
-    if (tempMaxRequiredRatio > _numEquippedBase) {
-      tempMaxRequiredRatio = _numEquippedBase;
     }
 
     // Could be the first time
@@ -358,10 +347,8 @@ library PlayerLibrary {
     uint _playerId,
     ActionChoice memory _actionChoice,
     uint16 _numConsumed,
-    uint16 _numEquippedBase,
     ItemNFT _itemNFT,
-    uint64 _queuedActionId,
-    bool _useAll
+    uint64 _queuedActionId
   ) private {
     _processConsumable(
       _from,
@@ -370,9 +357,7 @@ library PlayerLibrary {
       _actionChoice.inputTokenId1,
       _numConsumed,
       _actionChoice.num1,
-      _numEquippedBase * _actionChoice.num1,
-      _queuedActionId,
-      _useAll
+      _queuedActionId
     );
     _processConsumable(
       _from,
@@ -381,9 +366,7 @@ library PlayerLibrary {
       _actionChoice.inputTokenId2,
       _numConsumed,
       _actionChoice.num2,
-      _numEquippedBase * _actionChoice.num2,
-      _queuedActionId,
-      _useAll
+      _queuedActionId
     );
     _processConsumable(
       _from,
@@ -392,9 +375,7 @@ library PlayerLibrary {
       _actionChoice.inputTokenId3,
       _numConsumed,
       _actionChoice.num3,
-      _numEquippedBase * _actionChoice.num3,
-      _queuedActionId,
-      _useAll
+      _queuedActionId
     );
   }
 
@@ -406,7 +387,6 @@ library PlayerLibrary {
     World _world,
     ItemNFT _itemNFT,
     CombatStats storage _playerStats,
-    bool _useAll,
     ActionChoice memory actionChoice
   ) external returns (uint16 foodConsumed, uint16 numConsumed, uint actualElapsedTime, bool died) {
     // Fetch the requirements for it
@@ -424,29 +404,28 @@ library PlayerLibrary {
         _queuedAction,
         _elapsedTime,
         _itemNFT,
-        _playerStats,
-        _useAll
+        _playerStats
       );
     }
 
     // Check the max that can be used. To prevent overflow for sped up actions.
     numConsumed = uint16((_elapsedTime * actionChoice.rate) / (3600 * 100));
-    uint maxRequiredRatio = _getMaxRequiredRatio(_from, actionChoice, numConsumed, _queuedAction.num, _itemNFT);
+    // This checks the balances
+    uint maxRequiredRatio = _getMaxRequiredRatio(_from, actionChoice, numConsumed, _itemNFT);
 
-    // Check the balances of all the items
     if (numConsumed > maxRequiredRatio) {
       numConsumed = uint16(maxRequiredRatio);
     }
+
+    // TODO: This will affect how much combat can be done
     if (numConsumed > 0) {
       _processInputConsumables(
         _from,
         _playerId,
         actionChoice,
         numConsumed,
-        _queuedAction.num,
         _itemNFT,
-        _queuedAction.attire.queuedActionId,
-        _useAll
+        _queuedAction.attire.queuedActionId
       );
     }
 

@@ -11,6 +11,7 @@ import {
   firemakingChoices,
   FIRE_LIGHTER,
   LOG,
+  noAttire,
   NONE,
   QueuedAction,
   Skill,
@@ -150,10 +151,6 @@ async function main() {
   await tx.wait();
   console.log("batch mint");
 
-  tx = await players.setEquipment(playerId, [BRONZE_HELMET, BRONZE_GAUNTLETS]);
-  await tx.wait();
-  console.log("equip");
-
   tx = await world.addActions(allActions);
   await tx.wait();
   console.log("Add actions");
@@ -171,16 +168,13 @@ async function main() {
 
   // First woodcutting
   const queuedAction: QueuedAction = {
+    attire: {...noAttire, helmet: BRONZE_HELMET, gauntlets: BRONZE_GAUNTLETS},
     actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
     skill: Skill.WOODCUTTING,
     choiceId: NONE,
-    num: 0,
     choiceId1: NONE,
-    num1: 0,
     choiceId2: NONE,
-    num2: 0,
     regenerateId: NONE,
-    numRegenerate: 0,
     timespan: 3600,
     rightArmEquipmentTokenId: BRONZE_AXE,
     leftArmEquipmentTokenId: NONE,
@@ -208,16 +202,13 @@ async function main() {
 
   // Next firemaking
   const queuedActionFiremaking: QueuedAction = {
+    attire: {...noAttire, helmet: BRONZE_HELMET, gauntlets: BRONZE_GAUNTLETS},
     actionId: allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1,
     skill: Skill.FIREMAKING,
     choiceId: 1,
-    num: 1220,
     choiceId1: NONE,
-    num1: 0,
     choiceId2: NONE,
-    num2: 0,
     regenerateId: NONE,
-    numRegenerate: 0,
     timespan: 3600,
     rightArmEquipmentTokenId: FIRE_LIGHTER,
     leftArmEquipmentTokenId: NONE,

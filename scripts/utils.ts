@@ -352,13 +352,9 @@ export type QueuedAction = {
   attire: Attire;
   actionId: number;
   regenerateId: number;
-  numRegenerate: number;
   choiceId: number;
-  num: number;
   choiceId1: number;
-  num1: number;
   choiceId2: number;
-  num2: number;
   skill: Skill;
   timespan: number;
   rightArmEquipmentTokenId: number;

@@ -130,20 +130,16 @@ struct QueuedAction {
   Attire attire; // Keep here for now
   uint16 actionId;
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
-  uint16 numRegenerate;
   uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
-  uint16 num;
   uint16 choiceId1; // Reserved (TBD)
-  uint16 num1;
   uint16 choiceId2; // Reserved (TBD)
-  uint16 num2;
   uint16 rightArmEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftArmEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
   Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill. Attack/defence can also be used
   uint40 startTime; // Filled in by the function
   //  bool reusePrev; // If true, then the previous queued action attire is reused?
-  // 1 byte left
+  // 9 bytes left
 }
 
 struct ActionInfo {

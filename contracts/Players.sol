@@ -652,8 +652,6 @@ contract Players is
     QueuedAction[] memory remainingSkills,
     QueuedAction storage queuedAction,
     uint prevEndTime,
-    uint16 foodConsumed,
-    uint16 numConsumed,
     uint length
   ) private view {
     uint40 end = queuedAction.startTime + queuedAction.timespan;
@@ -661,8 +659,6 @@ contract Players is
     QueuedAction memory remainingAction = queuedAction;
     remainingAction.startTime = uint40(prevEndTime);
     remainingAction.timespan = uint16(end - prevEndTime);
-    remainingAction.numRegenerate -= uint8(foodConsumed);
-    remainingAction.num -= uint8(numConsumed);
 
     // Build a list of the skills queued that remain
     remainingSkills[length] = remainingAction;
@@ -770,7 +766,7 @@ contract Players is
       uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
       if (elapsedTime == 0) {
         // Haven't touched this action yet so add it all
-        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, 0, 0, length);
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, length);
         nextStartTime += queuedAction.timespan;
         length = i + 1;
         continue;
@@ -788,7 +784,6 @@ contract Players is
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
         // This also unequips.
-        bool consumeAll = skillEndTime <= block.timestamp;
         (foodConsumed, numConsumed, elapsedTime, died) = PlayerLibrary.processConsumables(
           _from,
           _playerId,
@@ -797,7 +792,6 @@ contract Players is
           world,
           itemNFT,
           player.totalStats,
-          consumeAll,
           actionChoice
         );
       }
@@ -812,7 +806,7 @@ contract Players is
 
       if (elapsedTime < queuedAction.timespan) {
         // Add the remainder if this action is not fully consumed
-        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, foodConsumed, numConsumed, length);
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, length);
         nextStartTime += elapsedTime;
         length = i + 1;
       }
