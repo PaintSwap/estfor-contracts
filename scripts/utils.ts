@@ -324,7 +324,32 @@ export type Equipment = {
   numToEquip: number;
 };
 
+export type Attire = {
+  helmet: number;
+  amulet: number;
+  chestplate: number;
+  gauntlets: number;
+  tassets: number;
+  boots: number;
+  ring: number;
+  reserved1: number;
+  queuedActionId: number;
+};
+
+export const noAttire = {
+  helmet: NONE,
+  amulet: NONE,
+  chestplate: NONE,
+  gauntlets: NONE,
+  tassets: NONE,
+  boots: NONE,
+  ring: NONE, // Always NONE for now
+  reserved1: NONE, // Always NONE for now
+  queuedActionId: 0, // Doesn't matter
+};
+
 export type QueuedAction = {
+  attire: Attire;
   actionId: number;
   regenerateId: number;
   numRegenerate: number;

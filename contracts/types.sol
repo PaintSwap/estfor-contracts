@@ -126,6 +126,8 @@ struct ActionChoice {
 
 // The user chooses these
 struct QueuedAction {
+  // Keep this first
+  Attire attire; // Keep here for now
   uint16 actionId;
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
   uint16 numRegenerate;
@@ -140,6 +142,7 @@ struct QueuedAction {
   uint24 timespan; // How long to queue the action for
   Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill. Attack/defence can also be used
   uint40 startTime; // Filled in by the function
+  //  bool reusePrev; // If true, then the previous queued action attire is reused?
   // 1 byte left
 }
 
@@ -156,20 +159,20 @@ struct ActionInfo {
 }
 
 // Equipment (leave at the bottom to allow for further ones)
-struct Armour {
+struct Attire {
   uint16 helmet; // tokenId for the head (1 - 255)
   uint16 amulet; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
   uint16 chestplate;
   uint16 gauntlets;
   uint16 tassets;
   uint16 boots;
+  uint16 ring;
   uint16 reserved1;
-  uint16 reserved2;
+  uint64 queuedActionId; // Just here for packing purposes
 }
 
 // TODO: Can pack this better, remove the structs
 struct Player {
-  Armour equipment; // Keep this first
   // These are stored in case individual items are changed later, but also prevents having to read them loads
   // Base attributes
   CombatStats totalStats;

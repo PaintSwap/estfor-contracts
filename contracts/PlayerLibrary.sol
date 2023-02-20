@@ -9,7 +9,8 @@ import "./Players.sol"; // Might not even be needed
 
 // Show all the player stats, return metadata json
 library PlayerLibrary {
-  event ActionUnequip(uint tokenId, uint16 itemTokenId, uint amount);
+  // Should match the event in Players
+  event ActionUnequip(uint playerId, uint queuedActionId, uint16 itemTokenId, uint amount);
 
   function uri(
     bytes32 name,
@@ -74,7 +75,7 @@ library PlayerLibrary {
     return output;
   }
 
-  function updatePlayerStats(CombatStats storage _totalStats, Item memory _item, bool _add) external {
+  function updatePlayerStats(CombatStats memory _totalStats, Item memory _item, bool _add) external pure {
     if (_item.attack != 0) {
       _totalStats.attack += _add ? _item.attack : -_item.attack;
     }
@@ -202,21 +203,22 @@ library PlayerLibrary {
 
   function _processConsumable(
     address _from,
-    uint _tokenId,
-    ItemNFT itemNFT,
-    uint16 itemTokenId,
-    uint16 numProduced,
-    uint16 baseNum,
-    uint16 totalEquipped,
+    uint _playerId,
+    ItemNFT _itemNFT,
+    uint16 _itemTokenId,
+    uint16 _numProduced,
+    uint16 _baseNum,
+    uint16 _totalEquipped,
+    uint64 _queuedActionId,
     bool _useAll
   ) private {
-    if (itemTokenId == 0) {
+    if (_itemTokenId == 0) {
       return;
     }
-    uint16 numBurn = numProduced * baseNum;
-    uint16 numUnequip = _useAll ? totalEquipped : numBurn;
-    emit ActionUnequip(_tokenId, itemTokenId, numUnequip);
-    itemNFT.burn(_from, itemTokenId, numBurn);
+    uint16 numBurn = _numProduced * _baseNum;
+    uint16 numUnequip = _useAll ? _totalEquipped : numBurn;
+    emit ActionUnequip(_playerId, _queuedActionId, _itemTokenId, numUnequip);
+    _itemNFT.burn(_from, _itemTokenId, numBurn);
   }
 
   function processConsumablesView(
@@ -244,7 +246,7 @@ library PlayerLibrary {
 
   function _processCombatConsumables(
     address _from,
-    uint _tokenId,
+    uint _playerId,
     QueuedAction storage queuedAction,
     uint _elapsedTime,
     ItemNFT _itemNFT,
@@ -270,12 +272,13 @@ library PlayerLibrary {
     // Figure out how much food should be used
     _processConsumable(
       _from,
-      _tokenId,
+      _playerId,
       _itemNFT,
       queuedAction.regenerateId,
       foodConsumed,
       1,
       queuedAction.numRegenerate,
+      queuedAction.attire.queuedActionId,
       _useAll
     );
     // TODO use playerStats.health
@@ -352,48 +355,52 @@ library PlayerLibrary {
 
   function _processInputConsumables(
     address _from,
-    uint _tokenId,
+    uint _playerId,
     ActionChoice memory _actionChoice,
     uint16 _numConsumed,
     uint16 _numEquippedBase,
     ItemNFT _itemNFT,
+    uint64 _queuedActionId,
     bool _useAll
   ) private {
     _processConsumable(
       _from,
-      _tokenId,
+      _playerId,
       _itemNFT,
       _actionChoice.inputTokenId1,
       _numConsumed,
       _actionChoice.num1,
       _numEquippedBase * _actionChoice.num1,
+      _queuedActionId,
       _useAll
     );
     _processConsumable(
       _from,
-      _tokenId,
+      _playerId,
       _itemNFT,
       _actionChoice.inputTokenId2,
       _numConsumed,
       _actionChoice.num2,
       _numEquippedBase * _actionChoice.num2,
+      _queuedActionId,
       _useAll
     );
     _processConsumable(
       _from,
-      _tokenId,
+      _playerId,
       _itemNFT,
       _actionChoice.inputTokenId3,
       _numConsumed,
       _actionChoice.num3,
       _numEquippedBase * _actionChoice.num3,
+      _queuedActionId,
       _useAll
     );
   }
 
   function processConsumables(
     address _from,
-    uint _tokenId,
+    uint _playerId,
     QueuedAction storage _queuedAction,
     uint _elapsedTime,
     World _world,
@@ -413,7 +420,7 @@ library PlayerLibrary {
     if (isCombat) {
       (foodConsumed, died) = _processCombatConsumables(
         _from,
-        _tokenId,
+        _playerId,
         _queuedAction,
         _elapsedTime,
         _itemNFT,
@@ -431,15 +438,17 @@ library PlayerLibrary {
       numConsumed = uint16(maxRequiredRatio);
     }
     if (numConsumed > 0) {
-      _processInputConsumables(_from, _tokenId, actionChoice, numConsumed, _queuedAction.num, _itemNFT, _useAll);
+      _processInputConsumables(
+        _from,
+        _playerId,
+        actionChoice,
+        numConsumed,
+        _queuedAction.num,
+        _itemNFT,
+        _queuedAction.attire.queuedActionId,
+        _useAll
+      );
     }
-
-    /*    if (_useAll && _queuedAction.potionId != 0) {
-      // Consume the potion
-      //      _users.actionUnequip(_from, _queuedAction.potionId, 1);
-      emit ActionUnequip(_tokenId, _queuedAction.potionId, 1);
-      _itemNFT.burn(_from, _queuedAction.potionId, 1);
-    } */
 
     if (actionChoice.outputTokenId != 0) {
       _itemNFT.mint(_from, actionChoice.outputTokenId, numConsumed);

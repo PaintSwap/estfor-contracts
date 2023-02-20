@@ -8,7 +8,6 @@ import {
   BRONZE_GAUNTLETS,
   BRONZE_PICKAXE,
   BRONZE_SWORD,
-  BRONZE_TASSETS,
   COAL_ORE,
   CombatStats,
   COMBAT_BASE,
@@ -25,14 +24,11 @@ import {
   getActionId,
   inputItem,
   LOG,
-  LOG_BASE,
-  LOG_MAX,
   MINING_MAX,
   MITHRIL_BAR,
   MITHRIL_ORE,
+  noAttire,
   NONE,
-  ORE_BASE,
-  ORE_MAX,
   QueuedAction,
   Skill,
   STAFF,
@@ -119,129 +115,6 @@ describe("Player", () => {
     };
   }
 
-  it("Equip", async () => {
-    const {playerId, players, itemNFT, alice} = await loadFixture(deployContracts);
-
-    await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // item doesn't exist yet
-    const combatStats: CombatStats = {
-      attack: 2,
-      magic: 0,
-      range: 0,
-      meleeDefence: -1,
-      magicDefence: 0,
-      rangeDefence: 0,
-      health: 12,
-    };
-    await itemNFT.addItem({
-      ...inputItem,
-      tokenId: BRONZE_GAUNTLETS,
-      combatStats,
-      equipPosition: EquipPosition.ARMS,
-      metadataURI: "someIPFSURI.json",
-    });
-    await expect(players.connect(alice).equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted; // Don't own any
-    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
-  });
-
-  it("Unequip", async () => {
-    const {playerId, players, itemNFT, alice} = await loadFixture(deployContracts);
-
-    const combatStats: CombatStats = {
-      attack: 2,
-      magic: 0,
-      range: 0,
-      meleeDefence: -1,
-      magicDefence: 0,
-      rangeDefence: 0,
-      health: 12,
-    };
-    await itemNFT.addItem({
-      ...inputItem,
-      tokenId: BRONZE_GAUNTLETS,
-      combatStats,
-      equipPosition: EquipPosition.ARMS,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
-
-    {
-      const afterStats = (await players.players(playerId)).totalStats;
-      expect(afterStats.attack).to.eq(2);
-      expect(afterStats.meleeDefence).to.eq(-1);
-    }
-    // Remove a piece of equipment and check the stats are appropriately updated
-    await players.connect(alice).unequip(playerId, EquipPosition.ARMS);
-    {
-      const afterStats = (await players.players(playerId)).totalStats;
-      expect(afterStats.attack).to.eq(0);
-      expect(afterStats.meleeDefence).to.eq(0);
-    }
-  });
-
-  it("SetEquipment", async () => {
-    const {playerId, players, itemNFT, alice} = await loadFixture(deployContracts);
-
-    await expect(players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // items don't exist yet
-    {
-      const combatStats: CombatStats = {
-        attack: 2,
-        magic: 0,
-        range: 0,
-        meleeDefence: -1,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 12,
-      };
-      await itemNFT.addItem({
-        ...inputItem,
-        tokenId: BRONZE_GAUNTLETS,
-        combatStats,
-        equipPosition: EquipPosition.ARMS,
-        metadataURI: "someIPFSURI.json",
-      });
-    }
-    {
-      const combatStats: CombatStats = {
-        attack: 0,
-        magic: 0,
-        range: 0,
-        meleeDefence: 10,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 0,
-      };
-      await itemNFT.addItem({
-        ...inputItem,
-        tokenId: BRONZE_TASSETS,
-        combatStats,
-        equipPosition: EquipPosition.LEGS,
-        metadataURI: "someIPFSURI.json",
-      });
-    }
-
-    await expect(players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS])).to.be.reverted; // Don't own any
-    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await itemNFT.testOnlyMint(alice.address, BRONZE_TASSETS, 1);
-    await players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS, BRONZE_TASSETS]);
-
-    // Check they are both equipped (and stats?)
-    {
-      const afterStats = (await players.players(playerId)).totalStats;
-      expect(afterStats.attack).to.eq(2);
-      expect(afterStats.meleeDefence).to.eq(9);
-    }
-    // Remove a piece of equipment and check the stats are appropriately updated
-    await players.connect(alice).setEquipment(playerId, [BRONZE_GAUNTLETS]);
-    {
-      const afterStats = (await players.players(playerId)).totalStats;
-      expect(afterStats.attack).to.eq(2);
-      expect(afterStats.meleeDefence).to.eq(-1);
-    }
-  });
-
   it("Skill points", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
     await itemNFT.addItem({
@@ -271,6 +144,7 @@ describe("Player", () => {
 
     const actionId = await getActionId(tx);
     const queuedAction: QueuedAction = {
+      attire: noAttire,
       actionId,
       skill: Skill.WOODCUTTING,
       choiceId: NONE,
@@ -318,6 +192,7 @@ describe("Player", () => {
     await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
     const timespan = 3600;
     const queuedAction: QueuedAction = {
+      attire: noAttire,
       actionId,
       skill: Skill.WOODCUTTING,
       choiceId: NONE,
@@ -378,6 +253,7 @@ describe("Player", () => {
     await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
     const timespan = 3600;
     const queuedAction: QueuedAction = {
+      attire: noAttire,
       actionId,
       skill: Skill.WOODCUTTING,
       choiceId: NONE,
@@ -433,7 +309,6 @@ describe("Player", () => {
     });
     await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
     await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
-    await players.connect(alice).equip(playerId, BRONZE_GAUNTLETS);
 
     await itemNFT.addItem({
       ...inputItem,
@@ -460,6 +335,7 @@ describe("Player", () => {
     });
 
     const queuedAction: QueuedAction = {
+      attire: {...noAttire, gauntlets: BRONZE_GAUNTLETS},
       actionId: 1,
       skill: Skill.ATTACK,
       choiceId: NONE,
@@ -487,13 +363,12 @@ describe("Player", () => {
     // TODO:
   });
 
-  it("Equipment stats", async () => {
+  // TODO: Check attire stats are as expected
+
+  /*  it("Check already equipped", async () => {
     const {playerId, players, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
     await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
     expect(await itemNFT.balanceOf(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
-
-    // Gauntlet doesn't exist yet
-    await expect(players.equip(playerId, BRONZE_GAUNTLETS)).to.be.reverted;
 
     const combatStats: CombatStats = {
       attack: 2,
@@ -535,7 +410,7 @@ describe("Player", () => {
     expect(afterStats.magicDefence).to.eq(0);
     expect(afterStats.health).to.eq(12);
 
-    expect((await players.players(playerId)).equipment.gauntlets).to.eq(BRONZE_GAUNTLETS);
+    expect((await players.players(playerId)).attire.gauntlets).to.eq(BRONZE_GAUNTLETS);
 
     // Try equip it on someone else, should fail as we don't have enough
     const avatarId = 1;
@@ -553,9 +428,9 @@ describe("Player", () => {
     await players.connect(alice).setActivePlayer(newPlayerId);
     await players.connect(alice).equip(newPlayerId, BRONZE_GAUNTLETS);
 
-    expect((await players.players(playerId)).equipment.gauntlets).to.eq(NONE);
-    expect((await players.players(newPlayerId)).equipment.gauntlets).to.eq(BRONZE_GAUNTLETS);
-  });
+    expect((await players.players(playerId)).attire.gauntlets).to.eq(NONE);
+    expect((await players.players(newPlayerId)).attire.gauntlets).to.eq(BRONZE_GAUNTLETS);
+  }); */
 
   it("Edit Name", async () => {
     const {playerId, playerNFT, alice, brush} = await loadFixture(deployContracts);
@@ -600,6 +475,7 @@ describe("Player", () => {
       await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       const timespan = 3600;
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.WOODCUTTING,
         choiceId: NONE,
@@ -671,6 +547,7 @@ describe("Player", () => {
 
       const timespan = 3600;
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.FIREMAKING,
         choiceId,
@@ -743,6 +620,7 @@ describe("Player", () => {
         });
         const timespan = 7200 + 10;
         const queuedAction: QueuedAction = {
+          attire: noAttire,
           actionId,
           skill: Skill.WOODCUTTING,
           choiceId: NONE,
@@ -806,6 +684,7 @@ describe("Player", () => {
         const timespan = 3600;
 
         const queuedAction: QueuedAction = {
+          attire: noAttire,
           actionId,
           skill: Skill.FIREMAKING,
           choiceId,
@@ -881,6 +760,7 @@ describe("Player", () => {
         });
         const timespan = 7200;
         const queuedAction: QueuedAction = {
+          attire: noAttire,
           actionId,
           skill: Skill.WOODCUTTING,
           choiceId: NONE,
@@ -944,6 +824,7 @@ describe("Player", () => {
         const timespan = 3600;
 
         const queuedAction: QueuedAction = {
+          attire: noAttire,
           actionId,
           skill: Skill.FIREMAKING,
           choiceId,
@@ -970,9 +851,12 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await players.connect(alice).multiskill(playerId, queuedActions);
+      // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
+      await expect(players.connect(alice).startActions(playerId, queuedActions, false)).to.be.reverted;
 
-      // multi-skill queue
+      await itemNFT.testOnlyMint(alice.address, LOG, 1);
+      await players.connect(alice).startActions(playerId, queuedActions, false);
+
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
@@ -980,7 +864,8 @@ describe("Player", () => {
       // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
         Math.floor((queuedActions[0].timespan * rate) / (3600 * 100)) -
-          Math.floor((queuedActions[1].timespan * rate) / (3600 * 100))
+          Math.floor((queuedActions[1].timespan * rate) / (3600 * 100)) +
+          1
       );
       expect(await players.actionQueueLength(playerId)).to.eq(0);
     });
@@ -1008,6 +893,7 @@ describe("Player", () => {
 
       await itemNFT.testOnlyMint(alice.address, BRONZE_PICKAXE, 1);
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.MINING,
         choiceId: NONE,
@@ -1079,6 +965,7 @@ describe("Player", () => {
       const timespan = 3600;
 
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.SMITHING,
         choiceId,
@@ -1151,6 +1038,7 @@ describe("Player", () => {
       await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       const timespan = 3600 * 24 + 1; // Exceed maximum
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.WOODCUTTING,
         choiceId: NONE,
@@ -1217,6 +1105,7 @@ describe("Player", () => {
       const actionId = await getActionId(tx);
       const timespan = 3600 * 19; // Should make 1
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.WOODCUTTING,
         choiceId: NONE,
@@ -1281,6 +1170,7 @@ describe("Player", () => {
       await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
       const timespan = 3600;
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.ATTACK,
         choiceId: NONE,
@@ -1373,6 +1263,7 @@ describe("Player", () => {
       await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 2);
       const timespan = 3600 * 3; // 3 hours
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.ATTACK,
         choiceId: NONE,
@@ -1473,6 +1364,7 @@ describe("Player", () => {
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
       const queuedAction: QueuedAction = {
+        attire: noAttire,
         actionId,
         skill: Skill.MAGIC,
         choiceId,
