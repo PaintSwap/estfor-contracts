@@ -630,6 +630,7 @@ contract Players is
     uint oldOverallSkillPoints,
     uint newOverallSkillPoints
   ) private {
+    /*
     // Level 99
     if (oldOverallSkillPoints < LEVEL_99_BOUNDARY && newOverallSkillPoints >= LEVEL_99_BOUNDARY) {
       // Mint rewards
@@ -655,7 +656,7 @@ contract Players is
       oldOverallSkillPoints < LEVEL_20_BOUNDARY && newOverallSkillPoints >= LEVEL_20_BOUNDARY
     ) {} else if (oldOverallSkillPoints < LEVEL_10_BOUNDARY && newOverallSkillPoints >= LEVEL_10_BOUNDARY) {} else if (
       oldOverallSkillPoints < LEVEL_5_BOUNDARY && newOverallSkillPoints >= LEVEL_5_BOUNDARY
-    ) {}
+    ) {} */
   }
 
   /*
@@ -702,8 +703,8 @@ contract Players is
     uint _playerId,
     bytes32 _name,
     bytes32 _avatarName,
-    string memory _avatarDescription,
-    string memory imageURI
+    string calldata _avatarDescription,
+    string calldata imageURI
   ) external view returns (string memory) {
     Player storage player = players[_playerId];
     return

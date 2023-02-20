@@ -7,8 +7,8 @@ interface IPlayers {
   function getURI(
     bytes32 _name,
     bytes32 _avatarName,
-    string memory _avatarDescription,
-    string memory _imageURI
+    string calldata _avatarDescription,
+    string calldata _imageURI
   ) external view returns (string memory);
 
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external;

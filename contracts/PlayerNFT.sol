@@ -12,8 +12,8 @@ import "./items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
-  event NewPlayer(uint playerId, uint avatarId, bytes32 name);
-  event EditPlayer(uint playerId, bytes32 newName);
+  event NewPlayer(uint playerId, uint avatarId, bytes20 name);
+  event EditPlayer(uint playerId, bytes20 newName);
 
   event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
@@ -27,15 +27,16 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   error NotOwner();
   error AvatarNotExists();
 
-  uint private latestPlayerId;
+  uint public latestPlayerId;
 
-  mapping(uint => AvatarInfo) private avatars;
-  string private baseURI;
-  mapping(uint => uint) private playerIdToAvatar; // playerId => avatar id
-  mapping(uint => bytes32) private names;
+  mapping(uint => AvatarInfo) public avatars;
+  string public baseURI;
+  mapping(uint => uint) public playerIdToAvatar; // playerId => avatar id
+  mapping(uint => bytes32) public names;
+  mapping(bytes => bool) public lowercaseNames; // name => exists
 
-  IBrushToken brush;
-  IPlayers private players;
+  IBrushToken public brush;
+  IPlayers public players;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(msg.sender, playerId) != 1) {
@@ -69,12 +70,20 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     players.mintBatch(msg.sender, itemNFTs, quantities);
   }
 
+  function _setName(uint _playerId, bytes20 _name) private {
+    require(uint160(_name) != 0, "Name cannot be empty");
+    names[_playerId] = _name;
+    bytes memory lowercaseName = _toLower(_name);
+    require(!lowercaseNames[lowercaseName], "Name already exists");
+    lowercaseNames[lowercaseName] = true;
+  }
+
   // Costs nothing to mint, only gas
   function mint(uint _avatarId, bytes32 _name) external {
     uint currentPlayerId = latestPlayerId;
-    emit NewPlayer(currentPlayerId, _avatarId, _name);
+    emit NewPlayer(currentPlayerId, _avatarId, bytes20(_name));
     _mint(msg.sender, currentPlayerId, 1, "");
-    names[currentPlayerId] = _name;
+    _setName(currentPlayerId, bytes20(_name));
     _mintStartingItems();
     _setTokenIdToAvatar(currentPlayerId, _avatarId);
     ++latestPlayerId;
@@ -149,8 +158,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     // Burn half, the rest goes into the pool
     brush.burn(brushCost / 2);
 
-    names[_playerId] = _newName;
-    emit EditPlayer(_playerId, _newName);
+    // Delete old name
+    bytes32 oldName = names[_playerId];
+    delete names[_playerId];
+    bytes memory oldLowercaseName = _toLower(oldName);
+    delete lowercaseNames[oldLowercaseName];
+
+    _setName(_playerId, bytes20(_newName));
+
+    emit EditPlayer(_playerId, bytes20(_newName));
   }
 
   function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
@@ -179,6 +195,17 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   function setPlayers(IPlayers _players) external onlyOwner {
     players = _players;
+  }
+
+  function _toLower(bytes32 _name) private pure returns (bytes memory) {
+    bytes memory lowerName = bytes(abi.encodePacked(_name));
+    for (uint i = 0; i < lowerName.length; i++) {
+      if ((uint8(lowerName[i]) >= 65) && (uint8(lowerName[i]) <= 90)) {
+        // So we add 32 to make it lowercase
+        lowerName[i] = bytes1(uint8(lowerName[i]) + 32);
+      }
+    }
+    return lowerName;
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
