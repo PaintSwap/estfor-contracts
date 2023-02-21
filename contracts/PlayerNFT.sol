@@ -66,7 +66,19 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   function _mintStartingItems() private {
     // Give the player some starting items
-    (uint[] memory itemNFTs, uint[] memory quantities) = _getInitialStartingItems();
+    uint[] memory itemNFTs = new uint[](5);
+    itemNFTs[0] = BRONZE_SWORD;
+    itemNFTs[1] = BRONZE_AXE;
+    itemNFTs[2] = FIRE_LIGHTER;
+    itemNFTs[3] = SMALL_NET;
+    itemNFTs[4] = BRONZE_PICKAXE;
+
+    uint[] memory quantities = new uint[](5);
+    quantities[0] = 1;
+    quantities[1] = 1;
+    quantities[2] = 1;
+    quantities[3] = 1;
+    quantities[4] = 1;
     players.mintBatch(msg.sender, itemNFTs, quantities);
   }
 
@@ -133,22 +145,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
    */
   function _exists(uint256 _playerId) private view returns (bool) {
     return playerIdToAvatar[_playerId] != 0;
-  }
-
-  function _getInitialStartingItems() private pure returns (uint[] memory itemNFTs, uint[] memory quantities) {
-    itemNFTs = new uint[](5);
-    itemNFTs[0] = BRONZE_SWORD;
-    itemNFTs[1] = BRONZE_AXE;
-    itemNFTs[2] = FIRE_LIGHTER;
-    itemNFTs[3] = SMALL_NET;
-    itemNFTs[4] = BRONZE_PICKAXE;
-
-    quantities = new uint[](5);
-    quantities[0] = 1;
-    quantities[1] = 1;
-    quantities[2] = 1;
-    quantities[3] = 1;
-    quantities[4] = 1;
   }
 
   function editName(uint _playerId, bytes32 _newName) external isOwnerOfPlayer(_playerId) {
