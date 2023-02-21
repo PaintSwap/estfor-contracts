@@ -40,7 +40,7 @@ contract Players is
     Equipment[] consumables;
     Equipment[] foodConsumed;
     ActionReward[] guaranteedRewards;
-    ActionReward[] loot;
+    ActionReward[] randomRewards;
     bool died;
   }
 
@@ -63,7 +63,7 @@ contract Players is
   error NotEquipped();
   error ArgumentLengthMismatch();
 
-  uint private constant MAX_LOOT_PER_ACTION = 5;
+  uint private constant MAX_LOOT_PER_ACTION = 3;
   uint32 public constant MAX_TIME = 1 days;
   uint constant LEVEL_5_BOUNDARY = 374;
   uint constant LEVEL_10_BOUNDARY = 1021;
@@ -558,15 +558,15 @@ contract Players is
   function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
     QueuedAction[] storage actionQueue = players[_playerId].actionQueue;
 
-    pendingOutput.consumables = new Equipment[](actionQueue.length * 3);
+    pendingOutput.consumables = new Equipment[](actionQueue.length * MAX_LOOT_PER_ACTION);
     pendingOutput.foodConsumed = new Equipment[](actionQueue.length);
-    pendingOutput.guaranteedRewards = new ActionReward[](actionQueue.length * 3);
-    pendingOutput.loot = new ActionReward[](actionQueue.length * 3);
+    pendingOutput.guaranteedRewards = new ActionReward[](actionQueue.length * MAX_LOOT_PER_ACTION);
+    pendingOutput.randomRewards = new ActionReward[](actionQueue.length * MAX_LOOT_PER_ACTION);
 
     uint consumableLength;
     uint foodConsumedLength;
     uint guaranteedRewardsLength;
-    uint lootLength;
+    uint randomRewardsLength;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
 

@@ -133,13 +133,13 @@ library PlayerLibrary {
     uint[] memory _amounts,
     uint _elapsedTime,
     ActionReward[] memory _guaranteedRewards
-  ) private pure returns (uint lootLength) {
+  ) private pure returns (uint length) {
     for (uint i; i < _guaranteedRewards.length; ++i) {
       uint numRewards = (_elapsedTime * _guaranteedRewards[i].rate) / (3600 * 100);
       if (numRewards > 0) {
-        _ids[lootLength] = _guaranteedRewards[i].itemTokenId;
-        _amounts[lootLength] = numRewards;
-        ++lootLength;
+        _ids[length] = _guaranteedRewards[i].itemTokenId;
+        _amounts[length] = numRewards;
+        ++length;
       }
     }
   }
@@ -151,10 +151,10 @@ library PlayerLibrary {
     World world,
     uint[] memory _ids,
     uint[] memory _amounts,
-    uint _lootLength,
+    uint _length,
     ActionReward[] memory _randomRewards
-  ) private view returns (uint lootLength) {
-    lootLength = _lootLength;
+  ) private view returns (uint length) {
+    length = _length;
     // Random chance loot
     if (_randomRewards.length > 0) {
       bool hasSeed = world.hasSeed(skillEndTime);
@@ -165,7 +165,7 @@ library PlayerLibrary {
         uint numTickets = elapsedTime / 3600;
 
         bytes32 randomComponent = bytes32(seed) ^ bytes20(_from);
-        uint startLootLength = lootLength;
+        uint startLootLength = length;
         for (uint i; i < numTickets; ++i) {
           // Percentage out of 256
           uint8 rand = uint8(uint256(randomComponent >> (i * 8)));
@@ -189,9 +189,9 @@ library PlayerLibrary {
 
               if (!found) {
                 // New item
-                _ids[lootLength] = potentialLoot.itemTokenId;
-                _amounts[lootLength] = 1;
-                ++lootLength;
+                _ids[length] = potentialLoot.itemTokenId;
+                _amounts[length] = 1;
+                ++length;
               }
               break;
             }
@@ -212,21 +212,12 @@ library PlayerLibrary {
     ids = new uint[](_guaranteedRewards.length + _randomRewards.length);
     amounts = new uint[](_guaranteedRewards.length + _randomRewards.length);
 
-    uint lootLength = _addGuarenteedRewards(ids, amounts, _elapsedTime, _guaranteedRewards);
-    lootLength = _addRandomRewards(
-      _from,
-      _skillEndTime,
-      _elapsedTime,
-      _world,
-      ids,
-      amounts,
-      lootLength,
-      _randomRewards
-    );
+    uint length = _addGuarenteedRewards(ids, amounts, _elapsedTime, _guaranteedRewards);
+    length = _addRandomRewards(_from, _skillEndTime, _elapsedTime, _world, ids, amounts, length, _randomRewards);
 
     assembly ("memory-safe") {
-      mstore(ids, lootLength)
-      mstore(amounts, lootLength)
+      mstore(ids, length)
+      mstore(amounts, length)
     }
   }
 

@@ -64,8 +64,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
   // TODO: Combine these into a struct to save gas
-  mapping(uint => ActionReward[]) guaranteedRewards; // action id => guaranteedRewards
-  mapping(uint => ActionReward[]) randomRewards; // action id => loot chances
+  mapping(uint => ActionReward[]) guaranteedRewards; // action id => guarenteed rewards
+  mapping(uint => ActionReward[]) randomRewards; // action id => random loot change
   mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
 
   function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
