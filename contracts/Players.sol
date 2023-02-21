@@ -88,7 +88,7 @@ contract Players is
     uint40 startTime;
     uint24 duration;
     uint16 val;
-    uint16 playerId; // Get the effect of it
+    uint16 itemTokenId; // Get the effect of it
     BoostType boostType;
   }
   mapping(uint => PlayerBoostInfo) public activeBoosts; // player id => boost info
@@ -162,7 +162,7 @@ contract Players is
     emit ClearAll(_playerId);
     // Can re-mint boost if it hasn't been consumed at all yet
     if (activeBoosts[_playerId].boostType != BoostType.NONE && activeBoosts[_playerId].startTime < block.timestamp) {
-      itemNFT.mint(_from, activeBoosts[_playerId].playerId, 1);
+      itemNFT.mint(_from, activeBoosts[_playerId].itemTokenId, 1);
       delete activeBoosts[_playerId];
     }
     _clearActionQueue(_playerId);
@@ -316,7 +316,6 @@ contract Players is
     uint16 _itemTokenId,
     uint40 _startTime
   ) external isOwnerOfPlayerAndActive(_playerId) {
-    //    require(_itemTokenId >= BOOST_VIAL_BASE && _itemTokenId <= BOOST_VIAL_MAX, "Not a boost vial");
     Item memory item = itemNFT.getItem(_itemTokenId);
     require(item.boostType != BoostType.NONE); // , "Not a boost vial");
     require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
@@ -330,15 +329,15 @@ contract Players is
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
     PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
-    if (playerBoost.playerId != NONE) {
-      itemNFT.mint(from, playerBoost.playerId, 1);
+    if (playerBoost.itemTokenId != NONE) {
+      itemNFT.mint(from, playerBoost.itemTokenId, 1);
     }
 
     playerBoost.startTime = _startTime;
     playerBoost.duration = item.boostDuration;
     playerBoost.val = item.boostValue;
     playerBoost.boostType = item.boostType;
-    playerBoost.playerId = _itemTokenId;
+    playerBoost.itemTokenId = _itemTokenId;
 
     emit ConsumeBoostVial(_playerId, playerBoost);
   }
@@ -347,12 +346,12 @@ contract Players is
     require(activeBoosts[_playerId].boostType != BoostType.NONE); // , "No active boost");
     require(activeBoosts[_playerId].startTime <= block.timestamp); // "Boost time already started");
     address from = msg.sender;
-    itemNFT.mint(from, activeBoosts[_playerId].playerId, 1);
+    itemNFT.mint(from, activeBoosts[_playerId].itemTokenId, 1);
     emit UnconsumeBoostVial(_playerId);
   }
 
   // Checks they have sufficient balance to equip the items
-  function _checkAttire(address _from, uint _playerId, Attire memory _attire) private view {
+  function _checkAttire(address _from, Attire memory _attire) private view {
     // Check the user has these items
     //    uint raw = _getEquipmentRawVal(_attire);
     //    if (raw > 0) {
@@ -377,7 +376,7 @@ contract Players is
     //    }
   }
 
-  function _checkActionConsumables(address _from, uint _playerId, QueuedAction memory _queuedAction) private view {
+  function _checkActionConsumables(address _from, QueuedAction memory _queuedAction) private view {
     // Check they have this to equip. Indexer can check actionChoices
     if (_queuedAction.regenerateId != NONE) {
       require(itemNFT.balanceOf(_from, _queuedAction.regenerateId) > 0);
@@ -443,8 +442,8 @@ contract Players is
       _checkEquipActionEquipmentBalance(_from, _queuedAction.rightArmEquipmentTokenId);
     }
 
-    _checkAttire(_from, _playerId, _queuedAction.attire);
-    _checkActionConsumables(_from, _playerId, _queuedAction);
+    _checkAttire(_from, _queuedAction.attire);
+    _checkActionConsumables(_from, _queuedAction);
 
     _queuedAction.startTime = uint40(_startTime);
     _queuedAction.attire.queueId = _queueId;
