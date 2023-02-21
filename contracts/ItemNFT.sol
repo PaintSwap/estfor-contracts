@@ -209,6 +209,7 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     if (_item.boostType != BoostType.NONE) {
       item.boostType = _item.boostType;
       item.boostValue = _item.boostValue;
+      item.boostDuration = _item.boostDuration;
     }
     tokenURIs[_item.tokenId] = _item.metadataURI;
   }

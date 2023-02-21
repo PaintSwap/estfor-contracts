@@ -74,7 +74,8 @@ enum EquipPosition {
   BOTH_HANDS,
   ARROW_SATCHEL,
   MAGIC_BAG,
-  AUX, // wood, seeds, food etc..
+  FOOD,
+  AUX, // wood, seeds etc..
   BOOST_VIAL,
   NONE
 }

@@ -238,15 +238,16 @@ uint16 constant BRONZE_ARROWS = ARROWS_BASE;
 uint16 constant ARROWS_MAX = ARROWS_BASE + 255;
 
 // Scrolls
-uint16 constant SCROLLS_BASE = 12032;
-uint16 constant AIR_SCROLLS = SCROLLS_BASE;
-uint16 constant FIRE_SCROLLS = SCROLLS_BASE + 1;
-uint16 constant SCROLLS_MAX = SCROLLS_BASE + 255;
+uint16 constant SCROLL_BASE = 12032;
+uint16 constant AIR_SCROLL = SCROLL_BASE;
+uint16 constant FIRE_SCROLL = SCROLL_BASE + 1;
+uint16 constant SCROLL_MAX = SCROLL_BASE + 255;
 
 // Boosts
 uint16 constant BOOST_VIAL_BASE = 60000;
 uint16 constant XP_BOOST = BOOST_VIAL_BASE;
-uint16 constant MEGA_XP_BOOST = BOOST_VIAL_BASE + 1;
+uint16 constant NON_COMBAT_XP_BOOST = BOOST_VIAL_BASE + 1;
+uint16 constant COMBAT_XP_BOOST = BOOST_VIAL_BASE + 2;
 uint16 constant BOOST_VIAL_MAX = BOOST_VIAL_BASE + 255;
 
 // MISC

@@ -265,13 +265,16 @@ export const AIR_SCROLL = SCROLL_BASE;
 export const FIRE_SCROLL = SCROLL_BASE + 1;
 export const SCROLL_MAX = SCROLL_BASE + 255;
 
+// Boosts
+export const BOOST_VIAL_BASE = 60000;
+export const XP_BOOST = BOOST_VIAL_BASE;
+export const NON_COMBAT_XP_BOOST = BOOST_VIAL_BASE + 1;
+export const COMBAT_XP_BOOST = BOOST_VIAL_BASE + 2;
+export const BOOST_VIAL_MAX = BOOST_VIAL_BASE + 255;
+
 // MISC
 export const MYSTERY_BOX = 65535;
 export const RAID_PASS = MYSTERY_BOX - 1;
-
-// Boosts
-export const XP_BOOST = 60000;
-export const MEGA_XP_BOOST = XP_BOOST - 1;
 
 // Other MISC
 /*Natuow Hide
@@ -304,7 +307,9 @@ export enum EquipPosition {
   BOTH_HANDS,
   ARROW_SATCHEL,
   MAGIC_BAG,
-  AUX,
+  FOOD,
+  AUX, // wood, seeds etc..
+  BOOST_VIAL,
   NONE,
 }
 
@@ -474,7 +479,7 @@ const bronzeSwordStats = {
   health: 0,
 };
 
-enum BoostType {
+export enum BoostType {
   NONE,
   ANY_XP,
   COMBAT_XP,

@@ -263,26 +263,7 @@ contract Players is
     bool _add,
     uint _startTime
   ) private {
-    // TODO: Balance of Batch would be better
-    // TODO: Checkpoints for start time.
-    if (_attire.helmet != NONE && itemNFT.balanceOf(_from, _attire.helmet) > 0) {
-      PlayerLibrary.updatePlayerStats(_stats, itemNFT.getItem(_attire.helmet), _add);
-    }
-    if (_attire.amulet != NONE && itemNFT.balanceOf(_from, _attire.amulet) > 0) {
-      PlayerLibrary.updatePlayerStats(_stats, itemNFT.getItem(_attire.amulet), _add);
-    }
-    if (_attire.chestplate != NONE && itemNFT.balanceOf(_from, _attire.chestplate) > 0) {
-      PlayerLibrary.updatePlayerStats(_stats, itemNFT.getItem(_attire.chestplate), _add);
-    }
-    if (_attire.gauntlets != NONE && itemNFT.balanceOf(_from, _attire.gauntlets) > 0) {
-      PlayerLibrary.updatePlayerStats(_stats, itemNFT.getItem(_attire.gauntlets), _add);
-    }
-    if (_attire.tassets != NONE && itemNFT.balanceOf(_from, _attire.tassets) > 0) {
-      PlayerLibrary.updatePlayerStats(_stats, itemNFT.getItem(_attire.tassets), _add);
-    }
-    if (_attire.boots != NONE && itemNFT.balanceOf(_from, _attire.boots) > 0) {
-      PlayerLibrary.updatePlayerStats(_stats, itemNFT.getItem(_attire.boots), _add);
-    }
+    PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT, _add);
   }
 
   function _getEquippedTokenId(
@@ -311,11 +292,7 @@ contract Players is
     return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
   }
 
-  function consumeBoost(
-    uint _playerId,
-    uint16 _itemTokenId,
-    uint40 _startTime
-  ) external isOwnerOfPlayerAndActive(_playerId) {
+  function _consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) private {
     Item memory item = itemNFT.getItem(_itemTokenId);
     require(item.boostType != BoostType.NONE); // , "Not a boost vial");
     require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
@@ -340,6 +317,14 @@ contract Players is
     playerBoost.itemTokenId = _itemTokenId;
 
     emit ConsumeBoostVial(_playerId, playerBoost);
+  }
+
+  function consumeBoost(
+    uint _playerId,
+    uint16 _itemTokenId,
+    uint40 _startTime
+  ) external isOwnerOfPlayerAndActive(_playerId) {
+    _consumeBoost(_playerId, _itemTokenId, _startTime);
   }
 
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
@@ -467,7 +452,12 @@ contract Players is
     _setActionQueue(_playerId, remainingSkillQueue);
   }
 
-  function _startActions(uint _playerId, QueuedAction[] memory _queuedActions, bool _append) private {
+  function _startActions(
+    uint _playerId,
+    QueuedAction[] memory _queuedActions,
+    uint16 _boostItemTokenId,
+    bool _append
+  ) private {
     if (_queuedActions.length == 0) {
       revert SkillsArrayZero();
     }
@@ -475,6 +465,11 @@ contract Players is
     address from = msg.sender;
     uint totalTimespan;
     QueuedAction[] memory remainingSkills = _consumeActions(from, _playerId);
+
+    if (_boostItemTokenId != NONE) {
+      _consumeBoost(_playerId, _boostItemTokenId, uint40(block.timestamp));
+    }
+
     Player storage player = players[_playerId];
     if (!_append) {
       if (player.actionQueue.length > 0) {
@@ -517,18 +512,20 @@ contract Players is
   ) external isOwnerOfPlayerAndActive(_playerId) {
     QueuedAction[] memory queuedActions = new QueuedAction[](1);
     queuedActions[0] = _queuedAction;
-    _startActions(_playerId, queuedActions, _append);
+    _startActions(_playerId, queuedActions, NONE, _append);
   }
 
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
   function startActions(
     uint _playerId,
     QueuedAction[] calldata _queuedActions,
+    uint16 _boostItemTokenId,
     bool _append
   ) external isOwnerOfPlayerAndActive(_playerId) {
-    _startActions(_playerId, _queuedActions, _append);
+    _startActions(_playerId, _queuedActions, _boostItemTokenId, _append);
   }
 
+  /*
   function removeQueuedAction(uint _playerId, uint _queueId) external isOwnerOfPlayer(_playerId) {
     // If the action is in progress, it can't be removed (allow later)
     QueuedAction[] storage actionQueue = players[_playerId].actionQueue;
@@ -555,7 +552,7 @@ contract Players is
         return;
       }
     }
-  }
+  } */
 
   // Get any changes that are pending and not on the blockchain yet.
   function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
@@ -767,6 +764,32 @@ contract Players is
     emit SetActivePlayer(from, _playerId);
   }
 
+  function _extraXPFromBoost(
+    uint _playerId,
+    bool _isCombatSkill,
+    uint _actionStartTime,
+    uint _elapsedTime,
+    uint16 _xpPerHour
+  ) private view returns (uint32 boostPointsAccrued) {
+    if (activeBoosts[_playerId].itemTokenId != NONE && activeBoosts[_playerId].startTime < block.timestamp) {
+      // A boost is active
+      if (
+        (_isCombatSkill && activeBoosts[_playerId].boostType == BoostType.COMBAT_XP) ||
+        (!_isCombatSkill && activeBoosts[_playerId].boostType == BoostType.NON_COMBAT_XP)
+      ) {
+        uint boostedTime;
+        // Correct skill for the boost
+        if (_actionStartTime + _elapsedTime < activeBoosts[_playerId].startTime + activeBoosts[_playerId].duration) {
+          // Consume it all
+          boostedTime = _elapsedTime;
+        } else {
+          boostedTime = activeBoosts[_playerId].duration;
+        }
+        boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoosts[_playerId].val) / (3600 * 100));
+      }
+    }
+  }
+
   function _consumeActions(address _from, uint _playerId) private returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_playerId];
     if (player.actionQueue.length == 0) {
@@ -831,11 +854,10 @@ contract Players is
       }
 
       if (!died) {
-        uint16 xpPerHour = world.getXPPerHour(
-          queuedAction.actionId,
-          _isCombat(queuedAction.skill) ? NONE : queuedAction.choiceId
-        );
+        bool _isCombatSkill = _isCombat(queuedAction.skill);
+        uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((elapsedTime * xpPerHour) / 3600);
+        pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
       }
 
       if (elapsedTime < queuedAction.timespan) {

@@ -75,27 +75,56 @@ library PlayerLibrary {
     return output;
   }
 
-  function updatePlayerStats(CombatStats memory _totalStats, Item memory _item, bool _add) external pure {
+  function updateCombatStats(
+    address _from,
+    CombatStats memory _stats,
+    Attire memory _attire,
+    ItemNFT _itemNFT,
+    bool _add
+  ) external view {
+    // TODO: Balance of Batch would be better
+    // TODO: Checkpoints for start time.
+    if (_attire.helmet != NONE && _itemNFT.balanceOf(_from, _attire.helmet) > 0) {
+      _updateCombatStats(_stats, _itemNFT.getItem(_attire.helmet), _add);
+    }
+    if (_attire.amulet != NONE && _itemNFT.balanceOf(_from, _attire.amulet) > 0) {
+      _updateCombatStats(_stats, _itemNFT.getItem(_attire.amulet), _add);
+    }
+    if (_attire.chestplate != NONE && _itemNFT.balanceOf(_from, _attire.chestplate) > 0) {
+      _updateCombatStats(_stats, _itemNFT.getItem(_attire.chestplate), _add);
+    }
+    if (_attire.gauntlets != NONE && _itemNFT.balanceOf(_from, _attire.gauntlets) > 0) {
+      _updateCombatStats(_stats, _itemNFT.getItem(_attire.gauntlets), _add);
+    }
+    if (_attire.tassets != NONE && _itemNFT.balanceOf(_from, _attire.tassets) > 0) {
+      _updateCombatStats(_stats, _itemNFT.getItem(_attire.tassets), _add);
+    }
+    if (_attire.boots != NONE && _itemNFT.balanceOf(_from, _attire.boots) > 0) {
+      _updateCombatStats(_stats, _itemNFT.getItem(_attire.boots), _add);
+    }
+  }
+
+  function _updateCombatStats(CombatStats memory _stats, Item memory _item, bool _add) private pure {
     if (_item.attack != 0) {
-      _totalStats.attack += _add ? _item.attack : -_item.attack;
+      _stats.attack += _add ? _item.attack : -_item.attack;
     }
     if (_item.magic != 0) {
-      _totalStats.magic += _add ? _item.magic : -_item.magic;
+      _stats.magic += _add ? _item.magic : -_item.magic;
     }
     if (_item.range != 0) {
-      _totalStats.range += _add ? _item.range : -_item.range;
+      _stats.range += _add ? _item.range : -_item.range;
     }
     if (_item.meleeDefence != 0) {
-      _totalStats.meleeDefence += _add ? _item.meleeDefence : -_item.meleeDefence;
+      _stats.meleeDefence += _add ? _item.meleeDefence : -_item.meleeDefence;
     }
     if (_item.magicDefence != 0) {
-      _totalStats.magicDefence += _add ? _item.magicDefence : -_item.magicDefence;
+      _stats.magicDefence += _add ? _item.magicDefence : -_item.magicDefence;
     }
     if (_item.rangeDefence != 0) {
-      _totalStats.rangeDefence += _add ? _item.rangeDefence : -_item.rangeDefence;
+      _stats.rangeDefence += _add ? _item.rangeDefence : -_item.rangeDefence;
     }
     if (_item.health != 0) {
-      _totalStats.health += _add ? _item.health : -_item.health;
+      _stats.health += _add ? _item.health : -_item.health;
     }
   }
 

@@ -3,6 +3,7 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {
   AIR_SCROLL,
+  BoostType,
   BRONZE_ARROW,
   BRONZE_AXE,
   BRONZE_GAUNTLETS,
@@ -29,6 +30,7 @@ import {
   MITHRIL_ORE,
   noAttire,
   NONE,
+  NON_COMBAT_XP_BOOST,
   QueuedAction,
   Skill,
   STAFF,
@@ -468,6 +470,7 @@ describe("Player", () => {
     await expect(playerNFT.connect(alice).editName(newPlayerId, name)).to.be.reverted;
   });
 
+  /* Disabled for now as not used?
   it("Remove action", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
@@ -525,7 +528,7 @@ describe("Player", () => {
     });
 
     // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
-    await players.connect(alice).startActions(playerId, queuedActions, false);
+    await players.connect(alice).startActions(playerId, queuedActions, NONE, false);
 
     // Cannot remove the first one because it's already started
     let queueId = 1; // First one starts here
@@ -538,6 +541,151 @@ describe("Player", () => {
     const actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue[0].attire.queueId).to.eq(queueId);
     expect(actionQueue[1].attire.queueId).to.eq(queueId + 2);
+  }); */
+
+  describe("Boosts", () => {
+    it("Add Boost, Full consume", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const boostValue = 10;
+      const boostDuration = 3300;
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: NON_COMBAT_XP_BOOST,
+        equipPosition: EquipPosition.BOOST_VIAL,
+        metadataURI: "someIPFSURI.json",
+        // Boost
+        boostType: BoostType.NON_COMBAT_XP,
+        boostValue,
+        boostDuration,
+      });
+
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        info: {
+          skill: Skill.WOODCUTTING,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: BRONZE_AXE,
+          itemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: actionIsAvailable,
+          isCombat: false,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyStats,
+      });
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
+      await itemNFT.testOnlyMint(alice.address, NON_COMBAT_XP_BOOST, 1);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        skill: Skill.WOODCUTTING,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_AXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(1);
+      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, false);
+      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(0);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(
+        queuedAction.timespan + (boostDuration * boostValue) / 100
+      ); //
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
+    });
+
+    it("Add Boost, partial consume", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const boostValue = 10;
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: NON_COMBAT_XP_BOOST,
+        equipPosition: EquipPosition.BOOST_VIAL,
+        metadataURI: "someIPFSURI.json",
+        // Boost
+        boostType: BoostType.NON_COMBAT_XP,
+        boostValue,
+        boostDuration: 7200,
+      });
+
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        info: {
+          skill: Skill.WOODCUTTING,
+          baseXPPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          itemTokenIdRangeMin: BRONZE_AXE,
+          itemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: actionIsAvailable,
+          isCombat: false,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyStats,
+      });
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
+      await itemNFT.testOnlyMint(alice.address, NON_COMBAT_XP_BOOST, 1);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        skill: Skill.WOODCUTTING,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_AXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(1);
+      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, false);
+      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(0);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(
+        queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
+      ); //
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
+    });
   });
 
   describe("Non-Combat Actions", () => {
@@ -921,10 +1069,10 @@ describe("Player", () => {
       });
 
       // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
-      await expect(players.connect(alice).startActions(playerId, queuedActions, false)).to.be.reverted;
+      await expect(players.connect(alice).startActions(playerId, queuedActions, NONE, false)).to.be.reverted;
 
       await itemNFT.testOnlyMint(alice.address, LOG, 1);
-      await players.connect(alice).startActions(playerId, queuedActions, false);
+      await players.connect(alice).startActions(playerId, queuedActions, NONE, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
@@ -1450,7 +1598,7 @@ describe("Player", () => {
         {
           ...inputItem,
           tokenId: COOKED_HUPPY,
-          equipPosition: EquipPosition.AUX, // FOOD
+          equipPosition: EquipPosition.FOOD,
           metadataURI: "someIPFSURI.json",
         },
       ]);
