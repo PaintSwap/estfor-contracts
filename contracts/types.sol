@@ -75,7 +75,7 @@ enum EquipPosition {
   ARROW_SATCHEL,
   MAGIC_BAG,
   FOOD,
-  AUX, // wood, seeds etc..
+  AUX, // wood, seeds  etc..
   BOOST_VIAL,
   NONE
 }
@@ -178,3 +178,20 @@ struct Player {
   uint240 totalSkillPoints;
   uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
 }
+
+// This is only for viewing so doesn't need to be optimized
+struct PendingOutput {
+  Equipment[] consumed;
+  ActionReward[] produced;
+  bool died;
+}
+
+struct PlayerBoostInfo {
+  uint40 startTime;
+  uint24 duration;
+  uint16 val;
+  uint16 itemTokenId; // Get the effect of it
+  BoostType boostType;
+}
+
+uint constant MAX_LOOT_PER_ACTION = 3;

@@ -692,7 +692,7 @@ describe("Player", () => {
     // Test minSkillPoints
     // Test isDynamic
     // Test incorrect item position and range
-    it("Woodcutting", async () => {
+    it.only("Woodcutting", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const rate = 100 * 100; // per hour
@@ -739,10 +739,17 @@ describe("Player", () => {
       await players.connect(alice).startAction(playerId, queuedAction, false);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await ethers.provider.send("evm_mine", []);
+      const pendingOutput = await players.connect(alice).pending(playerId);
+      expect(pendingOutput.consumed.length).is.eq(0);
+      expect(pendingOutput.produced.length).is.eq(1);
+      expect(pendingOutput.produced[0].itemTokenId).is.eq(LOG);
+      const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
+      expect(pendingOutput.produced[0].rate).is.eq(balanceExpected);
       await players.connect(alice).consumeActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
       // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(balanceExpected);
     });
 
     it("Firemaking", async () => {

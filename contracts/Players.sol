@@ -12,10 +12,7 @@ import "./PlayerNFT.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-contract Players is
-  OwnableUpgradeable,
-  UUPSUpgradeable // Multicall {
-{
+contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary for  Should match the event in Players
 
   event ClearAll(uint playerId);
@@ -34,15 +31,6 @@ contract Players is
   event SetActivePlayer(address account, uint playerId);
 
   event RemoveQueuedAction(uint playerId, uint queueId);
-
-  // This is only for viewing so doesn't need to be optimized
-  struct PendingOutput {
-    Equipment[] consumables;
-    Equipment[] foodConsumed;
-    ActionReward[] guaranteedRewards;
-    ActionReward[] randomRewards;
-    bool died;
-  }
 
   // TODO this could be packed better. As Combat stats are 8 bytes so could fit 4 of them
   struct AttireAttributes {
@@ -63,7 +51,6 @@ contract Players is
   error NotEquipped();
   error ArgumentLengthMismatch();
 
-  uint private constant MAX_LOOT_PER_ACTION = 3;
   uint32 public constant MAX_TIME = 1 days;
   uint constant LEVEL_5_BOUNDARY = 374;
   uint constant LEVEL_10_BOUNDARY = 1021;
@@ -84,13 +71,6 @@ contract Players is
 
   mapping(address => uint) activePlayer;
 
-  struct PlayerBoostInfo {
-    uint40 startTime;
-    uint24 duration;
-    uint16 val;
-    uint16 itemTokenId; // Get the effect of it
-    BoostType boostType;
-  }
   mapping(uint => PlayerBoostInfo) public activeBoosts; // player id => boost info
 
   uint private queueId; // Global queued action id
@@ -262,7 +242,7 @@ contract Players is
     Attire storage _attire,
     bool _add,
     uint _startTime
-  ) private {
+  ) private view {
     PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT, _add);
   }
 
@@ -557,54 +537,16 @@ contract Players is
   // Get any changes that are pending and not on the blockchain yet.
   function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
     QueuedAction[] storage actionQueue = players[_playerId].actionQueue;
-
-    pendingOutput.consumables = new Equipment[](actionQueue.length * MAX_LOOT_PER_ACTION);
-    pendingOutput.foodConsumed = new Equipment[](actionQueue.length);
-    pendingOutput.guaranteedRewards = new ActionReward[](actionQueue.length * MAX_LOOT_PER_ACTION);
-    pendingOutput.randomRewards = new ActionReward[](actionQueue.length * MAX_LOOT_PER_ACTION);
-
-    uint consumableLength;
-    uint foodConsumedLength;
-    uint guaranteedRewardsLength;
-    uint randomRewardsLength;
-    for (uint i; i < actionQueue.length; ++i) {
-      QueuedAction storage queuedAction = actionQueue[i];
-
-      uint24 elapsedTime;
-      uint40 skillEndTime = queuedAction.startTime + queuedAction.timespan;
-      bool consumeAll = skillEndTime <= block.timestamp;
-      if (consumeAll) {
-        // Fully consume this skill
-        elapsedTime = queuedAction.timespan;
-      } else if (block.timestamp > queuedAction.startTime) {
-        // partially consume
-        elapsedTime = uint16(block.timestamp - queuedAction.startTime);
-        skillEndTime = uint40(block.timestamp);
-      } else {
-        break;
-      }
-      /*
-      // Create some items if necessary (smithing ores to bars for instance)
-      uint16 modifiedElapsedTime = speedMultiplier[ _playerId] > 1
-        ? elapsedTime * speedMultiplier[ _playerId]
-        : elapsedTime;
-      (uint16 numProduced, uint16 foodConsumed, bool died) = PlayerLibrary.processConsumablesView(
-        queuedAction,
-        modifiedElapsedTime,
-        world
+    return
+      PlayerLibrary.pending(
+        _playerId,
+        actionQueue,
+        players[_playerId],
+        itemNFT,
+        world,
+        speedMultiplier[_playerId],
+        activeBoosts[_playerId]
       );
-      
-      ActionChoice memory actionChoice = world.getActionChoice(
-        _isCombat ? NONE : queuedAction.actionId,
-        queuedAction.choiceId
-      );
-
-      if (actionChoice.itemTokenId1 > 0) {}
-      if (actionChoice.itemTokenId2 > 0) {}
-      if (actionChoice.itemTokenId3 > 0) {} */
-
-      // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
-    }
   }
 
   function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
@@ -711,22 +653,8 @@ contract Players is
     uint _playerId,
     uint _skillEndTime,
     QueuedAction storage _queuedAction
-  ) private view returns (uint elapsedTime) {
-    bool consumeAll = _skillEndTime <= block.timestamp;
-    if (consumeAll) {
-      // Fully consume this skill
-      elapsedTime = _queuedAction.timespan;
-    } else if (block.timestamp > _queuedAction.startTime) {
-      // partially consume
-      elapsedTime = block.timestamp - _queuedAction.startTime;
-      uint modifiedElapsedTime = speedMultiplier[_playerId] > 1
-        ? uint(elapsedTime) * speedMultiplier[_playerId]
-        : elapsedTime;
-      // Up to timespan
-      if (modifiedElapsedTime > _queuedAction.timespan) {
-        elapsedTime = _queuedAction.timespan;
-      }
-    }
+  ) private view returns (uint) {
+    return PlayerLibrary.getElapsedTime(_skillEndTime, _queuedAction, speedMultiplier[_playerId]);
   }
 
   function _updateSkillPoints(uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
@@ -771,23 +699,14 @@ contract Players is
     uint _elapsedTime,
     uint16 _xpPerHour
   ) private view returns (uint32 boostPointsAccrued) {
-    if (activeBoosts[_playerId].itemTokenId != NONE && activeBoosts[_playerId].startTime < block.timestamp) {
-      // A boost is active
-      if (
-        (_isCombatSkill && activeBoosts[_playerId].boostType == BoostType.COMBAT_XP) ||
-        (!_isCombatSkill && activeBoosts[_playerId].boostType == BoostType.NON_COMBAT_XP)
-      ) {
-        uint boostedTime;
-        // Correct skill for the boost
-        if (_actionStartTime + _elapsedTime < activeBoosts[_playerId].startTime + activeBoosts[_playerId].duration) {
-          // Consume it all
-          boostedTime = _elapsedTime;
-        } else {
-          boostedTime = activeBoosts[_playerId].duration;
-        }
-        boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoosts[_playerId].val) / (3600 * 100));
-      }
-    }
+    return
+      PlayerLibrary.extraXPFromBoost(
+        _isCombatSkill,
+        _actionStartTime,
+        _elapsedTime,
+        _xpPerHour,
+        activeBoosts[_playerId]
+      );
   }
 
   function _consumeActions(address _from, uint _playerId) private returns (QueuedAction[] memory remainingSkills) {
