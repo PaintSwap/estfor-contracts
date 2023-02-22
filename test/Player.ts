@@ -692,7 +692,7 @@ describe("Player", () => {
     // Test minSkillPoints
     // Test isDynamic
     // Test incorrect item position and range
-    it.only("Woodcutting", async () => {
+    it("Woodcutting", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const rate = 100 * 100; // per hour

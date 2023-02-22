@@ -16,7 +16,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary for  Should match the event in Players
 
   event ClearAll(uint playerId);
-  event ActionFinished(uint playerId, uint queueId);
 
   event AddSkillPoints(uint playerId, Skill skill, uint32 points);
 
@@ -31,6 +30,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event SetActivePlayer(address account, uint playerId);
 
   event RemoveQueuedAction(uint playerId, uint queueId);
+
+  // For logging
+  event Died(uint playerId, uint queueId);
+  event Rewards(address _from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
+  event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
+  event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
+  event ActionFinished(uint playerId, uint queueId);
+  event ActionPartiallyFinished(uint playerId, uint queueId, uint elapsedTime);
 
   // TODO this could be packed better. As Combat stats are 8 bytes so could fit 4 of them
   struct AttireAttributes {
@@ -749,8 +756,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       }
 
       // Create some items if necessary (smithing ores to bars for instance)
-      uint16 foodConsumed;
-      uint16 numConsumed;
       bool died;
 
       ActionChoice memory actionChoice;
@@ -759,8 +764,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       if (queuedAction.choiceId != 0 || isCombat) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
-        // This also unequips.
-        (foodConsumed, numConsumed, elapsedTime, died) = PlayerLibrary.processConsumables(
+        (elapsedTime, died) = PlayerLibrary.processConsumables(
           _from,
           _playerId,
           queuedAction,
@@ -772,14 +776,18 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         );
       }
 
+      uint queueId = queuedAction.attire.queueId;
       if (!died) {
         bool _isCombatSkill = _isCombat(queuedAction.skill);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((elapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
+      } else {
+        emit Died(_playerId, queueId);
       }
 
-      if (elapsedTime < queuedAction.timespan) {
+      bool fullyFinished = elapsedTime >= queuedAction.timespan;
+      if (!fullyFinished) {
         // Add the remainder if this action is not fully consumed
         _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, length);
         nextStartTime += elapsedTime;
@@ -805,11 +813,18 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
-        itemNFT.mintBatch(_from, newIds, newAmounts);
+        if (newIds.length > 0) {
+          itemNFT.mintBatch(_from, newIds, newAmounts);
+          emit Rewards(_from, _playerId, queuedAction.attire.queueId, newIds, newAmounts);
+        }
         allpointsAccrued += pointsAccrued;
       }
 
-      emit ActionFinished(_playerId, queuedAction.attire.queueId); // Action finished
+      if (fullyFinished) {
+        emit ActionFinished(_playerId, queueId);
+      } else {
+        emit ActionPartiallyFinished(_playerId, queueId, elapsedTime);
+      }
     }
 
     if (allpointsAccrued > 0) {

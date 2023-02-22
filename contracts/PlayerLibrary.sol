@@ -11,6 +11,8 @@ import "./Players.sol"; // Might not even be needed
 library PlayerLibrary {
   // Should match the event in Players
   event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount);
+  event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
+  event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
 
   function uri(
     bytes32 name,
@@ -236,6 +238,7 @@ library PlayerLibrary {
     uint16 numBurn = _numProduced * _baseNum;
     // Balance should be checked beforehand
     emit ActionUnequip(_playerId, _queueId, _itemTokenId, numBurn);
+    emit Consume(_from, _playerId, _queueId, _itemTokenId, numBurn);
     _itemNFT.burn(_from, _itemTokenId, numBurn);
   }
 
@@ -358,10 +361,10 @@ library PlayerLibrary {
     uint _elapsedTime,
     ItemNFT _itemNFT,
     CombatStats storage _playerStats
-  ) private returns (uint16 foodConsumed, bool died) {
+  ) private returns (bool died) {
     /* combatStats.attack, */
     /* playerStats.meleeDefence */
-
+    uint16 foodConsumed;
     (foodConsumed, died) = _combatConsumablesView(
       _from,
       _playerId,
@@ -491,7 +494,7 @@ library PlayerLibrary {
     ItemNFT _itemNFT,
     CombatStats storage _playerStats,
     ActionChoice memory _actionChoice
-  ) external returns (uint16 foodConsumed, uint16 numConsumed, uint actualElapsedTime, bool died) {
+  ) external returns (uint actualElapsedTime, bool died) {
     // Fetch the requirements for it
     (bool isCombat, CombatStats memory combatStats) = _world.getCombatStats(_queuedAction.actionId);
 
@@ -501,18 +504,11 @@ library PlayerLibrary {
     // This is based on the damage done from battling
     // TODO Should probably move this out?
     if (isCombat) {
-      (foodConsumed, died) = _processCombatConsumables(
-        _from,
-        _playerId,
-        _queuedAction,
-        _elapsedTime,
-        _itemNFT,
-        _playerStats
-      );
+      (died) = _processCombatConsumables(_from, _playerId, _queuedAction, _elapsedTime, _itemNFT, _playerStats);
     }
 
     // Check the max that can be used. To prevent overflow for sped up actions.
-    numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * 100));
+    uint16 numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * 100));
     // This checks the balances
     uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
 
@@ -527,6 +523,7 @@ library PlayerLibrary {
 
     if (_actionChoice.outputTokenId != 0) {
       _itemNFT.mint(_from, _actionChoice.outputTokenId, numConsumed);
+      emit Reward(_from, _playerId, _queuedAction.attire.queueId, _actionChoice.outputTokenId, numConsumed);
     }
   }
 
