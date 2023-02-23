@@ -10,7 +10,6 @@ import "./Players.sol"; // Might not even be needed
 // Show all the player stats, return metadata json
 library PlayerLibrary {
   // Should match the event in Players
-  event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount);
   event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
   event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
 
@@ -92,8 +91,8 @@ library PlayerLibrary {
     if (_attire.amulet != NONE && _itemNFT.balanceOf(_from, _attire.amulet) > 0) {
       _updateCombatStats(_stats, _itemNFT.getItem(_attire.amulet), _add);
     }
-    if (_attire.chestplate != NONE && _itemNFT.balanceOf(_from, _attire.chestplate) > 0) {
-      _updateCombatStats(_stats, _itemNFT.getItem(_attire.chestplate), _add);
+    if (_attire.armor != NONE && _itemNFT.balanceOf(_from, _attire.armor) > 0) {
+      _updateCombatStats(_stats, _itemNFT.getItem(_attire.armor), _add);
     }
     if (_attire.gauntlets != NONE && _itemNFT.balanceOf(_from, _attire.gauntlets) > 0) {
       _updateCombatStats(_stats, _itemNFT.getItem(_attire.gauntlets), _add);
@@ -237,7 +236,6 @@ library PlayerLibrary {
     }
     uint16 numBurn = _numProduced * _baseNum;
     // Balance should be checked beforehand
-    emit ActionUnequip(_playerId, _queueId, _itemTokenId, numBurn);
     emit Consume(_from, _playerId, _queueId, _itemTokenId, numBurn);
     _itemNFT.burn(_from, _itemTokenId, numBurn);
   }
@@ -269,14 +267,7 @@ library PlayerLibrary {
     // TODO Should probably move this out?
     if (isCombat) {
       uint16 foodConsumed;
-      (foodConsumed, died) = _combatConsumablesView(
-        _from,
-        _playerId,
-        _queuedAction,
-        _elapsedTime,
-        _itemNFT,
-        _playerStats
-      );
+      (foodConsumed, died) = _combatConsumablesView(_from, _queuedAction, _elapsedTime, _itemNFT, _playerStats);
 
       if (_actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(_queuedAction.regenerateId, foodConsumed);
@@ -328,7 +319,6 @@ library PlayerLibrary {
 
   function _combatConsumablesView(
     address _from,
-    uint _playerId,
     QueuedAction storage queuedAction,
     uint _elapsedTime,
     ItemNFT _itemNFT,
@@ -343,17 +333,6 @@ library PlayerLibrary {
     }
   }
 
-  function combatConsumablesView(
-    address _from,
-    uint _playerId,
-    QueuedAction storage queuedAction,
-    uint _elapsedTime,
-    ItemNFT _itemNFT,
-    CombatStats storage _playerStats
-  ) external view returns (uint16 foodConsumed, bool died) {
-    (foodConsumed, died) = _combatConsumablesView(_from, _playerId, queuedAction, _elapsedTime, _itemNFT, _playerStats);
-  }
-
   function _processCombatConsumables(
     address _from,
     uint _playerId,
@@ -365,14 +344,7 @@ library PlayerLibrary {
     /* combatStats.attack, */
     /* playerStats.meleeDefence */
     uint16 foodConsumed;
-    (foodConsumed, died) = _combatConsumablesView(
-      _from,
-      _playerId,
-      _queuedAction,
-      _elapsedTime,
-      _itemNFT,
-      _playerStats
-    );
+    (foodConsumed, died) = _combatConsumablesView(_from, _queuedAction, _elapsedTime, _itemNFT, _playerStats);
 
     // Figure out how much food should be used
     _processConsumable(

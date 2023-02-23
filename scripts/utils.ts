@@ -47,13 +47,13 @@ export const NECK_MAX = NECK_BASE + 254;
 
 // 513 - 767 (body)
 export const BODY_BASE = 513;
-export const BRONZE_CHESTPLATE = BODY_BASE;
-export const IRON_CHESTPLATE = BODY_BASE + 1;
-export const MITHRIL_CHESTPLATE = BODY_BASE + 2;
-export const ADAMANTINE_CHESTPLATE = BODY_BASE + 3;
-export const RUNITE_CHESTPLATE = BODY_BASE + 4;
-export const TITANIUM_CHESTPLATE = BODY_BASE + 5;
-export const ORCHALCUM_CHESTPLATE = BODY_BASE + 6;
+export const BRONZE_ARMOR = BODY_BASE;
+export const IRON_ARMOR = BODY_BASE + 1;
+export const MITHRIL_ARMOR = BODY_BASE + 2;
+export const ADAMANTINE_ARMOR = BODY_BASE + 3;
+export const RUNITE_ARMOR = BODY_BASE + 4;
+export const TITANIUM_ARMOR = BODY_BASE + 5;
+export const ORCHALCUM_ARMOR = BODY_BASE + 6;
 export const BODY_MAX = BODY_BASE + 254;
 // 769 - 1023 (arms)
 export const ARMS_BASE = 769;
@@ -332,7 +332,7 @@ export type Equipment = {
 export type Attire = {
   helmet: number;
   amulet: number;
-  chestplate: number;
+  armor: number;
   gauntlets: number;
   tassets: number;
   boots: number;
@@ -344,7 +344,7 @@ export type Attire = {
 export const noAttire = {
   helmet: NONE,
   amulet: NONE,
-  chestplate: NONE,
+  armor: NONE,
   gauntlets: NONE,
   tassets: NONE,
   boots: NONE,
@@ -549,7 +549,7 @@ export const allItems: InputItem[] = [
   },
   {
     ...inputItem,
-    tokenId: BRONZE_CHESTPLATE,
+    tokenId: BRONZE_ARMOR,
     combatStats: bronzeHelmentStats,
     equipPosition: EquipPosition.BODY,
     metadataURI: "someIPFSURI.json",

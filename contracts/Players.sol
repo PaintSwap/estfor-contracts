@@ -13,7 +13,7 @@ import "./PlayerNFT.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
-  event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary for  Should match the event in Players
+  event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount);
 
   event ClearAll(uint playerId);
 
@@ -27,15 +27,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event ConsumeBoostVial(uint playerId, PlayerBoostInfo playerBoostInfo);
   event UnconsumeBoostVial(uint playerId);
 
-  event SetActivePlayer(address account, uint playerId);
+  event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
 
   event RemoveQueuedAction(uint playerId, uint queueId);
 
   // For logging
   event Died(uint playerId, uint queueId);
   event Rewards(address _from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
-  event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
-  event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
+  event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
+  event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
   event ActionFinished(uint playerId, uint queueId);
   event ActionPartiallyFinished(uint playerId, uint queueId, uint elapsedTime);
 
@@ -43,7 +43,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   struct AttireAttributes {
     CombatStats helmet;
     CombatStats amulet;
-    CombatStats chestplate;
+    CombatStats armor;
     CombatStats tassets;
     CombatStats gauntlets;
     CombatStats boots;
@@ -333,8 +333,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     if (_attire.amulet != NONE) {
       require(itemNFT.balanceOf(_from, _attire.amulet) > 0);
     }
-    if (_attire.chestplate != NONE) {
-      require(itemNFT.balanceOf(_from, _attire.chestplate) > 0);
+    if (_attire.armor != NONE) {
+      require(itemNFT.balanceOf(_from, _attire.armor) > 0);
     }
     if (_attire.gauntlets != NONE) {
       require(itemNFT.balanceOf(_from, _attire.gauntlets) > 0);
@@ -696,7 +696,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     }
     // All attire and actions can be made for this player
     activePlayer[from] = _playerId;
-    emit SetActivePlayer(from, _playerId);
+    emit SetActivePlayer(from, existingActivePlayer, _playerId);
   }
 
   function _extraXPFromBoost(

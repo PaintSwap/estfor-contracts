@@ -159,7 +159,7 @@ struct ActionInfo {
 struct Attire {
   uint16 helmet; // tokenId for the head (1 - 255)
   uint16 amulet; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
-  uint16 chestplate;
+  uint16 armor;
   uint16 gauntlets;
   uint16 tassets;
   uint16 boots;

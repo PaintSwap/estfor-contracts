@@ -25,13 +25,13 @@ uint16 constant NECK_MAX = NECK_BASE + 254;
 
 // 513 - 767 (body)
 uint16 constant BODY_BASE = 513;
-uint16 constant BRONZE_CHESTPLATE = BODY_BASE;
-uint16 constant IRON_CHESTPLATE = BODY_BASE + 1;
-uint16 constant MITHRIL_CHESTPLATE = BODY_BASE + 2;
-uint16 constant ADAMANTINE_CHESTPLATE = BODY_BASE + 3;
-uint16 constant RUNITE_CHESTPLATE = BODY_BASE + 4;
-uint16 constant TITANIUM_CHESTPLATE = BODY_BASE + 5;
-uint16 constant ORCHALCUM_CHESTPLATE = BODY_BASE + 6;
+uint16 constant BRONZE_ARMOR = BODY_BASE;
+uint16 constant IRON_ARMOR = BODY_BASE + 1;
+uint16 constant MITHRIL_ARMOR = BODY_BASE + 2;
+uint16 constant ADAMANTINE_ARMOR = BODY_BASE + 3;
+uint16 constant RUNITE_ARMOR = BODY_BASE + 4;
+uint16 constant TITANIUM_ARMOR = BODY_BASE + 5;
+uint16 constant ORCHALCUM_ARMOR = BODY_BASE + 6;
 uint16 constant BODY_MAX = BODY_BASE + 254;
 // 769 - 1023 (arms)
 uint16 constant ARMS_BASE = 769;
