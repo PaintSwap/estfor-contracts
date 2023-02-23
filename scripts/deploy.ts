@@ -27,21 +27,22 @@ async function main() {
 
   let brush: MockBrushToken;
   let tx;
-  if (network.chainId == 31337) {
+  {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    brush = await MockBrushToken.deploy();
-    await brush.mint(owner.address, 10000000000000);
-  } else if (network.chainId == 4002) {
-    const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    brush = await MockBrushToken.deploy();
-    tx = await brush.mint(owner.address, 10000000000000);
-    await tx.wait();
-    console.log("Minted brush");
-  } else if (network.chainId == 250) {
-    // Fantom mainnet
-    brush = await MockBrushToken.attach("0x85dec8c4B2680793661bCA91a8F129607571863d");
-  } else {
-    throw Error("Not a supported network");
+    if (network.chainId == 31337 || network.chainId == 1337) {
+      brush = await MockBrushToken.deploy();
+      await brush.mint(owner.address, 10000000000000);
+    } else if (network.chainId == 4002) {
+      brush = await MockBrushToken.deploy();
+      tx = await brush.mint(owner.address, 10000000000000);
+      await tx.wait();
+      console.log("Minted brush");
+    } else if (network.chainId == 250) {
+      // Fantom mainnet
+      brush = await MockBrushToken.attach("0x85dec8c4B2680793661bCA91a8F129607571863d");
+    } else {
+      throw Error("Not a supported network");
+    }
   }
 
   console.log(`Before calling MockOracleClient`);
@@ -86,6 +87,8 @@ async function main() {
   // This contains all the player data
   const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
   const playerLibrary = await PlayerLibrary.deploy();
+  await playerLibrary.deployed();
+  console.log(`PlayerLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
 
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayerLibrary: playerLibrary.address},
@@ -95,6 +98,8 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
+  await players.deployed();
+  console.log(`Players deployed at ${playerNFT.address.toLowerCase()}`);
 
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();

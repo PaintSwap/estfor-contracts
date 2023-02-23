@@ -32,12 +32,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
   event RemoveQueuedAction(uint playerId, uint queueId);
 
   // For logging
-  event Died(uint playerId, uint queueId);
-  event Rewards(address _from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
-  event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
-  event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
-  event ActionFinished(uint playerId, uint queueId);
-  event ActionPartiallyFinished(uint playerId, uint queueId, uint elapsedTime);
+  event Died(address from, uint playerId, uint queueId);
+  event Rewards(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
+  event Reward(address from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
+  event Consume(address from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
+  event ActionFinished(address from, uint playerId, uint queueId);
+  event ActionPartiallyFinished(address from, uint playerId, uint queueId, uint elapsedTime);
 
   // TODO this could be packed better. As Combat stats are 8 bytes so could fit 4 of them
   struct AttireAttributes {
@@ -783,7 +783,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
         pointsAccrued = uint32((elapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
       } else {
-        emit Died(_playerId, queueId);
+        emit Died(_from, _playerId, queueId);
       }
 
       bool fullyFinished = elapsedTime >= queuedAction.timespan;
@@ -821,9 +821,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       }
 
       if (fullyFinished) {
-        emit ActionFinished(_playerId, queueId);
+        emit ActionFinished(_from, _playerId, queueId);
       } else {
-        emit ActionPartiallyFinished(_playerId, queueId, elapsedTime);
+        emit ActionPartiallyFinished(_from, _playerId, queueId, elapsedTime);
       }
     }
 
