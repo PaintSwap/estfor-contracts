@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {
+  ActionQueueStatus,
   AIR_SCROLL,
   BoostType,
   BRONZE_ARROW,
@@ -162,7 +163,7 @@ describe("Player", () => {
       startTime: "0",
     };
 
-    await players.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [361]);
     await players.connect(alice).consumeActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
@@ -213,7 +214,7 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await players.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
     await players.connect(alice).setSpeedMultiplier(playerId, 2);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
@@ -270,7 +271,7 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await players.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await players.connect(alice).consumeActions(playerId);
@@ -341,7 +342,7 @@ describe("Player", () => {
       startTime: "0",
     };
 
-    await players.connect(alice).startAction(playerId, queuedAction, false);
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).consumeActions(playerId);
@@ -528,7 +529,7 @@ describe("Player", () => {
     });
 
     // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
-    await players.connect(alice).startActions(playerId, queuedActions, NONE, false);
+    await players.connect(alice).startActions(playerId, queuedActions, NONE, ActionQueueStatus.NONE);
 
     // Cannot remove the first one because it's already started
     let queueId = 1; // First one starts here
@@ -604,7 +605,7 @@ describe("Player", () => {
       });
 
       expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(1);
-      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, false);
+      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, ActionQueueStatus.NONE);
       expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -675,7 +676,7 @@ describe("Player", () => {
       });
 
       expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(1);
-      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, false);
+      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, ActionQueueStatus.NONE);
       expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -736,7 +737,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -820,7 +821,7 @@ describe("Player", () => {
 
       await itemNFT.testOnlyMint(alice.address, LOG, 5); // Mint less than will be used
 
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
@@ -943,9 +944,9 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await players.connect(alice).startAction(playerId, queuedActions[0], true);
+      await players.connect(alice).startAction(playerId, queuedActions[0], ActionQueueStatus.APPEND);
       await ethers.provider.send("evm_increaseTime", [10]);
-      await players.connect(alice).startAction(playerId, queuedActions[1], true);
+      await players.connect(alice).startAction(playerId, queuedActions[1], ActionQueueStatus.APPEND);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(10); // Should be partially completed
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(3);
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan]);
@@ -1076,10 +1077,11 @@ describe("Player", () => {
       });
 
       // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
-      await expect(players.connect(alice).startActions(playerId, queuedActions, NONE, false)).to.be.reverted;
+      await expect(players.connect(alice).startActions(playerId, queuedActions, NONE, ActionQueueStatus.NONE)).to.be
+        .reverted;
 
       await itemNFT.testOnlyMint(alice.address, LOG, 1);
-      await players.connect(alice).startActions(playerId, queuedActions, NONE, false);
+      await players.connect(alice).startActions(playerId, queuedActions, NONE, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
@@ -1137,7 +1139,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
@@ -1214,7 +1216,7 @@ describe("Player", () => {
 
       await itemNFT.testOnlyMint(alice.address, COAL_ORE, 255);
       await itemNFT.testOnlyMint(alice.address, MITHRIL_ORE, 255);
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
@@ -1230,8 +1232,8 @@ describe("Player", () => {
       );
     });
 
-    it("Max timespan ", async () => {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+    it("Set past max timespan ", async () => {
+      const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(deployContracts);
 
       const rate = 100 * 100; // per hour
       const tx = await world.addAction({
@@ -1252,7 +1254,7 @@ describe("Player", () => {
       const actionId = await getActionId(tx);
 
       await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
-      const timespan = 3600 * 24 + 1; // Exceed maximum
+      const timespan = maxTime + 1; // Exceed maximum
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
@@ -1274,15 +1276,15 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await expect(players.connect(alice).startAction(playerId, queuedAction, false)).to.be.reverted;
-      queuedAction.timespan -= 1; // Set to the maximum
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
-      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan - 1);
       // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
+        Math.floor(((queuedAction.timespan - 1) * rate) / (3600 * 100))
+      );
     });
 
     // TODO Rest of the actions
@@ -1330,7 +1332,7 @@ describe("Player", () => {
         startTime: "0",
       };
 
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [timespan]);
       await players.connect(alice).consumeActions(playerId);
       //      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
@@ -1412,7 +1414,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       const time = 361;
       await ethers.provider.send("evm_increaseTime", [time]);
@@ -1501,7 +1503,7 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).consumeActions(playerId);
@@ -1610,7 +1612,7 @@ describe("Player", () => {
         },
       ]);
 
-      await players.connect(alice).startAction(playerId, queuedAction, false);
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).consumeActions(playerId);

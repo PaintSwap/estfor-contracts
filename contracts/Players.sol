@@ -439,11 +439,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     _setActionQueue(_playerId, remainingSkillQueue);
   }
 
+  enum ActionQueueStatus {
+    NONE,
+    APPEND,
+    KEEP_LAST_IN_PROGRESS
+  }
+
   function _startActions(
     uint _playerId,
     QueuedAction[] memory _queuedActions,
     uint16 _boostItemTokenId,
-    bool _append
+    ActionQueueStatus _queueStatus
   ) private {
     if (_queuedActions.length == 0) {
       revert SkillsArrayZero();
@@ -458,12 +464,19 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     }
 
     Player storage player = players[_playerId];
-    if (!_append) {
+    if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length > 0) {
         _clearActionQueue(_playerId);
       }
       require(_queuedActions.length <= 3); // , "Queueing too many");
     } else {
+      if (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingSkills.length > 1) {
+        // Only want one
+        assembly ("memory-safe") {
+          mstore(remainingSkills, 1)
+        }
+      }
+
       // Keep remaining actions
       require(remainingSkills.length + _queuedActions.length <= 3); // , "Queueing too many (some already exist)");
       player.actionQueue = remainingSkills;
@@ -479,6 +492,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     uint currentQueuedActionId = queueId;
     do {
       QueuedAction memory queuedAction = _queuedActions[i];
+
+      if (totalTimespan + queuedAction.timespan > MAX_TIME) {
+        // Must be the last one which will exceed the max time
+        require(i == _queuedActions.length - 1);
+        // Shorten it so that it does not extend beyond the max time
+        queuedAction.timespan = uint24(MAX_TIME - totalTimespan);
+      }
+
       _addToQueue(from, _playerId, queuedAction, uint64(currentQueuedActionId), prevEndTime);
       unchecked {
         ++i;
@@ -488,18 +509,18 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       prevEndTime += queuedAction.timespan;
     } while (i < _queuedActions.length);
 
-    require(totalTimespan <= MAX_TIME); // , "Total time is longer than max");
+    assert(totalTimespan <= MAX_TIME); // Should never happen
     queueId = currentQueuedActionId;
   }
 
   function startAction(
     uint _playerId,
     QueuedAction calldata _queuedAction,
-    bool _append
+    ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActive(_playerId) {
     QueuedAction[] memory queuedActions = new QueuedAction[](1);
     queuedActions[0] = _queuedAction;
-    _startActions(_playerId, queuedActions, NONE, _append);
+    _startActions(_playerId, queuedActions, NONE, _queueStatus);
   }
 
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
@@ -507,9 +528,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
     uint _playerId,
     QueuedAction[] calldata _queuedActions,
     uint16 _boostItemTokenId,
-    bool _append
+    ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActive(_playerId) {
-    _startActions(_playerId, _queuedActions, _boostItemTokenId, _append);
+    _startActions(_playerId, _queuedActions, _boostItemTokenId, _queueStatus);
   }
 
   /*

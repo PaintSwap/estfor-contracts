@@ -1,6 +1,7 @@
 import {ethers, upgrades} from "hardhat";
 import {MockBrushToken} from "../typechain-types";
 import {
+  ActionQueueStatus,
   allActions,
   allItems,
   allShopItems,
@@ -186,7 +187,7 @@ async function main() {
     startTime: "0",
   };
 
-  tx = await players.startAction(playerId, queuedAction, false);
+  tx = await players.startAction(playerId, queuedAction, ActionQueueStatus.NONE);
   await tx.wait();
   console.log("start actions");
 
@@ -220,7 +221,7 @@ async function main() {
     startTime: "0",
   };
 
-  tx = await players.startAction(playerId, queuedActionFiremaking, false);
+  tx = await players.startAction(playerId, queuedActionFiremaking, ActionQueueStatus.NONE);
   await tx.wait();
   console.log("start actions");
 

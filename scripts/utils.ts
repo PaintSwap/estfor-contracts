@@ -397,9 +397,13 @@ export const getActionChoiceId = async (tx: ContractTransaction): Promise<number
   return event?.actionChoiceId.toNumber();
 };
 
-// Items
-
 // Actions
+
+export enum ActionQueueStatus {
+  NONE,
+  APPEND,
+  KEEP_LAST_IN_PROGRESS,
+}
 
 type ActionInfo = {
   skill: Skill;
