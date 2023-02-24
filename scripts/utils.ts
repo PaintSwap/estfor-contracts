@@ -103,7 +103,15 @@ export const RUNITE_SWORD = COMBAT_BASE + 4;
 export const TITANIUM_SWORD = COMBAT_BASE + 5;
 export const ORCHALCUM_SWORD = COMBAT_BASE + 6;
 // Magic
-export const STAFF = COMBAT_BASE + 50;
+export const STAFF_BASE = COMBAT_BASE + 50;
+export const STAFF_OF_THE_PHOENIX = STAFF_BASE;
+export const SAPPHIRE_STAFF = STAFF_BASE + 1;
+export const EMERALD_STAFF = STAFF_BASE + 2;
+export const RUBY_STAFF = STAFF_BASE + 3;
+export const AMETHYST_STAFF = STAFF_BASE + 4;
+export const DIAMOND_STAFF = STAFF_BASE + 5;
+export const DRAGONSTONE_STAFF = STAFF_BASE + 6;
+export const STAFF_MAX = STAFF_BASE + 49;
 // Ranged
 export const BOW = COMBAT_BASE + 100;
 // Shields (left arm)
@@ -233,7 +241,12 @@ export const COOKED_DRAGONFISH = COOKED_FISH_BASE + 19;
 export const COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 
 // Farming
-export const BONEMEAL = 11264;
+export const FARMING_BASE = 11264;
+export const BONEMEAL = FARMING_BASE;
+export const BONEMEALX2 = FARMING_BASE + 1;
+export const BONEMEALX5 = FARMING_BASE + 2;
+export const BONEMEALX10 = FARMING_BASE + 3;
+export const FARMING_MAX = FARMING_BASE + 255;
 
 // Mining
 export const ORE_BASE = 11520;
@@ -261,37 +274,101 @@ export const ARROW_MAX = ARROW_BASE + 255;
 
 // Scrolls
 export const SCROLL_BASE = 12032;
-export const AIR_SCROLL = SCROLL_BASE;
-export const FIRE_SCROLL = SCROLL_BASE + 1;
+export const SHADOW_SCROLL = SCROLL_BASE;
+export const NATURE_SCROLL = SCROLL_BASE + 1;
+export const AQUA_SCROLL = SCROLL_BASE + 2;
+export const HELL_SCROLL = SCROLL_BASE + 3;
+export const AIR_SCROLL = SCROLL_BASE + 4;
+export const BARRAGE_SCROLL = SCROLL_BASE + 5;
+export const FREEZE_SCROLL = SCROLL_BASE + 6;
 export const SCROLL_MAX = SCROLL_BASE + 255;
 
+// Spells
+export const SPELL_BASE = 12544;
+export const SHADOW_BLAST = SPELL_BASE;
+export const NATURES_FURU = SPELL_BASE + 1;
+export const DEATH_WAVE = SPELL_BASE + 2;
+export const VORTEX = SPELL_BASE + 3;
+export const MYSTIC_BLAST = SPELL_BASE + 4;
+export const MAGIC_BREATH = SPELL_BASE + 5;
+export const SUMMON_HELL_HOUND = SPELL_BASE + 6;
+export const AIR_BALL = SPELL_BASE + 7;
+export const FURY_FISTS = SPELL_BASE + 8;
+export const CONCUSSION_BEAMS = SPELL_BASE + 9;
+export const ICE_SPIKES = SPELL_BASE + 10;
+export const SPELL_MAX = 12799;
+
 // Boosts
-export const BOOST_VIAL_BASE = 60000;
-export const XP_BOOST = BOOST_VIAL_BASE;
-export const NON_COMBAT_XP_BOOST = BOOST_VIAL_BASE + 1;
-export const COMBAT_XP_BOOST = BOOST_VIAL_BASE + 2;
-export const BOOST_VIAL_MAX = BOOST_VIAL_BASE + 255;
+export const BOOST_BASE = 12800;
+export const COMBAT_BOOST = BOOST_BASE;
+export const XP_BOOST = BOOST_BASE + 1;
+export const GATHERING_BOOST = BOOST_BASE + 2;
+export const SKILLER_BOOST = BOOST_BASE + 3;
+export const ABSENCE_BOOST = BOOST_BASE + 4;
+export const BOOST_MAX = 13055;
+
+// Thieving
+export const THIEVING_BASE = 13056;
+export const PICKPOCKET_CHILD = THIEVING_BASE;
+export const PICKPOCKET_MAN = THIEVING_BASE + 1;
+export const PICKPOCKET_GUARD = THIEVING_BASE + 2;
+export const LOCKPICK_CHEST = THIEVING_BASE + 3;
+export const STEAL_FROM_STALL = THIEVING_BASE + 4;
+export const STEAL_FROM_FARMER = THIEVING_BASE + 5;
+export const STEAL_FROM_FISHERMAN = THIEVING_BASE + 6;
+export const STEAL_FROM_LUMBERJACK = THIEVING_BASE + 7;
+export const STEAL_FROM_BLACKSMITH = THIEVING_BASE + 8;
+export const PICKPOCKET_HEAD_GUARD = THIEVING_BASE + 9;
+export const PICKPOCKET_WIZARD = THIEVING_BASE + 10;
+export const STEAL_FROM_POTION_SHOP = THIEVING_BASE + 11;
+export const STEAL_FROM_GEM_MERCHANT = THIEVING_BASE + 12;
+export const STEAL_FROM_BANK = THIEVING_BASE + 13;
+export const PICKPOCKET_MASTER_THIEF = THIEVING_BASE + 14;
+export const THIEVING_MAX = 13311;
 
 // MISC
+export const MISC_BASE = 32768;
+export const NATUOW_HIDE = MISC_BASE;
+export const NATUOW_LEATHER = MISC_BASE + 1;
+export const SMALL_BONE = MISC_BASE + 2;
+export const MEDIUM_BONE = MISC_BASE + 3;
+export const LARGE_BONE = MISC_BASE + 4;
+export const DRAGON_BONE = MISC_BASE + 5;
+export const DRAGON_TEETH = MISC_BASE + 6;
+export const DRAGON_SCALE = MISC_BASE + 7;
+export const POISON = MISC_BASE + 8;
+export const STRING = MISC_BASE + 9;
+export const ROPE = MISC_BASE + 10;
+export const LEAF_FRAGMENTS = MISC_BASE + 11;
+export const VENOM_POUCH = MISC_BASE + 12;
+export const BAT_WING = MISC_BASE + 13;
+export const BAT_WING_PATCH = MISC_BASE + 14;
+export const THREAD_NEEDLE = MISC_BASE + 15;
+export const LOSSUTH_TEETH = MISC_BASE + 16;
+export const LOSSUTH_SCALE = MISC_BASE + 17;
+export const FEATHER = MISC_BASE + 18;
+export const QUARTZ_INFUSED_FEATHER = MISC_BASE + 19;
+export const BARK_CHUNK = MISC_BASE + 20;
+export const APPRENTICE_FABRIC = MISC_BASE + 21;
+export const MAGE_FABRIC = MISC_BASE + 22;
+export const SORCERER_FABRIC = MISC_BASE + 23;
+export const SEERS_FABRIC = MISC_BASE + 24;
+export const SHAMAN_FABRIC = MISC_BASE + 25;
+export const MASTER_FABRIC = MISC_BASE + 26;
+export const DRAGON_KEY = MISC_BASE + 27;
+export const BONE_KEY = MISC_BASE + 28;
+export const NATURE_KEY = MISC_BASE + 29;
+export const AQUA_KEY = MISC_BASE + 30;
+export const BLUECANAR = MISC_BASE + 31;
+export const ANURGAT = MISC_BASE + 32;
+export const RUFARUM = MISC_BASE + 33;
+export const WHITE_DEATH_SPORE = MISC_BASE + 34;
+export const BONES = MISC_BASE + 35;
+export const MISC_MAX = MISC_BASE + (10 + 256) + 255;
+
+// Other
 export const MYSTERY_BOX = 65535;
 export const RAID_PASS = MYSTERY_BOX - 1;
-
-// Other MISC
-/*Natuow Hide
-Natuow Leather
-Small Bone
-Bone
-Large Bone
-Dragon Bone
-Dragon Teeth
-Dragon Scale
-Poison
-String
-Rope
-Leaf Fragment
-Venom Pouch
-Bat Wing
-Lossuth Teeth */
 
 export enum EquipPosition {
   HEAD,
@@ -722,6 +799,29 @@ export const allActions: Action[] = [
     combatStats: emptyStats,
   },
   // Combat
+  {
+    // Natuow
+    info: {
+      skill: Skill.COMBAT,
+      baseXPPerHour: 3600,
+      minSkillPoints: 0,
+      isDynamic: false,
+      itemTokenIdRangeMin: COMBAT_BASE,
+      itemTokenIdRangeMax: COMBAT_MAX,
+      isAvailable: true,
+      isCombat: true,
+    },
+    guaranteedRewards: [
+      {itemTokenId: BONES, rate: 1 * 100},
+      {itemTokenId: NATUOW_HIDE, rate: 1 * 100},
+    ],
+    randomRewards: [],
+    combatStats: {
+      ...emptyStats,
+      attack: 1,
+      health: 20,
+    },
+  },
 ];
 
 export const firemakingChoices: ActionChoice[] = [

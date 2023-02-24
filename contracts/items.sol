@@ -65,7 +65,7 @@ uint16 constant TITANIUM_BOOTS = BOOTS_BASE + 5;
 uint16 constant ORCHALCUM_BOOTS = BOOTS_BASE + 6;
 uint16 constant BOOTS_MAX = BOOTS_BASE + 254;
 
-// 1537 - 1791 spare(1)
+// 1537 - 1791 ring(1)
 // 1793 - 2047 spare(2)
 
 // All other ones for the first arm
@@ -81,7 +81,15 @@ uint16 constant RUNITE_SWORD = COMBAT_BASE + 4;
 uint16 constant TITANIUM_SWORD = COMBAT_BASE + 5;
 uint16 constant ORCHALCUM_SWORD = COMBAT_BASE + 6;
 // Magic
-uint16 constant STAFF = COMBAT_BASE + 50;
+uint16 constant STAFF_BASE = COMBAT_BASE + 50;
+uint16 constant STAFF_OF_THE_PHOENIX = STAFF_BASE;
+uint16 constant SAPPHIRE_STAFF = STAFF_BASE + 1;
+uint16 constant EMERALD_STAFF = STAFF_BASE + 2;
+uint16 constant RUBY_STAFF = STAFF_BASE + 3;
+uint16 constant AMETHYST_STAFF = STAFF_BASE + 4;
+uint16 constant DIAMOND_STAFF = STAFF_BASE + 5;
+uint16 constant DRAGONSTONE_STAFF = STAFF_BASE + 6;
+uint16 constant STAFF_MAX = STAFF_BASE + 49;
 // Ranged
 uint16 constant BOW = COMBAT_BASE + 100;
 // Combat (left arm)
@@ -211,7 +219,12 @@ uint16 constant COOKED_DRAGONFISH = COOKED_FISH_BASE + 19;
 uint16 constant COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 
 // Farming
-uint16 constant BONEMEAL = 11264;
+uint16 constant FARMING_BASE = 11264;
+uint16 constant BONEMEAL = FARMING_BASE;
+uint16 constant BONEMEALX2 = FARMING_BASE + 1;
+uint16 constant BONEMEALX5 = FARMING_BASE + 2;
+uint16 constant BONEMEALX10 = FARMING_BASE + 3;
+uint16 constant FARMING_MAX = FARMING_BASE + 255;
 
 // Mining
 uint16 constant ORE_BASE = 11520;
@@ -231,42 +244,105 @@ uint16 constant DRAGONSTONE_ORE = ORE_BASE + 12;
 uint16 constant TITANIUM_ORE = ORE_BASE + 13;
 uint16 constant ORCHALCUM_ORE = ORE_BASE + 14;
 uint16 constant ORE_MAX = ORE_BASE + 255;
-
 // Arrows
-uint16 constant ARROWS_BASE = 11776;
-uint16 constant BRONZE_ARROWS = ARROWS_BASE;
-uint16 constant ARROWS_MAX = ARROWS_BASE + 255;
+uint16 constant ARROW_BASE = 11776;
+uint16 constant BRONZE_ARROW = ORE_BASE;
+uint16 constant ARROW_MAX = ARROW_BASE + 255;
 
 // Scrolls
 uint16 constant SCROLL_BASE = 12032;
-uint16 constant AIR_SCROLL = SCROLL_BASE;
-uint16 constant FIRE_SCROLL = SCROLL_BASE + 1;
+uint16 constant SHADOW_SCROLL = SCROLL_BASE;
+uint16 constant NATURE_SCROLL = SCROLL_BASE + 1;
+uint16 constant AQUA_SCROLL = SCROLL_BASE + 2;
+uint16 constant HELL_SCROLL = SCROLL_BASE + 3;
+uint16 constant AIR_SCROLL = SCROLL_BASE + 4;
+uint16 constant BARRAGE_SCROLL = SCROLL_BASE + 5;
+uint16 constant FREEZE_SCROLL = SCROLL_BASE + 6;
 uint16 constant SCROLL_MAX = SCROLL_BASE + 255;
 
+// Spells
+uint16 constant SPELL_BASE = 12544;
+uint16 constant SHADOW_BLAST = SPELL_BASE;
+uint16 constant NATURES_FURU = SPELL_BASE + 1;
+uint16 constant DEATH_WAVE = SPELL_BASE + 2;
+uint16 constant VORTEX = SPELL_BASE + 3;
+uint16 constant MYSTIC_BLAST = SPELL_BASE + 4;
+uint16 constant MAGIC_BREATH = SPELL_BASE + 5;
+uint16 constant SUMMON_HELL_HOUND = SPELL_BASE + 6;
+uint16 constant AIR_BALL = SPELL_BASE + 7;
+uint16 constant FURY_FISTS = SPELL_BASE + 8;
+uint16 constant CONCUSSION_BEAMS = SPELL_BASE + 9;
+uint16 constant ICE_SPIKES = SPELL_BASE + 10;
+uint16 constant SPELL_MAX = SPELL_BASE + 255;
+
 // Boosts
-uint16 constant BOOST_VIAL_BASE = 60000;
-uint16 constant XP_BOOST = BOOST_VIAL_BASE;
-uint16 constant NON_COMBAT_XP_BOOST = BOOST_VIAL_BASE + 1;
-uint16 constant COMBAT_XP_BOOST = BOOST_VIAL_BASE + 2;
-uint16 constant BOOST_VIAL_MAX = BOOST_VIAL_BASE + 255;
+uint16 constant BOOST_BASE = 12800;
+uint16 constant COMBAT_BOOST = BOOST_BASE;
+uint16 constant XP_BOOST = BOOST_BASE + 1;
+uint16 constant GATHERING_BOOST = BOOST_BASE + 2;
+uint16 constant SKILLER_BOOST = BOOST_BASE + 3;
+uint16 constant ABSENCE_BOOST = BOOST_BASE + 4;
+uint16 constant BOOST_MAX = BOOST_BASE + 255;
 
-// MISC
+// Thieving
+uint16 constant THIEVING_BASE = 13056;
+uint16 constant PICKPOCKET_CHILD = THIEVING_BASE;
+uint16 constant PICKPOCKET_MAN = THIEVING_BASE + 1;
+uint16 constant PICKPOCKET_GUARD = THIEVING_BASE + 2;
+uint16 constant LOCKPICK_CHEST = THIEVING_BASE + 3;
+uint16 constant STEAL_FROM_STALL = THIEVING_BASE + 4;
+uint16 constant STEAL_FROM_FARMER = THIEVING_BASE + 5;
+uint16 constant STEAL_FROM_FISHERMAN = THIEVING_BASE + 6;
+uint16 constant STEAL_FROM_LUMBERJACK = THIEVING_BASE + 7;
+uint16 constant STEAL_FROM_BLACKSMITH = THIEVING_BASE + 8;
+uint16 constant PICKPOCKET_HEAD_GUARD = THIEVING_BASE + 9;
+uint16 constant PICKPOCKET_WIZARD = THIEVING_BASE + 10;
+uint16 constant STEAL_FROM_POTION_SHOP = THIEVING_BASE + 11;
+uint16 constant STEAL_FROM_GEM_MERCHANT = THIEVING_BASE + 12;
+uint16 constant STEAL_FROM_BANK = THIEVING_BASE + 13;
+uint16 constant PICKPOCKET_MASTER_THIEF = THIEVING_BASE + 14;
+uint16 constant THIEVING_MAX = THIEVING_BASE + 255;
+
+// Misc
+uint16 constant MISC_BASE = 32768;
+uint16 constant NATUOW_HIDE = MISC_BASE;
+uint16 constant NATUOW_LEATHER = MISC_BASE + 1;
+uint16 constant SMALL_BONE = MISC_BASE + 2;
+uint16 constant MEDIUM_BONE = MISC_BASE + 3;
+uint16 constant LARGE_BONE = MISC_BASE + 4;
+uint16 constant DRAGON_BONE = MISC_BASE + 5;
+uint16 constant DRAGON_TEETH = MISC_BASE + 6;
+uint16 constant DRAGON_SCALE = MISC_BASE + 7;
+uint16 constant POISON = MISC_BASE + 8;
+uint16 constant STRING = MISC_BASE + 9;
+uint16 constant ROPE = MISC_BASE + 10;
+uint16 constant LEAF_FRAGMENTS = MISC_BASE + 11;
+uint16 constant VENOM_POUCH = MISC_BASE + 12;
+uint16 constant BAT_WING = MISC_BASE + 13;
+uint16 constant BAT_WING_PATCH = MISC_BASE + 14;
+uint16 constant THREAD_NEEDLE = MISC_BASE + 15;
+uint16 constant LOSSUTH_TEETH = MISC_BASE + 16;
+uint16 constant LOSSUTH_SCALE = MISC_BASE + 17;
+uint16 constant FEATHER = MISC_BASE + 18;
+uint16 constant QUARTZ_INFUSED_FEATHER = MISC_BASE + 19;
+uint16 constant BARK_CHUNK = MISC_BASE + 20;
+uint16 constant APPRENTICE_FABRIC = MISC_BASE + 21;
+uint16 constant MAGE_FABRIC = MISC_BASE + 22;
+uint16 constant SORCERER_FABRIC = MISC_BASE + 23;
+uint16 constant SEERS_FABRIC = MISC_BASE + 24;
+uint16 constant SHAMAN_FABRIC = MISC_BASE + 25;
+uint16 constant MASTER_FABRIC = MISC_BASE + 26;
+uint16 constant DRAGON_KEY = MISC_BASE + 27;
+uint16 constant BONE_KEY = MISC_BASE + 28;
+uint16 constant NATURE_KEY = MISC_BASE + 29;
+uint16 constant AQUA_KEY = MISC_BASE + 30;
+uint16 constant BLUECANAR = MISC_BASE + 31;
+uint16 constant ANURGAT = MISC_BASE + 32;
+uint16 constant RUFARUM = MISC_BASE + 33;
+uint16 constant WHITE_DEATH_SPORE = MISC_BASE + 34;
+uint16 constant BONES = MISC_BASE + 35;
+uint16 constant MISC_MAX = MISC_BASE + (10 + 256) + 255;
+
+// Other
 uint16 constant MYSTERY_BOX = 65535;
-uint16 constant RAID_PASS = MYSTERY_BOX - 1;
-
-// Other MISC
-/*Natuow Hide
-Natuow Leather
-Small Bone
-Bone
-Large Bone
-Dragon Bone
-Dragon Teeth
-Dragon Scale
-Poison
-String
-Rope
-Leaf Fragment
-Venom Pouch
-Bat Wing
-Lossuth Teeth */
+uint16 constant RAID_PASS = MISC_BASE - 1;

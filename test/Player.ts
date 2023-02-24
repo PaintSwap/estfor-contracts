@@ -21,7 +21,6 @@ import {
   EquipPosition,
   FIRE_LIGHTER,
   FIRE_MAX,
-  FIRE_SCROLL,
   getActionChoiceId,
   getActionId,
   inputItem,
@@ -31,12 +30,13 @@ import {
   MITHRIL_ORE,
   noAttire,
   NONE,
-  NON_COMBAT_XP_BOOST,
   QueuedAction,
+  SHADOW_SCROLL,
   Skill,
-  STAFF,
+  STAFF_OF_THE_PHOENIX,
   WOODCUTTING_BASE,
   WOODCUTTING_MAX,
+  XP_BOOST,
 } from "../scripts/utils";
 
 const actionIsAvailable = true;
@@ -552,7 +552,7 @@ describe("Player", () => {
       const boostDuration = 3300;
       await itemNFT.addItem({
         ...inputItem,
-        tokenId: NON_COMBAT_XP_BOOST,
+        tokenId: XP_BOOST,
         equipPosition: EquipPosition.BOOST_VIAL,
         metadataURI: "someIPFSURI.json",
         // Boost
@@ -580,7 +580,7 @@ describe("Player", () => {
       const actionId = await getActionId(tx);
 
       await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
-      await itemNFT.testOnlyMint(alice.address, NON_COMBAT_XP_BOOST, 1);
+      await itemNFT.testOnlyMint(alice.address, XP_BOOST, 1);
 
       const timespan = 3600;
       const queuedAction: QueuedAction = {
@@ -604,9 +604,9 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(1);
-      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, ActionQueueStatus.NONE);
-      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(1);
+      await players.connect(alice).startActions(playerId, [queuedAction], XP_BOOST, ActionQueueStatus.NONE);
+      expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
@@ -623,7 +623,7 @@ describe("Player", () => {
       const boostValue = 10;
       await itemNFT.addItem({
         ...inputItem,
-        tokenId: NON_COMBAT_XP_BOOST,
+        tokenId: XP_BOOST,
         equipPosition: EquipPosition.BOOST_VIAL,
         metadataURI: "someIPFSURI.json",
         // Boost
@@ -651,7 +651,7 @@ describe("Player", () => {
       const actionId = await getActionId(tx);
 
       await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
-      await itemNFT.testOnlyMint(alice.address, NON_COMBAT_XP_BOOST, 1);
+      await itemNFT.testOnlyMint(alice.address, XP_BOOST, 1);
 
       const timespan = 3600;
       const queuedAction: QueuedAction = {
@@ -675,9 +675,9 @@ describe("Player", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(1);
-      await players.connect(alice).startActions(playerId, [queuedAction], NON_COMBAT_XP_BOOST, ActionQueueStatus.NONE);
-      expect(await itemNFT.balanceOf(alice.address, NON_COMBAT_XP_BOOST)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(1);
+      await players.connect(alice).startActions(playerId, [queuedAction], XP_BOOST, ActionQueueStatus.NONE);
+      expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).consumeActions(playerId);
@@ -1544,7 +1544,11 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testOnlyMints(alice.address, [STAFF, COOKED_HUPPY, AIR_SCROLL, FIRE_SCROLL], [1, 255, 200, 100]);
+      await itemNFT.testOnlyMints(
+        alice.address,
+        [STAFF_OF_THE_PHOENIX, COOKED_HUPPY, AIR_SCROLL, SHADOW_SCROLL],
+        [1, 255, 200, 100]
+      );
 
       const scrollsConsumedRate = 1 * 100; // per hour
       // Combat uses none as it's not tied to a specific action (only combat ones)
@@ -1557,7 +1561,7 @@ describe("Player", () => {
         rate: scrollsConsumedRate,
         inputTokenId1: AIR_SCROLL,
         num1: 2,
-        inputTokenId2: FIRE_SCROLL,
+        inputTokenId2: SHADOW_SCROLL,
         num2: 1,
         inputTokenId3: NONE,
         num3: 0,
@@ -1574,7 +1578,7 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: COOKED_HUPPY,
         timespan,
-        rightArmEquipmentTokenId: STAFF,
+        rightArmEquipmentTokenId: STAFF_OF_THE_PHOENIX,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
       };
@@ -1588,13 +1592,13 @@ describe("Player", () => {
         },
         {
           ...inputItem,
-          tokenId: FIRE_SCROLL,
+          tokenId: SHADOW_SCROLL,
           equipPosition: EquipPosition.AUX,
           metadataURI: "someIPFSURI.json",
         },
         {
           ...inputItem,
-          tokenId: STAFF,
+          tokenId: STAFF_OF_THE_PHOENIX,
           equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
         },
@@ -1629,7 +1633,7 @@ describe("Player", () => {
 
       // Check that scrolls are consumed
       expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);
-      expect(await itemNFT.balanceOf(alice.address, FIRE_SCROLL)).to.eq(100 - 1);
+      expect(await itemNFT.balanceOf(alice.address, SHADOW_SCROLL)).to.eq(100 - 1);
     });
   });
 
