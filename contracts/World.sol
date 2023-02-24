@@ -63,10 +63,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint public lastDynamicUpdatedTime;
 
   mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
-  // TODO: Combine these into a struct to save gas
-  mapping(uint => ActionReward[]) guaranteedRewards; // action id => guarenteed rewards
-  mapping(uint => ActionReward[]) randomRewards; // action id => random loot change
   mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
+
+  mapping(uint => ActionRewards) private actionRewards;
 
   function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
     __VRFConsumerBaseV2_init(address(_coordinator));
@@ -168,8 +167,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actions[_actionId].skill;
   }
 
-  function getActionRewards(uint _actionId) external view returns (ActionReward[] memory, ActionReward[] memory) {
-    return (guaranteedRewards[_actionId], randomRewards[_actionId]);
+  function getActionRewards(uint _actionId) external view returns (ActionRewards memory) {
+    return actionRewards[_actionId];
   }
 
   function getPermissibleItemsForAction(
@@ -187,12 +186,39 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function _setAction(uint _actionId, Action calldata _action) private {
     require(_action.info.itemTokenIdRangeMin <= _action.info.itemTokenIdRangeMax);
     actions[_actionId] = _action.info;
+
+    // Set the rewards
+    ActionRewards storage actionReward = actionRewards[_actionId];
     if (_action.guaranteedRewards.length > 0) {
-      guaranteedRewards[_actionId] = _action.guaranteedRewards;
+      actionReward.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
+      actionReward.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
     }
+    if (_action.guaranteedRewards.length > 1) {
+      actionReward.guaranteedRewardTokenId2 = _action.guaranteedRewards[1].itemTokenId;
+      actionReward.guaranteedRewardRate2 = _action.guaranteedRewards[1].rate;
+    }
+    if (_action.guaranteedRewards.length > 2) {
+      actionReward.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
+      actionReward.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
+    }
+    // Now do the same for randomRewards
     if (_action.randomRewards.length > 0) {
-      randomRewards[_actionId] = _action.randomRewards;
+      actionReward.randomRandomTokenId1 = _action.randomRewards[0].itemTokenId;
+      actionReward.randomRewardChance1 = uint16(_action.randomRewards[0].rate);
     }
+    if (_action.randomRewards.length > 1) {
+      actionReward.randomRandomTokenId2 = _action.randomRewards[1].itemTokenId;
+      actionReward.randomRewardChance2 = uint16(_action.randomRewards[1].rate);
+    }
+    if (_action.randomRewards.length > 2) {
+      actionReward.randomRandomTokenId3 = _action.randomRewards[2].itemTokenId;
+      actionReward.randomRewardChance3 = uint16(_action.randomRewards[2].rate);
+    }
+    if (_action.randomRewards.length > 3) {
+      actionReward.randomReward4 = _action.randomRewards[3].itemTokenId;
+      actionReward.randomRewardChance4 = uint16(_action.randomRewards[3].rate);
+    }
+
     if (_action.info.isCombat) {
       actionCombatStats[_actionId] = _action.combatStats;
     }

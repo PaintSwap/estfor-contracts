@@ -129,20 +129,57 @@ library PlayerLibrary {
     }
   }
 
+  function _addGuarenteedReward(
+    uint[] memory _ids,
+    uint[] memory _amounts,
+    uint _elapsedTime,
+    uint16 _rewardTokenId,
+    uint24 _rewardRate,
+    ActionRewards memory _actionRewards,
+    uint oldLength
+  ) private pure returns (uint length) {
+    length = oldLength;
+    uint numRewards = (_elapsedTime * _rewardRate) / (3600 * 100);
+    if (numRewards > 0) {
+      _ids[length] = _rewardTokenId;
+      _amounts[length] = numRewards;
+      ++length;
+    }
+  }
+
   function _addGuarenteedRewards(
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _elapsedTime,
-    ActionReward[] memory _guaranteedRewards
+    ActionRewards memory _actionRewards
   ) private pure returns (uint length) {
-    for (uint i; i < _guaranteedRewards.length; ++i) {
-      uint numRewards = (_elapsedTime * _guaranteedRewards[i].rate) / (3600 * 100);
-      if (numRewards > 0) {
-        _ids[length] = _guaranteedRewards[i].itemTokenId;
-        _amounts[length] = numRewards;
-        ++length;
-      }
-    }
+    length = _addGuarenteedReward(
+      _ids,
+      _amounts,
+      _elapsedTime,
+      _actionRewards.guaranteedRewardTokenId1,
+      _actionRewards.guaranteedRewardRate1,
+      _actionRewards,
+      length
+    );
+    length = _addGuarenteedReward(
+      _ids,
+      _amounts,
+      _elapsedTime,
+      _actionRewards.guaranteedRewardTokenId2,
+      _actionRewards.guaranteedRewardRate3,
+      _actionRewards,
+      length
+    );
+    length = _addGuarenteedReward(
+      _ids,
+      _amounts,
+      _elapsedTime,
+      _actionRewards.guaranteedRewardTokenId3,
+      _actionRewards.guaranteedRewardRate2,
+      _actionRewards,
+      length
+    );
   }
 
   function _addRandomRewards(
@@ -152,11 +189,35 @@ library PlayerLibrary {
     World world,
     uint[] memory _ids,
     uint[] memory _amounts,
-    uint _length,
-    ActionReward[] memory _randomRewards
+    uint _oldLength,
+    ActionRewards memory _actionRewards
   ) private view returns (uint length) {
-    length = _length;
-    // Random chance loot
+    length = _oldLength;
+
+    // Easier to make it an array, but TODO update later
+    ActionReward[] memory _randomRewards = new ActionReward[](4);
+    uint randomRewardLength;
+    if (_actionRewards.randomRandomTokenId1 != 0) {
+      _randomRewards[0] = ActionReward(_actionRewards.randomRandomTokenId1, _actionRewards.randomRewardChance1);
+      ++randomRewardLength;
+    }
+    if (_actionRewards.randomRandomTokenId2 != 0) {
+      _randomRewards[1] = ActionReward(_actionRewards.randomRandomTokenId2, _actionRewards.randomRewardChance2);
+      ++randomRewardLength;
+    }
+    if (_actionRewards.randomRandomTokenId3 != 0) {
+      _randomRewards[2] = ActionReward(_actionRewards.randomRandomTokenId3, _actionRewards.randomRewardChance3);
+      ++randomRewardLength;
+    }
+    if (_actionRewards.randomReward4 != 0) {
+      _randomRewards[3] = ActionReward(_actionRewards.randomReward4, _actionRewards.randomRewardChance4);
+      ++randomRewardLength;
+    }
+
+    assembly ("memory-safe") {
+      mstore(_randomRewards, randomRewardLength)
+    }
+
     if (_randomRewards.length > 0) {
       bool hasSeed = world.hasSeed(skillEndTime);
       if (hasSeed) {
@@ -207,14 +268,13 @@ library PlayerLibrary {
     uint40 _skillEndTime,
     uint _elapsedTime,
     World _world,
-    ActionReward[] memory _guaranteedRewards,
-    ActionReward[] memory _randomRewards
+    ActionRewards memory _actionRewards
   ) public view returns (uint[] memory ids, uint[] memory amounts) {
-    ids = new uint[](_guaranteedRewards.length + _randomRewards.length);
-    amounts = new uint[](_guaranteedRewards.length + _randomRewards.length);
+    ids = new uint[](7);
+    amounts = new uint[](7);
 
-    uint length = _addGuarenteedRewards(ids, amounts, _elapsedTime, _guaranteedRewards);
-    length = _addRandomRewards(_from, _skillEndTime, _elapsedTime, _world, ids, amounts, length, _randomRewards);
+    uint length = _addGuarenteedRewards(ids, amounts, _elapsedTime, _actionRewards);
+    length = _addRandomRewards(_from, _skillEndTime, _elapsedTime, _world, ids, amounts, length, _actionRewards);
 
     assembly ("memory-safe") {
       mstore(ids, length)
@@ -631,20 +691,17 @@ library PlayerLibrary {
       if (pointsAccrued > 0) {
         //        _updateSkillPoints(_playerId, queuedAction.skill, pointsAccrued);
 
-        (ActionReward[] memory guaranteedRewards, ActionReward[] memory randomRewards) = _world.getActionRewards(
-          queuedAction.actionId
-        );
+        ActionRewards memory actionRewards = _world.getActionRewards(queuedAction.actionId);
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           from,
           uint40(queuedAction.startTime + elapsedTime),
           elapsedTime,
           _world,
-          guaranteedRewards,
-          randomRewards
+          actionRewards
         );
 
         for (uint i; i < newIds.length; ++i) {
-          pendingOutput.produced[producedLength] = ActionReward(uint16(newIds[i]), uint32(newAmounts[i]));
+          pendingOutput.produced[producedLength] = ActionReward(uint16(newIds[i]), uint24(newAmounts[i]));
           ++producedLength;
         }
 

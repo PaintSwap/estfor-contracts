@@ -95,9 +95,8 @@ struct CombatStats {
 // Loot
 struct ActionReward {
   uint16 itemTokenId;
-  uint32 rate; // num per hour, base 100 (2 decimals) or percentage chance
+  uint24 rate; // num per hour, base 100 (2 decimals) or percentage chance
 }
-
 struct PendingLoot {
   uint actionId;
   uint40 timestamp;
@@ -106,6 +105,24 @@ struct PendingLoot {
 struct Equipment {
   uint16 itemTokenId;
   uint16 numToEquip;
+}
+
+struct ActionRewards {
+  uint16 guaranteedRewardTokenId1;
+  uint24 guaranteedRewardRate1; // num per hour, base 100 (2 decimals)
+  uint16 guaranteedRewardTokenId2;
+  uint24 guaranteedRewardRate2;
+  uint16 guaranteedRewardTokenId3;
+  uint24 guaranteedRewardRate3;
+  // Random chance rewards
+  uint16 randomRandomTokenId1;
+  uint16 randomRewardChance1; // percentage, base 100 (2 decimals)
+  uint16 randomRandomTokenId2;
+  uint16 randomRewardChance2;
+  uint16 randomRandomTokenId3;
+  uint16 randomRewardChance3;
+  uint16 randomReward4;
+  uint16 randomRewardChance4;
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.

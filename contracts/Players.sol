@@ -12,7 +12,10 @@ import "./PlayerNFT.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
+contract Players is
+  OwnableUpgradeable,
+  UUPSUpgradeable //, Multicall {
+{
   event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount);
 
   event ClearAll(uint playerId);
@@ -692,12 +695,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
 
   function _addPendingLoot(
     PendingLoot[] storage _pendingLoot,
-    ActionReward[] memory _randomRewards,
+    ActionRewards memory _actionRewards,
     uint _actionId,
     uint _elapsedTime,
     uint _skillEndTime
   ) private {
-    if (_randomRewards.length > 0) {
+    bool hasRandomRewards = _actionRewards.randomRandomTokenId1 != NONE; // A precheck as an optimization
+    if (hasRandomRewards) {
       bool hasSeed = world.hasSeed(_skillEndTime);
       if (!hasSeed) {
         // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
@@ -818,19 +822,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, Multicall {
       if (pointsAccrued > 0) {
         _updateSkillPoints(_playerId, queuedAction.skill, pointsAccrued);
 
-        (ActionReward[] memory guaranteedRewards, ActionReward[] memory randomRewards) = world.getActionRewards(
-          queuedAction.actionId
-        );
+        ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getRewards(
           _from,
           uint40(queuedAction.startTime + elapsedTime),
           elapsedTime,
           world,
-          guaranteedRewards,
-          randomRewards
+          actionRewards
         );
 
-        _addPendingLoot(pendingLoot, randomRewards, queuedAction.actionId, elapsedTime, skillEndTime);
+        _addPendingLoot(pendingLoot, actionRewards, queuedAction.actionId, elapsedTime, skillEndTime);
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
