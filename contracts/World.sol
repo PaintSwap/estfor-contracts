@@ -179,8 +179,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint16 xpPerHour) {
-    return
-      _actionChoiceId != 0 ? actionChoices[_actionId][_actionChoiceId].baseXPPerHour : actions[_actionId].baseXPPerHour;
+    return _actionChoiceId != 0 ? actionChoices[_actionId][_actionChoiceId].xpPerHour : actions[_actionId].xpPerHour;
+  }
+
+  function getNumSpawn(uint16 _actionId) external view returns (uint numSpawn) {
+    return actions[_actionId].numSpawn;
   }
 
   function _setAction(uint _actionId, Action calldata _action) private {
@@ -299,6 +302,29 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     isCombat = actions[_actionId].isCombat;
     if (isCombat) {
       stats = actionCombatStats[_actionId];
+
+      // TODO: This shouldn't be needed
+      if (stats.attack <= 0) {
+        stats.attack = 1;
+      }
+      if (stats.meleeDefence <= 0) {
+        stats.meleeDefence = 1;
+      }
+      if (stats.magic <= 0) {
+        stats.magic = 1;
+      }
+      if (stats.magicDefence <= 0) {
+        stats.magicDefence = 1;
+      }
+      if (stats.range <= 0) {
+        stats.range = 1;
+      }
+      if (stats.rangeDefence <= 0) {
+        stats.rangeDefence = 1;
+      }
+      if (stats.health <= 0) {
+        stats.health = 1;
+      }
     }
   }
 

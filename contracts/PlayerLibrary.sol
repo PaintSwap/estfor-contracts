@@ -82,26 +82,49 @@ library PlayerLibrary {
     Attire memory _attire,
     ItemNFT _itemNFT,
     bool _add
-  ) public view {
+  ) public view returns (CombatStats memory stats) {
+    stats = _stats;
     // TODO: Balance of Batch would be better
     // TODO: Checkpoints for start time.
     if (_attire.helmet != NONE && _itemNFT.balanceOf(_from, _attire.helmet) > 0) {
-      _updateCombatStats(_stats, _itemNFT.getItem(_attire.helmet), _add);
+      _updateCombatStats(stats, _itemNFT.getItem(_attire.helmet), _add);
     }
     if (_attire.amulet != NONE && _itemNFT.balanceOf(_from, _attire.amulet) > 0) {
-      _updateCombatStats(_stats, _itemNFT.getItem(_attire.amulet), _add);
+      _updateCombatStats(stats, _itemNFT.getItem(_attire.amulet), _add);
     }
     if (_attire.armor != NONE && _itemNFT.balanceOf(_from, _attire.armor) > 0) {
-      _updateCombatStats(_stats, _itemNFT.getItem(_attire.armor), _add);
+      _updateCombatStats(stats, _itemNFT.getItem(_attire.armor), _add);
     }
     if (_attire.gauntlets != NONE && _itemNFT.balanceOf(_from, _attire.gauntlets) > 0) {
-      _updateCombatStats(_stats, _itemNFT.getItem(_attire.gauntlets), _add);
+      _updateCombatStats(stats, _itemNFT.getItem(_attire.gauntlets), _add);
     }
     if (_attire.tassets != NONE && _itemNFT.balanceOf(_from, _attire.tassets) > 0) {
-      _updateCombatStats(_stats, _itemNFT.getItem(_attire.tassets), _add);
+      _updateCombatStats(stats, _itemNFT.getItem(_attire.tassets), _add);
     }
     if (_attire.boots != NONE && _itemNFT.balanceOf(_from, _attire.boots) > 0) {
-      _updateCombatStats(_stats, _itemNFT.getItem(_attire.boots), _add);
+      _updateCombatStats(stats, _itemNFT.getItem(_attire.boots), _add);
+    }
+    // TODO: This isn't correct, should be hanlded in the calculations elsewhere with a better formula
+    if (stats.attack <= 0) {
+      stats.attack = 1;
+    }
+    if (stats.meleeDefence <= 0) {
+      stats.meleeDefence = 1;
+    }
+    if (stats.magic <= 0) {
+      stats.magic = 1;
+    }
+    if (stats.magicDefence <= 0) {
+      stats.magicDefence = 1;
+    }
+    if (stats.range <= 0) {
+      stats.range = 1;
+    }
+    if (stats.rangeDefence <= 0) {
+      stats.rangeDefence = 1;
+    }
+    if (stats.health <= 0) {
+      stats.health = 1;
     }
   }
 
@@ -307,17 +330,21 @@ library PlayerLibrary {
     uint _elapsedTime,
     World _world,
     ItemNFT _itemNFT,
-    CombatStats storage _playerStats,
+    CombatStats memory _combatStats,
     ActionChoice memory _actionChoice
   )
     public
     view
-    returns (Equipment[] memory consumedEquipment, ActionReward memory output, uint actualElapsedTime, bool died)
+    returns (
+      Equipment[] memory consumedEquipment,
+      ActionReward memory output,
+      uint actualElapsedTime,
+      uint xpElapsedTime,
+      bool died
+    )
   {
     // Fetch the requirements for it
-    (bool isCombat, CombatStats memory combatStats) = _world.getCombatStats(_queuedAction.actionId);
-
-    actualElapsedTime = _elapsedTime; // Can be updated
+    (bool isCombat, CombatStats memory enemyCombatStats) = _world.getCombatStats(_queuedAction.actionId);
 
     consumedEquipment = new Equipment[](4);
     uint consumedEquipmentLength;
@@ -325,23 +352,36 @@ library PlayerLibrary {
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
     // TODO Should probably move this out?
+    uint16 numConsumed;
+    uint combatElapsedTime;
     if (isCombat) {
+      (xpElapsedTime, combatElapsedTime, numConsumed) = getAdjustedElapsedTimes(
+        _from,
+        _itemNFT,
+        _world,
+        _elapsedTime,
+        _actionChoice,
+        _queuedAction,
+        _combatStats,
+        enemyCombatStats
+      );
+
       uint16 foodConsumed;
-      (foodConsumed, died) = _combatConsumablesView(_from, _queuedAction, _elapsedTime, _itemNFT, _playerStats);
+      (foodConsumed, died) = _foodConsumedView(
+        _from,
+        _queuedAction,
+        combatElapsedTime,
+        _itemNFT,
+        _combatStats,
+        enemyCombatStats
+      );
 
       if (_actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(_queuedAction.regenerateId, foodConsumed);
         ++consumedEquipmentLength;
       }
-    }
-
-    // Check the max that can be used. To prevent overflow for sped up actions.
-    uint16 numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * 100));
-    // This checks the balances
-    uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
-
-    if (numConsumed > maxRequiredRatio) {
-      numConsumed = uint16(maxRequiredRatio);
+    } else {
+      actualElapsedTime = _elapsedTime;
     }
 
     if (numConsumed > 0) {
@@ -377,36 +417,61 @@ library PlayerLibrary {
     }
   }
 
-  function _combatConsumablesView(
+  function _foodConsumedView(
     address _from,
     QueuedAction storage queuedAction,
-    uint _elapsedTime,
+    uint _combatElapsedTime, // uint _battleTime,
     ItemNFT _itemNFT,
-    CombatStats storage _playerStats
+    CombatStats memory _combatStats,
+    CombatStats memory _enemyCombatStats
   ) private view returns (uint16 foodConsumed, bool died) {
-    foodConsumed = uint16(_elapsedTime / 3600 + (_elapsedTime % 3600 == 0 ? 0 : 1)); // TODO: Should be based on damage done
-    uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
+    int32 totalHealthLost = int32(
+      (_enemyCombatStats.attack * _enemyCombatStats.attack * int32(int(_combatElapsedTime))) /
+        (_combatStats.meleeDefence * 60)
+    ) - _combatStats.health;
+    totalHealthLost += int32(
+      (_enemyCombatStats.magic * _enemyCombatStats.magic * int32(int(_combatElapsedTime))) /
+        (_combatStats.magicDefence * 60)
+    );
 
-    died = foodConsumed > balance;
-    if (died) {
-      foodConsumed = uint16(balance);
+    Item memory item = _itemNFT.getItem(queuedAction.regenerateId);
+
+    if (item.healthRestored == 0 || totalHealthLost <= 0) {
+      // No food attached or didn't lose any health
+      died = totalHealthLost > 0;
+    } else {
+      foodConsumed = uint16(
+        uint32(totalHealthLost) / item.healthRestored + (uint32(totalHealthLost) % item.healthRestored == 0 ? 0 : 1)
+      );
+      uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
+
+      died = foodConsumed > balance;
+      if (died) {
+        foodConsumed = uint16(balance);
+      }
     }
   }
 
-  function _processCombatConsumables(
+  function _processFoodConsumed(
     address _from,
     uint _playerId,
     QueuedAction storage _queuedAction,
-    uint _elapsedTime,
+    uint _combatElapsedTime,
     ItemNFT _itemNFT,
-    CombatStats storage _playerStats
+    CombatStats calldata _combatStats,
+    CombatStats memory _enemyCombatStats
   ) private returns (bool died) {
-    /* combatStats.attack, */
-    /* playerStats.meleeDefence */
     uint16 foodConsumed;
-    (foodConsumed, died) = _combatConsumablesView(_from, _queuedAction, _elapsedTime, _itemNFT, _playerStats);
-
     // Figure out how much food should be used
+    (foodConsumed, died) = _foodConsumedView(
+      _from,
+      _queuedAction,
+      _combatElapsedTime,
+      _itemNFT,
+      _combatStats,
+      _enemyCombatStats
+    );
+
     _processConsumable(
       _from,
       _playerId,
@@ -416,7 +481,6 @@ library PlayerLibrary {
       1,
       _queuedAction.attire.queueId
     );
-    // TODO use playerStats.health
   }
 
   function _getMaxRequiredRatio(
@@ -517,6 +581,87 @@ library PlayerLibrary {
     );
   }
 
+  function getAdjustedElapsedTimes(
+    address _from,
+    ItemNFT _itemNFT,
+    World _world,
+    uint _elapsedTime,
+    ActionChoice memory _actionChoice,
+    QueuedAction memory _queuedAction,
+    CombatStats memory _combatStats,
+    CombatStats memory _enemyCombatStats
+  ) public view returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed) {
+    // Update these as necessary
+    xpElapsedTime = _elapsedTime;
+    combatElapsedTime = _elapsedTime;
+
+    // Figure out how much food should be consumed.
+    // This is based on the damage done from battling
+    // TODO Should probably move this out?
+    (bool isCombat, CombatStats memory enemyCombatStats) = _world.getCombatStats(_queuedAction.actionId);
+    if (isCombat) {
+      uint numSpawned = _world.getNumSpawn(_queuedAction.actionId); // Per hour
+      uint maxHealthEnemy = numSpawned * uint16(enemyCombatStats.health);
+
+      int32 totalHealthDealt;
+      if (_actionChoice.skill == Skill.ATTACK) {
+        totalHealthDealt =
+          ((_combatStats.attack * _combatStats.attack * int32(int(_elapsedTime))) /
+            _enemyCombatStats.meleeDefence +
+            40) *
+          60;
+      } else if (_actionChoice.skill == Skill.MAGIC) {
+        _combatStats.magic += int16(int32(_actionChoice.diff)); // Extra magic damage
+
+        totalHealthDealt =
+          ((_combatStats.magic * _combatStats.magic * int32(int(_elapsedTime))) / _enemyCombatStats.magicDefence) *
+          60;
+      } else if (_actionChoice.skill == Skill.RANGED) {
+        // Add later
+        //        totalHealthDealt = (_combatStats.range * _combatStats.range * int32(int(_elapsedTime))) /
+        //        _enemyCombatStats.rangeDefence;
+      }
+
+      // Work out the ratio of health dealt to the max health they have
+      if (uint32(totalHealthDealt) > maxHealthEnemy) {
+        // We killed them all, but figure out how long it took
+        combatElapsedTime = (_elapsedTime * uint32(totalHealthDealt)) / maxHealthEnemy; // Use this to work out how much food, arrows & spells to consume
+        if (combatElapsedTime > _elapsedTime) {
+          combatElapsedTime = _elapsedTime;
+        }
+      } else if (uint32(totalHealthDealt) < maxHealthEnemy) {
+        // We didn't kill them all so they don't get the full rewards/xp
+        // This correct?
+        xpElapsedTime = (_elapsedTime * uint32(totalHealthDealt)) / maxHealthEnemy;
+      }
+
+      // Check the max that can be used
+      numConsumed = uint16((combatElapsedTime * _actionChoice.rate) / (3600 * 100));
+      if (numConsumed != 0) {
+        // This checks the balances
+        uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
+
+        if (numConsumed > maxRequiredRatio) {
+          numConsumed = uint16(maxRequiredRatio);
+
+          // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
+          xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
+        }
+      }
+    } else {
+      // Non-combat, check the max that can be used
+      numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * 100));
+      // This checks the balances
+      uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
+      if (numConsumed > maxRequiredRatio) {
+        numConsumed = uint16(maxRequiredRatio);
+
+        // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
+        xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
+      }
+    }
+  }
+
   function processConsumables(
     address _from,
     uint _playerId,
@@ -524,31 +669,34 @@ library PlayerLibrary {
     uint _elapsedTime,
     World _world,
     ItemNFT _itemNFT,
-    CombatStats storage _playerStats,
+    CombatStats calldata _combatStats,
     ActionChoice memory _actionChoice
-  ) external returns (uint actualElapsedTime, bool died) {
-    // Fetch the requirements for it
-    (bool isCombat, CombatStats memory combatStats) = _world.getCombatStats(_queuedAction.actionId);
-
-    actualElapsedTime = _elapsedTime; // Can be updated
-
-    // Figure out how much food should be consumed.
+  ) external returns (uint xpElapsedTime, uint combatElapsedTime, bool died) {
     // This is based on the damage done from battling
-    // TODO Should probably move this out?
+    (bool isCombat, CombatStats memory enemyCombatStats) = _world.getCombatStats(_queuedAction.actionId);
+    uint16 numConsumed;
+    (xpElapsedTime, combatElapsedTime, numConsumed) = getAdjustedElapsedTimes(
+      _from,
+      _itemNFT,
+      _world,
+      _elapsedTime,
+      _actionChoice,
+      _queuedAction,
+      _combatStats,
+      enemyCombatStats
+    );
     if (isCombat) {
-      (died) = _processCombatConsumables(_from, _playerId, _queuedAction, _elapsedTime, _itemNFT, _playerStats);
+      (died) = _processFoodConsumed(
+        _from,
+        _playerId,
+        _queuedAction,
+        combatElapsedTime,
+        _itemNFT,
+        _combatStats,
+        enemyCombatStats
+      );
     }
 
-    // Check the max that can be used. To prevent overflow for sped up actions.
-    uint16 numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * 100));
-    // This checks the balances
-    uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
-
-    if (numConsumed > maxRequiredRatio) {
-      numConsumed = uint16(maxRequiredRatio);
-    }
-
-    // TODO: This will affect how much combat can be done
     if (numConsumed > 0) {
       _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _itemNFT, _queuedAction.attire.queueId);
     }
@@ -649,20 +797,22 @@ library PlayerLibrary {
 
       ActionChoice memory actionChoice;
       bool isCombat = _isCombat(queuedAction.skill);
-
-      if (queuedAction.choiceId != 0 || isCombat) {
+      uint xpElapsedTime = elapsedTime;
+      if (queuedAction.choiceId != 0) {
+        // || isCombat) {
         actionChoice = _world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
         Equipment[] memory consumedEquipment;
         ActionReward memory output;
-        (consumedEquipment, output, elapsedTime, died) = processConsumablesView(
+
+        (consumedEquipment, output, elapsedTime, xpElapsedTime, died) = processConsumablesView(
           from,
           _playerId,
           queuedAction,
           elapsedTime,
           _world,
           _itemNFT,
-          player.totalStats,
+          combatStats,
           actionChoice
         );
 
@@ -684,8 +834,14 @@ library PlayerLibrary {
       if (!died) {
         bool _isCombatSkill = _isCombat(queuedAction.skill);
         uint16 xpPerHour = _world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
-        pointsAccrued = uint32((elapsedTime * xpPerHour) / 3600);
-        pointsAccrued += extraXPFromBoost(_isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour, activeBoost);
+        pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
+        pointsAccrued += extraXPFromBoost(
+          _isCombatSkill,
+          queuedAction.startTime,
+          xpElapsedTime,
+          xpPerHour,
+          activeBoost
+        );
       }
 
       if (pointsAccrued > 0) {
@@ -695,7 +851,7 @@ library PlayerLibrary {
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           from,
           uint40(queuedAction.startTime + elapsedTime),
-          elapsedTime,
+          xpElapsedTime,
           _world,
           actionRewards
         );
@@ -709,7 +865,7 @@ library PlayerLibrary {
         // But this could be improved
         allpointsAccrued += pointsAccrued;
       }
-    }
+    } // end of loop
 
     if (allpointsAccrued > 0) {
       // Check if they have levelled up
@@ -722,5 +878,34 @@ library PlayerLibrary {
       mstore(mload(pendingOutput), consumedLength)
       mstore(mload(add(pendingOutput, 32)), producedLength)
     }
+  }
+
+  function consumeBoost(
+    uint16 _itemTokenId,
+    ItemNFT itemNFT,
+    uint40 _startTime,
+    PlayerBoostInfo storage playerBoost
+  ) external {
+    Item memory item = itemNFT.getItem(_itemTokenId);
+    require(item.boostType != BoostType.NONE); // , "Not a boost vial");
+    require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
+    if (_startTime < block.timestamp) {
+      _startTime = uint40(block.timestamp);
+    }
+
+    // Burn it
+    address from = msg.sender;
+    itemNFT.burn(from, _itemTokenId, 1);
+
+    // If there's an active potion which hasn't been consumed yet, then we can mint it back
+    if (playerBoost.itemTokenId != NONE) {
+      itemNFT.mint(from, playerBoost.itemTokenId, 1);
+    }
+
+    playerBoost.startTime = _startTime;
+    playerBoost.duration = item.boostDuration;
+    playerBoost.val = item.boostValue;
+    playerBoost.boostType = item.boostType;
+    playerBoost.itemTokenId = _itemTokenId;
   }
 }

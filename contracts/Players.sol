@@ -42,18 +42,6 @@ contract Players is
   event ActionFinished(address from, uint playerId, uint queueId);
   event ActionPartiallyFinished(address from, uint playerId, uint queueId, uint elapsedTime);
 
-  // TODO this could be packed better. As Combat stats are 8 bytes so could fit 4 of them
-  struct AttireAttributes {
-    CombatStats helmet;
-    CombatStats amulet;
-    CombatStats armor;
-    CombatStats tassets;
-    CombatStats gauntlets;
-    CombatStats boots;
-    CombatStats ring;
-    CombatStats reserved1;
-  }
-
   error SkillsArrayZero();
   error NotOwner();
   error NotActive();
@@ -246,14 +234,14 @@ contract Players is
     itemNFT.mintBatch(_to, _ids, _amounts);
   }
 
-  function _updatePlayerStats(
+  function _updateCombatStats(
     address _from,
     CombatStats memory _stats,
     Attire storage _attire,
     bool _add,
     uint _startTime
-  ) private view {
-    PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT, _add);
+  ) private view returns (CombatStats memory) {
+    return PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT, _add);
   }
 
   function _getEquippedTokenId(
@@ -283,29 +271,8 @@ contract Players is
   }
 
   function _consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) private {
-    Item memory item = itemNFT.getItem(_itemTokenId);
-    require(item.boostType != BoostType.NONE); // , "Not a boost vial");
-    require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
-    if (_startTime < block.timestamp) {
-      _startTime = uint40(block.timestamp);
-    }
-
-    // Burn it
-    address from = msg.sender;
-    itemNFT.burn(from, _itemTokenId, 1);
-
-    // If there's an active potion which hasn't been consumed yet, then we can mint it back
     PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
-    if (playerBoost.itemTokenId != NONE) {
-      itemNFT.mint(from, playerBoost.itemTokenId, 1);
-    }
-
-    playerBoost.startTime = _startTime;
-    playerBoost.duration = item.boostDuration;
-    playerBoost.val = item.boostValue;
-    playerBoost.boostType = item.boostType;
-    playerBoost.itemTokenId = _itemTokenId;
-
+    PlayerLibrary.consumeBoost(_itemTokenId, itemNFT, _startTime, playerBoost);
     emit ConsumeBoostVial(_playerId, playerBoost);
   }
 
@@ -758,10 +725,14 @@ contract Players is
     for (uint i = 0; i < player.actionQueue.length; ++i) {
       QueuedAction storage queuedAction = player.actionQueue[i];
 
-      CombatStats memory combatStats = player.totalStats;
-
       // This will only ones that they have a balance for at this time. This will check balances
-      _updatePlayerStats(_from, combatStats, queuedAction.attire, true, queuedAction.startTime);
+      CombatStats memory combatStats = _updateCombatStats(
+        _from,
+        player.totalStats,
+        queuedAction.attire,
+        true,
+        queuedAction.startTime
+      );
 
       uint32 pointsAccrued;
       uint skillEndTime = queuedAction.startTime +
@@ -780,38 +751,43 @@ contract Players is
         continue;
       }
 
+      bool fullyFinished = elapsedTime >= queuedAction.timespan;
+
       // Create some items if necessary (smithing ores to bars for instance)
       bool died;
 
       ActionChoice memory actionChoice;
       bool isCombat = _isCombat(queuedAction.skill);
 
-      if (queuedAction.choiceId != 0 || isCombat) {
+      uint xpElapsedTime = elapsedTime;
+
+      if (queuedAction.choiceId != 0) {
+        // Includes combat
+        // { || isCombat) {
+        uint combatElapsedTime;
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
-        (elapsedTime, died) = PlayerLibrary.processConsumables(
+        (xpElapsedTime, combatElapsedTime, died) = PlayerLibrary.processConsumables(
           _from,
           _playerId,
           queuedAction,
           elapsedTime,
           world,
           itemNFT,
-          player.totalStats,
+          combatStats,
           actionChoice
         );
       }
-
       uint queueId = queuedAction.attire.queueId;
       if (!died) {
         bool _isCombatSkill = _isCombat(queuedAction.skill);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
-        pointsAccrued = uint32((elapsedTime * xpPerHour) / 3600);
+        pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
       } else {
         emit Died(_from, _playerId, queueId);
       }
 
-      bool fullyFinished = elapsedTime >= queuedAction.timespan;
       if (!fullyFinished) {
         // Add the remainder if this action is not fully consumed
         _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, length);
@@ -822,16 +798,21 @@ contract Players is
       if (pointsAccrued > 0) {
         _updateSkillPoints(_playerId, queuedAction.skill, pointsAccrued);
 
+        if (_isCombat(queuedAction.skill)) {
+          // Update health too with 33%
+          _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);
+        }
+
         ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getRewards(
           _from,
-          uint40(queuedAction.startTime + elapsedTime),
-          elapsedTime,
+          uint40(queuedAction.startTime + xpElapsedTime),
+          xpElapsedTime,
           world,
           actionRewards
         );
 
-        _addPendingLoot(pendingLoot, actionRewards, queuedAction.actionId, elapsedTime, skillEndTime);
+        _addPendingLoot(pendingLoot, actionRewards, queuedAction.actionId, xpElapsedTime, skillEndTime);
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved

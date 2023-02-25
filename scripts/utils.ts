@@ -484,7 +484,8 @@ export enum ActionQueueStatus {
 
 type ActionInfo = {
   skill: Skill;
-  baseXPPerHour: number;
+  xpPerHour: number;
+  numSpawn: number;
   isAvailable: boolean;
   isDynamic: boolean;
   minSkillPoints: number;
@@ -509,7 +510,7 @@ type ActionChoice = {
   skill: Skill;
   diff: number;
   rate: number;
-  baseXPPerHour: number;
+  xpPerHour: number;
   minSkillPoints: number;
   inputTokenId1: number;
   num1: number;
@@ -726,9 +727,10 @@ export const allActions: Action[] = [
   {
     info: {
       skill: Skill.WOODCUTTING,
-      baseXPPerHour: 25,
+      xpPerHour: 25,
       minSkillPoints: 0,
       isDynamic: false,
+      numSpawn: 0,
       itemTokenIdRangeMin: BRONZE_AXE,
       itemTokenIdRangeMax: WOODCUTTING_MAX,
       isAvailable: true,
@@ -741,9 +743,10 @@ export const allActions: Action[] = [
   {
     info: {
       skill: Skill.FIREMAKING,
-      baseXPPerHour: 0, // Decided by the type of log burned
+      xpPerHour: 0, // Decided by the type of log burned
       minSkillPoints: 0,
       isDynamic: false,
+      numSpawn: 0,
       itemTokenIdRangeMin: FIRE_LIGHTER,
       itemTokenIdRangeMax: FIRE_MAX,
       isAvailable: true,
@@ -756,9 +759,10 @@ export const allActions: Action[] = [
   {
     info: {
       skill: Skill.MINING,
-      baseXPPerHour: 25,
+      xpPerHour: 25,
       minSkillPoints: 0,
       isDynamic: false,
+      numSpawn: 0,
       itemTokenIdRangeMin: BRONZE_PICKAXE,
       itemTokenIdRangeMax: MINING_MAX,
       isAvailable: true,
@@ -771,9 +775,10 @@ export const allActions: Action[] = [
   {
     info: {
       skill: Skill.MINING,
-      baseXPPerHour: 35,
+      xpPerHour: 35,
       minSkillPoints: 274,
       isDynamic: false,
+      numSpawn: 0,
       itemTokenIdRangeMin: BRONZE_PICKAXE,
       itemTokenIdRangeMax: MINING_MAX,
       isAvailable: true,
@@ -786,9 +791,10 @@ export const allActions: Action[] = [
   {
     info: {
       skill: Skill.SMITHING,
-      baseXPPerHour: 0, // Decided by the ores smelted
+      xpPerHour: 0, // Decided by the ores smelted
       minSkillPoints: 0,
       isDynamic: false,
+      numSpawn: 0,
       itemTokenIdRangeMin: NONE,
       itemTokenIdRangeMax: NONE,
       isAvailable: true,
@@ -803,9 +809,10 @@ export const allActions: Action[] = [
     // Natuow
     info: {
       skill: Skill.COMBAT,
-      baseXPPerHour: 3600,
+      xpPerHour: 3600,
       minSkillPoints: 0,
       isDynamic: false,
+      numSpawn: 10,
       itemTokenIdRangeMin: COMBAT_BASE,
       itemTokenIdRangeMax: COMBAT_MAX,
       isAvailable: true,
@@ -824,12 +831,49 @@ export const allActions: Action[] = [
   },
 ];
 
+export const emptyActionChoice: ActionChoice = {
+  skill: Skill.NONE,
+  diff: 0,
+  rate: 0,
+  xpPerHour: 0,
+  minSkillPoints: 0,
+  inputTokenId1: NONE,
+  num1: 0,
+  inputTokenId2: NONE,
+  num2: 0,
+  inputTokenId3: NONE,
+  num3: 0,
+  outputTokenId: NONE,
+};
+
+export const meleeChoices: ActionChoice[] = [
+  {
+    ...emptyActionChoice,
+    skill: Skill.ATTACK,
+  },
+];
+
+export const magicChoices: ActionChoice[] = [
+  // All the different types of spells
+  // SHADOW BLAST
+  {
+    ...emptyActionChoice,
+    skill: Skill.MAGIC,
+    diff: 2, // 2 extra magic damage
+    inputTokenId1: SHADOW_SCROLL,
+    num1: 2,
+  },
+];
+
+// TODO: Add all the different types of arrows
+export const rangeChoices: ActionChoice[] = [];
+
 export const firemakingChoices: ActionChoice[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
     rate: 1220 * 100,
-    baseXPPerHour: 25,
+    xpPerHour: 25,
     minSkillPoints: 0,
     inputTokenId1: LOG,
     num1: 1,
@@ -843,7 +887,7 @@ export const firemakingChoices: ActionChoice[] = [
     skill: Skill.FIREMAKING,
     diff: 0,
     rate: 1220 * 100,
-    baseXPPerHour: 45,
+    xpPerHour: 45,
     minSkillPoints: 1021,
     inputTokenId1: OAK_LOG,
     num1: 1,
@@ -860,7 +904,7 @@ export const smithingChoices: ActionChoice[] = [
     skill: Skill.SMITHING,
     diff: 0,
     rate: 2440 * 100,
-    baseXPPerHour: 25,
+    xpPerHour: 25,
     minSkillPoints: 0,
     inputTokenId1: COPPER_ORE,
     num1: 1,
@@ -874,7 +918,7 @@ export const smithingChoices: ActionChoice[] = [
     skill: Skill.SMITHING,
     diff: 0,
     rate: 1220 * 100,
-    baseXPPerHour: 35,
+    xpPerHour: 35,
     minSkillPoints: 0,
     inputTokenId1: IRON_ORE,
     num1: 1,

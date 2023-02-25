@@ -47,9 +47,10 @@ enum Skill {
   RANGED,
   MAGIC,
   DEFENCE,
-  //  MELEE_ATTACK_DEFENCE, // combo
-  //  RANGED_ATTACK_DEFENCE, // combo
-  //  MAGIC_ATTACK_DEFENCE, // combo
+  //  MELEE_DEFENCE, // combo
+  //  RANGED_DEFENCE, // combo
+  //  MAGIC_DEFENCE, // combo
+  HEALTH,
   MINING,
   WOODCUTTING,
   FISHING,
@@ -82,14 +83,13 @@ enum EquipPosition {
 
 // CombatStats
 struct CombatStats {
-  int8 attack;
-  int8 magic;
-  int8 range;
-  int8 meleeDefence;
-  int8 magicDefence;
-  int8 rangeDefence;
-  int8 health;
-  // Spare
+  int16 attack;
+  int16 magic;
+  int16 range;
+  int16 meleeDefence;
+  int16 magicDefence;
+  int16 rangeDefence;
+  int16 health;
 }
 
 // Loot
@@ -131,7 +131,7 @@ struct ActionChoice {
   Skill skill;
   uint32 diff;
   uint32 rate; // rate of output produced per hour (base 100) 2 decimals
-  uint16 baseXPPerHour;
+  uint16 xpPerHour;
   uint32 minSkillPoints;
   uint16 inputTokenId1;
   uint8 num1;
@@ -165,9 +165,9 @@ struct ActionInfo {
   bool isAvailable;
   bool isDynamic;
   bool isCombat;
-  uint16 baseXPPerHour;
+  uint16 xpPerHour;
+  uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
   uint32 minSkillPoints;
-  // These are put here for efficiency even if not needed
   uint16 itemTokenIdRangeMin; // Inclusive
   uint16 itemTokenIdRangeMax; // Inclusive
 }

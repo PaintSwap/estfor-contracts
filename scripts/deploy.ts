@@ -12,6 +12,8 @@ import {
   firemakingChoices,
   FIRE_LIGHTER,
   LOG,
+  magicChoices,
+  meleeChoices,
   noAttire,
   NONE,
   QueuedAction,
@@ -165,8 +167,8 @@ async function main() {
   const smithMakingActionId = allActions.findIndex((action) => action.info.skill == Skill.SMITHING) + 1;
 
   tx = await world.addBulkActionChoices(
-    [fireMakingActionId, smithMakingActionId],
-    [firemakingChoices, smithingChoices]
+    [fireMakingActionId, smithMakingActionId, NONE, NONE],
+    [firemakingChoices, smithingChoices, meleeChoices, magicChoices]
   );
 
   await tx.wait();

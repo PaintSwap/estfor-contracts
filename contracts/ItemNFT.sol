@@ -188,13 +188,13 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
 
     if (hasCombat) {
       // Combat stats
-      item.attack = _item.combatStats.attack;
-      item.magic = _item.combatStats.magic;
-      item.range = _item.combatStats.range;
-      item.meleeDefence = _item.combatStats.meleeDefence;
-      item.magicDefence = _item.combatStats.magicDefence;
-      item.rangeDefence = _item.combatStats.rangeDefence;
-      item.health = _item.combatStats.health;
+      item.attack = int8(_item.combatStats.attack);
+      item.magic = int8(_item.combatStats.magic);
+      item.range = int8(_item.combatStats.range);
+      item.meleeDefence = int8(_item.combatStats.meleeDefence);
+      item.magicDefence = int8(_item.combatStats.magicDefence);
+      item.rangeDefence = int8(_item.combatStats.rangeDefence);
+      item.health = int8(_item.combatStats.health);
     }
     if (hasNonCombat) {
       item.skill1 = _item.nonCombatStats[0].skill;

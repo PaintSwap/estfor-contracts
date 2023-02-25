@@ -17,6 +17,7 @@ import {
   COOKED_HUPPY,
   COPPER_ORE,
   createPlayer,
+  emptyActionChoice,
   emptyStats,
   EquipPosition,
   FIRE_LIGHTER,
@@ -135,9 +136,10 @@ describe("Player", () => {
     const tx = await world.addAction({
       info: {
         skill: Skill.WOODCUTTING,
-        baseXPPerHour: 3600,
+        xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
+        numSpawn: 0,
         itemTokenIdRangeMin: WOODCUTTING_BASE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -177,9 +179,10 @@ describe("Player", () => {
     const tx = await world.addAction({
       info: {
         skill: Skill.WOODCUTTING,
-        baseXPPerHour: 3600,
+        xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
+        numSpawn: 0,
         itemTokenIdRangeMin: BRONZE_AXE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -234,9 +237,10 @@ describe("Player", () => {
     const tx = await world.addAction({
       info: {
         skill: Skill.WOODCUTTING,
-        baseXPPerHour: 3600,
+        xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
+        numSpawn: 0,
         itemTokenIdRangeMin: BRONZE_AXE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -314,10 +318,11 @@ describe("Player", () => {
 
     await world.addAction({
       info: {
-        skill: Skill.ATTACK,
-        baseXPPerHour: 3600,
+        skill: Skill.COMBAT,
+        xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
+        numSpawn: 1,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
         isAvailable: actionIsAvailable,
@@ -328,11 +333,17 @@ describe("Player", () => {
       combatStats: emptyStats,
     });
 
+    const tx = await world.addActionChoice(NONE, {
+      ...emptyActionChoice,
+      skill: Skill.ATTACK,
+    });
+    const choiceId = await getActionChoiceId(tx);
+
     const queuedAction: QueuedAction = {
       attire: {...noAttire, gauntlets: BRONZE_GAUNTLETS},
       actionId: 1,
       skill: Skill.ATTACK,
-      choiceId: NONE,
+      choiceId,
       choiceId1: NONE,
       choiceId2: NONE,
       regenerateId: NONE,
@@ -481,9 +492,10 @@ describe("Player", () => {
     const tx = await world.addAction({
       info: {
         skill: Skill.WOODCUTTING,
-        baseXPPerHour: 3600,
+        xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
+        numSpawn: 0,
         itemTokenIdRangeMin: BRONZE_AXE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -565,9 +577,10 @@ describe("Player", () => {
       const tx = await world.addAction({
         info: {
           skill: Skill.WOODCUTTING,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
@@ -636,9 +649,10 @@ describe("Player", () => {
       const tx = await world.addAction({
         info: {
           skill: Skill.WOODCUTTING,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
@@ -700,9 +714,10 @@ describe("Player", () => {
       const tx = await world.addAction({
         info: {
           skill: Skill.WOODCUTTING,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
@@ -759,9 +774,10 @@ describe("Player", () => {
       let tx = await world.addAction({
         info: {
           skill: Skill.FIREMAKING,
-          baseXPPerHour: 0,
+          xpPerHour: 0,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: FIRE_LIGHTER,
           itemTokenIdRangeMax: FIRE_MAX,
           isAvailable: actionIsAvailable,
@@ -777,7 +793,7 @@ describe("Player", () => {
       tx = await world.addActionChoice(actionId, {
         skill: Skill.FIREMAKING,
         diff: 0,
-        baseXPPerHour: 3600,
+        xpPerHour: 3600,
         minSkillPoints: 0,
         rate,
         inputTokenId1: LOG,
@@ -839,9 +855,10 @@ describe("Player", () => {
         const tx = await world.addAction({
           info: {
             skill: Skill.WOODCUTTING,
-            baseXPPerHour: 3600,
+            xpPerHour: 3600,
             minSkillPoints: 0,
             isDynamic: false,
+            numSpawn: 0,
             itemTokenIdRangeMin: BRONZE_AXE,
             itemTokenIdRangeMax: WOODCUTTING_MAX,
             isAvailable: actionIsAvailable,
@@ -880,9 +897,10 @@ describe("Player", () => {
         let tx = await world.addAction({
           info: {
             skill: Skill.FIREMAKING,
-            baseXPPerHour: 0,
+            xpPerHour: 0,
             minSkillPoints: 0,
             isDynamic: false,
+            numSpawn: 0,
             itemTokenIdRangeMin: FIRE_LIGHTER,
             itemTokenIdRangeMax: FIRE_MAX,
             isAvailable: actionIsAvailable,
@@ -898,7 +916,7 @@ describe("Player", () => {
         tx = await world.addActionChoice(actionId, {
           skill: Skill.FIREMAKING,
           diff: 0,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           rate,
           inputTokenId1: LOG,
@@ -971,9 +989,10 @@ describe("Player", () => {
         const tx = await world.addAction({
           info: {
             skill: Skill.WOODCUTTING,
-            baseXPPerHour: 3600,
+            xpPerHour: 3600,
             minSkillPoints: 0,
             isDynamic: false,
+            numSpawn: 0,
             itemTokenIdRangeMin: BRONZE_AXE,
             itemTokenIdRangeMax: WOODCUTTING_MAX,
             isAvailable: actionIsAvailable,
@@ -1012,9 +1031,10 @@ describe("Player", () => {
         let tx = await world.addAction({
           info: {
             skill: Skill.FIREMAKING,
-            baseXPPerHour: 0,
+            xpPerHour: 0,
             minSkillPoints: 0,
             isDynamic: false,
+            numSpawn: 0,
             itemTokenIdRangeMin: FIRE_LIGHTER,
             itemTokenIdRangeMax: FIRE_MAX,
             isAvailable: actionIsAvailable,
@@ -1030,7 +1050,7 @@ describe("Player", () => {
         tx = await world.addActionChoice(actionId, {
           skill: Skill.FIREMAKING,
           diff: 0,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           rate,
           inputTokenId1: LOG,
@@ -1102,9 +1122,10 @@ describe("Player", () => {
       const tx = await world.addAction({
         info: {
           skill: Skill.MINING,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: BRONZE_PICKAXE,
           itemTokenIdRangeMax: MINING_MAX,
           isAvailable: actionIsAvailable,
@@ -1153,9 +1174,10 @@ describe("Player", () => {
       let tx = await world.addAction({
         info: {
           skill: Skill.SMITHING,
-          baseXPPerHour: 0,
+          xpPerHour: 0,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: NONE,
           itemTokenIdRangeMax: NONE,
           isAvailable: actionIsAvailable,
@@ -1171,7 +1193,7 @@ describe("Player", () => {
       tx = await world.addActionChoice(actionId, {
         skill: Skill.SMITHING,
         diff: 0,
-        baseXPPerHour: 3600,
+        xpPerHour: 3600,
         minSkillPoints: 0,
         rate,
         inputTokenId1: COAL_ORE,
@@ -1239,9 +1261,10 @@ describe("Player", () => {
       const tx = await world.addAction({
         info: {
           skill: Skill.WOODCUTTING,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
@@ -1303,9 +1326,10 @@ describe("Player", () => {
       const tx = await world.addAction({
         info: {
           skill: Skill.WOODCUTTING,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 0,
           itemTokenIdRangeMin: WOODCUTTING_BASE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
@@ -1355,16 +1379,17 @@ describe("Player", () => {
         meleeDefence: 0,
         magicDefence: 0,
         rangeDefence: 0,
-        health: 0,
+        health: 1,
       };
 
       const rate = 1 * 100; // per hour
       let tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 1,
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionIsAvailable,
@@ -1376,6 +1401,11 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
+      tx = await world.addActionChoice(NONE, {
+        ...emptyActionChoice,
+        skill: Skill.ATTACK,
+      });
+      const choiceId = await getActionChoiceId(tx);
       await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
       await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
       const timespan = 3600;
@@ -1383,7 +1413,7 @@ describe("Player", () => {
         attire: noAttire,
         actionId,
         skill: Skill.ATTACK,
-        choiceId: NONE,
+        choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
         regenerateId: COOKED_HUPPY,
@@ -1395,6 +1425,10 @@ describe("Player", () => {
 
       await itemNFT.addItem({
         ...inputItem,
+        combatStats: {
+          ...emptyStats,
+          attack: 5,
+        },
         tokenId: BRONZE_SWORD,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -1403,12 +1437,13 @@ describe("Player", () => {
       await itemNFT.addItem({
         ...inputItem,
         tokenId: BRONZE_ARROW,
-        equipPosition: EquipPosition.AUX,
+        equipPosition: EquipPosition.ARROW_SATCHEL,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...inputItem,
+        healthRestored: 12,
         tokenId: COOKED_HUPPY,
         equipPosition: EquipPosition.AUX, // FOOD
         metadataURI: "someIPFSURI.json",
@@ -1426,7 +1461,7 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
       // Check food is consumed, update later
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 1);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 5);
     });
 
     it("Drop rewards", async () => {});
@@ -1451,9 +1486,10 @@ describe("Player", () => {
       let tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 1,
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionIsAvailable,
@@ -1468,11 +1504,16 @@ describe("Player", () => {
       await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
       await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 2);
       const timespan = 3600 * 3; // 3 hours
+      tx = await world.addActionChoice(NONE, {
+        ...emptyActionChoice,
+        skill: Skill.ATTACK,
+      });
+      const choiceId = await getActionChoiceId(tx);
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
         skill: Skill.ATTACK,
-        choiceId: NONE,
+        choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
         regenerateId: COOKED_HUPPY,
@@ -1498,6 +1539,7 @@ describe("Player", () => {
 
       await itemNFT.addItem({
         ...inputItem,
+        healthRestored: 1,
         tokenId: COOKED_HUPPY,
         equipPosition: EquipPosition.AUX, // FOOD
         metadataURI: "someIPFSURI.json",
@@ -1530,9 +1572,10 @@ describe("Player", () => {
       let tx = await world.addAction({
         info: {
           skill: Skill.COMBAT,
-          baseXPPerHour: 3600,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 1,
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionIsAvailable,
@@ -1555,8 +1598,8 @@ describe("Player", () => {
       // Fire blast
       tx = await world.addActionChoice(NONE, {
         skill: Skill.MAGIC,
-        diff: 0,
-        baseXPPerHour: 0,
+        diff: 2,
+        xpPerHour: 0,
         minSkillPoints: 0,
         rate: scrollsConsumedRate,
         inputTokenId1: AIR_SCROLL,
@@ -1610,6 +1653,7 @@ describe("Player", () => {
         },
         {
           ...inputItem,
+          healthRestored: 12,
           tokenId: COOKED_HUPPY,
           equipPosition: EquipPosition.FOOD,
           metadataURI: "someIPFSURI.json",
@@ -1629,7 +1673,7 @@ describe("Player", () => {
       );
 
       // Check food is consumed, update later
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 1);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 50);
 
       // Check that scrolls are consumed
       expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);

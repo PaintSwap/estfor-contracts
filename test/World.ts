@@ -93,10 +93,11 @@ describe("World", () => {
       const actionAvailable = false;
       let tx = await world.addAction({
         info: {
-          skill: Skill.ATTACK,
-          baseXPPerHour: 3600,
+          skill: Skill.COMBAT,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 1,
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionAvailable,
@@ -107,13 +108,14 @@ describe("World", () => {
         combatStats: emptyStats,
       });
       const actionId = await getActionId(tx);
-      expect((await world.actions(actionId)).skill).to.eq(Skill.ATTACK);
+      expect((await world.actions(actionId)).skill).to.eq(Skill.COMBAT);
       await world.editAction(actionId, {
         info: {
-          skill: Skill.ATTACK,
-          baseXPPerHour: 20,
+          skill: Skill.COMBAT,
+          xpPerHour: 20,
           minSkillPoints: 0,
           isDynamic: false,
+          numSpawn: 1,
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionAvailable,
@@ -123,7 +125,7 @@ describe("World", () => {
         randomRewards: [],
         combatStats: emptyStats,
       });
-      expect((await world.actions(actionId)).baseXPPerHour).to.eq(20);
+      expect((await world.actions(actionId)).xpPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
       await world.setAvailable(actionId, true);
       expect((await world.actions(actionId)).isAvailable).to.be.true;
@@ -133,10 +135,11 @@ describe("World", () => {
       // Set available on an action that is dynamic (this should be random only)
       await world.editAction(actionId, {
         info: {
-          skill: Skill.ATTACK,
-          baseXPPerHour: 3600,
+          skill: Skill.COMBAT,
+          xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: true,
+          numSpawn: 1,
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionAvailable,
