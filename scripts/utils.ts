@@ -10,6 +10,7 @@ export enum Skill {
   RANGED,
   MAGIC,
   DEFENCE,
+  HEALTH,
   //  MELEE_ATTACK_DEFENCE, // combo
   //  RANGED_ATTACK_DEFENCE, // combo
   //  MAGIC_ATTACK_DEFENCE, // combo

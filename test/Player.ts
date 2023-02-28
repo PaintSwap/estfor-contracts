@@ -75,7 +75,7 @@ describe("Player", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address], {kind: "uups"});
+    const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"});
 
     // This contains all the player data
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
@@ -106,6 +106,7 @@ describe("Player", () => {
     const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String(origName));
     await players.connect(alice).setActivePlayer(playerId);
     const maxTime = await players.MAX_TIME();
+    const editNameCost = await playerNFT.editNameCost();
 
     return {
       playerId,
@@ -118,6 +119,7 @@ describe("Player", () => {
       world,
       alice,
       origName,
+      editNameCost,
     };
   }
 
@@ -460,12 +462,12 @@ describe("Player", () => {
   });
 
   it("Edit Name", async () => {
-    const {playerId, playerNFT, alice, brush, origName} = await loadFixture(deployContracts);
+    const {playerId, playerNFT, alice, brush, origName, editNameCost} = await loadFixture(deployContracts);
     const name = ethers.utils.formatBytes32String("My name is edited");
     await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.reverted; // Haven't got the brush
 
-    await brush.mint(alice.address, 10000);
-    await brush.connect(alice).approve(playerNFT.address, 10000);
+    await brush.mint(alice.address, editNameCost.mul(2));
+    await brush.connect(alice).approve(playerNFT.address, editNameCost.mul(2));
 
     await expect(playerNFT.editName(playerId, name)).to.be.reverted; // Not the owner
     expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
@@ -1466,7 +1468,7 @@ describe("Player", () => {
 
     it("Drop rewards", async () => {});
 
-    it("Loot chance", async () => {});
+    it("Random chance", async () => {});
 
     it("Dead", async () => {
       // Lose all the XP that would have been gained

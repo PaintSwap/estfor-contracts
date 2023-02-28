@@ -83,7 +83,10 @@ async function main() {
 
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address], {kind: "uups"});
+  const EDIT_NAME_BRUSH_PRICE = 5000;
+  const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, EDIT_NAME_BRUSH_PRICE], {
+    kind: "uups",
+  });
 
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 
@@ -102,7 +105,7 @@ async function main() {
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
   await players.deployed();
-  console.log(`Players deployed at ${playerNFT.address.toLowerCase()}`);
+  console.log(`Players deployed at ${players.address.toLowerCase()}`);
 
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
@@ -176,7 +179,7 @@ async function main() {
 
   // First woodcutting
   const queuedAction: QueuedAction = {
-    attire: {...noAttire, helmet: BRONZE_HELMET, gauntlets: BRONZE_GAUNTLETS},
+    attire: noAttire,
     actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
     skill: Skill.WOODCUTTING,
     choiceId: NONE,
@@ -237,6 +240,11 @@ async function main() {
   console.log("consume actions (firemaking)");
 
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
+
+  // Start another action
+  tx = await players.startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+  await tx.wait();
+  console.log("start an unconsumed action");
 
   // Add shop item
   tx = await shop.addBuyableItems(allShopItems);

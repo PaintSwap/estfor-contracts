@@ -37,6 +37,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   IBrushToken public brush;
   IPlayers public players;
+  address public pool;
+
+  uint public editNameCost;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(msg.sender, playerId) != 1) {
@@ -55,13 +58,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush) public initializer {
+  function initialize(IBrushToken _brush, address _pool, uint _editNameCost) public initializer {
     __ERC1155_init("");
     __Ownable_init();
     __UUPSUpgradeable_init();
     brush = _brush;
     latestPlayerId = 1;
     baseURI = "ipfs://";
+    pool = _pool;
+    editNameCost = _editNameCost;
   }
 
   function _mintStartingItems() private {
@@ -148,10 +153,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function editName(uint _playerId, bytes32 _newName) external isOwnerOfPlayer(_playerId) {
-    uint brushCost = 5000;
+    uint brushCost = editNameCost;
     // Pay
     brush.transferFrom(msg.sender, address(this), brushCost);
-    // Burn half, the rest goes into the pool
+    // Send half to the pool
+    brush.transferFrom(msg.sender, pool, brushCost - (brushCost / 2));
+    // Burn the other half
     brush.burn(brushCost / 2);
 
     // Delete old name
@@ -191,6 +198,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   function setPlayers(IPlayers _players) external onlyOwner {
     players = _players;
+  }
+
+  function setEditNameCost(uint _editNameCost) external onlyOwner {
+    editNameCost = _editNameCost;
   }
 
   function _toLower(bytes32 _name) private pure returns (bytes memory) {
