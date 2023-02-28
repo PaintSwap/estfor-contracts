@@ -711,7 +711,7 @@ contract Players is
 
   // Callback after minting a player. If they aren't the active player then set it.
   function mintedPlayer(address _from, uint _playerId) external onlyPlayerNFT {
-    bool hasActivePlayer = activePlayer[_from] == 0;
+    bool hasActivePlayer = activePlayer[_from] != 0;
     if (!hasActivePlayer) {
       _setActivePlayer(_from, _playerId);
     }
