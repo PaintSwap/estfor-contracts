@@ -48,6 +48,18 @@ contract Players is
   error EquipSameItem();
   error NotEquipped();
   error ArgumentLengthMismatch();
+  error NotPlayerNFT();
+  error NotItemNFT();
+  error ActionNotAvailable();
+  error UnsupportedAttire();
+  error InvalidArmEquipment(uint16 itemTokenId);
+  error DoNotHaveEnoughQuantityToEquipToAction();
+  error NoActiveBoost();
+  error BoostTimeAlreadyStarted();
+  error NoItemBalance(uint16 itemTokenId);
+  error TooManyActionsQueued();
+  error TooManyActionsQueuedSomeAlreadyExist();
+  error ActionTimespanExceedsMaxTime();
 
   uint32 public constant MAX_TIME = 1 days;
   uint constant LEVEL_5_BOUNDARY = 374;
@@ -63,7 +75,7 @@ contract Players is
   uint constant LEVEL_90_BOUNDARY = 554828;
   uint constant LEVEL_99_BOUNDARY = 1035476;
 
-  uint constant MAX_MAIN_EQUIPMENT_ID = 256 * 8;
+  uint constant MAX_MAIN_EQUIPMENT_ID = 65536 * 8;
 
   mapping(uint => uint) speedMultiplier; // 0 or 1 is diabled, for testing only
 
@@ -88,6 +100,12 @@ contract Players is
 
   mapping(uint => EquipmentDiff[]) public actionEquipmentItemTokenIds; // QueuedActionId. Should only hold it for actions/actionChoices that are applicable
 
+  enum ActionQueueStatus {
+    NONE,
+    APPEND,
+    KEEP_LAST_IN_PROGRESS
+  }
+
   modifier isOwnerOfPlayer(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
       revert NotOwner();
@@ -106,12 +124,16 @@ contract Players is
   }
 
   modifier onlyPlayerNFT() {
-    require(msg.sender == address(playerNFT));
+    if (msg.sender != address(playerNFT)) {
+      revert NotPlayerNFT();
+    }
     _;
   }
 
   modifier onlyItemNFT() {
-    require(msg.sender == address(itemNFT));
+    if (msg.sender != address(itemNFT)) {
+      revert NotItemNFT();
+    }
     _;
   }
 
@@ -166,7 +188,7 @@ contract Players is
       return EquipPosition.NONE;
     }
 
-    return EquipPosition(_itemTokenId / 256);
+    return EquipPosition(_itemTokenId / 65536);
   }
 
   // If an item is transferred from a player, we need to unequip it from main attire for an action,
@@ -254,9 +276,22 @@ contract Players is
     }
   }
 
-  function _checkEquipActionEquipmentBalance(address _from, uint16 _itemTokenId) private view {
-    uint256 balance = itemNFT.balanceOf(_from, _itemTokenId);
-    require(balance >= 1); // , "Do not have enough quantity to equip to action");
+  function _checkEquipActionEquipment(
+    address _from,
+    uint16 _itemTokenId,
+    uint16 _itemTokenIdRangeMin,
+    uint16 _itemTokenIdRangeMax
+  ) private view {
+    if (_itemTokenId != NONE) {
+      if (_itemTokenId < _itemTokenIdRangeMin || _itemTokenId > _itemTokenIdRangeMax) {
+        revert InvalidArmEquipment(_itemTokenId);
+      }
+
+      uint256 balance = itemNFT.balanceOf(_from, _itemTokenId);
+      if (balance == 0) {
+        revert DoNotHaveEnoughQuantityToEquipToAction();
+      }
+    }
   }
 
   // This doesn't work as memory structs take up 1 element per slot, so we can't just do a mload
@@ -285,8 +320,12 @@ contract Players is
   }
 
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    require(activeBoosts[_playerId].boostType != BoostType.NONE); // , "No active boost");
-    require(activeBoosts[_playerId].startTime <= block.timestamp); // "Boost time already started");
+    if (activeBoosts[_playerId].boostType == BoostType.NONE) {
+      revert NoActiveBoost();
+    }
+    if (activeBoosts[_playerId].startTime > block.timestamp) {
+      revert BoostTimeAlreadyStarted();
+    }
     address from = msg.sender;
     itemNFT.mint(from, activeBoosts[_playerId].itemTokenId, 1);
     emit UnconsumeBoostVial(_playerId);
@@ -297,31 +336,31 @@ contract Players is
     // Check the user has these items
     //    uint raw = _getEquipmentRawVal(_attire);
     //    if (raw > 0) {
-    if (_attire.helmet != NONE) {
-      require(itemNFT.balanceOf(_from, _attire.helmet) > 0);
+    if (_attire.helmet != NONE && itemNFT.balanceOf(_from, _attire.helmet) == 0) {
+      revert NoItemBalance(_attire.helmet);
     }
-    if (_attire.amulet != NONE) {
-      require(itemNFT.balanceOf(_from, _attire.amulet) > 0);
+    if (_attire.amulet != NONE && itemNFT.balanceOf(_from, _attire.amulet) == 0) {
+      revert NoItemBalance(_attire.amulet);
     }
-    if (_attire.armor != NONE) {
-      require(itemNFT.balanceOf(_from, _attire.armor) > 0);
+    if (_attire.armor != NONE && itemNFT.balanceOf(_from, _attire.armor) == 0) {
+      revert NoItemBalance(_attire.armor);
     }
-    if (_attire.gauntlets != NONE) {
-      require(itemNFT.balanceOf(_from, _attire.gauntlets) > 0);
+    if (_attire.gauntlets != NONE && itemNFT.balanceOf(_from, _attire.gauntlets) == 0) {
+      revert NoItemBalance(_attire.gauntlets);
     }
-    if (_attire.tassets != NONE) {
-      require(itemNFT.balanceOf(_from, _attire.tassets) > 0);
+    if (_attire.tassets != NONE && itemNFT.balanceOf(_from, _attire.tassets) == 0) {
+      revert NoItemBalance(_attire.tassets);
     }
-    if (_attire.boots != NONE) {
-      require(itemNFT.balanceOf(_from, _attire.boots) > 0);
+    if (_attire.boots != NONE && itemNFT.balanceOf(_from, _attire.boots) == 0) {
+      revert NoItemBalance(_attire.boots);
     }
     //    }
   }
 
   function _checkActionConsumables(address _from, QueuedAction memory _queuedAction) private view {
     // Check they have this to equip. Indexer can check actionChoices
-    if (_queuedAction.regenerateId != NONE) {
-      require(itemNFT.balanceOf(_from, _queuedAction.regenerateId) > 0);
+    if (_queuedAction.regenerateId != NONE && itemNFT.balanceOf(_from, _queuedAction.regenerateId) == 0) {
+      revert NoItemBalance(_queuedAction.regenerateId);
     }
 
     if (_queuedAction.choiceId != NONE) {
@@ -332,14 +371,14 @@ contract Players is
       );
 
       // TODO: Can be balance of batch
-      if (actionChoice.inputTokenId1 != NONE) {
-        require(itemNFT.balanceOf(_from, actionChoice.inputTokenId1) > 0);
+      if (actionChoice.inputTokenId1 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId1) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId1);
       }
-      if (actionChoice.inputTokenId2 != NONE) {
-        require(itemNFT.balanceOf(_from, actionChoice.inputTokenId2) > 0);
+      if (actionChoice.inputTokenId2 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId2) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId2);
       }
-      if (actionChoice.inputTokenId3 != NONE) {
-        require(itemNFT.balanceOf(_from, actionChoice.inputTokenId3) > 0);
+      if (actionChoice.inputTokenId3 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId3) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId3);
       }
     }
     //     if (_queuedAction.choiceId1 != NONE) {
@@ -356,33 +395,24 @@ contract Players is
     Player storage _player = players[_playerId];
     //    Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
 
-    require(_queuedAction.attire.ring == NONE);
-    require(_queuedAction.attire.reserved1 == NONE);
+    if (_queuedAction.attire.ring != NONE) {
+      revert UnsupportedAttire();
+    }
+    if (_queuedAction.attire.reserved1 != NONE) {
+      revert UnsupportedAttire();
+    }
 
     (uint16 itemTokenIdRangeMin, uint16 itemTokenIdRangeMax) = world.getPermissibleItemsForAction(
       _queuedAction.actionId
     );
 
-    require(world.actionIsAvailable(_queuedAction.actionId)); // , "Action is not available");
+    if (!world.actionIsAvailable(_queuedAction.actionId)) {
+      revert ActionNotAvailable();
+    }
 
     // TODO: Check if it requires an action choice and that a valid one was specified
-
-    if (_queuedAction.leftArmEquipmentTokenId != NONE) {
-      require(
-        _queuedAction.leftArmEquipmentTokenId >= itemTokenIdRangeMin &&
-          _queuedAction.leftArmEquipmentTokenId <= itemTokenIdRangeMax
-      );
-      //        "Invalid item"
-      _checkEquipActionEquipmentBalance(_from, _queuedAction.leftArmEquipmentTokenId);
-    }
-    if (_queuedAction.rightArmEquipmentTokenId != NONE) {
-      require(
-        _queuedAction.rightArmEquipmentTokenId >= itemTokenIdRangeMin &&
-          _queuedAction.rightArmEquipmentTokenId <= itemTokenIdRangeMax
-      );
-      //        "Invalid item"
-      _checkEquipActionEquipmentBalance(_from, _queuedAction.rightArmEquipmentTokenId);
-    }
+    _checkEquipActionEquipment(_from, _queuedAction.leftArmEquipmentTokenId, itemTokenIdRangeMin, itemTokenIdRangeMax);
+    _checkEquipActionEquipment(_from, _queuedAction.rightArmEquipmentTokenId, itemTokenIdRangeMin, itemTokenIdRangeMax);
 
     _checkAttire(_from, _queuedAction.attire);
     _checkActionConsumables(_from, _queuedAction);
@@ -409,12 +439,6 @@ contract Players is
     _setActionQueue(_playerId, remainingSkillQueue);
   }
 
-  enum ActionQueueStatus {
-    NONE,
-    APPEND,
-    KEEP_LAST_IN_PROGRESS
-  }
-
   function _startActions(
     uint _playerId,
     QueuedAction[] memory _queuedActions,
@@ -438,7 +462,9 @@ contract Players is
       if (player.actionQueue.length > 0) {
         _clearActionQueue(_playerId);
       }
-      require(_queuedActions.length <= 3); // , "Queueing too many");
+      if (_queuedActions.length > 3) {
+        revert TooManyActionsQueued();
+      }
     } else {
       if (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingSkills.length > 1) {
         // Only want one
@@ -448,7 +474,9 @@ contract Players is
       }
 
       // Keep remaining actions
-      require(remainingSkills.length + _queuedActions.length <= 3); // , "Queueing too many (some already exist)");
+      if (remainingSkills.length + _queuedActions.length > 3) {
+        revert TooManyActionsQueuedSomeAlreadyExist();
+      }
       player.actionQueue = remainingSkills;
 
       for (uint i = 0; i < remainingSkills.length; ++i) {
@@ -465,7 +493,9 @@ contract Players is
 
       if (totalTimespan + queuedAction.timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time
-        require(i == _queuedActions.length - 1);
+        if (i != _queuedActions.length - 1) {
+          revert ActionTimespanExceedsMaxTime();
+        }
         // Shorten it so that it does not extend beyond the max time
         queuedAction.timespan = uint24(MAX_TIME - totalTimespan);
       }
@@ -679,16 +709,27 @@ contract Players is
     }
   }
 
-  function setActivePlayer(uint _playerId) external isOwnerOfPlayer(_playerId) {
-    address from = msg.sender;
-    uint existingActivePlayer = activePlayer[from];
+  // Callback after minting a player. If they aren't the active player then set it.
+  function mintedPlayer(address _from, uint _playerId) external onlyPlayerNFT {
+    bool hasActivePlayer = activePlayer[_from] == 0;
+    if (!hasActivePlayer) {
+      _setActivePlayer(_from, _playerId);
+    }
+  }
+
+  function _setActivePlayer(address _from, uint _playerId) private {
+    uint existingActivePlayer = activePlayer[_from];
     if (existingActivePlayer > 0) {
       // If there is an existing active player, unequip all items
-      _clearEverything(from, existingActivePlayer);
+      _clearEverything(_from, existingActivePlayer);
     }
     // All attire and actions can be made for this player
-    activePlayer[from] = _playerId;
-    emit SetActivePlayer(from, existingActivePlayer, _playerId);
+    activePlayer[_from] = _playerId;
+    emit SetActivePlayer(_from, existingActivePlayer, _playerId);
+  }
+
+  function setActivePlayer(uint _playerId) external isOwnerOfPlayer(_playerId) {
+    _setActivePlayer(msg.sender, _playerId);
   }
 
   function _extraXPFromBoost(

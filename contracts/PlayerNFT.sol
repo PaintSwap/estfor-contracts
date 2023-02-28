@@ -49,7 +49,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   modifier onlyPlayers() {
-    require(msg.sender == address(players));
+    require(msg.sender == address(players), "Not players");
     _;
   }
 
@@ -97,9 +97,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   // Costs nothing to mint, only gas
   function mint(uint _avatarId, bytes32 _name) external {
+    address from = msg.sender;
     uint currentPlayerId = latestPlayerId;
+    players.mintedPlayer(from, currentPlayerId);
     emit NewPlayer(currentPlayerId, _avatarId, bytes20(_name));
-    _mint(msg.sender, currentPlayerId, 1, "");
+    _mint(from, currentPlayerId, 1, "");
     _setName(currentPlayerId, bytes20(_name));
     _mintStartingItems();
     _setTokenIdToAvatar(currentPlayerId, _avatarId);
@@ -114,7 +116,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function uri(uint256 _playerId) public view virtual override returns (string memory) {
-    require(_exists(_playerId));
+    require(_exists(_playerId), "ERC1155Metadata: URI query for nonexistent token");
     AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
     string memory imageURI = string(abi.encodePacked(baseURI, avatarInfo.imageURI));
     return players.getURI(names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
