@@ -908,8 +908,8 @@ library PlayerLibrary {
     PlayerBoostInfo storage playerBoost
   ) external {
     Item memory item = itemNFT.getItem(_itemTokenId);
-    require(item.boostType != BoostType.NONE); // , "Not a boost vial");
-    require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
+    require(item.boostType != BoostType.NONE, "Not a boost vial");
+    require(_startTime < block.timestamp + 7 days, "Start time too far in the future");
     if (_startTime < block.timestamp) {
       _startTime = uint40(block.timestamp);
     }

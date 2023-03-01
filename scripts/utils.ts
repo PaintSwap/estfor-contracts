@@ -446,13 +446,13 @@ export type QueuedAction = {
 };
 
 export const createPlayer = async (
-  nft: PlayerNFT,
+  playerNFT: PlayerNFT,
   avatarId: number,
   account: SignerWithAddress,
   name: string,
   makeActive: boolean
 ): Promise<ethers.BigNumber> => {
-  const tx = await nft.connect(account).mint(avatarId, name, makeActive);
+  const tx = await playerNFT.connect(account).mint(avatarId, name, makeActive);
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
     return x.event == "NewPlayer";

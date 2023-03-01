@@ -548,7 +548,7 @@ contract Players is
           );
 
         uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
-        require(elapsedTime == 0);
+        require(elapsedTime == 0, "Elapsed time must be > 0");
         // Action hasn't started yet so allow it to be removed.
         for (uint j = i; j < actionQueue.length - 1; ++j) {
           actionQueue[j] = actionQueue[j + 1];

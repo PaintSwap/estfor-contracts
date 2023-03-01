@@ -86,7 +86,7 @@ contract Shop is Multicall, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
-    require(_tokenIds.length == _quantities.length);
+    require(_tokenIds.length == _quantities.length, "length mismatch");
     uint totalBrush;
     uint[] memory prices = new uint[](_tokenIds.length);
     for (uint i = 0; i < _tokenIds.length; ++i) {
@@ -115,8 +115,8 @@ contract Shop is Multicall, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
-    require(_tokenIds.length == _quantities.length);
-    require(_tokenIds.length > 0);
+    require(_tokenIds.length == _quantities.length, "length mismatch");
+    require(_tokenIds.length > 0, "length empty");
     uint totalBrush;
     uint[] memory prices = new uint[](_tokenIds.length);
     for (uint i = 0; i < _tokenIds.length; ++i) {
@@ -125,7 +125,7 @@ contract Shop is Multicall, UUPSUpgradeable, OwnableUpgradeable {
       itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
       prices[i] = brushPerToken;
     }
-    require(totalBrush >= _minExpectedBrush);
+    require(totalBrush >= _minExpectedBrush, "Min expected brush not reached");
     brush.transfer(msg.sender, totalBrush);
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }

@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 import "./interfaces/IBrushToken.sol";
 import "./interfaces/IPlayers.sol";
@@ -40,6 +41,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   address public pool;
 
   uint public editNameCost;
+
+  bytes32 merkleRoot; // For airdrop
+  mapping(address => bool) hasMintedFromWhitelist;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(msg.sender, playerId) != 1) {
@@ -95,8 +99,25 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     lowercaseNames[lowercaseName] = true;
   }
 
+  // Minting whitelist for the alpha
+  function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
+    merkleRoot = _merkleRoot;
+  }
+
+  function checkInWhitelist(bytes32[] calldata proof) public view returns (bool) {
+    bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
+    return MerkleProof.verify(proof, merkleRoot, leaf);
+  }
+
+  function mintWhitelist(uint _avatarId, bytes32 _name, bool _makeActive, bytes32[] calldata _proof) external {
+    require(checkInWhitelist(_proof), "Not in whitelist");
+    require(!hasMintedFromWhitelist[msg.sender], "Already minted");
+    hasMintedFromWhitelist[msg.sender] = true;
+    mint(_avatarId, _name, _makeActive);
+  }
+
   // Costs nothing to mint, only gas
-  function mint(uint _avatarId, bytes32 _name, bool _makeActive) external {
+  function mint(uint _avatarId, bytes32 _name, bool _makeActive) public {
     address from = msg.sender;
     uint currentPlayerId = latestPlayerId;
     emit NewPlayer(currentPlayerId, _avatarId, bytes20(_name));
