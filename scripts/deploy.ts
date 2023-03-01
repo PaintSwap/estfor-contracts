@@ -133,12 +133,19 @@ async function main() {
   console.log("addAvatars");
 
   // Create player
-  const playerId = await createPlayer(playerNFT, startAvatarId, owner, ethers.utils.formatBytes32String("0xSamWitch"));
+  const makeActive = true;
+  const playerId = await createPlayer(
+    playerNFT,
+    startAvatarId,
+    owner,
+    ethers.utils.formatBytes32String("0xSamWitch"),
+    makeActive
+  );
   console.log("createPlayer");
 
-  tx = await players.setActivePlayer(playerId);
-  await tx.wait();
-  console.log("Set active player");
+  //  tx = await players.setActivePlayer(playerId);
+  //  await tx.wait();
+  //  console.log("Set active player");
 
   // === Test stuff ===
   tx = await itemNFT.addItems(allItems);

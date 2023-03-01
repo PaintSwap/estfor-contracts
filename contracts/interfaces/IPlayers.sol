@@ -15,5 +15,5 @@ interface IPlayers {
 
   function itemBeforeTokenTransfer(address from, uint[] calldata tokenIds, uint256[] calldata amounts) external;
 
-  function mintedPlayer(address from, uint playerId) external;
+  function mintedPlayer(address from, uint playerId, bool makeActive) external;
 }

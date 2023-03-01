@@ -103,7 +103,14 @@ describe("Player", () => {
 
     // Create player
     const origName = "0xSamWitch";
-    const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String(origName));
+    const makeActive = true;
+    const playerId = await createPlayer(
+      playerNFT,
+      avatarId,
+      alice,
+      ethers.utils.formatBytes32String(origName),
+      makeActive
+    );
     await players.connect(alice).setActivePlayer(playerId);
     const maxTime = await players.MAX_TIME();
     const editNameCost = await playerNFT.editNameCost();
@@ -446,7 +453,8 @@ describe("Player", () => {
     const {playerNFT, alice} = await loadFixture(deployContracts);
     const nameTooLong = ethers.utils.formatBytes32String("F12345678901234567890");
     const avatarId = 1;
-    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, nameTooLong);
+    const makeActive = true;
+    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, nameTooLong, makeActive);
 
     expect(await playerNFT.names(newPlayerId)).to.eq(ethers.utils.formatBytes32String("F1234567890123456789"));
     expect(await playerNFT.lowercaseNames(ethers.utils.formatBytes32String("f1234567890123456789"))).to.be.true;
@@ -457,7 +465,8 @@ describe("Player", () => {
 
     const name = ethers.utils.formatBytes32String("123");
     const avatarId = 1;
-    await createPlayer(playerNFT, avatarId, alice, name);
+    const makeActive = true;
+    await createPlayer(playerNFT, avatarId, alice, name, makeActive);
     await expect(createPlayer(playerNFT, avatarId, alice, name)).to.be.reverted;
   });
 
@@ -479,8 +488,15 @@ describe("Player", () => {
     expect(await playerNFT.connect(alice).names(playerId)).to.eq(name);
 
     const avatarId = 1;
+    const makeActive = true;
     // Duplicate
-    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("name"));
+    const newPlayerId = await createPlayer(
+      playerNFT,
+      avatarId,
+      alice,
+      ethers.utils.formatBytes32String("name"),
+      makeActive
+    );
     await expect(playerNFT.connect(alice).editName(newPlayerId, name)).to.be.reverted;
   });
 

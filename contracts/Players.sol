@@ -710,9 +710,8 @@ contract Players is
   }
 
   // Callback after minting a player. If they aren't the active player then set it.
-  function mintedPlayer(address _from, uint _playerId) external onlyPlayerNFT {
-    bool hasActivePlayer = activePlayer[_from] != 0;
-    if (!hasActivePlayer) {
+  function mintedPlayer(address _from, uint _playerId, bool makeActive) external onlyPlayerNFT {
+    if (makeActive) {
       _setActivePlayer(_from, _playerId);
     }
   }
@@ -819,14 +818,14 @@ contract Players is
           actionChoice
         );
       }
-      uint queueId = queuedAction.attire.queueId;
+      uint _queueId = queuedAction.attire.queueId;
       if (!died) {
         bool _isCombatSkill = _isCombat(queuedAction.skill);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
       } else {
-        emit Died(_from, _playerId, queueId);
+        emit Died(_from, _playerId, _queueId);
       }
 
       if (!fullyFinished) {
@@ -859,15 +858,15 @@ contract Players is
         // But this could be improved
         if (newIds.length > 0) {
           itemNFT.mintBatch(_from, newIds, newAmounts);
-          emit Rewards(_from, _playerId, queuedAction.attire.queueId, newIds, newAmounts);
+          emit Rewards(_from, _playerId, _queueId, newIds, newAmounts);
         }
         allpointsAccrued += pointsAccrued;
       }
 
       if (fullyFinished) {
-        emit ActionFinished(_from, _playerId, queueId);
+        emit ActionFinished(_from, _playerId, _queueId);
       } else {
-        emit ActionPartiallyFinished(_from, _playerId, queueId, elapsedTime);
+        emit ActionPartiallyFinished(_from, _playerId, _queueId, elapsedTime);
       }
     }
 
