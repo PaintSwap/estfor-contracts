@@ -122,9 +122,20 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
     return bytes(tokenURIs[_tokenId]).length != 0;
   }
 
-  function getItem(uint16 _tokenId) external view returns (Item memory) {
-    require(items[_tokenId].exists, "Item doesn't exist");
+  function _getItem(uint _tokenId) private view returns (Item memory) {
+    require(_exists(_tokenId), "Token does not exist");
     return items[_tokenId];
+  }
+
+  function getItem(uint16 _tokenId) external view returns (Item memory) {
+    return _getItem(_tokenId);
+  }
+
+  function getItems(uint16[] calldata _tokenIds) external view returns (Item[] memory _items) {
+    _items = new Item[](_tokenIds.length);
+    for (uint i; i < _tokenIds.length; ++i) {
+      _items[i] = _getItem(_tokenIds[i]);
+    }
   }
 
   // If an item is burnt, remove it from the total
@@ -157,11 +168,20 @@ contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgra
 
     _removeAnyBurntFromTotal(_to, _ids, _amounts);
 
-    // TODO Add checkpoints so we know exactly what items a player has at a given time
-
     // Properly update the player inventory
     if (_to != address(0)) {
       IPlayers(players).itemBeforeTokenTransfer(_from, _ids, _amounts);
+    }
+  }
+
+  /**
+   * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
+   */
+  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
+    batchBalances = new uint256[](_ids.length);
+
+    for (uint16 i = 0; i < _ids.length; ++i) {
+      batchBalances[i] = balanceOf(_account, _ids[i]);
     }
   }
 

@@ -84,27 +84,48 @@ library PlayerLibrary {
     bool _add
   ) public view returns (CombatStats memory stats) {
     stats = _stats;
-    // TODO: Balance of Batch would be better
-    // TODO: Checkpoints for start time.
-    if (_attire.helmet != NONE && _itemNFT.balanceOf(_from, _attire.helmet) > 0) {
-      _updateCombatStats(stats, _itemNFT.getItem(_attire.helmet), _add);
+    uint attireLength;
+    uint16[] memory itemTokenIds = new uint16[](6);
+    if (_attire.helmet != NONE) {
+      itemTokenIds[attireLength] = _attire.helmet;
+      ++attireLength;
     }
-    if (_attire.amulet != NONE && _itemNFT.balanceOf(_from, _attire.amulet) > 0) {
-      _updateCombatStats(stats, _itemNFT.getItem(_attire.amulet), _add);
+    if (_attire.amulet != NONE) {
+      itemTokenIds[attireLength] = _attire.amulet;
+      ++attireLength;
     }
-    if (_attire.armor != NONE && _itemNFT.balanceOf(_from, _attire.armor) > 0) {
-      _updateCombatStats(stats, _itemNFT.getItem(_attire.armor), _add);
+    if (_attire.armor != NONE) {
+      itemTokenIds[attireLength] = _attire.armor;
+      ++attireLength;
     }
-    if (_attire.gauntlets != NONE && _itemNFT.balanceOf(_from, _attire.gauntlets) > 0) {
-      _updateCombatStats(stats, _itemNFT.getItem(_attire.gauntlets), _add);
+    if (_attire.gauntlets != NONE) {
+      itemTokenIds[attireLength] = _attire.gauntlets;
+      ++attireLength;
     }
-    if (_attire.tassets != NONE && _itemNFT.balanceOf(_from, _attire.tassets) > 0) {
-      _updateCombatStats(stats, _itemNFT.getItem(_attire.tassets), _add);
+    if (_attire.tassets != NONE) {
+      itemTokenIds[attireLength] = _attire.tassets;
+      ++attireLength;
     }
-    if (_attire.boots != NONE && _itemNFT.balanceOf(_from, _attire.boots) > 0) {
-      _updateCombatStats(stats, _itemNFT.getItem(_attire.boots), _add);
+    if (_attire.boots != NONE) {
+      itemTokenIds[attireLength] = _attire.boots;
+      ++attireLength;
     }
-    // TODO: This isn't correct, should be hanlded in the calculations elsewhere with a better formula
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, attireLength)
+    }
+
+    if (attireLength > 0) {
+      Item[] memory items = _itemNFT.getItems(itemTokenIds);
+      uint[] memory balances = _itemNFT.balanceOfs(_from, itemTokenIds);
+      for (uint i; i < items.length; ++i) {
+        if (balances[i] > 0) {
+          _updateCombatStats(stats, items[i], _add);
+        }
+      }
+    }
+
+    // TODO: This isn't correct, should be handled in the calculations elsewhere with a better formula
     if (stats.attack <= 0) {
       stats.attack = 1;
     }

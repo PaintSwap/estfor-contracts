@@ -96,13 +96,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // Costs nothing to mint, only gas
-  function mint(uint _avatarId, bytes32 _name) external {
+  function mint(uint _avatarId, bytes32 _name, bool _makeActive) external {
     address from = msg.sender;
     uint currentPlayerId = latestPlayerId;
-    players.mintedPlayer(from, currentPlayerId);
     emit NewPlayer(currentPlayerId, _avatarId, bytes20(_name));
     _mint(from, currentPlayerId, 1, "");
     _setName(currentPlayerId, bytes20(_name));
+    players.mintedPlayer(from, currentPlayerId, _makeActive);
     _mintStartingItems();
     _setTokenIdToAvatar(currentPlayerId, _avatarId);
     ++latestPlayerId;
@@ -158,7 +158,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     uint brushCost = editNameCost;
     // Pay
     brush.transferFrom(msg.sender, address(this), brushCost);
-    // Send half to the pool
+    // Send half to the pool (currently shop)
     brush.transferFrom(msg.sender, pool, brushCost - (brushCost / 2));
     // Burn the other half
     brush.burn(brushCost / 2);
@@ -172,6 +172,28 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     _setName(_playerId, bytes20(_newName));
 
     emit EditPlayer(_playerId, bytes20(_newName));
+  }
+
+  /**
+   * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
+   */
+  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
+    batchBalances = new uint256[](_ids.length);
+
+    for (uint16 i = 0; i < _ids.length; ++i) {
+      batchBalances[i] = balanceOf(_account, _ids[i]);
+    }
+  }
+
+  function _toLower(bytes32 _name) private pure returns (bytes memory) {
+    bytes memory lowerName = bytes(abi.encodePacked(_name));
+    for (uint i = 0; i < lowerName.length; i++) {
+      if ((uint8(lowerName[i]) >= 65) && (uint8(lowerName[i]) <= 90)) {
+        // So we add 32 to make it lowercase
+        lowerName[i] = bytes1(uint8(lowerName[i]) + 32);
+      }
+    }
+    return lowerName;
   }
 
   function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
@@ -204,17 +226,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
 
   function setEditNameCost(uint _editNameCost) external onlyOwner {
     editNameCost = _editNameCost;
-  }
-
-  function _toLower(bytes32 _name) private pure returns (bytes memory) {
-    bytes memory lowerName = bytes(abi.encodePacked(_name));
-    for (uint i = 0; i < lowerName.length; i++) {
-      if ((uint8(lowerName[i]) >= 65) && (uint8(lowerName[i]) <= 90)) {
-        // So we add 32 to make it lowercase
-        lowerName[i] = bytes1(uint8(lowerName[i]) + 32);
-      }
-    }
-    return lowerName;
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
