@@ -24,6 +24,7 @@ import {
   FIRE_MAX,
   getActionChoiceId,
   getActionId,
+  getRequestId,
   inputItem,
   LOG,
   MINING_MAX,
@@ -127,6 +128,7 @@ describe("Player", () => {
       alice,
       origName,
       editNameCost,
+      mockOracleClient,
     };
   }
 
@@ -1482,9 +1484,9 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 5);
     });
 
-    it("Drop rewards", async () => {});
+    it("Guarenteed rewards", async () => {});
 
-    it("Random chance", async () => {});
+    it("Random rewards", async () => {});
 
     it("Dead", async () => {
       // Lose all the XP that would have been gained

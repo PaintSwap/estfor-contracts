@@ -173,7 +173,7 @@ library PlayerLibrary {
     }
   }
 
-  function _addGuarenteedReward(
+  function _appendGuarenteedReward(
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _elapsedTime,
@@ -191,13 +191,13 @@ library PlayerLibrary {
     }
   }
 
-  function _addGuarenteedRewards(
+  function _appendGuarenteedRewards(
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _elapsedTime,
     ActionRewards memory _actionRewards
   ) private pure returns (uint length) {
-    length = _addGuarenteedReward(
+    length = _appendGuarenteedReward(
       _ids,
       _amounts,
       _elapsedTime,
@@ -206,7 +206,7 @@ library PlayerLibrary {
       _actionRewards,
       length
     );
-    length = _addGuarenteedReward(
+    length = _appendGuarenteedReward(
       _ids,
       _amounts,
       _elapsedTime,
@@ -215,7 +215,7 @@ library PlayerLibrary {
       _actionRewards,
       length
     );
-    length = _addGuarenteedReward(
+    length = _appendGuarenteedReward(
       _ids,
       _amounts,
       _elapsedTime,
@@ -226,7 +226,7 @@ library PlayerLibrary {
     );
   }
 
-  function _addRandomRewards(
+  function _appendRandomRewards(
     address _from,
     uint40 skillEndTime,
     uint elapsedTime,
@@ -241,20 +241,20 @@ library PlayerLibrary {
     // Easier to make it an array, but TODO update later
     ActionReward[] memory _randomRewards = new ActionReward[](4);
     uint randomRewardLength;
-    if (_actionRewards.randomRandomTokenId1 != 0) {
-      _randomRewards[0] = ActionReward(_actionRewards.randomRandomTokenId1, _actionRewards.randomRewardChance1);
+    if (_actionRewards.randomRewardTokenId1 != 0) {
+      _randomRewards[0] = ActionReward(_actionRewards.randomRewardTokenId1, _actionRewards.randomRewardChance1);
       ++randomRewardLength;
     }
-    if (_actionRewards.randomRandomTokenId2 != 0) {
-      _randomRewards[1] = ActionReward(_actionRewards.randomRandomTokenId2, _actionRewards.randomRewardChance2);
+    if (_actionRewards.randomRewardTokenId2 != 0) {
+      _randomRewards[1] = ActionReward(_actionRewards.randomRewardTokenId2, _actionRewards.randomRewardChance2);
       ++randomRewardLength;
     }
-    if (_actionRewards.randomRandomTokenId3 != 0) {
-      _randomRewards[2] = ActionReward(_actionRewards.randomRandomTokenId3, _actionRewards.randomRewardChance3);
+    if (_actionRewards.randomRewardTokenId3 != 0) {
+      _randomRewards[2] = ActionReward(_actionRewards.randomRewardTokenId3, _actionRewards.randomRewardChance3);
       ++randomRewardLength;
     }
-    if (_actionRewards.randomReward4 != 0) {
-      _randomRewards[3] = ActionReward(_actionRewards.randomReward4, _actionRewards.randomRewardChance4);
+    if (_actionRewards.randomRewardTokenId4 != 0) {
+      _randomRewards[3] = ActionReward(_actionRewards.randomRewardTokenId4, _actionRewards.randomRewardChance4);
       ++randomRewardLength;
     }
 
@@ -269,11 +269,10 @@ library PlayerLibrary {
 
         // Figure out how many chances they get (1 per hour spent)
         uint numTickets = elapsedTime / 3600;
-
         bytes32 randomComponent = bytes32(seed) ^ bytes20(_from);
         uint startLootLength = length;
         for (uint i; i < numTickets; ++i) {
-          // Percentage out of 256
+          // Percentage base 100 (2 decimals)
           uint8 rand = uint8(uint256(randomComponent >> (i * 8)));
 
           // Take each byte and check
@@ -317,8 +316,8 @@ library PlayerLibrary {
     ids = new uint[](7);
     amounts = new uint[](7);
 
-    uint length = _addGuarenteedRewards(ids, amounts, _elapsedTime, _actionRewards);
-    length = _addRandomRewards(_from, _skillEndTime, _elapsedTime, _world, ids, amounts, length, _actionRewards);
+    uint length = _appendGuarenteedRewards(ids, amounts, _elapsedTime, _actionRewards);
+    length = _appendRandomRewards(_from, _skillEndTime, _elapsedTime, _world, ids, amounts, length, _actionRewards);
 
     assembly ("memory-safe") {
       mstore(ids, length)

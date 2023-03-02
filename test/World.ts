@@ -32,6 +32,8 @@ describe("World", () => {
   describe("Seed", () => {
     it("Requesting random words", async () => {
       const {world, mockOracleClient, minSeedUpdateTime} = await loadFixture(deployContracts);
+      await expect(world.requestSeedUpdate()).to.be.reverted; // Too soon
+      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
       await world.requestSeedUpdate();
 
       let requestId = await world.requestIds(0);
@@ -70,20 +72,23 @@ describe("World", () => {
 
     it("getSeed", async () => {
       const {world, mockOracleClient, minSeedUpdateTime} = await loadFixture(deployContracts);
+      const blockNum = await ethers.provider.getBlockNumber();
+      const currentBlock = await ethers.provider.getBlock(blockNum);
+      const currentTimestamp = currentBlock.timestamp;
+      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
       await world.requestSeedUpdate();
 
       let requestId = await world.requestIds(0);
       await mockOracleClient.fulfill(requestId, world.address);
 
-      const blockNum = await ethers.provider.getBlockNumber();
-      const currentBlock = await ethers.provider.getBlock(blockNum);
-      const currentTimestamp = currentBlock.timestamp;
-      await world.getSeed(currentTimestamp + minSeedUpdateTime);
+      expect(await world.hasSeed(currentTimestamp)).to.be.true;
+
+      await world.getSeed(currentTimestamp);
       // Gives unhandled project rejection for some reason
       // Before offset
-      await expect(world.getSeed(currentTimestamp)).to.be.reverted;
+      await expect(world.getSeed(currentTimestamp - minSeedUpdateTime)).to.be.reverted;
       // After offset
-      await expect(world.getSeed(currentTimestamp + minSeedUpdateTime * 2)).to.be.reverted;
+      await expect(world.getSeed(currentTimestamp + minSeedUpdateTime)).to.be.reverted;
     });
   });
 

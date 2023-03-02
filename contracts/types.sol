@@ -97,7 +97,7 @@ struct ActionReward {
   uint16 itemTokenId;
   uint24 rate; // num per hour, base 100 (2 decimals) or percentage chance
 }
-struct PendingLoot {
+struct PendingRandomRewards {
   uint actionId;
   uint40 timestamp;
   uint16 elapsedTime;
@@ -115,13 +115,13 @@ struct ActionRewards {
   uint16 guaranteedRewardTokenId3;
   uint24 guaranteedRewardRate3;
   // Random chance rewards
-  uint16 randomRandomTokenId1;
+  uint16 randomRewardTokenId1;
   uint16 randomRewardChance1; // percentage, base 100 (2 decimals)
-  uint16 randomRandomTokenId2;
+  uint16 randomRewardTokenId2;
   uint16 randomRewardChance2;
-  uint16 randomRandomTokenId3;
+  uint16 randomRewardTokenId3;
   uint16 randomRewardChance3;
-  uint16 randomReward4;
+  uint16 randomRewardTokenId4;
   uint16 randomRewardChance4;
 }
 

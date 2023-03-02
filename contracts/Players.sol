@@ -24,7 +24,6 @@ contract Players is
 
   event LevelUp(uint playerId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
 
-  event AddToActionQueue(uint playerId, QueuedAction queuedAction); // This includes everything
   event SetActionQueue(uint playerId, QueuedAction[] queuedActions);
 
   event ConsumeBoostVial(uint playerId, PlayerBoostInfo playerBoostInfo);
@@ -91,7 +90,7 @@ contract Players is
   mapping(uint => Player) public players;
   ItemNFT private itemNFT;
   PlayerNFT private playerNFT;
-  PendingLoot[] private pendingLoot; // queue, will be sorted by timestamp
+  mapping(uint => PendingRandomRewards[]) private pendingRandomRewards; // queue, will be sorted by timestamp
 
   struct EquipmentDiff {
     uint16 itemTokenId;
@@ -420,7 +419,6 @@ contract Players is
     _queuedAction.startTime = uint40(_startTime);
     _queuedAction.attire.queueId = _queueId;
     _player.actionQueue.push(_queuedAction);
-    emit AddToActionQueue(_playerId, _queuedAction);
   }
 
   function _clearActionQueue(uint _playerId) private {
@@ -460,7 +458,9 @@ contract Players is
     Player storage player = players[_playerId];
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length > 0) {
-        _clearActionQueue(_playerId);
+        // Clear action queue
+        QueuedAction[] memory queuedActions;
+        player.actionQueue = queuedActions;
       }
       if (_queuedActions.length > 3) {
         revert TooManyActionsQueued();
@@ -508,6 +508,8 @@ contract Players is
       totalTimespan += queuedAction.timespan;
       prevEndTime += queuedAction.timespan;
     } while (i < _queuedActions.length);
+
+    emit SetActionQueue(_playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
     queueId = currentQueuedActionId;
@@ -690,20 +692,24 @@ contract Players is
     emit AddSkillPoints(_playerId, _skill, _pointsAccrued);
   }
 
-  function _addPendingLoot(
-    PendingLoot[] storage _pendingLoot,
+  function _addPendingRandomRewards(
+    PendingRandomRewards[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint _actionId,
     uint _elapsedTime,
     uint _skillEndTime
   ) private {
-    bool hasRandomRewards = _actionRewards.randomRandomTokenId1 != NONE; // A precheck as an optimization
+    bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
     if (hasRandomRewards) {
       bool hasSeed = world.hasSeed(_skillEndTime);
       if (!hasSeed) {
         // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
-        _pendingLoot.push(
-          PendingLoot({actionId: _actionId, timestamp: uint40(_skillEndTime), elapsedTime: uint16(_elapsedTime)})
+        _pendingRandomRewards.push(
+          PendingRandomRewards({
+            actionId: _actionId,
+            timestamp: uint40(_skillEndTime),
+            elapsedTime: uint16(_elapsedTime)
+          })
         );
       }
     }
@@ -852,7 +858,13 @@ contract Players is
           actionRewards
         );
 
-        _addPendingLoot(pendingLoot, actionRewards, queuedAction.actionId, xpElapsedTime, skillEndTime);
+        _addPendingRandomRewards(
+          pendingRandomRewards[_playerId],
+          actionRewards,
+          queuedAction.actionId,
+          xpElapsedTime,
+          skillEndTime
+        );
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved

@@ -460,6 +460,14 @@ export const createPlayer = async (
   return event?.playerId;
 };
 
+export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
+  const receipt = await tx.wait();
+  const event = receipt?.events?.filter((x) => {
+    return x.event == "RequestSent";
+  })[0].args;
+  return event?.requestId.toNumber();
+};
+
 export const getActionId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {

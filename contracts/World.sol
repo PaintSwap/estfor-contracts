@@ -76,16 +76,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     subscriptionId = _subscriptionId;
     lastActionId = 1;
     actionChoiceId = 1;
-    startTime = block.timestamp;
+    startTime = (block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME; // Floor to the nearest day 00:00 UTC
+    lastSeedUpdatedTime = startTime;
   }
 
   function requestSeedUpdate() external returns (uint256 requestId) {
     // Last one has not been fulfilled yet
     if (requestIds.length > 0) {
-      require(requestIds[requestIds.length - 1] != 0, "Seed can't be updated");
+      require(randomWords[requestIds[requestIds.length - 1]] != 0, "Seed can't be updated");
     }
 
-    require(lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME <= block.timestamp, "Can only request after 1 day has passed");
+    require(
+      lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME <= block.timestamp,
+      "Can only request after the next checkpoint"
+    );
 
     // Will revert if subscription is not set and funded.
     requestId = COORDINATOR.requestRandomWords(
@@ -97,13 +101,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     );
 
     requestIds.push(requestId);
-    lastSeedUpdatedTime = lastSeedUpdatedTime == 0 ? block.timestamp : lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME;
+    lastSeedUpdatedTime += MIN_SEED_UPDATE_TIME;
     emit RequestSent(requestId, numWords);
     return requestId;
   }
 
   function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
-    require(_requestId == requestIds[requestIds.length - 1], "request not found");
+    //    require(_requestId == requestIds[requestIds.length - 1], "request not found");
     require(randomWords[_requestId] == 0, "Request already been satisfied");
 
     uint random = _randomWords[0];
@@ -116,14 +120,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit RequestFulfilled(_requestId, random);
   }
 
-  function hasSeed(uint timestamp) external view returns (bool) {
-    uint offset = (timestamp - startTime) / MIN_SEED_UPDATE_TIME;
-    return offset > 0 && requestIds.length >= offset;
+  function _getSeed(uint _timestamp) private view returns (uint) {
+    uint offset = (_timestamp - startTime) / MIN_SEED_UPDATE_TIME;
+    if (requestIds.length == 0) {
+      return 0;
+    }
+    return randomWords[requestIds[offset]];
   }
 
-  function getSeed(uint timestamp) public view returns (uint seed) {
-    uint offset = (timestamp - startTime) / MIN_SEED_UPDATE_TIME;
-    seed = randomWords[requestIds[offset - 1]];
+  function hasSeed(uint _timestamp) external view returns (bool) {
+    return _getSeed(_timestamp) > 0;
+  }
+
+  function getSeed(uint _timestamp) public view returns (uint seed) {
+    seed = _getSeed(_timestamp);
     require(seed > 0, "No valid seed");
   }
 
@@ -206,19 +216,19 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
     // Now do the same for randomRewards
     if (_action.randomRewards.length > 0) {
-      actionReward.randomRandomTokenId1 = _action.randomRewards[0].itemTokenId;
+      actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
       actionReward.randomRewardChance1 = uint16(_action.randomRewards[0].rate);
     }
     if (_action.randomRewards.length > 1) {
-      actionReward.randomRandomTokenId2 = _action.randomRewards[1].itemTokenId;
+      actionReward.randomRewardTokenId2 = _action.randomRewards[1].itemTokenId;
       actionReward.randomRewardChance2 = uint16(_action.randomRewards[1].rate);
     }
     if (_action.randomRewards.length > 2) {
-      actionReward.randomRandomTokenId3 = _action.randomRewards[2].itemTokenId;
+      actionReward.randomRewardTokenId3 = _action.randomRewards[2].itemTokenId;
       actionReward.randomRewardChance3 = uint16(_action.randomRewards[2].rate);
     }
     if (_action.randomRewards.length > 3) {
-      actionReward.randomReward4 = _action.randomRewards[3].itemTokenId;
+      actionReward.randomRewardTokenId4 = _action.randomRewards[3].itemTokenId;
       actionReward.randomRewardChance4 = uint16(_action.randomRewards[3].rate);
     }
 
