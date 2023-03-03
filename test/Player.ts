@@ -183,6 +183,60 @@ describe("Player", () => {
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down
   });
 
+  it("Skill points (many)", async () => {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.addItem({
+      ...inputItem,
+      tokenId: BRONZE_AXE,
+      equipPosition: EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
+
+    const rate = 100 * 100; // per hour
+    const tx = await world.addAction({
+      info: {
+        skill: Skill.WOODCUTTING,
+        xpPerHour: 3600,
+        minSkillPoints: 0,
+        isDynamic: false,
+        numSpawn: 0,
+        itemTokenIdRangeMin: WOODCUTTING_BASE,
+        itemTokenIdRangeMax: WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        isCombat: true,
+      },
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
+      combatStats: emptyStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const queuedAction: QueuedAction = {
+      attire: noAttire,
+      actionId,
+      skill: Skill.WOODCUTTING,
+      choiceId: NONE,
+      choiceId1: NONE,
+      choiceId2: NONE,
+      regenerateId: NONE,
+      timespan: 3600,
+      rightArmEquipmentTokenId: BRONZE_AXE,
+      leftArmEquipmentTokenId: NONE,
+      startTime: "0",
+    };
+
+    // start a bunch of actions 1 after each other
+    for (let i = 0; i < 50; i++) {
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.APPEND);
+      await ethers.provider.send("evm_increaseTime", [7200]);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.eq((i + 1) * 3600);
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq((i + 1) * 100); // Should be rounded down
+    }
+  });
+
   it("Speed multiplier", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
@@ -1486,7 +1540,106 @@ describe("Player", () => {
 
     it("Guarenteed rewards", async () => {});
 
-    it("Random rewards", async () => {});
+    // This test only works if the timespan does not go over 00:00 utc
+    it("Random rewards (many)", async () => {
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(deployContracts);
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_ARROW,
+        equipPosition: EquipPosition.ARROW_SATCHEL,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      const rate = 100 * 100; // per hour
+      const randomChanceFraction = 50.0 / 100; // 50% chance
+      const randomChance = Math.floor(65535 * randomChanceFraction);
+
+      let tx = await world.addAction({
+        info: {
+          skill: Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          itemTokenIdRangeMin: WOODCUTTING_BASE,
+          itemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: actionIsAvailable,
+          isCombat: true,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [{itemTokenId: BRONZE_ARROW, rate: randomChance}],
+        combatStats: emptyStats,
+      });
+
+      const actionId = await getActionId(tx);
+      const numHours = 5;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        skill: Skill.WOODCUTTING,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan: 3600 * numHours,
+        rightArmEquipmentTokenId: BRONZE_AXE,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      let numProduced = 0;
+
+      // Repeat the test a bunch of times to check the random rewards are as expected
+      const numRepeats = 50;
+      for (let i = 0; i < numRepeats; ++i) {
+        await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+        let endTime;
+        {
+          const actionQueue = await players.getActionQueue(playerId);
+          expect(actionQueue.length).to.eq(1);
+          endTime = actionQueue[0].startTime + actionQueue[0].timespan;
+        }
+
+        expect(await world.hasSeed(endTime)).to.be.false;
+
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+        await players.connect(alice).consumeActions(playerId);
+        expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(numProduced);
+
+        expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
+
+        expect((await players.pending(playerId)).produced.length).to.eq(0);
+
+        tx = await world.requestSeedUpdate();
+        let requestId = getRequestId(tx);
+        expect(requestId).to.not.eq(0);
+        await mockOracleClient.fulfill(requestId, world.address);
+
+        expect(await world.hasSeed(endTime)).to.be.true;
+
+        if ((await players.claimableRandomRewards(playerId)).ids.length > 0) {
+          expect((await players.pending(playerId)).produced.length).to.eq(1);
+
+          const produced = (await players.pending(playerId)).produced[0].rate;
+          numProduced += produced;
+          expect((await players.pending(playerId)).produced[0].itemTokenId).to.be.eq(BRONZE_ARROW);
+        }
+      }
+      // Very unlikely to be exact
+      const expectedTotal = numRepeats * randomChanceFraction * numHours;
+      expect(numProduced).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
+      expect(numProduced).to.be.gte(expectedTotal * 0.85); // Within 15% below
+      expect(numProduced).to.be.lte(expectedTotal * 1.15); // 15% of the time we should get more than 50% of the reward
+    });
 
     it("Dead", async () => {
       // Lose all the XP that would have been gained

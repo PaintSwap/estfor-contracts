@@ -122,7 +122,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function _getSeed(uint _timestamp) private view returns (uint) {
     uint offset = (_timestamp - startTime) / MIN_SEED_UPDATE_TIME;
-    if (requestIds.length == 0) {
+    if (requestIds.length <= offset) {
       return 0;
     }
     return randomWords[requestIds[offset]];

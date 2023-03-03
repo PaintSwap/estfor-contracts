@@ -97,10 +97,11 @@ struct ActionReward {
   uint16 itemTokenId;
   uint24 rate; // num per hour, base 100 (2 decimals) or percentage chance
 }
-struct PendingRandomRewards {
-  uint actionId;
+struct PendingRandomReward {
+  uint64 actionId;
+  uint128 queueId;
   uint40 timestamp;
-  uint16 elapsedTime;
+  uint24 elapsedTime;
 }
 struct Equipment {
   uint16 itemTokenId;
@@ -211,4 +212,7 @@ struct PlayerBoostInfo {
   BoostType boostType;
 }
 
-uint constant MAX_LOOT_PER_ACTION = 3;
+uint constant MAX_GUARANTEED_REWARDS_PER_ACTION = 3;
+uint constant MAX_RANDOM_REWARDS_PER_ACTION = 4;
+uint constant MAX_REWARDS_PER_ACTION = MAX_GUARANTEED_REWARDS_PER_ACTION + MAX_RANDOM_REWARDS_PER_ACTION;
+uint constant MAX_CONSUMED_PER_ACTION = 3;

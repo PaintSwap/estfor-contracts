@@ -33,6 +33,8 @@ contract Players is
 
   event RemoveQueuedAction(uint playerId, uint queueId);
 
+  event AddPendingRandomReward(uint playerId, uint timestamp, uint elapsed);
+
   // For logging
   event Died(address from, uint playerId, uint queueId);
   event Rewards(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
@@ -55,7 +57,6 @@ contract Players is
   error DoNotHaveEnoughQuantityToEquipToAction();
   error NoActiveBoost();
   error BoostTimeAlreadyStarted();
-  error NoItemBalance(uint16 itemTokenId);
   error TooManyActionsQueued();
   error TooManyActionsQueuedSomeAlreadyExist();
   error ActionTimespanExceedsMaxTime();
@@ -90,7 +91,7 @@ contract Players is
   mapping(uint => Player) public players;
   ItemNFT private itemNFT;
   PlayerNFT private playerNFT;
-  mapping(uint => PendingRandomRewards[]) private pendingRandomRewards; // queue, will be sorted by timestamp
+  mapping(uint => PendingRandomReward[]) private pendingRandomRewards; // queue, will be sorted by timestamp
 
   struct EquipmentDiff {
     uint16 itemTokenId;
@@ -332,56 +333,11 @@ contract Players is
 
   // Checks they have sufficient balance to equip the items
   function _checkAttire(address _from, Attire memory _attire) private view {
-    // Check the user has these items
-    //    uint raw = _getEquipmentRawVal(_attire);
-    //    if (raw > 0) {
-    if (_attire.helmet != NONE && itemNFT.balanceOf(_from, _attire.helmet) == 0) {
-      revert NoItemBalance(_attire.helmet);
-    }
-    if (_attire.amulet != NONE && itemNFT.balanceOf(_from, _attire.amulet) == 0) {
-      revert NoItemBalance(_attire.amulet);
-    }
-    if (_attire.armor != NONE && itemNFT.balanceOf(_from, _attire.armor) == 0) {
-      revert NoItemBalance(_attire.armor);
-    }
-    if (_attire.gauntlets != NONE && itemNFT.balanceOf(_from, _attire.gauntlets) == 0) {
-      revert NoItemBalance(_attire.gauntlets);
-    }
-    if (_attire.tassets != NONE && itemNFT.balanceOf(_from, _attire.tassets) == 0) {
-      revert NoItemBalance(_attire.tassets);
-    }
-    if (_attire.boots != NONE && itemNFT.balanceOf(_from, _attire.boots) == 0) {
-      revert NoItemBalance(_attire.boots);
-    }
-    //    }
+    PlayerLibrary.checkAttire(_from, _attire, itemNFT);
   }
 
   function _checkActionConsumables(address _from, QueuedAction memory _queuedAction) private view {
-    // Check they have this to equip. Indexer can check actionChoices
-    if (_queuedAction.regenerateId != NONE && itemNFT.balanceOf(_from, _queuedAction.regenerateId) == 0) {
-      revert NoItemBalance(_queuedAction.regenerateId);
-    }
-
-    if (_queuedAction.choiceId != NONE) {
-      // Get all items for this
-      ActionChoice memory actionChoice = world.getActionChoice(
-        _isCombat(_queuedAction.skill) ? NONE : _queuedAction.actionId,
-        _queuedAction.choiceId
-      );
-
-      // TODO: Can be balance of batch
-      if (actionChoice.inputTokenId1 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId1) == 0) {
-        revert NoItemBalance(actionChoice.inputTokenId1);
-      }
-      if (actionChoice.inputTokenId2 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId2) == 0) {
-        revert NoItemBalance(actionChoice.inputTokenId2);
-      }
-      if (actionChoice.inputTokenId3 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId3) == 0) {
-        revert NoItemBalance(actionChoice.inputTokenId3);
-      }
-    }
-    //     if (_queuedAction.choiceId1 != NONE) {
-    //     if (_queuedAction.choiceId2 != NONE) {
+    PlayerLibrary.checkActionConsumables(_from, _queuedAction, itemNFT, world);
   }
 
   function _addToQueue(
@@ -575,8 +531,13 @@ contract Players is
         itemNFT,
         world,
         speedMultiplier[_playerId],
-        activeBoosts[_playerId]
+        activeBoosts[_playerId],
+        pendingRandomRewards[_playerId]
       );
+  }
+
+  function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
+    return pendingRandomRewards[_playerId];
   }
 
   function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
@@ -692,10 +653,14 @@ contract Players is
     emit AddSkillPoints(_playerId, _skill, _pointsAccrued);
   }
 
-  function _addPendingRandomRewards(
-    PendingRandomRewards[] storage _pendingRandomRewards,
+  //  uint count;
+  error err(uint);
+
+  function _addPendingRandomReward(
+    PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint _actionId,
+    uint _queueId,
     uint _elapsedTime,
     uint _skillEndTime
   ) private {
@@ -703,16 +668,34 @@ contract Players is
     if (hasRandomRewards) {
       bool hasSeed = world.hasSeed(_skillEndTime);
       if (!hasSeed) {
+        //        if (_pendingRandomRewards.length > 0) {
+        //          revert err(99);
+        //        }
         // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
         _pendingRandomRewards.push(
-          PendingRandomRewards({
-            actionId: _actionId,
+          PendingRandomReward({
+            actionId: uint64(_actionId),
+            queueId: uint128(_queueId),
             timestamp: uint40(_skillEndTime),
-            elapsedTime: uint16(_elapsedTime)
+            elapsedTime: uint24(_elapsedTime)
           })
         );
+        emit AddPendingRandomReward(_actionId, _skillEndTime, _elapsedTime);
+
+        //        if (count == 1) {
+        //          revert err(8);
+        //        }
+      } /* else {
+        if (count == 1) {
+          revert err(2);
+        }
+      } */
+    } /* else {
+      if (count == 1) {
+        revert err(9);
       }
-    }
+    } */
+    //    ++count;
   }
 
   // Callback after minting a player. If they aren't the active player then set it.
@@ -752,6 +735,35 @@ contract Players is
         _xpPerHour,
         activeBoosts[_playerId]
       );
+  }
+
+  function claimableRandomRewards(
+    uint _playerId
+  ) external view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
+    return PlayerLibrary.claimableRandomRewards(msg.sender, world, pendingRandomRewards[_playerId]);
+  }
+
+  function claimRandomRewards(uint _playerId) public isOwnerOfPlayerAndActive(_playerId) {
+    address from = msg.sender;
+    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = PlayerLibrary.claimableRandomRewards(
+      from,
+      world,
+      pendingRandomRewards[_playerId]
+    );
+
+    if (numRemoved > 0) {
+      // Shift the remaining rewards to the front of the array
+      for (uint i; i < pendingRandomRewards[_playerId].length - numRemoved; ++i) {
+        pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
+      }
+
+      for (uint i; i < numRemoved; ++i) {
+        pendingRandomRewards[_playerId].pop();
+      }
+
+      itemNFT.mintBatch(from, ids, amounts);
+      //      emit Rewards(from, _playerId, _queueId, ids, amounts);
+    }
   }
 
   function _consumeActions(address _from, uint _playerId) private returns (QueuedAction[] memory remainingSkills) {
@@ -858,10 +870,11 @@ contract Players is
           actionRewards
         );
 
-        _addPendingRandomRewards(
+        _addPendingRandomReward(
           pendingRandomRewards[_playerId],
           actionRewards,
           queuedAction.actionId,
+          _queueId,
           xpElapsedTime,
           skillEndTime
         );
@@ -886,6 +899,8 @@ contract Players is
       // Check if they have levelled up
       _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
     }
+
+    claimRandomRewards(_playerId);
 
     assembly ("memory-safe") {
       mstore(remainingSkills, length)

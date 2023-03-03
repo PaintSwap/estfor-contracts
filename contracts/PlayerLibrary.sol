@@ -13,6 +13,8 @@ library PlayerLibrary {
   event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
   event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
 
+  error NoItemBalance(uint16 itemTokenId);
+
   function uri(
     bytes32 name,
     mapping(Skill => uint32) storage skillPoints,
@@ -235,7 +237,7 @@ library PlayerLibrary {
     uint[] memory _amounts,
     uint _oldLength,
     ActionRewards memory _actionRewards
-  ) private view returns (uint length) {
+  ) private view returns (uint length, bool noLuck) {
     length = _oldLength;
 
     // Easier to make it an array, but TODO update later
@@ -272,19 +274,19 @@ library PlayerLibrary {
         bytes32 randomComponent = bytes32(seed) ^ bytes20(_from);
         uint startLootLength = length;
         for (uint i; i < numTickets; ++i) {
-          // Percentage base 100 (2 decimals)
-          uint8 rand = uint8(uint256(randomComponent >> (i * 8)));
+          // The random component is out of 65535, so we can take 2 bytes at a time
+          uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
 
           // Take each byte and check
           for (uint j; j < _randomRewards.length; ++j) {
-            ActionReward memory potentialLoot = _randomRewards[j];
-            if (rand < potentialLoot.rate) {
+            ActionReward memory potentialReward = _randomRewards[j];
+            if (rand < potentialReward.rate) {
               // Get the lowest chance one
 
               // Compare with previous and append amounts if an entry already exists
               bool found;
               for (uint k = startLootLength; k < _ids.length; ++k) {
-                if (potentialLoot.itemTokenId == _ids[k]) {
+                if (potentialReward.itemTokenId == _ids[k]) {
                   // exists
                   _amounts[k] += 1;
                   found = true;
@@ -294,13 +296,17 @@ library PlayerLibrary {
 
               if (!found) {
                 // New item
-                _ids[length] = potentialLoot.itemTokenId;
+                _ids[length] = potentialReward.itemTokenId;
                 _amounts[length] = 1;
                 ++length;
               }
               break;
             }
           }
+        }
+
+        if (length == 0) {
+          noLuck = true;
         }
       }
     }
@@ -317,7 +323,17 @@ library PlayerLibrary {
     amounts = new uint[](7);
 
     uint length = _appendGuarenteedRewards(ids, amounts, _elapsedTime, _actionRewards);
-    length = _appendRandomRewards(_from, _skillEndTime, _elapsedTime, _world, ids, amounts, length, _actionRewards);
+    bool noLuck;
+    (length, noLuck) = _appendRandomRewards(
+      _from,
+      _skillEndTime,
+      _elapsedTime,
+      _world,
+      ids,
+      amounts,
+      length,
+      _actionRewards
+    );
 
     assembly ("memory-safe") {
       mstore(ids, length)
@@ -778,6 +794,41 @@ library PlayerLibrary {
     }
   }
 
+  function claimableRandomRewards(
+    address _from,
+    World _world,
+    PendingRandomReward[] storage _pendingRandomRewards
+  ) public view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
+    ids = new uint[](_pendingRandomRewards.length);
+    amounts = new uint[](_pendingRandomRewards.length);
+
+    uint length;
+    for (uint i; i < _pendingRandomRewards.length; ++i) {
+      ActionRewards memory actionRewards = _world.getActionRewards(_pendingRandomRewards[i].actionId);
+      uint oldLength = length;
+      bool noLuck;
+      (length, noLuck) = _appendRandomRewards(
+        _from,
+        _pendingRandomRewards[i].timestamp,
+        _pendingRandomRewards[i].elapsedTime,
+        _world,
+        ids,
+        amounts,
+        oldLength,
+        actionRewards
+      );
+
+      if (length - oldLength > 0 || noLuck) {
+        ++numRemoved;
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(ids, length)
+      mstore(amounts, length)
+    }
+  }
+
   function pending(
     uint _playerId,
     QueuedAction[] storage actionQueue,
@@ -785,10 +836,13 @@ library PlayerLibrary {
     ItemNFT _itemNFT,
     World _world,
     uint _speedMultiplier,
-    PlayerBoostInfo storage activeBoost
+    PlayerBoostInfo storage activeBoost,
+    PendingRandomReward[] storage _pendingRandomRewards
   ) external view returns (PendingOutput memory pendingOutput) {
-    pendingOutput.consumed = new Equipment[](actionQueue.length * MAX_LOOT_PER_ACTION + 1);
-    pendingOutput.produced = new ActionReward[](actionQueue.length * MAX_LOOT_PER_ACTION * 2);
+    pendingOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
+    pendingOutput.produced = new ActionReward[](
+      actionQueue.length * MAX_REWARDS_PER_ACTION + (_pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION)
+    );
 
     uint consumedLength;
     uint producedLength;
@@ -892,8 +946,19 @@ library PlayerLibrary {
       //      _handleLevelUpRewards(from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
     }
 
-    // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
+    // Loop through any pending random rewards and add them to the output
+    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = claimableRandomRewards(
+      from,
+      _world,
+      _pendingRandomRewards
+    );
 
+    for (uint i; i < ids.length; ++i) {
+      pendingOutput.produced[producedLength] = ActionReward(uint16(ids[i]), uint24(amounts[i]));
+      ++producedLength;
+    }
+
+    // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
     assembly ("memory-safe") {
       mstore(mload(pendingOutput), consumedLength)
       mstore(mload(add(pendingOutput, 32)), producedLength)
@@ -907,8 +972,8 @@ library PlayerLibrary {
     PlayerBoostInfo storage playerBoost
   ) external {
     Item memory item = itemNFT.getItem(_itemTokenId);
-    require(item.boostType != BoostType.NONE, "Not a boost vial");
-    require(_startTime < block.timestamp + 7 days, "Start time too far in the future");
+    require(item.boostType != BoostType.NONE); // , "Not a boost vial");
+    require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
     if (_startTime < block.timestamp) {
       _startTime = uint40(block.timestamp);
     }
@@ -927,5 +992,63 @@ library PlayerLibrary {
     playerBoost.val = item.boostValue;
     playerBoost.boostType = item.boostType;
     playerBoost.itemTokenId = _itemTokenId;
+  }
+
+  function checkAttire(address _from, Attire memory _attire, ItemNFT _itemNFT) external view {
+    // Check the user has these items
+    //    uint raw = _getEquipmentRawVal(_attire);
+    //    if (raw > 0) {
+    if (_attire.helmet != NONE && _itemNFT.balanceOf(_from, _attire.helmet) == 0) {
+      revert NoItemBalance(_attire.helmet);
+    }
+    if (_attire.amulet != NONE && _itemNFT.balanceOf(_from, _attire.amulet) == 0) {
+      revert NoItemBalance(_attire.amulet);
+    }
+    if (_attire.armor != NONE && _itemNFT.balanceOf(_from, _attire.armor) == 0) {
+      revert NoItemBalance(_attire.armor);
+    }
+    if (_attire.gauntlets != NONE && _itemNFT.balanceOf(_from, _attire.gauntlets) == 0) {
+      revert NoItemBalance(_attire.gauntlets);
+    }
+    if (_attire.tassets != NONE && _itemNFT.balanceOf(_from, _attire.tassets) == 0) {
+      revert NoItemBalance(_attire.tassets);
+    }
+    if (_attire.boots != NONE && _itemNFT.balanceOf(_from, _attire.boots) == 0) {
+      revert NoItemBalance(_attire.boots);
+    }
+    //    }
+  }
+
+  function checkActionConsumables(
+    address _from,
+    QueuedAction memory _queuedAction,
+    ItemNFT _itemNFT,
+    World _world
+  ) external view {
+    // Check they have this to equip. Indexer can check actionChoices
+    if (_queuedAction.regenerateId != NONE && _itemNFT.balanceOf(_from, _queuedAction.regenerateId) == 0) {
+      revert NoItemBalance(_queuedAction.regenerateId);
+    }
+
+    if (_queuedAction.choiceId != NONE) {
+      // Get all items for this
+      ActionChoice memory actionChoice = _world.getActionChoice(
+        _isCombat(_queuedAction.skill) ? NONE : _queuedAction.actionId,
+        _queuedAction.choiceId
+      );
+
+      // TODO: Can be balance of batch
+      if (actionChoice.inputTokenId1 != NONE && _itemNFT.balanceOf(_from, actionChoice.inputTokenId1) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId1);
+      }
+      if (actionChoice.inputTokenId2 != NONE && _itemNFT.balanceOf(_from, actionChoice.inputTokenId2) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId2);
+      }
+      if (actionChoice.inputTokenId3 != NONE && _itemNFT.balanceOf(_from, actionChoice.inputTokenId3) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId3);
+      }
+    }
+    //     if (_queuedAction.choiceId1 != NONE) {
+    //     if (_queuedAction.choiceId2 != NONE) {
   }
 }
