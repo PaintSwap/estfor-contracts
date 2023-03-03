@@ -83,14 +83,23 @@ describe("Player", () => {
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
     const playerLibrary = await PlayerLibrary.deploy();
 
+    const PlayersImplActions = await ethers.getContractFactory("PlayersImplActions", {
+      libraries: {PlayerLibrary: playerLibrary.address},
+    });
+    const playersImplActions = await PlayersImplActions.deploy();
+
     const Players = await ethers.getContractFactory("Players", {
       libraries: {PlayerLibrary: playerLibrary.address},
     });
 
-    const players = await upgrades.deployProxy(Players, [itemNFT.address, playerNFT.address, world.address], {
-      kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
-    });
+    const players = await upgrades.deployProxy(
+      Players,
+      [itemNFT.address, playerNFT.address, world.address, playersImplActions.address],
+      {
+        kind: "uups",
+        unsafeAllow: ["delegatecall", "external-library-linking"],
+      }
+    );
 
     await itemNFT.setPlayers(players.address);
     await playerNFT.setPlayers(players.address);
