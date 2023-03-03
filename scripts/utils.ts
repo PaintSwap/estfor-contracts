@@ -3,17 +3,25 @@ import {ContractTransaction, ethers} from "ethers";
 import {PlayerNFT} from "../typechain-types";
 
 // Should match contract
+export enum CombatStyle {
+  NONE,
+  ATTACK,
+  RANGED,
+  MAGIC,
+  MELEE_DEFENCE,
+  RANGED_DEFENCE,
+  MAGIC_DEFENCE,
+}
+
+// Should match contract
 export enum Skill {
   NONE,
-  COMBAT, // This is a helper which incorporates attack <-> magic
+  COMBAT,
   ATTACK,
   RANGED,
   MAGIC,
   DEFENCE,
   HEALTH,
-  //  MELEE_ATTACK_DEFENCE, // combo
-  //  RANGED_ATTACK_DEFENCE, // combo
-  //  MAGIC_ATTACK_DEFENCE, // combo
   MINING,
   WOODCUTTING,
   FISHING,
@@ -438,7 +446,7 @@ export type QueuedAction = {
   choiceId: number;
   choiceId1: number;
   choiceId2: number;
-  skill: Skill;
+  combatStyle: CombatStyle;
   timespan: number;
   rightArmEquipmentTokenId: number;
   leftArmEquipmentTokenId: number;

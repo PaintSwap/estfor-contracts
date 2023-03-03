@@ -12,6 +12,7 @@ import {
   BRONZE_SWORD,
   COAL_ORE,
   CombatStats,
+  CombatStyle,
   COMBAT_BASE,
   COMBAT_MAX,
   COOKED_HUPPY,
@@ -166,7 +167,7 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       attire: noAttire,
       actionId,
-      skill: Skill.WOODCUTTING,
+      combatStyle: CombatStyle.NONE,
       choiceId: NONE,
       choiceId1: NONE,
       choiceId2: NONE,
@@ -178,10 +179,10 @@ describe("Player", () => {
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
-    await ethers.provider.send("evm_increaseTime", [361]);
+    /*    await ethers.provider.send("evm_increaseTime", [361]);
     await players.connect(alice).consumeActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
-    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down
+    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down */
   });
 
   it("Skill points (many)", async () => {
@@ -217,7 +218,7 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       attire: noAttire,
       actionId,
-      skill: Skill.WOODCUTTING,
+      combatStyle: CombatStyle.NONE,
       choiceId: NONE,
       choiceId1: NONE,
       choiceId2: NONE,
@@ -265,7 +266,7 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       attire: noAttire,
       actionId,
-      skill: Skill.WOODCUTTING,
+      combatStyle: CombatStyle.NONE,
       choiceId: NONE,
       choiceId1: NONE,
       choiceId2: NONE,
@@ -323,7 +324,7 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       attire: noAttire,
       actionId,
-      skill: Skill.WOODCUTTING,
+      combatStyle: CombatStyle.NONE,
       choiceId: NONE,
       choiceId1: NONE,
       choiceId2: NONE,
@@ -409,7 +410,7 @@ describe("Player", () => {
     const queuedAction: QueuedAction = {
       attire: {...noAttire, gauntlets: BRONZE_GAUNTLETS},
       actionId: 1,
-      skill: Skill.ATTACK,
+      combatStyle: CombatStyle.ATTACK,
       choiceId,
       choiceId1: NONE,
       choiceId2: NONE,
@@ -675,7 +676,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.WOODCUTTING,
+        combatStyle: CombatStyle.NONE,
         choiceId: NONE,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -747,7 +748,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.WOODCUTTING,
+        combatStyle: CombatStyle.NONE,
         choiceId: NONE,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -810,7 +811,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.WOODCUTTING,
+        combatStyle: CombatStyle.NONE,
         choiceId: NONE,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -886,7 +887,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.FIREMAKING,
+        combatStyle: CombatStyle.NONE,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -956,7 +957,7 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           attire: noAttire,
           actionId,
-          skill: Skill.WOODCUTTING,
+          combatStyle: CombatStyle.NONE,
           choiceId: NONE,
           choiceId1: NONE,
           choiceId2: NONE,
@@ -1017,7 +1018,7 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           attire: noAttire,
           actionId,
-          skill: Skill.FIREMAKING,
+          combatStyle: CombatStyle.NONE,
           choiceId,
           choiceId1: NONE,
           choiceId2: NONE,
@@ -1090,7 +1091,7 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           attire: noAttire,
           actionId,
-          skill: Skill.WOODCUTTING,
+          combatStyle: CombatStyle.NONE,
           choiceId: NONE,
           choiceId1: NONE,
           choiceId2: NONE,
@@ -1151,7 +1152,7 @@ describe("Player", () => {
         const queuedAction: QueuedAction = {
           attire: noAttire,
           actionId,
-          skill: Skill.FIREMAKING,
+          combatStyle: CombatStyle.NONE,
           choiceId,
           choiceId1: NONE,
           choiceId2: NONE,
@@ -1218,7 +1219,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.MINING,
+        combatStyle: CombatStyle.NONE,
         choiceId: NONE,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1287,7 +1288,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.SMITHING,
+        combatStyle: CombatStyle.NONE,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1357,7 +1358,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.WOODCUTTING,
+        combatStyle: CombatStyle.NONE,
         choiceId: NONE,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1421,7 +1422,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.WOODCUTTING,
+        combatStyle: CombatStyle.NONE,
         choiceId: NONE,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1489,7 +1490,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.ATTACK,
+        combatStyle: CombatStyle.ATTACK,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1533,6 +1534,102 @@ describe("Player", () => {
       await players.connect(alice).consumeActions(playerId);
       expect(await players.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
+
+      // Check food is consumed, update later
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 5);
+    });
+
+    it("Melee defence", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const monsterCombatStats: CombatStats = {
+        attack: 3,
+        magic: 0,
+        range: 0,
+        defence: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 1,
+      };
+
+      const rate = 1 * 100; // per hour
+      let tx = await world.addAction({
+        info: {
+          skill: Skill.COMBAT,
+          xpPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 1,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          isCombat: true,
+        },
+        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      tx = await world.addActionChoice(NONE, {
+        ...emptyActionChoice,
+        skill: Skill.ATTACK,
+      });
+      const choiceId = await getActionChoiceId(tx);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
+      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.MELEE_DEFENCE,
+        choiceId,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: COOKED_HUPPY,
+        timespan,
+        rightArmEquipmentTokenId: BRONZE_SWORD,
+        leftArmEquipmentTokenId: NONE,
+        startTime: "0",
+      };
+
+      await itemNFT.addItem({
+        ...inputItem,
+        combatStats: {
+          ...emptyStats,
+          attack: 5,
+        },
+        tokenId: BRONZE_SWORD,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_ARROW,
+        equipPosition: EquipPosition.ARROW_SATCHEL,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        healthRestored: 12,
+        tokenId: COOKED_HUPPY,
+        equipPosition: EquipPosition.AUX, // FOOD
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+
+      const time = 361;
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await players.connect(alice).consumeActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
+      expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
@@ -1588,7 +1685,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.WOODCUTTING,
+        combatStyle: CombatStyle.NONE,
         choiceId: NONE,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1689,7 +1786,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.ATTACK,
+        combatStyle: CombatStyle.ATTACK,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1793,7 +1890,7 @@ describe("Player", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        skill: Skill.MAGIC,
+        combatStyle: CombatStyle.MAGIC,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,

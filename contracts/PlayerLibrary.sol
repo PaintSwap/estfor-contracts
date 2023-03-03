@@ -758,8 +758,8 @@ library PlayerLibrary {
     }
   }
 
-  function _isCombat(Skill _skill) private pure returns (bool) {
-    return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
+  function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
+    return _combatStyle != CombatStyle.NONE;
   }
 
   function extraXPFromBoost(
@@ -864,7 +864,7 @@ library PlayerLibrary {
       bool died;
 
       ActionChoice memory actionChoice;
-      bool isCombat = _isCombat(queuedAction.skill);
+      bool isCombat = _isCombat(queuedAction.combatStyle);
       uint xpElapsedTime = elapsedTime;
       if (queuedAction.choiceId != 0) {
         // || isCombat) {
@@ -899,7 +899,7 @@ library PlayerLibrary {
       }
 
       if (!died) {
-        bool _isCombatSkill = _isCombat(queuedAction.skill);
+        bool _isCombatSkill = _isCombat(queuedAction.combatStyle);
         uint16 xpPerHour = _world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
         pointsAccrued += extraXPFromBoost(
@@ -1026,7 +1026,7 @@ library PlayerLibrary {
     if (_queuedAction.choiceId != NONE) {
       // Get all items for this
       ActionChoice memory actionChoice = _world.getActionChoice(
-        _isCombat(_queuedAction.skill) ? NONE : _queuedAction.actionId,
+        _isCombat(_queuedAction.combatStyle) ? NONE : _queuedAction.actionId,
         _queuedAction.choiceId
       );
 
@@ -1055,8 +1055,58 @@ library PlayerLibrary {
     return uint24(arr[index] | (bytes3(arr[index + 1]) >> 8) | (bytes3(arr[index + 2]) >> 16));
   }
 
+  function getSkillFromStyle(
+    CombatStyle _combatStyle,
+    uint16 _actionId,
+    World _world
+  ) external view returns (Skill skill) {
+    if (_combatStyle == CombatStyle.ATTACK) {
+      skill = Skill.ATTACK;
+    } else if (_combatStyle == CombatStyle.MAGIC) {
+      skill = Skill.MAGIC;
+    }
+    /* else if (_combatStyle == Skill.RANGED) {
+            skill = Skill.RANGED;
+          } */
+    else if (
+      _combatStyle == CombatStyle.MELEE_DEFENCE ||
+      _combatStyle == CombatStyle.RANGED_DEFENCE ||
+      _combatStyle == CombatStyle.MAGIC_DEFENCE
+    ) {
+      skill = Skill.DEFENCE;
+    } else {
+      // Not a combat style, get the skill from the action
+      skill = _world.getSkill(_actionId);
+    }
+  }
+
+  function cacheCombatStats(
+    Player storage _player,
+    uint32 _healthSkillPoints,
+    Skill _skill,
+    uint32 _skillPoints
+  ) external {
+    {
+      int16 level = int16(findLevel(_healthSkillPoints));
+      _player.combatStats.health = level;
+    }
+
+    int16 level = int16(findLevel(_skillPoints));
+    if (_skill == Skill.ATTACK) {
+      _player.combatStats.attack = level;
+    } else if (_skill == Skill.MAGIC) {
+      _player.combatStats.magic = level;
+    }
+    /* else if (_skill == Skill.RANGED) {
+            _player.combatStats.attack = level;
+          } */
+    else if (_skill == Skill.DEFENCE) {
+      _player.combatStats.defence = level;
+    }
+  }
+
   // Index not level, add one after (check for > max)
-  function findLevel(uint256 xp) external pure returns (uint16) {
+  function findLevel(uint256 xp) private pure returns (uint16) {
     uint256 low = 0;
     uint256 high = 100;
 

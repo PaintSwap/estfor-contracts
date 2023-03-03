@@ -8,6 +8,7 @@ import {
   BRONZE_AXE,
   BRONZE_GAUNTLETS,
   BRONZE_HELMET,
+  CombatStyle,
   createPlayer,
   firemakingChoices,
   FIRE_LIGHTER,
@@ -188,7 +189,7 @@ async function main() {
   const queuedAction: QueuedAction = {
     attire: noAttire,
     actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
-    skill: Skill.WOODCUTTING,
+    combatStyle: CombatStyle.NONE,
     choiceId: NONE,
     choiceId1: NONE,
     choiceId2: NONE,
@@ -222,7 +223,7 @@ async function main() {
   const queuedActionFiremaking: QueuedAction = {
     attire: {...noAttire, helmet: BRONZE_HELMET, gauntlets: BRONZE_GAUNTLETS},
     actionId: allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1,
-    skill: Skill.FIREMAKING,
+    combatStyle: CombatStyle.NONE,
     choiceId: 1,
     choiceId1: NONE,
     choiceId2: NONE,

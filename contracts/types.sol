@@ -40,16 +40,23 @@ enum BoostType {
   ABSENCE
 }
 
+enum CombatStyle {
+  NONE,
+  ATTACK,
+  RANGED,
+  MAGIC,
+  MELEE_DEFENCE,
+  RANGED_DEFENCE,
+  MAGIC_DEFENCE
+}
+
 enum Skill {
   NONE,
-  COMBAT, // This is a helper which incorporates attack <-> magic
+  COMBAT, // This is a helper which incorporates all combat skills, attack <-> magic, defence, health etc
   ATTACK,
   RANGED,
   MAGIC,
   DEFENCE,
-  //  MELEE_DEFENCE, // combo
-  //  RANGED_DEFENCE, // combo
-  //  MAGIC_DEFENCE, // combo
   HEALTH,
   MINING,
   WOODCUTTING,
@@ -144,7 +151,7 @@ struct QueuedAction {
   uint16 rightArmEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftArmEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  Skill skill; // attack, defence, strength, magic, ranged, woodcutting, needs to match actionId skill. Attack/defence can also be used
+  CombatStyle combatStyle; // specific style of combat,  can also be used
   uint40 startTime; // Filled in by the function
   //  bool reusePrev; // If true, then the previous queued action attire is reused?
   // 9 bytes left

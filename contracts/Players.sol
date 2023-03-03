@@ -60,6 +60,7 @@ contract Players is
   error TooManyActionsQueued();
   error TooManyActionsQueuedSomeAlreadyExist();
   error ActionTimespanExceedsMaxTime();
+  error ActionTimespanZero();
 
   uint32 public constant MAX_TIME = 1 days;
 
@@ -226,8 +227,8 @@ contract Players is
     }
   }
 
-  function _isCombat(Skill _skill) private pure returns (bool) {
-    return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
+  function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
+    return _combatStyle != CombatStyle.NONE;
   }
 
   function _consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) private {
@@ -719,7 +720,7 @@ contract Players is
       bool died;
 
       ActionChoice memory actionChoice;
-      bool isCombat = _isCombat(queuedAction.skill);
+      bool isCombat = _isCombat(queuedAction.combatStyle);
 
       uint xpElapsedTime = elapsedTime;
 
@@ -742,7 +743,7 @@ contract Players is
       }
       uint128 _queueId = queuedAction.attire.queueId;
       if (!died) {
-        bool _isCombatSkill = _isCombat(queuedAction.skill);
+        bool _isCombatSkill = _isCombat(queuedAction.combatStyle);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
@@ -758,29 +759,19 @@ contract Players is
       }
 
       if (pointsAccrued > 0) {
-        _updateSkillPoints(_playerId, queuedAction.skill, pointsAccrued);
+        Skill skill = PlayerLibrary.getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId, world);
 
-        if (_isCombat(queuedAction.skill)) {
+        if (_isCombat(queuedAction.combatStyle)) {
           // Update health too with 33%
           _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);
-          {
-            // If this is combat one, cache appropriately on the player object
-            int16 level = int16(PlayerLibrary.findLevel(skillPoints[_playerId][queuedAction.skill]));
-            if (queuedAction.skill == Skill.ATTACK) {
-              players[_playerId].combatStats.attack = level;
-            } else if (queuedAction.skill == Skill.DEFENCE) {
-              players[_playerId].combatStats.defence = level;
-            } else if (queuedAction.skill == Skill.MAGIC) {
-              players[_playerId].combatStats.magic = level;
-            } /* else if (queuedAction.skill == Skill.RANGED) {
-            players[_playerId].combatStats.ranged = level;
-          } */
-          }
-          {
-            int16 level = int16(PlayerLibrary.findLevel(skillPoints[_playerId][Skill.HEALTH]));
-            players[_playerId].combatStats.health = level;
-          }
+          PlayerLibrary.cacheCombatStats(
+            players[_playerId],
+            skillPoints[_playerId][Skill.HEALTH],
+            skill,
+            skillPoints[_playerId][skill]
+          );
         }
+        _updateSkillPoints(_playerId, skill, pointsAccrued);
 
         ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
         (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getRewards(
