@@ -18,7 +18,6 @@ library PlayerLibrary {
   function uri(
     bytes32 name,
     mapping(Skill => uint32) storage skillPoints,
-    CombatStats calldata totalStats,
     bytes32 avatarName,
     string calldata avatarDescription,
     string calldata imageURI
@@ -29,8 +28,12 @@ library PlayerLibrary {
         name,
         '{"trait_type":"Attack","value":"',
         skillPoints[Skill.ATTACK],
+        '"}, {"trait_type":"Magic","value":"',
+        skillPoints[Skill.MAGIC],
         '"}, {"trait_type":"Defence","value":"',
         skillPoints[Skill.DEFENCE],
+        '"}, {"trait_type":"Health","value":"',
+        skillPoints[Skill.HEALTH],
         '"}, {"trait_type":"Mining","value":"',
         skillPoints[Skill.MINING],
         '{"trait_type":"WoodCutting","value":"',
@@ -47,8 +50,6 @@ library PlayerLibrary {
         skillPoints[Skill.COOKING],
         '{"trait_type":"FireMaking","value":"',
         skillPoints[Skill.FIREMAKING],
-        '"}, {"trait_type":"Max health","value":"',
-        totalStats.health,
         '"}'
       )
     );
@@ -852,7 +853,7 @@ library PlayerLibrary {
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
 
-      CombatStats memory combatStats = player.totalStats;
+      CombatStats memory combatStats = player.combatStats;
 
       // This will only ones that they have a balance for at this time. This will check balances
       updateCombatStats(from, combatStats, queuedAction.attire, _itemNFT, true);
@@ -1050,5 +1051,39 @@ library PlayerLibrary {
     }
     //     if (_queuedAction.choiceId1 != NONE) {
     //     if (_queuedAction.choiceId2 != NONE) {
+  }
+
+  function average(uint256 a, uint256 b) private pure returns (uint256) {
+    // (a + b) / 2 can overflow.
+    return (a & b) + (a ^ b) / 2;
+  }
+
+  function getXP(uint256 _index) private pure returns (uint24) {
+    uint256 index = _index * 3;
+    return uint24(arr[index] | (bytes3(arr[index + 1]) >> 8) | (bytes3(arr[index + 2]) >> 16));
+  }
+
+  // Index not level, add one after (check for > max)
+  function findLevel(uint256 xp) external pure returns (uint16) {
+    uint256 low = 0;
+    uint256 high = 100;
+
+    while (low < high) {
+      uint256 mid = average(low, high);
+
+      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+      // Math.average rounds down (it does integer division with truncation).
+      if (getXP(mid) > xp) {
+        high = mid;
+      } else {
+        low = mid + 1;
+      }
+    }
+
+    if (low > 0) {
+      return uint16(low);
+    } else {
+      return 1;
+    }
   }
 }

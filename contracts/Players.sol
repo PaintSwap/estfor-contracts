@@ -62,18 +62,6 @@ contract Players is
   error ActionTimespanExceedsMaxTime();
 
   uint32 public constant MAX_TIME = 1 days;
-  uint constant LEVEL_5_BOUNDARY = 374;
-  uint constant LEVEL_10_BOUNDARY = 1021;
-  uint constant LEVEL_15_BOUNDARY = 1938;
-  uint constant LEVEL_20_BOUNDARY = 3236;
-  uint constant LEVEL_30_BOUNDARY = 7650;
-  uint constant LEVEL_40_BOUNDARY = 16432;
-  uint constant LEVEL_50_BOUNDARY = 33913;
-  uint constant LEVEL_60_BOUNDARY = 68761;
-  uint constant LEVEL_70_BOUNDARY = 138307;
-  uint constant LEVEL_80_BOUNDARY = 277219;
-  uint constant LEVEL_90_BOUNDARY = 554828;
-  uint constant LEVEL_99_BOUNDARY = 1035476;
 
   uint constant MAX_MAIN_EQUIPMENT_ID = 65536 * 8;
 
@@ -86,7 +74,7 @@ contract Players is
   uint private queueId; // Global queued action id
   World private world;
 
-  mapping(uint => mapping(Skill => uint32)) public skillPoints;
+  mapping(uint => mapping(Skill => uint32)) public skillPoints; // player -> skill -> points
 
   mapping(uint => Player) public players;
   ItemNFT private itemNFT;
@@ -635,9 +623,7 @@ contract Players is
     string calldata _avatarDescription,
     string calldata imageURI
   ) external view returns (string memory) {
-    Player storage player = players[_playerId];
-    return
-      PlayerLibrary.uri(_name, skillPoints[_playerId], player.totalStats, _avatarName, _avatarDescription, imageURI);
+    return PlayerLibrary.uri(_name, skillPoints[_playerId], _avatarName, _avatarDescription, imageURI);
   }
 
   function _getElapsedTime(
@@ -668,9 +654,6 @@ contract Players is
     if (hasRandomRewards) {
       bool hasSeed = world.hasSeed(_skillEndTime);
       if (!hasSeed) {
-        //        if (_pendingRandomRewards.length > 0) {
-        //          revert err(99);
-        //        }
         // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
         _pendingRandomRewards.push(
           PendingRandomReward({
@@ -681,21 +664,8 @@ contract Players is
           })
         );
         emit AddPendingRandomReward(_actionId, _skillEndTime, _elapsedTime);
-
-        //        if (count == 1) {
-        //          revert err(8);
-        //        }
-      } /* else {
-        if (count == 1) {
-          revert err(2);
-        }
-      } */
-    } /* else {
-      if (count == 1) {
-        revert err(9);
       }
-    } */
-    //    ++count;
+    }
   }
 
   // Callback after minting a player. If they aren't the active player then set it.
@@ -786,7 +756,7 @@ contract Players is
       // This will only ones that they have a balance for at this time. This will check balances
       CombatStats memory combatStats = _updateCombatStats(
         _from,
-        player.totalStats,
+        player.combatStats,
         queuedAction.attire,
         true,
         queuedAction.startTime
@@ -859,6 +829,23 @@ contract Players is
         if (_isCombat(queuedAction.skill)) {
           // Update health too with 33%
           _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);
+          {
+            // If this is combat one, cache appropriately on the player object
+            int16 level = int16(PlayerLibrary.findLevel(skillPoints[_playerId][queuedAction.skill]));
+            if (queuedAction.skill == Skill.ATTACK) {
+              players[_playerId].combatStats.attack = level;
+            } else if (queuedAction.skill == Skill.DEFENCE) {
+              players[_playerId].combatStats.defence = level;
+            } else if (queuedAction.skill == Skill.MAGIC) {
+              players[_playerId].combatStats.magic = level;
+            } /* else if (queuedAction.skill == Skill.RANGED) {
+            players[_playerId].combatStats.ranged = level;
+          } */
+          }
+          {
+            int16 level = int16(PlayerLibrary.findLevel(skillPoints[_playerId][Skill.HEALTH]));
+            players[_playerId].combatStats.health = level;
+          }
         }
 
         ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);

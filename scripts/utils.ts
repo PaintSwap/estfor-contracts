@@ -395,11 +395,11 @@ export type CombatStats = {
   attack: number;
   magic: number;
   range: number;
+  defence: number;
   meleeDefence: number;
   magicDefence: number;
   rangeDefence: number;
   health: number;
-  // Spare
 };
 
 export type Equipment = {
@@ -535,6 +535,7 @@ export const emptyStats = {
   attack: 0,
   magic: 0,
   range: 0,
+  defence: 0,
   meleeDefence: 0,
   magicDefence: 0,
   rangeDefence: 0,
@@ -545,6 +546,7 @@ const bronzeHelmentStats = {
   attack: 1,
   magic: 0,
   range: 0,
+  defence: 0,
   meleeDefence: 4,
   magicDefence: 0,
   rangeDefence: 1,
@@ -555,6 +557,7 @@ const bronzeGauntletStats = {
   attack: 0,
   magic: 0,
   range: 0,
+  defence: 0,
   meleeDefence: 1,
   magicDefence: 0,
   rangeDefence: 1,
@@ -565,6 +568,7 @@ const bronzeSwordStats = {
   attack: 5,
   magic: 0,
   range: 0,
+  defence: 0,
   meleeDefence: 0,
   magicDefence: 0,
   rangeDefence: 0,

@@ -141,6 +141,7 @@ describe("Player", () => {
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
+
     await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
 
     const rate = 100 * 100; // per hour
@@ -358,6 +359,7 @@ describe("Player", () => {
       attack: 2,
       magic: 0,
       range: 0,
+      defence: 0,
       meleeDefence: -1,
       magicDefence: 0,
       rangeDefence: 0,
@@ -1450,6 +1452,7 @@ describe("Player", () => {
         attack: 3,
         magic: 0,
         range: 0,
+        defence: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangeDefence: 0,
@@ -1649,6 +1652,7 @@ describe("Player", () => {
         attack: 3,
         magic: 0,
         range: 0,
+        defence: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangeDefence: 0,
@@ -1735,6 +1739,7 @@ describe("Player", () => {
         attack: 3,
         magic: 0,
         range: 0,
+        defence: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangeDefence: 0,
