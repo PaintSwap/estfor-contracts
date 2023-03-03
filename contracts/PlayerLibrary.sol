@@ -10,8 +10,8 @@ import "./Players.sol"; // Might not even be needed
 // Show all the player stats, return metadata json
 library PlayerLibrary {
   // Should match the event in Players
-  event Reward(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
-  event Consume(address _from, uint playerId, uint queueId, uint itemTokenId, uint amount);
+  event Reward(address _from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
+  event Consume(address _from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
 
   error NoItemBalance(uint16 itemTokenId);
 
@@ -347,22 +347,19 @@ library PlayerLibrary {
     uint _playerId,
     ItemNFT _itemNFT,
     uint16 _itemTokenId,
-    uint16 _numProduced,
-    uint16 _baseNum,
-    uint64 _queueId
+    uint16 _numConsumed,
+    uint128 _queueId
   ) private {
     if (_itemTokenId == 0) {
       return;
     }
-    uint16 numBurn = _numProduced * _baseNum;
     // Balance should be checked beforehand
-    emit Consume(_from, _playerId, _queueId, _itemTokenId, numBurn);
-    _itemNFT.burn(_from, _itemTokenId, numBurn);
+    emit Consume(_from, _playerId, _queueId, _itemTokenId, _numConsumed);
+    _itemNFT.burn(_from, _itemTokenId, _numConsumed);
   }
 
   function processConsumablesView(
     address _from,
-    uint _playerId,
     QueuedAction storage _queuedAction,
     uint _elapsedTime,
     World _world,
@@ -515,7 +512,6 @@ library PlayerLibrary {
       _itemNFT,
       _queuedAction.regenerateId,
       foodConsumed,
-      1,
       _queuedAction.attire.queueId
     );
   }
@@ -587,15 +583,14 @@ library PlayerLibrary {
     ActionChoice memory _actionChoice,
     uint16 _numConsumed,
     ItemNFT _itemNFT,
-    uint64 _queueId
+    uint128 _queueId
   ) private {
     _processConsumable(
       _from,
       _playerId,
       _itemNFT,
       _actionChoice.inputTokenId1,
-      _numConsumed,
-      _actionChoice.num1,
+      _numConsumed * _actionChoice.num1,
       _queueId
     );
     _processConsumable(
@@ -603,8 +598,7 @@ library PlayerLibrary {
       _playerId,
       _itemNFT,
       _actionChoice.inputTokenId2,
-      _numConsumed,
-      _actionChoice.num2,
+      _numConsumed * _actionChoice.num2,
       _queueId
     );
     _processConsumable(
@@ -612,8 +606,7 @@ library PlayerLibrary {
       _playerId,
       _itemNFT,
       _actionChoice.inputTokenId3,
-      _numConsumed,
-      _actionChoice.num3,
+      _numConsumed * _actionChoice.num3,
       _queueId
     );
   }
@@ -882,7 +875,6 @@ library PlayerLibrary {
 
         (consumedEquipment, output, elapsedTime, xpElapsedTime, died) = processConsumablesView(
           from,
-          _playerId,
           queuedAction,
           elapsedTime,
           _world,

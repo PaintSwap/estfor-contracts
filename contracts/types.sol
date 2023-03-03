@@ -87,7 +87,7 @@ struct ActionReward {
   uint24 rate; // num per hour, base 100 (2 decimals) or percentage chance
 }
 struct PendingRandomReward {
-  uint64 actionId;
+  uint16 actionId;
   uint128 queueId;
   uint40 timestamp;
   uint24 elapsedTime;
@@ -172,7 +172,7 @@ struct Attire {
   uint16 boots;
   uint16 ring;
   uint16 reserved1;
-  uint64 queueId; // Just here for packing purposes
+  uint128 queueId; // Just here for packing purposes
 }
 
 struct CombatStats {

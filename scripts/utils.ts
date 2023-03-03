@@ -473,7 +473,7 @@ export const getActionId = async (tx: ContractTransaction): Promise<number> => {
   const event = receipt?.events?.filter((x) => {
     return x.event == "AddAction";
   })[0].args;
-  return event?.actionId.toNumber();
+  return event?.actionId;
 };
 
 export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
@@ -481,7 +481,7 @@ export const getActionChoiceId = async (tx: ContractTransaction): Promise<number
   const event = receipt?.events?.filter((x) => {
     return x.event == "AddActionChoice";
   })[0].args;
-  return event?.actionChoiceId.toNumber();
+  return event?.actionChoiceId;
 };
 
 // Actions

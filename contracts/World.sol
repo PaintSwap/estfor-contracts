@@ -14,13 +14,13 @@ import "./types.sol";
 contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
-  event AddAction(uint actionId, Action action);
-  event EditAction(uint actionId, Action action);
-  event SetAvailableAction(uint actionId, bool available);
-  event AddDynamicActions(uint[] actionIds);
-  event RemoveDynamicActions(uint[] actionIds);
-  event AddActionChoice(uint actionId, uint actionChoiceId, ActionChoice choice);
-  event AddActionChoices(uint actionId, uint startActionChoice, ActionChoice[] choices);
+  event AddAction(uint16 actionId, Action action);
+  event EditAction(uint16 actionId, Action action);
+  event SetAvailableAction(uint16 actionId, bool available);
+  event AddDynamicActions(uint16[] actionIds);
+  event RemoveDynamicActions(uint16[] actionIds);
+  event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
+  event AddActionChoices(uint16 actionId, uint16 startActionChoice, ActionChoice[] choices);
 
   struct Action {
     ActionInfo info;
@@ -57,12 +57,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
   mapping(uint => ActionInfo) public actions;
-  uint public lastActionId;
-  uint public actionChoiceId;
-  uint[] private lastAddedDynamicActions;
+  uint16 public lastActionId;
+  uint16 public lastActionChoiceId;
+  uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  mapping(uint => mapping(uint => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
+  mapping(uint => mapping(uint16 => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
   mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
 
   mapping(uint => ActionRewards) private actionRewards;
@@ -75,7 +75,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
     lastActionId = 1;
-    actionChoiceId = 1;
+    lastActionChoiceId = 1;
     startTime = (block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME; // Floor to the nearest day 00:00 UTC
     lastSeedUpdatedTime = startTime;
   }
@@ -154,7 +154,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     delete lastAddedDynamicActions;
     uint seed = getSeed(block.timestamp);
 
-    uint[] memory actionIdsToAdd = new uint[](1);
+    uint16[] memory actionIdsToAdd = new uint16[](1);
 
     if (seed % 2 == 0) {
       // If it's even do X
@@ -237,78 +237,79 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function _addAction(uint _actionId, Action calldata _action) private {
+  function _addAction(uint16 _actionId, Action calldata _action) private {
     require(!_action.info.isDynamic, "Action is dynamic");
     _setAction(_actionId, _action);
     emit AddAction(_actionId, _action);
   }
 
   function addActions(Action[] calldata _actions) external onlyOwner {
-    uint currentActionId = lastActionId;
-    for (uint i; i < _actions.length; ++i) {
-      _addAction(currentActionId + i, _actions[i]);
+    uint16 actionId = lastActionId;
+    for (uint16 i; i < _actions.length; ++i) {
+      _addAction(actionId + i, _actions[i]);
     }
-    lastActionId += _actions.length;
+    lastActionId = actionId + uint16(_actions.length);
   }
 
   function addAction(Action calldata _action) external onlyOwner {
-    _addAction(lastActionId, _action);
-    ++lastActionId;
+    uint16 actionId = lastActionId;
+    _addAction(actionId, _action);
+    lastActionId = actionId + 1;
   }
 
-  function editAction(uint _actionId, Action calldata _action) external onlyOwner {
+  function editAction(uint16 _actionId, Action calldata _action) external onlyOwner {
     _setAction(_actionId, _action);
     emit EditAction(_actionId, _action);
   }
 
   // actionId of 0 means it is not tied to a specific action
-  function addActionChoice(uint _actionId, ActionChoice calldata _actionChoice) external onlyOwner {
-    uint currentActionChoiceId = actionChoiceId;
-    actionChoices[_actionId][currentActionChoiceId] = _actionChoice;
-    emit AddActionChoice(_actionId, currentActionChoiceId, _actionChoice);
-    actionChoiceId = currentActionChoiceId + 1;
+  function addActionChoice(uint16 _actionId, ActionChoice calldata _actionChoice) external onlyOwner {
+    uint16 actionChoiceId = lastActionChoiceId;
+    actionChoices[_actionId][actionChoiceId] = _actionChoice;
+    emit AddActionChoice(_actionId, actionChoiceId, _actionChoice);
+    lastActionChoiceId = actionChoiceId + 1;
   }
 
-  function addActionChoices(uint _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
+  function addActionChoices(uint16 _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
     require(_actionChoices.length > 0);
-    uint currentActionChoiceId = actionChoiceId;
-    for (uint i; i < _actionChoices.length; ++i) {
-      actionChoices[_actionId][currentActionChoiceId + i] = _actionChoices[i];
+    uint16 actionChoiceId = lastActionChoiceId;
+    for (uint16 i; i < _actionChoices.length; ++i) {
+      actionChoices[_actionId][actionChoiceId + i] = _actionChoices[i];
     }
-    emit AddActionChoices(_actionId, currentActionChoiceId, _actionChoices);
-    actionChoiceId = currentActionChoiceId + _actionChoices.length;
+    emit AddActionChoices(_actionId, actionChoiceId, _actionChoices);
+    lastActionChoiceId = actionChoiceId + uint16(_actionChoices.length);
   }
 
   function addBulkActionChoices(
-    uint[] calldata _actionIds,
+    uint16[] calldata _actionIds,
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
     require(_actionChoices.length > 0);
-    uint currentActionChoiceId = actionChoiceId;
-    uint count;
+    uint16 actionChoiceId = lastActionChoiceId;
+    uint16 count;
     for (uint i; i < _actionIds.length; ++i) {
-      uint actionId = _actionIds[i];
-      emit AddActionChoices(actionId, currentActionChoiceId + count, _actionChoices[i]);
+      uint16 actionId = _actionIds[i];
+      emit AddActionChoices(actionId, actionChoiceId + count, _actionChoices[i]);
       for (uint j; j < _actionChoices[i].length; ++j) {
-        actionChoices[actionId][currentActionChoiceId + count] = _actionChoices[i][j];
+        actionChoices[actionId][actionChoiceId + count] = _actionChoices[i][j];
         ++count;
       }
     }
-    actionChoiceId = currentActionChoiceId + count;
+    lastActionChoiceId = actionChoiceId + count;
   }
 
-  function setAvailable(uint _actionId, bool _isAvailable) external onlyOwner {
+  function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
     require(actions[_actionId].skill != Skill.NONE, "Action does not exist");
     require(!actions[_actionId].isDynamic, "Action is dynamic");
     actions[_actionId].isAvailable = _isAvailable;
     emit SetAvailableAction(_actionId, _isAvailable);
   }
 
-  function actionIsAvailable(uint _actionId) external view returns (bool) {
+  function actionIsAvailable(uint16 _actionId) external view returns (bool) {
     return actions[_actionId].isAvailable;
   }
 
-  function getCombatStats(uint _actionId) external view returns (bool isCombat, CombatStats memory stats) {
+  function getCombatStats(uint16 _actionId) external view returns (bool isCombat, CombatStats memory stats) {
     isCombat = actions[_actionId].isCombat;
     if (isCombat) {
       stats = actionCombatStats[_actionId];
@@ -338,7 +339,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function getActionChoice(uint _actionId, uint _choiceId) external view returns (ActionChoice memory) {
+  function getActionChoice(uint16 _actionId, uint16 _choiceId) external view returns (ActionChoice memory) {
     return actionChoices[_actionId][_choiceId];
   }
 

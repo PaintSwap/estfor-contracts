@@ -16,7 +16,7 @@ contract Players is
   OwnableUpgradeable,
   UUPSUpgradeable //, Multicall {
 {
-  event ActionUnequip(uint playerId, uint queueId, uint16 itemTokenId, uint amount);
+  event ActionUnequip(uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
 
   event ClearAll(uint playerId);
 
@@ -31,17 +31,17 @@ contract Players is
 
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
 
-  event RemoveQueuedAction(uint playerId, uint queueId);
+  event RemoveQueuedAction(uint playerId, uint128 queueId);
 
   event AddPendingRandomReward(uint playerId, uint timestamp, uint elapsed);
 
   // For logging
-  event Died(address from, uint playerId, uint queueId);
-  event Rewards(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
-  event Reward(address from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
-  event Consume(address from, uint playerId, uint queueId, uint itemTokenId, uint amount); // Used in PlayerLibrary too
-  event ActionFinished(address from, uint playerId, uint queueId);
-  event ActionPartiallyFinished(address from, uint playerId, uint queueId, uint elapsedTime);
+  event Died(address from, uint playerId, uint128 queueId);
+  event Rewards(address from, uint playerId, uint128 queueId, uint[] itemTokenIds, uint[] amounts);
+  event Reward(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary too
+  event Consume(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary too
+  event ActionFinished(address from, uint playerId, uint128 queueId);
+  event ActionPartiallyFinished(address from, uint playerId, uint128 queueId, uint elapsedTime);
 
   error SkillsArrayZero();
   error NotOwner();
@@ -71,7 +71,7 @@ contract Players is
 
   mapping(uint => PlayerBoostInfo) public activeBoosts; // player id => boost info
 
-  uint private queueId; // Global queued action id
+  uint64 private latestQueueId; // Global queued action id
   World private world;
 
   mapping(uint => mapping(Skill => uint32)) public skillPoints; // player -> skill -> points
@@ -80,13 +80,6 @@ contract Players is
   ItemNFT private itemNFT;
   PlayerNFT private playerNFT;
   mapping(uint => PendingRandomReward[]) private pendingRandomRewards; // queue, will be sorted by timestamp
-
-  struct EquipmentDiff {
-    uint16 itemTokenId;
-    int128 change;
-  }
-
-  mapping(uint => EquipmentDiff[]) public actionEquipmentItemTokenIds; // QueuedActionId. Should only hold it for actions/actionChoices that are applicable
 
   enum ActionQueueStatus {
     NONE,
@@ -138,7 +131,7 @@ contract Players is
     playerNFT = _playerNFT;
     world = _world;
 
-    queueId = 1; // Global queued action id
+    latestQueueId = 1;
   }
 
   // Consumes all the actions in the queue up to this time.
@@ -179,8 +172,6 @@ contract Players is
     return EquipPosition(_itemTokenId / 65536);
   }
 
-  // If an item is transferred from a player, we need to unequip it from main attire for an action,
-  // because it could affect stats.
   function itemBeforeTokenTransfer(
     address _from,
     uint[] calldata _itemTokenIds,
@@ -190,54 +181,7 @@ contract Players is
     if (playerId == 0) {
       return;
     }
-    /*
-    // Check if any of these are equipped, if no unequip if they don't have sufficient balance
-    QueuedAction[] memory remainingSkillQueue = _consumeActions(_from, playerId);
-
-    for (uint i = 0; i < _itemTokenIds.length; ++i) {
-      uint itemTokenId = _itemTokenIds[i];
-      uint amount = _amounts[i];
-      if (itemTokenId < MAX_MAIN_EQUIPMENT_ID) {
-        // Only have 1 and it's equipped so unequip it.
-//        if (itemNFT.balanceOf(_from, itemTokenId) == 1 && _isMainEquipped(playerId, itemTokenId)) {
-//          _unequip(playerId, _getMainEquipPosition(itemTokenId));
-//        }
-      } else {
-        // Not main attire. This is potentially equipped in an action, need to check all the queued actions and action choices
-        Player storage player = players[_playerId];
-        player.actionQueue = _queuedActions;
-
-        for (uint i = 0; i < player.actionQueue.length; ++i) {
-          QueuedAction storage queuedAction = player.actionQueue[i];
-
-          // Left/right arm
-
-          // Food
-
-          // Consumables
-
-          if (_queuedAction.choiceId != NONE) {
-            // Get all items for this
-            ActionChoice memory actionChoice = world.getActionChoice(
-              _isCombat(_queuedAction.skill) ? NONE : _queuedAction.actionId,
-              _queuedAction.choiceId
-            );
-
-            _equipActionConsumable(_playerId, actionChoice.inputTokenId1, actionChoice.num1 * _queuedAction.num);
-            _equipActionConsumable(_playerId, actionChoice.inputTokenId2, actionChoice.num2 * _queuedAction.num);
-            _equipActionConsumable(_playerId, actionChoice.inputTokenId3, actionChoice.num3 * _queuedAction.num);
-          }
-
-          queuedAction.choiceId;
-
-          //        player.actionQueue = remainingSkillQueue;
-          //        actionEquipmentItemTokenIds
-        }
-      }
-    }
-
-    // Any of these remaining actions requiring this and don't have appropriate outputs?
-    _setActionQueue(playerId, remainingSkillQueue); */
+    // Currently not used
   }
 
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
@@ -282,13 +226,6 @@ contract Players is
     }
   }
 
-  // This doesn't work as memory structs take up 1 element per slot, so we can't just do a mload
-  /*  function _getEquipmentRawVal(Attire memory _attire) private view returns (uint256 raw) {
-    assembly ("memory-safe") {
-      raw := mload(_attire)
-    }
-  } */
-
   function _isCombat(Skill _skill) private pure returns (bool) {
     return _skill == Skill.ATTACK || _skill == Skill.DEFENCE || _skill == Skill.MAGIC || _skill == Skill.RANGED;
   }
@@ -332,7 +269,7 @@ contract Players is
     address _from,
     uint _playerId,
     QueuedAction memory _queuedAction,
-    uint64 _queueId,
+    uint128 _queueId,
     uint _startTime
   ) private {
     Player storage _player = players[_playerId];
@@ -431,7 +368,7 @@ contract Players is
     uint prevEndTime = block.timestamp + totalTimespan;
 
     uint256 i;
-    uint currentQueuedActionId = queueId;
+    uint64 queueId = latestQueueId;
     do {
       QueuedAction memory queuedAction = _queuedActions[i];
 
@@ -444,10 +381,10 @@ contract Players is
         queuedAction.timespan = uint24(MAX_TIME - totalTimespan);
       }
 
-      _addToQueue(from, _playerId, queuedAction, uint64(currentQueuedActionId), prevEndTime);
+      _addToQueue(from, _playerId, queuedAction, queueId, prevEndTime);
       unchecked {
         ++i;
-        ++currentQueuedActionId;
+        ++queueId;
       }
       totalTimespan += queuedAction.timespan;
       prevEndTime += queuedAction.timespan;
@@ -456,7 +393,7 @@ contract Players is
     emit SetActionQueue(_playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
-    queueId = currentQueuedActionId;
+    latestQueueId = queueId;
   }
 
   function startAction(
@@ -639,16 +576,13 @@ contract Players is
     emit AddSkillPoints(_playerId, _skill, _pointsAccrued);
   }
 
-  //  uint count;
-  error err(uint);
-
   function _addPendingRandomReward(
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
-    uint _actionId,
-    uint _queueId,
-    uint _elapsedTime,
-    uint _skillEndTime
+    uint16 _actionId,
+    uint128 _queueId,
+    uint40 _skillEndTime,
+    uint24 _elapsedTime
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
     if (hasRandomRewards) {
@@ -657,8 +591,8 @@ contract Players is
         // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
         _pendingRandomRewards.push(
           PendingRandomReward({
-            actionId: uint64(_actionId),
-            queueId: uint128(_queueId),
+            actionId: _actionId,
+            queueId: _queueId,
             timestamp: uint40(_skillEndTime),
             elapsedTime: uint24(_elapsedTime)
           })
@@ -806,7 +740,7 @@ contract Players is
           actionChoice
         );
       }
-      uint _queueId = queuedAction.attire.queueId;
+      uint128 _queueId = queuedAction.attire.queueId;
       if (!died) {
         bool _isCombatSkill = _isCombat(queuedAction.skill);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
@@ -862,8 +796,8 @@ contract Players is
           actionRewards,
           queuedAction.actionId,
           _queueId,
-          xpElapsedTime,
-          skillEndTime
+          uint40(skillEndTime),
+          uint24(xpElapsedTime)
         );
 
         // This loot might be needed for a future task so mint now rather than later
