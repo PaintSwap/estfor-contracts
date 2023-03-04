@@ -83,7 +83,6 @@ contract PlayersImplRewards is PlayersImplBase {
     uint _elapsedTime,
     uint16 _rewardTokenId,
     uint24 _rewardRate,
-    ActionRewards memory _actionRewards,
     uint oldLength
   ) private pure returns (uint length) {
     length = oldLength;
@@ -107,7 +106,6 @@ contract PlayersImplRewards is PlayersImplBase {
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId1,
       _actionRewards.guaranteedRewardRate1,
-      _actionRewards,
       length
     );
     length = _appendGuarenteedReward(
@@ -116,7 +114,6 @@ contract PlayersImplRewards is PlayersImplBase {
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId2,
       _actionRewards.guaranteedRewardRate3,
-      _actionRewards,
       length
     );
     length = _appendGuarenteedReward(
@@ -125,7 +122,6 @@ contract PlayersImplRewards is PlayersImplBase {
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId3,
       _actionRewards.guaranteedRewardRate2,
-      _actionRewards,
       length
     );
   }

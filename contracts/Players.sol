@@ -47,6 +47,109 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     latestQueueId = 1;
   }
 
+  function startAction(
+    uint _playerId,
+    QueuedAction calldata _queuedAction,
+    ActionQueueStatus _queueStatus
+  ) external isOwnerOfPlayerAndActive(_playerId) {
+    QueuedAction[] memory queuedActions = new QueuedAction[](1);
+    queuedActions[0] = _queuedAction;
+    _startActions(_playerId, queuedActions, NONE, _queueStatus);
+  }
+
+  // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
+  function startActions(
+    uint _playerId,
+    QueuedAction[] calldata _queuedActions,
+    uint16 _boostItemTokenId,
+    ActionQueueStatus _queueStatus
+  ) external isOwnerOfPlayerAndActive(_playerId) {
+    _startActions(_playerId, _queuedActions, _boostItemTokenId, _queueStatus);
+  }
+
+  function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
+    _setActionQueue(_playerId, remainingSkillQueue);
+  }
+
+  function consumeBoost(
+    uint _playerId,
+    uint16 _itemTokenId,
+    uint40 _startTime
+  ) external isOwnerOfPlayerAndActive(_playerId) {
+    _consumeBoost(_playerId, _itemTokenId, _startTime);
+  }
+
+  function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    if (activeBoosts[_playerId].boostType == BoostType.NONE) {
+      revert NoActiveBoost();
+    }
+    if (activeBoosts[_playerId].startTime > block.timestamp) {
+      revert BoostTimeAlreadyStarted();
+    }
+    address from = msg.sender;
+    itemNFT.mint(from, activeBoosts[_playerId].itemTokenId, 1);
+    emit UnconsumeBoostVial(_playerId);
+  }
+
+  function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
+    return pendingRandomRewards[_playerId];
+  }
+
+  function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
+    return players[_playerId].actionQueue;
+  }
+
+  function actionQueueLength(uint _playerId) external view returns (uint256) {
+    return players[_playerId].actionQueue.length;
+  }
+
+  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
+    itemNFT.mintBatch(_to, _ids, _amounts);
+  }
+
+  function setSpeedMultiplier(uint _playerId, uint16 multiplier) external {
+    // Disable for production code
+    speedMultiplier[_playerId] = multiplier;
+  }
+
+  function getURI(
+    uint _playerId,
+    bytes32 _name,
+    bytes32 _avatarName,
+    string calldata _avatarDescription,
+    string calldata imageURI
+  ) external view returns (string memory) {
+    return PlayerLibrary.uri(_name, skillPoints[_playerId], _avatarName, _avatarDescription, imageURI);
+  }
+
+  // Callback after minting a player. If they aren't the active player then set it.
+  function mintedPlayer(address _from, uint _playerId, bool makeActive) external onlyPlayerNFT {
+    if (makeActive) {
+      _setActivePlayer(_from, _playerId);
+    }
+  }
+
+  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    _clearEverything(msg.sender, _playerId);
+  }
+
+  function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external onlyPlayerNFT {
+    _clearEverything(_from, _playerId);
+  }
+
+  function itemBeforeTokenTransfer(
+    address _from,
+    uint[] calldata _itemTokenIds,
+    uint[] calldata _amounts
+  ) external onlyItemNFT {
+    uint playerId = activePlayer[_from];
+    if (playerId == 0) {
+      return;
+    }
+    // Currently not used
+  }
+
   function _processActions(address _from, uint _playerId) private returns (QueuedAction[] memory remainingSkills) {
     (bool success, bytes memory data) = implProcessActions.delegatecall(
       abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)
@@ -70,14 +173,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     _clearActionQueue(_playerId);
   }
 
-  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    _clearEverything(msg.sender, _playerId);
-  }
-
-  function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external onlyPlayerNFT {
-    _clearEverything(_from, _playerId);
-  }
-
   function _isMainEquipped(uint _playerId, uint _itemTokenId) private view returns (bool) {
     EquipPosition position = _getMainEquipPosition(_itemTokenId);
     Player storage player = players[_playerId];
@@ -91,22 +186,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     }
 
     return EquipPosition(_itemTokenId / 65536);
-  }
-
-  function itemBeforeTokenTransfer(
-    address _from,
-    uint[] calldata _itemTokenIds,
-    uint[] calldata _amounts
-  ) external onlyItemNFT {
-    uint playerId = activePlayer[_from];
-    if (playerId == 0) {
-      return;
-    }
-    // Currently not used
-  }
-
-  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
-    itemNFT.mintBatch(_to, _ids, _amounts);
   }
 
   function _getEquippedTokenId(
@@ -141,26 +220,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
     PlayerLibrary.consumeBoost(_itemTokenId, itemNFT, _startTime, playerBoost);
     emit ConsumeBoostVial(_playerId, playerBoost);
-  }
-
-  function consumeBoost(
-    uint _playerId,
-    uint16 _itemTokenId,
-    uint40 _startTime
-  ) external isOwnerOfPlayerAndActive(_playerId) {
-    _consumeBoost(_playerId, _itemTokenId, _startTime);
-  }
-
-  function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    if (activeBoosts[_playerId].boostType == BoostType.NONE) {
-      revert NoActiveBoost();
-    }
-    if (activeBoosts[_playerId].startTime > block.timestamp) {
-      revert BoostTimeAlreadyStarted();
-    }
-    address from = msg.sender;
-    itemNFT.mint(from, activeBoosts[_playerId].itemTokenId, 1);
-    emit UnconsumeBoostVial(_playerId);
   }
 
   // Checks they have sufficient balance to equip the items
@@ -218,11 +277,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     Player storage player = players[_playerId];
     player.actionQueue = _queuedActions;
     emit SetActionQueue(_playerId, player.actionQueue);
-  }
-
-  function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
-    _setActionQueue(_playerId, remainingSkillQueue);
   }
 
   function _startActions(
@@ -303,26 +357,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     latestQueueId = queueId;
   }
 
-  function startAction(
-    uint _playerId,
-    QueuedAction calldata _queuedAction,
-    ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActive(_playerId) {
-    QueuedAction[] memory queuedActions = new QueuedAction[](1);
-    queuedActions[0] = _queuedAction;
-    _startActions(_playerId, queuedActions, NONE, _queueStatus);
-  }
-
-  // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
-  function startActions(
-    uint _playerId,
-    QueuedAction[] calldata _queuedActions,
-    uint16 _boostItemTokenId,
-    ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActive(_playerId) {
-    _startActions(_playerId, _queuedActions, _boostItemTokenId, _queueStatus);
-  }
-
   /*
   function removeQueuedAction(uint _playerId, uint _queueId) external isOwnerOfPlayer(_playerId) {
     // If the action is in progress, it can't be removed (allow later)
@@ -352,18 +386,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     }
   } */
 
-  function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
-    return pendingRandomRewards[_playerId];
-  }
-
-  function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
-    return players[_playerId].actionQueue;
-  }
-
-  function actionQueueLength(uint _playerId) external view returns (uint256) {
-    return players[_playerId].actionQueue.length;
-  }
-
   /*  function getLootBonusMultiplier(uint  _playerId) external view returns (uint256) {
     // The higher the level the higher the multiplier?
     return 2;
@@ -388,28 +410,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     }
   } */
 
-  function setSpeedMultiplier(uint _playerId, uint16 multiplier) external {
-    // Disable for production code
-    speedMultiplier[_playerId] = multiplier;
-  }
-
-  function getURI(
-    uint _playerId,
-    bytes32 _name,
-    bytes32 _avatarName,
-    string calldata _avatarDescription,
-    string calldata imageURI
-  ) external view returns (string memory) {
-    return PlayerLibrary.uri(_name, skillPoints[_playerId], _avatarName, _avatarDescription, imageURI);
-  }
-
-  // Callback after minting a player. If they aren't the active player then set it.
-  function mintedPlayer(address _from, uint _playerId, bool makeActive) external onlyPlayerNFT {
-    if (makeActive) {
-      _setActivePlayer(_from, _playerId);
-    }
-  }
-
   function _setActivePlayer(address _from, uint _playerId) private {
     uint existingActivePlayer = activePlayer[_from];
     if (existingActivePlayer > 0) {
@@ -426,6 +426,11 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
+  function setImpls(address _actions, address _rewards) external onlyOwner {
+    implProcessActions = _actions;
+    implRewards = _rewards;
+  }
 
   // For the various view functions that require delegatecall
   fallback() external {
@@ -450,10 +455,5 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
         return(0, returndatasize())
       }
     }
-  }
-
-  function setImpls(address _actions, address _rewards) external onlyOwner {
-    implProcessActions = _actions;
-    implRewards = _rewards;
   }
 }
