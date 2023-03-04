@@ -97,11 +97,11 @@ async function main() {
   await playerLibrary.deployed();
   console.log(`PlayerLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
 
-  const PlayersImplActions = await ethers.getContractFactory("PlayersImplActions", {
+  const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
     libraries: {PlayerLibrary: playerLibrary.address},
   });
-  const playersImplActions = await PlayersImplActions.deploy();
-  console.log(`PlayersImplActions deployed at ${playersImplActions.address.toLowerCase()}`);
+  const playersImplProcessActions = await PlayersImplProcessActions.deploy();
+  console.log(`PlayersImplProcessActions deployed at ${playersImplProcessActions.address.toLowerCase()}`);
 
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
     libraries: {PlayerLibrary: playerLibrary.address},
@@ -115,7 +115,7 @@ async function main() {
 
   const players = await upgrades.deployProxy(
     Players,
-    [itemNFT.address, playerNFT.address, world.address, playersImplActions.address, playersImplRewards.address],
+    [itemNFT.address, playerNFT.address, world.address, playersImplProcessActions.address, playersImplRewards.address],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
@@ -229,7 +229,7 @@ async function main() {
     await ethers.provider.send("evm_increaseTime", [1]);
   }
 
-  tx = await players.consumeActions(playerId);
+  tx = await players.processActions(playerId);
   await tx.wait();
   console.log("consume actions");
 
@@ -259,7 +259,7 @@ async function main() {
     await ethers.provider.send("evm_increaseTime", [1]);
   }
 
-  tx = await players.consumeActions(playerId);
+  tx = await players.processActions(playerId);
   await tx.wait();
   console.log("consume actions (firemaking)");
 

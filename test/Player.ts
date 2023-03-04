@@ -83,10 +83,10 @@ describe("Player", () => {
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
     const playerLibrary = await PlayerLibrary.deploy();
 
-    const PlayersImplActions = await ethers.getContractFactory("PlayersImplActions", {
+    const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
       libraries: {PlayerLibrary: playerLibrary.address},
     });
-    const playersImplActions = await PlayersImplActions.deploy();
+    const playersImplProcessActions = await PlayersImplProcessActions.deploy();
 
     const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
       libraries: {PlayerLibrary: playerLibrary.address},
@@ -99,7 +99,13 @@ describe("Player", () => {
 
     const players = await upgrades.deployProxy(
       Players,
-      [itemNFT.address, playerNFT.address, world.address, playersImplActions.address, playersImplRewards.address],
+      [
+        itemNFT.address,
+        playerNFT.address,
+        world.address,
+        playersImplProcessActions.address,
+        playersImplRewards.address,
+      ],
       {
         kind: "uups",
         unsafeAllow: ["delegatecall", "external-library-linking"],
@@ -194,7 +200,7 @@ describe("Player", () => {
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [361]);
-    await players.connect(alice).consumeActions(playerId);
+    await players.connect(alice).processActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down
   });
@@ -247,7 +253,7 @@ describe("Player", () => {
     for (let i = 0; i < 50; i++) {
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.APPEND);
       await ethers.provider.send("evm_increaseTime", [7200]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.eq((i + 1) * 3600);
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq((i + 1) * 100); // Should be rounded down
     }
@@ -302,7 +308,7 @@ describe("Player", () => {
     await players.connect(alice).setSpeedMultiplier(playerId, 2);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
-    await players.connect(alice).consumeActions(playerId);
+    await players.connect(alice).processActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
@@ -359,7 +365,7 @@ describe("Player", () => {
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
-    await players.connect(alice).consumeActions(playerId);
+    await players.connect(alice).processActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
@@ -438,7 +444,7 @@ describe("Player", () => {
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-    await players.connect(alice).consumeActions(playerId);
+    await players.connect(alice).processActions(playerId);
     expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(queuedAction.timespan);
   });
 
@@ -713,7 +719,7 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(
         queuedAction.timespan + (boostDuration * boostValue) / 100
       ); //
@@ -785,7 +791,7 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(
         queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
       ); //
@@ -855,7 +861,7 @@ describe("Player", () => {
       expect(pendingOutput.produced[0].itemTokenId).is.eq(LOG);
       const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
       expect(pendingOutput.produced[0].rate).is.eq(balanceExpected);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(balanceExpected);
@@ -933,7 +939,7 @@ describe("Player", () => {
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedAction.timespan);
 
       // Check how many logs they have now, 100 logs burnt per hour
@@ -1063,7 +1069,7 @@ describe("Player", () => {
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan]);
       expect(await players.actionQueueLength(playerId)).to.eq(2);
 
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
       expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
       // Check how many logs they have now, 1220 logs burnt per hour, 2 hours producing logs, 1 hour burning
@@ -1197,7 +1203,7 @@ describe("Player", () => {
       await players.connect(alice).startActions(playerId, queuedActions, NONE, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
       expect(await players.skillPoints(playerId, Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
       // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
@@ -1256,7 +1262,7 @@ describe("Player", () => {
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.MINING)).to.eq(queuedAction.timespan);
     });
 
@@ -1334,7 +1340,7 @@ describe("Player", () => {
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.SMITHING)).to.eq(queuedAction.timespan);
 
       // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
@@ -1395,7 +1401,7 @@ describe("Player", () => {
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan - 1);
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(
@@ -1451,7 +1457,7 @@ describe("Player", () => {
 
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [timespan]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       //      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(1); // Should be rounded down
     });
@@ -1547,7 +1553,7 @@ describe("Player", () => {
 
       const time = 361;
       await ethers.provider.send("evm_increaseTime", [time]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
@@ -1643,7 +1649,7 @@ describe("Player", () => {
 
       const time = 361;
       await ethers.provider.send("evm_increaseTime", [time]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
       expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
 
@@ -1728,7 +1734,7 @@ describe("Player", () => {
         expect(await world.hasSeed(endTime)).to.be.false;
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await players.connect(alice).consumeActions(playerId);
+        await players.connect(alice).processActions(playerId);
         expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(numProduced);
 
         expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
@@ -1840,7 +1846,7 @@ describe("Player", () => {
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       // Should die so doesn't get any attack skill points, and food should be consumed
       expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
@@ -1956,7 +1962,7 @@ describe("Player", () => {
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-      await players.connect(alice).consumeActions(playerId);
+      await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.MAGIC)).to.eq(queuedAction.timespan);
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 

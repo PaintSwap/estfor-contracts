@@ -76,7 +76,7 @@ contract PlayersBase {
   PlayerNFT internal playerNFT;
   mapping(uint => PendingRandomReward[]) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
-  address implActions;
+  address implProcessActions;
   address implRewards;
   address reserved1;
 
@@ -142,8 +142,22 @@ contract PlayersBase {
     uint _playerId,
     uint _skillEndTime,
     QueuedAction storage _queuedAction
-  ) internal view returns (uint) {
-    return PlayerLibrary.getElapsedTime(_skillEndTime, _queuedAction, speedMultiplier[_playerId]);
+  ) internal view returns (uint elapsedTime) {
+    uint _speedMultiplier = speedMultiplier[_playerId];
+    bool consumeAll = _skillEndTime <= block.timestamp;
+
+    if (consumeAll) {
+      // Fully consume this skill
+      elapsedTime = _queuedAction.timespan;
+    } else if (block.timestamp > _queuedAction.startTime) {
+      // partially consume
+      elapsedTime = block.timestamp - _queuedAction.startTime;
+      uint modifiedElapsedTime = _speedMultiplier > 1 ? uint(elapsedTime) * _speedMultiplier : elapsedTime;
+      // Up to timespan
+      if (modifiedElapsedTime > _queuedAction.timespan) {
+        elapsedTime = _queuedAction.timespan;
+      }
+    }
   }
 
   function _updateCombatStats(

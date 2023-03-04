@@ -32,7 +32,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     ItemNFT _itemNFT,
     PlayerNFT _playerNFT,
     World _world,
-    address _implActions,
+    address _implProcessActions,
     address _implRewards
   ) public initializer {
     __Ownable_init();
@@ -41,15 +41,15 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
     world = _world;
-    implActions = _implActions;
+    implProcessActions = _implProcessActions;
     implRewards = _implRewards;
 
     latestQueueId = 1;
   }
 
-  function _consumeActions(address _from, uint _playerId) private returns (QueuedAction[] memory remainingSkills) {
-    (bool success, bytes memory data) = implActions.delegatecall(
-      abi.encodeWithSignature("consumeActions(address,uint256)", _from, _playerId)
+  function _processActions(address _from, uint _playerId) private returns (QueuedAction[] memory remainingSkills) {
+    (bool success, bytes memory data) = implProcessActions.delegatecall(
+      abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)
     );
     require(success);
     return abi.decode(data, (QueuedAction[]));
@@ -60,7 +60,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
   // Mints the boost vial if it hasn't been consumed at all yet
   // Removes all the actions from the queue
   function _clearEverything(address _from, uint _playerId) private {
-    _consumeActions(_from, _playerId);
+    _processActions(_from, _playerId);
     emit ClearAll(_playerId);
     // Can re-mint boost if it hasn't been consumed at all yet
     if (activeBoosts[_playerId].boostType != BoostType.NONE && activeBoosts[_playerId].startTime < block.timestamp) {
@@ -220,8 +220,8 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     emit SetActionQueue(_playerId, player.actionQueue);
   }
 
-  function consumeActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    QueuedAction[] memory remainingSkillQueue = _consumeActions(msg.sender, _playerId);
+  function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
     _setActionQueue(_playerId, remainingSkillQueue);
   }
 
@@ -237,7 +237,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
 
     address from = msg.sender;
     uint totalTimespan;
-    QueuedAction[] memory remainingSkills = _consumeActions(from, _playerId);
+    QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
 
     if (_boostItemTokenId != NONE) {
       _consumeBoost(_playerId, _boostItemTokenId, uint40(block.timestamp));
@@ -452,8 +452,8 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     }
   }
 
-  function setImpl(address _actions, address _rewards) external onlyOwner {
-    implActions = _actions;
+  function setImpls(address _actions, address _rewards) external onlyOwner {
+    implProcessActions = _actions;
     implRewards = _rewards;
   }
 }
