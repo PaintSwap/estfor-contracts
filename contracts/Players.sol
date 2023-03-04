@@ -23,6 +23,8 @@ interface PlayerDelegates {
 }
 
 contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
+  error NoItemBalance(uint16 itemTokenId);
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -218,17 +220,84 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
 
   function _consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) private {
     PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
-    PlayerLibrary.consumeBoost(_itemTokenId, itemNFT, _startTime, playerBoost);
+
+    Item memory item = itemNFT.getItem(_itemTokenId);
+    require(item.boostType != BoostType.NONE); // , "Not a boost vial");
+    require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
+    if (_startTime < block.timestamp) {
+      _startTime = uint40(block.timestamp);
+    }
+
+    // Burn it
+    address from = msg.sender;
+    itemNFT.burn(from, _itemTokenId, 1);
+
+    // If there's an active potion which hasn't been consumed yet, then we can mint it back
+    if (playerBoost.itemTokenId != NONE) {
+      itemNFT.mint(from, playerBoost.itemTokenId, 1);
+    }
+
+    playerBoost.startTime = _startTime;
+    playerBoost.duration = item.boostDuration;
+    playerBoost.val = item.boostValue;
+    playerBoost.boostType = item.boostType;
+    playerBoost.itemTokenId = _itemTokenId;
+
     emit ConsumeBoostVial(_playerId, playerBoost);
   }
 
   // Checks they have sufficient balance to equip the items
   function _checkAttire(address _from, Attire memory _attire) private view {
-    PlayerLibrary.checkAttire(_from, _attire, itemNFT);
+    // Check the user has these items
+    //    uint raw = _getEquipmentRawVal(_attire);
+    //    if (raw > 0) {
+    if (_attire.helmet != NONE && itemNFT.balanceOf(_from, _attire.helmet) == 0) {
+      revert NoItemBalance(_attire.helmet);
+    }
+    if (_attire.amulet != NONE && itemNFT.balanceOf(_from, _attire.amulet) == 0) {
+      revert NoItemBalance(_attire.amulet);
+    }
+    if (_attire.armor != NONE && itemNFT.balanceOf(_from, _attire.armor) == 0) {
+      revert NoItemBalance(_attire.armor);
+    }
+    if (_attire.gauntlets != NONE && itemNFT.balanceOf(_from, _attire.gauntlets) == 0) {
+      revert NoItemBalance(_attire.gauntlets);
+    }
+    if (_attire.tassets != NONE && itemNFT.balanceOf(_from, _attire.tassets) == 0) {
+      revert NoItemBalance(_attire.tassets);
+    }
+    if (_attire.boots != NONE && itemNFT.balanceOf(_from, _attire.boots) == 0) {
+      revert NoItemBalance(_attire.boots);
+    }
+    //    }
   }
 
   function _checkActionConsumables(address _from, QueuedAction memory _queuedAction) private view {
-    PlayerLibrary.checkActionConsumables(_from, _queuedAction, itemNFT, world);
+    // Check they have this to equip. Indexer can check actionChoices
+    if (_queuedAction.regenerateId != NONE && itemNFT.balanceOf(_from, _queuedAction.regenerateId) == 0) {
+      revert NoItemBalance(_queuedAction.regenerateId);
+    }
+
+    if (_queuedAction.choiceId != NONE) {
+      // Get all items for this
+      ActionChoice memory actionChoice = world.getActionChoice(
+        _isCombat(_queuedAction.combatStyle) ? NONE : _queuedAction.actionId,
+        _queuedAction.choiceId
+      );
+
+      // TODO: Can be balance of batch
+      if (actionChoice.inputTokenId1 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId1) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId1);
+      }
+      if (actionChoice.inputTokenId2 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId2) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId2);
+      }
+      if (actionChoice.inputTokenId3 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId3) == 0) {
+        revert NoItemBalance(actionChoice.inputTokenId3);
+      }
+    }
+    //     if (_queuedAction.choiceId1 != NONE) {
+    //     if (_queuedAction.choiceId2 != NONE) {
   }
 
   function _addToQueue(

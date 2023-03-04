@@ -160,11 +160,93 @@ contract PlayersBase {
     }
   }
 
-  function _updateCombatStats(
-    address _from,
-    CombatStats memory _stats,
-    Attire storage _attire
-  ) internal view returns (CombatStats memory) {
-    return PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT);
+  function _updateCombatStats(address _from, CombatStats memory _stats, Attire storage _attire) internal view {
+    uint attireLength;
+    uint16[] memory itemTokenIds = new uint16[](6);
+    if (_attire.helmet != NONE) {
+      itemTokenIds[attireLength] = _attire.helmet;
+      ++attireLength;
+    }
+    if (_attire.amulet != NONE) {
+      itemTokenIds[attireLength] = _attire.amulet;
+      ++attireLength;
+    }
+    if (_attire.armor != NONE) {
+      itemTokenIds[attireLength] = _attire.armor;
+      ++attireLength;
+    }
+    if (_attire.gauntlets != NONE) {
+      itemTokenIds[attireLength] = _attire.gauntlets;
+      ++attireLength;
+    }
+    if (_attire.tassets != NONE) {
+      itemTokenIds[attireLength] = _attire.tassets;
+      ++attireLength;
+    }
+    if (_attire.boots != NONE) {
+      itemTokenIds[attireLength] = _attire.boots;
+      ++attireLength;
+    }
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, attireLength)
+    }
+
+    if (attireLength > 0) {
+      Item[] memory items = itemNFT.getItems(itemTokenIds);
+      uint[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
+      for (uint i; i < items.length; ++i) {
+        if (balances[i] > 0) {
+          _updateCombatStatsFromItem(_stats, items[i]);
+        }
+      }
+    }
+
+    // TODO: This isn't correct, should be handled in the calculations elsewhere with a better formula
+    if (_stats.attack <= 0) {
+      _stats.attack = 1;
+    }
+    if (_stats.meleeDefence <= 0) {
+      _stats.meleeDefence = 1;
+    }
+    if (_stats.magic <= 0) {
+      _stats.magic = 1;
+    }
+    if (_stats.magicDefence <= 0) {
+      _stats.magicDefence = 1;
+    }
+    if (_stats.range <= 0) {
+      _stats.range = 1;
+    }
+    if (_stats.rangeDefence <= 0) {
+      _stats.rangeDefence = 1;
+    }
+    if (_stats.health <= 0) {
+      _stats.health = 1;
+    }
+  }
+
+  function _updateCombatStatsFromItem(CombatStats memory _stats, Item memory _item) private pure {
+    if (_item.attack != 0) {
+      _stats.attack += _item.attack;
+    }
+    if (_item.magic != 0) {
+      _stats.magic += _item.magic;
+    }
+    if (_item.range != 0) {
+      _stats.range += _item.range;
+    }
+    if (_item.meleeDefence != 0) {
+      _stats.meleeDefence += _item.meleeDefence;
+    }
+    if (_item.magicDefence != 0) {
+      _stats.magicDefence += _item.magicDefence;
+    }
+    if (_item.rangeDefence != 0) {
+      _stats.rangeDefence += _item.rangeDefence;
+    }
+    if (_item.health != 0) {
+      _stats.health += _item.health;
+    }
   }
 }

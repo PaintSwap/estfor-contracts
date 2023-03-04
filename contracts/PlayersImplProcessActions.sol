@@ -24,7 +24,8 @@ contract PlayersImplProcessActions is PlayersImplBase {
       QueuedAction storage queuedAction = player.actionQueue[i];
 
       // This will only ones that they have a balance for at this time. This will check balances
-      CombatStats memory combatStats = _updateCombatStats(_from, player.combatStats, queuedAction.attire);
+      CombatStats memory combatStats = player.combatStats;
+      _updateCombatStats(_from, combatStats, queuedAction.attire);
 
       uint32 pointsAccrued;
       uint skillEndTime = queuedAction.startTime +
@@ -88,7 +89,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
       }
 
       if (pointsAccrued > 0) {
-        Skill skill = PlayerLibrary.getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId, world);
+        Skill skill = _getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId);
 
         if (_isCombat(queuedAction.combatStyle)) {
           // Update health too with 33%
@@ -296,6 +297,27 @@ contract PlayersImplProcessActions is PlayersImplBase {
     }
   }
 
+  function _getSkillFromStyle(CombatStyle _combatStyle, uint16 _actionId) private view returns (Skill skill) {
+    if (_combatStyle == CombatStyle.ATTACK) {
+      skill = Skill.ATTACK;
+    } else if (_combatStyle == CombatStyle.MAGIC) {
+      skill = Skill.MAGIC;
+    }
+    /* else if (_combatStyle == Skill.RANGED) {
+            skill = Skill.RANGED;
+          } */
+    else if (
+      _combatStyle == CombatStyle.MELEE_DEFENCE ||
+      _combatStyle == CombatStyle.RANGED_DEFENCE ||
+      _combatStyle == CombatStyle.MAGIC_DEFENCE
+    ) {
+      skill = Skill.DEFENCE;
+    } else {
+      // Not a combat style, get the skill from the action
+      skill = world.getSkill(_actionId);
+    }
+  }
+
   // Index not level, add one after (check for > max)
   function _findLevel(uint256 xp) private pure returns (uint16) {
     uint256 low = 0;
@@ -330,7 +352,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
     return uint24(arr[index] | (bytes3(arr[index + 1]) >> 8) | (bytes3(arr[index + 2]) >> 16));
   }
 
-  function _claimRandomRewards(uint _playerId) public isOwnerOfPlayerAndActive(_playerId) {
+  function _claimRandomRewards(uint _playerId) private {
     (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
     require(success);
   }

@@ -77,6 +77,124 @@ contract PlayersImplRewards is PlayersImplBase {
     }
   }
 
+  // Get any changes that are pending and not on the blockchain yet.
+  function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
+    Player storage player = players[_playerId];
+    QueuedAction[] storage actionQueue = player.actionQueue;
+    uint _speedMultiplier = speedMultiplier[_playerId];
+    PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+    PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
+
+    pendingOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
+    pendingOutput.produced = new ActionReward[](
+      actionQueue.length * MAX_REWARDS_PER_ACTION + (_pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION)
+    );
+
+    uint consumedLength;
+    uint producedLength;
+    address from = msg.sender;
+    uint previousSkillPoints = player.totalSkillPoints;
+    uint32 allpointsAccrued;
+    for (uint i; i < actionQueue.length; ++i) {
+      QueuedAction storage queuedAction = actionQueue[i];
+
+      CombatStats memory combatStats = player.combatStats;
+
+      // This will only ones that they have a balance for at this time. This will check balances
+      _updateCombatStats(from, combatStats, queuedAction.attire);
+
+      uint32 pointsAccrued;
+      uint skillEndTime = queuedAction.startTime +
+        (_speedMultiplier > 1 ? uint(queuedAction.timespan) / _speedMultiplier : queuedAction.timespan);
+
+      uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
+      if (elapsedTime == 0) {
+        break;
+      }
+
+      // Create some items if necessary (smithing ores to bars for instance)
+      bool died;
+
+      ActionChoice memory actionChoice;
+      bool isCombat = _isCombat(queuedAction.combatStyle);
+      uint xpElapsedTime = elapsedTime;
+      if (queuedAction.choiceId != 0) {
+        // || isCombat) {
+        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+
+        Equipment[] memory consumedEquipment;
+        ActionReward memory output;
+
+        (consumedEquipment, output, elapsedTime, xpElapsedTime, died) = _processConsumablesView(
+          from,
+          queuedAction,
+          elapsedTime,
+          combatStats,
+          actionChoice
+        );
+
+        if (output.itemTokenId != NONE) {
+          pendingOutput.produced[producedLength] = output;
+          ++producedLength;
+        }
+
+        for (uint i; i < consumedEquipment.length; ++i) {
+          pendingOutput.consumed[consumedLength] = consumedEquipment[i];
+          ++consumedLength;
+        }
+
+        if (died) {
+          pendingOutput.died = true;
+        }
+      }
+
+      if (!died) {
+        bool _isCombatSkill = _isCombat(queuedAction.combatStyle);
+        uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
+        pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
+        pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);
+      }
+
+      if (pointsAccrued > 0) {
+        //        _updateSkillPoints(_playerId, queuedAction.skill, pointsAccrued);
+
+        (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
+          uint40(queuedAction.startTime + elapsedTime),
+          xpElapsedTime,
+          queuedAction.actionId
+        );
+
+        for (uint i; i < newIds.length; ++i) {
+          pendingOutput.produced[producedLength] = ActionReward(uint16(newIds[i]), uint24(newAmounts[i]));
+          ++producedLength;
+        }
+
+        // This loot might be needed for a future task so mint now rather than later
+        // But this could be improved
+        allpointsAccrued += pointsAccrued;
+      }
+    } // end of loop
+
+    if (allpointsAccrued > 0) {
+      // Check if they have levelled up
+      //      _handleLevelUpRewards(from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
+    }
+
+    // Loop through any pending random rewards and add them to the output
+    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = claimableRandomRewards(_playerId);
+
+    for (uint i; i < ids.length; ++i) {
+      pendingOutput.produced[producedLength] = ActionReward(uint16(ids[i]), uint24(amounts[i]));
+      ++producedLength;
+    }
+
+    // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
+    assembly ("memory-safe") {
+      mstore(mload(pendingOutput), consumedLength)
+      mstore(mload(add(pendingOutput, 32)), producedLength)
+    }
+  }
+
   function _appendGuarenteedReward(
     uint[] memory _ids,
     uint[] memory _amounts,
@@ -205,124 +323,6 @@ contract PlayersImplRewards is PlayersImplBase {
           noLuck = true;
         }
       }
-    }
-  }
-
-  // Get any changes that are pending and not on the blockchain yet.
-  function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
-    Player storage player = players[_playerId];
-    QueuedAction[] storage actionQueue = player.actionQueue;
-    uint _speedMultiplier = speedMultiplier[_playerId];
-    PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
-    PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
-
-    pendingOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
-    pendingOutput.produced = new ActionReward[](
-      actionQueue.length * MAX_REWARDS_PER_ACTION + (_pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION)
-    );
-
-    uint consumedLength;
-    uint producedLength;
-    address from = msg.sender;
-    uint previousSkillPoints = player.totalSkillPoints;
-    uint32 allpointsAccrued;
-    for (uint i; i < actionQueue.length; ++i) {
-      QueuedAction storage queuedAction = actionQueue[i];
-
-      CombatStats memory combatStats = player.combatStats;
-
-      // This will only ones that they have a balance for at this time. This will check balances
-      _updateCombatStats(from, combatStats, queuedAction.attire);
-
-      uint32 pointsAccrued;
-      uint skillEndTime = queuedAction.startTime +
-        (_speedMultiplier > 1 ? uint(queuedAction.timespan) / _speedMultiplier : queuedAction.timespan);
-
-      uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
-      if (elapsedTime == 0) {
-        break;
-      }
-
-      // Create some items if necessary (smithing ores to bars for instance)
-      bool died;
-
-      ActionChoice memory actionChoice;
-      bool isCombat = _isCombat(queuedAction.combatStyle);
-      uint xpElapsedTime = elapsedTime;
-      if (queuedAction.choiceId != 0) {
-        // || isCombat) {
-        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
-
-        Equipment[] memory consumedEquipment;
-        ActionReward memory output;
-
-        (consumedEquipment, output, elapsedTime, xpElapsedTime, died) = _processConsumablesView(
-          from,
-          queuedAction,
-          elapsedTime,
-          combatStats,
-          actionChoice
-        );
-
-        if (output.itemTokenId != NONE) {
-          pendingOutput.produced[producedLength] = output;
-          ++producedLength;
-        }
-
-        for (uint i; i < consumedEquipment.length; ++i) {
-          pendingOutput.consumed[consumedLength] = consumedEquipment[i];
-          ++consumedLength;
-        }
-
-        if (died) {
-          pendingOutput.died = true;
-        }
-      }
-
-      if (!died) {
-        bool _isCombatSkill = _isCombat(queuedAction.combatStyle);
-        uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
-        pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
-        pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);
-      }
-
-      if (pointsAccrued > 0) {
-        //        _updateSkillPoints(_playerId, queuedAction.skill, pointsAccrued);
-
-        (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
-          uint40(queuedAction.startTime + elapsedTime),
-          xpElapsedTime,
-          queuedAction.actionId
-        );
-
-        for (uint i; i < newIds.length; ++i) {
-          pendingOutput.produced[producedLength] = ActionReward(uint16(newIds[i]), uint24(newAmounts[i]));
-          ++producedLength;
-        }
-
-        // This loot might be needed for a future task so mint now rather than later
-        // But this could be improved
-        allpointsAccrued += pointsAccrued;
-      }
-    } // end of loop
-
-    if (allpointsAccrued > 0) {
-      // Check if they have levelled up
-      //      _handleLevelUpRewards(from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
-    }
-
-    // Loop through any pending random rewards and add them to the output
-    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = claimableRandomRewards(_playerId);
-
-    for (uint i; i < ids.length; ++i) {
-      pendingOutput.produced[producedLength] = ActionReward(uint16(ids[i]), uint24(amounts[i]));
-      ++producedLength;
-    }
-
-    // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
-    assembly ("memory-safe") {
-      mstore(mload(pendingOutput), consumedLength)
-      mstore(mload(add(pendingOutput, 32)), producedLength)
     }
   }
 
