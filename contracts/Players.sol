@@ -13,13 +13,28 @@ import "./PlayersBase.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
+// External view functions that are in other implementation files
+interface PlayerDelegates {
+  function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput);
+
+  function claimableRandomRewards(
+    uint _playerId
+  ) external view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved);
+}
+
 contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(ItemNFT _itemNFT, PlayerNFT _playerNFT, World _world, address _implActions) public initializer {
+  function initialize(
+    ItemNFT _itemNFT,
+    PlayerNFT _playerNFT,
+    World _world,
+    address _implActions,
+    address _implRewards
+  ) public initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
 
@@ -27,6 +42,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     playerNFT = _playerNFT;
     world = _world;
     implActions = _implActions;
+    implRewards = _implRewards;
 
     latestQueueId = 1;
   }
@@ -119,10 +135,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
         revert DoNotHaveEnoughQuantityToEquipToAction();
       }
     }
-  }
-
-  function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
-    return _combatStyle != CombatStyle.NONE;
   }
 
   function _consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) private {
@@ -340,22 +352,6 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     }
   } */
 
-  // Get any changes that are pending and not on the blockchain yet.
-  function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
-    QueuedAction[] storage actionQueue = players[_playerId].actionQueue;
-    return
-      PlayerLibrary.pending(
-        _playerId,
-        actionQueue,
-        players[_playerId],
-        itemNFT,
-        world,
-        speedMultiplier[_playerId],
-        activeBoosts[_playerId],
-        pendingRandomRewards[_playerId]
-      );
-  }
-
   function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
     return pendingRandomRewards[_playerId];
   }
@@ -429,15 +425,35 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable {
     _setActivePlayer(msg.sender, _playerId);
   }
 
-  function claimableRandomRewards(
-    uint _playerId
-  ) external view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
-    return PlayerLibrary.claimableRandomRewards(msg.sender, world, pendingRandomRewards[_playerId]);
-  }
-
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  function setImpl(address _actions) external onlyOwner {
+  // For the various view functions that require delegatecall
+  fallback() external {
+    bytes4 selector = bytes4(msg.data);
+
+    address implementation;
+    if (selector == PlayerDelegates.pending.selector || selector == PlayerDelegates.claimableRandomRewards.selector) {
+      implementation = implRewards;
+    } else {
+      require(false);
+    }
+
+    assembly ("memory-safe") {
+      calldatacopy(0, 0, calldatasize())
+      let result := delegatecall(gas(), implementation, 0, calldatasize(), 0, 0)
+      returndatacopy(0, 0, returndatasize())
+      switch result
+      case 0 {
+        revert(0, returndatasize())
+      }
+      default {
+        return(0, returndatasize())
+      }
+    }
+  }
+
+  function setImpl(address _actions, address _rewards) external onlyOwner {
     implActions = _actions;
+    implRewards = _rewards;
   }
 }

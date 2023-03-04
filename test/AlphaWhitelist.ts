@@ -46,13 +46,18 @@ describe("AlphaWhitelist", () => {
     });
     const playersImplActions = await PlayersImplActions.deploy();
 
+    const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
+      libraries: {PlayerLibrary: playerLibrary.address},
+    });
+    const playersImplRewards = await PlayersImplRewards.deploy();
+
     const Players = await ethers.getContractFactory("Players", {
       libraries: {PlayerLibrary: playerLibrary.address},
     });
 
     const players = await upgrades.deployProxy(
       Players,
-      [itemNFT.address, playerNFT.address, world.address, playersImplActions.address],
+      [itemNFT.address, playerNFT.address, world.address, playersImplActions.address, playersImplRewards.address],
       {
         kind: "uups",
         unsafeAllow: ["delegatecall", "external-library-linking"],

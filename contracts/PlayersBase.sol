@@ -7,6 +7,8 @@ import "./items.sol";
 import "./ItemNFT.sol";
 import "./PlayerNFT.sol";
 
+import {PlayerLibrary} from "./PlayerLibrary.sol";
+
 contract PlayersBase {
   event ActionUnequip(uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
 
@@ -75,6 +77,8 @@ contract PlayersBase {
   mapping(uint => PendingRandomReward[]) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
   address implActions;
+  address implRewards;
+  address reserved1;
 
   enum ActionQueueStatus {
     NONE,
@@ -111,5 +115,42 @@ contract PlayersBase {
       revert NotItemNFT();
     }
     _;
+  }
+
+  function _extraXPFromBoost(
+    uint _playerId,
+    bool _isCombatSkill,
+    uint _actionStartTime,
+    uint _elapsedTime,
+    uint16 _xpPerHour
+  ) internal view returns (uint32 boostPointsAccrued) {
+    return
+      PlayerLibrary.extraXPFromBoost(
+        _isCombatSkill,
+        _actionStartTime,
+        _elapsedTime,
+        _xpPerHour,
+        activeBoosts[_playerId]
+      );
+  }
+
+  function _isCombat(CombatStyle _combatStyle) internal pure returns (bool) {
+    return _combatStyle != CombatStyle.NONE;
+  }
+
+  function _getElapsedTime(
+    uint _playerId,
+    uint _skillEndTime,
+    QueuedAction storage _queuedAction
+  ) internal view returns (uint) {
+    return PlayerLibrary.getElapsedTime(_skillEndTime, _queuedAction, speedMultiplier[_playerId]);
+  }
+
+  function _updateCombatStats(
+    address _from,
+    CombatStats memory _stats,
+    Attire storage _attire
+  ) internal view returns (CombatStats memory) {
+    return PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT);
   }
 }

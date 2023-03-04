@@ -103,13 +103,19 @@ async function main() {
   const playersImplActions = await PlayersImplActions.deploy();
   console.log(`PlayersImplActions deployed at ${playersImplActions.address.toLowerCase()}`);
 
+  const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
+    libraries: {PlayerLibrary: playerLibrary.address},
+  });
+  const playersImplRewards = await PlayersImplRewards.deploy();
+  console.log(`PlayersImplRewards deployed at ${playersImplRewards.address.toLowerCase()}`);
+
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayerLibrary: playerLibrary.address},
   });
 
   const players = await upgrades.deployProxy(
     Players,
-    [itemNFT.address, playerNFT.address, world.address, playersImplActions.address],
+    [itemNFT.address, playerNFT.address, world.address, playersImplActions.address, playersImplRewards.address],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],

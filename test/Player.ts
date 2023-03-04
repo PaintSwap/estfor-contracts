@@ -88,13 +88,18 @@ describe("Player", () => {
     });
     const playersImplActions = await PlayersImplActions.deploy();
 
+    const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
+      libraries: {PlayerLibrary: playerLibrary.address},
+    });
+    const playersImplRewards = await PlayersImplRewards.deploy();
+
     const Players = await ethers.getContractFactory("Players", {
       libraries: {PlayerLibrary: playerLibrary.address},
     });
 
     const players = await upgrades.deployProxy(
       Players,
-      [itemNFT.address, playerNFT.address, world.address, playersImplActions.address],
+      [itemNFT.address, playerNFT.address, world.address, playersImplActions.address, playersImplRewards.address],
       {
         kind: "uups",
         unsafeAllow: ["delegatecall", "external-library-linking"],
@@ -188,10 +193,10 @@ describe("Player", () => {
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
-    /*    await ethers.provider.send("evm_increaseTime", [361]);
+    await ethers.provider.send("evm_increaseTime", [361]);
     await players.connect(alice).consumeActions(playerId);
     expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
-    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down */
+    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(10); // Should be rounded down
   });
 
   it("Skill points (many)", async () => {
@@ -842,7 +847,9 @@ describe("Player", () => {
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
-      const pendingOutput = await players.connect(alice).pending(playerId);
+
+      const playerDelegates = await ethers.getContractAt("PlayerDelegates", players.address);
+      const pendingOutput = await playerDelegates.pending(playerId);
       expect(pendingOutput.consumed.length).is.eq(0);
       expect(pendingOutput.produced.length).is.eq(1);
       expect(pendingOutput.produced[0].itemTokenId).is.eq(LOG);
@@ -1726,7 +1733,9 @@ describe("Player", () => {
 
         expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
-        expect((await players.pending(playerId)).produced.length).to.eq(0);
+        const playerDelegates = await ethers.getContractAt("PlayerDelegates", players.address);
+        const pendingOutput = await playerDelegates.pending(playerId);
+        expect(pendingOutput.produced.length).to.eq(0);
 
         tx = await world.requestSeedUpdate();
         let requestId = getRequestId(tx);
@@ -1735,12 +1744,12 @@ describe("Player", () => {
 
         expect(await world.hasSeed(endTime)).to.be.true;
 
-        if ((await players.claimableRandomRewards(playerId)).ids.length > 0) {
-          expect((await players.pending(playerId)).produced.length).to.eq(1);
+        if ((await playerDelegates.claimableRandomRewards(playerId)).ids.length > 0) {
+          expect((await playerDelegates.pending(playerId)).produced.length).to.eq(1);
 
-          const produced = (await players.pending(playerId)).produced[0].rate;
+          const produced = (await playerDelegates.pending(playerId)).produced[0].rate;
           numProduced += produced;
-          expect((await players.pending(playerId)).produced[0].itemTokenId).to.be.eq(BRONZE_ARROW);
+          expect((await playerDelegates.pending(playerId)).produced[0].itemTokenId).to.be.eq(BRONZE_ARROW);
         }
       }
       // Very unlikely to be exact

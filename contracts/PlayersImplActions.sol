@@ -102,15 +102,13 @@ contract PlayersImplActions is PlayersImplBase {
         }
         _updateSkillPoints(_playerId, skill, pointsAccrued);
 
-        ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
-        (uint[] memory newIds, uint[] memory newAmounts) = PlayerLibrary.getRewards(
-          _from,
+        (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
-          world,
-          actionRewards
+          queuedAction.actionId
         );
 
+        ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
         _addPendingRandomReward(
           pendingRandomRewards[_playerId],
           actionRewards,
@@ -141,71 +139,28 @@ contract PlayersImplActions is PlayersImplBase {
       _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
     }
 
-    claimRandomRewards(_playerId);
+    _claimRandomRewards(_playerId);
 
     assembly ("memory-safe") {
       mstore(remainingSkills, length)
     }
   }
 
-  function claimRandomRewards(uint _playerId) public isOwnerOfPlayerAndActive(_playerId) {
-    address from = msg.sender;
-    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = PlayerLibrary.claimableRandomRewards(
-      from,
-      world,
-      pendingRandomRewards[_playerId]
-    );
-
-    if (numRemoved > 0) {
-      // Shift the remaining rewards to the front of the array
-      for (uint i; i < pendingRandomRewards[_playerId].length - numRemoved; ++i) {
-        pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
-      }
-
-      for (uint i; i < numRemoved; ++i) {
-        pendingRandomRewards[_playerId].pop();
-      }
-
-      itemNFT.mintBatch(from, ids, amounts);
-      //      emit Rewards(from, _playerId, _queueId, ids, amounts);
-    }
+  function _claimRandomRewards(uint _playerId) public isOwnerOfPlayerAndActive(_playerId) {
+    (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
+    require(success);
   }
 
-  function _extraXPFromBoost(
-    uint _playerId,
-    bool _isCombatSkill,
-    uint _actionStartTime,
+  function _getRewards(
+    uint40 _skillEndTime,
     uint _elapsedTime,
-    uint16 _xpPerHour
-  ) private view returns (uint32 boostPointsAccrued) {
-    return
-      PlayerLibrary.extraXPFromBoost(
-        _isCombatSkill,
-        _actionStartTime,
-        _elapsedTime,
-        _xpPerHour,
-        activeBoosts[_playerId]
-      );
-  }
-
-  function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
-    return _combatStyle != CombatStyle.NONE;
-  }
-
-  function _getElapsedTime(
-    uint _playerId,
-    uint _skillEndTime,
-    QueuedAction storage _queuedAction
-  ) private view returns (uint) {
-    return PlayerLibrary.getElapsedTime(_skillEndTime, _queuedAction, speedMultiplier[_playerId]);
-  }
-
-  function _updateCombatStats(
-    address _from,
-    CombatStats memory _stats,
-    Attire storage _attire
-  ) private view returns (CombatStats memory) {
-    return PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT);
+    uint16 _actionId
+  ) private returns (uint[] memory newIds, uint[] memory newAmounts) {
+    (bool success, bytes memory data) = implRewards.delegatecall(
+      abi.encodeWithSignature("getRewards(uint40,uint256,uint16)", _skillEndTime, _elapsedTime, _actionId)
+    );
+    require(success);
+    return abi.decode(data, (uint[], uint[]));
   }
 
   function _addRemainingSkill(
