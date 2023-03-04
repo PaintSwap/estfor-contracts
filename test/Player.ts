@@ -167,8 +167,6 @@ describe("Player", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
-
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
       info: {
@@ -180,7 +178,7 @@ describe("Player", () => {
         itemTokenIdRangeMin: WOODCUTTING_BASE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
-        isCombat: true,
+        actionChoiceRequired: false,
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
@@ -197,8 +195,8 @@ describe("Player", () => {
       choiceId2: NONE,
       regenerateId: NONE,
       timespan: 3600,
-      rightArmEquipmentTokenId: BRONZE_AXE,
-      leftArmEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
       startTime: "0",
       isValid: true,
     };
@@ -219,7 +217,6 @@ describe("Player", () => {
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
-    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
@@ -232,7 +229,7 @@ describe("Player", () => {
         itemTokenIdRangeMin: WOODCUTTING_BASE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
-        isCombat: true,
+        actionChoiceRequired: false,
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
@@ -249,8 +246,8 @@ describe("Player", () => {
       choiceId2: NONE,
       regenerateId: NONE,
       timespan: 3600,
-      rightArmEquipmentTokenId: BRONZE_AXE,
-      leftArmEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
       startTime: "0",
       isValid: true,
     };
@@ -279,7 +276,7 @@ describe("Player", () => {
         itemTokenIdRangeMin: BRONZE_AXE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
-        isCombat: false,
+        actionChoiceRequired: false,
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
@@ -287,7 +284,6 @@ describe("Player", () => {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
     const timespan = 3600;
     const queuedAction: QueuedAction = {
       attire: noAttire,
@@ -298,8 +294,8 @@ describe("Player", () => {
       choiceId2: NONE,
       regenerateId: NONE,
       timespan,
-      rightArmEquipmentTokenId: BRONZE_AXE,
-      leftArmEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
       startTime: "0",
       isValid: true,
     };
@@ -338,7 +334,7 @@ describe("Player", () => {
         itemTokenIdRangeMin: BRONZE_AXE,
         itemTokenIdRangeMax: WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
-        isCombat: false,
+        actionChoiceRequired: false,
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
@@ -346,7 +342,6 @@ describe("Player", () => {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
     const timespan = 3600;
     const queuedAction: QueuedAction = {
       attire: noAttire,
@@ -357,8 +352,8 @@ describe("Player", () => {
       choiceId2: NONE,
       regenerateId: NONE,
       timespan,
-      rightArmEquipmentTokenId: BRONZE_AXE,
-      leftArmEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
       startTime: "0",
       isValid: true,
     };
@@ -422,7 +417,7 @@ describe("Player", () => {
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
         isAvailable: actionIsAvailable,
-        isCombat: false,
+        actionChoiceRequired: true,
       },
       guaranteedRewards: [],
       randomRewards: [],
@@ -444,8 +439,8 @@ describe("Player", () => {
       choiceId2: NONE,
       regenerateId: NONE,
       timespan: 100,
-      rightArmEquipmentTokenId: BRONZE_SWORD,
-      leftArmEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: BRONZE_SWORD,
+      leftHandEquipmentTokenId: NONE,
       startTime: "0",
       isValid: true,
     };
@@ -612,7 +607,6 @@ describe("Player", () => {
       combatStats: emptyStats,
     });
     const actionId = await getActionId(tx);
-    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
     await itemNFT.addItem({
       ...inputItem,
       tokenId: BRONZE_AXE,
@@ -629,8 +623,8 @@ describe("Player", () => {
       choiceId2: NONE,
       regenerateId: NONE,
       timespan,
-      rightArmEquipmentTokenId: BRONZE_AXE,
-      leftArmEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
       startTime: "0",
     };
 
@@ -690,7 +684,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: false,
+          actionChoiceRequired: false,
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
@@ -698,7 +692,6 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       await itemNFT.testOnlyMint(alice.address, XP_BOOST, 1);
 
       const timespan = 3600;
@@ -711,8 +704,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_AXE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -763,7 +756,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: false,
+          actionChoiceRequired: false,
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
@@ -771,7 +764,6 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       await itemNFT.testOnlyMint(alice.address, XP_BOOST, 1);
 
       const timespan = 3600;
@@ -784,8 +776,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_AXE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -829,7 +821,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: false,
+          actionChoiceRequired: false,
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
@@ -837,7 +829,6 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       const timespan = 3600;
       const queuedAction: QueuedAction = {
         attire: noAttire,
@@ -848,8 +839,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_AXE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -892,7 +883,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: FIRE_LIGHTER,
           itemTokenIdRangeMax: FIRE_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: false,
+          actionChoiceRequired: true,
         },
         guaranteedRewards: [],
         randomRewards: [],
@@ -927,8 +918,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan,
-        rightArmEquipmentTokenId: FIRE_LIGHTER,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: FIRE_LIGHTER,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -974,14 +965,13 @@ describe("Player", () => {
             itemTokenIdRangeMin: BRONZE_AXE,
             itemTokenIdRangeMax: WOODCUTTING_MAX,
             isAvailable: actionIsAvailable,
-            isCombat: false,
+            actionChoiceRequired: false,
           },
           guaranteedRewards: [{itemTokenId: LOG, rate}],
           randomRewards: [],
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
-        await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
         await itemNFT.addItem({
           ...inputItem,
           tokenId: BRONZE_AXE,
@@ -998,8 +988,8 @@ describe("Player", () => {
           choiceId2: NONE,
           regenerateId: NONE,
           timespan,
-          rightArmEquipmentTokenId: BRONZE_AXE,
-          leftArmEquipmentTokenId: NONE,
+          rightHandEquipmentTokenId: BRONZE_AXE,
+          leftHandEquipmentTokenId: NONE,
           startTime: "0",
           isValid: true,
         };
@@ -1017,7 +1007,7 @@ describe("Player", () => {
             itemTokenIdRangeMin: FIRE_LIGHTER,
             itemTokenIdRangeMax: FIRE_MAX,
             isAvailable: actionIsAvailable,
-            isCombat: false,
+            actionChoiceRequired: true,
           },
           guaranteedRewards: [],
           randomRewards: [],
@@ -1060,8 +1050,8 @@ describe("Player", () => {
           choiceId2: NONE,
           regenerateId: NONE,
           timespan,
-          rightArmEquipmentTokenId: FIRE_LIGHTER,
-          leftArmEquipmentTokenId: NONE,
+          rightHandEquipmentTokenId: FIRE_LIGHTER,
+          leftHandEquipmentTokenId: NONE,
           startTime: "0",
           isValid: true,
         };
@@ -1110,14 +1100,13 @@ describe("Player", () => {
             itemTokenIdRangeMin: BRONZE_AXE,
             itemTokenIdRangeMax: WOODCUTTING_MAX,
             isAvailable: actionIsAvailable,
-            isCombat: false,
+            actionChoiceRequired: false,
           },
           guaranteedRewards: [{itemTokenId: LOG, rate}],
           randomRewards: [],
           combatStats: emptyStats,
         });
         const actionId = await getActionId(tx);
-        await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
         await itemNFT.addItem({
           ...inputItem,
           tokenId: BRONZE_AXE,
@@ -1134,8 +1123,8 @@ describe("Player", () => {
           choiceId2: NONE,
           regenerateId: NONE,
           timespan,
-          rightArmEquipmentTokenId: BRONZE_AXE,
-          leftArmEquipmentTokenId: NONE,
+          rightHandEquipmentTokenId: BRONZE_AXE,
+          leftHandEquipmentTokenId: NONE,
           startTime: "0",
           isValid: true,
         };
@@ -1153,7 +1142,7 @@ describe("Player", () => {
             itemTokenIdRangeMin: FIRE_LIGHTER,
             itemTokenIdRangeMax: FIRE_MAX,
             isAvailable: actionIsAvailable,
-            isCombat: false,
+            actionChoiceRequired: true,
           },
           guaranteedRewards: [],
           randomRewards: [],
@@ -1196,8 +1185,8 @@ describe("Player", () => {
           choiceId2: NONE,
           regenerateId: NONE,
           timespan,
-          rightArmEquipmentTokenId: FIRE_LIGHTER,
-          leftArmEquipmentTokenId: NONE,
+          rightHandEquipmentTokenId: FIRE_LIGHTER,
+          leftHandEquipmentTokenId: NONE,
           startTime: "0",
           isValid: true,
         };
@@ -1245,7 +1234,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: BRONZE_PICKAXE,
           itemTokenIdRangeMax: MINING_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: false,
+          actionChoiceRequired: false,
         },
         guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
         randomRewards: [],
@@ -1264,8 +1253,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan: 100,
-        rightArmEquipmentTokenId: BRONZE_PICKAXE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_PICKAXE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1298,7 +1287,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: NONE,
           itemTokenIdRangeMax: NONE,
           isAvailable: actionIsAvailable,
-          isCombat: false,
+          actionChoiceRequired: true,
         },
         guaranteedRewards: [],
         randomRewards: [],
@@ -1334,8 +1323,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan,
-        rightArmEquipmentTokenId: NONE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: NONE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1386,7 +1375,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: BRONZE_AXE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: false,
+          actionChoiceRequired: false,
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
@@ -1394,7 +1383,6 @@ describe("Player", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
       const timespan = maxTime + 1; // Exceed maximum
       const queuedAction: QueuedAction = {
         attire: noAttire,
@@ -1405,8 +1393,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_AXE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1439,7 +1427,6 @@ describe("Player", () => {
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
-      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
 
       const rate = 0.1 * 100; // 0.1 per hour
       const tx = await world.addAction({
@@ -1452,7 +1439,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: WOODCUTTING_BASE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: true,
+          actionChoiceRequired: false,
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
@@ -1470,8 +1457,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_AXE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1481,6 +1468,82 @@ describe("Player", () => {
       await players.connect(alice).processActions(playerId);
       //      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(1); // Should be rounded down
+    });
+
+    it("Incorrect equipment", async () => {
+      const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(deployContracts);
+
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        info: {
+          skill: Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          itemTokenIdRangeMin: BRONZE_AXE,
+          itemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: false,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.NONE,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightHandEquipmentTokenId: BRONZE_PICKAXE, // Incorrect
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_PICKAXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      // Incorrect equipment
+      await expect(players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.be.reverted;
+
+      // No equipment specified but is required
+      queuedAction.rightHandEquipmentTokenId = NONE;
+      await expect(players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.be.reverted;
+
+      queuedAction.rightHandEquipmentTokenId = BRONZE_AXE;
+      // This works
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+      // Specifying a combat style should fail
+      queuedAction.combatStyle = CombatStyle.ATTACK;
+      await expect(players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.be.reverted;
+
+      // Transfer away, the action should just be skipped and no xp/loot should be given
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_AXE)).to.eq(1);
+      await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, BRONZE_AXE, 1, "0x");
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_AXE)).to.eq(0);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(0);
     });
 
     it("Action pipelining", async () => {
@@ -1514,7 +1577,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: true,
+          actionChoiceRequired: true,
         },
         guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
         randomRewards: [],
@@ -1539,8 +1602,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: COOKED_HUPPY,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_SWORD,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_SWORD,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1567,7 +1630,7 @@ describe("Player", () => {
         ...inputItem,
         healthRestored: 12,
         tokenId: COOKED_HUPPY,
-        equipPosition: EquipPosition.AUX, // FOOD
+        equipPosition: EquipPosition.FOOD,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1611,7 +1674,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: true,
+          actionChoiceRequired: true,
         },
         guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
         randomRewards: [],
@@ -1636,8 +1699,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: COOKED_HUPPY,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_SWORD,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_SWORD,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1664,7 +1727,7 @@ describe("Player", () => {
         ...inputItem,
         healthRestored: 12,
         tokenId: COOKED_HUPPY,
-        equipPosition: EquipPosition.AUX, // FOOD
+        equipPosition: EquipPosition.FOOD,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1695,7 +1758,6 @@ describe("Player", () => {
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
-      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
 
       await itemNFT.addItem({
         ...inputItem,
@@ -1718,7 +1780,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: WOODCUTTING_BASE,
           itemTokenIdRangeMax: WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: true,
+          actionChoiceRequired: false,
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [{itemTokenId: BRONZE_ARROW, rate: randomChance}],
@@ -1736,8 +1798,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: NONE,
         timespan: 3600 * numHours,
-        rightArmEquipmentTokenId: BRONZE_AXE,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1815,7 +1877,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: true,
+          actionChoiceRequired: true,
         },
         guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
         randomRewards: [],
@@ -1840,8 +1902,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: COOKED_HUPPY,
         timespan,
-        rightArmEquipmentTokenId: BRONZE_SWORD,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: BRONZE_SWORD,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };
@@ -1864,7 +1926,7 @@ describe("Player", () => {
         ...inputItem,
         healthRestored: 1,
         tokenId: COOKED_HUPPY,
-        equipPosition: EquipPosition.AUX, // FOOD
+        equipPosition: EquipPosition.FOOD,
         metadataURI: "someIPFSURI.json",
       });
 
@@ -1903,7 +1965,7 @@ describe("Player", () => {
           itemTokenIdRangeMin: COMBAT_BASE,
           itemTokenIdRangeMax: COMBAT_MAX,
           isAvailable: actionIsAvailable,
-          isCombat: true,
+          actionChoiceRequired: true,
         },
         guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate}],
         randomRewards: [],
@@ -1945,8 +2007,8 @@ describe("Player", () => {
         choiceId2: NONE,
         regenerateId: COOKED_HUPPY,
         timespan,
-        rightArmEquipmentTokenId: STAFF_OF_THE_PHOENIX,
-        leftArmEquipmentTokenId: NONE,
+        rightHandEquipmentTokenId: STAFF_OF_THE_PHOENIX,
+        leftHandEquipmentTokenId: NONE,
         startTime: "0",
         isValid: true,
       };

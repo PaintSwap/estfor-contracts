@@ -36,6 +36,7 @@ contract PlayersBase {
   event Consume(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary too
   event ActionFinished(address from, uint playerId, uint128 queueId);
   event ActionPartiallyFinished(address from, uint playerId, uint128 queueId, uint elapsedTime);
+  event ActionAborted(uint playerId, uint128 queueId);
 
   error SkillsArrayZero();
   error NotOwner();

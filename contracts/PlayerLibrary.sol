@@ -90,14 +90,18 @@ library PlayerLibrary {
         (_combatStats.magicDefence * 60)
     );
 
-    Item memory item = _itemNFT.getItem(queuedAction.regenerateId);
+    uint healthRestored;
+    if (queuedAction.regenerateId != NONE) {
+      Item memory item = _itemNFT.getItem(queuedAction.regenerateId);
+      healthRestored = item.healthRestored;
+    }
 
-    if (item.healthRestored == 0 || totalHealthLost <= 0) {
+    if (healthRestored == 0 || totalHealthLost <= 0) {
       // No food attached or didn't lose any health
       died = totalHealthLost > 0;
     } else {
       foodConsumed = uint16(
-        uint32(totalHealthLost) / item.healthRestored + (uint32(totalHealthLost) % item.healthRestored == 0 ? 0 : 1)
+        uint32(totalHealthLost) / healthRestored + (uint32(totalHealthLost) % healthRestored == 0 ? 0 : 1)
       );
       uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
 

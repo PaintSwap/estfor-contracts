@@ -23,6 +23,21 @@ contract PlayersImplProcessActions is PlayersImplBase {
     for (uint i = 0; i < player.actionQueue.length; ++i) {
       QueuedAction storage queuedAction = player.actionQueue[i];
 
+      if (queuedAction.rightHandEquipmentTokenId != NONE) {
+        uint256 balance = itemNFT.balanceOf(_from, queuedAction.rightHandEquipmentTokenId);
+        if (balance == 0) {
+          emit ActionAborted(_playerId, queuedAction.attire.queueId);
+          continue;
+        }
+      }
+      if (queuedAction.leftHandEquipmentTokenId != NONE) {
+        uint256 balance = itemNFT.balanceOf(_from, queuedAction.leftHandEquipmentTokenId);
+        if (balance == 0) {
+          emit ActionAborted(_playerId, queuedAction.attire.queueId);
+          continue;
+        }
+      }
+
       // This will only ones that they have a balance for at this time. This will check balances
       CombatStats memory combatStats = player.combatStats;
       _updateCombatStats(_from, combatStats, queuedAction.attire);
@@ -56,9 +71,8 @@ contract PlayersImplProcessActions is PlayersImplBase {
 
       if (queuedAction.choiceId != 0) {
         // Includes combat
-        // { || isCombat) {
         uint combatElapsedTime;
-        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+        actionChoice = world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
 
         (xpElapsedTime, combatElapsedTime, died) = _processConsumables(
           _from,
@@ -69,6 +83,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
           actionChoice
         );
       }
+
       uint128 _queueId = queuedAction.attire.queueId;
       if (!died) {
         bool _isCombatSkill = _isCombat(queuedAction.combatStyle);
@@ -131,11 +146,11 @@ contract PlayersImplProcessActions is PlayersImplBase {
       } else {
         emit ActionPartiallyFinished(_from, _playerId, _queueId, elapsedTime);
       }
-    }
 
-    if (allpointsAccrued > 0) {
-      // Check if they have levelled up
-      _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
+      if (pointsAccrued > 0) {
+        // Check if they have levelled up
+        _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
+      }
     }
 
     _claimRandomRewards(_playerId);
@@ -154,6 +169,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
     ActionChoice memory _actionChoice
   ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died) {
     // This is based on the damage done from battling
+
     (bool isCombat, CombatStats memory enemyCombatStats) = world.getCombatStats(_queuedAction.actionId);
     uint16 numConsumed;
     (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getAdjustedElapsedTimes(
@@ -166,6 +182,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
       _combatStats,
       enemyCombatStats
     );
+
     if (isCombat) {
       (died) = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, enemyCombatStats);
     }

@@ -183,9 +183,25 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function getPermissibleItemsForAction(
     uint _actionId
-  ) external view returns (uint16 itemTokenIdRangeMin, uint16 itemTokenIdRangeMax) {
+  )
+    external
+    view
+    returns (
+      uint16 itemTokenIdRangeMin,
+      uint16 itemTokenIdRangeMax,
+      bool actionChoiceRequired,
+      Skill skill,
+      bool actionAvailable
+    )
+  {
     ActionInfo storage actionInfo = actions[_actionId];
-    return (actionInfo.itemTokenIdRangeMin, actionInfo.itemTokenIdRangeMax);
+    return (
+      actionInfo.itemTokenIdRangeMin,
+      actionInfo.itemTokenIdRangeMax,
+      actionInfo.actionChoiceRequired,
+      actionInfo.skill,
+      actionInfo.isAvailable
+    );
   }
 
   function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint16 xpPerHour) {
@@ -232,7 +248,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       actionReward.randomRewardChance4 = uint16(_action.randomRewards[3].rate);
     }
 
-    if (_action.info.isCombat) {
+    if (_action.info.skill == Skill.COMBAT) {
       actionCombatStats[_actionId] = _action.combatStats;
     }
   }
@@ -305,12 +321,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit SetAvailableAction(_actionId, _isAvailable);
   }
 
-  function actionIsAvailable(uint16 _actionId) external view returns (bool) {
-    return actions[_actionId].isAvailable;
-  }
-
   function getCombatStats(uint16 _actionId) external view returns (bool isCombat, CombatStats memory stats) {
-    isCombat = actions[_actionId].isCombat;
+    isCombat = actions[_actionId].skill == Skill.COMBAT;
     if (isCombat) {
       stats = actionCombatStats[_actionId];
 

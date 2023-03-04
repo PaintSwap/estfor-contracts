@@ -222,8 +222,8 @@ async function main() {
     choiceId2: NONE,
     regenerateId: NONE,
     timespan: 3600,
-    rightArmEquipmentTokenId: BRONZE_AXE,
-    leftArmEquipmentTokenId: NONE,
+    rightHandEquipmentTokenId: BRONZE_AXE,
+    leftHandEquipmentTokenId: NONE,
     startTime: "0",
     isValid: true,
   };
@@ -257,8 +257,8 @@ async function main() {
     choiceId2: NONE,
     regenerateId: NONE,
     timespan: 3600,
-    rightArmEquipmentTokenId: FIRE_LIGHTER,
-    leftArmEquipmentTokenId: NONE,
+    rightHandEquipmentTokenId: FIRE_LIGHTER,
+    leftHandEquipmentTokenId: NONE,
     startTime: "0",
     isValid: true,
   };

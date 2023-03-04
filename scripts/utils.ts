@@ -448,8 +448,8 @@ export type QueuedAction = {
   choiceId2: number;
   combatStyle: CombatStyle;
   timespan: number;
-  rightArmEquipmentTokenId: number;
-  leftArmEquipmentTokenId: number;
+  rightHandEquipmentTokenId: number;
+  leftHandEquipmentTokenId: number;
   startTime: string;
   isValid: boolean;
 };
@@ -494,7 +494,6 @@ export const getActionChoiceId = async (tx: ContractTransaction): Promise<number
 };
 
 // Actions
-
 export enum ActionQueueStatus {
   NONE,
   APPEND,
@@ -503,14 +502,14 @@ export enum ActionQueueStatus {
 
 type ActionInfo = {
   skill: Skill;
-  xpPerHour: number;
-  numSpawn: number;
   isAvailable: boolean;
   isDynamic: boolean;
+  actionChoiceRequired: boolean;
+  xpPerHour: number;
+  numSpawn: number;
   minSkillPoints: number;
   itemTokenIdRangeMin: number;
   itemTokenIdRangeMax: number;
-  isCombat: boolean;
 };
 
 type ActionReward = {
@@ -757,7 +756,7 @@ export const allActions: Action[] = [
       itemTokenIdRangeMin: BRONZE_AXE,
       itemTokenIdRangeMax: WOODCUTTING_MAX,
       isAvailable: true,
-      isCombat: false,
+      actionChoiceRequired: false,
     },
     guaranteedRewards: [{itemTokenId: LOG, rate: 1220 * 100}],
     randomRewards: [],
@@ -773,7 +772,7 @@ export const allActions: Action[] = [
       itemTokenIdRangeMin: FIRE_LIGHTER,
       itemTokenIdRangeMax: FIRE_MAX,
       isAvailable: true,
-      isCombat: false,
+      actionChoiceRequired: true,
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -789,7 +788,7 @@ export const allActions: Action[] = [
       itemTokenIdRangeMin: BRONZE_PICKAXE,
       itemTokenIdRangeMax: MINING_MAX,
       isAvailable: true,
-      isCombat: false,
+      actionChoiceRequired: false,
     },
     guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 1220 * 100}],
     randomRewards: [],
@@ -805,7 +804,7 @@ export const allActions: Action[] = [
       itemTokenIdRangeMin: BRONZE_PICKAXE,
       itemTokenIdRangeMax: MINING_MAX,
       isAvailable: true,
-      isCombat: false,
+      actionChoiceRequired: true,
     },
     guaranteedRewards: [{itemTokenId: TIN_ORE, rate: 1220 * 100}],
     randomRewards: [],
@@ -821,7 +820,7 @@ export const allActions: Action[] = [
       itemTokenIdRangeMin: NONE,
       itemTokenIdRangeMax: NONE,
       isAvailable: true,
-      isCombat: false,
+      actionChoiceRequired: true,
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -839,7 +838,7 @@ export const allActions: Action[] = [
       itemTokenIdRangeMin: COMBAT_BASE,
       itemTokenIdRangeMax: COMBAT_MAX,
       isAvailable: true,
-      isCombat: true,
+      actionChoiceRequired: true,
     },
     guaranteedRewards: [
       {itemTokenId: BONES, rate: 1 * 100},

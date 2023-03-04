@@ -59,7 +59,6 @@ contract PlayersImplQueueActions is PlayersImplBase {
     uint64 queueId = latestQueueId;
     do {
       QueuedAction memory queuedAction = _queuedActions[i];
-      queuedAction.isValid = true;
 
       if (totalTimespan + queuedAction.timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time
@@ -121,7 +120,6 @@ contract PlayersImplQueueActions is PlayersImplBase {
     uint _startTime
   ) private {
     Player storage _player = players[_playerId];
-    //    Skill skill = world.getSkill(_queuedAction.actionId); // Can be combat
 
     if (_queuedAction.attire.ring != NONE) {
       revert UnsupportedAttire();
@@ -129,24 +127,74 @@ contract PlayersImplQueueActions is PlayersImplBase {
     if (_queuedAction.attire.reserved1 != NONE) {
       revert UnsupportedAttire();
     }
+    if (_queuedAction.choiceId1 != NONE) {
+      revert UnsupportedAttire();
+    }
+    if (_queuedAction.choiceId2 != NONE) {
+      revert UnsupportedAttire();
+    }
 
-    (uint16 itemTokenIdRangeMin, uint16 itemTokenIdRangeMax) = world.getPermissibleItemsForAction(
-      _queuedAction.actionId
-    );
+    if (_queuedAction.regenerateId != NONE) {
+      require(itemNFT.getItem(_queuedAction.regenerateId).equipPosition == EquipPosition.FOOD);
+    }
 
-    if (!world.actionIsAvailable(_queuedAction.actionId)) {
+    uint16 actionId = _queuedAction.actionId;
+
+    (
+      uint16 itemTokenIdRangeMin,
+      uint16 itemTokenIdRangeMax,
+      bool actionChoiceRequired,
+      Skill skill,
+      bool actionAvailable
+    ) = world.getPermissibleItemsForAction(actionId);
+
+    if (!actionAvailable) {
       revert ActionNotAvailable();
     }
 
-    // TODO: Check if it requires an action choice and that a valid one was specified
-    _checkEquipActionEquipment(_from, _queuedAction.leftArmEquipmentTokenId, itemTokenIdRangeMin, itemTokenIdRangeMax);
-    _checkEquipActionEquipment(_from, _queuedAction.rightArmEquipmentTokenId, itemTokenIdRangeMin, itemTokenIdRangeMax);
+    bool isCombat = skill == Skill.COMBAT;
+
+    // Check the actionChoice is valid
+    if (actionChoiceRequired) {
+      require(_queuedAction.choiceId != NONE);
+      ActionChoice memory actionChoice = world.getActionChoice(
+        isCombat ? NONE : _queuedAction.actionId,
+        _queuedAction.choiceId
+      );
+
+      require(actionChoice.skill != Skill.NONE);
+    }
+
+    // Check combatStyle is only selected if queuedAction is combat
+    if (isCombat) {
+      require(_queuedAction.combatStyle != CombatStyle.NONE);
+    } else {
+      require(_queuedAction.combatStyle == CombatStyle.NONE);
+    }
+
+    _checkHandEquipment(
+      _from,
+      _queuedAction.rightHandEquipmentTokenId,
+      itemTokenIdRangeMin,
+      itemTokenIdRangeMax,
+      isCombat,
+      true
+    );
+    _checkHandEquipment(
+      _from,
+      _queuedAction.leftHandEquipmentTokenId,
+      itemTokenIdRangeMin,
+      itemTokenIdRangeMax,
+      isCombat,
+      false
+    );
 
     _checkAttire(_from, _queuedAction.attire);
     _checkActionConsumables(_from, _queuedAction);
 
     _queuedAction.startTime = uint40(_startTime);
     _queuedAction.attire.queueId = _queueId;
+    _queuedAction.isValid = true;
     _player.actionQueue.push(_queuedAction);
   }
 
@@ -229,21 +277,27 @@ contract PlayersImplQueueActions is PlayersImplBase {
     }
   }
 
-  function _checkEquipActionEquipment(
+  function _checkHandEquipment(
     address _from,
-    uint16 _itemTokenId,
+    uint16 _equippedItemTokenId,
     uint16 _itemTokenIdRangeMin,
-    uint16 _itemTokenIdRangeMax
+    uint16 _itemTokenIdRangeMax,
+    bool _isCombat,
+    bool _isRightHand
   ) private view {
-    if (_itemTokenId != NONE) {
-      if (_itemTokenId < _itemTokenIdRangeMin || _itemTokenId > _itemTokenIdRangeMax) {
-        revert InvalidArmEquipment(_itemTokenId);
+    if (_equippedItemTokenId != NONE) {
+      if (_equippedItemTokenId < _itemTokenIdRangeMin || _equippedItemTokenId > _itemTokenIdRangeMax) {
+        revert InvalidArmEquipment(_equippedItemTokenId);
       }
 
-      uint256 balance = itemNFT.balanceOf(_from, _itemTokenId);
+      uint256 balance = itemNFT.balanceOf(_from, _equippedItemTokenId);
       if (balance == 0) {
         revert DoNotHaveEnoughQuantityToEquipToAction();
       }
+    } else {
+      // Only combat actions can have no equipment if they have a choice
+      // e.g smithing doesn't require anything equipped
+      require(_isCombat || _itemTokenIdRangeMin == NONE || !_isRightHand);
     }
   }
 }

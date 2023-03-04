@@ -148,8 +148,8 @@ struct QueuedAction {
   uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
   uint16 choiceId1; // Reserved (TBD)
   uint16 choiceId2; // Reserved (TBD)
-  uint16 rightArmEquipmentTokenId; // Axe/Sword/bow, can be empty
-  uint16 leftArmEquipmentTokenId; // Shield, can be empty
+  uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
+  uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
   CombatStyle combatStyle; // specific style of combat,  can also be used
   uint40 startTime; // Filled in by the function
@@ -162,7 +162,7 @@ struct ActionInfo {
   Skill skill;
   bool isAvailable;
   bool isDynamic;
-  bool isCombat;
+  bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint16 xpPerHour;
   uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
   uint32 minSkillPoints;
