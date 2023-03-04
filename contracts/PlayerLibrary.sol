@@ -83,8 +83,7 @@ library PlayerLibrary {
     address _from,
     CombatStats memory _stats,
     Attire memory _attire,
-    ItemNFT _itemNFT,
-    bool _add
+    ItemNFT _itemNFT
   ) public view returns (CombatStats memory stats) {
     stats = _stats;
     uint attireLength;
@@ -123,7 +122,7 @@ library PlayerLibrary {
       uint[] memory balances = _itemNFT.balanceOfs(_from, itemTokenIds);
       for (uint i; i < items.length; ++i) {
         if (balances[i] > 0) {
-          _updateCombatStats(stats, items[i], _add);
+          _updateCombatStats(stats, items[i]);
         }
       }
     }
@@ -152,27 +151,27 @@ library PlayerLibrary {
     }
   }
 
-  function _updateCombatStats(CombatStats memory _stats, Item memory _item, bool _add) private pure {
+  function _updateCombatStats(CombatStats memory _stats, Item memory _item) private pure {
     if (_item.attack != 0) {
-      _stats.attack += _add ? _item.attack : -_item.attack;
+      _stats.attack += _item.attack;
     }
     if (_item.magic != 0) {
-      _stats.magic += _add ? _item.magic : -_item.magic;
+      _stats.magic += _item.magic;
     }
     if (_item.range != 0) {
-      _stats.range += _add ? _item.range : -_item.range;
+      _stats.range += _item.range;
     }
     if (_item.meleeDefence != 0) {
-      _stats.meleeDefence += _add ? _item.meleeDefence : -_item.meleeDefence;
+      _stats.meleeDefence += _item.meleeDefence;
     }
     if (_item.magicDefence != 0) {
-      _stats.magicDefence += _add ? _item.magicDefence : -_item.magicDefence;
+      _stats.magicDefence += _item.magicDefence;
     }
     if (_item.rangeDefence != 0) {
-      _stats.rangeDefence += _add ? _item.rangeDefence : -_item.rangeDefence;
+      _stats.rangeDefence += _item.rangeDefence;
     }
     if (_item.health != 0) {
-      _stats.health += _add ? _item.health : -_item.health;
+      _stats.health += _item.health;
     }
   }
 
@@ -849,7 +848,7 @@ library PlayerLibrary {
       CombatStats memory combatStats = player.combatStats;
 
       // This will only ones that they have a balance for at this time. This will check balances
-      updateCombatStats(from, combatStats, queuedAction.attire, _itemNFT, true);
+      updateCombatStats(from, combatStats, queuedAction.attire, _itemNFT);
 
       uint32 pointsAccrued;
       uint skillEndTime = queuedAction.startTime +

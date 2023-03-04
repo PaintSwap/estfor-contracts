@@ -24,13 +24,7 @@ contract PlayersImplActions is PlayersImplBase {
       QueuedAction storage queuedAction = player.actionQueue[i];
 
       // This will only ones that they have a balance for at this time. This will check balances
-      CombatStats memory combatStats = _updateCombatStats(
-        _from,
-        player.combatStats,
-        queuedAction.attire,
-        true,
-        queuedAction.startTime
-      );
+      CombatStats memory combatStats = _updateCombatStats(_from, player.combatStats, queuedAction.attire);
 
       uint32 pointsAccrued;
       uint skillEndTime = queuedAction.startTime +
@@ -209,11 +203,9 @@ contract PlayersImplActions is PlayersImplBase {
   function _updateCombatStats(
     address _from,
     CombatStats memory _stats,
-    Attire storage _attire,
-    bool _add,
-    uint _startTime
+    Attire storage _attire
   ) private view returns (CombatStats memory) {
-    return PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT, _add);
+    return PlayerLibrary.updateCombatStats(_from, _stats, _attire, itemNFT);
   }
 
   function _addRemainingSkill(
