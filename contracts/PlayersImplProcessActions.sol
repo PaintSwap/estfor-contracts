@@ -65,8 +65,6 @@ contract PlayersImplProcessActions is PlayersImplBase {
           _playerId,
           queuedAction,
           elapsedTime,
-          world,
-          itemNFT,
           combatStats,
           actionChoice
         );
@@ -152,18 +150,16 @@ contract PlayersImplProcessActions is PlayersImplBase {
     uint _playerId,
     QueuedAction storage _queuedAction,
     uint _elapsedTime,
-    World _world,
-    ItemNFT _itemNFT,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice
   ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died) {
     // This is based on the damage done from battling
-    (bool isCombat, CombatStats memory enemyCombatStats) = _world.getCombatStats(_queuedAction.actionId);
+    (bool isCombat, CombatStats memory enemyCombatStats) = world.getCombatStats(_queuedAction.actionId);
     uint16 numConsumed;
     (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getAdjustedElapsedTimes(
       _from,
-      _itemNFT,
-      _world,
+      itemNFT,
+      world,
       _elapsedTime,
       _actionChoice,
       _queuedAction,
@@ -171,23 +167,15 @@ contract PlayersImplProcessActions is PlayersImplBase {
       enemyCombatStats
     );
     if (isCombat) {
-      (died) = _processFoodConsumed(
-        _from,
-        _playerId,
-        _queuedAction,
-        combatElapsedTime,
-        _itemNFT,
-        _combatStats,
-        enemyCombatStats
-      );
+      (died) = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, enemyCombatStats);
     }
 
     if (numConsumed > 0) {
-      _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _itemNFT, _queuedAction.attire.queueId);
+      _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _queuedAction.attire.queueId);
     }
 
     if (_actionChoice.outputTokenId != 0) {
-      _itemNFT.mint(_from, _actionChoice.outputTokenId, numConsumed);
+      itemNFT.mint(_from, _actionChoice.outputTokenId, numConsumed);
       emit Reward(_from, _playerId, _queuedAction.attire.queueId, _actionChoice.outputTokenId, numConsumed);
     }
   }
@@ -197,39 +185,16 @@ contract PlayersImplProcessActions is PlayersImplBase {
     uint _playerId,
     ActionChoice memory _actionChoice,
     uint16 _numConsumed,
-    ItemNFT _itemNFT,
     uint128 _queueId
   ) private {
-    _processConsumable(
-      _from,
-      _playerId,
-      _itemNFT,
-      _actionChoice.inputTokenId1,
-      _numConsumed * _actionChoice.num1,
-      _queueId
-    );
-    _processConsumable(
-      _from,
-      _playerId,
-      _itemNFT,
-      _actionChoice.inputTokenId2,
-      _numConsumed * _actionChoice.num2,
-      _queueId
-    );
-    _processConsumable(
-      _from,
-      _playerId,
-      _itemNFT,
-      _actionChoice.inputTokenId3,
-      _numConsumed * _actionChoice.num3,
-      _queueId
-    );
+    _processConsumable(_from, _playerId, _actionChoice.inputTokenId1, _numConsumed * _actionChoice.num1, _queueId);
+    _processConsumable(_from, _playerId, _actionChoice.inputTokenId2, _numConsumed * _actionChoice.num2, _queueId);
+    _processConsumable(_from, _playerId, _actionChoice.inputTokenId3, _numConsumed * _actionChoice.num3, _queueId);
   }
 
   function _processConsumable(
     address _from,
     uint _playerId,
-    ItemNFT _itemNFT,
     uint16 _itemTokenId,
     uint16 _numConsumed,
     uint128 _queueId
@@ -239,7 +204,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
     }
     // Balance should be checked beforehand
     emit Consume(_from, _playerId, _queueId, _itemTokenId, _numConsumed);
-    _itemNFT.burn(_from, _itemTokenId, _numConsumed);
+    itemNFT.burn(_from, _itemTokenId, _numConsumed);
   }
 
   function _processFoodConsumed(
@@ -247,7 +212,6 @@ contract PlayersImplProcessActions is PlayersImplBase {
     uint _playerId,
     QueuedAction storage _queuedAction,
     uint _combatElapsedTime,
-    ItemNFT _itemNFT,
     CombatStats memory _combatStats,
     CombatStats memory _enemyCombatStats
   ) private returns (bool died) {
@@ -257,19 +221,12 @@ contract PlayersImplProcessActions is PlayersImplBase {
       _from,
       _queuedAction,
       _combatElapsedTime,
-      _itemNFT,
+      itemNFT,
       _combatStats,
       _enemyCombatStats
     );
 
-    _processConsumable(
-      _from,
-      _playerId,
-      _itemNFT,
-      _queuedAction.regenerateId,
-      foodConsumed,
-      _queuedAction.attire.queueId
-    );
+    _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.attire.queueId);
   }
 
   function _cacheCombatStats(
@@ -319,16 +276,16 @@ contract PlayersImplProcessActions is PlayersImplBase {
   }
 
   // Index not level, add one after (check for > max)
-  function _findLevel(uint256 xp) private pure returns (uint16) {
+  function _findLevel(uint256 _xp) private pure returns (uint16) {
     uint256 low = 0;
     uint256 high = 100;
 
     while (low < high) {
-      uint256 mid = _average(low, high);
+      uint256 mid = (low + high) / 2;
 
       // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
       // Math.average rounds down (it does integer division with truncation).
-      if (_getXP(mid) > xp) {
+      if (_getXP(mid) > _xp) {
         high = mid;
       } else {
         low = mid + 1;
@@ -342,14 +299,9 @@ contract PlayersImplProcessActions is PlayersImplBase {
     }
   }
 
-  function _average(uint256 a, uint256 b) private pure returns (uint256) {
-    // (a + b) / 2 can overflow.
-    return (a & b) + (a ^ b) / 2;
-  }
-
   function _getXP(uint256 _index) private pure returns (uint24) {
     uint256 index = _index * 3;
-    return uint24(arr[index] | (bytes3(arr[index + 1]) >> 8) | (bytes3(arr[index + 2]) >> 16));
+    return uint24(xpBytes[index] | (bytes3(xpBytes[index + 1]) >> 8) | (bytes3(xpBytes[index + 2]) >> 16));
   }
 
   function _claimRandomRewards(uint _playerId) private {
