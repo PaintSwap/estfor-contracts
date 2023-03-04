@@ -225,6 +225,7 @@ async function main() {
     rightArmEquipmentTokenId: BRONZE_AXE,
     leftArmEquipmentTokenId: NONE,
     startTime: "0",
+    isValid: true,
   };
 
   tx = await players.startAction(playerId, queuedAction, ActionQueueStatus.NONE);
@@ -259,6 +260,7 @@ async function main() {
     rightArmEquipmentTokenId: FIRE_LIGHTER,
     leftArmEquipmentTokenId: NONE,
     startTime: "0",
+    isValid: true,
   };
 
   tx = await players.startAction(playerId, queuedActionFiremaking, ActionQueueStatus.NONE);

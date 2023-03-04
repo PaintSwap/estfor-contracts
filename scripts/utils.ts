@@ -451,6 +451,7 @@ export type QueuedAction = {
   rightArmEquipmentTokenId: number;
   leftArmEquipmentTokenId: number;
   startTime: string;
+  isValid: boolean;
 };
 
 export const createPlayer = async (

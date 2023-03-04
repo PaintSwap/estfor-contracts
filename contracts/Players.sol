@@ -162,7 +162,9 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     if (playerId == 0) {
       return;
     }
-    // Currently not used
+
+    // TODO: Check if the player is currently using any of the items, and record all which are 0 and left/right arm items
+    // emit QueuedActionValid(true/false)
   }
 
   // Consumes all the actions in the queue up to this time.

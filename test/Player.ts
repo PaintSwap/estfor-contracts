@@ -200,6 +200,7 @@ describe("Player", () => {
       rightArmEquipmentTokenId: BRONZE_AXE,
       leftArmEquipmentTokenId: NONE,
       startTime: "0",
+      isValid: true,
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
@@ -251,6 +252,7 @@ describe("Player", () => {
       rightArmEquipmentTokenId: BRONZE_AXE,
       leftArmEquipmentTokenId: NONE,
       startTime: "0",
+      isValid: true,
     };
 
     // start a bunch of actions 1 after each other
@@ -299,6 +301,7 @@ describe("Player", () => {
       rightArmEquipmentTokenId: BRONZE_AXE,
       leftArmEquipmentTokenId: NONE,
       startTime: "0",
+      isValid: true,
     };
 
     await itemNFT.addItem({
@@ -357,6 +360,7 @@ describe("Player", () => {
       rightArmEquipmentTokenId: BRONZE_AXE,
       leftArmEquipmentTokenId: NONE,
       startTime: "0",
+      isValid: true,
     };
 
     await itemNFT.addItem({
@@ -443,6 +447,7 @@ describe("Player", () => {
       rightArmEquipmentTokenId: BRONZE_SWORD,
       leftArmEquipmentTokenId: NONE,
       startTime: "0",
+      isValid: true,
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
@@ -709,6 +714,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_AXE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -781,6 +787,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_AXE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -844,6 +851,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_AXE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -922,6 +930,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: FIRE_LIGHTER,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -992,6 +1001,7 @@ describe("Player", () => {
           rightArmEquipmentTokenId: BRONZE_AXE,
           leftArmEquipmentTokenId: NONE,
           startTime: "0",
+          isValid: true,
         };
 
         queuedActions.push(queuedAction);
@@ -1053,6 +1063,7 @@ describe("Player", () => {
           rightArmEquipmentTokenId: FIRE_LIGHTER,
           leftArmEquipmentTokenId: NONE,
           startTime: "0",
+          isValid: true,
         };
 
         queuedActions.push(queuedAction);
@@ -1126,6 +1137,7 @@ describe("Player", () => {
           rightArmEquipmentTokenId: BRONZE_AXE,
           leftArmEquipmentTokenId: NONE,
           startTime: "0",
+          isValid: true,
         };
 
         queuedActions.push(queuedAction);
@@ -1187,6 +1199,7 @@ describe("Player", () => {
           rightArmEquipmentTokenId: FIRE_LIGHTER,
           leftArmEquipmentTokenId: NONE,
           startTime: "0",
+          isValid: true,
         };
 
         queuedActions.push(queuedAction);
@@ -1254,6 +1267,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_PICKAXE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -1323,6 +1337,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: NONE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -1393,6 +1408,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_AXE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -1457,6 +1473,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_AXE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
@@ -1525,6 +1542,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_SWORD,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -1621,6 +1639,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_SWORD,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -1720,6 +1739,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_AXE,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       let numProduced = 0;
@@ -1823,6 +1843,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: BRONZE_SWORD,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItem({
@@ -1927,6 +1948,7 @@ describe("Player", () => {
         rightArmEquipmentTokenId: STAFF_OF_THE_PHOENIX,
         leftArmEquipmentTokenId: NONE,
         startTime: "0",
+        isValid: true,
       };
 
       await itemNFT.addItems([

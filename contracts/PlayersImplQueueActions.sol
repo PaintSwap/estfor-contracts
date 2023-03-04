@@ -59,6 +59,7 @@ contract PlayersImplQueueActions is PlayersImplBase {
     uint64 queueId = latestQueueId;
     do {
       QueuedAction memory queuedAction = _queuedActions[i];
+      queuedAction.isValid = true;
 
       if (totalTimespan + queuedAction.timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time

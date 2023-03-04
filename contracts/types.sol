@@ -142,7 +142,7 @@ struct ActionChoice {
 // The user chooses these
 struct QueuedAction {
   // Keep this first
-  Attire attire; // Keep here for now
+  Attire attire;
   uint16 actionId;
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
   uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
@@ -153,6 +153,7 @@ struct QueuedAction {
   uint24 timespan; // How long to queue the action for
   CombatStyle combatStyle; // specific style of combat,  can also be used
   uint40 startTime; // Filled in by the function
+  bool isValid; // If we still have the item, TODO: Not used yet
   //  bool reusePrev; // If true, then the previous queued action attire is reused?
   // 9 bytes left
 }
