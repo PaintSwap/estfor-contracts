@@ -219,6 +219,12 @@ struct PlayerBoostInfo {
   BoostType boostType;
 }
 
+enum ActionQueueStatus {
+  NONE,
+  APPEND,
+  KEEP_LAST_IN_PROGRESS
+}
+
 uint constant MAX_GUARANTEED_REWARDS_PER_ACTION = 3;
 uint constant MAX_RANDOM_REWARDS_PER_ACTION = 4;
 uint constant MAX_REWARDS_PER_ACTION = MAX_GUARANTEED_REWARDS_PER_ACTION + MAX_RANDOM_REWARDS_PER_ACTION;

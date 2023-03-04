@@ -76,15 +76,10 @@ contract PlayersBase {
   PlayerNFT internal playerNFT;
   mapping(uint => PendingRandomReward[]) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
+  address implQueueActions;
   address implProcessActions;
   address implRewards;
   address reserved1;
-
-  enum ActionQueueStatus {
-    NONE,
-    APPEND,
-    KEEP_LAST_IN_PROGRESS
-  }
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
@@ -248,5 +243,13 @@ contract PlayersBase {
     if (_item.health != 0) {
       _stats.health += _item.health;
     }
+  }
+
+  function _processActions(address _from, uint _playerId) internal returns (QueuedAction[] memory remainingSkills) {
+    (bool success, bytes memory data) = implProcessActions.delegatecall(
+      abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)
+    );
+    require(success);
+    return abi.decode(data, (QueuedAction[]));
   }
 }

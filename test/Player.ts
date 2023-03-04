@@ -83,6 +83,9 @@ describe("Player", () => {
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
     const playerLibrary = await PlayerLibrary.deploy();
 
+    const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
+    const playersImplQueueActions = await PlayersImplQueueActions.deploy();
+
     const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
       libraries: {PlayerLibrary: playerLibrary.address},
     });
@@ -103,6 +106,7 @@ describe("Player", () => {
         itemNFT.address,
         playerNFT.address,
         world.address,
+        playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,
       ],
@@ -854,8 +858,8 @@ describe("Player", () => {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
 
-      const playerDelegates = await ethers.getContractAt("PlayerDelegates", players.address);
-      const pendingOutput = await playerDelegates.pending(playerId);
+      const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
+      const pendingOutput = await playerDelegateView.pending(playerId);
       expect(pendingOutput.consumed.length).is.eq(0);
       expect(pendingOutput.produced.length).is.eq(1);
       expect(pendingOutput.produced[0].itemTokenId).is.eq(LOG);
@@ -1739,8 +1743,8 @@ describe("Player", () => {
 
         expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
-        const playerDelegates = await ethers.getContractAt("PlayerDelegates", players.address);
-        const pendingOutput = await playerDelegates.pending(playerId);
+        const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
+        const pendingOutput = await playerDelegateView.pending(playerId);
         expect(pendingOutput.produced.length).to.eq(0);
 
         tx = await world.requestSeedUpdate();
@@ -1750,12 +1754,12 @@ describe("Player", () => {
 
         expect(await world.hasSeed(endTime)).to.be.true;
 
-        if ((await playerDelegates.claimableRandomRewards(playerId)).ids.length > 0) {
-          expect((await playerDelegates.pending(playerId)).produced.length).to.eq(1);
+        if ((await playerDelegateView.claimableRandomRewards(playerId)).ids.length > 0) {
+          expect((await playerDelegateView.pending(playerId)).produced.length).to.eq(1);
 
-          const produced = (await playerDelegates.pending(playerId)).produced[0].rate;
+          const produced = (await playerDelegateView.pending(playerId)).produced[0].rate;
           numProduced += produced;
-          expect((await playerDelegates.pending(playerId)).produced[0].itemTokenId).to.be.eq(BRONZE_ARROW);
+          expect((await playerDelegateView.pending(playerId)).produced[0].itemTokenId).to.be.eq(BRONZE_ARROW);
         }
       }
       // Very unlikely to be exact

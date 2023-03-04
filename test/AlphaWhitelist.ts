@@ -41,6 +41,9 @@ describe("AlphaWhitelist", () => {
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
     const playerLibrary = await PlayerLibrary.deploy();
 
+    const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
+    const playersImplQueueActions = await PlayersImplQueueActions.deploy();
+
     const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
       libraries: {PlayerLibrary: playerLibrary.address},
     });
@@ -61,6 +64,7 @@ describe("AlphaWhitelist", () => {
         itemNFT.address,
         playerNFT.address,
         world.address,
+        playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,
       ],
