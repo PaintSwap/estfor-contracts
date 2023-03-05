@@ -15,11 +15,10 @@ import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 // External view functions that are in other implementation files
 interface PlayerDelegateView {
-  function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput);
-
-  function claimableRandomRewards(
-    uint _playerId
-  ) external view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved);
+  function pendingRewards(
+    uint _playerId,
+    PendingFlags memory _flags
+  ) external view returns (PendingOutput memory pendingOutput);
 }
 
 // Functions to help with delegatecall selectors
@@ -82,6 +81,11 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
   function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
     _setActionQueue(_playerId, remainingSkillQueue);
+  }
+
+  function claimRandomRewards(uint _playerId) external {
+    (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
+    require(success);
   }
 
   function consumeBoost(
@@ -312,9 +316,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     bytes4 selector = bytes4(msg.data);
 
     address implementation;
-    if (
-      selector == PlayerDelegateView.pending.selector || selector == PlayerDelegateView.claimableRandomRewards.selector
-    ) {
+    if (selector == PlayerDelegateView.pendingRewards.selector) {
       implementation = implRewards;
     } else {
       require(false);

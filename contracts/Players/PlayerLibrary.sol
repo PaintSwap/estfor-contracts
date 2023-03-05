@@ -192,53 +192,56 @@ library PlayerLibrary {
     // TODO Should probably move this out?
     (bool isCombat, CombatStats memory enemyCombatStats) = _world.getCombatStats(_queuedAction.actionId);
     if (isCombat) {
-      uint numSpawned = _world.getNumSpawn(_queuedAction.actionId); // Per hour
-      uint maxHealthEnemy = numSpawned * uint16(enemyCombatStats.health);
+      uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
+      uint maxHealthEnemy = (numSpawnedPerHour * _elapsedTime * uint16(enemyCombatStats.health)) / 3600;
+      if (maxHealthEnemy > 0) {
+        int32 totalHealthDealt;
+        if (_actionChoice.skill == Skill.ATTACK) {
+          totalHealthDealt =
+            ((_combatStats.attack * _combatStats.attack * int32(int(_elapsedTime))) /
+              _enemyCombatStats.meleeDefence +
+              40) *
+            60;
+        } else if (_actionChoice.skill == Skill.MAGIC) {
+          _combatStats.magic += int16(int32(_actionChoice.diff)); // Extra magic damage
 
-      int32 totalHealthDealt;
-      if (_actionChoice.skill == Skill.ATTACK) {
-        totalHealthDealt =
-          ((_combatStats.attack * _combatStats.attack * int32(int(_elapsedTime))) /
-            _enemyCombatStats.meleeDefence +
-            40) *
-          60;
-      } else if (_actionChoice.skill == Skill.MAGIC) {
-        _combatStats.magic += int16(int32(_actionChoice.diff)); // Extra magic damage
-
-        totalHealthDealt =
-          ((_combatStats.magic * _combatStats.magic * int32(int(_elapsedTime))) / _enemyCombatStats.magicDefence) *
-          60;
-      } else if (_actionChoice.skill == Skill.RANGE) {
-        // Add later
-        //        totalHealthDealt = (_combatStats.range * _combatStats.range * int32(int(_elapsedTime))) /
-        //        _enemyCombatStats.rangeDefence;
-      }
-
-      // Work out the ratio of health dealt to the max health they have
-      if (uint32(totalHealthDealt) > maxHealthEnemy) {
-        // We killed them all, but figure out how long it took
-        combatElapsedTime = (_elapsedTime * uint32(totalHealthDealt)) / maxHealthEnemy; // Use this to work out how much food, arrows & spells to consume
-        if (combatElapsedTime > _elapsedTime) {
-          combatElapsedTime = _elapsedTime;
+          totalHealthDealt =
+            ((_combatStats.magic * _combatStats.magic * int32(int(_elapsedTime))) / _enemyCombatStats.magicDefence) *
+            60;
+        } else if (_actionChoice.skill == Skill.RANGE) {
+          // Add later
+          //        totalHealthDealt = (_combatStats.range * _combatStats.range * int32(int(_elapsedTime))) /
+          //        _enemyCombatStats.rangeDefence;
         }
-      } else if (uint32(totalHealthDealt) < maxHealthEnemy) {
-        // We didn't kill them all so they don't get the full rewards/xp
-        // This correct?
-        xpElapsedTime = (_elapsedTime * uint32(totalHealthDealt)) / maxHealthEnemy;
-      }
 
-      // Check the max that can be used
-      numConsumed = uint16((combatElapsedTime * _actionChoice.rate) / (3600 * 100));
-      if (numConsumed != 0) {
-        // This checks the balances
-        uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
-
-        if (numConsumed > maxRequiredRatio) {
-          numConsumed = uint16(maxRequiredRatio);
-
-          // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
-          xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
+        // Work out the ratio of health dealt to the max health they have
+        if (uint32(totalHealthDealt) > maxHealthEnemy) {
+          // We killed them all, but figure out how long it took
+          combatElapsedTime = (_elapsedTime * uint32(totalHealthDealt)) / maxHealthEnemy; // Use this to work out how much food, arrows & spells to consume
+          if (combatElapsedTime > _elapsedTime) {
+            combatElapsedTime = _elapsedTime;
+          }
+        } else if (uint32(totalHealthDealt) < maxHealthEnemy) {
+          // We didn't kill them all so they don't get the full rewards/xp
+          // This correct?
+          xpElapsedTime = (_elapsedTime * uint32(totalHealthDealt)) / maxHealthEnemy;
         }
+
+        // Check the max that can be used
+        numConsumed = uint16((combatElapsedTime * _actionChoice.rate) / (3600 * 100));
+        if (numConsumed != 0) {
+          // This checks the balances
+          uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
+
+          if (numConsumed > maxRequiredRatio) {
+            numConsumed = uint16(maxRequiredRatio);
+
+            // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
+            xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
+          }
+        }
+      } else {
+        xpElapsedTime = 0;
       }
     } else {
       // Non-combat, check the max that can be used

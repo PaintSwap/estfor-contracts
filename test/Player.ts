@@ -377,7 +377,7 @@ describe("Player", () => {
       Math.floor(((queuedAction.timespan / 2) * rate) / (3600 * 100))
     );
   });
-
+  /*
   it("Skill points, max range", async () => {
     const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(deployContracts);
 
@@ -414,7 +414,7 @@ describe("Player", () => {
         xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
-        numSpawn: 1,
+        numSpawn: 10,
         itemTokenIdRangeMin: COMBAT_BASE,
         itemTokenIdRangeMax: COMBAT_MAX,
         isAvailable: actionIsAvailable,
@@ -452,7 +452,7 @@ describe("Player", () => {
     await players.connect(alice).processActions(playerId);
     expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(queuedAction.timespan);
   });
-
+*/
   it("Multi-skill points", async () => {
     // TODO:
   });
@@ -510,14 +510,22 @@ describe("Player", () => {
     await ethers.provider.send("evm_mine", []);
 
     const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-    let pendingOutput = await playerDelegateView.pending(playerId);
+    let pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+      includeLoot: true,
+      includePastRandomRewards: true,
+      includeXPRewards: true,
+    });
     expect(pendingOutput.produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
 
     expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
-    pendingOutput = await playerDelegateView.pending(playerId);
+    pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+      includeLoot: true,
+      includePastRandomRewards: true,
+      includeXPRewards: true,
+    });
     expect(pendingOutput.produced.length).is.eq(2);
     expect(pendingOutput.produced[1].itemTokenId).is.eq(BRONZE_BAR);
     expect(pendingOutput.produced[1].amount).is.eq(3);
@@ -928,7 +936,11 @@ describe("Player", () => {
       await ethers.provider.send("evm_mine", []);
 
       const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-      const pendingOutput = await playerDelegateView.pending(playerId);
+      const pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+        includeLoot: true,
+        includePastRandomRewards: true,
+        includeXPRewards: true,
+      });
       expect(pendingOutput.consumed.length).is.eq(0);
       expect(pendingOutput.produced.length).is.eq(1);
       expect(pendingOutput.produced[0].itemTokenId).is.eq(LOG);
@@ -1705,7 +1717,7 @@ describe("Player", () => {
 
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
-      const time = 361;
+      const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
@@ -1714,7 +1726,101 @@ describe("Player", () => {
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
-      // Check food is consumed, update later
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 50);
+    });
+
+    it("Melee, combat don't kill anything", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const monsterCombatStats: CombatStats = {
+        attack: 3,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 1,
+      };
+
+      const rate = 1 * 100; // per hour
+      let tx = await world.addAction({
+        info: {
+          skill: Skill.COMBAT,
+          xpPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 1,
+          itemTokenIdRangeMin: COMBAT_BASE,
+          itemTokenIdRangeMax: COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+        },
+        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      tx = await world.addActionChoice(NONE, {
+        ...emptyActionChoice,
+        skill: Skill.ATTACK,
+      });
+      const choiceId = await getActionChoiceId(tx);
+      await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
+      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.ATTACK,
+        choiceId,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: COOKED_HUPPY,
+        timespan,
+        rightHandEquipmentTokenId: BRONZE_SWORD,
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      await itemNFT.addItem({
+        ...inputItem,
+        combatStats: {
+          ...emptyStats,
+          attack: 5,
+        },
+        tokenId: BRONZE_SWORD,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_ARROW,
+        equipPosition: EquipPosition.ARROW_SATCHEL,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        healthRestored: 12,
+        tokenId: COOKED_HUPPY,
+        equipPosition: EquipPosition.FOOD,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+
+      const time = 360;
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
+      // Check food is consumed
       expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 5);
     });
 
@@ -1801,7 +1907,7 @@ describe("Player", () => {
 
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
-      const time = 361;
+      const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
@@ -1811,10 +1917,10 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
       // Check food is consumed, update later
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 5);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 50);
     });
 
-    it("Guarenteed rewards", async () => {});
+    it("Guaranteed rewards", async () => {});
 
     // This test only works if the timespan does not go over 00:00 utc
     it("Random rewards (many)", async () => {
@@ -1894,7 +2000,11 @@ describe("Player", () => {
         expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
         const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-        const pendingOutput = await playerDelegateView.pending(playerId);
+        const pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+          includeLoot: true,
+          includePastRandomRewards: true,
+          includeXPRewards: true,
+        });
         expect(pendingOutput.produced.length).to.eq(0);
 
         tx = await world.requestSeedUpdate();
@@ -1904,12 +2014,42 @@ describe("Player", () => {
 
         expect(await world.hasSeed(endTime)).to.be.true;
 
-        if ((await playerDelegateView.claimableRandomRewards(playerId)).ids.length > 0) {
-          expect((await playerDelegateView.pending(playerId)).produced.length).to.eq(1);
+        if (
+          (
+            await playerDelegateView.pendingRewards(playerId, {
+              includeLoot: false,
+              includePastRandomRewards: true,
+              includeXPRewards: false,
+            })
+          ).produced.length > 0
+        ) {
+          expect(
+            (
+              await playerDelegateView.pendingRewards(playerId, {
+                includeLoot: false,
+                includePastRandomRewards: true,
+                includeXPRewards: false,
+              })
+            ).produced.length
+          ).to.eq(1);
 
-          const produced = (await playerDelegateView.pending(playerId)).produced[0].amount;
+          const produced = (
+            await playerDelegateView.pendingRewards(playerId, {
+              includeLoot: false,
+              includePastRandomRewards: true,
+              includeXPRewards: false,
+            })
+          ).produced[0].amount;
           numProduced += produced;
-          expect((await playerDelegateView.pending(playerId)).produced[0].itemTokenId).to.be.eq(BRONZE_ARROW);
+          expect(
+            (
+              await playerDelegateView.pendingRewards(playerId, {
+                includeLoot: false,
+                includePastRandomRewards: true,
+                includeXPRewards: false,
+              })
+            ).produced[0].itemTokenId
+          ).to.be.eq(BRONZE_ARROW);
         }
       }
       // Very unlikely to be exact

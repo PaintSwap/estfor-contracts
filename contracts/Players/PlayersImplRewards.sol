@@ -12,13 +12,26 @@ contract PlayersImplRewards is PlayersImplBase {
     uint16 _actionId
   ) public view returns (uint[] memory ids, uint[] memory amounts) {
     ActionRewards memory actionRewards = world.getActionRewards(_actionId);
+    bool isCombat = world.getSkill(_actionId) == Skill.COMBAT;
 
-    ids = new uint[](7);
-    amounts = new uint[](7);
+    ids = new uint[](MAX_REWARDS_PER_ACTION);
+    amounts = new uint[](MAX_REWARDS_PER_ACTION);
 
-    uint length = _appendGuarenteedRewards(ids, amounts, _elapsedTime, actionRewards);
+    uint numSpawnedPerHour = world.getNumSpawn(_actionId);
+    uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / 3600);
+
+    uint length = _appendGuaranteedRewards(ids, amounts, _elapsedTime, actionRewards, monstersKilled, isCombat);
     bool noLuck;
-    (length, noLuck) = _appendRandomRewards(_skillEndTime, _elapsedTime, ids, amounts, length, actionRewards);
+    (length, noLuck) = _appendRandomRewards(
+      _skillEndTime,
+      _elapsedTime,
+      ids,
+      amounts,
+      length,
+      actionRewards,
+      monstersKilled,
+      isCombat
+    );
 
     assembly ("memory-safe") {
       mstore(ids, length)
@@ -26,15 +39,19 @@ contract PlayersImplRewards is PlayersImplBase {
     }
   }
 
-  function claimableRandomRewards(
+  function _claimableRandomRewards(
     uint _playerId
-  ) public view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
+  ) private view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
     PendingRandomReward[] storage pendingRandomRewards = pendingRandomRewards[_playerId];
     ids = new uint[](pendingRandomRewards.length);
     amounts = new uint[](pendingRandomRewards.length);
 
     uint length;
     for (uint i; i < pendingRandomRewards.length; ++i) {
+      bool isCombat = world.getSkill(pendingRandomRewards[i].actionId) == Skill.COMBAT;
+      uint numSpawnedPerHour = world.getNumSpawn(pendingRandomRewards[i].actionId);
+      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomRewards[i].elapsedTime) / 3600);
+
       ActionRewards memory actionRewards = world.getActionRewards(pendingRandomRewards[i].actionId);
       uint oldLength = length;
       bool noLuck;
@@ -44,7 +61,9 @@ contract PlayersImplRewards is PlayersImplBase {
         ids,
         amounts,
         oldLength,
-        actionRewards
+        actionRewards,
+        monstersKilled,
+        isCombat
       );
 
       if (length - oldLength > 0 || noLuck) {
@@ -60,7 +79,7 @@ contract PlayersImplRewards is PlayersImplBase {
 
   function claimRandomRewards(uint _playerId) public isOwnerOfPlayerAndActive(_playerId) {
     address from = msg.sender;
-    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = claimableRandomRewards(_playerId);
+    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
 
     if (numRemoved > 0) {
       // Shift the remaining rewards to the front of the array
@@ -99,7 +118,10 @@ contract PlayersImplRewards is PlayersImplBase {
   }
 
   // Get any changes that are pending and not on the blockchain yet.
-  function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
+  function pendingRewards(
+    uint _playerId,
+    PendingFlags memory _flags
+  ) external view returns (PendingOutput memory pendingOutput) {
     Player storage player = players[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     uint _speedMultiplier = speedMultiplier[_playerId];
@@ -176,7 +198,7 @@ contract PlayersImplRewards is PlayersImplBase {
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);
       }
 
-      if (pointsAccrued > 0) {
+      if (_flags.includeLoot && pointsAccrued > 0) {
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           uint40(queuedAction.startTime + elapsedTime),
           xpElapsedTime,
@@ -194,7 +216,7 @@ contract PlayersImplRewards is PlayersImplBase {
       }
     } // end of loop
 
-    if (allPointsAccrued > 0) {
+    if (_flags.includeXPRewards && allPointsAccrued > 0) {
       (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
         from,
         previousSkillPoints,
@@ -207,12 +229,14 @@ contract PlayersImplRewards is PlayersImplBase {
       }
     }
 
-    // Loop through any pending random rewards and add them to the output
-    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = claimableRandomRewards(_playerId);
+    if (_flags.includePastRandomRewards) {
+      // Loop through any pending random rewards and add them to the output
+      (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
 
-    for (uint i; i < ids.length; ++i) {
-      pendingOutput.produced[producedLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
-      ++producedLength;
+      for (uint i; i < ids.length; ++i) {
+        pendingOutput.produced[producedLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
+        ++producedLength;
+      }
     }
 
     // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
@@ -222,16 +246,25 @@ contract PlayersImplRewards is PlayersImplBase {
     }
   }
 
-  function _appendGuarenteedReward(
+  function _appendGuaranteedReward(
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _elapsedTime,
     uint16 _rewardTokenId,
     uint24 _rewardRate,
-    uint oldLength
+    uint _oldLength,
+    uint16 _monstersKilled,
+    bool _isCombat
   ) private pure returns (uint length) {
-    length = oldLength;
-    uint numRewards = (_elapsedTime * _rewardRate) / (3600 * 100);
+    length = _oldLength;
+
+    uint numRewards;
+    if (_isCombat) {
+      numRewards = _monstersKilled;
+    } else {
+      numRewards = (_elapsedTime * _rewardRate) / (3600 * 100);
+    }
+
     if (numRewards > 0) {
       _ids[length] = _rewardTokenId;
       _amounts[length] = numRewards;
@@ -239,35 +272,43 @@ contract PlayersImplRewards is PlayersImplBase {
     }
   }
 
-  function _appendGuarenteedRewards(
+  function _appendGuaranteedRewards(
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _elapsedTime,
-    ActionRewards memory _actionRewards
+    ActionRewards memory _actionRewards,
+    uint16 _monstersKilled,
+    bool _isCombat
   ) private pure returns (uint length) {
-    length = _appendGuarenteedReward(
+    length = _appendGuaranteedReward(
       _ids,
       _amounts,
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId1,
       _actionRewards.guaranteedRewardRate1,
-      length
+      length,
+      _monstersKilled,
+      _isCombat
     );
-    length = _appendGuarenteedReward(
+    length = _appendGuaranteedReward(
       _ids,
       _amounts,
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId2,
       _actionRewards.guaranteedRewardRate3,
-      length
+      length,
+      _monstersKilled,
+      _isCombat
     );
-    length = _appendGuarenteedReward(
+    length = _appendGuaranteedReward(
       _ids,
       _amounts,
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId3,
       _actionRewards.guaranteedRewardRate2,
-      length
+      length,
+      _monstersKilled,
+      _isCombat
     );
   }
 
@@ -277,7 +318,9 @@ contract PlayersImplRewards is PlayersImplBase {
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _oldLength,
-    ActionRewards memory _actionRewards
+    ActionRewards memory _actionRewards,
+    uint16 _monstersKilled,
+    bool _isCombat
   ) private view returns (uint length, bool noLuck) {
     length = _oldLength;
 
@@ -310,8 +353,14 @@ contract PlayersImplRewards is PlayersImplBase {
       if (hasSeed) {
         uint seed = world.getSeed(skillEndTime);
 
-        // Figure out how many chances they get (1 per hour spent)
-        uint numTickets = elapsedTime / 3600;
+        // If combat use monsters killed, otherwise use elapsed time to see how many chances they get
+        uint numTickets;
+        if (_isCombat) {
+          numTickets = _monstersKilled;
+        } else {
+          // (1 per hour spent)
+          numTickets = elapsedTime / 3600;
+        }
         bytes32 randomComponent = bytes32(seed);
         uint startLootLength = length;
         for (uint i; i < numTickets; ++i) {

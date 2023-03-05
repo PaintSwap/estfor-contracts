@@ -227,6 +227,12 @@ struct XPThresholdReward {
   Equipment[] equipments;
 }
 
+struct PendingFlags {
+  bool includeLoot; // Guaranteed loot from actions, and random loot if claiming quite late
+  bool includePastRandomRewards; // This is random loot from previous actions
+  bool includeXPRewards; // Passing any xp thresholds gives you extra rewards
+}
+
 enum ActionQueueStatus {
   NONE,
   APPEND,
