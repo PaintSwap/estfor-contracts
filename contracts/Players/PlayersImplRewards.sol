@@ -92,7 +92,7 @@ contract PlayersImplRewards is PlayersImplBase {
         amounts = new uint[](items.length);
         for (uint i = 0; i < items.length; ++i) {
           itemTokenIds[i] = items[i].itemTokenId;
-          amounts[i] = items[i].numToEquip;
+          amounts[i] = items[i].amount;
         }
       }
     }
@@ -107,7 +107,7 @@ contract PlayersImplRewards is PlayersImplBase {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
 
     pendingOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
-    pendingOutput.produced = new ActionReward[](
+    pendingOutput.produced = new Equipment[](
       actionQueue.length * MAX_REWARDS_PER_ACTION + (_pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION)
     );
 
@@ -144,7 +144,7 @@ contract PlayersImplRewards is PlayersImplBase {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
         Equipment[] memory consumedEquipment;
-        ActionReward memory output;
+        Equipment memory output;
 
         (consumedEquipment, output, elapsedTime, xpElapsedTime, died) = _processConsumablesView(
           from,
@@ -184,7 +184,7 @@ contract PlayersImplRewards is PlayersImplBase {
         );
 
         for (uint i; i < newIds.length; ++i) {
-          pendingOutput.produced[producedLength] = ActionReward(uint16(newIds[i]), uint24(newAmounts[i]));
+          pendingOutput.produced[producedLength] = Equipment(uint16(newIds[i]), uint24(newAmounts[i]));
           ++producedLength;
         }
 
@@ -202,7 +202,7 @@ contract PlayersImplRewards is PlayersImplBase {
       );
 
       for (uint i; i < ids.length; ++i) {
-        pendingOutput.produced[producedLength] = ActionReward(uint16(ids[i]), uint24(amounts[i]));
+        pendingOutput.produced[producedLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
         ++producedLength;
       }
     }
@@ -211,7 +211,7 @@ contract PlayersImplRewards is PlayersImplBase {
     (uint[] memory ids, uint[] memory amounts, uint numRemoved) = claimableRandomRewards(_playerId);
 
     for (uint i; i < ids.length; ++i) {
-      pendingOutput.produced[producedLength] = ActionReward(uint16(ids[i]), uint24(amounts[i]));
+      pendingOutput.produced[producedLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
       ++producedLength;
     }
 
@@ -364,7 +364,7 @@ contract PlayersImplRewards is PlayersImplBase {
     view
     returns (
       Equipment[] memory consumedEquipment,
-      ActionReward memory output,
+      Equipment memory output,
       uint actualElapsedTime,
       uint xpElapsedTime,
       bool died
@@ -436,7 +436,7 @@ contract PlayersImplRewards is PlayersImplBase {
     }
 
     if (_actionChoice.outputTokenId != 0) {
-      output = ActionReward(_actionChoice.outputTokenId, numConsumed);
+      output = Equipment(_actionChoice.outputTokenId, numConsumed);
     }
 
     assembly ("memory-safe") {

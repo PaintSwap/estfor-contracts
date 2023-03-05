@@ -391,12 +391,12 @@ export enum EquipPosition {
   LEFT_HAND,
   RIGHT_HAND,
   BOTH_HANDS,
+  NONE,
   ARROW_SATCHEL,
   MAGIC_BAG,
   FOOD,
   AUX, // wood, seeds etc..
   BOOST_VIAL,
-  NONE,
 }
 
 export type CombatStats = {
@@ -411,7 +411,7 @@ export type CombatStats = {
 
 export type Equipment = {
   itemTokenId: number;
-  numToEquip: number;
+  amount: number;
 };
 
 export type Attire = {
@@ -734,7 +734,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     equipments: [
       {
         itemTokenId: BRONZE_HELMET,
-        numToEquip: 3,
+        amount: 3,
       },
     ],
   },

@@ -79,12 +79,12 @@ enum EquipPosition {
   LEFT_HAND,
   RIGHT_HAND,
   BOTH_HANDS,
+  NONE,
   ARROW_SATCHEL,
   MAGIC_BAG,
   FOOD,
   AUX, // wood, seeds  etc..
-  BOOST_VIAL,
-  NONE
+  BOOST_VIAL
 }
 
 // Loot
@@ -100,7 +100,7 @@ struct PendingRandomReward {
 }
 struct Equipment {
   uint16 itemTokenId;
-  uint16 numToEquip;
+  uint24 amount;
 }
 
 struct ActionRewards {
@@ -210,7 +210,7 @@ struct Player {
 // This is only for viewing so doesn't need to be optimized
 struct PendingOutput {
   Equipment[] consumed;
-  ActionReward[] produced;
+  Equipment[] produced;
   bool died;
 }
 
