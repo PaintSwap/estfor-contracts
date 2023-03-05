@@ -7,6 +7,7 @@ import {
   BoostType,
   BRONZE_ARROW,
   BRONZE_AXE,
+  BRONZE_BAR,
   BRONZE_GAUNTLETS,
   BRONZE_PICKAXE,
   BRONZE_SWORD,
@@ -20,6 +21,7 @@ import {
   createPlayer,
   emptyActionChoice,
   emptyStats,
+  Equipment,
   EquipPosition,
   FIRE_LIGHTER,
   FIRE_MAX,
@@ -453,6 +455,75 @@ describe("Player", () => {
 
   it("Multi-skill points", async () => {
     // TODO:
+  });
+
+  it("XP threshold rewards", async () => {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.addItem({
+      ...inputItem,
+      tokenId: BRONZE_AXE,
+      equipPosition: EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    const rate = 100 * 100; // per hour
+    const tx = await world.addAction({
+      info: {
+        skill: Skill.WOODCUTTING,
+        xpPerHour: 3600,
+        minSkillPoints: 0,
+        isDynamic: false,
+        numSpawn: 0,
+        itemTokenIdRangeMin: WOODCUTTING_BASE,
+        itemTokenIdRangeMax: WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+      },
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
+      combatStats: emptyStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const queuedAction: QueuedAction = {
+      attire: noAttire,
+      actionId,
+      combatStyle: CombatStyle.NONE,
+      choiceId: NONE,
+      choiceId1: NONE,
+      choiceId2: NONE,
+      regenerateId: NONE,
+      timespan: 7200,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
+      startTime: "0",
+      isValid: true,
+    };
+
+    const equipments: Equipment[] = [{numToEquip: 3, itemTokenId: BRONZE_BAR}];
+    await expect(players.addXPThresholdReward({xpThreshold: 7219, equipments})).to.be.reverted;
+    await players.addXPThresholdReward({xpThreshold: 7200, equipments});
+
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_mine", []);
+
+    const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
+    let pendingOutput = await playerDelegateView.pending(playerId);
+    expect(pendingOutput.produced.length).is.eq(1);
+    await players.connect(alice).processActions(playerId);
+
+    expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(0);
+    await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_mine", []);
+    pendingOutput = await playerDelegateView.pending(playerId);
+    expect(pendingOutput.produced.length).is.eq(2);
+    expect(pendingOutput.produced[1].itemTokenId).is.eq(BRONZE_BAR);
+    expect(pendingOutput.produced[1].rate).is.eq(3);
+
+    await players.connect(alice).processActions(playerId);
+    expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(3);
   });
 
   // TODO: Check attire stats are as expected

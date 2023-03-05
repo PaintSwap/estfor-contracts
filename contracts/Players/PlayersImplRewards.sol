@@ -77,6 +77,27 @@ contract PlayersImplRewards is PlayersImplBase {
     }
   }
 
+  function claimableXPThresholdRewards(
+    address _from,
+    uint _oldTotalSkillPoints,
+    uint _newTotalSkillPoints
+  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts) {
+    uint16 prevIndex = _findBaseXPThreshold(_oldTotalSkillPoints);
+    uint16 nextIndex = _findBaseXPThreshold(_newTotalSkillPoints);
+    if (prevIndex != nextIndex) {
+      uint32 xpThreshold = _getXPReward(nextIndex);
+      Equipment[] memory items = xpRewardThresholds[xpThreshold];
+      if (items.length > 0) {
+        itemTokenIds = new uint[](items.length);
+        amounts = new uint[](items.length);
+        for (uint i = 0; i < items.length; ++i) {
+          itemTokenIds[i] = items[i].itemTokenId;
+          amounts[i] = items[i].numToEquip;
+        }
+      }
+    }
+  }
+
   // Get any changes that are pending and not on the blockchain yet.
   function pending(uint _playerId) external view returns (PendingOutput memory pendingOutput) {
     Player storage player = players[_playerId];
@@ -93,7 +114,8 @@ contract PlayersImplRewards is PlayersImplBase {
     uint consumedLength;
     uint producedLength;
     address from = msg.sender;
-    uint32 allpointsAccrued;
+    uint previousSkillPoints = player.totalSkillPoints;
+    uint32 allPointsAccrued;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
 
@@ -155,8 +177,6 @@ contract PlayersImplRewards is PlayersImplBase {
       }
 
       if (pointsAccrued > 0) {
-        //        _updateSkillPoints(_playerId, queuedAction.skill, pointsAccrued);
-
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           uint40(queuedAction.startTime + elapsedTime),
           xpElapsedTime,
@@ -170,13 +190,21 @@ contract PlayersImplRewards is PlayersImplBase {
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
-        allpointsAccrued += pointsAccrued;
+        allPointsAccrued += pointsAccrued;
       }
     } // end of loop
 
-    if (allpointsAccrued > 0) {
-      // Check if they have levelled up
-      //      _handleLevelUpRewards(from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
+    if (allPointsAccrued > 0) {
+      (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
+        from,
+        previousSkillPoints,
+        previousSkillPoints + allPointsAccrued
+      );
+
+      for (uint i; i < ids.length; ++i) {
+        pendingOutput.produced[producedLength] = ActionReward(uint16(ids[i]), uint24(amounts[i]));
+        ++producedLength;
+      }
     }
 
     // Loop through any pending random rewards and add them to the output

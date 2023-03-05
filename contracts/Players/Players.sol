@@ -287,6 +287,26 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     implRewards = _rewards;
   }
 
+  function _addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) private {
+    // Check that it is part of the hexBytes
+    uint16 index = _findBaseXPThreshold(_xpThresholdReward.xpThreshold);
+    uint32 xpThreshold = _getXPReward(index);
+    require(_xpThresholdReward.xpThreshold == xpThreshold); // Not in the hex string
+
+    xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.equipments;
+    emit AddThresholdReward(_xpThresholdReward);
+  }
+
+  function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external onlyOwner {
+    _addXPThresholdReward(_xpThresholdReward);
+  }
+
+  function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
+    for (uint i; i < _xpThresholdRewards.length; ++i) {
+      _addXPThresholdReward(_xpThresholdRewards[i]);
+    }
+  }
+
   // For the various view functions that require delegatecall
   fallback() external {
     bytes4 selector = bytes4(msg.data);

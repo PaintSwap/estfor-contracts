@@ -6,6 +6,10 @@ import "./PlayersImplBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 contract PlayersImplProcessActions is PlayersImplBase {
+  // 3 bytes for each level. 0x000000 is the first level, 0x000054 is the second, etc.
+  bytes constant xpBytes =
+    hex"0000000000540000AE00010E0001760001E600025E0002DE0003680003FD00049B0005460005FC0006C0000792000873000964000A66000B7B000CA4000DE1000F360010A20012290013CB00158B00176B00196E001B94001DE200205A0022FF0025D50028DD002C1E002F99003354003752003B9A004030004519004A5C004FFF005609005C81006370006ADD0072D1007B57008479008E420098BE00A3F900B00200BCE700CAB800D98600E96300FA62010C9901201D013506014B6F016373017D2E0198C101B64E01D5F801F7E6021C4302433B026CFD0299BE02C9B302FD1803342B036F3203AE7303F23D043AE30488BE04DC2F05359B05957005FC24066A3606E02D075E9907E61608774C0912EB09B9B40A6C740B2C060BF9560CD5610DC1340EBDF30FCCD410EF24";
+
   function processActions(address _from, uint _playerId) external returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_playerId];
     if (player.actionQueue.length == 0) {
@@ -14,7 +18,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
     }
 
     uint previousSkillPoints = player.totalSkillPoints;
-    uint32 allpointsAccrued;
+    uint32 allPointsAccrued;
 
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint length;
@@ -137,7 +141,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
           itemNFT.mintBatch(_from, newIds, newAmounts);
           emit Rewards(_from, _playerId, _queueId, newIds, newAmounts);
         }
-        allpointsAccrued += pointsAccrued;
+        allPointsAccrued += pointsAccrued;
       }
 
       if (fullyFinished) {
@@ -145,12 +149,11 @@ contract PlayersImplProcessActions is PlayersImplBase {
       } else {
         emit ActionPartiallyFinished(_from, _playerId, _queueId, elapsedTime);
       }
+    }
 
-      if (pointsAccrued > 0) {
-        // Check if they have levelled up
-        _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + pointsAccrued);
-        player.totalSkillPoints = uint160(previousSkillPoints + pointsAccrued);
-      }
+    if (allPointsAccrued > 0) {
+      _handleTotalXPThresholdRewards(_from, previousSkillPoints, previousSkillPoints + allPointsAccrued);
+      player.totalSkillPoints = uint160(previousSkillPoints + allPointsAccrued);
     }
 
     _claimRandomRewards(_playerId);
@@ -295,7 +298,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
   // Index not level, add one after (check for > max)
   function _findLevel(uint256 _xp) private pure returns (uint16) {
     uint256 low = 0;
-    uint256 high = 100;
+    uint256 high = xpBytes.length / 3;
 
     while (low < high) {
       uint256 mid = (low + high) / 2;
@@ -385,38 +388,32 @@ contract PlayersImplProcessActions is PlayersImplBase {
     }
   }
 
-  function _handleLevelUpRewards(
+  function _claimableXPThresholdRewards(
     address _from,
-    uint _playerId,
-    uint oldOverallSkillPoints,
-    uint newOverallSkillPoints
-  ) private {
-    /*
-    // Level 99
-    if (oldOverallSkillPoints < LEVEL_99_BOUNDARY && newOverallSkillPoints >= LEVEL_99_BOUNDARY) {
-      // Mint rewards
-      uint[] memory itemTokenIds = new uint[](1);
-      itemTokenIds[0] = SAPPHIRE_AMULET;
+    uint _oldTotalSkillPoints,
+    uint _newTotalSkillPoints
+  ) private returns (uint[] memory ids, uint[] memory amounts) {
+    (bool success, bytes memory data) = implRewards.delegatecall(
+      abi.encodeWithSignature(
+        "claimableXPThresholdRewards(address,uint256,uint256)",
+        _from,
+        _oldTotalSkillPoints,
+        _newTotalSkillPoints
+      )
+    );
+    require(success);
+    return abi.decode(data, (uint[], uint[]));
+  }
 
-      uint[] memory amounts = new uint[](1);
-      amounts[0] = 1;
-
+  function _handleTotalXPThresholdRewards(address _from, uint _oldTotalSkillPoints, uint _newTotalSkillPoints) private {
+    (uint[] memory itemTokenIds, uint[] memory amounts) = _claimableXPThresholdRewards(
+      _from,
+      _oldTotalSkillPoints,
+      _newTotalSkillPoints
+    );
+    if (itemTokenIds.length > 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
-
-      // Consume an XP boost immediately
-      // TODO
-
-      emit LevelUp(_playerId, itemTokenIds, amounts);
-    } else if (oldOverallSkillPoints < LEVEL_90_BOUNDARY && newOverallSkillPoints >= LEVEL_90_BOUNDARY) {} else if (
-      oldOverallSkillPoints < LEVEL_80_BOUNDARY && newOverallSkillPoints >= LEVEL_80_BOUNDARY
-    ) {} else if (oldOverallSkillPoints < LEVEL_70_BOUNDARY && newOverallSkillPoints >= LEVEL_70_BOUNDARY) {} else if (
-      oldOverallSkillPoints < LEVEL_60_BOUNDARY && newOverallSkillPoints >= LEVEL_60_BOUNDARY
-    ) {} else if (oldOverallSkillPoints < LEVEL_50_BOUNDARY && newOverallSkillPoints >= LEVEL_50_BOUNDARY) {} else if (
-      oldOverallSkillPoints < LEVEL_40_BOUNDARY && newOverallSkillPoints >= LEVEL_40_BOUNDARY
-    ) {} else if (oldOverallSkillPoints < LEVEL_30_BOUNDARY && newOverallSkillPoints >= LEVEL_30_BOUNDARY) {} else if (
-      oldOverallSkillPoints < LEVEL_20_BOUNDARY && newOverallSkillPoints >= LEVEL_20_BOUNDARY
-    ) {} else if (oldOverallSkillPoints < LEVEL_10_BOUNDARY && newOverallSkillPoints >= LEVEL_10_BOUNDARY) {} else if (
-      oldOverallSkillPoints < LEVEL_5_BOUNDARY && newOverallSkillPoints >= LEVEL_5_BOUNDARY
-    ) {} */
+      emit XPThresholdRewards(itemTokenIds, amounts);
+    }
   }
 }

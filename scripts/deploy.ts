@@ -5,6 +5,7 @@ import {
   allActions,
   allItems,
   allShopItems,
+  allXPThresholdRewards,
   BRONZE_AXE,
   BRONZE_GAUNTLETS,
   BRONZE_HELMET,
@@ -178,7 +179,11 @@ async function main() {
   // === Test stuff ===
   tx = await itemNFT.addItems(allItems);
   await tx.wait();
-  console.log("add item");
+  console.log("add items");
+
+  tx = await players.addXPThresholdRewards(allXPThresholdRewards);
+  await tx.wait();
+  console.log("add xp threshold rewards");
 
   const tokenIds: number[] = [];
   const amounts: number[] = [];

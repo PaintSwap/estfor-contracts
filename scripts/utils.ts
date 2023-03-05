@@ -607,6 +607,11 @@ type InputItem = {
   metadataURI: string;
 };
 
+type XPThresholdReward = {
+  xpThreshold: number;
+  equipments: Equipment[];
+};
+
 export const inputItem = {
   combatStats: emptyStats,
   nonCombatStats: [],
@@ -616,7 +621,6 @@ export const inputItem = {
   boostDuration: 0,
 };
 
-// TODO This is just reusing the same stats for now
 export const allItems: InputItem[] = [
   {
     ...inputItem,
@@ -721,6 +725,18 @@ export const allItems: InputItem[] = [
     tokenId: BRONZE_BAR,
     equipPosition: EquipPosition.AUX,
     metadataURI: "someIPFSURI.json",
+  },
+];
+
+export const allXPThresholdRewards: XPThresholdReward[] = [
+  {
+    xpThreshold: 7200,
+    equipments: [
+      {
+        itemTokenId: BRONZE_HELMET,
+        numToEquip: 3,
+      },
+    ],
   },
 ];
 

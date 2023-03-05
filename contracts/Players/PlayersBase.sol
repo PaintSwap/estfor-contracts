@@ -29,6 +29,8 @@ contract PlayersBase {
 
   event AddPendingRandomReward(uint playerId, uint timestamp, uint elapsed);
 
+  event AddThresholdReward(XPThresholdReward xpThresholdReward);
+
   // For logging
   event Died(address from, uint playerId, uint128 queueId);
   event Rewards(address from, uint playerId, uint128 queueId, uint[] itemTokenIds, uint[] amounts);
@@ -37,6 +39,7 @@ contract PlayersBase {
   event ActionFinished(address from, uint playerId, uint128 queueId);
   event ActionPartiallyFinished(address from, uint playerId, uint128 queueId, uint elapsedTime);
   event ActionAborted(uint playerId, uint128 queueId);
+  event XPThresholdRewards(uint[] itemTokenIds, uint[] amounts);
 
   error SkillsArrayZero();
   error NotOwner();
@@ -76,6 +79,10 @@ contract PlayersBase {
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
   mapping(uint => PendingRandomReward[]) internal pendingRandomRewards; // queue, will be sorted by timestamp
+
+  // 4 bytes for each threshold, currently just 7200
+  bytes constant xpRewardBytes = hex"0000000000001C20";
+  mapping(uint => Equipment[]) xpRewardThresholds; // XP => items[]. Thresholds and all items rewarded for it
 
   address implQueueActions;
   address implProcessActions;
@@ -262,5 +269,40 @@ contract PlayersBase {
     );
     require(success);
     return abi.decode(data, (QueuedAction[]));
+  }
+
+  // Index not level, add one after (check for > max)
+  function _findBaseXPThreshold(uint256 _xp) internal pure returns (uint16) {
+    uint256 low = 0;
+    uint256 high = xpRewardBytes.length / 4;
+
+    while (low < high) {
+      uint256 mid = (low + high) / 2;
+
+      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+      // Math.average rounds down (it does integer division with truncation).
+      if (_getXPReward(mid) > _xp) {
+        high = mid;
+      } else {
+        low = mid + 1;
+      }
+    }
+
+    if (low > 0) {
+      return uint16(low - 1);
+    } else {
+      return 0;
+    }
+  }
+
+  function _getXPReward(uint256 _index) internal pure returns (uint32) {
+    uint256 index = _index * 4;
+    return
+      uint32(
+        xpRewardBytes[index] |
+          (bytes4(xpRewardBytes[index + 1]) >> 8) |
+          (bytes4(xpRewardBytes[index + 2]) >> 16) |
+          (bytes4(xpRewardBytes[index + 3]) >> 24)
+      );
   }
 }
