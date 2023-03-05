@@ -97,7 +97,7 @@ contract PlayersImplRewards is PlayersImplBase {
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
 
-      CombatStats memory combatStats = player.combatStats;
+      CombatStats memory combatStats = _getCachedCombatStats(player);
 
       // This will only ones that they have a balance for at this time. This will check balances
       _updateCombatStats(from, combatStats, queuedAction.attire);

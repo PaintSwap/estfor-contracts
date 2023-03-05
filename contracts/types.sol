@@ -42,10 +42,10 @@ enum BoostType {
 enum CombatStyle {
   NONE,
   ATTACK,
-  RANGED,
+  RANGE,
   MAGIC,
   MELEE_DEFENCE,
-  RANGED_DEFENCE,
+  RANGE_DEFENCE,
   MAGIC_DEFENCE
 }
 
@@ -53,7 +53,7 @@ enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates all combat skills, attack <-> magic, defence, health etc
   ATTACK,
-  RANGED,
+  RANGE,
   MAGIC,
   DEFENCE,
   HEALTH,
@@ -187,7 +187,6 @@ struct CombatStats {
   int16 attack;
   int16 magic;
   int16 range;
-  int16 defence;
   int16 health;
   // These include equipment
   int16 meleeDefence;
@@ -195,13 +194,17 @@ struct CombatStats {
   int16 rangeDefence;
 }
 
-// TODO: Can pack this better, remove the structs
 struct Player {
-  CombatStats combatStats; // Cached so this doesn't need to be calculated every combat
+  // Combat, stats from skill points (Cached so this doesn't need to be calculated every combat)
+  int16 attack;
+  int16 magic;
+  int16 range;
+  int16 defence;
+  int16 health;
+  uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
+  uint160 totalSkillPoints;
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
-  uint240 totalSkillPoints;
-  uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
 }
 
 // This is only for viewing so doesn't need to be optimized

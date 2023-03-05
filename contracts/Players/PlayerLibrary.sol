@@ -208,7 +208,7 @@ library PlayerLibrary {
         totalHealthDealt =
           ((_combatStats.magic * _combatStats.magic * int32(int(_elapsedTime))) / _enemyCombatStats.magicDefence) *
           60;
-      } else if (_actionChoice.skill == Skill.RANGED) {
+      } else if (_actionChoice.skill == Skill.RANGE) {
         // Add later
         //        totalHealthDealt = (_combatStats.range * _combatStats.range * int32(int(_elapsedTime))) /
         //        _enemyCombatStats.rangeDefence;

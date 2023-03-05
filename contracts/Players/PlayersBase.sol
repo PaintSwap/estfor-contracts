@@ -246,6 +246,16 @@ contract PlayersBase {
     }
   }
 
+  function _getCachedCombatStats(Player storage _player) internal view returns (CombatStats memory combatStats) {
+    combatStats.attack = _player.attack;
+    combatStats.magic = _player.magic;
+    //    combatStats.range = _player.range;
+    combatStats.health = _player.health;
+    combatStats.meleeDefence = _player.defence;
+    combatStats.magicDefence = _player.defence;
+    //    combatStats.rangeDefence = _player.defence;
+  }
+
   function _processActions(address _from, uint _playerId) internal returns (QueuedAction[] memory remainingSkills) {
     (bool success, bytes memory data) = implProcessActions.delegatecall(
       abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)

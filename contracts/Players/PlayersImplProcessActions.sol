@@ -38,7 +38,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
       }
 
       // This will only ones that they have a balance for at this time. This will check balances
-      CombatStats memory combatStats = player.combatStats;
+      CombatStats memory combatStats = _getCachedCombatStats(player);
       _updateCombatStats(_from, combatStats, queuedAction.attire);
 
       uint32 pointsAccrued;
@@ -149,7 +149,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
       if (pointsAccrued > 0) {
         // Check if they have levelled up
         _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + pointsAccrued);
-        player.totalSkillPoints = uint240(previousSkillPoints + pointsAccrued);
+        player.totalSkillPoints = uint160(previousSkillPoints + pointsAccrued);
       }
     }
 
@@ -254,20 +254,20 @@ contract PlayersImplProcessActions is PlayersImplBase {
   ) private {
     {
       int16 level = int16(_findLevel(_healthSkillPoints));
-      _player.combatStats.health = level;
+      _player.health = level;
     }
 
     int16 level = int16(_findLevel(_skillPoints));
     if (_skill == Skill.ATTACK) {
-      _player.combatStats.attack = level;
+      _player.attack = level;
     } else if (_skill == Skill.MAGIC) {
-      _player.combatStats.magic = level;
+      _player.magic = level;
     }
-    /* else if (_skill == Skill.RANGED) {
-            _player.combatStats.attack = level;
+    /* else if (_skill == Skill.RANGE) {
+            _player.attack = level;
           } */
     else if (_skill == Skill.DEFENCE) {
-      _player.combatStats.defence = level;
+      _player.defence = level;
     }
   }
 
@@ -277,12 +277,12 @@ contract PlayersImplProcessActions is PlayersImplBase {
     } else if (_combatStyle == CombatStyle.MAGIC) {
       skill = Skill.MAGIC;
     }
-    /* else if (_combatStyle == Skill.RANGED) {
-            skill = Skill.RANGED;
+    /* else if (_combatStyle == Skill.RANGE) {
+            skill = Skill.RANGE;
           } */
     else if (
       _combatStyle == CombatStyle.MELEE_DEFENCE ||
-      _combatStyle == CombatStyle.RANGED_DEFENCE ||
+      _combatStyle == CombatStyle.RANGE_DEFENCE ||
       _combatStyle == CombatStyle.MAGIC_DEFENCE
     ) {
       skill = Skill.DEFENCE;

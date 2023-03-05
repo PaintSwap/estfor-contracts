@@ -6,10 +6,10 @@ import {PlayerNFT} from "../typechain-types";
 export enum CombatStyle {
   NONE,
   ATTACK,
-  RANGED,
+  RANGE,
   MAGIC,
   MELEE_DEFENCE,
-  RANGED_DEFENCE,
+  RANGE_DEFENCE,
   MAGIC_DEFENCE,
 }
 
@@ -18,7 +18,7 @@ export enum Skill {
   NONE,
   COMBAT,
   ATTACK,
-  RANGED,
+  RANGE,
   MAGIC,
   DEFENCE,
   HEALTH,
@@ -403,7 +403,6 @@ export type CombatStats = {
   attack: number;
   magic: number;
   range: number;
-  defence: number;
   meleeDefence: number;
   magicDefence: number;
   rangeDefence: number;
@@ -539,44 +538,40 @@ type ActionChoice = {
   outputTokenId: number;
 };
 
-export const emptyStats = {
+export const emptyStats: CombatStats = {
   attack: 0,
   magic: 0,
   range: 0,
-  defence: 0,
   meleeDefence: 0,
   magicDefence: 0,
   rangeDefence: 0,
   health: 0,
 };
 
-const bronzeHelmentStats = {
+const bronzeHelmentStats: CombatStats = {
   attack: 1,
   magic: 0,
   range: 0,
-  defence: 0,
   meleeDefence: 4,
   magicDefence: 0,
   rangeDefence: 1,
   health: 1,
 };
 
-const bronzeGauntletStats = {
+const bronzeGauntletStats: CombatStats = {
   attack: 0,
   magic: 0,
   range: 0,
-  defence: 0,
   meleeDefence: 1,
   magicDefence: 0,
   rangeDefence: 1,
   health: 0,
 };
 
-const bronzeSwordStats = {
+const bronzeSwordStats: CombatStats = {
   attack: 5,
   magic: 0,
   range: 0,
-  defence: 0,
   meleeDefence: 0,
   magicDefence: 0,
   rangeDefence: 0,
@@ -976,7 +971,7 @@ export const smithingChoices: ActionChoice[] = [
 /*
 export const allCombatSubActions: CombatConsumables[] = [
   {
-    skill: Skill.RANGED,
+    skill: Skill.RANGE,
     diff: 10, // 10 more ranged dmg/h
     minSkillPoints: 0,
     rate: 100, // 100 arrows used hour
