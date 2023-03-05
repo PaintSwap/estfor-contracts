@@ -57,7 +57,7 @@ async function main() {
   console.log(`MockOracleClient deployed at ${mockOracleClient.address.toLowerCase()}`);
 
   // Create the world
-  const subscriptionId = 2;
+  const subscriptionId = 62;
   const World = await ethers.getContractFactory("World");
   const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
     kind: "uups",
