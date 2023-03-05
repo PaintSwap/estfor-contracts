@@ -132,9 +132,13 @@ contract PlayersImplRewards is PlayersImplBase {
     pendingOutput.produced = new Equipment[](
       actionQueue.length * MAX_REWARDS_PER_ACTION + (_pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION)
     );
+    pendingOutput.producedPastRandomRewards = new Equipment[](20);
+    pendingOutput.producedXPRewards = new Equipment[](20);
 
     uint consumedLength;
     uint producedLength;
+    uint producedPastRandomRewardsLength;
+    uint producedXPRewardsLength;
     address from = msg.sender;
     uint previousSkillPoints = player.totalSkillPoints;
     uint32 allPointsAccrued;
@@ -162,7 +166,6 @@ contract PlayersImplRewards is PlayersImplBase {
       bool isCombat = _isCombat(queuedAction.combatStyle);
       uint xpElapsedTime = elapsedTime;
       if (queuedAction.choiceId != 0) {
-        // || isCombat) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
         Equipment[] memory consumedEquipment;
@@ -224,8 +227,8 @@ contract PlayersImplRewards is PlayersImplBase {
       );
 
       for (uint i; i < ids.length; ++i) {
-        pendingOutput.produced[producedLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
-        ++producedLength;
+        pendingOutput.producedXPRewards[producedXPRewardsLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
+        ++producedXPRewardsLength;
       }
     }
 
@@ -234,15 +237,19 @@ contract PlayersImplRewards is PlayersImplBase {
       (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
 
       for (uint i; i < ids.length; ++i) {
-        pendingOutput.produced[producedLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
-        ++producedLength;
+        pendingOutput.producedPastRandomRewards[producedPastRandomRewardsLength] = Equipment(
+          uint16(ids[i]),
+          uint24(amounts[i])
+        );
+        ++producedPastRandomRewardsLength;
       }
     }
 
-    // TODO Will also need guaranteedRewards, find a way to re-factor all this stuff so it can be re-used in the actual queue consumption
     assembly ("memory-safe") {
       mstore(mload(pendingOutput), consumedLength)
       mstore(mload(add(pendingOutput, 32)), producedLength)
+      mstore(mload(add(pendingOutput, 64)), producedPastRandomRewardsLength)
+      mstore(mload(add(pendingOutput, 96)), producedXPRewardsLength)
     }
   }
 
@@ -361,7 +368,11 @@ contract PlayersImplRewards is PlayersImplBase {
           // (1 per hour spent)
           numTickets = elapsedTime / 3600;
         }
-        bytes32 randomComponent = bytes32(seed);
+        bytes32 randomComponent = bytes32(seed) ^
+          (bytes32(uint256(skillEndTime)) |
+            (bytes32(uint256(skillEndTime)) << 64) |
+            (bytes32(uint256(skillEndTime)) << 128) |
+            (bytes32(uint256(skillEndTime)) << 192));
         uint startLootLength = length;
         for (uint i; i < numTickets; ++i) {
           // The random component is out of 65535, so we can take 2 bytes at a time

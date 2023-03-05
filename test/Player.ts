@@ -526,9 +526,10 @@ describe("Player", () => {
       includePastRandomRewards: true,
       includeXPRewards: true,
     });
-    expect(pendingOutput.produced.length).is.eq(2);
-    expect(pendingOutput.produced[1].itemTokenId).is.eq(BRONZE_BAR);
-    expect(pendingOutput.produced[1].amount).is.eq(3);
+    expect(pendingOutput.produced.length).is.eq(1);
+    expect(pendingOutput.producedXPRewards.length).is.eq(1);
+    expect(pendingOutput.producedXPRewards[0].itemTokenId).is.eq(BRONZE_BAR);
+    expect(pendingOutput.producedXPRewards[0].amount).is.eq(3);
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(3);
@@ -2021,7 +2022,7 @@ describe("Player", () => {
               includePastRandomRewards: true,
               includeXPRewards: false,
             })
-          ).produced.length > 0
+          ).producedPastRandomRewards.length > 0
         ) {
           expect(
             (
@@ -2030,7 +2031,7 @@ describe("Player", () => {
                 includePastRandomRewards: true,
                 includeXPRewards: false,
               })
-            ).produced.length
+            ).producedPastRandomRewards.length
           ).to.eq(1);
 
           const produced = (
@@ -2039,7 +2040,7 @@ describe("Player", () => {
               includePastRandomRewards: true,
               includeXPRewards: false,
             })
-          ).produced[0].amount;
+          ).producedPastRandomRewards[0].amount;
           numProduced += produced;
           expect(
             (
@@ -2048,7 +2049,7 @@ describe("Player", () => {
                 includePastRandomRewards: true,
                 includeXPRewards: false,
               })
-            ).produced[0].itemTokenId
+            ).producedPastRandomRewards[0].itemTokenId
           ).to.be.eq(BRONZE_ARROW);
         }
       }

@@ -211,6 +211,8 @@ struct Player {
 struct PendingOutput {
   Equipment[] consumed;
   Equipment[] produced;
+  Equipment[] producedPastRandomRewards;
+  Equipment[] producedXPRewards;
   bool died;
 }
 
