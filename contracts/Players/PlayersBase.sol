@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./World.sol";
-import "./types.sol";
-import "./items.sol";
-import "./ItemNFT.sol";
-import "./PlayerNFT.sol";
+import "../World.sol";
+import "../types.sol";
+import "../items.sol";
+import "../ItemNFT.sol";
+import "../PlayerNFT.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 

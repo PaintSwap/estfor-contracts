@@ -93,7 +93,6 @@ contract PlayersImplRewards is PlayersImplBase {
     uint consumedLength;
     uint producedLength;
     address from = msg.sender;
-    uint previousSkillPoints = player.totalSkillPoints;
     uint32 allpointsAccrued;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];

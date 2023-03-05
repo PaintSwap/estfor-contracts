@@ -4,11 +4,11 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "./World.sol";
-import "./types.sol";
-import "./items.sol";
-import "./ItemNFT.sol";
-import "./PlayerNFT.sol";
+import "../World.sol";
+import "../types.sol";
+import "../items.sol";
+import "../ItemNFT.sol";
+import "../PlayerNFT.sol";
 import "./PlayersBase.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";

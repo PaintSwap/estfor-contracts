@@ -2,9 +2,9 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
-import "./types.sol";
-import "./World.sol";
-import "./ItemNFT.sol";
+import "../types.sol";
+import "../World.sol";
+import "../ItemNFT.sol";
 import "./Players.sol"; // Might not even be needed
 
 // Show all the player stats, return metadata json

@@ -13,7 +13,6 @@ contract PlayersImplProcessActions is PlayersImplBase {
       return remainingSkills;
     }
 
-    // TODO: Check they have everything (attire is checked already)
     uint previousSkillPoints = player.totalSkillPoints;
     uint32 allpointsAccrued;
 
@@ -105,7 +104,7 @@ contract PlayersImplProcessActions is PlayersImplBase {
         Skill skill = _getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId);
 
         if (_isCombat(queuedAction.combatStyle)) {
-          // Update health too with 33%
+          // Update health too with 33% of the points gained from combat
           _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);
           _cacheCombatStats(
             players[_playerId],
@@ -149,7 +148,8 @@ contract PlayersImplProcessActions is PlayersImplBase {
 
       if (pointsAccrued > 0) {
         // Check if they have levelled up
-        _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + allpointsAccrued);
+        _handleLevelUpRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + pointsAccrued);
+        player.totalSkillPoints = uint240(previousSkillPoints + pointsAccrued);
       }
     }
 

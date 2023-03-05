@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 // For optimization purposes this contains a few data items, and everything except combat stats (although it could fit?)
 struct Item {
-  // TODO: Type?
   EquipPosition equipPosition;
   bool hasNonCombatStats;
   bool hasCombatStats;
