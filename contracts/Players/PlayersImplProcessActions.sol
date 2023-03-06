@@ -6,10 +6,6 @@ import "./PlayersImplBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 contract PlayersImplProcessActions is PlayersImplBase {
-  // 3 bytes for each level. 0x000000 is the first level, 0x000054 is the second, etc.
-  bytes constant xpBytes =
-    hex"0000000000540000AE00010E0001760001E600025E0002DE0003680003FD00049B0005460005FC0006C0000792000873000964000A66000B7B000CA4000DE1000F360010A20012290013CB00158B00176B00196E001B94001DE200205A0022FF0025D50028DD002C1E002F99003354003752003B9A004030004519004A5C004FFF005609005C81006370006ADD0072D1007B57008479008E420098BE00A3F900B00200BCE700CAB800D98600E96300FA62010C9901201D013506014B6F016373017D2E0198C101B64E01D5F801F7E6021C4302433B026CFD0299BE02C9B302FD1803342B036F3203AE7303F23D043AE30488BE04DC2F05359B05957005FC24066A3606E02D075E9907E61608774C0912EB09B9B40A6C740B2C060BF9560CD5610DC1340EBDF30FCCD410EF24";
-
   function processActions(address _from, uint _playerId) external returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_playerId];
     if (player.actionQueue.length == 0) {
@@ -256,11 +252,11 @@ contract PlayersImplProcessActions is PlayersImplBase {
     uint32 _skillPoints
   ) private {
     {
-      int16 level = int16(_findLevel(_healthSkillPoints));
+      int16 level = int16(PlayerLibrary.getLevel(_healthSkillPoints));
       _player.health = level;
     }
 
-    int16 level = int16(_findLevel(_skillPoints));
+    int16 level = int16(PlayerLibrary.getLevel(_skillPoints));
     if (_skill == Skill.ATTACK) {
       _player.attack = level;
     } else if (_skill == Skill.MAGIC) {
@@ -293,35 +289,6 @@ contract PlayersImplProcessActions is PlayersImplBase {
       // Not a combat style, get the skill from the action
       skill = world.getSkill(_actionId);
     }
-  }
-
-  // Index not level, add one after (check for > max)
-  function _findLevel(uint256 _xp) private pure returns (uint16) {
-    uint256 low = 0;
-    uint256 high = xpBytes.length / 3;
-
-    while (low < high) {
-      uint256 mid = (low + high) / 2;
-
-      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
-      // Math.average rounds down (it does integer division with truncation).
-      if (_getXP(mid) > _xp) {
-        high = mid;
-      } else {
-        low = mid + 1;
-      }
-    }
-
-    if (low > 0) {
-      return uint16(low);
-    } else {
-      return 1;
-    }
-  }
-
-  function _getXP(uint256 _index) private pure returns (uint24) {
-    uint256 index = _index * 3;
-    return uint24(xpBytes[index] | (bytes3(xpBytes[index + 1]) >> 8) | (bytes3(xpBytes[index + 2]) >> 16));
   }
 
   function _claimRandomRewards(uint _playerId) private {

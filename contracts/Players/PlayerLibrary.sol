@@ -24,29 +24,29 @@ library PlayerLibrary {
       abi.encodePacked(
         _getTraitStringJSON("Avatar", avatarName),
         ",",
-        _getTraitNumberJSON("Attack", skillPoints[Skill.ATTACK]),
+        _getTraitNumberJSON("Attack", getLevel(skillPoints[Skill.ATTACK])),
         ",",
-        _getTraitNumberJSON("Magic", skillPoints[Skill.MAGIC]),
+        _getTraitNumberJSON("Magic", getLevel(skillPoints[Skill.MAGIC])),
         ",",
-        _getTraitNumberJSON("Defence", skillPoints[Skill.DEFENCE]),
+        _getTraitNumberJSON("Defence", getLevel(skillPoints[Skill.DEFENCE])),
         ",",
-        _getTraitNumberJSON("Health", skillPoints[Skill.HEALTH]),
+        _getTraitNumberJSON("Health", getLevel(skillPoints[Skill.HEALTH])),
         ",",
-        _getTraitNumberJSON("Mining", skillPoints[Skill.MINING]),
+        _getTraitNumberJSON("Mining", getLevel(skillPoints[Skill.MINING])),
         ",",
-        _getTraitNumberJSON("WoodCutting", skillPoints[Skill.WOODCUTTING]),
+        _getTraitNumberJSON("WoodCutting", getLevel(skillPoints[Skill.WOODCUTTING])),
         ",",
-        _getTraitNumberJSON("Fishing", skillPoints[Skill.FISHING]),
+        _getTraitNumberJSON("Fishing", getLevel(skillPoints[Skill.FISHING])),
         ",",
-        _getTraitNumberJSON("Smithing", skillPoints[Skill.SMITHING]),
+        _getTraitNumberJSON("Smithing", getLevel(skillPoints[Skill.SMITHING])),
         ",",
-        _getTraitNumberJSON("Thieving", skillPoints[Skill.THIEVING]),
+        _getTraitNumberJSON("Thieving", getLevel(skillPoints[Skill.THIEVING])),
         ",",
-        _getTraitNumberJSON("Crafting", skillPoints[Skill.CRAFTING]),
+        _getTraitNumberJSON("Crafting", getLevel(skillPoints[Skill.CRAFTING])),
         ",",
-        _getTraitNumberJSON("Cooking", skillPoints[Skill.COOKING]),
+        _getTraitNumberJSON("Cooking", getLevel(skillPoints[Skill.COOKING])),
         ",",
-        _getTraitNumberJSON("FireMaking", skillPoints[Skill.FIREMAKING])
+        _getTraitNumberJSON("FireMaking", getLevel(skillPoints[Skill.FIREMAKING]))
       )
     );
 
@@ -93,6 +93,35 @@ library PlayerLibrary {
 
   function _getTraitTypeJSON(string memory traitType) private pure returns (bytes memory) {
     return abi.encodePacked('{"trait_type":"', traitType, '","value":');
+  }
+
+  // Index not level, add one after (check for > max)
+  function getLevel(uint256 _xp) public pure returns (uint16) {
+    uint256 low = 0;
+    uint256 high = xpBytes.length / 3;
+
+    while (low < high) {
+      uint256 mid = (low + high) / 2;
+
+      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+      // Math.average rounds down (it does integer division with truncation).
+      if (_getXP(mid) > _xp) {
+        high = mid;
+      } else {
+        low = mid + 1;
+      }
+    }
+
+    if (low > 0) {
+      return uint16(low);
+    } else {
+      return 1;
+    }
+  }
+
+  function _getXP(uint256 _index) private pure returns (uint24) {
+    uint256 index = _index * 3;
+    return uint24(xpBytes[index] | (bytes3(xpBytes[index + 1]) >> 8) | (bytes3(xpBytes[index + 2]) >> 16));
   }
 
   function foodConsumedView(
