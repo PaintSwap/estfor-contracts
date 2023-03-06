@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "../types.sol";
 import "../World.sol";
 import "../ItemNFT.sol";
@@ -9,6 +10,9 @@ import "./Players.sol"; // Might not even be needed
 
 // Show all the player stats, return metadata json
 library PlayerLibrary {
+  using Strings for uint32;
+  using Strings for bytes32;
+
   function uri(
     bytes32 name,
     mapping(Skill => uint32) storage skillPoints,
@@ -18,33 +22,19 @@ library PlayerLibrary {
   ) external view returns (string memory) {
     string memory attributes = string(
       abi.encodePacked(
-        '{"trait_type":"Player name","value":"',
-        name,
-        '{"trait_type":"Attack","value":"',
-        skillPoints[Skill.ATTACK],
-        '"}, {"trait_type":"Magic","value":"',
-        skillPoints[Skill.MAGIC],
-        '"}, {"trait_type":"Defence","value":"',
-        skillPoints[Skill.DEFENCE],
-        '"}, {"trait_type":"Health","value":"',
-        skillPoints[Skill.HEALTH],
-        '"}, {"trait_type":"Mining","value":"',
-        skillPoints[Skill.MINING],
-        '{"trait_type":"WoodCutting","value":"',
-        skillPoints[Skill.WOODCUTTING],
-        '"}, {"trait_type":"Fishing","value":"',
-        skillPoints[Skill.FISHING],
-        '{"trait_type":"Smithing","value":"',
-        skillPoints[Skill.SMITHING],
-        '"}, {"trait_type":"Thieving","value":"',
-        skillPoints[Skill.THIEVING],
-        '{"trait_type":"Crafting","value":"',
-        skillPoints[Skill.CRAFTING],
-        '"}, {"trait_type":"Cooking","value":"',
-        skillPoints[Skill.COOKING],
-        '{"trait_type":"FireMaking","value":"',
-        skillPoints[Skill.FIREMAKING],
-        '"}'
+        _getTraitStringJSON("Avatar", avatarName), ',',
+        _getTraitNumberJSON("Attack", skillPoints[Skill.ATTACK]), ',',
+        _getTraitNumberJSON("Magic", skillPoints[Skill.MAGIC]), ',',
+        _getTraitNumberJSON("Defence", skillPoints[Skill.DEFENCE]), ',',
+        _getTraitNumberJSON("Health", skillPoints[Skill.HEALTH]), ',',
+        _getTraitNumberJSON("Mining", skillPoints[Skill.MINING]), ',',
+        _getTraitNumberJSON("WoodCutting", skillPoints[Skill.WOODCUTTING]), ',',
+        _getTraitNumberJSON("Fishing", skillPoints[Skill.FISHING]), ',',
+        _getTraitNumberJSON("Smithing", skillPoints[Skill.SMITHING]), ',',
+        _getTraitNumberJSON("Thieving", skillPoints[Skill.THIEVING]), ',',
+        _getTraitNumberJSON("Crafting", skillPoints[Skill.CRAFTING]), ',',
+        _getTraitNumberJSON("Cooking", skillPoints[Skill.COOKING]), ',',
+        _getTraitNumberJSON("FireMaking", skillPoints[Skill.FIREMAKING])
       )
     );
 
@@ -52,13 +42,13 @@ library PlayerLibrary {
       bytes(
         string(
           abi.encodePacked(
-            '{"name": "',
-            avatarName,
-            '", "description": "',
+            '{"name":"',
+            _trimBytes32(name),
+            '","description":"',
             avatarDescription,
-            '", attributes":[',
+            '","attributes":[',
             attributes,
-            ', "image": "',
+            '],"image":"',
             imageURI,
             '"}'
           )
@@ -71,6 +61,34 @@ library PlayerLibrary {
 
     // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
     return output;
+  }
+
+  function _trimBytes32(bytes32 _bytes32) private pure returns (bytes memory _bytes) {
+    uint256 _len;
+    while(_len < 32) {
+      if (_bytes32[_len] == 0) {
+        break;
+      }
+      unchecked {
+        ++_len;
+      }
+    }
+    _bytes = abi.encodePacked(_bytes32);
+    assembly ("memory-safe") {
+      mstore(_bytes, _len)
+    }
+  }
+  
+  function _getTraitStringJSON(string memory traitType, bytes32 value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(traitType), '"', _trimBytes32(value), '"}');
+  }
+
+  function _getTraitNumberJSON(string memory traitType, uint32 value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(traitType), value.toString(), '}');
+  }
+
+  function _getTraitTypeJSON(string memory traitType) private pure returns (bytes memory) {
+    return abi.encodePacked('{"trait_type":"', traitType, '","value":');
   }
 
   function foodConsumedView(
