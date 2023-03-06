@@ -291,11 +291,6 @@ contract PlayersImplProcessActions is PlayersImplBase {
     }
   }
 
-  function _claimRandomRewards(uint _playerId) private {
-    (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
-    require(success);
-  }
-
   function _getRewards(
     uint40 _skillEndTime,
     uint _elapsedTime,

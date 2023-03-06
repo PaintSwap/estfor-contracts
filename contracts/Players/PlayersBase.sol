@@ -302,4 +302,9 @@ abstract contract PlayersBase {
           (bytes4(xpRewardBytes[index + 3]) >> 24)
       );
   }
+
+  function _claimRandomRewards(uint _playerId) internal {
+    (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
+    require(success);
+  }
 }

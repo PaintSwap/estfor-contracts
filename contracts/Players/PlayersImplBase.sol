@@ -8,4 +8,6 @@ contract PlayersImplBase is PlayersBase {
   uint256[50] private __gap;
   // From OwnableUpgradeable
   uint256[50] private __gap1;
+  // From ReentrancyGuardUpgradeable
+  uint256[50] private __gap2;
 }

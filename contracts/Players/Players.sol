@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "../World.sol";
 import "../types.sol";
 import "../items.sol";
@@ -31,7 +32,7 @@ interface IPlayerDelegate {
   ) external;
 }
 
-contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall {
+contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, Multicall {
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -47,6 +48,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
   ) public initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
+    __ReentrancyGuard_init();
 
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
@@ -62,7 +64,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     uint _playerId,
     QueuedAction calldata _queuedAction,
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActive(_playerId) {
+  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     QueuedAction[] memory queuedActions = new QueuedAction[](1);
     queuedActions[0] = _queuedAction;
     _startActions(_playerId, queuedActions, NONE, _queueStatus);
@@ -74,32 +76,31 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     QueuedAction[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActive(_playerId) {
+  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     _startActions(_playerId, _queuedActions, _boostItemTokenId, _queueStatus);
   }
 
-  function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+  function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
     _setActionQueue(_playerId, remainingSkillQueue);
   }
 
-  function claimRandomRewards(uint _playerId) external {
-    (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
-    require(success);
+  function claimRandomRewards(uint _playerId) external nonReentrant {
+    _claimRandomRewards(_playerId);
   }
 
   function consumeBoost(
     uint _playerId,
     uint16 _itemTokenId,
     uint40 _startTime
-  ) external isOwnerOfPlayerAndActive(_playerId) {
+  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     (bool success, ) = implQueueActions.delegatecall(
       abi.encodeWithSignature("consumeBoost(uint256,uint16,uint40)", _playerId, _itemTokenId, _startTime)
     );
     require(success);
   }
 
-  function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+  function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     if (activeBoosts[_playerId].boostType == BoostType.NONE) {
       revert NoActiveBoost();
     }
@@ -149,7 +150,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     }
   }
 
-  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     _clearEverything(msg.sender, _playerId);
   }
 
