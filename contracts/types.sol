@@ -7,6 +7,7 @@ struct Item {
   bool hasNonCombatStats;
   bool hasCombatStats;
   bool exists;
+  bool isTransferable;
   // Food
   uint16 healthRestored;
   // Boost vial

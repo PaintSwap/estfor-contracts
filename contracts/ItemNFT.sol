@@ -28,6 +28,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
     NonCombatStat[] nonCombatStats;
     uint16 tokenId;
     EquipPosition equipPosition;
+    bool isTransferable;
     // Food
     uint16 healthRestored;
     // Boost
@@ -119,7 +120,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
   }
 
   function _exists(uint _tokenId) private view returns (bool) {
-    return bytes(tokenURIs[_tokenId]).length != 0;
+    return items[_tokenId].exists;
   }
 
   function _getItem(uint _tokenId) private view returns (Item memory) {
@@ -139,7 +140,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
   }
 
   // If an item is burnt, remove it from the total
-  function _removeAnyBurntFromTotal(address _to, uint[] memory _ids, uint[] memory _amounts) internal {
+  function _removeAnyBurntFromTotal(address _to, uint[] memory _ids, uint[] memory _amounts) private {
     uint i = _ids.length;
     // Precondition is that ids/amounts has some elements
     if (_to == address(0)) {
@@ -151,6 +152,17 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
         itemBalances[_ids[i]] -= _amounts[i];
       } while (i > 0);
     }
+  }
+
+  function _checkIsTransferable(uint[] memory _ids) private view {
+    uint i = _ids.length;
+    // Precondition is that ids has some elements
+    do {
+      unchecked {
+        --i;
+      }
+      require(!items[_ids[i]].exists || items[_ids[i]].isTransferable);
+    } while (i > 0);
   }
 
   function _beforeTokenTransfer(
@@ -167,8 +179,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
     }
 
     _removeAnyBurntFromTotal(_to, _ids, _amounts);
+    _checkIsTransferable(_ids);
 
-    // Properly update the player inventory
     if (_to != address(0)) {
       IPlayers(players).itemBeforeTokenTransfer(_from, _ids, _amounts);
     }
@@ -205,6 +217,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
     item.hasCombatStats = hasCombat;
     item.hasNonCombatStats = hasNonCombat;
     item.equipPosition = _item.equipPosition;
+    item.isTransferable = _item.isTransferable;
 
     if (hasCombat) {
       // Combat stats

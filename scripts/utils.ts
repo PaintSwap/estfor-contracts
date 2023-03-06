@@ -597,6 +597,7 @@ type InputItem = {
   nonCombatStats: NonCombatStat[];
   tokenId: number;
   equipPosition: EquipPosition;
+  isTransferable: boolean;
   // Food
   healthRestored: number;
   // Boost
@@ -615,6 +616,7 @@ type XPThresholdReward = {
 export const inputItem = {
   combatStats: emptyStats,
   nonCombatStats: [],
+  isTransferable: true,
   healthRestored: 0,
   boostType: BoostType.NONE,
   boostValue: 0,
