@@ -119,14 +119,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   // Costs nothing to mint, only gas
   function mint(uint _avatarId, bytes32 _name, bool _makeActive) public {
     address from = msg.sender;
-    uint playerId = latestPlayerId;
+    uint playerId = latestPlayerId++;
     emit NewPlayer(playerId, _avatarId, bytes20(_name));
     _mint(from, playerId, 1, "");
     _setName(playerId, bytes20(_name));
     players.mintedPlayer(from, playerId, _makeActive);
     _mintStartingItems();
     _setTokenIdToAvatar(playerId, _avatarId);
-    ++latestPlayerId;
   }
 
   function _setTokenIdToAvatar(uint _playerId, uint _avatarId) private {
