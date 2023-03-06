@@ -19,6 +19,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event Sell(address seller, uint16 tokenId, uint quantity, uint price);
   event SellBatch(address seller, uint16[] tokenIds, uint[] quantities, uint[] prices);
 
+  error LengthMismatch();
+  error LengthEmpty();
+  error ItemCannotBeBought();
+  error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
+  error MinExpectedBrushNotReaced(uint totalBrush, uint minExpectedBrush);
+
   struct ShopItem {
     uint16 tokenId;
     uint128 price;
@@ -75,7 +81,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   // Buy simple items and XP boosts using brush
   function buy(uint16 _tokenId, uint _quantity) external {
     uint price = shopItems[_tokenId];
-    require(price != 0, "Item cannot be bought");
+    if (price == 0) {
+      revert ItemCannotBeBought();
+    }
     // Pay
     brush.transferFrom(msg.sender, address(this), price);
     // Burn half, the rest goes into the pool for sellable items
@@ -86,12 +94,19 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
-    require(_tokenIds.length == _quantities.length, "length mismatch");
+    if (_tokenIds.length != _quantities.length) {
+      revert LengthMismatch();
+    }
+    if (_tokenIds.length == 0) {
+      revert LengthEmpty();
+    }
     uint totalBrush;
     uint[] memory prices = new uint[](_tokenIds.length);
     for (uint i = 0; i < _tokenIds.length; ++i) {
       uint price = shopItems[uint16(_tokenIds[i])];
-      require(price != 0, "Item cannot be bought");
+      if (price == 0) {
+        revert ItemCannotBeBought();
+      }
       totalBrush += price * _quantities[i];
       prices[i] = price;
     }
@@ -108,15 +123,21 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
-    require(totalBrush >= _minExpectedBrush, "Min expected brush not reached");
+    if (totalBrush < _minExpectedBrush) {
+      revert MinExpectedBrushNotReaced(totalBrush, _minExpectedBrush);
+    }
     itemNFT.burn(msg.sender, uint(_tokenId), _quantity);
     brush.transfer(msg.sender, totalBrush);
     emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
   }
 
   function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
-    require(_tokenIds.length == _quantities.length, "length mismatch");
-    require(_tokenIds.length > 0, "length empty");
+    if (_tokenIds.length != _quantities.length) {
+      revert LengthMismatch();
+    }
+    if (_tokenIds.length == 0) {
+      revert LengthEmpty();
+    }
     uint totalBrush;
     uint[] memory prices = new uint[](_tokenIds.length);
     for (uint i = 0; i < _tokenIds.length; ++i) {
@@ -125,7 +146,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
       prices[i] = brushPerToken;
     }
-    require(totalBrush >= _minExpectedBrush, "Min expected brush not reached");
+    if (totalBrush < _minExpectedBrush) {
+      revert MinExpectedBrushNotReaced(totalBrush, _minExpectedBrush);
+    }
     brush.transfer(msg.sender, totalBrush);
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
@@ -137,7 +160,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function addBuyableItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    require(_shopItems.length > 0, "length empty");
+    if (_shopItems.length == 0) {
+      revert LengthEmpty();
+    }
     uint i;
     do {
       shopItems[_shopItems[i].tokenId] = _shopItems[i].price;
