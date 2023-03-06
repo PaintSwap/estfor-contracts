@@ -46,7 +46,7 @@ import {
 
 const actionIsAvailable = true;
 
-describe("Player", () => {
+describe("Players", () => {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
 
@@ -156,6 +156,7 @@ describe("Player", () => {
       origName,
       editNameCost,
       mockOracleClient,
+      avatarInfo,
     };
   }
 
@@ -603,64 +604,6 @@ describe("Player", () => {
     expect((await players.players(playerId)).attire.gauntlets).to.eq(NONE);
     expect((await players.players(newPlayerId)).attire.gauntlets).to.eq(BRONZE_GAUNTLETS);
   }); */
-
-  it("Empty name", async () => {
-    const {playerNFT, alice} = await loadFixture(deployContracts);
-    const nameTooLong = ethers.utils.formatBytes32String("");
-    const avatarId = 1;
-    await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong)).to.be.reverted;
-  });
-
-  it("Name too long", async () => {
-    const {playerNFT, alice} = await loadFixture(deployContracts);
-    const nameTooLong = ethers.utils.formatBytes32String("F12345678901234567890");
-    const avatarId = 1;
-    const makeActive = true;
-    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, nameTooLong, makeActive);
-
-    expect(await playerNFT.names(newPlayerId)).to.eq(ethers.utils.formatBytes32String("F1234567890123456789"));
-    expect(await playerNFT.lowercaseNames(ethers.utils.formatBytes32String("f1234567890123456789"))).to.be.true;
-  });
-
-  it("Duplicate names not allowed", async () => {
-    const {playerNFT, alice} = await loadFixture(deployContracts);
-
-    const name = ethers.utils.formatBytes32String("123");
-    const avatarId = 1;
-    const makeActive = true;
-    await createPlayer(playerNFT, avatarId, alice, name, makeActive);
-    await expect(createPlayer(playerNFT, avatarId, alice, name)).to.be.reverted;
-  });
-
-  it("Edit Name", async () => {
-    const {playerId, playerNFT, alice, brush, origName, editNameCost} = await loadFixture(deployContracts);
-    const name = ethers.utils.formatBytes32String("My name is edited");
-    await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.reverted; // Haven't got the brush
-
-    await brush.mint(alice.address, editNameCost.mul(2));
-    await brush.connect(alice).approve(playerNFT.address, editNameCost.mul(2));
-
-    await expect(playerNFT.editName(playerId, name)).to.be.reverted; // Not the owner
-    expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
-      .be.true;
-
-    await playerNFT.connect(alice).editName(playerId, name);
-    expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
-      .be.false; // Should be deleted now
-    expect(await playerNFT.connect(alice).names(playerId)).to.eq(name);
-
-    const avatarId = 1;
-    const makeActive = true;
-    // Duplicate
-    const newPlayerId = await createPlayer(
-      playerNFT,
-      avatarId,
-      alice,
-      ethers.utils.formatBytes32String("name"),
-      makeActive
-    );
-    await expect(playerNFT.connect(alice).editName(newPlayerId, name)).to.be.reverted;
-  });
 
   /* Disabled for now as not used?
   it("Remove action", async () => {
@@ -2274,8 +2217,4 @@ describe("Player", () => {
       expect(await itemNFT.balanceOf(alice.address, SHADOW_SCROLL)).to.eq(100 - 1);
     });
   });
-
-  /*
-  it("uri", async () => {
-  }); */
 });

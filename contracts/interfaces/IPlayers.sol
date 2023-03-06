@@ -5,6 +5,7 @@ interface IPlayers {
   function clearEverythingBeforeTokenTransfer(address from, uint tokenId) external;
 
   function getURI(
+    uint playerId,
     bytes32 name,
     bytes32 avatarName,
     string calldata avatarDescription,

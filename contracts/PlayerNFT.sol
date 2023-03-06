@@ -139,7 +139,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
     require(_exists(_playerId), "ERC1155Metadata: URI query for nonexistent token");
     AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
     string memory imageURI = string(abi.encodePacked(baseURI, avatarInfo.imageURI));
-    return players.getURI(names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
+    return players.getURI(_playerId, names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
   }
 
   function _beforeTokenTransfer(

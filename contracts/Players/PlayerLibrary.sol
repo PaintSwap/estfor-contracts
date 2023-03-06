@@ -22,50 +22,54 @@ library PlayerLibrary {
   ) external view returns (string memory) {
     string memory attributes = string(
       abi.encodePacked(
-        _getTraitStringJSON("Avatar", avatarName), ',',
-        _getTraitNumberJSON("Attack", skillPoints[Skill.ATTACK]), ',',
-        _getTraitNumberJSON("Magic", skillPoints[Skill.MAGIC]), ',',
-        _getTraitNumberJSON("Defence", skillPoints[Skill.DEFENCE]), ',',
-        _getTraitNumberJSON("Health", skillPoints[Skill.HEALTH]), ',',
-        _getTraitNumberJSON("Mining", skillPoints[Skill.MINING]), ',',
-        _getTraitNumberJSON("WoodCutting", skillPoints[Skill.WOODCUTTING]), ',',
-        _getTraitNumberJSON("Fishing", skillPoints[Skill.FISHING]), ',',
-        _getTraitNumberJSON("Smithing", skillPoints[Skill.SMITHING]), ',',
-        _getTraitNumberJSON("Thieving", skillPoints[Skill.THIEVING]), ',',
-        _getTraitNumberJSON("Crafting", skillPoints[Skill.CRAFTING]), ',',
-        _getTraitNumberJSON("Cooking", skillPoints[Skill.COOKING]), ',',
+        _getTraitStringJSON("Avatar", avatarName),
+        ",",
+        _getTraitNumberJSON("Attack", skillPoints[Skill.ATTACK]),
+        ",",
+        _getTraitNumberJSON("Magic", skillPoints[Skill.MAGIC]),
+        ",",
+        _getTraitNumberJSON("Defence", skillPoints[Skill.DEFENCE]),
+        ",",
+        _getTraitNumberJSON("Health", skillPoints[Skill.HEALTH]),
+        ",",
+        _getTraitNumberJSON("Mining", skillPoints[Skill.MINING]),
+        ",",
+        _getTraitNumberJSON("WoodCutting", skillPoints[Skill.WOODCUTTING]),
+        ",",
+        _getTraitNumberJSON("Fishing", skillPoints[Skill.FISHING]),
+        ",",
+        _getTraitNumberJSON("Smithing", skillPoints[Skill.SMITHING]),
+        ",",
+        _getTraitNumberJSON("Thieving", skillPoints[Skill.THIEVING]),
+        ",",
+        _getTraitNumberJSON("Crafting", skillPoints[Skill.CRAFTING]),
+        ",",
+        _getTraitNumberJSON("Cooking", skillPoints[Skill.COOKING]),
+        ",",
         _getTraitNumberJSON("FireMaking", skillPoints[Skill.FIREMAKING])
       )
     );
 
     string memory json = Base64.encode(
-      bytes(
-        string(
-          abi.encodePacked(
-            '{"name":"',
-            _trimBytes32(name),
-            '","description":"',
-            avatarDescription,
-            '","attributes":[',
-            attributes,
-            '],"image":"',
-            imageURI,
-            '"}'
-          )
-        )
+      abi.encodePacked(
+        '{"name":"',
+        _trimBytes32(name),
+        '","description":"',
+        avatarDescription,
+        '","attributes":[',
+        attributes,
+        '],"image":"',
+        imageURI,
+        '"}'
       )
     );
 
-    // Base64
-    string memory output = string(abi.encodePacked("data:application/json;base64,", json));
-
-    // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-    return output;
+    return string(abi.encodePacked("data:application/json;base64,", json));
   }
 
   function _trimBytes32(bytes32 _bytes32) private pure returns (bytes memory _bytes) {
     uint256 _len;
-    while(_len < 32) {
+    while (_len < 32) {
       if (_bytes32[_len] == 0) {
         break;
       }
@@ -78,13 +82,13 @@ library PlayerLibrary {
       mstore(_bytes, _len)
     }
   }
-  
+
   function _getTraitStringJSON(string memory traitType, bytes32 value) private pure returns (bytes memory) {
     return abi.encodePacked(_getTraitTypeJSON(traitType), '"', _trimBytes32(value), '"}');
   }
 
   function _getTraitNumberJSON(string memory traitType, uint32 value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(traitType), value.toString(), '}');
+    return abi.encodePacked(_getTraitTypeJSON(traitType), value.toString(), "}");
   }
 
   function _getTraitTypeJSON(string memory traitType) private pure returns (bytes memory) {

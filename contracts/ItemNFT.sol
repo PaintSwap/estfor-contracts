@@ -12,7 +12,7 @@ import "./types.sol";
 import "./items.sol";
 
 // The NFT contract contains data related to the items and who owns them
-contract ItemNFT is ERC1155Upgradeable, Multicall, UUPSUpgradeable, OwnableUpgradeable {
+contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event AddItem(Item item, uint16 tokenId);
   event AddItems(Item[] items, uint16[] tokenIds);
   event EditItem(Item item, uint16 tokenId);
