@@ -2,8 +2,11 @@
 pragma solidity ^0.8.17;
 
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts/utils/Multicall.sol";
+
 import "./VRFConsumerBaseV2Upgradeable.sol";
 import "./types.sol";
 
@@ -11,7 +14,7 @@ import "./types.sol";
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634
 // LINK token 0x6F43FF82CCA38001B6699a8AC47A2d0E66939407
 // PREMIUM 0.0005 LINK
-contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
+contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
   event AddAction(uint16 actionId, Action action);

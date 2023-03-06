@@ -5,6 +5,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "@openzeppelin/contracts/utils/Multicall.sol";
 
 import "./interfaces/IBrushToken.sol";
 import "./interfaces/IPlayers.sol";
@@ -12,7 +13,7 @@ import "./types.sol";
 import "./items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
+contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event NewPlayer(uint playerId, uint avatarId, bytes20 name);
   event EditPlayer(uint playerId, bytes20 newName);
 

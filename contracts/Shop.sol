@@ -10,7 +10,7 @@ import "./items.sol";
 import "./ItemNFT.sol";
 
 // The contract allows items to be bought/sold
-contract Shop is Multicall, UUPSUpgradeable, OwnableUpgradeable {
+contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);
   event RemoveShopItem(uint16 tokenId);
