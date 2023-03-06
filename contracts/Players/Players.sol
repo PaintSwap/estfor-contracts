@@ -32,10 +32,11 @@ interface IPlayerDelegate {
   ) external;
 }
 
-contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, Multicall {
+contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall {
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
+    _checkStartSlot();
   }
 
   function initialize(

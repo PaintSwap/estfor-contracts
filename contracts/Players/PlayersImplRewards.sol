@@ -5,7 +5,11 @@ import "./PlayersImplBase.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-contract PlayersImplRewards is PlayersImplBase {
+contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
+  constructor() {
+    _checkStartSlot();
+  }
+
   function getRewards(
     uint40 _skillEndTime,
     uint _elapsedTime,

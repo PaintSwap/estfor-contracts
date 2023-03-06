@@ -3,11 +3,13 @@ pragma solidity ^0.8.17;
 
 import "./PlayersBase.sol";
 
-contract PlayersImplBase is PlayersBase {
-  // From UUPSUpgradeable
-  uint256[50] private __gap;
-  // From OwnableUpgradeable
-  uint256[50] private __gap1;
+// Use this first to get the same storage layout for implementation files as the main contract
+contract PlayersUpgradeableImplDummyBase {
+  // From UUPSUpgradeable, includes ERC1967UpgradeUpgradeable
+  uint256[100] private __gap;
+  // From OwnableUpgradeable, includes ContextUpgradeable
+  uint256[100] private __gap1;
   // From ReentrancyGuardUpgradeable
-  uint256[50] private __gap2;
+  uint256[51] private __gap2;
+  // DO NOT UPDATE THIS AFTER DEPLOYMENT!!!
 }

@@ -6,6 +6,7 @@ import "../types.sol";
 import "../items.sol";
 import "../ItemNFT.sol";
 import "../PlayerNFT.sol";
+import "hardhat/console.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
@@ -60,6 +61,8 @@ abstract contract PlayersBase {
   uint32 public constant MAX_TIME = 1 days;
 
   uint constant MAX_MAIN_EQUIPMENT_ID = 65536 * 8;
+
+  uint internal startSlot; // Keep as the first non-constant state variable
 
   mapping(uint => uint) internal speedMultiplier; // 0 or 1 is diabled, for testing only
 
@@ -306,5 +309,14 @@ abstract contract PlayersBase {
   function _claimRandomRewards(uint _playerId) internal {
     (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
     require(success);
+  }
+
+  function _checkStartSlot() internal {
+    uint expectedStartSlotNumber = 251; // From the various slot arrays expected in the base classes
+    uint slot;
+    assembly ("memory-safe") {
+      slot := startSlot.slot
+    }
+    require(slot == expectedStartSlotNumber);
   }
 }

@@ -5,7 +5,11 @@ import "./PlayersImplBase.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-contract PlayersImplProcessActions is PlayersImplBase {
+contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
+  constructor() {
+    _checkStartSlot();
+  }
+
   function processActions(address _from, uint _playerId) external returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_playerId];
     if (player.actionQueue.length == 0) {

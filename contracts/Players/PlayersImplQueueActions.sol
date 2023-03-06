@@ -3,7 +3,11 @@ pragma solidity ^0.8.17;
 
 import "./PlayersImplBase.sol";
 
-contract PlayersImplQueueActions is PlayersImplBase {
+contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
+  constructor() {
+    _checkStartSlot();
+  }
+
   error NoItemBalance(uint16 itemTokenId);
 
   function startActions(
