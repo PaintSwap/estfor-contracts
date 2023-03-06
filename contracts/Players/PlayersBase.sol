@@ -9,7 +9,7 @@ import "../PlayerNFT.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-contract PlayersBase {
+abstract contract PlayersBase {
   event ActionUnequip(uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
 
   event ClearAll(uint playerId);
@@ -21,6 +21,7 @@ contract PlayersBase {
   event SetActionQueue(uint playerId, QueuedAction[] queuedActions);
 
   event ConsumeBoostVial(uint playerId, PlayerBoostInfo playerBoostInfo);
+
   event UnconsumeBoostVial(uint playerId);
 
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
