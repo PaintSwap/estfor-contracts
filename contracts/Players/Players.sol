@@ -178,12 +178,13 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
   function _clearEverything(address _from, uint _playerId) private {
     _processActions(_from, _playerId);
     emit ClearAll(_playerId);
+    _clearActionQueue(_playerId);
     // Can re-mint boost if it hasn't been consumed at all yet
     if (activeBoosts[_playerId].boostType != BoostType.NONE && activeBoosts[_playerId].startTime < block.timestamp) {
-      itemNFT.mint(_from, activeBoosts[_playerId].itemTokenId, 1);
+      uint itemTokenId = activeBoosts[_playerId].itemTokenId;
       delete activeBoosts[_playerId];
+      itemNFT.mint(_from, itemTokenId, 1);
     }
-    _clearActionQueue(_playerId);
   }
 
   function _clearActionQueue(uint _playerId) private {
@@ -215,67 +216,14 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     require(success);
   }
 
-  /*
-  function removeQueuedAction(uint _playerId, uint _queueId) external isOwnerOfPlayer(_playerId) {
-    // If the action is in progress, it can't be removed (allow later)
-    QueuedAction[] storage actionQueue = players[_playerId].actionQueue;
-    for (uint i; i < actionQueue.length; ++i) {
-      QueuedAction storage queuedAction = actionQueue[i];
-      if (queuedAction.attire.queueId == _queueId) {
-        uint skillEndTime = queuedAction.startTime +
-          (
-            speedMultiplier[_playerId] > 1
-              ? uint(queuedAction.timespan) / speedMultiplier[_playerId]
-              : queuedAction.timespan
-          );
-
-        uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
-        require(elapsedTime == 0, "Elapsed time must be > 0");
-        // Action hasn't started yet so allow it to be removed.
-        for (uint j = i; j < actionQueue.length - 1; ++j) {
-          actionQueue[j] = actionQueue[j + 1];
-          // Shift start times
-          actionQueue[j].startTime -= queuedAction.timespan;
-        }
-        actionQueue.pop();
-        emit RemoveQueuedAction(_playerId, _queueId);
-        return;
-      }
-    }
-  } */
-
-  /*  function getLootBonusMultiplier(uint  _playerId) external view returns (uint256) {
-    // The higher the level the higher the multiplier?
-    return 2;
-  } */
-
-  /*
-  function getLoot(uint actionId, uint seed) external view returns (uint[] memory playerIds) {
-    if (seed == 0) {
-      return playerIds;
-    }
-
-    playerIds = new uint[](3); // max
-    uint length;
-    if (seed % 2 == 0) {
-      playerIds[0] = SAPPHIRE_AMULET;
-    } else {
-      playerIds[0] = BRONZE_PICKAXE;
-    }
-
-    assembly ("memory-safe") {
-      mstore(playerIds, length)
-    }
-  } */
-
   function _setActivePlayer(address _from, uint _playerId) private {
     uint existingActivePlayer = activePlayer[_from];
+    // All attire and actions can be made for this player
+    activePlayer[_from] = _playerId;
     if (existingActivePlayer > 0) {
       // If there is an existing active player, unequip all items
       _clearEverything(_from, existingActivePlayer);
     }
-    // All attire and actions can be made for this player
-    activePlayer[_from] = _playerId;
     emit SetActivePlayer(_from, existingActivePlayer, _playerId);
   }
 
@@ -298,7 +246,7 @@ contract Players is PlayersBase, OwnableUpgradeable, UUPSUpgradeable, Multicall 
     require(_xpThresholdReward.xpThreshold == xpThreshold); // Not in the hex string
 
     xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.equipments;
-    emit AddThresholdReward(_xpThresholdReward);
+    emit AdminAddThresholdReward(_xpThresholdReward);
   }
 
   function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external onlyOwner {

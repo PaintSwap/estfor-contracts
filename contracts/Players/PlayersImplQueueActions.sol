@@ -211,15 +211,30 @@ contract PlayersImplQueueActions is PlayersImplBase {
         _queuedAction.choiceId
       );
 
-      // TODO: Can be balance of batch
-      if (actionChoice.inputTokenId1 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId1) == 0) {
-        revert NoItemBalance(actionChoice.inputTokenId1);
+      uint16[] memory items = new uint16[](3);
+      uint itemLength;
+      if (actionChoice.inputTokenId1 != NONE) {
+        items[itemLength] = actionChoice.inputTokenId1;
+        ++itemLength;
       }
-      if (actionChoice.inputTokenId2 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId2) == 0) {
-        revert NoItemBalance(actionChoice.inputTokenId2);
+      if (actionChoice.inputTokenId2 != NONE) {
+        items[itemLength] = actionChoice.inputTokenId2;
+        ++itemLength;
       }
-      if (actionChoice.inputTokenId3 != NONE && itemNFT.balanceOf(_from, actionChoice.inputTokenId3) == 0) {
-        revert NoItemBalance(actionChoice.inputTokenId3);
+      if (actionChoice.inputTokenId3 != NONE) {
+        items[itemLength] = actionChoice.inputTokenId3;
+        ++itemLength;
+      }
+      assembly ("memory-safe") {
+        mstore(items, itemLength)
+      }
+      if (itemLength > 0) {
+        uint256[] memory balances = itemNFT.balanceOfs(_from, items);
+        for (uint i; i < balances.length; ++i) {
+          if (balances[i] == 0) {
+            revert NoItemBalance(items[i]);
+          }
+        }
       }
     }
     //     if (_queuedAction.choiceId1 != NONE) {
@@ -229,27 +244,44 @@ contract PlayersImplQueueActions is PlayersImplBase {
   // Checks they have sufficient balance to equip the items
   function _checkAttire(address _from, Attire memory _attire) private view {
     // Check the user has these items
-    //    uint raw = _getEquipmentRawVal(_attire);
-    //    if (raw > 0) {
-    if (_attire.helmet != NONE && itemNFT.balanceOf(_from, _attire.helmet) == 0) {
-      revert NoItemBalance(_attire.helmet);
+    uint16[] memory items = new uint16[](8);
+    uint itemLength;
+    if (_attire.helmet != NONE) {
+      items[itemLength] = _attire.helmet;
+      ++itemLength;
     }
-    if (_attire.amulet != NONE && itemNFT.balanceOf(_from, _attire.amulet) == 0) {
-      revert NoItemBalance(_attire.amulet);
+    if (_attire.amulet != NONE) {
+      items[itemLength] = _attire.amulet;
+      ++itemLength;
     }
-    if (_attire.armor != NONE && itemNFT.balanceOf(_from, _attire.armor) == 0) {
-      revert NoItemBalance(_attire.armor);
+    if (_attire.armor != NONE) {
+      items[itemLength] = _attire.armor;
+      ++itemLength;
     }
-    if (_attire.gauntlets != NONE && itemNFT.balanceOf(_from, _attire.gauntlets) == 0) {
-      revert NoItemBalance(_attire.gauntlets);
+    if (_attire.gauntlets != NONE) {
+      items[itemLength] = _attire.gauntlets;
+      ++itemLength;
     }
-    if (_attire.tassets != NONE && itemNFT.balanceOf(_from, _attire.tassets) == 0) {
-      revert NoItemBalance(_attire.tassets);
+    if (_attire.tassets != NONE) {
+      items[itemLength] = _attire.tassets;
+      ++itemLength;
     }
-    if (_attire.boots != NONE && itemNFT.balanceOf(_from, _attire.boots) == 0) {
-      revert NoItemBalance(_attire.boots);
+    if (_attire.boots != NONE) {
+      items[itemLength] = _attire.boots;
+      ++itemLength;
     }
-    //    }
+
+    assembly ("memory-safe") {
+      mstore(items, itemLength)
+    }
+    if (itemLength > 0) {
+      uint256[] memory balances = itemNFT.balanceOfs(_from, items);
+      for (uint i; i < balances.length; ++i) {
+        if (balances[i] == 0) {
+          revert NoItemBalance(items[i]);
+        }
+      }
+    }
   }
 
   function _isMainEquipped(uint _playerId, uint _itemTokenId) private view returns (bool) {

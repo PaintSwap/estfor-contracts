@@ -211,7 +211,6 @@ library PlayerLibrary {
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    // TODO Should probably move this out?
     (bool isCombat, CombatStats memory enemyCombatStats) = _world.getCombatStats(_queuedAction.actionId);
     if (isCombat) {
       uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);

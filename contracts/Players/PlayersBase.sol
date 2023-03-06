@@ -10,13 +10,11 @@ import "../PlayerNFT.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 abstract contract PlayersBase {
-  event ActionUnequip(uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
-
   event ClearAll(uint playerId);
 
   event AddSkillPoints(uint playerId, Skill skill, uint32 points);
 
-  event LevelUp(uint playerId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
+  //  event LevelUp(uint playerId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
 
   event SetActionQueue(uint playerId, QueuedAction[] queuedActions);
 
@@ -26,11 +24,9 @@ abstract contract PlayersBase {
 
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
 
-  event RemoveQueuedAction(uint playerId, uint128 queueId);
-
   event AddPendingRandomReward(uint playerId, uint timestamp, uint elapsed);
 
-  event AddThresholdReward(XPThresholdReward xpThresholdReward);
+  event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
 
   // For logging
   event Died(address from, uint playerId, uint128 queueId);

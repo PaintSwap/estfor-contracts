@@ -438,7 +438,6 @@ contract PlayersImplRewards is PlayersImplBase {
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    // TODO Should probably move this out?
     uint16 numConsumed;
     uint combatElapsedTime;
     if (isCombat) {
