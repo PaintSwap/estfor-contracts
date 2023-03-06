@@ -161,8 +161,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function itemBeforeTokenTransfer(
     address _from,
-    uint[] calldata _itemTokenIds,
-    uint[] calldata _amounts
+    uint[] calldata /*_itemTokenIds*/,
+    uint[] calldata /*_amounts*/
   ) external onlyItemNFT {
     uint playerId = activePlayer[_from];
     if (playerId == 0) {

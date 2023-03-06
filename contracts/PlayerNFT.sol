@@ -144,12 +144,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, M
   }
 
   function _beforeTokenTransfer(
-    address operator,
+    address /*operator*/,
     address from,
     address to,
     uint256[] memory ids,
     uint256[] memory amounts,
-    bytes memory data
+    bytes memory /*data*/
   ) internal virtual override {
     if (from == address(0) || amounts.length == 0 || from == to) {
       return;

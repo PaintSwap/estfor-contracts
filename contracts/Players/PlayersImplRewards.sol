@@ -101,7 +101,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
   }
 
   function claimableXPThresholdRewards(
-    address _from,
     uint _oldTotalSkillPoints,
     uint _newTotalSkillPoints
   ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts) {
@@ -129,7 +128,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     Player storage player = players[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     uint _speedMultiplier = speedMultiplier[_playerId];
-    PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
 
     pendingOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
@@ -188,8 +186,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
           ++producedLength;
         }
 
-        for (uint i; i < consumedEquipment.length; ++i) {
-          pendingOutput.consumed[consumedLength] = consumedEquipment[i];
+        for (uint j; j < consumedEquipment.length; ++j) {
+          pendingOutput.consumed[consumedLength] = consumedEquipment[j];
           ++consumedLength;
         }
 
@@ -225,7 +223,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
     if (_flags.includeXPRewards && allPointsAccrued > 0) {
       (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
-        from,
         previousSkillPoints,
         previousSkillPoints + allPointsAccrued
       );

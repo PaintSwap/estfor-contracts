@@ -311,7 +311,7 @@ abstract contract PlayersBase {
     require(success);
   }
 
-  function _checkStartSlot() internal {
+  function _checkStartSlot() internal pure {
     uint expectedStartSlotNumber = 251; // From the various slot arrays expected in the base classes
     uint slot;
     assembly ("memory-safe") {

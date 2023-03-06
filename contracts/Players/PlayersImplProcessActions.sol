@@ -355,14 +355,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _claimableXPThresholdRewards(
-    address _from,
     uint _oldTotalSkillPoints,
     uint _newTotalSkillPoints
   ) private returns (uint[] memory ids, uint[] memory amounts) {
     (bool success, bytes memory data) = implRewards.delegatecall(
       abi.encodeWithSignature(
-        "claimableXPThresholdRewards(address,uint256,uint256)",
-        _from,
+        "claimableXPThresholdRewards(uint256,uint256)",
         _oldTotalSkillPoints,
         _newTotalSkillPoints
       )
@@ -373,7 +371,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function _handleTotalXPThresholdRewards(address _from, uint _oldTotalSkillPoints, uint _newTotalSkillPoints) private {
     (uint[] memory itemTokenIds, uint[] memory amounts) = _claimableXPThresholdRewards(
-      _from,
       _oldTotalSkillPoints,
       _newTotalSkillPoints
     );
