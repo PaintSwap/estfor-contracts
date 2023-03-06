@@ -223,6 +223,7 @@ export const RAW_ELECTRIC_EEL = RAW_FISH_BASE + 16;
 export const RAW_MANTA_RAY = RAW_FISH_BASE + 17;
 export const RAW_LEVIATHAN = RAW_FISH_BASE + 18;
 export const RAW_DRAGONFISH = RAW_FISH_BASE + 19;
+export const RAW_SKRIMP = RAW_FISH_BASE + 20;
 export const RAW_FIRE_MAX = RAW_FISH_BASE + 255;
 
 // Cooked fish
@@ -247,6 +248,7 @@ export const COOKED_ELECTRIC_EEL = COOKED_FISH_BASE + 16;
 export const COOKED_MANTA_RAY = COOKED_FISH_BASE + 17;
 export const COOKED_LEVIATHAN = COOKED_FISH_BASE + 18;
 export const COOKED_DRAGONFISH = COOKED_FISH_BASE + 19;
+export const COOKED_SKRIMP = COOKED_FISH_BASE + 20;
 export const COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 
 // Farming
@@ -305,7 +307,7 @@ export const AIR_BALL = SPELL_BASE + 7;
 export const FURY_FISTS = SPELL_BASE + 8;
 export const CONCUSSION_BEAMS = SPELL_BASE + 9;
 export const ICE_SPIKES = SPELL_BASE + 10;
-export const SPELL_MAX = 12799;
+export const SPELL_MAX = SPELL_BASE + 255;
 
 // Boosts
 export const BOOST_BASE = 12800;
@@ -314,7 +316,12 @@ export const XP_BOOST = BOOST_BASE + 1;
 export const GATHERING_BOOST = BOOST_BASE + 2;
 export const SKILLER_BOOST = BOOST_BASE + 3;
 export const ABSENCE_BOOST = BOOST_BASE + 4;
-export const BOOST_MAX = 13055;
+export const COMBAT_BOOST_NON_TRANSFERABLE = BOOST_BASE + 5;
+export const XP_BOOST_NON_TRANSFERABLE = BOOST_BASE + 6;
+export const GATHERING_BOOST_NON_TRANSFERABLE = BOOST_BASE + 7;
+export const SKILLER_BOOST_NON_TRANSFERABLE = BOOST_BASE + 8;
+export const ABSENCE_BOOST_NON_TRANSFERABLE = BOOST_BASE + 9;
+export const BOOST_MAX = BOOST_BASE + 255;
 
 // Thieving
 export const THIEVING_BASE = 13056;
@@ -730,16 +737,59 @@ export const allItems: InputItem[] = [
   },
 ];
 
+/*
+TOTAL XP 500 - EMERALD_STAFF
+TOTAL XP 1000 - XP_BOOST
+TOTAL XP 2500 - GATHERING_BOOST
+TOTAL XP 5000 - 20 * COOKED_SKRIMP
+TOTAL XP 10000 - 10 * WHITE_DEATH_SPORE
+TOTAL XP 30000 - 20 * ASH_LOG
+TOTAL XP 50000 - 3 * BONE_KEY
+TOTAL XP 100000 - 3 * AQUA_KEY
+TOTAL XP 120000 - 50 * DRAGON_BONE
+TOTAL XP 300000 - 3 * SKILLER_BOOST
+TOTAL XP 350000 - 3 * XP_BOOST
+TOTAL XP 500000 - 2 * ABSENCE_BOOST
+TOTAL XP 600000 - 5 * COMBAT_BOOST
+TOTAL XP 750000 - 5 * LOSSUTH_SCALE */
 export const allXPThresholdRewards: XPThresholdReward[] = [
   {
-    xpThreshold: 7200,
+    xpThreshold: 500,
     equipments: [
       {
         itemTokenId: BRONZE_HELMET,
-        amount: 3,
+        amount: 1,
       },
     ],
   },
+  {
+    xpThreshold: 1000,
+    equipments: [
+      {
+        itemTokenId: XP_BOOST_NON_TRANSFERABLE,
+        amount: 1,
+      },
+    ],
+  },
+  {
+    xpThreshold: 2500,
+    equipments: [
+      {
+        itemTokenId: GATHERING_BOOST_NON_TRANSFERABLE,
+        amount: 1,
+      },
+    ],
+  },
+  {
+    xpThreshold: 5000,
+    equipments: [
+      {
+        itemTokenId: COOKED_SKRIMP,
+        amount: 20,
+      },
+    ],
+  },
+  // TODO...
 ];
 
 type ShopItem = {

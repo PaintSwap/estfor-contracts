@@ -495,7 +495,7 @@ describe("Players", () => {
       choiceId1: NONE,
       choiceId2: NONE,
       regenerateId: NONE,
-      timespan: 7200,
+      timespan: 500,
       rightHandEquipmentTokenId: BRONZE_AXE,
       leftHandEquipmentTokenId: NONE,
       startTime: "0",
@@ -503,11 +503,11 @@ describe("Players", () => {
     };
 
     const equipments: Equipment[] = [{itemTokenId: BRONZE_BAR, amount: 3}];
-    await expect(players.addXPThresholdReward({xpThreshold: 7219, equipments})).to.be.reverted;
-    await players.addXPThresholdReward({xpThreshold: 7200, equipments});
+    await expect(players.addXPThresholdReward({xpThreshold: 499, equipments})).to.be.reverted;
+    await players.addXPThresholdReward({xpThreshold: 500, equipments});
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
-    await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_increaseTime", [250]);
     await ethers.provider.send("evm_mine", []);
 
     const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
@@ -518,9 +518,8 @@ describe("Players", () => {
     });
     expect(pendingOutput.produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
-
     expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(0);
-    await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_increaseTime", [250]);
     await ethers.provider.send("evm_mine", []);
     pendingOutput = await playerDelegateView.pendingRewards(playerId, {
       includeLoot: true,

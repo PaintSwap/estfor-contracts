@@ -6,7 +6,6 @@ import "../types.sol";
 import "../items.sol";
 import "../ItemNFT.sol";
 import "../PlayerNFT.sol";
-import "hardhat/console.sol";
 
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
@@ -80,8 +79,9 @@ abstract contract PlayersBase {
   PlayerNFT internal playerNFT;
   mapping(uint => PendingRandomReward[]) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
-  // 4 bytes for each threshold, currently just 7200
-  bytes constant xpRewardBytes = hex"0000000000001C20";
+  // 4 bytes for each threshold, starts at 500 xp in decimal
+  bytes constant xpRewardBytes =
+    hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";
   mapping(uint => Equipment[]) xpRewardThresholds; // XP => items[]. Thresholds and all items rewarded for it
 
   address implQueueActions;

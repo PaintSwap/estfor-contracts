@@ -140,18 +140,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
   }
 
   // If an item is burnt, remove it from the total
-  function _removeAnyBurntFromTotal(address _to, uint[] memory _ids, uint[] memory _amounts) private {
+  function _removeAnyBurntFromTotal(uint[] memory _ids, uint[] memory _amounts) private {
     uint i = _ids.length;
     // Precondition is that ids/amounts has some elements
-    if (_to == address(0)) {
-      // burning
-      do {
-        unchecked {
-          --i;
-        }
-        itemBalances[_ids[i]] -= _amounts[i];
-      } while (i > 0);
-    }
+    do {
+      unchecked {
+        --i;
+      }
+      itemBalances[_ids[i]] -= _amounts[i];
+    } while (i > 0);
   }
 
   function _checkIsTransferable(uint[] memory _ids) private view {
@@ -174,15 +171,21 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
     bytes memory /*_data*/
   ) internal virtual override {
     if (_from == address(0) || _amounts.length == 0 || _from == _to) {
-      // When minting, self sending or transferring then no further processing is required
+      // When minting or self sending, then no further processing is required
       return;
     }
 
-    _removeAnyBurntFromTotal(_to, _ids, _amounts);
-    _checkIsTransferable(_ids);
-
-    if (_to != address(0)) {
+    bool isBurnt = _to == address(0) || _to == 0x000000000000000000000000000000000000dEaD;
+    if (isBurnt) {
+      _removeAnyBurntFromTotal(_ids, _amounts);
+    } else {
+      _checkIsTransferable(_ids);
+    }
+    if (players != address(0)) {
       IPlayers(players).itemBeforeTokenTransfer(_from, _ids, _amounts);
+    } else {
+      // Only for tests
+      require(block.chainid == 31337);
     }
   }
 
