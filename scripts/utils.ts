@@ -507,8 +507,8 @@ type ActionInfo = {
   xpPerHour: number;
   numSpawn: number;
   minSkillPoints: number;
-  itemTokenIdRangeMin: number;
-  itemTokenIdRangeMax: number;
+  handItemTokenIdRangeMin: number;
+  handItemTokenIdRangeMax: number;
 };
 
 type ActionReward = {
@@ -764,8 +764,8 @@ export const allActions: Action[] = [
       minSkillPoints: 0,
       isDynamic: false,
       numSpawn: 0,
-      itemTokenIdRangeMin: BRONZE_AXE,
-      itemTokenIdRangeMax: WOODCUTTING_MAX,
+      handItemTokenIdRangeMin: BRONZE_AXE,
+      handItemTokenIdRangeMax: WOODCUTTING_MAX,
       isAvailable: true,
       actionChoiceRequired: false,
     },
@@ -780,8 +780,8 @@ export const allActions: Action[] = [
       minSkillPoints: 0,
       isDynamic: false,
       numSpawn: 0,
-      itemTokenIdRangeMin: FIRE_LIGHTER,
-      itemTokenIdRangeMax: FIRE_MAX,
+      handItemTokenIdRangeMin: FIRE_LIGHTER,
+      handItemTokenIdRangeMax: FIRE_MAX,
       isAvailable: true,
       actionChoiceRequired: true,
     },
@@ -796,8 +796,8 @@ export const allActions: Action[] = [
       minSkillPoints: 0,
       isDynamic: false,
       numSpawn: 0,
-      itemTokenIdRangeMin: BRONZE_PICKAXE,
-      itemTokenIdRangeMax: MINING_MAX,
+      handItemTokenIdRangeMin: BRONZE_PICKAXE,
+      handItemTokenIdRangeMax: MINING_MAX,
       isAvailable: true,
       actionChoiceRequired: false,
     },
@@ -812,8 +812,8 @@ export const allActions: Action[] = [
       minSkillPoints: 274,
       isDynamic: false,
       numSpawn: 0,
-      itemTokenIdRangeMin: BRONZE_PICKAXE,
-      itemTokenIdRangeMax: MINING_MAX,
+      handItemTokenIdRangeMin: BRONZE_PICKAXE,
+      handItemTokenIdRangeMax: MINING_MAX,
       isAvailable: true,
       actionChoiceRequired: true,
     },
@@ -828,8 +828,8 @@ export const allActions: Action[] = [
       minSkillPoints: 0,
       isDynamic: false,
       numSpawn: 0,
-      itemTokenIdRangeMin: NONE,
-      itemTokenIdRangeMax: NONE,
+      handItemTokenIdRangeMin: NONE,
+      handItemTokenIdRangeMax: NONE,
       isAvailable: true,
       actionChoiceRequired: true,
     },
@@ -846,8 +846,8 @@ export const allActions: Action[] = [
       minSkillPoints: 0,
       isDynamic: false,
       numSpawn: 10,
-      itemTokenIdRangeMin: COMBAT_BASE,
-      itemTokenIdRangeMax: COMBAT_MAX,
+      handItemTokenIdRangeMin: COMBAT_BASE,
+      handItemTokenIdRangeMax: COMBAT_MAX,
       isAvailable: true,
       actionChoiceRequired: true,
     },

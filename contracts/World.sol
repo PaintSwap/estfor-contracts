@@ -187,8 +187,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     external
     view
     returns (
-      uint16 itemTokenIdRangeMin,
-      uint16 itemTokenIdRangeMax,
+      uint16 handItemTokenIdRangeMin,
+      uint16 handItemTokenIdRangeMax,
       bool actionChoiceRequired,
       Skill skill,
       bool actionAvailable
@@ -196,8 +196,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   {
     ActionInfo storage actionInfo = actions[_actionId];
     return (
-      actionInfo.itemTokenIdRangeMin,
-      actionInfo.itemTokenIdRangeMax,
+      actionInfo.handItemTokenIdRangeMin,
+      actionInfo.handItemTokenIdRangeMax,
       actionInfo.actionChoiceRequired,
       actionInfo.skill,
       actionInfo.isAvailable
@@ -213,7 +213,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _setAction(uint _actionId, Action calldata _action) private {
-    require(_action.info.itemTokenIdRangeMin <= _action.info.itemTokenIdRangeMax);
+    require(_action.info.handItemTokenIdRangeMin <= _action.info.handItemTokenIdRangeMax);
     actions[_actionId] = _action.info;
 
     // Set the rewards

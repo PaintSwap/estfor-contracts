@@ -141,8 +141,8 @@ contract PlayersImplQueueActions is PlayersImplBase {
     uint16 actionId = _queuedAction.actionId;
 
     (
-      uint16 itemTokenIdRangeMin,
-      uint16 itemTokenIdRangeMax,
+      uint16 handItemTokenIdRangeMin,
+      uint16 handItemTokenIdRangeMax,
       bool actionChoiceRequired,
       Skill skill,
       bool actionAvailable
@@ -175,16 +175,16 @@ contract PlayersImplQueueActions is PlayersImplBase {
     _checkHandEquipment(
       _from,
       _queuedAction.rightHandEquipmentTokenId,
-      itemTokenIdRangeMin,
-      itemTokenIdRangeMax,
+      handItemTokenIdRangeMin,
+      handItemTokenIdRangeMax,
       isCombat,
       true
     );
     _checkHandEquipment(
       _from,
       _queuedAction.leftHandEquipmentTokenId,
-      itemTokenIdRangeMin,
-      itemTokenIdRangeMax,
+      handItemTokenIdRangeMin,
+      handItemTokenIdRangeMax,
       isCombat,
       false
     );
@@ -312,13 +312,13 @@ contract PlayersImplQueueActions is PlayersImplBase {
   function _checkHandEquipment(
     address _from,
     uint16 _equippedItemTokenId,
-    uint16 _itemTokenIdRangeMin,
-    uint16 _itemTokenIdRangeMax,
+    uint16 _handItemTokenIdRangeMin,
+    uint16 _handItemTokenIdRangeMax,
     bool _isCombat,
     bool _isRightHand
   ) private view {
     if (_equippedItemTokenId != NONE) {
-      if (_equippedItemTokenId < _itemTokenIdRangeMin || _equippedItemTokenId > _itemTokenIdRangeMax) {
+      if (_equippedItemTokenId < _handItemTokenIdRangeMin || _equippedItemTokenId > _handItemTokenIdRangeMax) {
         revert InvalidArmEquipment(_equippedItemTokenId);
       }
 
@@ -329,7 +329,7 @@ contract PlayersImplQueueActions is PlayersImplBase {
     } else {
       // Only combat actions can have no equipment if they have a choice
       // e.g smithing doesn't require anything equipped
-      require(_isCombat || _itemTokenIdRangeMin == NONE || !_isRightHand);
+      require(_isCombat || _handItemTokenIdRangeMin == NONE || !_isRightHand);
     }
   }
 }

@@ -165,8 +165,8 @@ struct ActionInfo {
   uint16 xpPerHour;
   uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
   uint32 minSkillPoints;
-  uint16 itemTokenIdRangeMin; // Inclusive
-  uint16 itemTokenIdRangeMax; // Inclusive
+  uint16 handItemTokenIdRangeMin; // Inclusive
+  uint16 handItemTokenIdRangeMax; // Inclusive
 }
 
 // Equipment (leave at the bottom to allow for further ones)
