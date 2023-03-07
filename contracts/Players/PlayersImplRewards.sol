@@ -46,22 +46,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
   function _claimableRandomRewards(
     uint _playerId
   ) private view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
-    PendingRandomReward[] storage pendingRandomRewards = pendingRandomRewards[_playerId];
-    ids = new uint[](pendingRandomRewards.length);
-    amounts = new uint[](pendingRandomRewards.length);
+    PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
+    ids = new uint[](_pendingRandomRewards.length);
+    amounts = new uint[](_pendingRandomRewards.length);
 
     uint length;
-    for (uint i; i < pendingRandomRewards.length; ++i) {
-      bool isCombat = world.getSkill(pendingRandomRewards[i].actionId) == Skill.COMBAT;
-      uint numSpawnedPerHour = world.getNumSpawn(pendingRandomRewards[i].actionId);
-      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomRewards[i].elapsedTime) / 3600);
+    for (uint i; i < _pendingRandomRewards.length; ++i) {
+      bool isCombat = world.getSkill(_pendingRandomRewards[i].actionId) == Skill.COMBAT;
+      uint numSpawnedPerHour = world.getNumSpawn(_pendingRandomRewards[i].actionId);
+      uint16 monstersKilled = uint16((numSpawnedPerHour * _pendingRandomRewards[i].elapsedTime) / 3600);
 
-      ActionRewards memory actionRewards = world.getActionRewards(pendingRandomRewards[i].actionId);
+      ActionRewards memory actionRewards = world.getActionRewards(_pendingRandomRewards[i].actionId);
       uint oldLength = length;
       bool noLuck;
       (length, noLuck) = _appendRandomRewards(
-        pendingRandomRewards[i].timestamp,
-        pendingRandomRewards[i].elapsedTime,
+        _pendingRandomRewards[i].timestamp,
+        _pendingRandomRewards[i].elapsedTime,
         ids,
         amounts,
         oldLength,
@@ -191,9 +191,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
           ++consumedLength;
         }
 
-        if (died) {
-          pendingOutput.died = true;
-        }
+        pendingOutput.died = died;
       }
 
       if (!died) {
