@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {createPlayer} from "../scripts/utils";
+import { PlayerNFT } from "../typechain-types";
 
 describe("PlayerNFT", () => {
   async function deployContracts() {
@@ -36,7 +37,7 @@ describe("PlayerNFT", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"});
+    const playerNFT = (await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"})) as PlayerNFT;
 
     // This contains all the player data
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
@@ -121,7 +122,7 @@ describe("PlayerNFT", () => {
     const {playerNFT, alice} = await loadFixture(deployContracts);
     const nameTooLong = ethers.utils.formatBytes32String("");
     const avatarId = 1;
-    await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong)).to.be.reverted;
+    await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong, true)).to.be.reverted;
   });
 
   it("Name too long", async () => {
@@ -142,7 +143,7 @@ describe("PlayerNFT", () => {
     const avatarId = 1;
     const makeActive = true;
     await createPlayer(playerNFT, avatarId, alice, name, makeActive);
-    await expect(createPlayer(playerNFT, avatarId, alice, name)).to.be.reverted;
+    await expect(createPlayer(playerNFT, avatarId, alice, name, true)).to.be.reverted;
   });
 
   it("Edit Name", async () => {
@@ -176,18 +177,25 @@ describe("PlayerNFT", () => {
   });
 
   it("uri", async () => {
-    const {playerId, playerNFT, avatarInfo, origName} = await loadFixture(deployContracts);
+    const {playerId, playerNFT, avatarInfo} = await loadFixture(deployContracts);
     const uri = await playerNFT.uri(playerId);
-    expect(uri.startsWith("data:application/json;base64,")).to.be.true;
 
-    const decodedBase64 = ethers.utils.base64.decode(uri.split(",")[1]);
-    const metadata = JSON.parse(new TextDecoder().decode(decodedBase64));
-    expect(metadata.name).to.eq(origName);
-    expect(metadata.description).to.eq(avatarInfo.description);
+    expect(uri.startsWith('data:application/json;base64')).to.be.true;
+    const metadata = JSON.parse(Buffer.from(uri.split(';base64,')[1], 'base64').toString());
+    expect(metadata).to.have.property('name');
+    expect(metadata.name).to.equal('0xSamWitch'); // TODO: give the player a better name than 0xSamWitch
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
-    expect(metadata.attributes.length).to.be.greaterThan(0);
-    const avatar = metadata.attributes.find((e) => e.trait_type === "Avatar");
-    expect(avatar.value).to.eq(ethers.utils.parseBytes32String(avatarInfo.name));
+    expect(metadata).to.have.property('attributes');
+    expect(metadata.attributes).to.be.an('array');
+    expect(metadata.attributes).to.have.length(13);
+    expect(metadata.attributes[0]).to.have.property('trait_type');
+    expect(metadata.attributes[0].trait_type).to.equal('Avatar');
+    expect(metadata.attributes[0]).to.have.property('value');
+    expect(metadata.attributes[0].value).to.equal('Name goes here');
+    expect(metadata.attributes[1]).to.have.property('trait_type');
+    expect(metadata.attributes[1].trait_type).to.equal('Attack');
+    expect(metadata.attributes[1]).to.have.property('value');
+    expect(metadata.attributes[1].value).to.equal(1);
   });
 
   it("supportsInterface", async () => {

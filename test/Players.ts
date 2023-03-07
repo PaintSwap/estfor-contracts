@@ -43,6 +43,7 @@ import {
   WOODCUTTING_MAX,
   XP_BOOST,
 } from "../scripts/utils";
+import { PlayerNFT } from "../typechain-types";
 
 const actionIsAvailable = true;
 
@@ -79,7 +80,7 @@ describe("Players", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"});
+    const playerNFT = (await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"})) as PlayerNFT;
 
     // This contains all the player data
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
