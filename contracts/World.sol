@@ -194,6 +194,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       uint16 handItemTokenIdRangeMax,
       bool actionChoiceRequired,
       Skill skill,
+      uint32 minSkillPoints,
       bool actionAvailable
     )
   {
@@ -203,6 +204,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       actionInfo.handItemTokenIdRangeMax,
       actionInfo.actionChoiceRequired,
       actionInfo.skill,
+      actionInfo.minSkillPoints,
       actionInfo.isAvailable
     );
   }
@@ -284,6 +286,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   // actionId of 0 means it is not tied to a specific action
   function addActionChoice(uint16 _actionId, ActionChoice calldata _actionChoice) external onlyOwner {
     uint16 actionChoiceId = lastActionChoiceId;
+    if (_actionChoice.outputTokenId != 0) {
+      require(_actionChoice.outputNum == 1); // Only supporting max 1 for now
+    }
     actionChoices[_actionId][actionChoiceId] = _actionChoice;
     emit AddActionChoice(_actionId, actionChoiceId, _actionChoice);
     lastActionChoiceId = actionChoiceId + 1;

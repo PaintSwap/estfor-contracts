@@ -587,6 +587,7 @@ type ActionChoice = {
   inputTokenId3: number;
   num3: number;
   outputTokenId: number;
+  outputNum: number; // Not used yet, always 1
 };
 
 export const emptyStats: CombatStats = {
@@ -964,6 +965,7 @@ export const emptyActionChoice: ActionChoice = {
   inputTokenId3: NONE,
   num3: 0,
   outputTokenId: NONE,
+  outputNum: 0,
 };
 
 export const meleeChoices: ActionChoice[] = [
@@ -1002,6 +1004,7 @@ export const firemakingChoices: ActionChoice[] = [
     inputTokenId3: NONE,
     num3: 0,
     outputTokenId: NONE,
+    outputNum: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -1016,6 +1019,7 @@ export const firemakingChoices: ActionChoice[] = [
     inputTokenId3: NONE,
     num3: 0,
     outputTokenId: NONE,
+    outputNum: 0,
   },
 ];
 
@@ -1033,6 +1037,7 @@ export const smithingChoices: ActionChoice[] = [
     inputTokenId3: NONE,
     num3: 0,
     outputTokenId: BRONZE_BAR,
+    outputNum: 1,
   },
   {
     skill: Skill.SMITHING,
@@ -1047,6 +1052,7 @@ export const smithingChoices: ActionChoice[] = [
     inputTokenId3: NONE,
     num3: 0,
     outputTokenId: IRON_BAR,
+    outputNum: 1,
   },
 ];
 

@@ -1047,6 +1047,7 @@ describe("Players", () => {
         inputTokenId3: NONE,
         num3: 0,
         outputTokenId: NONE,
+        outputNum: 0,
       });
       const choiceId = await getActionChoiceId(tx);
 
@@ -1171,6 +1172,7 @@ describe("Players", () => {
           inputTokenId3: NONE,
           num3: 0,
           outputTokenId: NONE,
+          outputNum: 0,
         });
         const choiceId = await getActionChoiceId(tx);
 
@@ -1306,6 +1308,7 @@ describe("Players", () => {
           inputTokenId3: NONE,
           num3: 0,
           outputTokenId: NONE,
+          outputNum: 0,
         });
         const choiceId = await getActionChoiceId(tx);
 
@@ -1451,6 +1454,7 @@ describe("Players", () => {
         inputTokenId3: NONE,
         num3: 0,
         outputTokenId: MITHRIL_BAR,
+        outputNum: 1,
       });
       const choiceId = await getActionChoiceId(tx);
 
@@ -1690,6 +1694,18 @@ describe("Players", () => {
 
     it("Action pipelining", async () => {
       // Try wood cut, and then burning them when having none equipped
+    });
+
+    it("Attire, equipment and conusmeable minSkillPoints", async () => {
+      // TODO
+    });
+
+    it("Action minSkillPoints", async () => {
+      // TODO
+    });
+
+    it("ActionChoice minSkillPoints", async () => {
+      // TODO
     });
   });
 
@@ -2261,6 +2277,7 @@ describe("Players", () => {
         inputTokenId3: NONE,
         num3: 0,
         outputTokenId: NONE,
+        outputNum: 0,
       });
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;

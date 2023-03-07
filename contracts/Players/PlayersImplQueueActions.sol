@@ -152,6 +152,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       uint16 handItemTokenIdRangeMax,
       bool actionChoiceRequired,
       Skill skill,
+      uint32 actionMinSkillPoints,
       bool actionAvailable
     ) = world.getPermissibleItemsForAction(actionId);
 
@@ -160,14 +161,19 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
 
     bool isCombat = skill == Skill.COMBAT;
+    if (!isCombat && skillPoints[_playerId][skill] < actionMinSkillPoints) {
+      revert MinimumSkillPointsNotReached();
+    }
 
     // Check the actionChoice is valid
+    ActionChoice memory actionChoice;
     if (actionChoiceRequired) {
       require(_queuedAction.choiceId != NONE);
-      ActionChoice memory actionChoice = world.getActionChoice(
-        isCombat ? NONE : _queuedAction.actionId,
-        _queuedAction.choiceId
-      );
+      actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
+
+      if (skillPoints[_playerId][actionChoice.skill] < actionChoice.minSkillPoints) {
+        revert MinimumSkillPointsNotReached();
+      }
 
       require(actionChoice.skill != Skill.NONE);
     }
@@ -187,7 +193,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       isCombat
     );
 
-    _checkActionConsumables(_from, _playerId, _queuedAction);
+    _checkActionConsumables(_from, _playerId, _queuedAction, actionChoice);
 
     _queuedAction.startTime = uint40(_startTime);
     _queuedAction.attire.queueId = _queueId;
@@ -197,14 +203,14 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _checkAttire(_from, _playerId, _player.actionQueue[_player.actionQueue.length - 1].attire);
   }
 
-  function _checkActionConsumables(address _from, uint _playerId, QueuedAction memory _queuedAction) private view {
+  function _checkActionConsumables(
+    address _from,
+    uint _playerId,
+    QueuedAction memory _queuedAction,
+    ActionChoice memory actionChoice
+  ) private view {
     if (_queuedAction.choiceId != NONE) {
       // Get all items for this
-      ActionChoice memory actionChoice = world.getActionChoice(
-        _isCombatStyle(_queuedAction.combatStyle) ? NONE : _queuedAction.actionId,
-        _queuedAction.choiceId
-      );
-
       uint16[] memory itemTokenIds = new uint16[](4);
       uint itemLength;
       if (_queuedAction.regenerateId != NONE) {

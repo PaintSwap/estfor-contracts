@@ -128,10 +128,10 @@ struct ActionRewards {
 // Fixed based available actions that can be undertaken for an action
 struct ActionChoice {
   Skill skill;
+  uint32 minSkillPoints;
   uint32 diff;
   uint32 rate; // rate of output produced per hour (base 100) 2 decimals
   uint16 xpPerHour;
-  uint32 minSkillPoints;
   uint16 inputTokenId1;
   uint8 num1;
   uint16 inputTokenId2;
@@ -139,6 +139,7 @@ struct ActionChoice {
   uint16 inputTokenId3;
   uint8 num3;
   uint16 outputTokenId; // Always num of 1
+  uint8 outputNum; // Not used yet
 }
 
 // The user chooses these
