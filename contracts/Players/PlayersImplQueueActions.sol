@@ -169,28 +169,18 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       require(actionChoice.skill != Skill.NONE);
     }
 
-    // Check combatStyle is only selected if queuedAction is combat
-    if (isCombat) {
-      require(_queuedAction.combatStyle != CombatStyle.NONE);
-    } else {
-      require(_queuedAction.combatStyle == CombatStyle.NONE);
+    {
+      // Check combatStyle is only selected if queuedAction is combat
+      bool combatStyleSelected = _queuedAction.combatStyle != CombatStyle.NONE;
+      require(isCombat == combatStyleSelected);
     }
 
-    _checkHandEquipment(
+    _checkHandEquipments(
       _from,
-      _queuedAction.rightHandEquipmentTokenId,
+      [_queuedAction.rightHandEquipmentTokenId, _queuedAction.leftHandEquipmentTokenId],
       handItemTokenIdRangeMin,
       handItemTokenIdRangeMax,
-      isCombat,
-      true
-    );
-    _checkHandEquipment(
-      _from,
-      _queuedAction.leftHandEquipmentTokenId,
-      handItemTokenIdRangeMin,
-      handItemTokenIdRangeMax,
-      isCombat,
-      false
+      isCombat
     );
 
     _checkActionConsumables(_from, _queuedAction);
@@ -219,16 +209,13 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       uint16[] memory items = new uint16[](3);
       uint itemLength;
       if (actionChoice.inputTokenId1 != NONE) {
-        items[itemLength] = actionChoice.inputTokenId1;
-        ++itemLength;
+        items[itemLength++] = actionChoice.inputTokenId1;
       }
       if (actionChoice.inputTokenId2 != NONE) {
-        items[itemLength] = actionChoice.inputTokenId2;
-        ++itemLength;
+        items[itemLength++] = actionChoice.inputTokenId2;
       }
       if (actionChoice.inputTokenId3 != NONE) {
-        items[itemLength] = actionChoice.inputTokenId3;
-        ++itemLength;
+        items[itemLength++] = actionChoice.inputTokenId3;
       }
       assembly ("memory-safe") {
         mstore(items, itemLength)
@@ -285,27 +272,30 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
   }
 
-  function _checkHandEquipment(
+  function _checkHandEquipments(
     address _from,
-    uint16 _equippedItemTokenId,
+    uint16[2] memory _equippedItemTokenIds, // right, left
     uint16 _handItemTokenIdRangeMin,
     uint16 _handItemTokenIdRangeMax,
-    bool _isCombat,
-    bool _isRightHand
+    bool _isCombat
   ) private view {
-    if (_equippedItemTokenId != NONE) {
-      if (_equippedItemTokenId < _handItemTokenIdRangeMin || _equippedItemTokenId > _handItemTokenIdRangeMax) {
-        revert InvalidArmEquipment(_equippedItemTokenId);
-      }
+    for (uint i; i < _equippedItemTokenIds.length; ++i) {
+      bool isRightHand = i == 0;
+      uint16 equippedItemTokenId = _equippedItemTokenIds[i];
+      if (equippedItemTokenId != NONE) {
+        if (equippedItemTokenId < _handItemTokenIdRangeMin || equippedItemTokenId > _handItemTokenIdRangeMax) {
+          revert InvalidArmEquipment(equippedItemTokenId);
+        }
 
-      uint256 balance = itemNFT.balanceOf(_from, _equippedItemTokenId);
-      if (balance == 0) {
-        revert DoNotHaveEnoughQuantityToEquipToAction();
+        uint256 balance = itemNFT.balanceOf(_from, equippedItemTokenId);
+        if (balance == 0) {
+          revert DoNotHaveEnoughQuantityToEquipToAction();
+        }
+      } else {
+        // Only combat actions can have no equipment if they have hand range choice
+        // e.g smithing doesn't require anything equipped
+        require(_isCombat || _handItemTokenIdRangeMin == NONE || !isRightHand);
       }
-    } else {
-      // Only combat actions can have no equipment if they have a choice
-      // e.g smithing doesn't require anything equipped
-      require(_isCombat || _handItemTokenIdRangeMin == NONE || !_isRightHand);
     }
   }
 }

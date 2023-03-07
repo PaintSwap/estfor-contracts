@@ -157,6 +157,51 @@ abstract contract PlayersBase {
     }
   }
 
+  function _getPointsAccrued(
+    address _from,
+    uint _playerId,
+    QueuedAction storage _queuedAction,
+    Skill _skill,
+    uint _xpElapsedTime
+  ) internal view returns (uint32 pointsAccrued) {
+    bool _isCombatSkill = _isCombatStyle(_queuedAction.combatStyle);
+    uint16 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
+    pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
+    pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
+    pointsAccrued += _extraXPFromFullEquipment(
+      _from,
+      _playerId,
+      _queuedAction.attire,
+      _skill,
+      _xpElapsedTime,
+      xpPerHour
+    );
+  }
+
+  function _updateStatsFromHandEquipment(
+    address _from,
+    uint16[2] memory _handEquipmentTokenIds,
+    CombatStats memory _combatStats,
+    bool _isCombat
+  ) internal view returns (bool missingRequiredHandEquipment) {
+    for (uint i; i < _handEquipmentTokenIds.length; ++i) {
+      uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
+      if (handEquipmentTokenId != NONE) {
+        uint256 balance = itemNFT.balanceOf(_from, handEquipmentTokenId);
+        if (balance == 0) {
+          // Assume that if the player doesn't have the non-combat item that this action cannot be done
+          if (!_isCombat) {
+            missingRequiredHandEquipment = true;
+          }
+        } else if (_isCombat) {
+          // Update the combat stats
+          Item memory item = itemNFT.getItem(handEquipmentTokenId);
+          _updateCombatStatsFromItem(_combatStats, item);
+        }
+      }
+    }
+  }
+
   function _isCombatStyle(CombatStyle _combatStyle) internal pure returns (bool) {
     return _combatStyle != CombatStyle.NONE;
   }
@@ -191,28 +236,22 @@ abstract contract PlayersBase {
     uint attireLength;
     itemTokenIds = new uint16[](8);
     if (_attire.helmet != NONE) {
-      itemTokenIds[attireLength] = _attire.helmet;
-      ++attireLength;
+      itemTokenIds[attireLength++] = _attire.helmet;
     }
     if (_attire.amulet != NONE && !_skipNeck) {
-      itemTokenIds[attireLength] = _attire.amulet;
-      ++attireLength;
+      itemTokenIds[attireLength++] = _attire.amulet;
     }
     if (_attire.armor != NONE) {
-      itemTokenIds[attireLength] = _attire.armor;
-      ++attireLength;
+      itemTokenIds[attireLength++] = _attire.armor;
     }
     if (_attire.gauntlets != NONE) {
-      itemTokenIds[attireLength] = _attire.gauntlets;
-      ++attireLength;
+      itemTokenIds[attireLength++] = _attire.gauntlets;
     }
     if (_attire.tassets != NONE) {
-      itemTokenIds[attireLength] = _attire.tassets;
-      ++attireLength;
+      itemTokenIds[attireLength++] = _attire.tassets;
     }
     if (_attire.boots != NONE) {
-      itemTokenIds[attireLength] = _attire.boots;
-      ++attireLength;
+      itemTokenIds[attireLength++] = _attire.boots;
     }
 
     assembly ("memory-safe") {

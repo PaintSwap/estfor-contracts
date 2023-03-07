@@ -25,25 +25,23 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint nextStartTime = block.timestamp;
     for (uint i = 0; i < player.actionQueue.length; ++i) {
       QueuedAction storage queuedAction = player.actionQueue[i];
-
-      if (queuedAction.rightHandEquipmentTokenId != NONE) {
-        uint256 balance = itemNFT.balanceOf(_from, queuedAction.rightHandEquipmentTokenId);
-        if (balance == 0) {
-          emit ActionAborted(_playerId, queuedAction.attire.queueId);
-          continue;
-        }
+      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
+      CombatStats memory combatStats;
+      if (isCombat) {
+        // This will only ones that they have a balance for at this time. This will check balances
+        combatStats = _getCachedCombatStats(player);
+        _updateCombatStats(_from, combatStats, queuedAction.attire);
       }
-      if (queuedAction.leftHandEquipmentTokenId != NONE) {
-        uint256 balance = itemNFT.balanceOf(_from, queuedAction.leftHandEquipmentTokenId);
-        if (balance == 0) {
-          emit ActionAborted(_playerId, queuedAction.attire.queueId);
-          continue;
-        }
+      bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
+        _from,
+        [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
+        combatStats,
+        isCombat
+      );
+      if (missingRequiredHandEquipment) {
+        emit ActionAborted(_playerId, queuedAction.attire.queueId);
+        continue;
       }
-
-      // This will only ones that they have a balance for at this time. This will check balances
-      CombatStats memory combatStats = _getCachedCombatStats(player);
-      _updateCombatStats(_from, combatStats, queuedAction.attire);
 
       uint32 pointsAccrued;
       uint skillEndTime = queuedAction.startTime +
@@ -68,7 +66,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       bool died;
 
       ActionChoice memory actionChoice;
-      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
 
       uint xpElapsedTime = elapsedTime;
 
@@ -91,18 +88,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       Skill skill = _getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId);
 
       if (!died) {
-        bool _isCombatSkill = _isCombatStyle(queuedAction.combatStyle);
-        uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
-        pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
-        pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);
-        pointsAccrued += _extraXPFromFullEquipment(
-          _from,
-          _playerId,
-          queuedAction.attire,
-          skill,
-          xpElapsedTime,
-          xpPerHour
-        );
+        pointsAccrued = _getPointsAccrued(_from, _playerId, queuedAction, skill, xpElapsedTime);
       } else {
         emit Died(_from, _playerId, _queueId);
       }
@@ -115,8 +101,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       if (pointsAccrued > 0) {
-        Skill skill = _getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId);
-
         if (_isCombatStyle(queuedAction.combatStyle)) {
           // Update health too with 33% of the points gained from combat
           _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);

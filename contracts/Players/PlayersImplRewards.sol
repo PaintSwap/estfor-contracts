@@ -122,6 +122,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
   // Get any changes that are pending and not on the blockchain yet.
   function pendingRewards(
+    address _owner,
     uint _playerId,
     PendingFlags memory _flags
   ) external view returns (PendingOutput memory pendingOutput) {
@@ -141,16 +142,27 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     uint producedLength;
     uint producedPastRandomRewardsLength;
     uint producedXPRewardsLength;
-    address from = msg.sender;
+    address from = _owner;
     uint previousSkillPoints = player.totalSkillPoints;
     uint32 allPointsAccrued;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
-
-      CombatStats memory combatStats = _getCachedCombatStats(player);
-
-      // This will only ones that they have a balance for at this time. This will check balances
-      _updateCombatStats(from, combatStats, queuedAction.attire);
+      CombatStats memory combatStats;
+      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
+      if (isCombat) {
+        // This will only ones that they have a balance for at this time. This will check balances
+        combatStats = _getCachedCombatStats(player);
+        _updateCombatStats(from, combatStats, queuedAction.attire);
+      }
+      bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
+        from,
+        [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
+        combatStats,
+        isCombat
+      );
+      if (missingRequiredHandEquipment) {
+        continue;
+      }
 
       uint32 pointsAccrued;
       uint skillEndTime = queuedAction.startTime +
@@ -165,7 +177,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       bool died;
 
       ActionChoice memory actionChoice;
-      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       uint xpElapsedTime = elapsedTime;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
@@ -182,32 +193,19 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         );
 
         if (output.itemTokenId != NONE) {
-          pendingOutput.produced[producedLength] = output;
-          ++producedLength;
+          pendingOutput.produced[producedLength++] = output;
         }
 
         for (uint j; j < consumedEquipment.length; ++j) {
-          pendingOutput.consumed[consumedLength] = consumedEquipment[j];
-          ++consumedLength;
+          pendingOutput.consumed[consumedLength++] = consumedEquipment[j];
         }
 
         pendingOutput.died = died;
       }
 
       if (!died) {
-        bool _isCombatSkill = _isCombatStyle(queuedAction.combatStyle);
-        uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
-        pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
-        pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);
         Skill skill = world.getSkill(queuedAction.actionId);
-        pointsAccrued += _extraXPFromFullEquipment(
-          from,
-          _playerId,
-          queuedAction.attire,
-          skill,
-          xpElapsedTime,
-          xpPerHour
-        );
+        pointsAccrued = _getPointsAccrued(from, _playerId, queuedAction, skill, xpElapsedTime);
       }
 
       if (_flags.includeLoot && pointsAccrued > 0) {
@@ -218,8 +216,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         );
 
         for (uint j; j < newIds.length; ++j) {
-          pendingOutput.produced[producedLength] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
-          ++producedLength;
+          pendingOutput.produced[producedLength++] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
         }
 
         // This loot might be needed for a future task so mint now rather than later
@@ -235,8 +232,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       );
 
       for (uint i; i < ids.length; ++i) {
-        pendingOutput.producedXPRewards[producedXPRewardsLength] = Equipment(uint16(ids[i]), uint24(amounts[i]));
-        ++producedXPRewardsLength;
+        pendingOutput.producedXPRewards[producedXPRewardsLength++] = Equipment(uint16(ids[i]), uint24(amounts[i]));
       }
     }
 
@@ -245,14 +241,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
 
       for (uint i; i < ids.length; ++i) {
-        pendingOutput.producedPastRandomRewards[producedPastRandomRewardsLength] = Equipment(
+        pendingOutput.producedPastRandomRewards[producedPastRandomRewardsLength++] = Equipment(
           uint16(ids[i]),
           uint24(amounts[i])
         );
-        ++producedPastRandomRewardsLength;
       }
     }
 
+    // Compact to fit the arrays
     assembly ("memory-safe") {
       mstore(mload(pendingOutput), consumedLength)
       mstore(mload(add(pendingOutput, 32)), producedLength)
@@ -343,20 +339,28 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     ActionReward[] memory _randomRewards = new ActionReward[](4);
     uint randomRewardLength;
     if (_actionRewards.randomRewardTokenId1 != 0) {
-      _randomRewards[0] = ActionReward(_actionRewards.randomRewardTokenId1, _actionRewards.randomRewardChance1);
-      ++randomRewardLength;
+      _randomRewards[randomRewardLength++] = ActionReward(
+        _actionRewards.randomRewardTokenId1,
+        _actionRewards.randomRewardChance1
+      );
     }
     if (_actionRewards.randomRewardTokenId2 != 0) {
-      _randomRewards[1] = ActionReward(_actionRewards.randomRewardTokenId2, _actionRewards.randomRewardChance2);
-      ++randomRewardLength;
+      _randomRewards[randomRewardLength++] = ActionReward(
+        _actionRewards.randomRewardTokenId2,
+        _actionRewards.randomRewardChance2
+      );
     }
     if (_actionRewards.randomRewardTokenId3 != 0) {
-      _randomRewards[2] = ActionReward(_actionRewards.randomRewardTokenId3, _actionRewards.randomRewardChance3);
-      ++randomRewardLength;
+      _randomRewards[randomRewardLength++] = ActionReward(
+        _actionRewards.randomRewardTokenId3,
+        _actionRewards.randomRewardChance3
+      );
     }
     if (_actionRewards.randomRewardTokenId4 != 0) {
-      _randomRewards[3] = ActionReward(_actionRewards.randomRewardTokenId4, _actionRewards.randomRewardChance4);
-      ++randomRewardLength;
+      _randomRewards[randomRewardLength++] = ActionReward(
+        _actionRewards.randomRewardTokenId4,
+        _actionRewards.randomRewardChance4
+      );
     }
 
     assembly ("memory-safe") {
@@ -466,8 +470,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       );
 
       if (_actionChoice.inputTokenId1 != NONE) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(_queuedAction.regenerateId, foodConsumed);
-        ++consumedEquipmentLength;
+        consumedEquipment[consumedEquipmentLength++] = Equipment(_queuedAction.regenerateId, foodConsumed);
       }
     } else {
       (xpElapsedTime, numConsumed) = PlayerLibrary.getNonCombatAdjustedElapsedTime(
@@ -480,25 +483,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
     if (numConsumed > 0) {
       if (_actionChoice.inputTokenId1 != NONE) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(
+        consumedEquipment[consumedEquipmentLength++] = Equipment(
           _actionChoice.inputTokenId1,
           numConsumed * _actionChoice.num1
         );
-        ++consumedEquipmentLength;
       }
       if (_actionChoice.inputTokenId2 != NONE) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(
+        consumedEquipment[consumedEquipmentLength++] = Equipment(
           _actionChoice.inputTokenId2,
           numConsumed * _actionChoice.num2
         );
-        ++consumedEquipmentLength;
       }
       if (_actionChoice.inputTokenId3 != NONE) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(
+        consumedEquipment[consumedEquipmentLength++] = Equipment(
           _actionChoice.inputTokenId3,
           numConsumed * _actionChoice.num3
         );
-        ++consumedEquipmentLength;
       }
     }
 

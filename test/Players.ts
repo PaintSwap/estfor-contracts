@@ -519,7 +519,7 @@ describe("Players", () => {
     await ethers.provider.send("evm_mine", []);
 
     const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-    let pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+    let pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
       includeLoot: true,
       includePastRandomRewards: true,
       includeXPRewards: true,
@@ -529,7 +529,7 @@ describe("Players", () => {
     expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [250]);
     await ethers.provider.send("evm_mine", []);
-    pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+    pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
       includeLoot: true,
       includePastRandomRewards: true,
       includeXPRewards: true,
@@ -887,7 +887,8 @@ describe("Players", () => {
       await ethers.provider.send("evm_mine", []);
 
       const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-      const pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+      console.log(await itemNFT.balanceOf(alice.address, BRONZE_AXE));
+      const pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
         includeLoot: true,
         includePastRandomRewards: true,
         includeXPRewards: true,
@@ -2060,7 +2061,7 @@ describe("Players", () => {
         expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
         const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-        const pendingOutput = await playerDelegateView.pendingRewards(playerId, {
+        const pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
           includeLoot: true,
           includePastRandomRewards: true,
           includeXPRewards: true,
@@ -2076,7 +2077,7 @@ describe("Players", () => {
 
         if (
           (
-            await playerDelegateView.pendingRewards(playerId, {
+            await playerDelegateView.pendingRewards(alice.address, playerId, {
               includeLoot: false,
               includePastRandomRewards: true,
               includeXPRewards: false,
@@ -2085,7 +2086,7 @@ describe("Players", () => {
         ) {
           expect(
             (
-              await playerDelegateView.pendingRewards(playerId, {
+              await playerDelegateView.pendingRewards(alice.address, playerId, {
                 includeLoot: false,
                 includePastRandomRewards: true,
                 includeXPRewards: false,
@@ -2094,7 +2095,7 @@ describe("Players", () => {
           ).to.eq(1);
 
           const produced = (
-            await playerDelegateView.pendingRewards(playerId, {
+            await playerDelegateView.pendingRewards(alice.address, playerId, {
               includeLoot: false,
               includePastRandomRewards: true,
               includeXPRewards: false,
@@ -2103,7 +2104,7 @@ describe("Players", () => {
           numProduced += produced;
           expect(
             (
-              await playerDelegateView.pendingRewards(playerId, {
+              await playerDelegateView.pendingRewards(alice.address, playerId, {
                 includeLoot: false,
                 includePastRandomRewards: true,
                 includeXPRewards: false,

@@ -17,6 +17,7 @@ import {PlayerLibrary} from "./PlayerLibrary.sol";
 // External view functions that are in other implementation files
 interface PlayerDelegateView {
   function pendingRewards(
+    address _owner,
     uint _playerId,
     PendingFlags memory _flags
   ) external view returns (PendingOutput memory pendingOutput);
