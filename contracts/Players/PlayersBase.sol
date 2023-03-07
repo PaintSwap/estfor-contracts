@@ -80,6 +80,10 @@ abstract contract PlayersBase {
   PlayerNFT internal playerNFT;
   mapping(uint => PendingRandomReward[]) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
+  // Constants for the damage formula
+  uint128 alphaCombat;
+  uint128 betaCombat;
+
   // 4 bytes for each threshold, starts at 500 xp in decimal
   bytes constant xpRewardBytes =
     hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";
@@ -274,29 +278,6 @@ abstract contract PlayersBase {
           _updateCombatStatsFromItem(_stats, items[i]);
         }
       }
-    }
-
-    // TODO: This isn't correct, should be handled in the calculations elsewhere with a better formula
-    if (_stats.attack <= 0) {
-      _stats.attack = 1;
-    }
-    if (_stats.meleeDefence <= 0) {
-      _stats.meleeDefence = 1;
-    }
-    if (_stats.magic <= 0) {
-      _stats.magic = 1;
-    }
-    if (_stats.magicDefence <= 0) {
-      _stats.magicDefence = 1;
-    }
-    if (_stats.range <= 0) {
-      _stats.range = 1;
-    }
-    if (_stats.rangeDefence <= 0) {
-      _stats.rangeDefence = 1;
-    }
-    if (_stats.health <= 0) {
-      _stats.health = 1;
     }
   }
 

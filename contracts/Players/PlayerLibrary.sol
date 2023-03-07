@@ -102,7 +102,6 @@ library PlayerLibrary {
       uint256 mid = (low + high) / 2;
 
       // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
-      // Math.average rounds down (it does integer division with truncation).
       if (_getXP(mid) > _xp) {
         high = mid;
       } else {
@@ -125,19 +124,25 @@ library PlayerLibrary {
   function foodConsumedView(
     address _from,
     QueuedAction storage queuedAction,
-    uint _combatElapsedTime, // uint _battleTime,
+    uint _combatElapsedTime,
     ItemNFT _itemNFT,
     CombatStats memory _combatStats,
-    CombatStats memory _enemyCombatStats
+    CombatStats memory _enemyCombatStats,
+    uint128 _alphaCombat,
+    uint128 _betaCombat
   ) public view returns (uint16 foodConsumed, bool died) {
-    int32 totalHealthLost = int32(
-      (_enemyCombatStats.attack * _enemyCombatStats.attack * int32(int(_combatElapsedTime))) /
-        (_combatStats.meleeDefence * 60)
-    ) - _combatStats.health;
-    totalHealthLost += int32(
-      (_enemyCombatStats.magic * _enemyCombatStats.magic * int32(int(_combatElapsedTime))) /
-        (_combatStats.magicDefence * 60)
+    uint32 totalHealthLost = uint32(
+      int32(_dmg(_enemyCombatStats.attack, _combatStats.meleeDefence, _alphaCombat, _betaCombat, _combatElapsedTime)) -
+        _combatStats.health
     );
+    totalHealthLost += _dmg(
+      _enemyCombatStats.magic,
+      _combatStats.magicDefence,
+      _alphaCombat,
+      _betaCombat,
+      _combatElapsedTime
+    );
+    //    totalHealthLost +=  _dmg(_enemyCombatStats.range, _combatStats.rangeDefence, _alphaCombat, _betaCombat, _combatElapsedTime);
 
     uint healthRestored;
     if (queuedAction.regenerateId != NONE) {
@@ -149,6 +154,7 @@ library PlayerLibrary {
       // No food attached or didn't lose any health
       died = totalHealthLost > 0;
     } else {
+      // Round up
       foodConsumed = uint16(
         uint32(totalHealthLost) / healthRestored + (uint32(totalHealthLost) % healthRestored == 0 ? 0 : 1)
       );
@@ -222,6 +228,26 @@ library PlayerLibrary {
     }
   }
 
+  function _max(int256 a, int256 b) private pure returns (int256) {
+    return a > b ? a : b;
+  }
+
+  function _dmg(
+    int16 attack,
+    int16 defence,
+    uint128 _alphaCombat,
+    uint128 _betaCombat,
+    uint _elapsedTime
+  ) private pure returns (uint32) {
+    return
+      uint32(
+        int32(
+          (_max(0, attack * int128(_alphaCombat) + (attack - defence) * int128(_betaCombat)) *
+            int32(int(_elapsedTime))) / 60
+        )
+      );
+  }
+
   function getCombatAdjustedElapsedTimes(
     address _from,
     ItemNFT _itemNFT,
@@ -230,7 +256,9 @@ library PlayerLibrary {
     ActionChoice memory _actionChoice,
     QueuedAction memory _queuedAction,
     CombatStats memory _combatStats,
-    CombatStats memory _enemyCombatStats
+    CombatStats memory _enemyCombatStats,
+    uint128 _alphaCombat,
+    uint128 _betaCombat
   ) external view returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed) {
     // Update these as necessary
     xpElapsedTime = _elapsedTime;
@@ -241,23 +269,28 @@ library PlayerLibrary {
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
     uint maxHealthEnemy = (numSpawnedPerHour * _elapsedTime * uint16(_enemyCombatStats.health)) / 3600;
     if (maxHealthEnemy > 0) {
-      int32 totalHealthDealt;
+      uint32 totalHealthDealt;
       if (_actionChoice.skill == Skill.ATTACK) {
-        totalHealthDealt =
-          ((_combatStats.attack * _combatStats.attack * int32(int(_elapsedTime))) /
-            _enemyCombatStats.meleeDefence +
-            40) *
-          60;
+        totalHealthDealt = _dmg(
+          _combatStats.attack,
+          _enemyCombatStats.meleeDefence,
+          _alphaCombat,
+          _betaCombat,
+          _elapsedTime
+        );
       } else if (_actionChoice.skill == Skill.MAGIC) {
         _combatStats.magic += int16(int32(_actionChoice.diff)); // Extra magic damage
-
-        totalHealthDealt =
-          ((_combatStats.magic * _combatStats.magic * int32(int(_elapsedTime))) / _enemyCombatStats.magicDefence) *
-          60;
+        totalHealthDealt = _dmg(
+          _combatStats.magic,
+          _enemyCombatStats.magicDefence,
+          _alphaCombat,
+          _betaCombat,
+          _elapsedTime
+        );
       } else if (_actionChoice.skill == Skill.RANGE) {
         // Add later
-        //        totalHealthDealt = (_combatStats.range * _combatStats.range * int32(int(_elapsedTime))) /
-        //        _enemyCombatStats.rangeDefence;
+        //        _combatStats.range += int16(int32(_actionChoice.diff)); // Extra magic damage
+        //        totalHealthDealt = _dmg(_combatStats.range, _enemyCombatStats.rangeDefence, _alphaCombat, _betaCombat, _elapsedTime);
       }
 
       // Work out the ratio of health dealt to the max health they have

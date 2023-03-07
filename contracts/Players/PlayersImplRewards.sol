@@ -335,7 +335,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
   ) private view returns (uint length, bool noLuck) {
     length = _oldLength;
 
-    // Easier to make it an array, but TODO update later
     ActionReward[] memory _randomRewards = new ActionReward[](4);
     uint randomRewardLength;
     if (_actionRewards.randomRewardTokenId1 != 0) {
@@ -456,7 +455,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         _actionChoice,
         _queuedAction,
         _combatStats,
-        enemyCombatStats
+        enemyCombatStats,
+        alphaCombat,
+        betaCombat
       );
 
       uint16 foodConsumed;
@@ -466,7 +467,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         combatElapsedTime,
         itemNFT,
         _combatStats,
-        enemyCombatStats
+        enemyCombatStats,
+        alphaCombat,
+        betaCombat
       );
 
       if (_actionChoice.inputTokenId1 != NONE) {

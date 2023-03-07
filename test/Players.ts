@@ -1803,7 +1803,7 @@ describe("Players", () => {
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 50);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
     });
 
     it("Melee, combat don't kill anything", async () => {
@@ -1897,7 +1897,7 @@ describe("Players", () => {
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 5);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 3);
     });
 
     it("Melee defence", async () => {
@@ -1993,7 +1993,7 @@ describe("Players", () => {
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
       // Check food is consumed, update later
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 50);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
     });
 
     it("Guaranteed rewards", async () => {});
@@ -2233,7 +2233,7 @@ describe("Players", () => {
         meleeDefence: 0,
         magicDefence: 0,
         rangeDefence: 0,
-        health: 0,
+        health: 5,
       };
 
       const dropRate = 1 * 100; // per hour
@@ -2258,7 +2258,7 @@ describe("Players", () => {
       await itemNFT.testOnlyMints(
         alice.address,
         [STAFF_OF_THE_PHOENIX, COOKED_HUPPY, AIR_SCROLL, SHADOW_SCROLL],
-        [1, 255, 200, 100]
+        [1, 1000, 200, 100]
       );
 
       const scrollsConsumedRate = 1 * 100; // per hour
@@ -2343,7 +2343,7 @@ describe("Players", () => {
       );
 
       // Check food is consumed, update later
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 50);
+      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
 
       // Check that scrolls are consumed
       expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);

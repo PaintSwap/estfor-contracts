@@ -178,7 +178,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _actionChoice,
         _queuedAction,
         _combatStats,
-        _enemyCombatStats
+        _enemyCombatStats,
+        alphaCombat,
+        betaCombat
       );
 
       (died) = _processFoodConsumed(
@@ -251,7 +253,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       _combatElapsedTime,
       itemNFT,
       _combatStats,
-      _enemyCombatStats
+      _enemyCombatStats,
+      alphaCombat,
+      betaCombat
     );
 
     _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.attire.queueId);
