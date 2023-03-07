@@ -887,7 +887,6 @@ describe("Players", () => {
       await ethers.provider.send("evm_mine", []);
 
       const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-      console.log(await itemNFT.balanceOf(alice.address, BRONZE_AXE));
       const pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
         includeLoot: true,
         includePastRandomRewards: true,

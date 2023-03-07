@@ -7,13 +7,17 @@ struct Item {
   bool hasNonCombatStats;
   bool hasCombatStats;
   bool exists;
-  bool isTransferable;
   // Food
   uint16 healthRestored;
   // Boost vial
   BoostType boostType;
   uint16 boostValue; // Varies, could be the % increase
   uint24 boostDuration; // How long the effect of the boost last
+  // Can it be transferred?
+  bool isTransferable;
+  // Minimum requirements in this skill to use this item
+  Skill skill;
+  uint32 minSkillPoints;
   // Combat stats
   int8 attack;
   int8 magic;
@@ -27,8 +31,6 @@ struct Item {
   int16 skillDiff1;
   //    Skill skill2;
   //    int16 diff2;
-  //    Skill skill3;
-  //    int16 diff3;
 }
 
 enum BoostType {

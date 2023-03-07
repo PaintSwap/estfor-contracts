@@ -648,7 +648,11 @@ type InputItem = {
   nonCombatStats: NonCombatStat[];
   tokenId: number;
   equipPosition: EquipPosition;
+  // Can this be transferred to another player?
   isTransferable: boolean;
+  // Minimum requirements in this skill
+  skill: Skill;
+  minSkillPoints: number;
   // Food
   healthRestored: number;
   // Boost
@@ -668,6 +672,8 @@ export const inputItem = {
   combatStats: emptyStats,
   nonCombatStats: [],
   isTransferable: true,
+  skill: Skill.NONE,
+  minSkillPoints: 0,
   healthRestored: 0,
   boostType: BoostType.NONE,
   boostValue: 0,

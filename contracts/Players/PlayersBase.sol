@@ -56,6 +56,7 @@ abstract contract PlayersBase {
   error TooManyActionsQueuedSomeAlreadyExist();
   error ActionTimespanExceedsMaxTime();
   error ActionTimespanZero();
+  error MinimumSkillPointsNotReached();
 
   uint32 public constant MAX_TIME = 1 days;
 

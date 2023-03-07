@@ -116,15 +116,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     emit ConsumeBoostVial(_playerId, playerBoost);
   }
 
-  function _addToQueue(
-    address _from,
-    uint _playerId,
-    QueuedAction memory _queuedAction,
-    uint128 _queueId,
-    uint _startTime
-  ) private {
-    Player storage _player = players[_playerId];
-
+  function _checkAddToQueue(QueuedAction memory _queuedAction) private view {
     if (_queuedAction.attire.ring != NONE) {
       revert UnsupportedAttire();
     }
@@ -141,6 +133,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     if (_queuedAction.regenerateId != NONE) {
       require(itemNFT.getItem(_queuedAction.regenerateId).equipPosition == EquipPosition.FOOD);
     }
+  }
+
+  function _addToQueue(
+    address _from,
+    uint _playerId,
+    QueuedAction memory _queuedAction,
+    uint128 _queueId,
+    uint _startTime
+  ) private {
+    _checkAddToQueue(_queuedAction);
+    Player storage _player = players[_playerId];
 
     uint16 actionId = _queuedAction.actionId;
 
@@ -177,28 +180,24 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     _checkHandEquipments(
       _from,
+      _playerId,
       [_queuedAction.rightHandEquipmentTokenId, _queuedAction.leftHandEquipmentTokenId],
       handItemTokenIdRangeMin,
       handItemTokenIdRangeMax,
       isCombat
     );
 
-    _checkActionConsumables(_from, _queuedAction);
+    _checkActionConsumables(_from, _playerId, _queuedAction);
 
     _queuedAction.startTime = uint40(_startTime);
     _queuedAction.attire.queueId = _queueId;
     _queuedAction.isValid = true;
     _player.actionQueue.push(_queuedAction);
 
-    _checkAttire(_from, _player.actionQueue[_player.actionQueue.length - 1].attire);
+    _checkAttire(_from, _playerId, _player.actionQueue[_player.actionQueue.length - 1].attire);
   }
 
-  function _checkActionConsumables(address _from, QueuedAction memory _queuedAction) private view {
-    // Check they have this to equip. Indexer can check actionChoices
-    if (_queuedAction.regenerateId != NONE && itemNFT.balanceOf(_from, _queuedAction.regenerateId) == 0) {
-      revert NoItemBalance(_queuedAction.regenerateId);
-    }
-
+  function _checkActionConsumables(address _from, uint _playerId, QueuedAction memory _queuedAction) private view {
     if (_queuedAction.choiceId != NONE) {
       // Get all items for this
       ActionChoice memory actionChoice = world.getActionChoice(
@@ -206,25 +205,33 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         _queuedAction.choiceId
       );
 
-      uint16[] memory items = new uint16[](3);
+      uint16[] memory itemTokenIds = new uint16[](4);
       uint itemLength;
+      if (_queuedAction.regenerateId != NONE) {
+        itemTokenIds[itemLength++] = _queuedAction.regenerateId;
+      }
       if (actionChoice.inputTokenId1 != NONE) {
-        items[itemLength++] = actionChoice.inputTokenId1;
+        itemTokenIds[itemLength++] = actionChoice.inputTokenId1;
       }
       if (actionChoice.inputTokenId2 != NONE) {
-        items[itemLength++] = actionChoice.inputTokenId2;
+        itemTokenIds[itemLength++] = actionChoice.inputTokenId2;
       }
       if (actionChoice.inputTokenId3 != NONE) {
-        items[itemLength++] = actionChoice.inputTokenId3;
+        itemTokenIds[itemLength++] = actionChoice.inputTokenId3;
       }
       assembly ("memory-safe") {
-        mstore(items, itemLength)
+        mstore(itemTokenIds, itemLength)
       }
       if (itemLength > 0) {
-        uint256[] memory balances = itemNFT.balanceOfs(_from, items);
+        uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
+        (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
         for (uint i; i < balances.length; ++i) {
+          if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
+            revert MinimumSkillPointsNotReached();
+          }
+
           if (balances[i] == 0) {
-            revert NoItemBalance(items[i]);
+            revert NoItemBalance(itemTokenIds[i]);
           }
         }
       }
@@ -233,13 +240,18 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     //     if (_queuedAction.choiceId2 != NONE) {
   }
 
-  // Checks they have sufficient balance to equip the items
-  function _checkAttire(address _from, Attire storage _attire) private view {
+  // Checks they have sufficient balance to equip the items, and minimum skill points
+  function _checkAttire(address _from, uint _playerId, Attire storage _attire) private view {
     // Check the user has these items
     bool skipNeck = false;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length > 0) {
+      (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
       for (uint i; i < balances.length; ++i) {
+        if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
+          revert MinimumSkillPointsNotReached();
+        }
+
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
         }
@@ -274,6 +286,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function _checkHandEquipments(
     address _from,
+    uint _playerId,
     uint16[2] memory _equippedItemTokenIds, // right, left
     uint16 _handItemTokenIdRangeMin,
     uint16 _handItemTokenIdRangeMax,
@@ -283,13 +296,20 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       bool isRightHand = i == 0;
       uint16 equippedItemTokenId = _equippedItemTokenIds[i];
       if (equippedItemTokenId != NONE) {
-        if (equippedItemTokenId < _handItemTokenIdRangeMin || equippedItemTokenId > _handItemTokenIdRangeMax) {
+        if (
+          _handItemTokenIdRangeMin != NONE &&
+          (equippedItemTokenId < _handItemTokenIdRangeMin || equippedItemTokenId > _handItemTokenIdRangeMax)
+        ) {
           revert InvalidArmEquipment(equippedItemTokenId);
         }
 
         uint256 balance = itemNFT.balanceOf(_from, equippedItemTokenId);
         if (balance == 0) {
           revert DoNotHaveEnoughQuantityToEquipToAction();
+        }
+        (Skill skill, uint32 minSkillPoints) = itemNFT.getMinRequirement(equippedItemTokenId);
+        if (skillPoints[_playerId][skill] < minSkillPoints) {
+          revert MinimumSkillPointsNotReached();
         }
       } else {
         // Only combat actions can have no equipment if they have hand range choice

@@ -28,7 +28,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
     NonCombatStat[] nonCombatStats;
     uint16 tokenId;
     EquipPosition equipPosition;
+    // Can it be transferred?
     bool isTransferable;
+    // Minimum requirements in this skill
+    Skill skill;
+    uint32 minSkillPoints;
     // Food
     uint16 healthRestored;
     // Boost
@@ -130,6 +134,20 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
 
   function getItem(uint16 _tokenId) external view returns (Item memory) {
     return _getItem(_tokenId);
+  }
+
+  function getMinRequirement(uint16 _tokenId) public view returns (Skill, uint32) {
+    return (items[_tokenId].skill, items[_tokenId].minSkillPoints);
+  }
+
+  function getMinRequirements(
+    uint16[] calldata _tokenIds
+  ) external view returns (Skill[] memory skills, uint32[] memory minSkillPoints) {
+    skills = new Skill[](_tokenIds.length);
+    minSkillPoints = new uint32[](_tokenIds.length);
+    for (uint i; i < _tokenIds.length; ++i) {
+      (skills[i], minSkillPoints[i]) = getMinRequirement(_tokenIds[i]);
+    }
   }
 
   function getItems(uint16[] calldata _tokenIds) external view returns (Item[] memory _items) {
@@ -247,6 +265,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
       item.boostValue = _item.boostValue;
       item.boostDuration = _item.boostDuration;
     }
+
+    item.minSkillPoints = _item.minSkillPoints;
+    item.skill = _item.skill;
     tokenURIs[_item.tokenId] = _item.metadataURI;
   }
 
