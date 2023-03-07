@@ -235,10 +235,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  function setImpls(address _queueActions, address _processActions, address _rewards) external onlyOwner {
-    implQueueActions = _queueActions;
-    implProcessActions = _processActions;
-    implRewards = _rewards;
+  function setImpls(address _implQueueActions, address _implProcessActions, address _implRewards) external onlyOwner {
+    implQueueActions = _implQueueActions;
+    implProcessActions = _implProcessActions;
+    implRewards = _implRewards;
   }
 
   function _addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) private {
