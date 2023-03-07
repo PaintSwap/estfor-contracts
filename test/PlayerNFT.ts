@@ -198,8 +198,20 @@ describe("PlayerNFT", () => {
     expect(metadata.attributes[1].value).to.equal(1);
   });
 
-  it("supportsInterface", async () => {
-    const {playerNFT, playerId} = await loadFixture(deployContracts);
-    // TODO
+  describe("supportsInterface", async () => {
+    it('IERC165', async () => {
+      const {playerNFT} = await loadFixture(deployContracts);
+      expect(await playerNFT.supportsInterface('0x01ffc9a7')).to.equal(true);
+    });
+  
+    it('IERC1155', async () => {
+      const { playerNFT } = await loadFixture(deployContracts);
+      expect(await playerNFT.supportsInterface('0xd9b67a26')).to.equal(true);
+    });
+  
+    it('IERC1155Metadata', async () => {
+      const { playerNFT } = await loadFixture(deployContracts);
+      expect(await playerNFT.supportsInterface('0x0e89341c')).to.equal(true);
+    });
   });
 });

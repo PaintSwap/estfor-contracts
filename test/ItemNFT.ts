@@ -43,9 +43,21 @@ describe("PlayerNFT", () => {
     };
   }
 
-  it("supportsInterface", async () => {
-    const {itemNFT} = await loadFixture(deployContracts);
-    // TODO
+  describe("supportsInterface", async () => {
+    it('IERC165', async () => {
+      const {itemNFT} = await loadFixture(deployContracts);
+      expect(await itemNFT.supportsInterface('0x01ffc9a7')).to.equal(true);
+    });
+  
+    it('IERC1155', async () => {
+      const { itemNFT } = await loadFixture(deployContracts);
+      expect(await itemNFT.supportsInterface('0xd9b67a26')).to.equal(true);
+    });
+  
+    it('IERC1155Metadata', async () => {
+      const { itemNFT } = await loadFixture(deployContracts);
+      expect(await itemNFT.supportsInterface('0x0e89341c')).to.equal(true);
+    });
   });
 
   it("getItem", async () => {
