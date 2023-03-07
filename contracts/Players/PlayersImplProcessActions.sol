@@ -268,21 +268,21 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint32 _skillPoints
   ) private {
     {
-      int16 level = int16(PlayerLibrary.getLevel(_healthSkillPoints));
-      _player.health = level;
+      int16 _health = int16(PlayerLibrary.getLevel(_healthSkillPoints));
+      _player.health = _health;
     }
 
-    int16 level = int16(PlayerLibrary.getLevel(_skillPoints));
+    int16 _level = int16(PlayerLibrary.getLevel(_skillPoints));
     if (_skill == Skill.ATTACK) {
-      _player.melee = level;
+      _player.melee = _level;
     } else if (_skill == Skill.MAGIC) {
-      _player.magic = level;
+      _player.magic = _level;
     }
     /* else if (_skill == Skill.RANGE) {
-            _player.range = level;
+            _player.range = _level;
           } */
     else if (_skill == Skill.DEFENCE) {
-      _player.defence = level;
+      _player.defence = _level;
     }
   }
 
