@@ -132,7 +132,7 @@ library PlayerLibrary {
     uint128 _betaCombat
   ) public view returns (uint16 foodConsumed, bool died) {
     uint32 totalHealthLost = uint32(
-      int32(_dmg(_enemyCombatStats.attack, _combatStats.meleeDefence, _alphaCombat, _betaCombat, _combatElapsedTime)) -
+      int32(_dmg(_enemyCombatStats.melee, _combatStats.meleeDefence, _alphaCombat, _betaCombat, _combatElapsedTime)) -
         _combatStats.health
     );
     totalHealthLost += _dmg(
@@ -272,7 +272,7 @@ library PlayerLibrary {
       uint32 totalHealthDealt;
       if (_actionChoice.skill == Skill.ATTACK) {
         totalHealthDealt = _dmg(
-          _combatStats.attack,
+          _combatStats.melee,
           _enemyCombatStats.meleeDefence,
           _alphaCombat,
           _betaCombat,

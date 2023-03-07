@@ -451,7 +451,7 @@ export enum EquipPosition {
 }
 
 export type CombatStats = {
-  attack: number;
+  melee: number;
   magic: number;
   range: number;
   meleeDefence: number;
@@ -591,7 +591,7 @@ type ActionChoice = {
 };
 
 export const emptyStats: CombatStats = {
-  attack: 0,
+  melee: 0,
   magic: 0,
   range: 0,
   meleeDefence: 0,
@@ -601,7 +601,7 @@ export const emptyStats: CombatStats = {
 };
 
 const bronzeHelmentStats: CombatStats = {
-  attack: 1,
+  melee: 1,
   magic: 0,
   range: 0,
   meleeDefence: 4,
@@ -611,7 +611,7 @@ const bronzeHelmentStats: CombatStats = {
 };
 
 const bronzeGauntletStats: CombatStats = {
-  attack: 0,
+  melee: 0,
   magic: 0,
   range: 0,
   meleeDefence: 1,
@@ -621,7 +621,7 @@ const bronzeGauntletStats: CombatStats = {
 };
 
 const bronzeSwordStats: CombatStats = {
-  attack: 5,
+  melee: 5,
   magic: 0,
   range: 0,
   meleeDefence: 0,
@@ -946,7 +946,7 @@ export const allActions: Action[] = [
     randomRewards: [],
     combatStats: {
       ...emptyStats,
-      attack: 1,
+      melee: 1,
       health: 20,
     },
   },

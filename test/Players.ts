@@ -391,7 +391,7 @@ describe("Players", () => {
     const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(deployContracts);
 
     const combatStats: CombatStats = {
-      attack: 2,
+      melee: 2,
       magic: 0,
       range: 0,
       meleeDefence: -1,
@@ -551,7 +551,7 @@ describe("Players", () => {
     expect(await itemNFT.balanceOf(alice.address, BRONZE_GAUNTLETS)).to.eq(1);
 
     const combatStats: CombatStats = {
-      attack: 2,
+      melee: 2,
       magic: 0,
       range: 0,
       meleeDefence: -1,
@@ -570,7 +570,7 @@ describe("Players", () => {
 
     // Check bonuses before
     const beforeStats = (await players.players(playerId)).totalStats;
-    expect(beforeStats.attack).to.eq(0);
+    expect(beforeStats.melee).to.eq(0);
     expect(beforeStats.range).to.eq(0);
     expect(beforeStats.magic).to.eq(0);
     expect(beforeStats.meleeDefence).to.eq(0);
@@ -582,7 +582,7 @@ describe("Players", () => {
 
     // Check bonuses after
     const afterStats = (await players.players(playerId)).totalStats;
-    expect(afterStats.attack).to.eq(2);
+    expect(afterStats.melee).to.eq(2);
     expect(afterStats.range).to.eq(0);
     expect(afterStats.magic).to.eq(0);
     expect(afterStats.meleeDefence).to.eq(-1);
@@ -1714,7 +1714,7 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
-        attack: 3,
+        melee: 3,
         magic: 0,
         range: 0,
         meleeDefence: 0,
@@ -1769,7 +1769,7 @@ describe("Players", () => {
         ...inputItem,
         combatStats: {
           ...emptyStats,
-          attack: 5,
+          melee: 5,
         },
         tokenId: BRONZE_SWORD,
         equipPosition: EquipPosition.RIGHT_HAND,
@@ -1810,7 +1810,7 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
-        attack: 3,
+        melee: 3,
         magic: 0,
         range: 0,
         meleeDefence: 0,
@@ -1865,7 +1865,7 @@ describe("Players", () => {
         ...inputItem,
         combatStats: {
           ...emptyStats,
-          attack: 5,
+          melee: 5,
         },
         tokenId: BRONZE_SWORD,
         equipPosition: EquipPosition.RIGHT_HAND,
@@ -1904,7 +1904,7 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
-        attack: 3,
+        melee: 3,
         magic: 0,
         range: 0,
         meleeDefence: 0,
@@ -1959,7 +1959,7 @@ describe("Players", () => {
         ...inputItem,
         combatStats: {
           ...emptyStats,
-          attack: 5,
+          melee: 5,
         },
         tokenId: BRONZE_SWORD,
         equipPosition: EquipPosition.RIGHT_HAND,
@@ -2140,7 +2140,7 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
-        attack: 3,
+        melee: 3,
         magic: 0,
         range: 0,
         meleeDefence: 0,
@@ -2227,7 +2227,7 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const monsterCombatStats: CombatStats = {
-        attack: 3,
+        melee: 3,
         magic: 0,
         range: 0,
         meleeDefence: 0,

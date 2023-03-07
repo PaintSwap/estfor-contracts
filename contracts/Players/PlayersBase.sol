@@ -281,32 +281,32 @@ abstract contract PlayersBase {
     }
   }
 
-  function _updateCombatStatsFromItem(CombatStats memory _stats, Item memory _item) private pure {
-    if (_item.attack != 0) {
-      _stats.attack += _item.attack;
+  function _updateCombatStatsFromItem(CombatStats memory _combatStats, Item memory _item) private pure {
+    if (_item.melee != 0) {
+      _combatStats.melee += _item.melee;
     }
     if (_item.magic != 0) {
-      _stats.magic += _item.magic;
+      _combatStats.magic += _item.magic;
     }
     if (_item.range != 0) {
-      _stats.range += _item.range;
+      _combatStats.range += _item.range;
     }
     if (_item.meleeDefence != 0) {
-      _stats.meleeDefence += _item.meleeDefence;
+      _combatStats.meleeDefence += _item.meleeDefence;
     }
     if (_item.magicDefence != 0) {
-      _stats.magicDefence += _item.magicDefence;
+      _combatStats.magicDefence += _item.magicDefence;
     }
     if (_item.rangeDefence != 0) {
-      _stats.rangeDefence += _item.rangeDefence;
+      _combatStats.rangeDefence += _item.rangeDefence;
     }
     if (_item.health != 0) {
-      _stats.health += _item.health;
+      _combatStats.health += _item.health;
     }
   }
 
   function _getCachedCombatStats(Player storage _player) internal view returns (CombatStats memory combatStats) {
-    combatStats.attack = _player.attack;
+    combatStats.melee = _player.melee;
     combatStats.magic = _player.magic;
     //    combatStats.range = _player.range;
     combatStats.health = _player.health;

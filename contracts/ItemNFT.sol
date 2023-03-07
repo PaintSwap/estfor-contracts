@@ -242,7 +242,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
 
     if (hasCombat) {
       // Combat stats
-      item.attack = int8(_item.combatStats.attack);
+      item.melee = int8(_item.combatStats.melee);
       item.magic = int8(_item.combatStats.magic);
       item.range = int8(_item.combatStats.range);
       item.meleeDefence = int8(_item.combatStats.meleeDefence);

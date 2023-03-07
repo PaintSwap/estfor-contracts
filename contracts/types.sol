@@ -19,7 +19,7 @@ struct Item {
   Skill skill;
   uint32 minSkillPoints;
   // Combat stats
-  int8 attack;
+  int8 melee;
   int8 magic;
   int8 range;
   int8 meleeDefence;
@@ -188,7 +188,7 @@ struct Attire {
 
 struct CombatStats {
   // From skill points
-  int16 attack;
+  int16 melee;
   int16 magic;
   int16 range;
   int16 health;
@@ -199,8 +199,8 @@ struct CombatStats {
 }
 
 struct Player {
-  // Combat, stats from skill points (Cached so this doesn't need to be calculated every combat)
-  int16 attack;
+  // Combat levels, (Cached from skill points so this doesn't need to be calculated every combat)
+  int16 melee;
   int16 magic;
   int16 range;
   int16 defence;
