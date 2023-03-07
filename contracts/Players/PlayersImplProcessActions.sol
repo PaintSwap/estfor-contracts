@@ -181,22 +181,22 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice
   ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died) {
-    // This is based on the damage done from battling
-
-    (bool _isCombat, CombatStats memory _enemyCombatStats) = world.getCombatStats(_queuedAction.actionId);
+    bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
     uint16 numConsumed;
-    (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getAdjustedElapsedTimes(
-      _from,
-      itemNFT,
-      world,
-      _elapsedTime,
-      _actionChoice,
-      _queuedAction,
-      _combatStats,
-      _enemyCombatStats
-    );
 
-    if (_isCombat) {
+    if (isCombat) {
+      CombatStats memory _enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
+      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getCombatAdjustedElapsedTimes(
+        _from,
+        itemNFT,
+        world,
+        _elapsedTime,
+        _actionChoice,
+        _queuedAction,
+        _combatStats,
+        _enemyCombatStats
+      );
+
       (died) = _processFoodConsumed(
         _from,
         _playerId,
@@ -204,6 +204,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         combatElapsedTime,
         _combatStats,
         _enemyCombatStats
+      );
+    } else {
+      (xpElapsedTime, numConsumed) = PlayerLibrary.getNonCombatAdjustedElapsedTime(
+        _from,
+        itemNFT,
+        _elapsedTime,
+        _actionChoice
       );
     }
 

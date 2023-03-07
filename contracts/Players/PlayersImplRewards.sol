@@ -173,7 +173,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         Equipment[] memory consumedEquipment;
         Equipment memory output;
 
-        (consumedEquipment, output, elapsedTime, xpElapsedTime, died) = _processConsumablesView(
+        (consumedEquipment, output, xpElapsedTime, died) = _processConsumablesView(
           from,
           queuedAction,
           elapsedTime,
@@ -212,13 +212,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
       if (_flags.includeLoot && pointsAccrued > 0) {
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
-          uint40(queuedAction.startTime + elapsedTime),
+          uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
           queuedAction.actionId
         );
 
-        for (uint i; i < newIds.length; ++i) {
-          pendingOutput.produced[producedLength] = Equipment(uint16(newIds[i]), uint24(newAmounts[i]));
+        for (uint j; j < newIds.length; ++j) {
+          pendingOutput.produced[producedLength] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
           ++producedLength;
         }
 
@@ -430,26 +430,21 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
   )
     private
     view
-    returns (
-      Equipment[] memory consumedEquipment,
-      Equipment memory output,
-      uint actualElapsedTime,
-      uint xpElapsedTime,
-      bool died
-    )
+    returns (Equipment[] memory consumedEquipment, Equipment memory output, uint xpElapsedTime, bool died)
   {
-    // Fetch the requirements for it
-    (bool isCombat, CombatStats memory enemyCombatStats) = world.getCombatStats(_queuedAction.actionId);
-
     consumedEquipment = new Equipment[](4);
     uint consumedEquipmentLength;
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
     uint16 numConsumed;
-    uint combatElapsedTime;
+    bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
     if (isCombat) {
-      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getAdjustedElapsedTimes(
+      // Fetch the requirements for it
+      CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
+
+      uint combatElapsedTime;
+      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getCombatAdjustedElapsedTimes(
         _from,
         itemNFT,
         world,
@@ -475,7 +470,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         ++consumedEquipmentLength;
       }
     } else {
-      actualElapsedTime = _elapsedTime;
+      (xpElapsedTime, numConsumed) = PlayerLibrary.getNonCombatAdjustedElapsedTime(
+        _from,
+        itemNFT,
+        _elapsedTime,
+        _actionChoice
+      );
     }
 
     if (numConsumed > 0) {

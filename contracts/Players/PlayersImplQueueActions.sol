@@ -252,7 +252,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     bool skipNeck = false;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length > 0) {
-      uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
       for (uint i; i < balances.length; ++i) {
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);

@@ -324,33 +324,30 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit SetAvailableAction(_actionId, _isAvailable);
   }
 
-  function getCombatStats(uint16 _actionId) external view returns (bool isCombat, CombatStats memory stats) {
-    isCombat = actions[_actionId].skill == Skill.COMBAT;
-    if (isCombat) {
-      stats = actionCombatStats[_actionId];
+  function getCombatStats(uint16 _actionId) external view returns (CombatStats memory stats) {
+    stats = actionCombatStats[_actionId];
 
-      // TODO: This shouldn't be needed
-      if (stats.attack <= 0) {
-        stats.attack = 1;
-      }
-      if (stats.meleeDefence <= 0) {
-        stats.meleeDefence = 1;
-      }
-      if (stats.magic <= 0) {
-        stats.magic = 1;
-      }
-      if (stats.magicDefence <= 0) {
-        stats.magicDefence = 1;
-      }
-      if (stats.range <= 0) {
-        stats.range = 1;
-      }
-      if (stats.rangeDefence <= 0) {
-        stats.rangeDefence = 1;
-      }
-      if (stats.health <= 0) {
-        stats.health = 1;
-      }
+    // TODO: This shouldn't be needed
+    if (stats.attack <= 0) {
+      stats.attack = 1;
+    }
+    if (stats.meleeDefence <= 0) {
+      stats.meleeDefence = 1;
+    }
+    if (stats.magic <= 0) {
+      stats.magic = 1;
+    }
+    if (stats.magicDefence <= 0) {
+      stats.magicDefence = 1;
+    }
+    if (stats.range <= 0) {
+      stats.range = 1;
+    }
+    if (stats.rangeDefence <= 0) {
+      stats.rangeDefence = 1;
+    }
+    if (stats.health <= 0) {
+      stats.health = 1;
     }
   }
 
