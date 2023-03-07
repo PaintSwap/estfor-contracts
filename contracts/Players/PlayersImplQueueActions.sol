@@ -211,7 +211,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     if (_queuedAction.choiceId != NONE) {
       // Get all items for this
       ActionChoice memory actionChoice = world.getActionChoice(
-        _isCombat(_queuedAction.combatStyle) ? NONE : _queuedAction.actionId,
+        _isCombatStyle(_queuedAction.combatStyle) ? NONE : _queuedAction.actionId,
         _queuedAction.choiceId
       );
 

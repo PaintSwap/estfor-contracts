@@ -137,7 +137,7 @@ abstract contract PlayersBase {
       );
   }
 
-  function _isCombat(CombatStyle _combatStyle) internal pure returns (bool) {
+  function _isCombatStyle(CombatStyle _combatStyle) internal pure returns (bool) {
     return _combatStyle != CombatStyle.NONE;
   }
 

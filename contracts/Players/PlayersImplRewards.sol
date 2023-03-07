@@ -165,7 +165,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       bool died;
 
       ActionChoice memory actionChoice;
-      bool isCombat = _isCombat(queuedAction.combatStyle);
+      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       uint xpElapsedTime = elapsedTime;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
@@ -195,7 +195,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       }
 
       if (!died) {
-        bool _isCombatSkill = _isCombat(queuedAction.combatStyle);
+        bool _isCombatSkill = _isCombatStyle(queuedAction.combatStyle);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);

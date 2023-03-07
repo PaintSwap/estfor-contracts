@@ -68,7 +68,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       bool died;
 
       ActionChoice memory actionChoice;
-      bool isCombat = _isCombat(queuedAction.combatStyle);
+      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
 
       uint xpElapsedTime = elapsedTime;
 
@@ -89,7 +89,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
       uint128 _queueId = queuedAction.attire.queueId;
       if (!died) {
-        bool _isCombatSkill = _isCombat(queuedAction.combatStyle);
+        bool _isCombatSkill = _isCombatStyle(queuedAction.combatStyle);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
@@ -107,7 +107,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (pointsAccrued > 0) {
         Skill skill = _getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId);
 
-        if (_isCombat(queuedAction.combatStyle)) {
+        if (_isCombatStyle(queuedAction.combatStyle)) {
           // Update health too with 33% of the points gained from combat
           _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);
           _cacheCombatStats(
@@ -173,7 +173,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died) {
     // This is based on the damage done from battling
 
-    (bool isCombat, CombatStats memory enemyCombatStats) = world.getCombatStats(_queuedAction.actionId);
+    (bool _isCombat, CombatStats memory _enemyCombatStats) = world.getCombatStats(_queuedAction.actionId);
     uint16 numConsumed;
     (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getAdjustedElapsedTimes(
       _from,
@@ -183,11 +183,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       _actionChoice,
       _queuedAction,
       _combatStats,
-      enemyCombatStats
+      _enemyCombatStats
     );
 
-    if (isCombat) {
-      (died) = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, enemyCombatStats);
+    if (_isCombat) {
+      (died) = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, _enemyCombatStats);
     }
 
     if (numConsumed > 0) {
