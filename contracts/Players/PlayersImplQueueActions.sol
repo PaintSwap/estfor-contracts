@@ -52,8 +52,11 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
       player.actionQueue = remainingSkills;
 
-      for (uint i; i < remainingSkills.length; ++i) {
-        totalTimespan += remainingSkills[i].timespan;
+      for (uint j = remainingSkills.length; j != 0 ; ) {
+        unchecked {
+          --j;
+        }
+        totalTimespan += remainingSkills[j].timespan;
       }
     }
 
