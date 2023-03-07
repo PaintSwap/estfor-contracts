@@ -199,6 +199,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
         pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);
+        Skill skill = world.getSkill(queuedAction.actionId);
+        pointsAccrued += _extraXPFromFullEquipment(
+          from,
+          _playerId,
+          queuedAction.attire,
+          skill,
+          xpElapsedTime,
+          xpPerHour
+        );
       }
 
       if (_flags.includeLoot && pointsAccrued > 0) {

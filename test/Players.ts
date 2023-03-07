@@ -33,6 +33,11 @@ import {
   MINING_MAX,
   MITHRIL_BAR,
   MITHRIL_ORE,
+  NATURE_BODY,
+  NATURE_BOOTS,
+  NATURE_BRACERS,
+  NATURE_MASK,
+  NATURE_TROUSERS,
   noAttire,
   NONE,
   QueuedAction,
@@ -43,7 +48,7 @@ import {
   WOODCUTTING_MAX,
   XP_BOOST,
 } from "../scripts/utils";
-import { PlayerNFT } from "../typechain-types";
+import {PlayerNFT} from "../typechain-types";
 
 const actionIsAvailable = true;
 
@@ -80,7 +85,9 @@ describe("Players", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const playerNFT = (await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"})) as PlayerNFT;
+    const playerNFT = (await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {
+      kind: "uups",
+    })) as PlayerNFT;
 
     // This contains all the player data
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
@@ -892,6 +899,115 @@ describe("Players", () => {
       expect(pendingOutput.produced[0].amount).is.eq(balanceExpected);
       await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(balanceExpected);
+    });
+
+    it("Woodcutting, full nature equipment", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        info: {
+          skill: Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: BRONZE_AXE,
+          handItemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: false,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600;
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: BRONZE_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: NATURE_MASK,
+        equipPosition: EquipPosition.HEAD,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: NATURE_BODY,
+        equipPosition: EquipPosition.BODY,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: NATURE_BRACERS,
+        equipPosition: EquipPosition.ARMS,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: NATURE_TROUSERS,
+        equipPosition: EquipPosition.LEGS,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...inputItem,
+        tokenId: NATURE_BOOTS,
+        equipPosition: EquipPosition.BOOTS,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      const queuedAction: QueuedAction = {
+        attire: {
+          helmet: NATURE_MASK,
+          amulet: NONE,
+          armor: NATURE_BODY,
+          gauntlets: NATURE_BRACERS,
+          tassets: NATURE_TROUSERS,
+          boots: NATURE_BOOTS,
+          ring: NONE, // Always NONE for now
+          reserved1: NONE, // Always NONE for now
+          queueId: 0, // Doesn't matter
+        },
+        actionId,
+        combatStyle: CombatStyle.NONE,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      await itemNFT.testOnlyMints(
+        alice.address,
+        [NATURE_MASK, NATURE_BODY, NATURE_BRACERS, NATURE_TROUSERS, NATURE_BOOTS],
+        [1, 1, 1, 1, 1]
+      );
+
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
+      await players.connect(alice).processActions(playerId);
+      expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(
+        queuedAction.timespan + queuedAction.timespan * 0.03
+      );
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(balanceExpected);
     });

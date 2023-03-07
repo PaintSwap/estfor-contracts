@@ -137,6 +137,26 @@ abstract contract PlayersBase {
       );
   }
 
+  function _extraXPFromFullEquipment(
+    address _from,
+    uint _playerId,
+    Attire storage _attire,
+    Skill _skill,
+    uint _elapsedTime,
+    uint16 _xpPerHour
+  ) internal view returns (uint32 extraPointsAccrued) {
+    if (_skill == Skill.THIEVING || _skill == Skill.CRAFTING || _skill == Skill.WOODCUTTING) {
+      // Check if they have the full equipment set, if so they can get some bonus
+      bool skipNeck = true;
+      (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+      uint extraBoost = PlayerLibrary.extraBoostFromFullEquipment(_skill, itemTokenIds, balances);
+
+      if (extraBoost > 0) {
+        extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * extraBoost) / (3600 * 100));
+      }
+    }
+  }
+
   function _isCombatStyle(CombatStyle _combatStyle) internal pure returns (bool) {
     return _combatStyle != CombatStyle.NONE;
   }
@@ -163,14 +183,18 @@ abstract contract PlayersBase {
     }
   }
 
-  function _updateCombatStats(address _from, CombatStats memory _stats, Attire storage _attire) internal view {
+  function _getAttireWithBalance(
+    address _from,
+    Attire storage _attire,
+    bool _skipNeck
+  ) internal view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
     uint attireLength;
-    uint16[] memory itemTokenIds = new uint16[](6);
+    itemTokenIds = new uint16[](8);
     if (_attire.helmet != NONE) {
       itemTokenIds[attireLength] = _attire.helmet;
       ++attireLength;
     }
-    if (_attire.amulet != NONE) {
+    if (_attire.amulet != NONE && !_skipNeck) {
       itemTokenIds[attireLength] = _attire.amulet;
       ++attireLength;
     }
@@ -196,8 +220,15 @@ abstract contract PlayersBase {
     }
 
     if (attireLength > 0) {
+      balances = itemNFT.balanceOfs(_from, itemTokenIds);
+    }
+  }
+
+  function _updateCombatStats(address _from, CombatStats memory _stats, Attire storage _attire) internal view {
+    bool skipNeck = false;
+    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+    if (itemTokenIds.length > 0) {
       Item[] memory items = itemNFT.getItems(itemTokenIds);
-      uint[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
       for (uint i; i < items.length; ++i) {
         if (balances[i] > 0) {
           _updateCombatStatsFromItem(_stats, items[i]);

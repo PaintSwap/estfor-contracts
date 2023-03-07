@@ -193,13 +193,14 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       false
     );
 
-    _checkAttire(_from, _queuedAction.attire);
     _checkActionConsumables(_from, _queuedAction);
 
     _queuedAction.startTime = uint40(_startTime);
     _queuedAction.attire.queueId = _queueId;
     _queuedAction.isValid = true;
     _player.actionQueue.push(_queuedAction);
+
+    _checkAttire(_from, _player.actionQueue[_player.actionQueue.length - 1].attire);
   }
 
   function _checkActionConsumables(address _from, QueuedAction memory _queuedAction) private view {
@@ -246,43 +247,15 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   }
 
   // Checks they have sufficient balance to equip the items
-  function _checkAttire(address _from, Attire memory _attire) private view {
+  function _checkAttire(address _from, Attire storage _attire) private view {
     // Check the user has these items
-    uint16[] memory items = new uint16[](8);
-    uint itemLength;
-    if (_attire.helmet != NONE) {
-      items[itemLength] = _attire.helmet;
-      ++itemLength;
-    }
-    if (_attire.amulet != NONE) {
-      items[itemLength] = _attire.amulet;
-      ++itemLength;
-    }
-    if (_attire.armor != NONE) {
-      items[itemLength] = _attire.armor;
-      ++itemLength;
-    }
-    if (_attire.gauntlets != NONE) {
-      items[itemLength] = _attire.gauntlets;
-      ++itemLength;
-    }
-    if (_attire.tassets != NONE) {
-      items[itemLength] = _attire.tassets;
-      ++itemLength;
-    }
-    if (_attire.boots != NONE) {
-      items[itemLength] = _attire.boots;
-      ++itemLength;
-    }
-
-    assembly ("memory-safe") {
-      mstore(items, itemLength)
-    }
-    if (itemLength > 0) {
-      uint256[] memory balances = itemNFT.balanceOfs(_from, items);
+    bool skipNeck = false;
+    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+    if (itemTokenIds.length > 0) {
+      uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
       for (uint i; i < balances.length; ++i) {
         if (balances[i] == 0) {
-          revert NoItemBalance(items[i]);
+          revert NoItemBalance(itemTokenIds[i]);
         }
       }
     }

@@ -6,13 +6,12 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "../types.sol";
 import "../World.sol";
 import "../ItemNFT.sol";
-import "./Players.sol"; // Might not even be needed
 
-// Show all the player stats, return metadata json
 library PlayerLibrary {
   using Strings for uint32;
   using Strings for bytes32;
 
+  // Show all the player stats, return metadata json
   function uri(
     bytes32 name,
     mapping(Skill => uint32) storage skillPoints,
@@ -333,6 +332,61 @@ library PlayerLibrary {
           boostedTime = activeBoost.duration;
         }
         boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoost.val) / (3600 * 100));
+      }
+    }
+  }
+
+  function extraBoostFromFullEquipment(
+    Skill _skill,
+    uint16[] memory itemTokenIds,
+    uint[] memory balances
+  ) external pure returns (uint extraBoost) {
+    if (itemTokenIds.length == 5) {
+      if (_skill == Skill.THIEVING) {
+        if (
+          itemTokenIds[0] == NATUOW_HOOD &&
+          balances[0] > 0 && // head
+          itemTokenIds[1] == NATUOW_BODY &&
+          balances[1] > 0 && // body
+          itemTokenIds[2] == NATUOW_BRACERS &&
+          balances[2] > 0 && // arms
+          itemTokenIds[3] == NATUOW_TASSETS &&
+          balances[3] > 0 && // legs
+          itemTokenIds[4] == NATUOW_BOOTS &&
+          balances[4] > 0 // boots
+        ) {
+          extraBoost = 3; // %
+        }
+      } else if (_skill == Skill.WOODCUTTING) {
+        if (
+          itemTokenIds[0] == NATURE_MASK &&
+          balances[0] > 0 && // head
+          itemTokenIds[1] == NATURE_BODY &&
+          balances[1] > 0 && // body
+          itemTokenIds[2] == NATURE_BRACERS &&
+          balances[2] > 0 && // arms
+          itemTokenIds[3] == NATURE_TROUSERS &&
+          balances[3] > 0 && // legs
+          itemTokenIds[4] == NATURE_BOOTS &&
+          balances[4] > 0 // boots
+        ) {
+          extraBoost = 3; // %
+        }
+      } else if (_skill == Skill.CRAFTING) {
+        if (
+          itemTokenIds[0] == BAT_WING_HAT &&
+          balances[0] > 0 && // head
+          itemTokenIds[1] == BAT_WING_BODY &&
+          balances[1] > 0 && // body
+          itemTokenIds[2] == BAT_WING_BRACERS &&
+          balances[2] > 0 && // arms
+          itemTokenIds[3] == BAT_WING_TROUSERS &&
+          balances[3] > 0 && // legs
+          itemTokenIds[4] == BAT_WING_BOOTS &&
+          balances[4] > 0 // boots
+        ) {
+          extraBoost = 3; // %
+        }
       }
     }
   }

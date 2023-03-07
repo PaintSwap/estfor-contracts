@@ -88,11 +88,21 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       uint128 _queueId = queuedAction.attire.queueId;
+      Skill skill = _getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId);
+
       if (!died) {
         bool _isCombatSkill = _isCombatStyle(queuedAction.combatStyle);
         uint16 xpPerHour = world.getXPPerHour(queuedAction.actionId, _isCombatSkill ? NONE : queuedAction.choiceId);
         pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
-        pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, elapsedTime, xpPerHour);
+        pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, queuedAction.startTime, xpElapsedTime, xpPerHour);
+        pointsAccrued += _extraXPFromFullEquipment(
+          _from,
+          _playerId,
+          queuedAction.attire,
+          skill,
+          xpElapsedTime,
+          xpPerHour
+        );
       } else {
         emit Died(_from, _playerId, _queueId);
       }
@@ -187,7 +197,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     );
 
     if (_isCombat) {
-      (died) = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, _enemyCombatStats);
+      (died) = _processFoodConsumed(
+        _from,
+        _playerId,
+        _queuedAction,
+        combatElapsedTime,
+        _combatStats,
+        _enemyCombatStats
+      );
     }
 
     if (numConsumed > 0) {

@@ -41,8 +41,16 @@ export const MITHRIL_HELMET = HEAD_BASE + 2;
 export const ADAMANTINE_HELMET = HEAD_BASE + 3;
 export const RUNITE_HELMET = HEAD_BASE + 4;
 export const TITANIUM_HELMET = HEAD_BASE + 5;
-export const ORCHALCUM_HELMET = HEAD_BASE + 6;
-
+export const ORICHALCUM_HELMET = HEAD_BASE + 6;
+export const NATUOW_HOOD = HEAD_BASE + 7;
+export const BAT_WING_HAT = HEAD_BASE + 8;
+export const NATURE_MASK = HEAD_BASE + 9;
+export const APPRENTICE_HAT = HEAD_BASE + 10;
+export const MAGE_HOOD = HEAD_BASE + 11;
+export const SORCERER_HAT = HEAD_BASE + 12;
+export const SEERS_HOOD = HEAD_BASE + 13;
+export const SHAMAN_HOOD = HEAD_BASE + 14;
+export const MASTER_HAT = HEAD_BASE + 15;
 export const HEAD_MAX = HEAD_BASE + 254; // Inclusive
 // 257 - 511 (neck)
 export const NECK_BASE = 257;
@@ -62,7 +70,16 @@ export const MITHRIL_ARMOR = BODY_BASE + 2;
 export const ADAMANTINE_ARMOR = BODY_BASE + 3;
 export const RUNITE_ARMOR = BODY_BASE + 4;
 export const TITANIUM_ARMOR = BODY_BASE + 5;
-export const ORCHALCUM_ARMOR = BODY_BASE + 6;
+export const ORICHALCUM_ARMOR = BODY_BASE + 6;
+export const NATUOW_BODY = BODY_BASE + 7;
+export const BAT_WING_BODY = BODY_BASE + 8;
+export const NATURE_BODY = BODY_BASE + 9;
+export const APPRENTICE_BODY = BODY_BASE + 10;
+export const MAGE_BODY = BODY_BASE + 11;
+export const SORCERER_BODY = BODY_BASE + 12;
+export const SEERS_BODY = BODY_BASE + 13;
+export const SHAMAN_BODY = BODY_BASE + 14;
+export const MASTER_BODY = BODY_BASE + 15;
 export const BODY_MAX = BODY_BASE + 254;
 // 769 - 1023 (arms)
 export const ARMS_BASE = 769;
@@ -72,7 +89,16 @@ export const MITHRIL_GAUNTLETS = ARMS_BASE + 2;
 export const ADAMANTINE_GAUNTLETS = ARMS_BASE + 3;
 export const RUNITE_GAUNTLETS = ARMS_BASE + 4;
 export const TITANIUM_GAUNTLETS = ARMS_BASE + 5;
-export const ORCHALCUM_GAUNTLETS = ARMS_BASE + 6;
+export const ORICHALCUM_GAUNTLETS = ARMS_BASE + 6;
+export const NATUOW_BRACERS = ARMS_BASE + 7;
+export const BAT_WING_BRACERS = ARMS_BASE + 8;
+export const NATURE_BRACERS = ARMS_BASE + 9;
+export const APPRENTICE_GAUNTLETS = ARMS_BASE + 10;
+export const MAGE_BRACERS = ARMS_BASE + 11;
+export const SORCERER_GAUNTLETS = ARMS_BASE + 12;
+export const SEERS_BRACERS = ARMS_BASE + 13;
+export const SHAMAN_GAUNTLETS = ARMS_BASE + 14;
+export const MASTER_BRACERS = ARMS_BASE + 15;
 export const ARMS_MAX = ARMS_BASE + 254;
 // 1025 - 1279 (legs)
 export const LEGS_BASE = 1025;
@@ -82,7 +108,16 @@ export const MITHRIL_TASSETS = LEGS_BASE + 2;
 export const ADAMANTINE_TASSETS = LEGS_BASE + 3;
 export const RUNITE_TASSETS = LEGS_BASE + 4;
 export const TITANIUM_TASSETS = LEGS_BASE + 5;
-export const ORCHALCUM_TASSETS = LEGS_BASE + 6;
+export const ORICHALCUM_TASSETS = LEGS_BASE + 6;
+export const NATUOW_TASSETS = LEGS_BASE + 7;
+export const BAT_WING_TROUSERS = LEGS_BASE + 8;
+export const NATURE_TROUSERS = LEGS_BASE + 9;
+export const APPRENTICE_TROUSERS = LEGS_BASE + 10;
+export const MAGE_TROUSERS = LEGS_BASE + 11;
+export const SORCERER_TROUSERS = LEGS_BASE + 12;
+export const SEERS_TROUSERS = LEGS_BASE + 13;
+export const SHAMAN_TROUSERS = LEGS_BASE + 14;
+export const MASTER_TROUSERS = LEGS_BASE + 15;
 export const LEGS_MAX = LEGS_BASE + 254;
 
 // 1281 - 1535 (boots)
@@ -93,7 +128,16 @@ export const MITHRIL_BOOTS = BOOTS_BASE + 2;
 export const ADAMANTINE_BOOTS = BOOTS_BASE + 3;
 export const RUNITE_BOOTS = BOOTS_BASE + 4;
 export const TITANIUM_BOOTS = BOOTS_BASE + 5;
-export const ORCHALCUM_BOOTS = BOOTS_BASE + 6;
+export const ORICHALCUM_BOOTS = BOOTS_BASE + 6;
+export const NATUOW_BOOTS = BOOTS_BASE + 7;
+export const BAT_WING_BOOTS = BOOTS_BASE + 8;
+export const NATURE_BOOTS = BOOTS_BASE + 9;
+export const APPRENTICE_BOOTS = BOOTS_BASE + 10;
+export const MAGE_BOOTS = BOOTS_BASE + 11;
+export const SORCERER_BOOTS = BOOTS_BASE + 12;
+export const SEERS_BOOTS = BOOTS_BASE + 13;
+export const SHAMAN_BOOTS = BOOTS_BASE + 14;
+export const MASTER_BOOTS = BOOTS_BASE + 15;
 export const BOOTS_MAX = BOOTS_BASE + 254;
 
 // 1536 - 1791 spare(1)
@@ -737,21 +781,6 @@ export const allItems: InputItem[] = [
   },
 ];
 
-/*
-TOTAL XP 500 - EMERALD_STAFF
-TOTAL XP 1000 - XP_BOOST
-TOTAL XP 2500 - GATHERING_BOOST
-TOTAL XP 5000 - 20 * COOKED_SKRIMP
-TOTAL XP 10000 - 10 * WHITE_DEATH_SPORE
-TOTAL XP 30000 - 20 * ASH_LOG
-TOTAL XP 50000 - 3 * BONE_KEY
-TOTAL XP 100000 - 3 * AQUA_KEY
-TOTAL XP 120000 - 50 * DRAGON_BONE
-TOTAL XP 300000 - 3 * SKILLER_BOOST
-TOTAL XP 350000 - 3 * XP_BOOST
-TOTAL XP 500000 - 2 * ABSENCE_BOOST
-TOTAL XP 600000 - 5 * COMBAT_BOOST
-TOTAL XP 750000 - 5 * LOSSUTH_SCALE */
 export const allXPThresholdRewards: XPThresholdReward[] = [
   {
     xpThreshold: 500,
