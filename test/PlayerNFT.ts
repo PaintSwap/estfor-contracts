@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {createPlayer} from "../scripts/utils";
-import { PlayerNFT } from "../typechain-types";
+import {PlayerNFT} from "../typechain-types";
 
 describe("PlayerNFT", () => {
   async function deployContracts() {
@@ -27,9 +27,15 @@ describe("PlayerNFT", () => {
       unsafeAllow: ["delegatecall"],
     });
 
+    const buyPath = [alice.address, brush.address];
+    const MockRouter = await ethers.getContractFactory("MockRouter");
+    const router = await MockRouter.deploy();
+    const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
+    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall"],
     });
@@ -37,7 +43,14 @@ describe("PlayerNFT", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const playerNFT = (await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"})) as PlayerNFT;
+    const editNameCost = 5000;
+    const playerNFT = (await upgrades.deployProxy(
+      PlayerNFT,
+      [brush.address, shop.address, royaltyReceiver.address, editNameCost],
+      {
+        kind: "uups",
+      }
+    )) as PlayerNFT;
 
     // This contains all the player data
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
@@ -99,7 +112,6 @@ describe("PlayerNFT", () => {
     );
     await players.connect(alice).setActivePlayer(playerId);
     const maxTime = await players.MAX_TIME();
-    const editNameCost = await playerNFT.editNameCost();
 
     return {
       playerId,
@@ -151,8 +163,8 @@ describe("PlayerNFT", () => {
     const name = ethers.utils.formatBytes32String("My name is edited");
     await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.reverted; // Haven't got the brush
 
-    await brush.mint(alice.address, editNameCost.mul(2));
-    await brush.connect(alice).approve(playerNFT.address, editNameCost.mul(2));
+    await brush.mint(alice.address, editNameCost * 2);
+    await brush.connect(alice).approve(playerNFT.address, editNameCost * 2);
 
     await expect(playerNFT.editName(playerId, name)).to.be.reverted; // Not the owner
     expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
@@ -177,41 +189,46 @@ describe("PlayerNFT", () => {
   });
 
   it("uri", async () => {
-    const {playerId, playerNFT, avatarInfo} = await loadFixture(deployContracts);
+    const {playerId, playerNFT, avatarInfo, origName} = await loadFixture(deployContracts);
     const uri = await playerNFT.uri(playerId);
 
-    expect(uri.startsWith('data:application/json;base64')).to.be.true;
-    const metadata = JSON.parse(Buffer.from(uri.split(';base64,')[1], 'base64').toString());
-    expect(metadata).to.have.property('name');
-    expect(metadata.name).to.equal('0xSamWitch'); // TODO: give the player a better name than 0xSamWitch
+    expect(uri.startsWith("data:application/json;base64")).to.be.true;
+    const metadata = JSON.parse(Buffer.from(uri.split(";base64,")[1], "base64").toString());
+    expect(metadata).to.have.property("name");
+    expect(metadata.name).to.equal(origName);
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
-    expect(metadata).to.have.property('attributes');
-    expect(metadata.attributes).to.be.an('array');
+    expect(metadata).to.have.property("attributes");
+    expect(metadata.attributes).to.be.an("array");
     expect(metadata.attributes).to.have.length(13);
-    expect(metadata.attributes[0]).to.have.property('trait_type');
-    expect(metadata.attributes[0].trait_type).to.equal('Avatar');
-    expect(metadata.attributes[0]).to.have.property('value');
-    expect(metadata.attributes[0].value).to.equal('Name goes here');
-    expect(metadata.attributes[1]).to.have.property('trait_type');
-    expect(metadata.attributes[1].trait_type).to.equal('Attack');
-    expect(metadata.attributes[1]).to.have.property('value');
+    expect(metadata.attributes[0]).to.have.property("trait_type");
+    expect(metadata.attributes[0].trait_type).to.equal("Avatar");
+    expect(metadata.attributes[0]).to.have.property("value");
+    expect(metadata.attributes[0].value).to.equal("Name goes here");
+    expect(metadata.attributes[1]).to.have.property("trait_type");
+    expect(metadata.attributes[1].trait_type).to.equal("Attack");
+    expect(metadata.attributes[1]).to.have.property("value");
     expect(metadata.attributes[1].value).to.equal(1);
   });
 
   describe("supportsInterface", async () => {
-    it('IERC165', async () => {
+    it("IERC165", async () => {
       const {playerNFT} = await loadFixture(deployContracts);
-      expect(await playerNFT.supportsInterface('0x01ffc9a7')).to.equal(true);
+      expect(await playerNFT.supportsInterface("0x01ffc9a7")).to.equal(true);
     });
-  
-    it('IERC1155', async () => {
-      const { playerNFT } = await loadFixture(deployContracts);
-      expect(await playerNFT.supportsInterface('0xd9b67a26')).to.equal(true);
+
+    it("IERC1155", async () => {
+      const {playerNFT} = await loadFixture(deployContracts);
+      expect(await playerNFT.supportsInterface("0xd9b67a26")).to.equal(true);
     });
-  
-    it('IERC1155Metadata', async () => {
-      const { playerNFT } = await loadFixture(deployContracts);
-      expect(await playerNFT.supportsInterface('0x0e89341c')).to.equal(true);
+
+    it("IERC1155Metadata", async () => {
+      const {playerNFT} = await loadFixture(deployContracts);
+      expect(await playerNFT.supportsInterface("0x0e89341c")).to.equal(true);
+    });
+
+    it("IERC2981 royalties", async () => {
+      const {playerNFT} = await loadFixture(deployContracts);
+      expect(await playerNFT.supportsInterface("0x2a55205a")).to.equal(true);
     });
   });
 });

@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {MockBrushToken} from "../typechain-types";
+import {MockBrushToken, MockWrappedFantom} from "../typechain-types";
 import {
   ActionQueueStatus,
   allActions,
@@ -31,20 +31,26 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   let brush: MockBrushToken;
+  let wftm: MockWrappedFantom;
   let tx;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
+    const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     if (network.chainId == 31337 || network.chainId == 1337) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, 10000000000000);
+      wftm = await MockWrappedFantom.deploy();
     } else if (network.chainId == 4002) {
+      // Fantom testnet
       brush = await MockBrushToken.deploy();
       tx = await brush.mint(owner.address, 10000000000000);
-      await tx.wait();
       console.log("Minted brush");
+      await tx.wait();
+      wftm = MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach("0x85dec8c4B2680793661bCA91a8F129607571863d");
+      wftm = MockWrappedFantom.attach("0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
     } else {
       throw Error("Not a supported network");
     }
@@ -74,9 +80,17 @@ async function main() {
   await shop.deployed();
   console.log(`Shop deployed at ${shop.address.toLowerCase()}`);
 
+  const buyPath = [wftm.address, brush.address];
+  const MockRouter = await ethers.getContractFactory("MockRouter");
+  const router = await MockRouter.deploy();
+  const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
+  const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+  await royaltyReceiver.deployed();
+  console.log(`RoyaltyReceiver deployed at ${royaltyReceiver.address.toLowerCase()}`);
+
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
+  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
   });
@@ -86,9 +100,13 @@ async function main() {
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
   const EDIT_NAME_BRUSH_PRICE = 5000;
-  const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, EDIT_NAME_BRUSH_PRICE], {
-    kind: "uups",
-  });
+  const playerNFT = await upgrades.deployProxy(
+    PlayerNFT,
+    [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE],
+    {
+      kind: "uups",
+    }
+  );
 
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 

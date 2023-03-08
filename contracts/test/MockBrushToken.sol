@@ -1,5 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
+
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MockBrushToken is ERC20("PaintSwap Token", "BRUSH") {

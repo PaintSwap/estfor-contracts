@@ -5,6 +5,8 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
+
 import "./interfaces/IBrushToken.sol";
 import "./interfaces/IPlayers.sol";
 import "./World.sol";
@@ -12,7 +14,7 @@ import "./types.sol";
 import "./items.sol";
 
 // The NFT contract contains data related to the items and who owns them
-contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
+contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
   event AddItem(Item item, uint16 tokenId);
   event AddItems(Item[] items, uint16[] tokenIds);
   event EditItem(Item item, uint16 tokenId);
@@ -51,6 +53,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
 
   address players;
   address shop;
+  // Royalties
+  uint public royaltyFee;
+  address public royaltyReceiver;
 
   uint public uniqueItems; // unique number of items
 
@@ -68,13 +73,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
     _disableInitializers();
   }
 
-  function initialize(World _world, address _shop) public initializer {
+  function initialize(World _world, address _shop, address _royaltyReceiver) public initializer {
     __ERC1155_init("");
     __Ownable_init();
     __UUPSUpgradeable_init();
     world = _world;
     shop = _shop;
     baseURI = "ipfs://";
+    royaltyFee = 250; // 2.5%
+    royaltyReceiver = _royaltyReceiver;
   }
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
@@ -269,6 +276,22 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Mul
     item.minSkillPoints = _item.minSkillPoints;
     item.skill = _item.skill;
     tokenURIs[_item.tokenId] = _item.metadataURI;
+  }
+
+  function royaltyInfo(
+    uint256 _tokenId,
+    uint256 _salePrice
+  ) external view override returns (address receiver, uint256 royaltyAmount) {
+    uint256 amount = (_salePrice * royaltyFee) / 10000;
+    return (royaltyReceiver, amount);
+  }
+
+  function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
+    return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
+  }
+
+  function setRoyaltyReceiver(address _receiver) external onlyOwner {
+    royaltyReceiver = _receiver;
   }
 
   // Or make it constants and redeploy the contracts

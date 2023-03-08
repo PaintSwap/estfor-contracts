@@ -27,9 +27,15 @@ describe("Shop", function () {
       unsafeAllow: ["delegatecall"],
     });
 
+    const buyPath = [alice.address, brush.address];
+    const MockRouter = await ethers.getContractFactory("MockRouter");
+    const router = await MockRouter.deploy();
+    const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
+    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall"],
     });

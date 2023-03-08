@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/utils/Multicall.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import "./interfaces/IBrushToken.sol";
 import "./interfaces/IPlayers.sol";
@@ -13,7 +14,7 @@ import "./types.sol";
 import "./items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
+contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
   event NewPlayer(uint playerId, uint avatarId, bytes20 name);
   event EditPlayer(uint playerId, bytes20 newName);
 
@@ -42,6 +43,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, M
   address public pool;
 
   uint public editNameCost;
+  uint public royaltyFee;
+  address public royaltyReceiver;
 
   bytes32 merkleRoot; // For airdrop
   mapping(address => bool) hasMintedFromWhitelist;
@@ -63,7 +66,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, M
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush, address _pool, uint _editNameCost) public initializer {
+  function initialize(
+    IBrushToken _brush,
+    address _pool,
+    address _royaltyReceiver,
+    uint _editNameCost
+  ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
     __UUPSUpgradeable_init();
@@ -72,6 +80,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, M
     baseURI = "ipfs://";
     pool = _pool;
     editNameCost = _editNameCost;
+    royaltyFee = 250; // 2.5%
+    royaltyReceiver = _royaltyReceiver;
   }
 
   function _mintStartingItems() private {
@@ -217,6 +227,30 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, M
     return lowerName;
   }
 
+  function burn(address _from, uint _playerId) external {
+    require(
+      _from == _msgSender() || isApprovedForAll(_from, _msgSender()),
+      "ERC1155: caller is not token owner or approved"
+    );
+    _burn(_from, _playerId, 1);
+  }
+
+  function royaltyInfo(
+    uint256 _tokenId,
+    uint256 _salePrice
+  ) external view override returns (address receiver, uint256 royaltyAmount) {
+    uint256 amount = (_salePrice * royaltyFee) / 10000;
+    return (royaltyReceiver, amount);
+  }
+
+  function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
+    return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
+  }
+
+  function setRoyaltyReceiver(address _receiver) external onlyOwner {
+    royaltyReceiver = _receiver;
+  }
+
   function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
     avatars[_avatarId] = _avatarInfo;
     emit SetAvatar(_avatarId, _avatarInfo);
@@ -231,14 +265,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, M
 
   function setBaseURI(string calldata _baseURI) external onlyOwner {
     _setURI(_baseURI);
-  }
-
-  function burn(address _from, uint _playerId) external {
-    require(
-      _from == _msgSender() || isApprovedForAll(_from, _msgSender()),
-      "ERC1155: caller is not token owner or approved"
-    );
-    _burn(_from, _playerId, 1);
   }
 
   function setPlayers(IPlayers _players) external onlyOwner {

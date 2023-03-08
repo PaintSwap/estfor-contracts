@@ -3,7 +3,7 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {BRONZE_AXE, EquipPosition, inputItem} from "../scripts/utils";
 
-describe("PlayerNFT", () => {
+describe("ItemNFT", () => {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
 
@@ -26,9 +26,15 @@ describe("PlayerNFT", () => {
       unsafeAllow: ["delegatecall"],
     });
 
+    const buyPath = [alice.address, brush.address];
+    const MockRouter = await ethers.getContractFactory("MockRouter");
+    const router = await MockRouter.deploy();
+    const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
+    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall"],
     });
@@ -44,19 +50,24 @@ describe("PlayerNFT", () => {
   }
 
   describe("supportsInterface", async () => {
-    it('IERC165', async () => {
+    it("IERC165", async () => {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface('0x01ffc9a7')).to.equal(true);
+      expect(await itemNFT.supportsInterface("0x01ffc9a7")).to.equal(true);
     });
-  
-    it('IERC1155', async () => {
-      const { itemNFT } = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface('0xd9b67a26')).to.equal(true);
+
+    it("IERC1155", async () => {
+      const {itemNFT} = await loadFixture(deployContracts);
+      expect(await itemNFT.supportsInterface("0xd9b67a26")).to.equal(true);
     });
-  
-    it('IERC1155Metadata', async () => {
-      const { itemNFT } = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface('0x0e89341c')).to.equal(true);
+
+    it("IERC1155Metadata", async () => {
+      const {itemNFT} = await loadFixture(deployContracts);
+      expect(await itemNFT.supportsInterface("0x0e89341c")).to.equal(true);
+    });
+
+    it("IERC2981 royalties", async () => {
+      const {itemNFT} = await loadFixture(deployContracts);
+      expect(await itemNFT.supportsInterface("0x2a55205a")).to.equal(true);
     });
   });
 

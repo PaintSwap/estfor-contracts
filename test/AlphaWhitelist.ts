@@ -25,9 +25,15 @@ describe("AlphaWhitelist", () => {
       unsafeAllow: ["delegatecall"],
     });
 
+    const buyPath = [alice.address, brush.address];
+    const MockRouter = await ethers.getContractFactory("MockRouter");
+    const router = await MockRouter.deploy();
+    const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
+    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address], {
+    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall"],
     });
@@ -35,7 +41,12 @@ describe("AlphaWhitelist", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const playerNFT = await upgrades.deployProxy(PlayerNFT, [brush.address, shop.address, 5000], {kind: "uups"});
+    const editBrushCost = 5000;
+    const playerNFT = await upgrades.deployProxy(
+      PlayerNFT,
+      [brush.address, shop.address, royaltyReceiver.address, editBrushCost],
+      {kind: "uups"}
+    );
 
     // This contains all the player data
     const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
