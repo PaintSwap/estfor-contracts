@@ -14,8 +14,6 @@ abstract contract PlayersBase {
 
   event AddSkillPoints(uint playerId, Skill skill, uint32 points);
 
-  //  event LevelUp(uint playerId, uint[] itemTokenIdsRewarded, uint[] amountTokenIdsRewarded);
-
   event SetActionQueue(uint playerId, QueuedAction[] queuedActions);
 
   event ConsumeBoostVial(uint playerId, PlayerBoostInfo playerBoostInfo);
@@ -31,12 +29,13 @@ abstract contract PlayersBase {
   // For logging
   event Died(address from, uint playerId, uint128 queueId);
   event Rewards(address from, uint playerId, uint128 queueId, uint[] itemTokenIds, uint[] amounts);
-  event Reward(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary too
-  event Consume(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount); // Used in PlayerLibrary too
+  event Reward(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
+  event Consume(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
   event ActionFinished(address from, uint playerId, uint128 queueId);
   event ActionPartiallyFinished(address from, uint playerId, uint128 queueId, uint elapsedTime);
   event ActionAborted(uint playerId, uint128 queueId);
   event XPThresholdRewards(uint[] itemTokenIds, uint[] amounts);
+  event LevelUp(uint playerId, Skill skill, uint32 level);
 
   error SkillsArrayZero();
   error NotOwner();

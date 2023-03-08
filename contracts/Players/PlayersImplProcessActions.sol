@@ -135,6 +135,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           itemNFT.mintBatch(_from, newIds, newAmounts);
           emit Rewards(_from, _playerId, _queueId, newIds, newAmounts);
         }
+
         allPointsAccrued += pointsAccrued;
       }
 
@@ -336,8 +337,17 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _updateSkillPoints(uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
-    skillPoints[_playerId][_skill] += _pointsAccrued;
+    uint32 oldPoints = skillPoints[_playerId][_skill];
+    uint32 newPoints = oldPoints + _pointsAccrued;
+    skillPoints[_playerId][_skill] = newPoints;
     emit AddSkillPoints(_playerId, _skill, _pointsAccrued);
+
+    uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
+    uint16 newLevel = PlayerLibrary.getLevel(newPoints);
+    // Update the player's level
+    if (newLevel > oldLevel) {
+      emit LevelUp(_playerId, _skill, newLevel);
+    }
   }
 
   function _addPendingRandomReward(
