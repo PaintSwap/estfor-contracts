@@ -1,25 +1,29 @@
 # Estfor Kingdom contracts
 
+![image](https://user-images.githubusercontent.com/84033732/223739503-c53a888a-443f-4fb5-98a3-d40f94956799.png)
+
 All the smart contract code for the Estfor Kingdom RPG game on the Fantom Blockchain.
 
 Make sure `yarn` is installed (or replace with equivalent npm instructions)
 
 These contracts use hardhat and require solidity 0.8.18 at minimum.
 
-To compile:
+Install dependencies:  
+```shell
+yarn install
+```
 
+To compile:  
 ```shell
 yarn compile
 ```
 
-To run the tests:
-
+To run the tests:  
 ```shell
 yarn test
 ```
 
-To deploy the contracts:
-
+To deploy the contracts:  
 ```shell
 yarn deploy
 ```
