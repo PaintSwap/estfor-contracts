@@ -102,13 +102,17 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
     uint totalBrush;
     uint[] memory prices = new uint[](_tokenIds.length);
-    for (uint i = 0; i < _tokenIds.length; ++i) {
+    uint i;
+    while (i < _tokenIds.length) {
       uint price = shopItems[uint16(_tokenIds[i])];
       if (price == 0) {
         revert ItemCannotBeBought();
       }
       totalBrush += price * _quantities[i];
       prices[i] = price;
+      unchecked {
+        ++i;
+      }
     }
 
     // Pay
@@ -140,11 +144,15 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
     uint totalBrush;
     uint[] memory prices = new uint[](_tokenIds.length);
-    for (uint i = 0; i < _tokenIds.length; ++i) {
+    uint i;
+    while (i < _tokenIds.length) {
       uint brushPerToken = getPriceForItem(_tokenIds[i]);
       totalBrush += brushPerToken * _quantities[i];
       itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
       prices[i] = brushPerToken;
+      unchecked {
+        ++i;
+      }
     }
     if (totalBrush < _minExpectedBrush) {
       revert MinExpectedBrushNotReaced(totalBrush, _minExpectedBrush);

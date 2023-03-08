@@ -150,8 +150,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit RemoveDynamicActions(lastAddedDynamicActions);
 
     // These are no longer available as existing actions
-    for (uint i = 0; i < lastAddedDynamicActions.length; ++i) {
+    uint i;
+    while (i < lastAddedDynamicActions.length) {
       actions[lastAddedDynamicActions[i]].isAvailable = false;
+      unchecked {
+        ++i;
+      }
     }
 
     delete lastAddedDynamicActions;
@@ -167,9 +171,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     lastAddedDynamicActions = actionIdsToAdd;
-
-    for (uint i; i < actionIdsToAdd.length; ++i) {
+    i = 0;
+    while (i < actionIdsToAdd.length) {
       actions[actionIdsToAdd[i]].isAvailable = false;
+      unchecked {
+        ++i;
+      }
     }
 
     lastDynamicUpdatedTime = block.timestamp;
@@ -266,8 +273,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function addActions(Action[] calldata _actions) external onlyOwner {
     uint16 actionId = lastActionId;
-    for (uint16 i; i < _actions.length; ++i) {
+    uint16 i;
+    while (i < _actions.length) {
       _addAction(actionId + i, _actions[i]);
+      unchecked {
+        ++i;
+      }
     }
     lastActionId = actionId + uint16(_actions.length);
   }
@@ -297,8 +308,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function addActionChoices(uint16 _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
     require(_actionChoices.length > 0);
     uint16 actionChoiceId = lastActionChoiceId;
-    for (uint16 i; i < _actionChoices.length; ++i) {
+    uint16 i;
+    while (i < _actionChoices.length) {
       actionChoices[_actionId][actionChoiceId + i] = _actionChoices[i];
+      unchecked {
+        ++i;
+      }
     }
     emit AddActionChoices(_actionId, actionChoiceId, _actionChoices);
     lastActionChoiceId = actionChoiceId + uint16(_actionChoices.length);
@@ -311,12 +326,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     require(_actionChoices.length > 0);
     uint16 actionChoiceId = lastActionChoiceId;
     uint16 count;
-    for (uint i; i < _actionIds.length; ++i) {
+    uint i;
+    while (i < _actionIds.length) {
       uint16 actionId = _actionIds[i];
       emit AddActionChoices(actionId, actionChoiceId + count, _actionChoices[i]);
-      for (uint j; j < _actionChoices[i].length; ++j) {
+      uint j;
+      while (j < _actionChoices[i].length) {
         actionChoices[actionId][actionChoiceId + count] = _actionChoices[i][j];
-        ++count;
+        unchecked {
+          ++j;
+          ++count;
+        }
+      }
+      unchecked {
+        ++i;
       }
     }
     lastActionChoiceId = actionChoiceId + count;

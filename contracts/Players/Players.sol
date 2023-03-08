@@ -259,8 +259,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
-    for (uint i; i < _xpThresholdRewards.length; ++i) {
+    uint i;
+    while (i < _xpThresholdRewards.length) {
       _addXPThresholdReward(_xpThresholdRewards[i]);
+      unchecked {
+        ++i;
+      }
     }
   }
 

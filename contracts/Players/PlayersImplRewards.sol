@@ -51,7 +51,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     amounts = new uint[](_pendingRandomRewards.length);
 
     uint length;
-    for (uint i; i < _pendingRandomRewards.length; ++i) {
+    uint i;
+    while (i < _pendingRandomRewards.length) {
       bool isCombat = world.getSkill(_pendingRandomRewards[i].actionId) == Skill.COMBAT;
       uint numSpawnedPerHour = world.getNumSpawn(_pendingRandomRewards[i].actionId);
       uint16 monstersKilled = uint16((numSpawnedPerHour * _pendingRandomRewards[i].elapsedTime) / 3600);
@@ -73,6 +74,10 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       if (length - oldLength > 0 || noLuck) {
         ++numRemoved;
       }
+
+      unchecked {
+        ++i;
+      }
     }
 
     assembly ("memory-safe") {
@@ -87,12 +92,19 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
     if (numRemoved > 0) {
       // Shift the remaining rewards to the front of the array
-      for (uint i; i < pendingRandomRewards[_playerId].length - numRemoved; ++i) {
+      uint i;
+      while (i < pendingRandomRewards[_playerId].length - numRemoved) {
         pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
+        unchecked {
+          ++i;
+        }
       }
-
-      for (uint i; i < numRemoved; ++i) {
+      i = 0;
+      while (i < numRemoved) {
         pendingRandomRewards[_playerId].pop();
+        unchecked {
+          ++i;
+        }
       }
 
       itemNFT.mintBatch(from, ids, amounts);
@@ -112,9 +124,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       if (items.length > 0) {
         itemTokenIds = new uint[](items.length);
         amounts = new uint[](items.length);
-        for (uint i = 0; i < items.length; ++i) {
+        uint i;
+        while (i < items.length) {
           itemTokenIds[i] = items[i].itemTokenId;
           amounts[i] = items[i].amount;
+          unchecked {
+            ++i;
+          }
         }
       }
     }
@@ -195,9 +211,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         if (output.itemTokenId != NONE) {
           pendingOutput.produced[producedLength++] = output;
         }
-
-        for (uint j; j < consumedEquipment.length; ++j) {
+        uint j;
+        while (j < consumedEquipment.length) {
           pendingOutput.consumed[consumedLength++] = consumedEquipment[j];
+          unchecked {
+            ++j;
+          }
         }
 
         pendingOutput.died = died;
@@ -215,8 +234,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
           queuedAction.actionId
         );
 
-        for (uint j; j < newIds.length; ++j) {
+        uint j;
+        while (j < newIds.length) {
           pendingOutput.produced[producedLength++] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
+          unchecked {
+            ++j;
+          }
         }
 
         // This loot might be needed for a future task so mint now rather than later
@@ -230,21 +253,27 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         previousSkillPoints,
         previousSkillPoints + allPointsAccrued
       );
-
-      for (uint i; i < ids.length; ++i) {
+      uint i;
+      while (i < ids.length) {
         pendingOutput.producedXPRewards[producedXPRewardsLength++] = Equipment(uint16(ids[i]), uint24(amounts[i]));
+        unchecked {
+          ++i;
+        }
       }
     }
 
     if (_flags.includePastRandomRewards) {
       // Loop through any pending random rewards and add them to the output
       (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
-
-      for (uint i; i < ids.length; ++i) {
+      uint i;
+      while (i < ids.length) {
         pendingOutput.producedPastRandomRewards[producedPastRandomRewardsLength++] = Equipment(
           uint16(ids[i]),
           uint24(amounts[i])
         );
+        unchecked {
+          ++i;
+        }
       }
     }
 
@@ -385,24 +414,30 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
             (bytes32(uint256(skillEndTime)) << 128) |
             (bytes32(uint256(skillEndTime)) << 192));
         uint startLootLength = length;
-        for (uint i; i < numTickets; ++i) {
+        uint i;
+        while (i < numTickets) {
           // The random component is out of 65535, so we can take 2 bytes at a time
           uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
 
           // Take each byte and check
-          for (uint j; j < _randomRewards.length; ++j) {
+          uint j;
+          while (j < _randomRewards.length) {
             ActionReward memory potentialReward = _randomRewards[j];
             if (rand < potentialReward.rate) {
               // Get the lowest chance one
 
               // Compare with previous and append amounts if an entry already exists
               bool found;
-              for (uint k = startLootLength; k < _ids.length; ++k) {
+              uint k = startLootLength;
+              while (k < _ids.length) {
                 if (potentialReward.itemTokenId == _ids[k]) {
                   // exists
                   _amounts[k] += 1;
                   found = true;
                   break;
+                }
+                unchecked {
+                  ++k;
                 }
               }
 
@@ -414,6 +449,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
               }
               break;
             }
+            unchecked {
+              ++j;
+            }
+          }
+          unchecked {
+            ++i;
           }
         }
 

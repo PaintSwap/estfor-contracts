@@ -181,7 +181,8 @@ abstract contract PlayersBase {
     CombatStats memory _combatStats,
     bool _isCombat
   ) internal view returns (bool missingRequiredHandEquipment) {
-    for (uint i; i < _handEquipmentTokenIds.length; ++i) {
+    uint i;
+    while (i < _handEquipmentTokenIds.length) {
       uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
       if (handEquipmentTokenId != NONE) {
         uint256 balance = itemNFT.balanceOf(_from, handEquipmentTokenId);
@@ -195,6 +196,9 @@ abstract contract PlayersBase {
           Item memory item = itemNFT.getItem(handEquipmentTokenId);
           _updateCombatStatsFromItem(_combatStats, item);
         }
+      }
+      unchecked {
+        ++i;
       }
     }
   }
@@ -265,9 +269,13 @@ abstract contract PlayersBase {
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length > 0) {
       Item[] memory items = itemNFT.getItems(itemTokenIds);
-      for (uint i; i < items.length; ++i) {
+      uint i;
+      while (i < items.length) {
         if (balances[i] > 0) {
           _updateCombatStatsFromItem(_stats, items[i]);
+        }
+        unchecked {
+          ++i;
         }
       }
     }

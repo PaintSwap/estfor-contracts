@@ -51,8 +51,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         revert TooManyActionsQueuedSomeAlreadyExist();
       }
       player.actionQueue = remainingSkills;
-
-      for (uint j = remainingSkills.length; j != 0; ) {
+      uint j = remainingSkills.length;
+      while (j != 0) {
         unchecked {
           --j;
         }
@@ -234,13 +234,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       if (itemLength > 0) {
         uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
         (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
-        for (uint i; i < balances.length; ++i) {
+        uint i;
+        while (i < balances.length) {
           if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
             revert MinimumSkillPointsNotReached();
           }
 
           if (balances[i] == 0) {
             revert NoItemBalance(itemTokenIds[i]);
+          }
+          unchecked {
+            ++i;
           }
         }
       }
@@ -256,13 +260,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length > 0) {
       (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
-      for (uint i; i < balances.length; ++i) {
+      uint i;
+      while (i < balances.length) {
         if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
           revert MinimumSkillPointsNotReached();
         }
 
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
+        }
+        unchecked {
+          ++i;
         }
       }
     }
@@ -301,7 +309,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint16 _handItemTokenIdRangeMax,
     bool _isCombat
   ) private view {
-    for (uint i; i < _equippedItemTokenIds.length; ++i) {
+    uint i;
+    while (i < _equippedItemTokenIds.length) {
       bool isRightHand = i == 0;
       uint16 equippedItemTokenId = _equippedItemTokenIds[i];
       if (equippedItemTokenId != NONE) {
@@ -324,6 +333,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         // Only combat actions can have no equipment if they have hand range choice
         // e.g smithing doesn't require anything equipped
         require(_isCombat || _handItemTokenIdRangeMin == NONE || !isRightHand);
+      }
+      unchecked {
+        ++i;
       }
     }
   }

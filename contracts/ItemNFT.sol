@@ -98,7 +98,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function _mintBatchItems(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) internal {
     uint numNewItems;
-    for (uint i = 0; i < _tokenIds.length; ++i) {
+    uint i;
+    while (i < _tokenIds.length) {
       uint tokenId = _tokenIds[i];
       require(tokenId < type(uint16).max, "id too high");
       //      require(_exists(_tokenIds[i]));
@@ -109,6 +110,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       }
 
       itemBalances[tokenId] = existingBalance + _amounts[i];
+      unchecked {
+        ++i;
+      }
     }
     if (numNewItems > 0) {
       uniqueItems += numNewItems;
@@ -152,15 +156,23 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   ) external view returns (Skill[] memory skills, uint32[] memory minSkillPoints) {
     skills = new Skill[](_tokenIds.length);
     minSkillPoints = new uint32[](_tokenIds.length);
-    for (uint i; i < _tokenIds.length; ++i) {
+    uint i;
+    while (i < _tokenIds.length) {
       (skills[i], minSkillPoints[i]) = getMinRequirement(_tokenIds[i]);
+      unchecked {
+        ++i;
+      }
     }
   }
 
   function getItems(uint16[] calldata _tokenIds) external view returns (Item[] memory _items) {
     _items = new Item[](_tokenIds.length);
-    for (uint i; i < _tokenIds.length; ++i) {
+    uint i;
+    while (i < _tokenIds.length) {
       _items[i] = _getItem(_tokenIds[i]);
+      unchecked {
+        ++i;
+      }
     }
   }
 
@@ -220,8 +232,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
     batchBalances = new uint256[](_ids.length);
 
-    for (uint16 i = 0; i < _ids.length; ++i) {
+    uint i;
+    while (i < _ids.length) {
       batchBalances[i] = balanceOf(_account, _ids[i]);
+      unchecked {
+        ++i;
+      }
     }
   }
 
@@ -304,10 +320,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function addItems(InputItem[] calldata _inputItems) external onlyOwner {
     Item[] memory _items = new Item[](_inputItems.length);
     uint16[] memory tokenIds = new uint16[](_items.length);
-    for (uint i; i < _inputItems.length; ++i) {
+    uint i;
+    while (i < _inputItems.length) {
       require(!_exists(_inputItems[i].tokenId), "This item was already added");
       _items[i] = _setItem(_inputItems[i]);
       tokenIds[i] = _inputItems[i].tokenId;
+      unchecked {
+        ++i;
+      }
     }
     emit AddItems(_items, tokenIds);
   }

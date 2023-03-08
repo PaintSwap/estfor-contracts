@@ -215,18 +215,25 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
    */
   function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
     batchBalances = new uint256[](_ids.length);
-
-    for (uint16 i = 0; i < _ids.length; ++i) {
+    uint i;
+    while (i < _ids.length) {
       batchBalances[i] = balanceOf(_account, _ids[i]);
+      unchecked {
+        ++i;
+      }
     }
   }
 
   function _toLower(bytes32 _name) private pure returns (bytes memory) {
     bytes memory lowerName = bytes(abi.encodePacked(_name));
-    for (uint i = 0; i < lowerName.length; i++) {
+    uint i;
+    while (i < lowerName.length) {
       if ((uint8(lowerName[i]) >= 65) && (uint8(lowerName[i]) <= 90)) {
         // So we add 32 to make it lowercase
         lowerName[i] = bytes1(uint8(lowerName[i]) + 32);
+      }
+      unchecked {
+        ++i;
       }
     }
     return lowerName;
@@ -262,8 +269,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
-    for (uint i; i < _avatarInfos.length; ++i) {
+    uint i;
+    while (i < _avatarInfos.length) {
       avatars[_startAvatarId + i] = _avatarInfos[i];
+      unchecked {
+        ++i;
+      }
     }
     emit SetAvatars(_startAvatarId, _avatarInfos);
   }
