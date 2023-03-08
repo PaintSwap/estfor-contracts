@@ -36,7 +36,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   string public baseURI;
   mapping(uint playerId => uint avatar) public playerIdToAvatar;
   mapping(uint playerId => bytes32 name) public names;
-  mapping(bytes name => bool exists) public lowercaseNames; // name => exists
+  mapping(bytes name => bool exists) public lowercaseNames;
 
   IBrushToken public brush;
   IPlayers public players;
@@ -121,15 +121,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return MerkleProof.verify(proof, merkleRoot, leaf);
   }
 
-  function mintWhitelist(uint _avatarId, bytes32 _name, bool _makeActive, bytes32[] calldata _proof) external {
-    require(checkInWhitelist(_proof), "Not in whitelist");
-    ++numMintedFromWhitelist[msg.sender];
-    require(numMintedFromWhitelist[msg.sender] <= MAX_ALPHA_WHITELIST, "Minted more than allowed");
-    mint(_avatarId, _name, _makeActive);
-  }
-
-  // Costs nothing to mint, only gas
-  function mint(uint _avatarId, bytes32 _name, bool _makeActive) public {
+  function _mintPlayer(uint _avatarId, bytes32 _name, bool _makeActive) private {
     address from = msg.sender;
     uint playerId = latestPlayerId++;
     emit NewPlayer(playerId, _avatarId, bytes20(_name));
@@ -138,6 +130,18 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     players.mintedPlayer(from, playerId, _makeActive);
     _mintStartingItems();
     _setTokenIdToAvatar(playerId, _avatarId);
+  }
+
+  function mintWhitelist(uint _avatarId, bytes32 _name, bool _makeActive, bytes32[] calldata _proof) external {
+    require(checkInWhitelist(_proof), "Not in whitelist");
+    ++numMintedFromWhitelist[msg.sender];
+    require(numMintedFromWhitelist[msg.sender] <= MAX_ALPHA_WHITELIST, "Minted more than allowed");
+    _mintPlayer(_avatarId, _name, _makeActive);
+  }
+
+  // Costs nothing to mint, only gas
+  function mint(uint _avatarId, bytes32 _name, bool _makeActive) external {
+    _mintPlayer(_avatarId, _name, _makeActive);
   }
 
   function _setTokenIdToAvatar(uint _playerId, uint _avatarId) private {
