@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 
@@ -39,7 +39,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   // Past request ids
   uint[] public requestIds; // Each one is a seed for a day
-  mapping(uint => uint) public randomWords; /* requestId --> random word */
+  mapping(uint requestId => uint randomWord) public randomWords;
   uint public lastSeedUpdatedTime;
 
   uint startTime;
@@ -59,16 +59,16 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
-  mapping(uint => ActionInfo) public actions;
+  mapping(uint actionId => ActionInfo actionInfo) public actions;
   uint16 public lastActionId;
   uint16 public lastActionChoiceId;
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  mapping(uint => mapping(uint16 => ActionChoice)) public actionChoices; // action id => (choice id => Choice)
-  mapping(uint => CombatStats) actionCombatStats; // action id => combat stats
+  mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) public actionChoices;
+  mapping(uint actionId => CombatStats combatStats) actionCombatStats;
 
-  mapping(uint => ActionRewards) private actionRewards;
+  mapping(uint actionId => ActionRewards actionRewards) private actionRewards;
 
   function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
     __VRFConsumerBaseV2_init(address(_coordinator));

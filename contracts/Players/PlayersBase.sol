@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "../World.sol";
 import "../types.sol";
@@ -64,21 +64,21 @@ abstract contract PlayersBase {
 
   uint internal startSlot; // Keep as the first non-constant state variable
 
-  mapping(uint => uint) internal speedMultiplier; // 0 or 1 is diabled, for testing only
+  mapping(uint playerId => uint multiplier) internal speedMultiplier; // 0 or 1 is diabled, for testing only
 
-  mapping(address => uint) internal activePlayer;
+  mapping(address user => uint playerId) internal activePlayer;
 
-  mapping(uint => PlayerBoostInfo) public activeBoosts; // player id => boost info
+  mapping(uint playerId => PlayerBoostInfo boostInfo) public activeBoosts;
 
   uint64 internal latestQueueId; // Global queued action id
   World internal world;
 
-  mapping(uint => mapping(Skill => uint32)) public skillPoints; // player -> skill -> points
+  mapping(uint playerId => mapping(Skill skill => uint32 skillPoint)) public skillPoints;
 
-  mapping(uint => Player) public players;
+  mapping(uint playerId => Player player) public players;
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
-  mapping(uint => PendingRandomReward[]) internal pendingRandomRewards; // queue, will be sorted by timestamp
+  mapping(uint playerId => PendingRandomReward[] pendingRandomRewards) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
   // Constants for the damage formula
   uint128 alphaCombat;
@@ -87,7 +87,7 @@ abstract contract PlayersBase {
   // 4 bytes for each threshold, starts at 500 xp in decimal
   bytes constant xpRewardBytes =
     hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";
-  mapping(uint => Equipment[]) xpRewardThresholds; // XP => items[]. Thresholds and all items rewarded for it
+  mapping(uint xp => Equipment[] equipments) xpRewardThresholds; // Thresholds and all items rewarded for it
 
   address implQueueActions;
   address implProcessActions;
@@ -144,7 +144,6 @@ abstract contract PlayersBase {
 
   function _extraXPFromFullEquipment(
     address _from,
-    uint _playerId,
     Attire storage _attire,
     Skill _skill,
     uint _elapsedTime,
@@ -173,14 +172,7 @@ abstract contract PlayersBase {
     uint16 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
-    pointsAccrued += _extraXPFromFullEquipment(
-      _from,
-      _playerId,
-      _queuedAction.attire,
-      _skill,
-      _xpElapsedTime,
-      xpPerHour
-    );
+    pointsAccrued += _extraXPFromFullEquipment(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);
   }
 
   function _updateStatsFromHandEquipment(

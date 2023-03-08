@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/utils/Multicall.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -166,7 +166,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address _from,
     uint[] calldata /*_itemTokenIds*/,
     uint[] calldata /*_amounts*/
-  ) external onlyItemNFT {
+  ) external view onlyItemNFT {
     uint playerId = activePlayer[_from];
     if (playerId == 0) {
       return;

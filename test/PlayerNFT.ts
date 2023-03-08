@@ -111,17 +111,11 @@ describe("PlayerNFT", () => {
       makeActive
     );
     await players.connect(alice).setActivePlayer(playerId);
-    const maxTime = await players.MAX_TIME();
 
     return {
       playerId,
-      players,
       playerNFT,
-      itemNFT,
       brush,
-      maxTime,
-      owner,
-      world,
       alice,
       origName,
       editNameCost,

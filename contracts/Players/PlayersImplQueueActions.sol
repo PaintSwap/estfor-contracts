@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "./PlayersImplBase.sol";
 
@@ -52,7 +52,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
       player.actionQueue = remainingSkills;
 
-      for (uint j = remainingSkills.length; j != 0 ; ) {
+      for (uint j = remainingSkills.length; j != 0; ) {
         unchecked {
           --j;
         }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -49,7 +49,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   string private baseURI;
 
   // How many of this item exist
-  mapping(uint => uint) public itemBalances;
+  mapping(uint itemId => uint amount) public itemBalances;
 
   address players;
   address shop;
@@ -59,9 +59,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   uint public uniqueItems; // unique number of items
 
-  mapping(uint => string) private tokenURIs;
-  mapping(uint => CombatStats) combatStats;
-  mapping(uint => Item) items;
+  mapping(uint itemId => string tokenURI) private tokenURIs;
+  mapping(uint itemId => CombatStats combatStats) combatStats;
+  mapping(uint itemId => Item) items;
 
   modifier onlyPlayersOrShop() {
     require(msg.sender == players || msg.sender == shop, "Not players OR shop");
@@ -279,7 +279,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function royaltyInfo(
-    uint256 _tokenId,
+    uint256 /*_tokenId*/,
     uint256 _salePrice
   ) external view override returns (address receiver, uint256 royaltyAmount) {
     uint256 amount = (_salePrice * royaltyFee) / 10000;

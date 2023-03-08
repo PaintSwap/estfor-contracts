@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 // For optimization purposes this contains a few data items, and everything except combat stats (although it could fit?)
 struct Item {

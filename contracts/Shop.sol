@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -32,7 +32,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   IBrushToken brush;
   ItemNFT itemNFT;
-  mapping(uint => uint) public shopItems;
+  mapping(uint itemId => uint price) public shopItems;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {

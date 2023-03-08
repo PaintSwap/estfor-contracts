@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IBrushToken.sol";
@@ -32,7 +32,6 @@ contract RoyaltyReceiver is Ownable {
 
   receive() external payable {
     uint deadline = block.timestamp + deadlineDuration;
-    address[] memory _buyPath = new address[](2);
     // Buy brush and send it to the pool
     uint[] memory amounts = router.swapExactETHForTokens{value: msg.value}(0, buyPath, address(this), deadline);
     brush.transfer(pool, amounts[amounts.length - 1]);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -13,7 +13,7 @@ library PlayerLibrary {
   // Show all the player stats, return metadata json
   function uri(
     bytes32 name,
-    mapping(Skill => uint32) storage skillPoints,
+    mapping(Skill skill => uint32 skillPoint) storage skillPoints,
     bytes32 avatarName,
     string calldata avatarDescription,
     string calldata imageURI

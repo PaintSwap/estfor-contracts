@@ -2,10 +2,10 @@ import "dotenv/config";
 
 import {HardhatUserConfig} from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import '@nomicfoundation/hardhat-chai-matchers';
+import "@nomicfoundation/hardhat-chai-matchers";
 
-import '@nomiclabs/hardhat-ethers';
-import '@nomiclabs/hardhat-solhint';
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-solhint";
 
 import "@openzeppelin/hardhat-upgrades";
 
@@ -16,7 +16,7 @@ import "solidity-coverage";
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.17",
+    version: "0.8.19",
     settings: {
       optimizer: {
         enabled: true,

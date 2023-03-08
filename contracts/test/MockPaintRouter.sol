@@ -1,14 +1,14 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import "./MockBrushToken.sol";
 
 contract MockRouter {
   function swapExactETHForTokens(
-    uint amountOutMin,
+    uint /*amountOutMin*/,
     address[] calldata path,
     address to,
-    uint deadline
+    uint /*deadline*/
   ) external payable returns (uint[] memory amounts) {
     amounts = new uint[](2);
     amounts[0] = msg.value;
