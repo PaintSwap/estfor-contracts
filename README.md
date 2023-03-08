@@ -28,12 +28,13 @@ To deploy the contracts:
 yarn deploy
 ```
 
-Fantom mainnet deployed contract addresses:  
-PlayerNFT: 0x  
-Players: 0x  
-ItemNFT: 0x  
-Shop: 0x  
-World: 0x  
-RoyaltyReceiver: 0x  
+### Fantom mainnet deployed contract addresses:  
+PlayerNFT [0x...](https://ftmscan.com/address/)   
+Players [0x...](https://ftmscan.com/address/)   
+ItemNFT [0x...](https://ftmscan.com/address/)   
+Shop [0x...](https://ftmscan.com/address/)   
+World [0x...](https://ftmscan.com/address/)  
+RoyaltyReceiver [0x...](https://ftmscan.com/address/)
 
-Brush in-game currency: 0x85dec8c4b2680793661bca91a8f129607571863d  
+### Other addresses:  
+BRUSH [0x85dec8c4b2680793661bca91a8f129607571863d](https://ftmscan.com/address/0x85dec8c4b2680793661bca91a8f129607571863d)  
