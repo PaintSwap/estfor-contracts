@@ -100,7 +100,6 @@ describe("AlphaWhitelist", () => {
     const proof = treeWhitelist.getProof(owner.address);
     expect(await playerNFT.checkInWhitelist(proof)).to.be.true;
     expect(await playerNFT.connect(alice).checkInWhitelist(proof)).to.be.false;
-    const name = ethers.utils.formatBytes32String("name");
 
     const avatarId = 1;
     const avatarInfo = {
@@ -110,8 +109,14 @@ describe("AlphaWhitelist", () => {
     };
     await playerNFT.setAvatar(avatarId, avatarInfo);
 
-    await playerNFT.mintWhitelist(1, name, true, proof);
-    await expect(playerNFT.mintWhitelist(1, name, true, proof)).to.be.reverted; // Cannot mint twice
-    await expect(playerNFT.connect(alice).mintWhitelist(1, name, true, proof)).to.be.reverted; // Not whitelisted
+    const maxMints = await playerNFT.MAX_ALPHA_WHITELIST();
+    for (let i = 0; i < maxMints.toNumber(); ++i) {
+      const name = ethers.utils.formatBytes32String(`name${i}`);
+      await playerNFT.mintWhitelist(1, name, true, proof);
+    }
+
+    const newName = ethers.utils.formatBytes32String("Cheesy poofs");
+    await expect(playerNFT.mintWhitelist(1, newName, true, proof)).to.be.reverted; // Cannot mint again
+    await expect(playerNFT.connect(alice).mintWhitelist(1, newName, true, proof)).to.be.reverted; // Not whitelisted
   });
 });

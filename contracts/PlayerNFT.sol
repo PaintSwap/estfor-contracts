@@ -47,7 +47,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   address public royaltyReceiver;
 
   bytes32 merkleRoot; // For airdrop
-  mapping(address => bool) hasMintedFromWhitelist;
+  mapping(address whitelistedUser => uint amount) numMintedFromWhitelist;
+  uint public constant MAX_ALPHA_WHITELIST = 2;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(msg.sender, playerId) != 1) {
@@ -122,8 +123,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function mintWhitelist(uint _avatarId, bytes32 _name, bool _makeActive, bytes32[] calldata _proof) external {
     require(checkInWhitelist(_proof), "Not in whitelist");
-    require(!hasMintedFromWhitelist[msg.sender], "Already minted");
-    hasMintedFromWhitelist[msg.sender] = true;
+    ++numMintedFromWhitelist[msg.sender];
+    require(numMintedFromWhitelist[msg.sender] <= MAX_ALPHA_WHITELIST, "Minted more than allowed");
     mint(_avatarId, _name, _makeActive);
   }
 
