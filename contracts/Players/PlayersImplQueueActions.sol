@@ -30,7 +30,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     Player storage player = players[_playerId];
     if (_queueStatus == ActionQueueStatus.NONE) {
-      if (player.actionQueue.length > 0) {
+      if (player.actionQueue.length != 0) {
         // Clear action queue
         QueuedAction[] memory queuedActions;
         player.actionQueue = queuedActions;
@@ -231,7 +231,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       assembly ("memory-safe") {
         mstore(itemTokenIds, itemLength)
       }
-      if (itemLength > 0) {
+      if (itemLength != 0) {
         uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
         (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
         uint i;
@@ -258,7 +258,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     // Check the user has these items
     bool skipNeck = false;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
-    if (itemTokenIds.length > 0) {
+    if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
       uint i;
       while (i < balances.length) {

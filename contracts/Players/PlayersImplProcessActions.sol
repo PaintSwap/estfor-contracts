@@ -100,7 +100,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         length = i + 1;
       }
 
-      if (pointsAccrued > 0) {
+      if (pointsAccrued != 0) {
         if (_isCombatStyle(queuedAction.combatStyle)) {
           // Update health too with 33% of the points gained from combat
           _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);
@@ -131,7 +131,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
-        if (newIds.length > 0) {
+        if (newIds.length != 0) {
           itemNFT.mintBatch(_from, newIds, newAmounts);
           emit Rewards(_from, _playerId, _queueId, newIds, newAmounts);
         }
@@ -146,7 +146,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
     }
 
-    if (allPointsAccrued > 0) {
+    if (allPointsAccrued != 0) {
       _handleTotalXPThresholdRewards(_from, previousSkillPoints, previousSkillPoints + allPointsAccrued);
       player.totalSkillPoints = uint160(previousSkillPoints + allPointsAccrued);
     }
@@ -201,7 +201,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       );
     }
 
-    if (numConsumed > 0) {
+    if (numConsumed != 0) {
       _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _queuedAction.attire.queueId);
     }
 
@@ -396,7 +396,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       _oldTotalSkillPoints,
       _newTotalSkillPoints
     );
-    if (itemTokenIds.length > 0) {
+    if (itemTokenIds.length != 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
       emit XPThresholdRewards(itemTokenIds, amounts);
     }

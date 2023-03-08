@@ -109,7 +109,7 @@ library PlayerLibrary {
       }
     }
 
-    if (low > 0) {
+    if (low != 0) {
       return uint16(low);
     } else {
       return 1;
@@ -152,7 +152,7 @@ library PlayerLibrary {
 
     if (healthRestored == 0 || totalHealthLost <= 0) {
       // No food attached or didn't lose any health
-      died = totalHealthLost > 0;
+      died = totalHealthLost != 0;
     } else {
       // Round up
       foodConsumed = uint16(
@@ -174,7 +174,7 @@ library PlayerLibrary {
     ItemNFT _itemNFT
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _numConsumed;
-    if (_numConsumed > 0) {
+    if (_numConsumed != 0) {
       if (_actionChoice.inputTokenId1 != 0) {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
@@ -268,7 +268,7 @@ library PlayerLibrary {
     // This is based on the damage done from battling
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
     uint maxHealthEnemy = (numSpawnedPerHour * _elapsedTime * uint16(_enemyCombatStats.health)) / 3600;
-    if (maxHealthEnemy > 0) {
+    if (maxHealthEnemy != 0) {
       uint32 totalHealthDealt;
       if (_actionChoice.skill == Skill.ATTACK) {
         totalHealthDealt = _dmg(
@@ -384,45 +384,45 @@ library PlayerLibrary {
       if (_skill == Skill.THIEVING) {
         if (
           itemTokenIds[0] == NATUOW_HOOD &&
-          balances[0] > 0 && // head
+          balances[0] != 0 && // head
           itemTokenIds[1] == NATUOW_BODY &&
-          balances[1] > 0 && // body
+          balances[1] != 0 && // body
           itemTokenIds[2] == NATUOW_BRACERS &&
-          balances[2] > 0 && // arms
+          balances[2] != 0 && // arms
           itemTokenIds[3] == NATUOW_TASSETS &&
-          balances[3] > 0 && // legs
+          balances[3] != 0 && // legs
           itemTokenIds[4] == NATUOW_BOOTS &&
-          balances[4] > 0 // boots
+          balances[4] != 0 // boots
         ) {
           extraBoost = 3; // %
         }
       } else if (_skill == Skill.WOODCUTTING) {
         if (
           itemTokenIds[0] == NATURE_MASK &&
-          balances[0] > 0 && // head
+          balances[0] != 0 && // head
           itemTokenIds[1] == NATURE_BODY &&
-          balances[1] > 0 && // body
+          balances[1] != 0 && // body
           itemTokenIds[2] == NATURE_BRACERS &&
-          balances[2] > 0 && // arms
+          balances[2] != 0 && // arms
           itemTokenIds[3] == NATURE_TROUSERS &&
-          balances[3] > 0 && // legs
+          balances[3] != 0 && // legs
           itemTokenIds[4] == NATURE_BOOTS &&
-          balances[4] > 0 // boots
+          balances[4] != 0 // boots
         ) {
           extraBoost = 3; // %
         }
       } else if (_skill == Skill.CRAFTING) {
         if (
           itemTokenIds[0] == BAT_WING_HAT &&
-          balances[0] > 0 && // head
+          balances[0] != 0 && // head
           itemTokenIds[1] == BAT_WING_BODY &&
-          balances[1] > 0 && // body
+          balances[1] != 0 && // body
           itemTokenIds[2] == BAT_WING_BRACERS &&
-          balances[2] > 0 && // arms
+          balances[2] != 0 && // arms
           itemTokenIds[3] == BAT_WING_TROUSERS &&
-          balances[3] > 0 && // legs
+          balances[3] != 0 && // legs
           itemTokenIds[4] == BAT_WING_BOOTS &&
-          balances[4] > 0 // boots
+          balances[4] != 0 // boots
         ) {
           extraBoost = 3; // %
         }

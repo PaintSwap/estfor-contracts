@@ -85,7 +85,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function requestSeedUpdate() external returns (uint256 requestId) {
     // Last one has not been fulfilled yet
-    if (requestIds.length > 0) {
+    if (requestIds.length != 0) {
       require(randomWords[requestIds[requestIds.length - 1]] != 0, "Seed can't be updated");
     }
 
@@ -132,12 +132,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function hasSeed(uint _timestamp) external view returns (bool) {
-    return _getSeed(_timestamp) > 0;
+    return _getSeed(_timestamp) != 0;
   }
 
   function getSeed(uint _timestamp) public view returns (uint seed) {
     seed = _getSeed(_timestamp);
-    require(seed > 0, "No valid seed");
+    require(seed != 0, "No valid seed");
   }
 
   // Can be called by anyone as long as over 1 day has passed since the last call
@@ -230,7 +230,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // Set the rewards
     ActionRewards storage actionReward = actionRewards[_actionId];
-    if (_action.guaranteedRewards.length > 0) {
+    if (_action.guaranteedRewards.length != 0) {
       actionReward.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
       actionReward.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
     }
@@ -243,7 +243,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       actionReward.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
     }
     // Now do the same for randomRewards
-    if (_action.randomRewards.length > 0) {
+    if (_action.randomRewards.length != 0) {
       actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
       actionReward.randomRewardChance1 = uint16(_action.randomRewards[0].rate);
     }
@@ -306,7 +306,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function addActionChoices(uint16 _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
-    require(_actionChoices.length > 0);
+    require(_actionChoices.length != 0);
     uint16 actionChoiceId = lastActionChoiceId;
     uint16 i;
     while (i < _actionChoices.length) {
@@ -323,7 +323,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     uint16[] calldata _actionIds,
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
-    require(_actionChoices.length > 0);
+    require(_actionChoices.length != 0);
     uint16 actionChoiceId = lastActionChoiceId;
     uint16 count;
     uint i;

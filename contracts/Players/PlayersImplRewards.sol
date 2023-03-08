@@ -71,7 +71,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         isCombat
       );
 
-      if (length - oldLength > 0 || noLuck) {
+      if (length - oldLength != 0 || noLuck) {
         ++numRemoved;
       }
 
@@ -90,7 +90,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     address from = msg.sender;
     (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
 
-    if (numRemoved > 0) {
+    if (numRemoved != 0) {
       // Shift the remaining rewards to the front of the array
       uint i;
       while (i < pendingRandomRewards[_playerId].length - numRemoved) {
@@ -121,7 +121,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     if (prevIndex != nextIndex) {
       uint32 xpThreshold = _getXPReward(nextIndex);
       Equipment[] memory items = xpRewardThresholds[xpThreshold];
-      if (items.length > 0) {
+      if (items.length != 0) {
         itemTokenIds = new uint[](items.length);
         amounts = new uint[](items.length);
         uint i;
@@ -227,7 +227,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         pointsAccrued = _getPointsAccrued(from, _playerId, queuedAction, skill, xpElapsedTime);
       }
 
-      if (_flags.includeLoot && pointsAccrued > 0) {
+      if (_flags.includeLoot && pointsAccrued != 0) {
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
@@ -248,7 +248,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       }
     } // end of loop
 
-    if (_flags.includeXPRewards && allPointsAccrued > 0) {
+    if (_flags.includeXPRewards && allPointsAccrued != 0) {
       (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
         previousSkillPoints,
         previousSkillPoints + allPointsAccrued
@@ -305,7 +305,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       numRewards = (_elapsedTime * _rewardRate) / (3600 * 100);
     }
 
-    if (numRewards > 0) {
+    if (numRewards != 0) {
       _ids[length] = _rewardTokenId;
       _amounts[length] = numRewards;
       ++length;
@@ -395,7 +395,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       mstore(_randomRewards, randomRewardLength)
     }
 
-    if (_randomRewards.length > 0) {
+    if (_randomRewards.length != 0) {
       bool hasSeed = world.hasSeed(skillEndTime);
       if (hasSeed) {
         uint seed = world.getSeed(skillEndTime);
@@ -525,7 +525,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       );
     }
 
-    if (numConsumed > 0) {
+    if (numConsumed != 0) {
       if (_actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength++] = Equipment(
           _actionChoice.inputTokenId1,

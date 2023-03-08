@@ -114,7 +114,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
         ++i;
       }
     }
-    if (numNewItems > 0) {
+    if (numNewItems != 0) {
       uniqueItems += numNewItems;
     }
     _mintBatch(_to, _tokenIds, _amounts, "");
@@ -185,7 +185,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
         --i;
       }
       itemBalances[_ids[i]] -= _amounts[i];
-    } while (i > 0);
+    } while (i != 0);
   }
 
   function _checkIsTransferable(uint[] memory _ids) private view {
@@ -196,7 +196,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
         --i;
       }
       require(!items[_ids[i]].exists || items[_ids[i]].isTransferable);
-    } while (i > 0);
+    } while (i != 0);
   }
 
   function _beforeTokenTransfer(
@@ -255,7 +255,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     assembly ("memory-safe") {
       hasCombat := not(iszero(_combatStats))
     }
-    bool hasNonCombat = _item.nonCombatStats.length > 0;
+    bool hasNonCombat = _item.nonCombatStats.length != 0;
     item = items[_item.tokenId];
     item.exists = true;
     item.hasCombatStats = hasCombat;
@@ -279,7 +279,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       // TODO: Add more later if necessary
     }
 
-    if (_item.healthRestored > 0) {
+    if (_item.healthRestored != 0) {
       item.healthRestored = _item.healthRestored;
     }
 

@@ -2107,7 +2107,7 @@ describe("Players", () => {
               includePastRandomRewards: true,
               includeXPRewards: false,
             })
-          ).producedPastRandomRewards.length > 0
+          ).producedPastRandomRewards.length != 0
         ) {
           expect(
             (

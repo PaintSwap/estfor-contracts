@@ -154,7 +154,7 @@ abstract contract PlayersBase {
       (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
       uint extraBoost = PlayerLibrary.extraBoostFromFullEquipment(_skill, itemTokenIds, balances);
 
-      if (extraBoost > 0) {
+      if (extraBoost != 0) {
         extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * extraBoost) / (3600 * 100));
       }
     }
@@ -258,7 +258,7 @@ abstract contract PlayersBase {
       mstore(itemTokenIds, attireLength)
     }
 
-    if (attireLength > 0) {
+    if (attireLength != 0) {
       balances = itemNFT.balanceOfs(_from, itemTokenIds);
     }
   }
@@ -266,11 +266,11 @@ abstract contract PlayersBase {
   function _updateCombatStats(address _from, CombatStats memory _stats, Attire storage _attire) internal view {
     bool skipNeck = false;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
-    if (itemTokenIds.length > 0) {
+    if (itemTokenIds.length != 0) {
       Item[] memory items = itemNFT.getItems(itemTokenIds);
       uint i;
       while (i < items.length) {
-        if (balances[i] > 0) {
+        if (balances[i] != 0) {
           _updateCombatStatsFromItem(_stats, items[i]);
         }
         unchecked {
@@ -339,7 +339,7 @@ abstract contract PlayersBase {
       }
     }
 
-    if (low > 0) {
+    if (low != 0) {
       return uint16(low - 1);
     } else {
       return 0;

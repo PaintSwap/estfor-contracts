@@ -225,7 +225,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint existingActivePlayer = activePlayer[_from];
     // All attire and actions can be made for this player
     activePlayer[_from] = _playerId;
-    if (existingActivePlayer > 0) {
+    if (existingActivePlayer != 0) {
       // If there is an existing active player, unequip all items
       _clearEverything(_from, existingActivePlayer);
     }
