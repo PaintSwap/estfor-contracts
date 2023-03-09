@@ -293,6 +293,7 @@ export const COOKED_MANTA_RAY = COOKED_FISH_BASE + 17;
 export const COOKED_LEVIATHAN = COOKED_FISH_BASE + 18;
 export const COOKED_DRAGONFISH = COOKED_FISH_BASE + 19;
 export const COOKED_SKRIMP = COOKED_FISH_BASE + 20;
+export const COOKED_BOWFISH = COOKED_FISH_BASE + 21;
 export const COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 
 // Farming
@@ -324,7 +325,7 @@ export const ORE_MAX = ORE_BASE + 255;
 
 // Arrows
 export const ARROW_BASE = 11776;
-export const BRONZE_ARROW = ORE_BASE;
+export const BRONZE_ARROW = ARROW_BASE;
 export const ARROW_MAX = ARROW_BASE + 255;
 
 // Scrolls
@@ -424,6 +425,7 @@ export const ANURGAT = MISC_BASE + 32;
 export const RUFARUM = MISC_BASE + 33;
 export const WHITE_DEATH_SPORE = MISC_BASE + 34;
 export const BONES = MISC_BASE + 35;
+export const RUBY = MISC_BASE + 36;
 export const MISC_MAX = MISC_BASE + (10 + 256) + 255;
 
 // Other

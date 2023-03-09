@@ -105,7 +105,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       }
 
       itemNFT.mintBatch(from, ids, amounts);
-      //      emit Rewards(from, _playerId, _queueId, ids, amounts);
+      emit Rewards(from, _playerId, 0, ids, amounts);
     }
   }
 

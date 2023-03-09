@@ -48,6 +48,10 @@ import {
   WOODCUTTING_BASE,
   WOODCUTTING_MAX,
   XP_BOOST,
+  HELL_SCROLL,
+  COOKED_BOWFISH,
+  RUBY,
+  LEAF_FRAGMENTS,
 } from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 
@@ -552,6 +556,190 @@ describe("Players", () => {
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(3);
+  });
+
+  it("Daily Rewards", async () => {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.addItem({
+      ...defaultInputItem,
+      tokenId: BRONZE_AXE,
+      equipPosition: EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    const rate = 100 * 100; // per hour
+    const tx = await world.addAction({
+      info: {
+        skill: Skill.WOODCUTTING,
+        xpPerHour: 3600,
+        minSkillPoints: 0,
+        isDynamic: false,
+        numSpawn: 0,
+        handItemTokenIdRangeMin: WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+      },
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
+      combatStats: emptyStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const queuedAction: QueuedAction = {
+      attire: noAttire,
+      actionId,
+      combatStyle: CombatStyle.NONE,
+      choiceId: NONE,
+      choiceId1: NONE,
+      choiceId2: NONE,
+      regenerateId: NONE,
+      timespan: 500,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
+      startTime: "0",
+      isValid: true,
+    };
+
+    const oneDay = 24 * 3600;
+    const oneWeek = oneDay * 7;
+    const timestamp = Math.floor(Date.now() / 1000 / oneWeek) * oneWeek + oneDay + 1; // Start on friday
+
+    await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+    await ethers.provider.send("evm_mine", []);
+
+    let balanceBeforeWeeklyReward = await itemNFT.balanceOf(alice.address, XP_BOOST);
+
+    const equipments = [
+      {itemTokenId: COPPER_ORE, amount: 100},
+      {itemTokenId: COAL_ORE, amount: 200},
+      {itemTokenId: RUBY, amount: 100},
+      {itemTokenId: MITHRIL_BAR, amount: 200},
+      {itemTokenId: COOKED_BOWFISH, amount: 100},
+      {itemTokenId: LEAF_FRAGMENTS, amount: 20},
+      {itemTokenId: HELL_SCROLL, amount: 300},
+    ];
+
+    let beforeBalances = await itemNFT.balanceOfs(
+      alice.address,
+      equipments.map((equipment) => equipment.itemTokenId)
+    );
+
+    for (let i = 0; i < 5; ++i) {
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await ethers.provider.send("evm_mine", []);
+    }
+
+    let afterBalances = await itemNFT.balanceOfs(
+      alice.address,
+      equipments.map((equipment) => equipment.itemTokenId)
+    );
+
+    for (let i = 1; i < 6; ++i) {
+      expect(beforeBalances[i].toNumber() + equipments[i].amount).to.eq(afterBalances[i]);
+    }
+
+    // This isn't a full week so shouldn't get weekly rewards, but still get daily rewards
+    let balanceAfterWeeklyReward = await itemNFT.balanceOf(alice.address, XP_BOOST);
+    expect(balanceBeforeWeeklyReward).to.eq(balanceAfterWeeklyReward);
+    let prevBalanceDailyReward = await itemNFT.balanceOf(alice.address, equipments[equipments.length - 1].itemTokenId);
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, XP_BOOST));
+    let balanceAfterDailyReward = await itemNFT.balanceOf(alice.address, equipments[equipments.length - 1].itemTokenId);
+    expect(balanceAfterDailyReward).to.eq(prevBalanceDailyReward.toNumber() + equipments[equipments.length - 1].amount);
+
+    // Next one should start the next round
+    await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+    await ethers.provider.send("evm_mine", []);
+
+    beforeBalances = await itemNFT.balanceOfs(
+      alice.address,
+      equipments.map((equipment) => equipment.itemTokenId)
+    );
+
+    for (let i = 0; i < 7; ++i) {
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await ethers.provider.send("evm_mine", []);
+    }
+
+    afterBalances = await itemNFT.balanceOfs(
+      alice.address,
+      equipments.map((equipment) => equipment.itemTokenId)
+    );
+
+    for (let i = 0; i < 7; ++i) {
+      expect(beforeBalances[i].toNumber() + equipments[i].amount).to.eq(afterBalances[i]);
+    }
+
+    // Also check extra week streak reward
+    expect(balanceAfterWeeklyReward.toNumber() + 1).to.eq(await itemNFT.balanceOf(alice.address, XP_BOOST));
+  });
+
+  it("Daily Rewards, only 1 claim", async () => {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.addItem({
+      ...defaultInputItem,
+      tokenId: BRONZE_AXE,
+      equipPosition: EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    const rate = 100 * 100; // per hour
+    const tx = await world.addAction({
+      info: {
+        skill: Skill.WOODCUTTING,
+        xpPerHour: 3600,
+        minSkillPoints: 0,
+        isDynamic: false,
+        numSpawn: 0,
+        handItemTokenIdRangeMin: WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+      },
+      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      randomRewards: [],
+      combatStats: emptyStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const queuedAction: QueuedAction = {
+      attire: noAttire,
+      actionId,
+      combatStyle: CombatStyle.NONE,
+      choiceId: NONE,
+      choiceId1: NONE,
+      choiceId2: NONE,
+      regenerateId: NONE,
+      timespan: 500,
+      rightHandEquipmentTokenId: BRONZE_AXE,
+      leftHandEquipmentTokenId: NONE,
+      startTime: "0",
+      isValid: true,
+    };
+
+    const oneDay = 24 * 3600;
+    const oneWeek = oneDay * 7;
+    const timestamp = Math.floor(Date.now() / 1000 / oneWeek) * 2 * oneWeek + 1; // Start next thursday
+
+    await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+    await ethers.provider.send("evm_mine", []);
+
+    const equipment = {itemTokenId: COPPER_ORE, amount: 100};
+    let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    let balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+    expect(balanceAfter).to.eq(balanceBefore.toNumber() + equipment.amount);
+
+    // Start again, shouldn't get any more rewards
+    balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+    expect(balanceAfter).to.eq(balanceBefore);
   });
 
   // TODO: Check attire stats are as expected

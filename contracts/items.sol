@@ -262,6 +262,7 @@ uint16 constant COOKED_MANTA_RAY = COOKED_FISH_BASE + 17;
 uint16 constant COOKED_LEVIATHAN = COOKED_FISH_BASE + 18;
 uint16 constant COOKED_DRAGONFISH = COOKED_FISH_BASE + 19;
 uint16 constant COOKED_SKRIMP = COOKED_FISH_BASE + 20;
+uint16 constant COOKED_BOWFISH = COOKED_FISH_BASE + 21;
 uint16 constant COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 
 // Farming
@@ -292,7 +293,7 @@ uint16 constant ORCHALCUM_ORE = ORE_BASE + 14;
 uint16 constant ORE_MAX = ORE_BASE + 255;
 // Arrows
 uint16 constant ARROW_BASE = 11776;
-uint16 constant BRONZE_ARROW = ORE_BASE;
+uint16 constant BRONZE_ARROW = ARROW_BASE;
 uint16 constant ARROW_MAX = ARROW_BASE + 255;
 
 // Scrolls
@@ -392,6 +393,7 @@ uint16 constant ANURGAT = MISC_BASE + 32;
 uint16 constant RUFARUM = MISC_BASE + 33;
 uint16 constant WHITE_DEATH_SPORE = MISC_BASE + 34;
 uint16 constant BONES = MISC_BASE + 35;
+uint16 constant RUBY = MISC_BASE + 36;
 uint16 constant MISC_MAX = MISC_BASE + (10 + 256) + 255;
 
 // Other

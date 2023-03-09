@@ -11,6 +11,7 @@ import {Unsafe256, U256} from "./lib/Unsafe256.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
 import "./types.sol";
+import "./items.sol";
 
 // Fantom VRF
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634
@@ -28,6 +29,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event RemoveDynamicActions(uint16[] actionIds);
   event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
   event AddActionChoices(uint16 actionId, uint16 startActionChoice, ActionChoice[] choices);
+  event NewDailyRewards(Equipment[8] dailyRewards);
 
   struct Action {
     ActionInfo info;
@@ -69,6 +71,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
+  Equipment[8] public dailyRewards; // Last one is the weekly reward
+
   mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) public actionChoices;
   mapping(uint actionId => CombatStats combatStats) actionCombatStats;
 
@@ -85,6 +89,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     nextActionChoiceId = 1;
     startTime = (block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME; // Floor to the nearest day 00:00 UTC
     lastSeedUpdatedTime = startTime;
+
+    // Issue new daily rewards
+    dailyRewards[0] = Equipment(COPPER_ORE, 100);
+    dailyRewards[1] = Equipment(COAL_ORE, 200);
+    dailyRewards[2] = Equipment(RUBY, 100);
+    dailyRewards[3] = Equipment(MITHRIL_BAR, 200);
+    dailyRewards[4] = Equipment(COOKED_BOWFISH, 100);
+    dailyRewards[5] = Equipment(LEAF_FRAGMENTS, 20);
+    dailyRewards[6] = Equipment(HELL_SCROLL, 300);
+
+    // The weekly reward
+    dailyRewards[7] = Equipment(XP_BOOST, 1);
+
+    emit NewDailyRewards(dailyRewards);
   }
 
   function requestSeedUpdate() external returns (uint256 requestId) {
@@ -125,6 +143,33 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     randomWords[_requestId] = random;
     emit RequestFulfilled(_requestId, random);
+
+    uint checkpoint = (block.timestamp / 1 weeks) * 1 weeks;
+
+    // Are we at the threshold for a new week
+    if (checkpoint == (block.timestamp / 1 days) * 1 days) {
+      // Issue new daily rewards based on the new seed (TODO)
+      dailyRewards[0] = Equipment(COPPER_ORE, 100);
+      dailyRewards[1] = Equipment(COAL_ORE, 200);
+      dailyRewards[2] = Equipment(RUBY, 100);
+      dailyRewards[3] = Equipment(MITHRIL_BAR, 200);
+      dailyRewards[4] = Equipment(COOKED_BOWFISH, 100);
+      dailyRewards[5] = Equipment(LEAF_FRAGMENTS, 20);
+      dailyRewards[6] = Equipment(HELL_SCROLL, 300);
+
+      // The weekly reward
+      dailyRewards[7] = Equipment(XP_BOOST, 1);
+    }
+  }
+
+  function getDailyReward() external view returns (Equipment memory equipment) {
+    uint checkpoint = (block.timestamp / 1 weeks) * 1 weeks;
+    uint offset = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
+    equipment = dailyRewards[offset];
+  }
+
+  function getWeeklyReward() external view returns (Equipment memory equipment) {
+    equipment = dailyRewards[7];
   }
 
   function _getSeed(uint _timestamp) private view returns (uint) {

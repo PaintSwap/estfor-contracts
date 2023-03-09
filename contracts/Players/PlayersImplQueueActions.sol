@@ -16,6 +16,40 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   error NoItemBalance(uint16 itemTokenId);
 
+  function _handleDailyRewards(address _from, uint _playerId) private {
+    uint streakStart = (block.timestamp / 1 weeks) * 1 weeks;
+    uint streakStartIndex = streakStart / 1 weeks;
+    bytes32 mask = dailyRewardMasks[_playerId];
+    uint16 lastRewardStartIndex = uint16(uint256(mask));
+    if (lastRewardStartIndex < streakStartIndex) {
+      mask = bytes32(streakStartIndex);
+    }
+
+    uint maskIndex = ((block.timestamp / 1 days) * 1 days - streakStart) / 1 days;
+
+    // Claim daily reward as long as it's been set
+    if (mask[maskIndex] == 0) {
+      Equipment memory dailyReward = world.getDailyReward();
+      if (dailyReward.itemTokenId != NONE) {
+        mask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
+        dailyRewardMasks[_playerId] = mask;
+
+        itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
+        emit Reward(_from, _playerId, 0, dailyReward.itemTokenId, dailyReward.amount);
+
+        // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
+        bool canClaimWeeklyRewards = uint(mask >> (25 * 8)) == 2 ** (7 * 8) - 1;
+        if (canClaimWeeklyRewards) {
+          Equipment memory weeklyReward = world.getWeeklyReward();
+          if (weeklyReward.itemTokenId != NONE) {
+            itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
+            emit Reward(_from, _playerId, 0, weeklyReward.itemTokenId, weeklyReward.amount);
+          }
+        }
+      }
+    }
+  }
+
   function startActions(
     uint _playerId,
     QueuedAction[] calldata _queuedActions,
@@ -93,6 +127,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
     nextQueueId = queueId.asUint64();
+
+    _handleDailyRewards(from, _playerId);
   }
 
   function consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
