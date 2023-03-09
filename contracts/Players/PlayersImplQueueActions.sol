@@ -276,31 +276,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
   }
 
-  function _isMainEquipped(uint _playerId, uint _itemTokenId) private view returns (bool) {
-    EquipPosition position = _getMainEquipPosition(_itemTokenId);
-    Player storage player = players[_playerId];
-    uint equippedTokenId = _getEquippedTokenId(position, player);
-    return equippedTokenId == _itemTokenId;
-  }
-
-  function _getMainEquipPosition(uint _itemTokenId) private pure returns (EquipPosition) {
-    if (_itemTokenId >= MAX_MAIN_EQUIPMENT_ID) {
-      return EquipPosition.NONE;
-    }
-
-    return EquipPosition(_itemTokenId / 65536);
-  }
-
-  function _getEquippedTokenId(
-    EquipPosition _position,
-    Player storage _player
-  ) private view returns (uint16 equippedTokenId) {
-    assembly ("memory-safe") {
-      let val := sload(_player.slot)
-      equippedTokenId := shr(mul(_position, 16), val)
-    }
-  }
-
   function _checkHandEquipments(
     address _from,
     uint _playerId,
