@@ -23,7 +23,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error LengthEmpty();
   error ItemCannotBeBought();
   error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
-  error MinExpectedBrushNotReaced(uint totalBrush, uint minExpectedBrush);
+  error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
 
   struct ShopItem {
     uint16 tokenId;
@@ -155,7 +155,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       }
     }
     if (totalBrush < _minExpectedBrush) {
-      revert MinExpectedBrushNotReaced(totalBrush, _minExpectedBrush);
+      revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     brush.transfer(msg.sender, totalBrush);
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
