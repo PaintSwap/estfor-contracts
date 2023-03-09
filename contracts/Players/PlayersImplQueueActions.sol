@@ -2,10 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {Unsafe256, U256} from "../lib/Unsafe256.sol";
-import {
-  PlayersUpgradeableImplDummyBase,
-  PlayersBase
-} from "./PlayersImplBase.sol";
+import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 
 import "../items.sol";
 import "../types.sol";
@@ -21,7 +18,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function startActions(
     uint _playerId,
-    QueuedAction[] memory _queuedActions,
+    QueuedAction[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
   ) external {
@@ -85,7 +82,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         queuedAction.timespan = uint24(MAX_TIME - totalTimespan);
       }
 
-      _addToQueue(from, _playerId, queuedAction, uint64(queueId.asUint256()), prevEndTime);
+      _addToQueue(from, _playerId, queuedAction, queueId.asUint64(), prevEndTime);
       iter = iter.inc();
       queueId = queueId.inc();
       totalTimespan += queuedAction.timespan;
@@ -95,7 +92,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     emit SetActionQueue(_playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
-    latestQueueId = uint64(queueId.asUint256());
+    latestQueueId = queueId.asUint64();
   }
 
   function consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
@@ -197,7 +194,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _checkHandEquipments(
       _from,
       _playerId,
-      [_queuedAction.rightHandEquipmentTokenId, _queuedAction.leftHandEquipmentTokenId],
+      [_queuedAction.leftHandEquipmentTokenId, _queuedAction.rightHandEquipmentTokenId],
       handItemTokenIdRangeMin,
       handItemTokenIdRangeMax,
       isCombat
@@ -307,16 +304,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   function _checkHandEquipments(
     address _from,
     uint _playerId,
-    uint16[2] memory _equippedItemTokenIds, // right, left
+    uint16[2] memory _equippedItemTokenIds, // left, right
     uint16 _handItemTokenIdRangeMin,
     uint16 _handItemTokenIdRangeMax,
     bool _isCombat
   ) private view {
     U256 iter = U256.wrap(_equippedItemTokenIds.length);
+    bool twoHanded;
     while (iter.notEqual(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      bool isRightHand = i == 0;
+      bool isRightHand = i == 1;
       uint16 equippedItemTokenId = _equippedItemTokenIds[i];
       if (equippedItemTokenId != NONE) {
         if (
@@ -334,8 +332,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         if (skillPoints[_playerId][skill] < minSkillPoints) {
           revert MinimumSkillPointsNotReached();
         }
+        EquipPosition equipPosition = itemNFT.getEquipPosition(equippedItemTokenId);
+        if (isRightHand) {
+          require(equipPosition == EquipPosition.RIGHT_HAND || equipPosition == EquipPosition.BOTH_HANDS);
+          twoHanded = equipPosition == EquipPosition.BOTH_HANDS;
+        } else {
+          // left hand, if we've equipped a 2 handed weapon, we can't equip anything else
+          require(!twoHanded);
+          require(equipPosition == EquipPosition.LEFT_HAND);
+        }
       } else {
-        // Only combat actions can have no equipment if they have hand range choice
+        // Only combat actions can have no equipment
         // e.g smithing doesn't require anything equipped
         require(_isCombat || _handItemTokenIdRangeMin == NONE || !isRightHand);
       }

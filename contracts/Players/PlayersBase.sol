@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Unsafe256, U256} from"../lib/Unsafe256.sol";
-import {World} from"../World.sol";
-import {ItemNFT} from"../ItemNFT.sol";
-import {PlayerNFT} from"../PlayerNFT.sol";
+import {Unsafe256, U256} from "../lib/Unsafe256.sol";
+import {World} from "../World.sol";
+import {ItemNFT} from "../ItemNFT.sol";
+import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 import "../types.sol";
@@ -316,10 +316,10 @@ abstract contract PlayersBase {
   }
 
   function _processActions(address _from, uint _playerId) internal returns (QueuedAction[] memory remainingSkills) {
-    (bool success, bytes memory data) = implProcessActions.delegatecall(
+    bytes memory data = _delegatecall(
+      implProcessActions,
       abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)
     );
-    require(success);
     return abi.decode(data, (QueuedAction[]));
   }
 
@@ -359,8 +359,7 @@ abstract contract PlayersBase {
   }
 
   function _claimRandomRewards(uint _playerId) internal {
-    (bool success, ) = implRewards.delegatecall(abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
-    require(success);
+    _delegatecall(implRewards, abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
   }
 
   function _checkStartSlot() internal pure {
@@ -370,5 +369,16 @@ abstract contract PlayersBase {
       slot := startSlot.slot
     }
     require(slot == expectedStartSlotNumber);
+  }
+
+  function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {
+    bool success;
+    (success, returndata) = target.delegatecall(data);
+    if (!success) {
+      if (returndata.length == 0) revert();
+      assembly ("memory-safe") {
+        revert(add(32, returndata), mload(returndata))
+      }
+    }
   }
 }

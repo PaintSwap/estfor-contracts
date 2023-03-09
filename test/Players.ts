@@ -10,6 +10,7 @@ import {
   BRONZE_BAR,
   BRONZE_GAUNTLETS,
   BRONZE_PICKAXE,
+  BRONZE_SHIELD,
   BRONZE_SWORD,
   COAL_ORE,
   CombatStats,
@@ -28,7 +29,7 @@ import {
   getActionChoiceId,
   getActionId,
   getRequestId,
-  inputItem,
+  defaultInputItem,
   LOG,
   MINING_MAX,
   MITHRIL_BAR,
@@ -182,7 +183,7 @@ describe("Players", () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
@@ -233,7 +234,7 @@ describe("Players", () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
@@ -322,7 +323,7 @@ describe("Players", () => {
     };
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
@@ -380,7 +381,7 @@ describe("Players", () => {
     };
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
@@ -410,7 +411,7 @@ describe("Players", () => {
       health: 12,
     };
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_GAUNTLETS,
       combatStats,
       equipPosition: EquipPosition.ARMS,
@@ -420,7 +421,7 @@ describe("Players", () => {
     await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_SWORD,
       combatStats,
       equipPosition: EquipPosition.RIGHT_HAND,
@@ -480,7 +481,7 @@ describe("Players", () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
@@ -571,7 +572,7 @@ describe("Players", () => {
     };
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_GAUNTLETS,
       combatStats,
       equipPosition: EquipPosition.ARMS,
@@ -647,7 +648,7 @@ describe("Players", () => {
     });
     const actionId = await getActionId(tx);
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
@@ -673,7 +674,7 @@ describe("Players", () => {
     queuedActions.push(queuedAction);
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: LOG,
       equipPosition: EquipPosition.AUX,
       metadataURI: "someIPFSURI.json",
@@ -702,7 +703,7 @@ describe("Players", () => {
       const boostValue = 10;
       const boostDuration = 3300;
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: XP_BOOST,
         equipPosition: EquipPosition.BOOST_VIAL,
         metadataURI: "someIPFSURI.json",
@@ -750,7 +751,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -774,7 +775,7 @@ describe("Players", () => {
 
       const boostValue = 10;
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: XP_BOOST,
         equipPosition: EquipPosition.BOOST_VIAL,
         metadataURI: "someIPFSURI.json",
@@ -822,7 +823,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -885,7 +886,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -938,42 +939,42 @@ describe("Players", () => {
       const timespan = 3600;
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: NATURE_MASK,
         equipPosition: EquipPosition.HEAD,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: NATURE_BODY,
         equipPosition: EquipPosition.BODY,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: NATURE_BRACERS,
         equipPosition: EquipPosition.ARMS,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: NATURE_TROUSERS,
         equipPosition: EquipPosition.LEGS,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: NATURE_BOOTS,
         equipPosition: EquipPosition.BOOTS,
         metadataURI: "someIPFSURI.json",
@@ -1078,14 +1079,14 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: FIRE_LIGHTER,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: LOG,
         equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
@@ -1126,7 +1127,7 @@ describe("Players", () => {
         });
         const actionId = await getActionId(tx);
         await itemNFT.addItem({
-          ...inputItem,
+          ...defaultInputItem,
           tokenId: BRONZE_AXE,
           equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
@@ -1188,7 +1189,7 @@ describe("Players", () => {
 
         await itemNFT.testOnlyMint(alice.address, FIRE_LIGHTER, 1);
         await itemNFT.addItem({
-          ...inputItem,
+          ...defaultInputItem,
           tokenId: FIRE_LIGHTER,
           equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
@@ -1214,7 +1215,7 @@ describe("Players", () => {
       }
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: LOG,
         equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
@@ -1262,7 +1263,7 @@ describe("Players", () => {
         });
         const actionId = await getActionId(tx);
         await itemNFT.addItem({
-          ...inputItem,
+          ...defaultInputItem,
           tokenId: BRONZE_AXE,
           equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
@@ -1324,7 +1325,7 @@ describe("Players", () => {
 
         await itemNFT.testOnlyMint(alice.address, FIRE_LIGHTER, 1);
         await itemNFT.addItem({
-          ...inputItem,
+          ...defaultInputItem,
           tokenId: FIRE_LIGHTER,
           equipPosition: EquipPosition.RIGHT_HAND,
           metadataURI: "someIPFSURI.json",
@@ -1350,7 +1351,7 @@ describe("Players", () => {
       }
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: LOG,
         equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
@@ -1415,7 +1416,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_PICKAXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -1486,14 +1487,14 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: COAL_ORE,
         equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: MITHRIL_ORE,
         equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
@@ -1556,7 +1557,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -1578,7 +1579,7 @@ describe("Players", () => {
     it("Low rate action (more than 1 hour needed)", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -1665,14 +1666,14 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_PICKAXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -1776,7 +1777,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         combatStats: {
           ...emptyStats,
           melee: 5,
@@ -1787,14 +1788,14 @@ describe("Players", () => {
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_ARROW,
         equipPosition: EquipPosition.ARROW_SATCHEL,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         healthRestored: 12,
         tokenId: COOKED_HUPPY,
         equipPosition: EquipPosition.FOOD,
@@ -1872,7 +1873,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         combatStats: {
           ...emptyStats,
           melee: 5,
@@ -1883,14 +1884,14 @@ describe("Players", () => {
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_ARROW,
         equipPosition: EquipPosition.ARROW_SATCHEL,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         healthRestored: 12,
         tokenId: COOKED_HUPPY,
         equipPosition: EquipPosition.FOOD,
@@ -1966,7 +1967,7 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         combatStats: {
           ...emptyStats,
           melee: 5,
@@ -1977,14 +1978,14 @@ describe("Players", () => {
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_ARROW,
         equipPosition: EquipPosition.ARROW_SATCHEL,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         healthRestored: 12,
         tokenId: COOKED_HUPPY,
         equipPosition: EquipPosition.FOOD,
@@ -2006,6 +2007,210 @@ describe("Players", () => {
       expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
     });
 
+    describe("Magic", () => {
+      async function deployContractsMagic() {
+        const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+        const monsterCombatStats: CombatStats = {
+          melee: 3,
+          magic: 0,
+          range: 0,
+          meleeDefence: 0,
+          magicDefence: 0,
+          rangeDefence: 0,
+          health: 5,
+        };
+
+        const dropRate = 1 * 100; // per hour
+        let tx = await world.addAction({
+          info: {
+            skill: Skill.COMBAT,
+            xpPerHour: 3600,
+            minSkillPoints: 0,
+            isDynamic: false,
+            numSpawn: 1,
+            handItemTokenIdRangeMin: COMBAT_BASE,
+            handItemTokenIdRangeMax: COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+          },
+          guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
+        });
+        const actionId = await getActionId(tx);
+
+        await itemNFT.testOnlyMints(
+          alice.address,
+          [STAFF_OF_THE_PHOENIX, BRONZE_SHIELD, COOKED_HUPPY, AIR_SCROLL, SHADOW_SCROLL],
+          [1, 1, 1000, 200, 100]
+        );
+
+        const scrollsConsumedRate = 1 * 100; // per hour
+        // Combat uses none as it's not tied to a specific action (only combat ones)
+        // Fire blast
+        tx = await world.addActionChoice(NONE, {
+          skill: Skill.MAGIC,
+          diff: 2,
+          xpPerHour: 0,
+          minSkillPoints: 0,
+          rate: scrollsConsumedRate,
+          inputTokenId1: AIR_SCROLL,
+          num1: 2,
+          inputTokenId2: SHADOW_SCROLL,
+          num2: 1,
+          inputTokenId3: NONE,
+          num3: 0,
+          outputTokenId: NONE,
+          outputNum: 0,
+        });
+        const choiceId = await getActionChoiceId(tx);
+        const timespan = 3600;
+        const queuedAction: QueuedAction = {
+          attire: noAttire,
+          actionId,
+          combatStyle: CombatStyle.MAGIC,
+          choiceId,
+          choiceId1: NONE,
+          choiceId2: NONE,
+          regenerateId: COOKED_HUPPY,
+          timespan,
+          rightHandEquipmentTokenId: STAFF_OF_THE_PHOENIX,
+          leftHandEquipmentTokenId: NONE, // 2 handed, must specify this for both?
+          startTime: "0",
+          isValid: true,
+        };
+
+        await itemNFT.addItems([
+          {
+            ...defaultInputItem,
+            tokenId: AIR_SCROLL,
+            equipPosition: EquipPosition.MAGIC_BAG,
+            metadataURI: "someIPFSURI.json",
+          },
+          {
+            ...defaultInputItem,
+            tokenId: SHADOW_SCROLL,
+            equipPosition: EquipPosition.MAGIC_BAG,
+            metadataURI: "someIPFSURI.json",
+          },
+          {
+            ...defaultInputItem,
+            tokenId: STAFF_OF_THE_PHOENIX,
+            equipPosition: EquipPosition.BOTH_HANDS,
+            metadataURI: "someIPFSURI.json",
+          },
+          {
+            ...defaultInputItem,
+            tokenId: BRONZE_SHIELD,
+            equipPosition: EquipPosition.LEFT_HAND,
+            metadataURI: "someIPFSURI.json",
+          },
+          {
+            ...defaultInputItem,
+            tokenId: BRONZE_ARROW,
+            equipPosition: EquipPosition.ARROW_SATCHEL,
+            metadataURI: "someIPFSURI.json",
+          },
+          {
+            ...defaultInputItem,
+            healthRestored: 12,
+            tokenId: COOKED_HUPPY,
+            equipPosition: EquipPosition.FOOD,
+            metadataURI: "someIPFSURI.json",
+          },
+        ]);
+
+        return {playerId, players, itemNFT, world, alice, timespan, actionId, dropRate, queuedAction};
+      }
+
+      it("Simple", async () => {
+        const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction} = await loadFixture(
+          deployContractsMagic
+        );
+
+        await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+        await players.connect(alice).processActions(playerId);
+        expect(await players.skillPoints(playerId, Skill.MAGIC)).to.eq(queuedAction.timespan);
+        expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+
+        // Check the drops are as expected
+        expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(
+          Math.floor((timespan * dropRate) / (3600 * 100))
+        );
+
+        // Check food is consumed, update later
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
+
+        // Check that scrolls are consumed
+        expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);
+        expect(await itemNFT.balanceOf(alice.address, SHADOW_SCROLL)).to.eq(100 - 1);
+      });
+
+      it("No staff equipped", async () => {
+        const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction} = await loadFixture(
+          deployContractsMagic
+        );
+
+        const _queuedAction = {...queuedAction};
+        _queuedAction.rightHandEquipmentTokenId = NONE;
+
+        await players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE);
+
+        await ethers.provider.send("evm_increaseTime", [_queuedAction.timespan]);
+        await players.connect(alice).processActions(playerId);
+        expect(await players.skillPoints(playerId, Skill.MAGIC)).to.eq(_queuedAction.timespan);
+        expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+
+        // Check the drops are as expected
+        expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(
+          Math.floor((timespan * dropRate) / (3600 * 100))
+        );
+
+        // Check food is consumed, update later
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
+
+        // Check that scrolls are consumed
+        expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);
+        expect(await itemNFT.balanceOf(alice.address, SHADOW_SCROLL)).to.eq(100 - 1);
+      });
+
+      it("Cannot equip shield with a staff", async () => {
+        const {playerId, players, alice, queuedAction} = await loadFixture(deployContractsMagic);
+
+        const _queuedAction = {...queuedAction};
+
+        _queuedAction.leftHandEquipmentTokenId = BRONZE_SHIELD;
+        await expect(players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)).to.be
+          .reverted;
+        _queuedAction.leftHandEquipmentTokenId = NONE;
+        await expect(players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)).to.not.be
+          .reverted;
+      });
+
+      it("No scrolls equipped during processing action", async () => {
+        const {playerId, players, itemNFT, alice, queuedAction} = await loadFixture(deployContractsMagic);
+
+        await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+
+        await itemNFT.connect(alice).burn(alice.address, AIR_SCROLL, 200);
+
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+        await players.connect(alice).processActions(playerId);
+        // Should get no XP
+        expect(await players.skillPoints(playerId, Skill.MAGIC)).to.eq(0);
+        expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+        // Check food is consumed, update later
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
+
+        // Check that no scrolls are consumed
+        expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(0);
+        expect(await itemNFT.balanceOf(alice.address, SHADOW_SCROLL)).to.eq(100);
+      });
+    });
+
     it("Guaranteed rewards", async () => {});
 
     // This test only works if the timespan does not go over 00:00 utc
@@ -2013,14 +2218,14 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(deployContracts);
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_AXE,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_ARROW,
         equipPosition: EquipPosition.ARROW_SATCHEL,
         metadataURI: "someIPFSURI.json",
@@ -2202,21 +2407,21 @@ describe("Players", () => {
       };
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_SWORD,
         equipPosition: EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         tokenId: BRONZE_ARROW,
         equipPosition: EquipPosition.AUX,
         metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
-        ...inputItem,
+        ...defaultInputItem,
         healthRestored: 1,
         tokenId: COOKED_HUPPY,
         equipPosition: EquipPosition.FOOD,
@@ -2231,133 +2436,6 @@ describe("Players", () => {
       expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(0);
-    });
-
-    it("Magic", async () => {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
-
-      const monsterCombatStats: CombatStats = {
-        melee: 3,
-        magic: 0,
-        range: 0,
-        meleeDefence: 0,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 5,
-      };
-
-      const dropRate = 1 * 100; // per hour
-      let tx = await world.addAction({
-        info: {
-          skill: Skill.COMBAT,
-          xpPerHour: 3600,
-          minSkillPoints: 0,
-          isDynamic: false,
-          numSpawn: 1,
-          handItemTokenIdRangeMin: COMBAT_BASE,
-          handItemTokenIdRangeMax: COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-        },
-        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
-      const actionId = await getActionId(tx);
-
-      await itemNFT.testOnlyMints(
-        alice.address,
-        [STAFF_OF_THE_PHOENIX, COOKED_HUPPY, AIR_SCROLL, SHADOW_SCROLL],
-        [1, 1000, 200, 100]
-      );
-
-      const scrollsConsumedRate = 1 * 100; // per hour
-      // Combat uses none as it's not tied to a specific action (only combat ones)
-      // Fire blast
-      tx = await world.addActionChoice(NONE, {
-        skill: Skill.MAGIC,
-        diff: 2,
-        xpPerHour: 0,
-        minSkillPoints: 0,
-        rate: scrollsConsumedRate,
-        inputTokenId1: AIR_SCROLL,
-        num1: 2,
-        inputTokenId2: SHADOW_SCROLL,
-        num2: 1,
-        inputTokenId3: NONE,
-        num3: 0,
-        outputTokenId: NONE,
-        outputNum: 0,
-      });
-      const choiceId = await getActionChoiceId(tx);
-      const timespan = 3600;
-      const queuedAction: QueuedAction = {
-        attire: noAttire,
-        actionId,
-        combatStyle: CombatStyle.MAGIC,
-        choiceId,
-        choiceId1: NONE,
-        choiceId2: NONE,
-        regenerateId: COOKED_HUPPY,
-        timespan,
-        rightHandEquipmentTokenId: STAFF_OF_THE_PHOENIX,
-        leftHandEquipmentTokenId: NONE,
-        startTime: "0",
-        isValid: true,
-      };
-
-      await itemNFT.addItems([
-        {
-          ...inputItem,
-          tokenId: AIR_SCROLL,
-          equipPosition: EquipPosition.AUX,
-          metadataURI: "someIPFSURI.json",
-        },
-        {
-          ...inputItem,
-          tokenId: SHADOW_SCROLL,
-          equipPosition: EquipPosition.AUX,
-          metadataURI: "someIPFSURI.json",
-        },
-        {
-          ...inputItem,
-          tokenId: STAFF_OF_THE_PHOENIX,
-          equipPosition: EquipPosition.RIGHT_HAND,
-          metadataURI: "someIPFSURI.json",
-        },
-        {
-          ...inputItem,
-          tokenId: BRONZE_ARROW,
-          equipPosition: EquipPosition.AUX,
-          metadataURI: "someIPFSURI.json",
-        },
-        {
-          ...inputItem,
-          healthRestored: 12,
-          tokenId: COOKED_HUPPY,
-          equipPosition: EquipPosition.FOOD,
-          metadataURI: "someIPFSURI.json",
-        },
-      ]);
-
-      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
-
-      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-      await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, Skill.MAGIC)).to.eq(queuedAction.timespan);
-      expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
-
-      // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate) / (3600 * 100))
-      );
-
-      // Check food is consumed, update later
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
-
-      // Check that scrolls are consumed
-      expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);
-      expect(await itemNFT.balanceOf(alice.address, SHADOW_SCROLL)).to.eq(100 - 1);
     });
   });
 });

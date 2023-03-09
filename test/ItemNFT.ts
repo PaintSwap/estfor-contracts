@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {BRONZE_AXE, EquipPosition, inputItem} from "../scripts/utils";
+import {BRONZE_AXE, EquipPosition, defaultInputItem} from "../scripts/utils";
 
 describe("ItemNFT", () => {
   async function deployContracts() {
@@ -90,7 +90,7 @@ describe("ItemNFT", () => {
     const {itemNFT, alice, owner} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       equipPosition: EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
@@ -106,7 +106,7 @@ describe("ItemNFT", () => {
     const {itemNFT, alice, owner} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
-      ...inputItem,
+      ...defaultInputItem,
       tokenId: BRONZE_AXE,
       isTransferable: false, // Cannot be transferred
       equipPosition: EquipPosition.RIGHT_HAND,

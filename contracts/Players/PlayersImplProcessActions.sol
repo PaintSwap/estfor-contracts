@@ -315,10 +315,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _elapsedTime,
     uint16 _actionId
   ) private returns (uint[] memory newIds, uint[] memory newAmounts) {
-    (bool success, bytes memory data) = implRewards.delegatecall(
+    bytes memory data = _delegatecall(
+      implRewards,
       abi.encodeWithSignature("getRewards(uint40,uint256,uint16)", _skillEndTime, _elapsedTime, _actionId)
     );
-    require(success);
     return abi.decode(data, (uint[], uint[]));
   }
 
@@ -382,14 +382,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _oldTotalSkillPoints,
     uint _newTotalSkillPoints
   ) private returns (uint[] memory ids, uint[] memory amounts) {
-    (bool success, bytes memory data) = implRewards.delegatecall(
+    bytes memory data = _delegatecall(
+      implRewards,
       abi.encodeWithSignature(
         "claimableXPThresholdRewards(uint256,uint256)",
         _oldTotalSkillPoints,
         _newTotalSkillPoints
       )
     );
-    require(success);
     return abi.decode(data, (uint[], uint[]));
   }
 

@@ -103,10 +103,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint16 _itemTokenId,
     uint40 _startTime
   ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    (bool success, ) = implQueueActions.delegatecall(
+    _delegatecall(
+      implQueueActions,
       abi.encodeWithSignature("consumeBoost(uint256,uint16,uint40)", _playerId, _itemTokenId, _startTime)
     );
-    require(success);
   }
 
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
@@ -208,13 +208,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     emit SetActionQueue(_playerId, player.actionQueue);
   }
 
+  error err(bytes);
+
   function _startActions(
     uint _playerId,
     QueuedAction[] memory _queuedActions,
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
   ) private {
-    (bool success, ) = implQueueActions.delegatecall(
+    _delegatecall(
+      implQueueActions,
       abi.encodeWithSelector(
         IPlayerDelegate.startActions.selector,
         _playerId,
@@ -223,7 +226,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _queueStatus
       )
     );
-    require(success);
   }
 
   function _setActivePlayer(address _from, uint _playerId) private {
@@ -265,7 +267,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
     U256 iter = U256.wrap(_xpThresholdRewards.length);
-    while(iter.notEqual(0)) {
+    while (iter.notEqual(0)) {
       iter = iter.dec();
       _addXPThresholdReward(_xpThresholdRewards[iter.asUint256()]);
     }

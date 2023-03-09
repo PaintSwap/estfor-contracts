@@ -319,8 +319,12 @@ library PlayerLibrary {
         if (numConsumed > maxRequiredRatio) {
           numConsumed = uint16(maxRequiredRatio);
 
-          // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
-          xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
+          if (numConsumed > 0) {
+            // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
+            xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
+          } else {
+            xpElapsedTime = 0;
+          }
         }
       }
     } else {
@@ -343,9 +347,12 @@ library PlayerLibrary {
     uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
     if (numConsumed > maxRequiredRatio) {
       numConsumed = uint16(maxRequiredRatio);
-
-      // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
-      xpElapsedTime = (_elapsedTime * maxRequiredRatio) / numConsumed;
+      if (numConsumed > 0) {
+        // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
+        xpElapsedTime = (_elapsedTime * maxRequiredRatio) / numConsumed;
+      } else {
+        xpElapsedTime = 0;
+      }
     }
   }
 

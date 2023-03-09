@@ -96,7 +96,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     if (numRemoved != 0) {
       // Shift the remaining rewards to the front of the array
       U256 bounds = U256.wrap(pendingRandomRewards[_playerId].length).sub(numRemoved);
-      for ( U256 iter; iter < bounds; iter = iter.inc() ) {
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
         pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
       }
@@ -411,14 +411,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
           U256 randomRewardsLength = U256.wrap(_randomRewards.length);
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();
-            
+
             ActionReward memory potentialReward = _randomRewards[j];
             if (rand < potentialReward.rate) {
               // Get the lowest chance one
 
               // Compare with previous and append amounts if an entry already exists
               bool found;
-              
+
               U256 idsLength = U256.wrap(_ids.length);
               for (U256 iterK = U256.wrap(startLootLength); iterK < idsLength; iterK = iterK.inc()) {
                 uint k = iterK.asUint256();

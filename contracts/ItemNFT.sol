@@ -155,6 +155,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return (items[_tokenId].skill, items[_tokenId].minSkillPoints);
   }
 
+  function getEquipPosition(uint16 _tokenId) external view returns (EquipPosition) {
+    return items[_tokenId].equipPosition;
+  }
+
   function getMinRequirements(
     uint16[] calldata _tokenIds
   ) external view returns (Skill[] memory skills, uint32[] memory minSkillPoints) {

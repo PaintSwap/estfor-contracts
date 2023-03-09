@@ -330,16 +330,16 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       iter = iter.dec();
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
-      emit AddActionChoices(actionId, uint16((actionChoiceId + count).asUint256()), _actionChoices[i]);
+      emit AddActionChoices(actionId, (actionChoiceId + count).asUint16(), _actionChoices[i]);
       U256 iter2 = U256.wrap(_actionChoices[i].length);
       while (iter2.notEqual(0)) {
         iter2 = iter2.dec();
         uint16 j = iter2.asUint16();
-        actionChoices[actionId][uint16((actionChoiceId + count).asUint256())] = _actionChoices[i][j];
+        actionChoices[actionId][(actionChoiceId + count).asUint16()] = _actionChoices[i][j];
         count = count.inc();
       }
     }
-    lastActionChoiceId = uint16((actionChoiceId + count).asUint256());
+    lastActionChoiceId = (actionChoiceId + count).asUint16();
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
