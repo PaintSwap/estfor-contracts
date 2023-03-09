@@ -11,7 +11,6 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {Unsafe256, U256} from "./lib/Unsafe256.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
-import {INFTVaultFactory} from "./interfaces/INFTVaultFactory.sol";
 import "./types.sol";
 import "./items.sol";
 
@@ -52,7 +51,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   bytes32 merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) numMintedFromWhitelist;
-  INFTVaultFactory constant psVaultFactory = INFTVaultFactory(0xD80A0a2d69aC9fcEc428cA16cE113Eb6Dc55B991);
   uint public constant MAX_ALPHA_WHITELIST = 2;
 
   modifier isOwnerOfPlayer(uint playerId) {
@@ -121,24 +119,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     merkleRoot = _merkleRoot;
   }
 
-  function _isWhitelisted(bytes32[] calldata _proof, address _account) private view returns (bool) {
-    bytes32 leaf = keccak256(abi.encodePacked(_account));
+  function checkInWhitelist(bytes32[] calldata _proof) public view returns (bool whitelisted) {
+    bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
     return MerkleProof.verify(_proof, merkleRoot, leaf);
-  }
-
-  function checkInWhitelist(bytes32[] calldata _proof, address _vaultAddress) public view returns (bool whitelisted) {
-    // First check if this is a proof for the account itself
-    whitelisted = _isWhitelisted(_proof, msg.sender);
-    if (!whitelisted && block.chainid == 250) {
-      // Otherwise check the vaultAddress matches one for the sender. Only check on fantom for now.
-      uint16 maxVaultVersion = psVaultFactory.version(); // Current 1, may change change in the future if new vaults are released.
-      for (uint16 i = 1; i <= maxVaultVersion; ++i) {
-        address vaultAddress = psVaultFactory.vaultAddresses(msg.sender, i);
-        if (vaultAddress == _vaultAddress && _isWhitelisted(_proof, vaultAddress)) {
-          return true;
-        }
-      }
-    }
   }
 
   function _mintPlayer(uint _avatarId, bytes32 _name, bool _makeActive) private {
@@ -152,14 +135,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _setTokenIdToAvatar(playerId, _avatarId);
   }
 
-  function mintWhitelist(
-    uint _avatarId,
-    bytes32 _name,
-    bool _makeActive,
-    bytes32[] calldata _proof,
-    address _vaultAddress
-  ) external {
-    require(checkInWhitelist(_proof, _vaultAddress), "Not in whitelist");
+  function mintWhitelist(uint _avatarId, bytes32 _name, bool _makeActive, bytes32[] calldata _proof) external {
+    require(checkInWhitelist(_proof), "Not in whitelist");
     ++numMintedFromWhitelist[msg.sender];
     require(numMintedFromWhitelist[msg.sender] <= MAX_ALPHA_WHITELIST, "Minted more than allowed");
     _mintPlayer(_avatarId, _name, _makeActive);

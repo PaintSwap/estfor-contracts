@@ -98,9 +98,8 @@ describe("AlphaWhitelist", () => {
     const root = treeWhitelist.getRoot();
     await playerNFT.setMerkleRoot(root);
     const proof = treeWhitelist.getProof(owner.address);
-    const vaultAddress = ethers.constants.AddressZero;
-    expect(await playerNFT.checkInWhitelist(proof, vaultAddress)).to.be.true;
-    expect(await playerNFT.connect(alice).checkInWhitelist(proof, vaultAddress)).to.be.false;
+    expect(await playerNFT.checkInWhitelist(proof)).to.be.true;
+    expect(await playerNFT.connect(alice).checkInWhitelist(proof)).to.be.false;
 
     const avatarId = 1;
     const avatarInfo = {
@@ -113,11 +112,11 @@ describe("AlphaWhitelist", () => {
     const maxMints = await playerNFT.MAX_ALPHA_WHITELIST();
     for (let i = 0; i < maxMints.toNumber(); ++i) {
       const name = ethers.utils.formatBytes32String(`name${i}`);
-      await playerNFT.mintWhitelist(1, name, true, proof, vaultAddress);
+      await playerNFT.mintWhitelist(1, name, true, proof);
     }
 
     const newName = ethers.utils.formatBytes32String("Cheesy poofs");
-    await expect(playerNFT.mintWhitelist(1, newName, true, proof, vaultAddress)).to.be.reverted; // Cannot mint again
-    await expect(playerNFT.connect(alice).mintWhitelist(1, newName, true, proof, vaultAddress)).to.be.reverted; // Not whitelisted
+    await expect(playerNFT.mintWhitelist(1, newName, true, proof)).to.be.reverted; // Cannot mint again
+    await expect(playerNFT.connect(alice).mintWhitelist(1, newName, true, proof)).to.be.reverted; // Not whitelisted
   });
 });
