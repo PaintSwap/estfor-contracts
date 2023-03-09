@@ -290,7 +290,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _getSkillFromStyle(CombatStyle _combatStyle, uint16 _actionId) private view returns (Skill skill) {
-    if (_combatStyle == CombatStyle.ATTACK) {
+    if (_combatStyle == CombatStyle.MELEE) {
       skill = Skill.ATTACK;
     } else if (_combatStyle == CombatStyle.MAGIC) {
       skill = Skill.MAGIC;

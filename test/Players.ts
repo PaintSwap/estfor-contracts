@@ -453,7 +453,7 @@ describe("Players", () => {
     const queuedAction: QueuedAction = {
       attire: {...noAttire, gauntlets: BRONZE_GAUNTLETS},
       actionId: 1,
-      combatStyle: CombatStyle.ATTACK,
+      combatStyle: CombatStyle.MELEE,
       choiceId,
       choiceId1: NONE,
       choiceId2: NONE,
@@ -1689,7 +1689,7 @@ describe("Players", () => {
       // This works
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
       // Specifying a combat style should fail
-      queuedAction.combatStyle = CombatStyle.ATTACK;
+      queuedAction.combatStyle = CombatStyle.MELEE;
       await expect(players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.be.reverted;
 
       // Transfer away, the action should just be skipped and no xp/loot should be given
@@ -1763,7 +1763,7 @@ describe("Players", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        combatStyle: CombatStyle.ATTACK,
+        combatStyle: CombatStyle.MELEE,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -1859,7 +1859,7 @@ describe("Players", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        combatStyle: CombatStyle.ATTACK,
+        combatStyle: CombatStyle.MELEE,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,
@@ -2189,7 +2189,7 @@ describe("Players", () => {
       const queuedAction: QueuedAction = {
         attire: noAttire,
         actionId,
-        combatStyle: CombatStyle.ATTACK,
+        combatStyle: CombatStyle.MELEE,
         choiceId,
         choiceId1: NONE,
         choiceId2: NONE,

@@ -44,7 +44,7 @@ enum BoostType {
 
 enum CombatStyle {
   NONE,
-  ATTACK,
+  MELEE,
   RANGE,
   MAGIC,
   MELEE_DEFENCE,

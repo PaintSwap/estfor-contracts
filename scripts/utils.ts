@@ -5,7 +5,7 @@ import {PlayerNFT} from "../typechain-types";
 // Should match contract
 export enum CombatStyle {
   NONE,
-  ATTACK,
+  MELEE,
   RANGE,
   MAGIC,
   MELEE_DEFENCE,
