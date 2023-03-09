@@ -72,7 +72,7 @@ abstract contract PlayersBase {
 
   mapping(uint playerId => PlayerBoostInfo boostInfo) public activeBoosts;
 
-  uint64 internal latestQueueId; // Global queued action id
+  uint64 internal nextQueueId; // Global queued action id
   World internal world;
 
   mapping(uint playerId => mapping(Skill skill => uint32 skillPoint)) public skillPoints;

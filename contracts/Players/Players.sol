@@ -64,7 +64,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;
 
-    latestQueueId = 1;
+    nextQueueId = 1;
     alphaCombat = 1;
     betaCombat = 1;
   }

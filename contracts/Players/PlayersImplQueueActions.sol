@@ -67,7 +67,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint prevEndTime = block.timestamp + totalTimespan;
 
     U256 iter;
-    U256 queueId = U256.wrap(latestQueueId);
+    U256 queueId = U256.wrap(nextQueueId);
     U256 queuedActionsLength = U256.wrap(_queuedActions.length);
     do {
       uint i = iter.asUint256();
@@ -92,7 +92,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     emit SetActionQueue(_playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
-    latestQueueId = queueId.asUint64();
+    nextQueueId = queueId.asUint64();
   }
 
   function consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {

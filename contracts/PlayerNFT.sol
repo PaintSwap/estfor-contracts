@@ -34,7 +34,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error NotOwner();
   error AvatarNotExists();
 
-  uint public latestPlayerId;
+  uint public nextPlayerId;
 
   mapping(uint avatarId => AvatarInfo avatarInfo) public avatars;
   string public baseURI;
@@ -82,7 +82,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     __Ownable_init();
     __UUPSUpgradeable_init();
     brush = _brush;
-    latestPlayerId = 1;
+    nextPlayerId = 1;
     baseURI = "ipfs://";
     pool = _pool;
     editNameCost = _editNameCost;
@@ -143,7 +143,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function _mintPlayer(uint _avatarId, bytes32 _name, bool _makeActive) private {
     address from = msg.sender;
-    uint playerId = latestPlayerId++;
+    uint playerId = nextPlayerId++;
     emit NewPlayer(playerId, _avatarId, bytes20(_name));
     _mint(from, playerId, 1, "");
     _setName(playerId, bytes20(_name));

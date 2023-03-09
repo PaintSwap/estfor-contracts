@@ -64,8 +64,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
   mapping(uint actionId => ActionInfo actionInfo) public actions;
-  uint16 public lastActionId;
-  uint16 public lastActionChoiceId;
+  uint16 public nextActionId;
+  uint16 public nextActionChoiceId;
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
@@ -81,8 +81,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
-    lastActionId = 1;
-    lastActionChoiceId = 1;
+    nextActionId = 1;
+    nextActionChoiceId = 1;
     startTime = (block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME; // Floor to the nearest day 00:00 UTC
     lastSeedUpdatedTime = startTime;
   }
@@ -224,6 +224,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actions[_actionId].numSpawn;
   }
 
+  function getCombatStats(uint16 _actionId) external view returns (CombatStats memory stats) {
+    stats = actionCombatStats[_actionId];
+  }
+
+  function getActionChoice(uint16 _actionId, uint16 _choiceId) external view returns (ActionChoice memory) {
+    return actionChoices[_actionId][_choiceId];
+  }
+
   function _setAction(uint _actionId, Action calldata _action) private {
     require(_action.info.handItemTokenIdRangeMin <= _action.info.handItemTokenIdRangeMax);
     actions[_actionId] = _action.info;
@@ -272,9 +280,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function addActions(Action[] calldata _actions) external onlyOwner {
-    uint16 actionId = lastActionId;
+    uint16 actionId = nextActionId;
     U256 iter = U256.wrap(_actions.length);
-    lastActionId = actionId + iter.asUint16();
+    nextActionId = actionId + iter.asUint16();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
@@ -283,9 +291,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function addAction(Action calldata _action) external onlyOwner {
-    uint16 actionId = lastActionId;
+    uint16 actionId = nextActionId;
     _addAction(actionId, _action);
-    lastActionId = actionId + 1;
+    nextActionId = actionId + 1;
   }
 
   function editAction(uint16 _actionId, Action calldata _action) external onlyOwner {
@@ -295,20 +303,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   // actionId of 0 means it is not tied to a specific action
   function addActionChoice(uint16 _actionId, ActionChoice calldata _actionChoice) external onlyOwner {
-    uint16 actionChoiceId = lastActionChoiceId;
+    uint16 actionChoiceId = nextActionChoiceId;
     if (_actionChoice.outputTokenId != 0) {
       require(_actionChoice.outputNum == 1); // Only supporting max 1 for now
     }
     actionChoices[_actionId][actionChoiceId] = _actionChoice;
     emit AddActionChoice(_actionId, actionChoiceId, _actionChoice);
-    lastActionChoiceId = actionChoiceId + 1;
+    nextActionChoiceId = actionChoiceId + 1;
   }
 
   function addActionChoices(uint16 _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
     U256 iter = U256.wrap(_actionChoices.length);
     require(iter.neq(0));
-    uint16 actionChoiceId = lastActionChoiceId;
-    lastActionChoiceId = actionChoiceId + iter.asUint16();
+    uint16 actionChoiceId = nextActionChoiceId;
+    nextActionChoiceId = actionChoiceId + iter.asUint16();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
@@ -324,7 +332,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     U256 iter = U256.wrap(_actionIds.length);
     require(iter.neq(0));
     require(iter.eq(_actionChoices.length));
-    U256 actionChoiceId = U256.wrap(lastActionChoiceId);
+    U256 actionChoiceId = U256.wrap(nextActionChoiceId);
     U256 count;
     while (iter.neq(0)) {
       iter = iter.dec();
@@ -339,7 +347,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
         count = count.inc();
       }
     }
-    lastActionChoiceId = (actionChoiceId + count).asUint16();
+    nextActionChoiceId = (actionChoiceId + count).asUint16();
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
@@ -347,14 +355,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     require(!actions[_actionId].isDynamic, "Action is dynamic");
     actions[_actionId].isAvailable = _isAvailable;
     emit SetAvailableAction(_actionId, _isAvailable);
-  }
-
-  function getCombatStats(uint16 _actionId) external view returns (CombatStats memory stats) {
-    stats = actionCombatStats[_actionId];
-  }
-
-  function getActionChoice(uint16 _actionId, uint16 _choiceId) external view returns (ActionChoice memory) {
-    return actionChoices[_actionId][_choiceId];
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
