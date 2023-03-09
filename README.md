@@ -6,35 +6,41 @@ All the smart contract code for the Estfor Kingdom RPG game on the Fantom Blockc
 
 Make sure `yarn` is installed (or replace with equivalent npm instructions)
 
-These contracts use hardhat and require solidity 0.8.18 at minimum.
+These contracts use hardhat and require solidity 0.8.19 at minimum.
 
-Install dependencies:  
+Install dependencies:
+
 ```shell
 yarn install
 ```
 
-To compile:  
+To compile:
+
 ```shell
 yarn compile
 ```
 
-To run the tests:  
+To run the tests:
+
 ```shell
 yarn test
 ```
 
-To deploy the contracts:  
+To deploy the contracts:
+
 ```shell
 yarn deploy
 ```
 
-### Fantom mainnet deployed contract addresses:  
-PlayerNFT [0x...](https://ftmscan.com/address/)   
-Players [0x...](https://ftmscan.com/address/)   
-ItemNFT [0x...](https://ftmscan.com/address/)   
-Shop [0x...](https://ftmscan.com/address/)   
+### Fantom mainnet deployed contract addresses:
+
+PlayerNFT [0x...](https://ftmscan.com/address/)  
+Players [0x...](https://ftmscan.com/address/)  
+ItemNFT [0x...](https://ftmscan.com/address/)  
+Shop [0x...](https://ftmscan.com/address/)  
 World [0x...](https://ftmscan.com/address/)  
 RoyaltyReceiver [0x...](https://ftmscan.com/address/)
 
-### Other addresses:  
-BRUSH [0x85dec8c4b2680793661bca91a8f129607571863d](https://ftmscan.com/address/0x85dec8c4b2680793661bca91a8f129607571863d)  
+### Other addresses:
+
+BRUSH [0x85dec8c4b2680793661bca91a8f129607571863d](https://ftmscan.com/address/0x85dec8c4b2680793661bca91a8f129607571863d)
