@@ -12,8 +12,8 @@ using {
     sub as -,
     mul as *,
     div as /,
-    notEqual as !=,
-    equal as ==,
+    neq as !=,
+    eq as ==,
     lt as <,
     lte as <=,
     gt as >,
@@ -36,11 +36,11 @@ function div(U256 _u256, U256 _divisor) pure returns (U256) {
     return U256.wrap(U256.unwrap(_u256).unsafe_div(U256.unwrap(_divisor)));
 }
 
-function notEqual(U256 _u256, U256 _bounds) pure returns (bool) {
+function neq(U256 _u256, U256 _bounds) pure returns (bool) {
     return U256.unwrap(_u256) != U256.unwrap(_bounds);
 }
 
-function equal(U256 _u256, U256 _bounds) pure returns (bool) {
+function eq(U256 _u256, U256 _bounds) pure returns (bool) {
     return U256.unwrap(_u256) == U256.unwrap(_bounds);
 }
 

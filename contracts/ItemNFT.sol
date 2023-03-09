@@ -118,7 +118,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
       itemBalances[tokenId] = existingBalance + _amounts[i];
     }
-    if (numNewItems.notEqual(0)) {
+    if (numNewItems.neq(0)) {
       uniqueItems += numNewItems.asUint256();
     }
     _mintBatch(_to, _tokenIds, _amounts, "");
@@ -183,7 +183,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // If an item is burnt, remove it from the total
   function _removeAnyBurntFromTotal(uint[] memory _ids, uint[] memory _amounts) private {
     U256 iter = U256.wrap(_ids.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       itemBalances[_ids[i]] -= _amounts[i];
@@ -192,7 +192,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function _checkIsTransferable(uint[] memory _ids) private view {
     U256 iter = U256.wrap(_ids.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       require(!items[_ids[i]].exists || items[_ids[i]].isTransferable);
@@ -232,7 +232,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
     U256 iter = U256.wrap(_ids.length);
     batchBalances = new uint256[](iter.asUint256());
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       batchBalances[i] = balanceOf(_account, _ids[i]);
@@ -319,7 +319,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     U256 iter = U256.wrap(_inputItems.length);
     Item[] memory _items = new Item[](iter.asUint256());
     uint16[] memory tokenIds = new uint16[](iter.asUint256());
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       require(!_exists(_inputItems[i].tokenId), "This item was already added");

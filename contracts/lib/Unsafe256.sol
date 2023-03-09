@@ -55,11 +55,11 @@ library Unsafe256 {
     return U256.wrap(U256.unwrap(_u256).unsafe_div(_value));
   }
 
-  function notEqual(U256 _u256, uint256 _value) internal pure returns (bool) {
+  function neq(U256 _u256, uint256 _value) internal pure returns (bool) {
     return U256.unwrap(_u256) != _value;
   }
 
-  function equal(U256 _u256, uint256 _value) internal pure returns (bool) {
+  function eq(U256 _u256, uint256 _value) internal pure returns (bool) {
     return U256.unwrap(_u256) == _value;
   }
 

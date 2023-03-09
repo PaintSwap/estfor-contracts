@@ -58,7 +58,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
       player.actionQueue = remainingSkills;
       U256 j = U256.wrap(remainingSkills.length);
-      while (j.notEqual(0)) {
+      while (j.neq(0)) {
         j = j.dec();
         totalTimespan += remainingSkills[j.asUint256()].timespan;
       }
@@ -87,7 +87,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       queueId = queueId.inc();
       totalTimespan += queuedAction.timespan;
       prevEndTime += queuedAction.timespan;
-    } while (iter.notEqual(_queuedActions.length));
+    } while (iter.neq(_queuedActions.length));
 
     emit SetActionQueue(_playerId, player.actionQueue);
 
@@ -239,7 +239,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
         (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
         U256 iter = U256.wrap(balances.length);
-        while (iter.notEqual(0)) {
+        while (iter.neq(0)) {
           iter = iter.dec();
           uint i = iter.asUint256();
           if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
@@ -263,7 +263,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
       U256 iter = U256.wrap(balances.length);
-      while (iter.notEqual(0)) {
+      while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
         if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
@@ -311,7 +311,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   ) private view {
     U256 iter = U256.wrap(_equippedItemTokenIds.length);
     bool twoHanded;
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       bool isRightHand = i == 1;

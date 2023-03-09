@@ -155,7 +155,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // These are no longer available as existing actions
     U256 iter = U256.wrap(lastAddedDynamicActions.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       actions[lastAddedDynamicActions[iter.asUint256()]].isAvailable = false;
     }
@@ -174,7 +174,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     lastAddedDynamicActions = actionIdsToAdd;
     iter = U256.wrap(actionIdsToAdd.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       actions[actionIdsToAdd[iter.asUint256()]].isAvailable = true;
     }
@@ -275,7 +275,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     uint16 actionId = lastActionId;
     U256 iter = U256.wrap(_actions.length);
     lastActionId = actionId + iter.asUint16();
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
       _addAction(actionId + i, _actions[i]);
@@ -306,10 +306,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function addActionChoices(uint16 _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
     U256 iter = U256.wrap(_actionChoices.length);
-    require(iter.notEqual(0));
+    require(iter.neq(0));
     uint16 actionChoiceId = lastActionChoiceId;
     lastActionChoiceId = actionChoiceId + iter.asUint16();
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
       actionChoices[_actionId][actionChoiceId + i] = _actionChoices[i];
@@ -322,17 +322,17 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
     U256 iter = U256.wrap(_actionIds.length);
-    require(iter.notEqual(0));
-    require(iter.equal(_actionChoices.length));
+    require(iter.neq(0));
+    require(iter.eq(_actionChoices.length));
     U256 actionChoiceId = U256.wrap(lastActionChoiceId);
     U256 count;
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
       emit AddActionChoices(actionId, (actionChoiceId + count).asUint16(), _actionChoices[i]);
       U256 iter2 = U256.wrap(_actionChoices[i].length);
-      while (iter2.notEqual(0)) {
+      while (iter2.neq(0)) {
         iter2 = iter2.dec();
         uint16 j = iter2.asUint16();
         actionChoices[actionId][(actionChoiceId + count).asUint16()] = _actionChoices[i][j];

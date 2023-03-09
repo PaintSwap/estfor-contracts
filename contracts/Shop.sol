@@ -60,7 +60,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function getPriceForItems(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
     U256 iter = U256.wrap(_tokenIds.length);
-    if (iter.equal(0)) {
+    if (iter.eq(0)) {
       return prices;
     }
 
@@ -68,7 +68,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     uint totalBrushForItem = totalBrush / itemNFT.uniqueItems();
 
     prices = new uint[](iter.asUint256());
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       uint totalOfThisItem = itemNFT.itemBalances(_tokenIds[i]);
@@ -98,15 +98,15 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
     U256 iter = U256.wrap(_tokenIds.length);
-    if (iter.equal(0)) {
+    if (iter.eq(0)) {
       revert LengthEmpty();
     }
-    if (iter.notEqual(_quantities.length)) {
+    if (iter.neq(_quantities.length)) {
       revert LengthMismatch();
     }
     uint totalBrush;
     uint[] memory prices = new uint[](iter.asUint256());
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       uint price = shopItems[uint16(_tokenIds[i])];
@@ -139,10 +139,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
     U256 iter = U256.wrap(_tokenIds.length);
-    if (iter.equal(0)) {
+    if (iter.eq(0)) {
       revert LengthEmpty();
     }
-    if (iter.notEqual(_quantities.length)) {
+    if (iter.neq(_quantities.length)) {
       revert LengthMismatch();
     }
     U256 totalBrush;
@@ -154,7 +154,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       totalBrush = totalBrush + (brushPerToken * U256.wrap(_quantities[i]));
       itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
       prices[i] = brushPerToken.asUint256();
-    } while (iter.notEqual(0));
+    } while (iter.neq(0));
     if (totalBrush.lt(_minExpectedBrush)) {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
     }
@@ -170,10 +170,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function addBuyableItems(ShopItem[] calldata _shopItems) external onlyOwner {
     U256 iter = U256.wrap(_shopItems.length);
-    if (iter.equal(0)) {
+    if (iter.eq(0)) {
       revert LengthEmpty();
     }
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       shopItems[_shopItems[i].tokenId] = _shopItems[i].price;

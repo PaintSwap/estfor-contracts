@@ -58,7 +58,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
     U256 iter = U256.wrap(_pendingRandomRewards.length);
     uint length;
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       bool isCombat = world.getSkill(_pendingRandomRewards[i].actionId) == Skill.COMBAT;
@@ -100,7 +100,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         uint i = iter.asUint256();
         pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
       }
-      for (U256 iter = U256.wrap(numRemoved); iter.notEqual(0); iter = iter.dec()) {
+      for (U256 iter = U256.wrap(numRemoved); iter.neq(0); iter = iter.dec()) {
         pendingRandomRewards[_playerId].pop();
       }
 
@@ -123,7 +123,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         itemTokenIds = new uint[](iter.asUint256());
         amounts = new uint[](iter.asUint256());
 
-        while (iter.notEqual(0)) {
+        while (iter.neq(0)) {
           iter = iter.dec();
           uint i = iter.asUint256();
           itemTokenIds[i] = items[i].itemTokenId;
@@ -424,7 +424,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
                 uint k = iterK.asUint256();
                 if (potentialReward.itemTokenId == _ids[k]) {
                   // exists
-                  _amounts[k] += 1;
+                  ++_amounts[k];
                   found = true;
                   break;
                 }

@@ -184,7 +184,7 @@ abstract contract PlayersBase {
     bool _isCombat
   ) internal view returns (bool missingRequiredHandEquipment) {
     U256 iter = U256.wrap(_handEquipmentTokenIds.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
       uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
@@ -271,7 +271,7 @@ abstract contract PlayersBase {
     if (itemTokenIds.length != 0) {
       Item[] memory items = itemNFT.getItems(itemTokenIds);
       U256 iter = U256.wrap(items.length);
-      while (iter.notEqual(0)) {
+      while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
         if (balances[i] != 0) {
@@ -340,7 +340,7 @@ abstract contract PlayersBase {
       }
     }
 
-    if (low.notEqual(0)) {
+    if (low.neq(0)) {
       return low.dec().asUint16();
     } else {
       return 0;

@@ -196,7 +196,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       return;
     }
     U256 iter = U256.wrap(ids.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       uint playerId = ids[i];
@@ -240,7 +240,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
     U256 iter = U256.wrap(_ids.length);
     batchBalances = new uint256[](iter.asUint256());
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       batchBalances[i] = balanceOf(_account, _ids[i]);
@@ -250,7 +250,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function _toLower(bytes32 _name) private pure returns (bytes memory) {
     bytes memory lowerName = bytes(abi.encodePacked(_name));
     U256 iter = U256.wrap(lowerName.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       if ((uint8(lowerName[i]) >= 65) && (uint8(lowerName[i]) <= 90)) {
@@ -292,7 +292,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
     U256 iter = U256.wrap(_avatarInfos.length);
-    while (iter.notEqual(0)) {
+    while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       avatars[_startAvatarId + i] = _avatarInfos[i];
