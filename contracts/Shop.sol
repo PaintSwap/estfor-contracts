@@ -133,7 +133,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     itemNFT.burn(msg.sender, uint(_tokenId), _quantity);
-    brush.transfer(msg.sender, totalBrush);
+    require(brush.transfer(msg.sender, totalBrush));
     emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
   }
 
@@ -158,7 +158,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (totalBrush.lt(_minExpectedBrush)) {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
     }
-    brush.transfer(msg.sender, totalBrush.asUint256());
+    require(brush.transfer(msg.sender, totalBrush.asUint256()));
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
