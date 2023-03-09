@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/utils/Base64.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+
+import {ItemNFT} from "../ItemNFT.sol";
+import {World} from "../World.sol";
+
+import "../items.sol";
 import "../types.sol";
-import "../ItemNFT.sol";
 
 library PlayerLibrary {
   using Strings for uint32;

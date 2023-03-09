@@ -1,18 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/utils/Multicall.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "../World.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+
+import {Unsafe256, U256} from "../lib/Unsafe256.sol";
+
+import {World} from "../World.sol";
+import {ItemNFT} from "../ItemNFT.sol";
+import {PlayerNFT} from "../PlayerNFT.sol";
+import {PlayersBase} from "./PlayersBase.sol";
+import {PlayerLibrary} from "./PlayerLibrary.sol";
+
 import "../types.sol";
 import "../items.sol";
-import "../ItemNFT.sol";
-import "../PlayerNFT.sol";
-import "./PlayersBase.sol";
-
-import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 // External view functions that are in other implementation files
 interface PlayerDelegateView {
@@ -34,6 +37,8 @@ interface IPlayerDelegate {
 }
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall {
+  using Unsafe256 for U256;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -259,12 +264,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
-    uint i;
-    while (i < _xpThresholdRewards.length) {
-      _addXPThresholdReward(_xpThresholdRewards[i]);
-      unchecked {
-        ++i;
-      }
+    U256 iter = U256.wrap(_xpThresholdRewards.length);
+    while(iter.notEqual(0)) {
+      iter = iter.dec();
+      _addXPThresholdReward(_xpThresholdRewards[iter.asUint256()]);
     }
   }
 

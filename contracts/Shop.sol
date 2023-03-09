@@ -1,16 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/utils/Multicall.sol";
-import "./interfaces/IBrushToken.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
+
+import {Unsafe256, U256} from "./lib/Unsafe256.sol";
+import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {ItemNFT} from "./ItemNFT.sol";
+
 import "./types.sol";
 import "./items.sol";
-import "./ItemNFT.sol";
 
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
+  using Unsafe256 for U256;
+
   event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);
   event RemoveShopItem(uint16 tokenId);
@@ -54,16 +59,18 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function getPriceForItems(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
-    if (_tokenIds.length == 0) {
+    U256 iter = U256.wrap(_tokenIds.length);
+    if (iter.equal(0)) {
       return prices;
     }
 
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / itemNFT.uniqueItems();
 
-    prices = new uint[](_tokenIds.length);
-    uint i;
-    do {
+    prices = new uint[](iter.asUint256());
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       uint totalOfThisItem = itemNFT.itemBalances(_tokenIds[i]);
       if (totalOfThisItem < 100) {
         // Need to be a minimum of an item before any can be sold.
@@ -71,11 +78,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       } else {
         prices[i] = totalBrushForItem / totalOfThisItem;
       }
-
-      unchecked {
-        ++i;
-      }
-    } while (i < prices.length);
+    }
   }
 
   // Buy simple items and XP boosts using brush
@@ -94,25 +97,24 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
-    if (_tokenIds.length != _quantities.length) {
-      revert LengthMismatch();
-    }
-    if (_tokenIds.length == 0) {
+    U256 iter = U256.wrap(_tokenIds.length);
+    if (iter.equal(0)) {
       revert LengthEmpty();
     }
+    if (iter.notEqual(_quantities.length)) {
+      revert LengthMismatch();
+    }
     uint totalBrush;
-    uint[] memory prices = new uint[](_tokenIds.length);
-    uint i;
-    while (i < _tokenIds.length) {
+    uint[] memory prices = new uint[](iter.asUint256());
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       uint price = shopItems[uint16(_tokenIds[i])];
       if (price == 0) {
         revert ItemCannotBeBought();
       }
       totalBrush += price * _quantities[i];
       prices[i] = price;
-      unchecked {
-        ++i;
-      }
     }
 
     // Pay
@@ -128,7 +130,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     uint brushPerToken = getPriceForItem(_tokenId);
     uint totalBrush = brushPerToken * _quantity;
     if (totalBrush < _minExpectedBrush) {
-      revert MinExpectedBrushNotReaced(totalBrush, _minExpectedBrush);
+      revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     itemNFT.burn(msg.sender, uint(_tokenId), _quantity);
     brush.transfer(msg.sender, totalBrush);
@@ -136,28 +138,27 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
-    if (_tokenIds.length != _quantities.length) {
-      revert LengthMismatch();
-    }
-    if (_tokenIds.length == 0) {
+    U256 iter = U256.wrap(_tokenIds.length);
+    if (iter.equal(0)) {
       revert LengthEmpty();
     }
-    uint totalBrush;
-    uint[] memory prices = new uint[](_tokenIds.length);
-    uint i;
-    while (i < _tokenIds.length) {
-      uint brushPerToken = getPriceForItem(_tokenIds[i]);
-      totalBrush += brushPerToken * _quantities[i];
+    if (iter.notEqual(_quantities.length)) {
+      revert LengthMismatch();
+    }
+    U256 totalBrush;
+    uint[] memory prices = new uint[](iter.asUint256());
+    do {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      U256 brushPerToken = U256.wrap(getPriceForItem(_tokenIds[i]));
+      totalBrush = totalBrush + (brushPerToken * U256.wrap(_quantities[i]));
       itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
-      prices[i] = brushPerToken;
-      unchecked {
-        ++i;
-      }
+      prices[i] = brushPerToken.asUint256();
+    } while (iter.notEqual(0));
+    if (totalBrush.lt(_minExpectedBrush)) {
+      revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
     }
-    if (totalBrush < _minExpectedBrush) {
-      revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
-    }
-    brush.transfer(msg.sender, totalBrush);
+    brush.transfer(msg.sender, totalBrush.asUint256());
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
@@ -168,16 +169,15 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function addBuyableItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    if (_shopItems.length == 0) {
+    U256 iter = U256.wrap(_shopItems.length);
+    if (iter.equal(0)) {
       revert LengthEmpty();
     }
-    uint i;
-    do {
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       shopItems[_shopItems[i].tokenId] = _shopItems[i].price;
-      unchecked {
-        ++i;
-      }
-    } while (i < _shopItems.length);
+    }
     emit AddShopItems(_shopItems);
   }
 

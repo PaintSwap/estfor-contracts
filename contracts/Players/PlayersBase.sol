@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "../World.sol";
-import "../types.sol";
-import "../items.sol";
-import "../ItemNFT.sol";
-import "../PlayerNFT.sol";
-
+import {Unsafe256, U256} from"../lib/Unsafe256.sol";
+import {World} from"../World.sol";
+import {ItemNFT} from"../ItemNFT.sol";
+import {PlayerNFT} from"../PlayerNFT.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
+import "../types.sol";
+import "../items.sol";
+
 abstract contract PlayersBase {
+  using Unsafe256 for U256;
+
   event ClearAll(uint playerId);
 
   event AddSkillPoints(uint playerId, Skill skill, uint32 points);
@@ -180,8 +183,10 @@ abstract contract PlayersBase {
     CombatStats memory _combatStats,
     bool _isCombat
   ) internal view returns (bool missingRequiredHandEquipment) {
-    uint i;
-    while (i < _handEquipmentTokenIds.length) {
+    U256 iter = U256.wrap(_handEquipmentTokenIds.length);
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint16 i = iter.asUint16();
       uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
       if (handEquipmentTokenId != NONE) {
         uint256 balance = itemNFT.balanceOf(_from, handEquipmentTokenId);
@@ -195,9 +200,6 @@ abstract contract PlayersBase {
           Item memory item = itemNFT.getItem(handEquipmentTokenId);
           _updateCombatStatsFromItem(_combatStats, item);
         }
-      }
-      unchecked {
-        ++i;
       }
     }
   }
@@ -264,17 +266,16 @@ abstract contract PlayersBase {
   }
 
   function _updateCombatStats(address _from, CombatStats memory _stats, Attire storage _attire) internal view {
-    bool skipNeck = false;
+    bool skipNeck;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length != 0) {
       Item[] memory items = itemNFT.getItems(itemTokenIds);
-      uint i;
-      while (i < items.length) {
+      U256 iter = U256.wrap(items.length);
+      while (iter.notEqual(0)) {
+        iter = iter.dec();
+        uint i = iter.asUint256();
         if (balances[i] != 0) {
           _updateCombatStatsFromItem(_stats, items[i]);
-        }
-        unchecked {
-          ++i;
         }
       }
     }
@@ -324,36 +325,36 @@ abstract contract PlayersBase {
 
   // Index not level, add one after (check for > max)
   function _findBaseXPThreshold(uint256 _xp) internal pure returns (uint16) {
-    uint256 low = 0;
-    uint256 high = xpRewardBytes.length / 4;
+    U256 low;
+    U256 high = U256.wrap(xpRewardBytes.length).div(4);
 
     while (low < high) {
-      uint256 mid = (low + high) / 2;
+      U256 mid = (low + high).div(2);
 
       // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
       // Math.average rounds down (it does integer division with truncation).
-      if (_getXPReward(mid) > _xp) {
+      if (_getXPReward(mid.asUint256()) > _xp) {
         high = mid;
       } else {
-        low = mid + 1;
+        low = mid.inc();
       }
     }
 
-    if (low != 0) {
-      return uint16(low - 1);
+    if (low.notEqual(0)) {
+      return low.dec().asUint16();
     } else {
       return 0;
     }
   }
 
   function _getXPReward(uint256 _index) internal pure returns (uint32) {
-    uint256 index = _index * 4;
+    U256 index = U256.wrap(_index).mul(4);
     return
       uint32(
-        xpRewardBytes[index] |
-          (bytes4(xpRewardBytes[index + 1]) >> 8) |
-          (bytes4(xpRewardBytes[index + 2]) >> 16) |
-          (bytes4(xpRewardBytes[index + 3]) >> 24)
+        xpRewardBytes[index.asUint256()] |
+          (bytes4(xpRewardBytes[index.add(1).asUint256()]) >> 8) |
+          (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
+          (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
       );
   }
 

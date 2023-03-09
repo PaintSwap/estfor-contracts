@@ -1,20 +1,23 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@openzeppelin/contracts/utils/Multicall.sol";
-import "@openzeppelin/contracts/interfaces/IERC2981.sol";
+import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
+import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import "./interfaces/IBrushToken.sol";
-import "./interfaces/IPlayers.sol";
+import {Unsafe256, U256} from "./lib/Unsafe256.sol";
+import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {IPlayers} from "./interfaces/IPlayers.sol";
 import "./types.sol";
 import "./items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
+  using Unsafe256 for U256;
+
   event NewPlayer(uint playerId, uint avatarId, bytes20 name);
   event EditPlayer(uint playerId, bytes20 newName);
 
@@ -169,15 +172,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (from == address(0) || amounts.length == 0 || from == to) {
       return;
     }
-    uint i = 0;
-    do {
-      // Get player and consume any actions & unequip all items before transferring the whole player
+    U256 iter = U256.wrap(ids.length);
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       uint playerId = ids[i];
       players.clearEverythingBeforeTokenTransfer(from, playerId);
-      unchecked {
-        ++i;
-      }
-    } while (i < ids.length);
+    }
   }
 
   /**
@@ -214,26 +215,24 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
   function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
-    batchBalances = new uint256[](_ids.length);
-    uint i;
-    while (i < _ids.length) {
+    U256 iter = U256.wrap(_ids.length);
+    batchBalances = new uint256[](iter.asUint256());
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       batchBalances[i] = balanceOf(_account, _ids[i]);
-      unchecked {
-        ++i;
-      }
     }
   }
 
   function _toLower(bytes32 _name) private pure returns (bytes memory) {
     bytes memory lowerName = bytes(abi.encodePacked(_name));
-    uint i;
-    while (i < lowerName.length) {
+    U256 iter = U256.wrap(lowerName.length);
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       if ((uint8(lowerName[i]) >= 65) && (uint8(lowerName[i]) <= 90)) {
         // So we add 32 to make it lowercase
         lowerName[i] = bytes1(uint8(lowerName[i]) + 32);
-      }
-      unchecked {
-        ++i;
       }
     }
     return lowerName;
@@ -269,12 +268,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
-    uint i;
-    while (i < _avatarInfos.length) {
+    U256 iter = U256.wrap(_avatarInfos.length);
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       avatars[_startAvatarId + i] = _avatarInfos[i];
-      unchecked {
-        ++i;
-      }
     }
     emit SetAvatars(_startAvatarId, _avatarInfos);
   }

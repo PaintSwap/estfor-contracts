@@ -1,9 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "./PlayersImplBase.sol";
+import {Unsafe256, U256} from "../lib/Unsafe256.sol";
+import {
+  PlayersUpgradeableImplDummyBase,
+  PlayersBase
+} from "./PlayersImplBase.sol";
+
+import "../items.sol";
+import "../types.sol";
 
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
+  using Unsafe256 for U256;
+
   constructor() {
     _checkStartSlot();
   }
@@ -51,44 +60,42 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         revert TooManyActionsQueuedSomeAlreadyExist();
       }
       player.actionQueue = remainingSkills;
-      uint j = remainingSkills.length;
-      while (j != 0) {
-        unchecked {
-          --j;
-        }
-        totalTimespan += remainingSkills[j].timespan;
+      U256 j = U256.wrap(remainingSkills.length);
+      while (j.notEqual(0)) {
+        j = j.dec();
+        totalTimespan += remainingSkills[j.asUint256()].timespan;
       }
     }
 
     uint prevEndTime = block.timestamp + totalTimespan;
 
-    uint256 i;
-    uint64 queueId = latestQueueId;
+    U256 iter;
+    U256 queueId = U256.wrap(latestQueueId);
+    U256 queuedActionsLength = U256.wrap(_queuedActions.length);
     do {
+      uint i = iter.asUint256();
       QueuedAction memory queuedAction = _queuedActions[i];
 
       if (totalTimespan + queuedAction.timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time
-        if (i != _queuedActions.length - 1) {
+        if (iter != queuedActionsLength.dec()) {
           revert ActionTimespanExceedsMaxTime();
         }
         // Shorten it so that it does not extend beyond the max time
         queuedAction.timespan = uint24(MAX_TIME - totalTimespan);
       }
 
-      _addToQueue(from, _playerId, queuedAction, queueId, prevEndTime);
-      unchecked {
-        ++i;
-        ++queueId;
-      }
+      _addToQueue(from, _playerId, queuedAction, uint64(queueId.asUint256()), prevEndTime);
+      iter = iter.inc();
+      queueId = queueId.inc();
       totalTimespan += queuedAction.timespan;
       prevEndTime += queuedAction.timespan;
-    } while (i < _queuedActions.length);
+    } while (iter.notEqual(_queuedActions.length));
 
     emit SetActionQueue(_playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
-    latestQueueId = queueId;
+    latestQueueId = uint64(queueId.asUint256());
   }
 
   function consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
@@ -142,7 +149,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     address _from,
     uint _playerId,
     QueuedAction memory _queuedAction,
-    uint128 _queueId,
+    uint64 _queueId,
     uint _startTime
   ) private {
     _checkAddToQueue(_queuedAction);
@@ -234,17 +241,15 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       if (itemLength != 0) {
         uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
         (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
-        uint i;
-        while (i < balances.length) {
+        U256 iter = U256.wrap(balances.length);
+        while (iter.notEqual(0)) {
+          iter = iter.dec();
+          uint i = iter.asUint256();
           if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
             revert MinimumSkillPointsNotReached();
           }
-
           if (balances[i] == 0) {
             revert NoItemBalance(itemTokenIds[i]);
-          }
-          unchecked {
-            ++i;
           }
         }
       }
@@ -256,21 +261,19 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   // Checks they have sufficient balance to equip the items, and minimum skill points
   function _checkAttire(address _from, uint _playerId, Attire storage _attire) private view {
     // Check the user has these items
-    bool skipNeck = false;
+    bool skipNeck;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
-      uint i;
-      while (i < balances.length) {
+      U256 iter = U256.wrap(balances.length);
+      while (iter.notEqual(0)) {
+        iter = iter.dec();
+        uint i = iter.asUint256();
         if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
           revert MinimumSkillPointsNotReached();
         }
-
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
-        }
-        unchecked {
-          ++i;
         }
       }
     }
@@ -309,8 +312,10 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint16 _handItemTokenIdRangeMax,
     bool _isCombat
   ) private view {
-    uint i;
-    while (i < _equippedItemTokenIds.length) {
+    U256 iter = U256.wrap(_equippedItemTokenIds.length);
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       bool isRightHand = i == 0;
       uint16 equippedItemTokenId = _equippedItemTokenIds[i];
       if (equippedItemTokenId != NONE) {
@@ -333,9 +338,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         // Only combat actions can have no equipment if they have hand range choice
         // e.g smithing doesn't require anything equipped
         require(_isCombat || _handItemTokenIdRangeMin == NONE || !isRightHand);
-      }
-      unchecked {
-        ++i;
       }
     }
   }

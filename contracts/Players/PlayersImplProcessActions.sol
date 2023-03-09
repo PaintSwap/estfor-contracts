@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import "./PlayersImplBase.sol";
-
+import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
+
+import "../items.sol";
+import "../types.sol";
 
 contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   constructor() {

@@ -1,11 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "./PlayersImplBase.sol";
-
+import {Unsafe256, U256, UnsafeMath} from "../lib/Unsafe256.sol";
+import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
+import "../items.sol";
+import "../types.sol";
+
 contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
+  using Unsafe256 for U256;
+  using UnsafeMath for uint256;
+
   constructor() {
     _checkStartSlot();
   }
@@ -50,9 +56,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     ids = new uint[](_pendingRandomRewards.length);
     amounts = new uint[](_pendingRandomRewards.length);
 
+    U256 iter = U256.wrap(_pendingRandomRewards.length);
     uint length;
-    uint i;
-    while (i < _pendingRandomRewards.length) {
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
       bool isCombat = world.getSkill(_pendingRandomRewards[i].actionId) == Skill.COMBAT;
       uint numSpawnedPerHour = world.getNumSpawn(_pendingRandomRewards[i].actionId);
       uint16 monstersKilled = uint16((numSpawnedPerHour * _pendingRandomRewards[i].elapsedTime) / 3600);
@@ -72,11 +80,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       );
 
       if (length - oldLength != 0 || noLuck) {
-        ++numRemoved;
-      }
-
-      unchecked {
-        ++i;
+        numRemoved = numRemoved.unsafe_increment();
       }
     }
 
@@ -89,22 +93,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
   function claimRandomRewards(uint _playerId) public isOwnerOfPlayerAndActive(_playerId) {
     address from = msg.sender;
     (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
-
     if (numRemoved != 0) {
       // Shift the remaining rewards to the front of the array
-      uint i;
-      while (i < pendingRandomRewards[_playerId].length - numRemoved) {
+      U256 bounds = U256.wrap(pendingRandomRewards[_playerId].length).sub(numRemoved);
+      for ( U256 iter; iter < bounds; iter = iter.inc() ) {
+        uint i = iter.asUint256();
         pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
-        unchecked {
-          ++i;
-        }
       }
-      i = 0;
-      while (i < numRemoved) {
+      for (U256 iter = U256.wrap(numRemoved); iter.notEqual(0); iter = iter.dec()) {
         pendingRandomRewards[_playerId].pop();
-        unchecked {
-          ++i;
-        }
       }
 
       itemNFT.mintBatch(from, ids, amounts);
@@ -122,15 +119,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       uint32 xpThreshold = _getXPReward(nextIndex);
       Equipment[] memory items = xpRewardThresholds[xpThreshold];
       if (items.length != 0) {
-        itemTokenIds = new uint[](items.length);
-        amounts = new uint[](items.length);
-        uint i;
-        while (i < items.length) {
+        U256 iter = U256.wrap(items.length);
+        itemTokenIds = new uint[](iter.asUint256());
+        amounts = new uint[](iter.asUint256());
+
+        while (iter.notEqual(0)) {
+          iter = iter.dec();
+          uint i = iter.asUint256();
           itemTokenIds[i] = items[i].itemTokenId;
           amounts[i] = items[i].amount;
-          unchecked {
-            ++i;
-          }
         }
       }
     }
@@ -211,12 +208,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         if (output.itemTokenId != NONE) {
           pendingOutput.produced[producedLength++] = output;
         }
-        uint j;
-        while (j < consumedEquipment.length) {
-          pendingOutput.consumed[consumedLength++] = consumedEquipment[j];
-          unchecked {
-            ++j;
-          }
+        U256 consumedEquipmentLength = U256.wrap(consumedEquipment.length);
+        for (U256 iter; iter < consumedEquipmentLength; iter = iter.inc()) {
+          pendingOutput.consumed[consumedLength++] = consumedEquipment[iter.asUint256()];
         }
 
         pendingOutput.died = died;
@@ -234,12 +228,10 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
           queuedAction.actionId
         );
 
-        uint j;
-        while (j < newIds.length) {
+        U256 newIdsLength = U256.wrap(newIds.length);
+        for (U256 iter; iter < newIdsLength; iter = iter.inc()) {
+          uint j = iter.asUint256();
           pendingOutput.produced[producedLength++] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
-          unchecked {
-            ++j;
-          }
         }
 
         // This loot might be needed for a future task so mint now rather than later
@@ -253,27 +245,23 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         previousSkillPoints,
         previousSkillPoints + allPointsAccrued
       );
-      uint i;
-      while (i < ids.length) {
+      U256 idsLength = U256.wrap(ids.length);
+      for (U256 iter; iter < idsLength; iter = iter.inc()) {
+        uint i = iter.asUint256();
         pendingOutput.producedXPRewards[producedXPRewardsLength++] = Equipment(uint16(ids[i]), uint24(amounts[i]));
-        unchecked {
-          ++i;
-        }
       }
     }
 
     if (_flags.includePastRandomRewards) {
       // Loop through any pending random rewards and add them to the output
       (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
-      uint i;
-      while (i < ids.length) {
+      U256 idsLength = U256.wrap(ids.length);
+      for (U256 iter; iter < idsLength; iter = iter.inc()) {
+        uint i = iter.asUint256();
         pendingOutput.producedPastRandomRewards[producedPastRandomRewardsLength++] = Equipment(
           uint16(ids[i]),
           uint24(amounts[i])
         );
-        unchecked {
-          ++i;
-        }
       }
     }
 
@@ -414,30 +402,31 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
             (bytes32(uint256(skillEndTime)) << 128) |
             (bytes32(uint256(skillEndTime)) << 192));
         uint startLootLength = length;
-        uint i;
-        while (i < numTickets) {
+        for (U256 iter; iter.lt(numTickets); iter = iter.inc()) {
+          uint i = iter.asUint256();
           // The random component is out of 65535, so we can take 2 bytes at a time
           uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
 
           // Take each byte and check
-          uint j;
-          while (j < _randomRewards.length) {
+          U256 randomRewardsLength = U256.wrap(_randomRewards.length);
+          for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
+            uint j = iterJ.asUint256();
+            
             ActionReward memory potentialReward = _randomRewards[j];
             if (rand < potentialReward.rate) {
               // Get the lowest chance one
 
               // Compare with previous and append amounts if an entry already exists
               bool found;
-              uint k = startLootLength;
-              while (k < _ids.length) {
+              
+              U256 idsLength = U256.wrap(_ids.length);
+              for (U256 iterK = U256.wrap(startLootLength); iterK < idsLength; iterK = iterK.inc()) {
+                uint k = iterK.asUint256();
                 if (potentialReward.itemTokenId == _ids[k]) {
                   // exists
                   _amounts[k] += 1;
                   found = true;
                   break;
-                }
-                unchecked {
-                  ++k;
                 }
               }
 
@@ -449,12 +438,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
               }
               break;
             }
-            unchecked {
-              ++j;
-            }
-          }
-          unchecked {
-            ++i;
           }
         }
 

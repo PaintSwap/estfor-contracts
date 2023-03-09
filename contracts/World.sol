@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
-import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts/utils/Multicall.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 
-import "./VRFConsumerBaseV2Upgradeable.sol";
+import {Unsafe256, U256} from "./lib/Unsafe256.sol";
+import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
+
 import "./types.sol";
 
 // Fantom VRF
@@ -15,6 +17,8 @@ import "./types.sol";
 // LINK token 0x6F43FF82CCA38001B6699a8AC47A2d0E66939407
 // PREMIUM 0.0005 LINK
 contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
+  using Unsafe256 for U256;
+
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
   event AddAction(uint16 actionId, Action action);
@@ -150,12 +154,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit RemoveDynamicActions(lastAddedDynamicActions);
 
     // These are no longer available as existing actions
-    uint i;
-    while (i < lastAddedDynamicActions.length) {
-      actions[lastAddedDynamicActions[i]].isAvailable = false;
-      unchecked {
-        ++i;
-      }
+    U256 iter = U256.wrap(lastAddedDynamicActions.length);
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      actions[lastAddedDynamicActions[iter.asUint256()]].isAvailable = false;
     }
 
     delete lastAddedDynamicActions;
@@ -171,12 +173,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     lastAddedDynamicActions = actionIdsToAdd;
-    i = 0;
-    while (i < actionIdsToAdd.length) {
-      actions[actionIdsToAdd[i]].isAvailable = false;
-      unchecked {
-        ++i;
-      }
+    iter = U256.wrap(actionIdsToAdd.length);
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      actions[actionIdsToAdd[iter.asUint256()]].isAvailable = true;
     }
 
     lastDynamicUpdatedTime = block.timestamp;
@@ -273,14 +273,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function addActions(Action[] calldata _actions) external onlyOwner {
     uint16 actionId = lastActionId;
-    uint16 i;
-    while (i < _actions.length) {
+    U256 iter = U256.wrap(_actions.length);
+    lastActionId = actionId + iter.asUint16();
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint16 i = iter.asUint16();
       _addAction(actionId + i, _actions[i]);
-      unchecked {
-        ++i;
-      }
     }
-    lastActionId = actionId + uint16(_actions.length);
   }
 
   function addAction(Action calldata _action) external onlyOwner {
@@ -306,43 +305,41 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function addActionChoices(uint16 _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
-    require(_actionChoices.length != 0);
+    U256 iter = U256.wrap(_actionChoices.length);
+    require(iter.notEqual(0));
     uint16 actionChoiceId = lastActionChoiceId;
-    uint16 i;
-    while (i < _actionChoices.length) {
+    lastActionChoiceId = actionChoiceId + iter.asUint16();
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint16 i = iter.asUint16();
       actionChoices[_actionId][actionChoiceId + i] = _actionChoices[i];
-      unchecked {
-        ++i;
-      }
     }
     emit AddActionChoices(_actionId, actionChoiceId, _actionChoices);
-    lastActionChoiceId = actionChoiceId + uint16(_actionChoices.length);
   }
 
   function addBulkActionChoices(
     uint16[] calldata _actionIds,
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
-    require(_actionChoices.length != 0);
-    uint16 actionChoiceId = lastActionChoiceId;
-    uint16 count;
-    uint i;
-    while (i < _actionIds.length) {
+    U256 iter = U256.wrap(_actionIds.length);
+    require(iter.notEqual(0));
+    require(iter.equal(_actionChoices.length));
+    U256 actionChoiceId = U256.wrap(lastActionChoiceId);
+    U256 count;
+    while (iter.notEqual(0)) {
+      iter = iter.dec();
+      uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
-      emit AddActionChoices(actionId, actionChoiceId + count, _actionChoices[i]);
-      uint j;
-      while (j < _actionChoices[i].length) {
-        actionChoices[actionId][actionChoiceId + count] = _actionChoices[i][j];
-        unchecked {
-          ++j;
-          ++count;
-        }
-      }
-      unchecked {
-        ++i;
+      emit AddActionChoices(actionId, uint16((actionChoiceId + count).asUint256()), _actionChoices[i]);
+      U256 iter2 = U256.wrap(_actionChoices[i].length);
+      while (iter2.notEqual(0)) {
+        iter2 = iter2.dec();
+        uint16 j = iter2.asUint16();
+        actionChoices[actionId][uint16((actionChoiceId + count).asUint256())] = _actionChoices[i][j];
+        count = count.inc();
       }
     }
-    lastActionChoiceId = actionChoiceId + count;
+    lastActionChoiceId = uint16((actionChoiceId + count).asUint256());
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
