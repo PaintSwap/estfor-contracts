@@ -43,6 +43,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     Skill skill;
     int16 diff;
   }
+
   // Contains everything you need to create an item
   struct InputItem {
     CombatStats combatStats;
@@ -72,6 +73,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   address players;
   address shop;
+
   // Royalties
   uint public royaltyFee;
   address public royaltyReceiver;

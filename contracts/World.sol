@@ -94,6 +94,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   mapping(uint actionId => ActionRewards actionRewards) private actionRewards;
 
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+  
   function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
     __VRFConsumerBaseV2_init(address(_coordinator));
     __Ownable_init();
