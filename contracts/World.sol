@@ -22,8 +22,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
-  event AddAction(uint16 actionId, Action action);
-  event EditAction(uint16 actionId, Action action);
+  event AddAction(Action action);
+  event EditAction(Action action);
   event SetAvailableAction(uint16 actionId, bool available);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
@@ -32,6 +32,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event NewDailyRewards(Equipment[8] dailyRewards);
 
   struct Action {
+    uint16 actionId;
     ActionInfo info;
     ActionReward[] guaranteedRewards;
     ActionReward[] randomRewards;
@@ -66,7 +67,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
   mapping(uint actionId => ActionInfo actionInfo) public actions;
-  uint16 public nextActionId;
   uint16 public nextActionChoiceId;
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
@@ -85,7 +85,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
-    nextActionId = 1;
     nextActionChoiceId = 1;
     startTime = (block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME; // Floor to the nearest day 00:00 UTC
     lastSeedUpdatedTime = startTime;
@@ -277,12 +276,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actionChoices[_actionId][_choiceId];
   }
 
-  function _setAction(uint _actionId, Action calldata _action) private {
+  function _setAction(Action calldata _action) private {
     require(_action.info.handItemTokenIdRangeMin <= _action.info.handItemTokenIdRangeMax);
-    actions[_actionId] = _action.info;
+    actions[_action.actionId] = _action.info;
 
     // Set the rewards
-    ActionRewards storage actionReward = actionRewards[_actionId];
+    ActionRewards storage actionReward = actionRewards[_action.actionId];
     if (_action.guaranteedRewards.length != 0) {
       actionReward.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
       actionReward.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
@@ -314,36 +313,34 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     if (_action.info.skill == Skill.COMBAT) {
-      actionCombatStats[_actionId] = _action.combatStats;
+      actionCombatStats[_action.actionId] = _action.combatStats;
     }
   }
 
-  function _addAction(uint16 _actionId, Action calldata _action) private {
+  function _addAction(Action calldata _action) private {
     require(!_action.info.isDynamic, "Action is dynamic");
-    _setAction(_actionId, _action);
-    emit AddAction(_actionId, _action);
+    require(actions[_action.actionId].skill == Skill.NONE, "Action alrleady exists");
+    _setAction(_action);
+    emit AddAction(_action);
   }
 
   function addActions(Action[] calldata _actions) external onlyOwner {
-    uint16 actionId = nextActionId;
     U256 iter = U256.wrap(_actions.length);
-    nextActionId = actionId + iter.asUint16();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
-      _addAction(actionId + i, _actions[i]);
+      _addAction(_actions[i]);
     }
   }
 
   function addAction(Action calldata _action) external onlyOwner {
-    uint16 actionId = nextActionId;
-    _addAction(actionId, _action);
-    nextActionId = actionId + 1;
+    _addAction(_action);
   }
 
-  function editAction(uint16 _actionId, Action calldata _action) external onlyOwner {
-    _setAction(_actionId, _action);
-    emit EditAction(_actionId, _action);
+  function editAction(Action calldata _action) external onlyOwner {
+    require(actions[_action.actionId].skill != Skill.NONE, "Action does not exist");
+    _setAction(_action);
+    emit EditAction(_action);
   }
 
   // actionId of 0 means it is not tied to a specific action

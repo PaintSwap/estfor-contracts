@@ -534,7 +534,7 @@ export const getActionId = async (tx: ContractTransaction): Promise<number> => {
   const event = receipt?.events?.filter((x) => {
     return x.event == "AddAction";
   })[0].args;
-  return event?.actionId;
+  return event?.action.actionId;
 };
 
 export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
@@ -570,6 +570,7 @@ type ActionReward = {
 };
 
 type Action = {
+  actionId: number;
   info: ActionInfo;
   guaranteedRewards: ActionReward[];
   randomRewards: ActionReward[];
@@ -848,6 +849,7 @@ export const allShopItems: ShopItem[] = [
 
 export const allActions: Action[] = [
   {
+    actionId: 1,
     info: {
       skill: Skill.WOODCUTTING,
       xpPerHour: 25,
@@ -864,6 +866,7 @@ export const allActions: Action[] = [
     combatStats: emptyStats,
   },
   {
+    actionId: 2,
     info: {
       skill: Skill.FIREMAKING,
       xpPerHour: 0, // Decided by the type of log burned
@@ -880,6 +883,7 @@ export const allActions: Action[] = [
     combatStats: emptyStats,
   },
   {
+    actionId: 3,
     info: {
       skill: Skill.MINING,
       xpPerHour: 25,
@@ -896,6 +900,7 @@ export const allActions: Action[] = [
     combatStats: emptyStats,
   },
   {
+    actionId: 4,
     info: {
       skill: Skill.MINING,
       xpPerHour: 35,
@@ -912,6 +917,7 @@ export const allActions: Action[] = [
     combatStats: emptyStats,
   },
   {
+    actionId: 5,
     info: {
       skill: Skill.SMITHING,
       xpPerHour: 0, // Decided by the ores smelted
@@ -929,6 +935,7 @@ export const allActions: Action[] = [
   },
   // Combat
   {
+    actionId: 6,
     // Natuow
     info: {
       skill: Skill.COMBAT,

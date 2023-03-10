@@ -195,6 +195,7 @@ describe("Players", () => {
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -246,6 +247,7 @@ describe("Players", () => {
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -293,6 +295,7 @@ describe("Players", () => {
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -351,6 +354,7 @@ describe("Players", () => {
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -433,6 +437,7 @@ describe("Players", () => {
     });
 
     await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.COMBAT,
         xpPerHour: 3600,
@@ -493,6 +498,7 @@ describe("Players", () => {
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -572,6 +578,7 @@ describe("Players", () => {
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -694,6 +701,7 @@ describe("Players", () => {
 
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -823,6 +831,7 @@ describe("Players", () => {
     const queuedActions: QueuedAction[] = [];
     const rate = 100 * 100; // per hour
     const tx = await world.addAction({
+      actionId: 1,
       info: {
         skill: Skill.WOODCUTTING,
         xpPerHour: 3600,
@@ -907,6 +916,7 @@ describe("Players", () => {
 
       const rate = 100 * 100; // per hour
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -979,6 +989,7 @@ describe("Players", () => {
 
       const rate = 100 * 100; // per hour
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -1044,6 +1055,7 @@ describe("Players", () => {
 
       const rate = 100 * 100; // per hour
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -1111,6 +1123,7 @@ describe("Players", () => {
 
       const rate = 100 * 100; // per hour
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -1219,6 +1232,7 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
       const rate = 100 * 100; // per hour
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.FIREMAKING,
           xpPerHour: 0,
@@ -1302,6 +1316,7 @@ describe("Players", () => {
       const rate = 1220 * 100; // per hour
       {
         const tx = await world.addAction({
+          actionId: 1,
           info: {
             skill: Skill.WOODCUTTING,
             xpPerHour: 3600,
@@ -1344,6 +1359,7 @@ describe("Players", () => {
       }
       {
         let tx = await world.addAction({
+          actionId: 2,
           info: {
             skill: Skill.FIREMAKING,
             xpPerHour: 0,
@@ -1438,6 +1454,7 @@ describe("Players", () => {
       const rate = 100 * 100; // per hour
       {
         const tx = await world.addAction({
+          actionId: 1,
           info: {
             skill: Skill.WOODCUTTING,
             xpPerHour: 3600,
@@ -1480,6 +1497,7 @@ describe("Players", () => {
       }
       {
         let tx = await world.addAction({
+          actionId: 2,
           info: {
             skill: Skill.FIREMAKING,
             xpPerHour: 0,
@@ -1573,6 +1591,7 @@ describe("Players", () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.MINING,
           xpPerHour: 3600,
@@ -1626,6 +1645,7 @@ describe("Players", () => {
       const rate = 100 * 100; // per hour
 
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.SMITHING,
           xpPerHour: 0,
@@ -1715,6 +1735,7 @@ describe("Players", () => {
 
       const rate = 100 * 100; // per hour
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -1779,6 +1800,7 @@ describe("Players", () => {
 
       const rate = 0.1 * 100; // 0.1 per hour
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -1824,6 +1846,7 @@ describe("Players", () => {
 
       const rate = 100 * 100; // per hour
       const tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -1928,6 +1951,7 @@ describe("Players", () => {
 
       const rate = 1 * 100; // per hour
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.COMBAT,
           xpPerHour: 3600,
@@ -2024,6 +2048,7 @@ describe("Players", () => {
 
       const rate = 1 * 100; // per hour
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.COMBAT,
           xpPerHour: 3600,
@@ -2118,6 +2143,7 @@ describe("Players", () => {
 
       const rate = 1 * 100; // per hour
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.COMBAT,
           xpPerHour: 3600,
@@ -2215,6 +2241,7 @@ describe("Players", () => {
 
         const dropRate = 1 * 100; // per hour
         let tx = await world.addAction({
+          actionId: 1,
           info: {
             skill: Skill.COMBAT,
             xpPerHour: 3600,
@@ -2428,6 +2455,7 @@ describe("Players", () => {
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.WOODCUTTING,
           xpPerHour: 3600,
@@ -2558,6 +2586,7 @@ describe("Players", () => {
 
       const rate = 1 * 100; // per hour
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.COMBAT,
           xpPerHour: 3600,

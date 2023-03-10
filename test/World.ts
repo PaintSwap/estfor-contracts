@@ -97,6 +97,7 @@ describe("World", () => {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
       let tx = await world.addAction({
+        actionId: 1,
         info: {
           skill: Skill.COMBAT,
           xpPerHour: 3600,
@@ -114,7 +115,8 @@ describe("World", () => {
       });
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.COMBAT);
-      await world.editAction(actionId, {
+      await world.editAction({
+        actionId,
         info: {
           skill: Skill.COMBAT,
           xpPerHour: 20,
@@ -138,7 +140,8 @@ describe("World", () => {
       expect((await world.actions(actionId)).isAvailable).to.be.false;
 
       // Set available on an action that is dynamic (this should be random only)
-      await world.editAction(actionId, {
+      await world.editAction({
+        actionId,
         info: {
           skill: Skill.COMBAT,
           xpPerHour: 3600,
