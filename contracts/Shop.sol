@@ -29,6 +29,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error ItemCannotBeBought();
   error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
   error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
+  error TransferFailed();
 
   struct ShopItem {
     uint16 tokenId;
@@ -133,7 +134,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     itemNFT.burn(msg.sender, uint(_tokenId), _quantity);
-    require(brush.transfer(msg.sender, totalBrush));
+    if (!brush.transfer(msg.sender, totalBrush)) {
+      revert TransferFailed();
+    }
     emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
   }
 
@@ -158,7 +161,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (totalBrush.lt(_minExpectedBrush)) {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
     }
-    require(brush.transfer(msg.sender, totalBrush.asUint256()));
+    if (!brush.transfer(msg.sender, totalBrush.asUint256())) {
+      revert TransferFailed();
+    }
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 

@@ -32,6 +32,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   error NotOwner();
   error AvatarNotExists();
+  error NotPlayers();
+  error NameCannotBeEmpty();
+  error NameAlreadyExists();
+  error errorNotInWhitelist();
+  error MintedMoreThanAllowed();
+  error NotInWhitelist();
+  error ERC1155Metadata_URIQueryForNonexistentToken();
 
   uint public nextPlayerId;
 
@@ -61,7 +68,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   modifier onlyPlayers() {
-    require(msg.sender == address(players), "Not players");
+    if (msg.sender != address(players)) {
+      revert NotPlayers();
+    }
     _;
   }
 
@@ -107,10 +116,14 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function _setName(uint _playerId, bytes20 _name) private {
-    require(uint160(_name) != 0, "Name cannot be empty");
+    if (uint160(_name) == 0) {
+      revert NameCannotBeEmpty();
+    }
     names[_playerId] = _name;
     bytes memory lowercaseName = _toLower(_name);
-    require(!lowercaseNames[lowercaseName], "Name already exists");
+    if (lowercaseNames[lowercaseName]) {
+      revert NameAlreadyExists();
+    }
     lowercaseNames[lowercaseName] = true;
   }
 
@@ -136,9 +149,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function mintWhitelist(uint _avatarId, bytes32 _name, bool _makeActive, bytes32[] calldata _proof) external {
-    require(checkInWhitelist(_proof), "Not in whitelist");
+    if (!checkInWhitelist(_proof)) {
+      revert NotInWhitelist();
+    }
     ++numMintedFromWhitelist[msg.sender];
-    require(numMintedFromWhitelist[msg.sender] <= MAX_ALPHA_WHITELIST, "Minted more than allowed");
+    if (numMintedFromWhitelist[msg.sender] > MAX_ALPHA_WHITELIST) {
+      revert MintedMoreThanAllowed();
+    }
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 
@@ -155,7 +172,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function uri(uint256 _playerId) public view virtual override returns (string memory) {
-    require(_exists(_playerId), "ERC1155Metadata: URI query for nonexistent token");
+    if (!_exists(_playerId)) {
+      revert ERC1155Metadata_URIQueryForNonexistentToken();
+    }
     AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
     string memory imageURI = string(abi.encodePacked(baseURI, avatarInfo.imageURI));
     return players.getURI(_playerId, names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);

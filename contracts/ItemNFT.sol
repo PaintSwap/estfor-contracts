@@ -25,6 +25,17 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   event AddItems(Item[] items, uint16[] tokenIds);
   event EditItem(Item item, uint16 tokenId);
 
+  error IdTooHigh();
+  error TokenDoesNotExist();
+  error ItemNotTransferable();
+  error InvalidChainId();
+  error InvalidTokenId();
+  error ItemAlreadyExists();
+  error ItemDoesNotExist();
+  error EquipmentPositionShouldNotChange();
+  error OnlyForHardhat();
+  error NotAllowedHardhat();
+
   // Input only
   struct NonCombatStat {
     Skill skill;
@@ -90,8 +101,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     royaltyReceiver = _royaltyReceiver;
   }
 
+  function _mintItem1() internal {}
+
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
-    require(_tokenId < type(uint16).max, "id too high");
+    if (_tokenId >= type(uint16).max) {
+      revert IdTooHigh();
+    }
     //    require(_exists(_tokenId));
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
@@ -108,7 +123,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       uint tokenId = _tokenIds[i];
-      require(tokenId < type(uint16).max, "id too high");
+      if (tokenId >= type(uint16).max) {
+        revert IdTooHigh();
+      }
       //      require(_exists(_tokenIds[i]));
       uint existingBalance = itemBalances[tokenId];
       if (existingBalance == 0) {
@@ -134,7 +151,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    require(_exists(_tokenId), "Token does not exist");
+    if (!_exists(_tokenId)) {
+      revert TokenDoesNotExist();
+    }
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
 
@@ -143,7 +162,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _getItem(uint _tokenId) private view returns (Item memory) {
-    require(_exists(_tokenId), "Token does not exist");
+    if (!_exists(_tokenId)) {
+      revert TokenDoesNotExist();
+    }
     return items[_tokenId];
   }
 
@@ -195,7 +216,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      require(!items[_ids[i]].exists || items[_ids[i]].isTransferable);
+      if (items[_ids[i]].exists && !items[_ids[i]].isTransferable) {
+        revert ItemNotTransferable();
+      }
     }
   }
 
@@ -221,8 +244,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     if (players != address(0)) {
       IPlayers(players).itemBeforeTokenTransfer(_from, _ids, _amounts);
     } else {
-      // Only for tests
-      require(block.chainid == 31337);
+      if (block.chainid != 31337) {
+        revert InvalidChainId();
+      }
     }
   }
 
@@ -248,7 +272,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _setItem(InputItem calldata _item) private returns (Item storage item) {
-    require(_item.tokenId != 0);
+    if (_item.tokenId == 0) {
+      revert InvalidTokenId();
+    }
     bool hasCombat;
     CombatStats calldata _combatStats = _item.combatStats;
     assembly ("memory-safe") {
@@ -311,7 +337,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   // Or make it constants and redeploy the contracts
   function addItem(InputItem calldata _inputItem) external onlyOwner {
-    require(!_exists(_inputItem.tokenId), "This item was already added");
+    if (_exists(_inputItem.tokenId)) {
+      revert ItemAlreadyExists();
+    }
     Item storage item = _setItem(_inputItem);
     emit AddItem(item, _inputItem.tokenId);
   }
@@ -323,7 +351,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      require(!_exists(_inputItems[i].tokenId), "This item was already added");
+      if (_exists(_inputItems[i].tokenId)) {
+        revert ItemAlreadyExists();
+      }
       _items[i] = _setItem(_inputItems[i]);
       tokenIds[i] = _inputItems[i].tokenId;
     }
@@ -331,11 +361,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function editItem(InputItem calldata _inputItem) external onlyOwner {
-    require(_exists(_inputItem.tokenId), "This item was not added yet");
-    require(
-      items[_inputItem.tokenId].equipPosition == _inputItem.equipPosition,
-      "Equipment position should not change"
-    );
+    if (!_exists(_inputItem.tokenId)) {
+      revert ItemDoesNotExist();
+    }
+    if (items[_inputItem.tokenId].equipPosition != _inputItem.equipPosition) {
+      revert EquipmentPositionShouldNotChange();
+    }
     Item storage item = _setItem(_inputItem);
     emit EditItem(item, _inputItem.tokenId);
   }
@@ -351,12 +382,16 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   modifier isHardhat() {
-    require(block.chainid == 31337, "Only for hardhat");
+    if (block.chainid != 31337) {
+      revert OnlyForHardhat();
+    }
     _;
   }
 
   modifier isNotHardhat() {
-    require(block.chainid != 31337, "Not allowed hardhat");
+    if (block.chainid == 31337) {
+      revert NotAllowedHardhat();
+    }
     _;
   }
 
