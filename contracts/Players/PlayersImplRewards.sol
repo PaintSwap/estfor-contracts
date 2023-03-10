@@ -53,13 +53,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     uint _playerId
   ) private view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
-    ids = new uint[](_pendingRandomRewards.length);
-    amounts = new uint[](_pendingRandomRewards.length);
+    U256 pendingRandomRewardsLength = U256.wrap(_pendingRandomRewards.length);
+    ids = new uint[](pendingRandomRewardsLength.asUint256());
+    amounts = new uint[](pendingRandomRewardsLength.asUint256());
 
-    U256 iter = U256.wrap(_pendingRandomRewards.length);
     uint length;
-    while (iter.neq(0)) {
-      iter = iter.dec();
+    for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc())  {
       uint i = iter.asUint256();
       bool isCombat = world.getSkill(_pendingRandomRewards[i].actionId) == Skill.COMBAT;
       uint numSpawnedPerHour = world.getNumSpawn(_pendingRandomRewards[i].actionId);
