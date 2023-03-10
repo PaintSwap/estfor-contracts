@@ -90,7 +90,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     }
   }
 
-  function claimRandomRewards(uint _playerId) public isOwnerOfPlayerAndActive(_playerId) {
+  function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     address from = msg.sender;
     (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
     if (numRemoved != 0) {
