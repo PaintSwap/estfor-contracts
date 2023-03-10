@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {MockBrushToken, MockWrappedFantom} from "../typechain-types";
+import {MockBrushToken, MockWrappedFantom, PlayerNFT} from "../typechain-types";
 import {
   ActionQueueStatus,
   allActions,
@@ -100,13 +100,13 @@ async function main() {
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
   const EDIT_NAME_BRUSH_PRICE = 5000;
-  const playerNFT = await upgrades.deployProxy(
+  const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE],
     {
       kind: "uups",
     }
-  );
+  )) as PlayerNFT;
 
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 
@@ -162,6 +162,10 @@ async function main() {
   console.log("setPlayers");
   await shop.setItemNFT(itemNFT.address);
   console.log("setItemNFT");
+
+  tx = await players.setDailyRewardsEnabled(true);
+  await tx.wait();
+  console.log("Set daily rewards enabled");
 
   const startAvatarId = 1;
   const avatarInfos = [

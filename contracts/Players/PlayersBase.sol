@@ -94,6 +94,8 @@ abstract contract PlayersBase {
     hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";
   mapping(uint xp => Equipment[] equipments) xpRewardThresholds; // Thresholds and all items rewarded for it
 
+  bool dailyRewardsEnabled;
+
   address implQueueActions;
   address implProcessActions;
   address implRewards;

@@ -53,7 +53,7 @@ import {
   RUBY,
   LEAF_FRAGMENTS,
 } from "../scripts/utils";
-import {PlayerNFT} from "../typechain-types";
+import {PlayerNFT, PlayersImplRewards__factory} from "../typechain-types";
 
 const actionIsAvailable = true;
 
@@ -561,6 +561,8 @@ describe("Players", () => {
   it("Daily Rewards", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
+    players.setDailyRewardsEnabled(true);
+
     await itemNFT.addItem({
       ...defaultInputItem,
       tokenId: BRONZE_AXE,
@@ -604,7 +606,7 @@ describe("Players", () => {
 
     const oneDay = 24 * 3600;
     const oneWeek = oneDay * 7;
-    const timestamp = Math.floor(Date.now() / 1000 / oneWeek) * oneWeek + oneDay + 1; // Start on friday
+    const timestamp = Math.floor(Date.now() / 1000 / oneWeek) * (2 * oneWeek) + oneDay + 1; // Start next friday
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await ethers.provider.send("evm_mine", []);
@@ -680,6 +682,8 @@ describe("Players", () => {
 
   it("Daily Rewards, only 1 claim", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+
+    players.setDailyRewardsEnabled(true);
 
     await itemNFT.addItem({
       ...defaultInputItem,

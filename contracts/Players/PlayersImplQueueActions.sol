@@ -28,7 +28,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint maskIndex = ((block.timestamp / 1 days) * 1 days - streakStart) / 1 days;
 
     // Claim daily reward as long as it's been set
-    if (mask[maskIndex] == 0) {
+    if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
       Equipment memory dailyReward = world.getDailyReward();
       if (dailyReward.itemTokenId != NONE) {
         mask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));

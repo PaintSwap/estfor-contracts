@@ -273,6 +273,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
   }
 
+  function setDailyRewardsEnabled(bool _dailyRewardsEnabled) external onlyOwner {
+    dailyRewardsEnabled = _dailyRewardsEnabled;
+  }
+
   // For the various view functions that require delegatecall
   fallback() external {
     bytes4 selector = bytes4(msg.data);
