@@ -39,6 +39,9 @@ interface IPlayerDelegate {
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall {
   using Unsafe256 for U256;
 
+  error InvalidSelector();
+  error XPThresholdNotFound();
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -255,7 +258,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     // Check that it is part of the hexBytes
     uint16 index = _findBaseXPThreshold(_xpThresholdReward.xpThreshold);
     uint32 xpThreshold = _getXPReward(index);
-    require(_xpThresholdReward.xpThreshold == xpThreshold); // Not in the hex string
+    if (_xpThresholdReward.xpThreshold != xpThreshold) {
+      revert XPThresholdNotFound();
+    }
 
     xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.equipments;
     emit AdminAddThresholdReward(_xpThresholdReward);
@@ -285,7 +290,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (selector == PlayerDelegateView.pendingRewards.selector) {
       implementation = implRewards;
     } else {
-      require(false);
+      revert InvalidSelector();
     }
 
     assembly ("memory-safe") {

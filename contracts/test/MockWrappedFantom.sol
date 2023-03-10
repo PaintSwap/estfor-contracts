@@ -4,14 +4,17 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MockWrappedFantom {
-  string public name = "Wrapped Ftm";
-  string public symbol = "WFTM";
-  uint8 public decimals = 18;
-
   event Approval(address indexed src, address indexed guy, uint wad);
   event Transfer(address indexed src, address indexed dst, uint wad);
   event Deposit(address indexed dst, uint wad);
   event Withdrawal(address indexed src, uint wad);
+
+  error InsufficientBalance();
+  error InsufficientAllowance();
+
+  string public name = "Wrapped Ftm";
+  string public symbol = "WFTM";
+  uint8 public decimals = 18;
 
   mapping(address user => uint balance) public balanceOf;
   mapping(address => mapping(address => uint)) public allowance;
@@ -26,7 +29,9 @@ contract MockWrappedFantom {
   }
 
   function withdraw(uint wad) public {
-    require(balanceOf[msg.sender] >= wad);
+    if (balanceOf[msg.sender] < wad) {
+      revert InsufficientBalance();
+    }
     balanceOf[msg.sender] -= wad;
     payable(msg.sender).transfer(wad);
     emit Withdrawal(msg.sender, wad);
@@ -47,10 +52,14 @@ contract MockWrappedFantom {
   }
 
   function transferFrom(address src, address dst, uint wad) public returns (bool) {
-    require(balanceOf[src] >= wad);
+    if (balanceOf[src] < wad) {
+      revert InsufficientBalance();
+    }
 
     if (src != msg.sender && allowance[src][msg.sender] != type(uint).max) {
-      require(allowance[src][msg.sender] >= wad);
+      if (allowance[src][msg.sender] < wad) {
+        revert InsufficientAllowance();
+      }
       allowance[src][msg.sender] -= wad;
     }
 

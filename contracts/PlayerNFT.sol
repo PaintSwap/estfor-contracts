@@ -39,6 +39,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error MintedMoreThanAllowed();
   error NotInWhitelist();
   error ERC1155Metadata_URIQueryForNonexistentToken();
+  error ERC1155BurnForbidden();
 
   uint public nextPlayerId;
 
@@ -258,10 +259,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function burn(address _from, uint _playerId) external {
-    require(
-      _from == _msgSender() || isApprovedForAll(_from, _msgSender()),
-      "ERC1155: caller is not token owner or approved"
-    );
+    if (_from != _msgSender() && !isApprovedForAll(_from, _msgSender())) {
+      revert ERC1155BurnForbidden();
+    }
     _burn(_from, _playerId, 1);
   }
 

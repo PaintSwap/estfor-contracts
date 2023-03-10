@@ -35,6 +35,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error EquipmentPositionShouldNotChange();
   error OnlyForHardhat();
   error NotAllowedHardhat();
+  error ERC1155ReceiverNotApproved();
+  error NotPlayersOrShop();
 
   // Input only
   struct NonCombatStat {
@@ -81,7 +83,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(uint itemId => Item) items;
 
   modifier onlyPlayersOrShop() {
-    require(msg.sender == players || msg.sender == shop, "Not players OR shop");
+    if (msg.sender != players && msg.sender != shop) {
+      revert NotPlayersOrShop();
+    }
     _;
   }
 
@@ -264,10 +268,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function burn(address _from, uint _tokenId, uint _quantity) external {
-    require(
-      _from == _msgSender() || isApprovedForAll(_from, _msgSender()) || players == _msgSender() || shop == _msgSender(),
-      "ERC1155: caller is not token owner, approved , players contract or shop contract"
-    );
+    if (
+      _from != _msgSender() && !isApprovedForAll(_from, _msgSender()) && players != _msgSender() && shop != _msgSender()
+    ) {
+      revert ERC1155ReceiverNotApproved();
+    }
     _burn(_from, _tokenId, _quantity);
   }
 

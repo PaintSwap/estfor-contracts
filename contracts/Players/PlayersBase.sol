@@ -59,6 +59,7 @@ abstract contract PlayersBase {
   error ActionTimespanExceedsMaxTime();
   error ActionTimespanZero();
   error MinimumSkillPointsNotReached();
+  error InvalidStartSlot();
 
   uint32 public constant MAX_TIME = 1 days;
 
@@ -373,7 +374,9 @@ abstract contract PlayersBase {
     assembly ("memory-safe") {
       slot := startSlot.slot
     }
-    require(slot == expectedStartSlotNumber);
+    if (slot != expectedStartSlotNumber) {
+      revert InvalidStartSlot();
+    }
   }
 
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {

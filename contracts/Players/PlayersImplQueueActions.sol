@@ -15,6 +15,16 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   }
 
   error NoItemBalance(uint16 itemTokenId);
+  error CannotEquipTwoHandedAndOtherEquipment();
+  error IncorrectRightHandEquipment(uint16 equippedItemTokenId);
+  error IncorrectLeftHandEquipment(uint16 equippedItemTokenId);
+  error IncorrectEquippedItem();
+  error NotABoostVial();
+  error StartTimeTooFarInTheFuture();
+  error UnsupportedRegenerateItem();
+  error InvalidCombatStyle();
+  error InvalidSkill();
+  error ActionChoiceIdRequired();
 
   function _handleDailyRewards(address _from, uint _playerId) private {
     uint streakStart = (block.timestamp / 1 weeks) * 1 weeks;
@@ -135,8 +145,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
 
     Item memory item = itemNFT.getItem(_itemTokenId);
-    require(item.boostType != BoostType.NONE); // , "Not a boost vial");
-    require(_startTime < block.timestamp + 7 days); // , "Start time too far in the future");
+    if (item.boostType == BoostType.NONE) {
+      revert NotABoostVial();
+    }
+    if (_startTime >= block.timestamp + 7 days) {
+      revert StartTimeTooFarInTheFuture();
+    }
     if (_startTime < block.timestamp) {
       _startTime = uint40(block.timestamp);
     }
@@ -174,7 +188,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
 
     if (_queuedAction.regenerateId != NONE) {
-      require(itemNFT.getItem(_queuedAction.regenerateId).equipPosition == EquipPosition.FOOD);
+      if (itemNFT.getItem(_queuedAction.regenerateId).equipPosition != EquipPosition.FOOD) {
+        revert UnsupportedRegenerateItem();
+      }
     }
   }
 
@@ -211,20 +227,26 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
     if (actionChoiceRequired) {
-      require(_queuedAction.choiceId != NONE);
+      if (_queuedAction.choiceId == NONE) {
+        revert ActionChoiceIdRequired();
+      }
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
 
       if (skillPoints[_playerId][actionChoice.skill] < actionChoice.minSkillPoints) {
         revert MinimumSkillPointsNotReached();
       }
 
-      require(actionChoice.skill != Skill.NONE);
+      if (actionChoice.skill == Skill.NONE) {
+        revert InvalidSkill();
+      }
     }
 
     {
       // Check combatStyle is only selected if queuedAction is combat
       bool combatStyleSelected = _queuedAction.combatStyle != CombatStyle.NONE;
-      require(isCombat == combatStyleSelected);
+      if (isCombat != combatStyleSelected) {
+        revert InvalidCombatStyle();
+      }
     }
 
     _checkHandEquipments(
@@ -345,17 +367,25 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         }
         EquipPosition equipPosition = itemNFT.getEquipPosition(equippedItemTokenId);
         if (isRightHand) {
-          require(equipPosition == EquipPosition.RIGHT_HAND || equipPosition == EquipPosition.BOTH_HANDS);
+          if (equipPosition != EquipPosition.RIGHT_HAND && equipPosition != EquipPosition.BOTH_HANDS) {
+            revert IncorrectRightHandEquipment(equippedItemTokenId);
+          }
           twoHanded = equipPosition == EquipPosition.BOTH_HANDS;
         } else {
           // left hand, if we've equipped a 2 handed weapon, we can't equip anything else
-          require(!twoHanded);
-          require(equipPosition == EquipPosition.LEFT_HAND);
+          if (twoHanded) {
+            revert CannotEquipTwoHandedAndOtherEquipment();
+          }
+          if (equipPosition != EquipPosition.LEFT_HAND) {
+            revert IncorrectLeftHandEquipment(equippedItemTokenId);
+          }
         }
       } else {
         // Only combat actions can have no equipment
         // e.g smithing doesn't require anything equipped
-        require(_isCombat || _handItemTokenIdRangeMin == NONE || !isRightHand);
+        if (!_isCombat && _handItemTokenIdRangeMin != NONE && isRightHand) {
+          revert IncorrectEquippedItem();
+        }
       }
     }
   }
