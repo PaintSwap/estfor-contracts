@@ -31,6 +31,23 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
   event NewDailyRewards(Equipment[8] dailyRewards);
 
+  error SeedCannotBeUpdatedYet();
+  error CanOnlyRequestAfterTheNextCheckpoint();
+  error RequestAlreadyFulfilled();
+  error NoValidSeed();
+  error CanOnlyRequestAfter1DayHasPassed();
+  error ActionIdZeroNotAllowed();
+  error MinCannotBeGreaterThanMax();
+  error DynamicActionsCannotBeAdded();
+  error ActionAlreadyExists();
+  error ActionDoesNotExist();
+  error ActionChoiceIdZeroNotAllowed();
+  error OnlySupportingMax1Output();
+  error DynamicActionsCannotBeSet();
+  error LengthMismatch();
+  error NoActionChoices();
+  error ActionChoiceAlreadyExists();
+
   struct Action {
     uint16 actionId;
     ActionInfo info;
@@ -104,14 +121,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function requestSeedUpdate() external returns (uint256 requestId) {
     // Last one has not been fulfilled yet
-    if (requestIds.length != 0) {
-      require(randomWords[requestIds[requestIds.length - 1]] != 0, "Seed can't be updated");
+    if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]] == 0) {
+      revert SeedCannotBeUpdatedYet();
     }
-
-    require(
-      lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME <= block.timestamp,
-      "Can only request after the next checkpoint"
-    );
+    if (lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME > block.timestamp) {
+      revert CanOnlyRequestAfterTheNextCheckpoint();
+    }
 
     // Will revert if subscription is not set and funded.
     requestId = COORDINATOR.requestRandomWords(
@@ -130,7 +145,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
     //    require(_requestId == requestIds[requestIds.length - 1], "request not found");
-    require(randomWords[_requestId] == 0, "Request already been satisfied");
+    if (randomWords[_requestId] != 0) {
+      revert RequestAlreadyFulfilled();
+    }
 
     uint random = _randomWords[0];
     if (random == 0) {
@@ -183,15 +200,16 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function getSeed(uint _timestamp) public view returns (uint seed) {
     seed = _getSeed(_timestamp);
-    require(seed != 0, "No valid seed");
+    if (seed == 0) {
+      revert NoValidSeed();
+    }
   }
 
   // Can be called by anyone as long as over 1 day has passed since the last call
   function updateDynamicActions() external {
-    require(
-      (lastDynamicUpdatedTime + MIN_DYNAMIC_ACTION_UPDATE_TIME) <= block.timestamp,
-      "Can only request after 1 day has passed"
-    );
+    if ((lastDynamicUpdatedTime + MIN_DYNAMIC_ACTION_UPDATE_TIME) > block.timestamp) {
+      revert CanOnlyRequestAfter1DayHasPassed();
+    }
 
     emit RemoveDynamicActions(lastAddedDynamicActions);
 
@@ -275,8 +293,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _setAction(Action calldata _action) private {
-    require(_action.actionId != 0);
-    require(_action.info.handItemTokenIdRangeMin <= _action.info.handItemTokenIdRangeMax);
+    if (_action.actionId == 0) {
+      revert ActionIdZeroNotAllowed();
+    }
+    if (_action.info.handItemTokenIdRangeMin > _action.info.handItemTokenIdRangeMax) {
+      revert MinCannotBeGreaterThanMax();
+    }
     actions[_action.actionId] = _action.info;
 
     // Set the rewards
@@ -317,8 +339,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _addAction(Action calldata _action) private {
-    require(!_action.info.isDynamic, "Action is dynamic");
-    require(actions[_action.actionId].skill == Skill.NONE, "Action already exists");
+    if (_action.info.isDynamic) {
+      revert DynamicActionsCannotBeAdded();
+    }
+    if (actions[_action.actionId].skill != Skill.NONE) {
+      revert ActionAlreadyExists();
+    }
     _setAction(_action);
     emit AddAction(_action);
   }
@@ -337,18 +363,23 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function editAction(Action calldata _action) external onlyOwner {
-    require(actions[_action.actionId].skill != Skill.NONE, "Action does not exist");
+    if (actions[_action.actionId].skill == Skill.NONE) {
+      revert ActionDoesNotExist();
+    }
     _setAction(_action);
     emit EditAction(_action);
   }
 
   function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
-    require(_actionChoiceId != 0);
-    if (_actionChoice.outputTokenId != 0) {
-      require(_actionChoice.outputNum == 1); // Only supporting max 1 for now
+    if (_actionChoiceId == 0) {
+      revert ActionChoiceIdZeroNotAllowed();
     }
-    // Check it isn't added already
-    require(actionChoices[_actionId][_actionChoiceId].skill == Skill.NONE);
+    if (_actionChoice.outputTokenId != 0 && _actionChoice.outputNum != 1) {
+      revert OnlySupportingMax1Output();
+    }
+    if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
+      revert ActionChoiceAlreadyExists();
+    }
     actionChoices[_actionId][_actionChoiceId] = _actionChoice;
   }
 
@@ -367,9 +398,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     uint16[] calldata _actionChoiceIds,
     ActionChoice[] calldata _actionChoices
   ) external onlyOwner {
-    require(_actionChoiceIds.length == _actionChoices.length);
+    if (_actionChoiceIds.length != _actionChoices.length) {
+      revert LengthMismatch();
+    }
     U256 iter = U256.wrap(_actionChoices.length);
-    require(iter.neq(0));
+    if (iter.eq(0)) {
+      revert NoActionChoices();
+    }
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
@@ -384,13 +419,22 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
     U256 iter = U256.wrap(0);
-    require(_actionIds.length != (0) && _actionIds.length == _actionChoices.length);
+    if (_actionIds.length != _actionChoices.length) {
+      revert LengthMismatch();
+    }
+    if (_actionIds.length == 0) {
+      revert NoActionChoices();
+    }
+
     while (iter.lt(_actionIds.length)) {
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
       emit AddActionChoices(actionId, _actionChoiceIds[i], _actionChoices[i]);
       U256 iter2 = U256.wrap(0);
-      require(_actionChoiceIds[i].length == _actionChoices[i].length);
+      if (_actionChoiceIds[i].length != _actionChoices[i].length) {
+        revert LengthMismatch();
+      }
+
       while (iter2.lt(_actionChoices[i].length)) {
         uint16 j = iter2.asUint16();
         _addActionChoice(actionId, _actionChoiceIds[i][j], _actionChoices[i][j]);
@@ -401,8 +445,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
-    require(actions[_actionId].skill != Skill.NONE, "Action does not exist");
-    require(!actions[_actionId].isDynamic, "Action is dynamic");
+    if (actions[_actionId].skill == Skill.NONE) {
+      revert ActionDoesNotExist();
+    }
+    if (actions[_actionId].isDynamic) {
+      revert DynamicActionsCannotBeSet();
+    }
     actions[_actionId].isAvailable = _isAvailable;
     emit SetAvailableAction(_actionId, _isAvailable);
   }
