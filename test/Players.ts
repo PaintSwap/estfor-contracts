@@ -2019,293 +2019,153 @@ describe("Players", () => {
   });
 
   describe("Combat Actions", () => {
-    it("Melee", async () => {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+    describe.only("Melee", async () => {
+      async function deployContractsMelee() {
+        const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
-      const monsterCombatStats: CombatStats = {
-        melee: 3,
-        magic: 0,
-        range: 0,
-        meleeDefence: 0,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 1,
-      };
+        const monsterCombatStats: CombatStats = {
+          melee: 3,
+          magic: 0,
+          range: 0,
+          meleeDefence: 0,
+          magicDefence: 0,
+          rangeDefence: 0,
+          health: 1,
+        };
 
-      const rate = 1 * 100; // per hour
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: Skill.COMBAT,
-          xpPerHour: 3600,
-          minSkillPoints: 0,
-          isDynamic: false,
-          numSpawn: 1,
-          handItemTokenIdRangeMin: COMBAT_BASE,
-          handItemTokenIdRangeMax: COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-        },
-        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
-      const actionId = await getActionId(tx);
+        const rate = 1 * 100; // per hour
+        let tx = await world.addAction({
+          actionId: 1,
+          info: {
+            skill: Skill.COMBAT,
+            xpPerHour: 3600,
+            minSkillPoints: 0,
+            isDynamic: false,
+            numSpawn: 1,
+            handItemTokenIdRangeMin: COMBAT_BASE,
+            handItemTokenIdRangeMax: COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+          },
+          guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
+        });
+        const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(NONE, 1, {
-        ...emptyActionChoice,
-        skill: Skill.ATTACK,
-      });
-      const choiceId = await getActionChoiceId(tx);
-      await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
-      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
-      const timespan = 3600;
-      const queuedAction: QueuedAction = {
-        attire: noAttire,
-        actionId,
-        combatStyle: CombatStyle.MELEE,
-        choiceId,
-        choiceId1: NONE,
-        choiceId2: NONE,
-        regenerateId: COOKED_HUPPY,
-        timespan,
-        rightHandEquipmentTokenId: BRONZE_SWORD,
-        leftHandEquipmentTokenId: NONE,
-        startTime: "0",
-        isValid: true,
-      };
+        tx = await world.addActionChoice(NONE, 1, {
+          ...emptyActionChoice,
+          skill: Skill.ATTACK,
+        });
+        const choiceId = await getActionChoiceId(tx);
+        await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
+        await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
+        const timespan = 3600;
+        const queuedAction: QueuedAction = {
+          attire: noAttire,
+          actionId,
+          combatStyle: CombatStyle.MELEE,
+          choiceId,
+          choiceId1: NONE,
+          choiceId2: NONE,
+          regenerateId: COOKED_HUPPY,
+          timespan,
+          rightHandEquipmentTokenId: BRONZE_SWORD,
+          leftHandEquipmentTokenId: NONE,
+          startTime: "0",
+          isValid: true,
+        };
 
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        combatStats: {
-          ...emptyCombatStats,
-          melee: 5,
-        },
-        tokenId: BRONZE_SWORD,
-        equipPosition: EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
-      });
+        await itemNFT.addItem({
+          ...defaultInputItem,
+          combatStats: {
+            ...emptyCombatStats,
+            melee: 5,
+          },
+          tokenId: BRONZE_SWORD,
+          equipPosition: EquipPosition.RIGHT_HAND,
+          metadataURI: "someIPFSURI.json",
+        });
 
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        tokenId: BRONZE_ARROW,
-        equipPosition: EquipPosition.ARROW_SATCHEL,
-        metadataURI: "someIPFSURI.json",
-      });
+        await itemNFT.addItem({
+          ...defaultInputItem,
+          tokenId: BRONZE_ARROW,
+          equipPosition: EquipPosition.ARROW_SATCHEL,
+          metadataURI: "someIPFSURI.json",
+        });
 
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        healthRestored: 12,
-        tokenId: COOKED_HUPPY,
-        equipPosition: EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
-      });
+        await itemNFT.addItem({
+          ...defaultInputItem,
+          healthRestored: 12,
+          tokenId: COOKED_HUPPY,
+          equipPosition: EquipPosition.FOOD,
+          metadataURI: "someIPFSURI.json",
+        });
 
-      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+        return {
+          playerId,
+          players,
+          itemNFT,
+          alice,
+          queuedAction,
+          rate,
+        };
+      }
 
-      const time = 3600;
-      await ethers.provider.send("evm_increaseTime", [time]);
-      await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
-      expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
+      it("Simple", async () => {
+        const {playerId, players, itemNFT, alice, queuedAction, rate} = await loadFixture(deployContractsMelee);
 
-      // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
+        await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 
-      // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
-    });
+        const time = 3600;
+        await ethers.provider.send("evm_increaseTime", [time]);
+        await players.connect(alice).processActions(playerId);
+        expect(await players.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
+        expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
-    it("Melee, combat don't kill anything", async () => {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
+        // Check the drops are as expected
+        expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
-      const monsterCombatStats: CombatStats = {
-        melee: 3,
-        magic: 0,
-        range: 0,
-        meleeDefence: 0,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 1,
-      };
-
-      const rate = 1 * 100; // per hour
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: Skill.COMBAT,
-          xpPerHour: 3600,
-          minSkillPoints: 0,
-          isDynamic: false,
-          numSpawn: 1,
-          handItemTokenIdRangeMin: COMBAT_BASE,
-          handItemTokenIdRangeMax: COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-        },
-        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
-      const actionId = await getActionId(tx);
-
-      tx = await world.addActionChoice(NONE, 1, {
-        ...emptyActionChoice,
-        skill: Skill.ATTACK,
-      });
-      const choiceId = await getActionChoiceId(tx);
-      await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
-      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
-      const timespan = 3600;
-      const queuedAction: QueuedAction = {
-        attire: noAttire,
-        actionId,
-        combatStyle: CombatStyle.MELEE,
-        choiceId,
-        choiceId1: NONE,
-        choiceId2: NONE,
-        regenerateId: COOKED_HUPPY,
-        timespan,
-        rightHandEquipmentTokenId: BRONZE_SWORD,
-        leftHandEquipmentTokenId: NONE,
-        startTime: "0",
-        isValid: true,
-      };
-
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        combatStats: {
-          ...emptyCombatStats,
-          melee: 5,
-        },
-        tokenId: BRONZE_SWORD,
-        equipPosition: EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
+        // Check food is consumed
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
       });
 
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        tokenId: BRONZE_ARROW,
-        equipPosition: EquipPosition.ARROW_SATCHEL,
-        metadataURI: "someIPFSURI.json",
+      it("Don't kill anything", async () => {
+        const {playerId, players, itemNFT, alice, queuedAction} = await loadFixture(deployContractsMelee);
+
+        await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+
+        const time = 360;
+        await ethers.provider.send("evm_increaseTime", [time]);
+        await players.connect(alice).processActions(playerId);
+        expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
+
+        // Check the drops are as expected
+        expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
+        // Check food is consumed
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 3);
       });
 
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        healthRestored: 12,
-        tokenId: COOKED_HUPPY,
-        equipPosition: EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
+      it("Melee defence", async () => {
+        const {playerId, players, itemNFT, alice, queuedAction, rate} = await loadFixture(deployContractsMelee);
+
+        const _queuedAction = {...queuedAction};
+        _queuedAction.combatStyle = CombatStyle.MELEE_DEFENCE;
+
+        await players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE);
+
+        const time = 3600;
+        await ethers.provider.send("evm_increaseTime", [time]);
+        await players.connect(alice).processActions(playerId);
+        expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
+        expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
+
+        // Check the drops are as expected
+        expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
+
+        // Check food is consumed, update later
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
       });
-
-      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
-
-      const time = 360;
-      await ethers.provider.send("evm_increaseTime", [time]);
-      await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
-
-      // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
-      // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 3);
-    });
-
-    it("Melee defence", async () => {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
-
-      const monsterCombatStats: CombatStats = {
-        melee: 3,
-        magic: 0,
-        range: 0,
-        meleeDefence: 0,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 1,
-      };
-
-      const rate = 1 * 100; // per hour
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: Skill.COMBAT,
-          xpPerHour: 3600,
-          minSkillPoints: 0,
-          isDynamic: false,
-          numSpawn: 1,
-          handItemTokenIdRangeMin: COMBAT_BASE,
-          handItemTokenIdRangeMax: COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-        },
-        guaranteedRewards: [{itemTokenId: BRONZE_ARROW, rate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
-      const actionId = await getActionId(tx);
-
-      tx = await world.addActionChoice(NONE, 1, {
-        ...emptyActionChoice,
-        skill: Skill.ATTACK,
-      });
-      const choiceId = await getActionChoiceId(tx);
-      await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
-      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 255);
-      const timespan = 3600;
-      const queuedAction: QueuedAction = {
-        attire: noAttire,
-        actionId,
-        combatStyle: CombatStyle.MELEE_DEFENCE,
-        choiceId,
-        choiceId1: NONE,
-        choiceId2: NONE,
-        regenerateId: COOKED_HUPPY,
-        timespan,
-        rightHandEquipmentTokenId: BRONZE_SWORD,
-        leftHandEquipmentTokenId: NONE,
-        startTime: "0",
-        isValid: true,
-      };
-
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        combatStats: {
-          ...emptyCombatStats,
-          melee: 5,
-        },
-        tokenId: BRONZE_SWORD,
-        equipPosition: EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
-      });
-
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        tokenId: BRONZE_ARROW,
-        equipPosition: EquipPosition.ARROW_SATCHEL,
-        metadataURI: "someIPFSURI.json",
-      });
-
-      await itemNFT.addItem({
-        ...defaultInputItem,
-        healthRestored: 12,
-        tokenId: COOKED_HUPPY,
-        equipPosition: EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
-      });
-
-      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
-
-      const time = 3600;
-      await ethers.provider.send("evm_increaseTime", [time]);
-      await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
-      expect(await players.skillPoints(playerId, Skill.ATTACK)).to.eq(0);
-
-      // Check the drops are as expected
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
-
-      // Check food is consumed, update later
-      expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
     });
 
     describe("Magic", () => {
