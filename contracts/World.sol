@@ -275,6 +275,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _setAction(Action calldata _action) private {
+    require(_action.actionId != 0);
     require(_action.info.handItemTokenIdRangeMin <= _action.info.handItemTokenIdRangeMax);
     actions[_action.actionId] = _action.info;
 
@@ -317,7 +318,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function _addAction(Action calldata _action) private {
     require(!_action.info.isDynamic, "Action is dynamic");
-    require(actions[_action.actionId].skill == Skill.NONE, "Action alrleady exists");
+    require(actions[_action.actionId].skill == Skill.NONE, "Action already exists");
     _setAction(_action);
     emit AddAction(_action);
   }
@@ -342,6 +343,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
+    require(_actionChoiceId != 0);
     if (_actionChoice.outputTokenId != 0) {
       require(_actionChoice.outputNum == 1); // Only supporting max 1 for now
     }

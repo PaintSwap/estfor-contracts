@@ -248,6 +248,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _setItem(InputItem calldata _item) private returns (Item storage item) {
+    require(_item.tokenId != 0);
     bool hasCombat;
     CombatStats calldata _combatStats = _item.combatStats;
     assembly ("memory-safe") {

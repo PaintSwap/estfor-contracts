@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {COMBAT_BASE, COMBAT_MAX, emptyStats, getActionId, NONE, Skill} from "../scripts/utils";
+import {AIR_SCROLL, COMBAT_BASE, COMBAT_MAX, emptyStats, getActionId, NONE, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -162,6 +162,30 @@ describe("World", () => {
 
     it("Dynamic actions", async () => {
       // Dynamic actions TODO
+    });
+  });
+
+  describe("ActionChoices", () => {
+    it("Cannot use id 0", async () => {
+      const {world} = await loadFixture(deployContracts);
+      const choiceId = 0;
+      await expect(
+        world.addActionChoice(NONE, choiceId, {
+          skill: Skill.MAGIC,
+          diff: 2,
+          xpPerHour: 0,
+          minSkillPoints: 0,
+          rate: 1 * 100,
+          inputTokenId1: AIR_SCROLL,
+          num1: 1,
+          inputTokenId2: NONE,
+          num2: 0,
+          inputTokenId3: NONE,
+          num3: 0,
+          outputTokenId: NONE,
+          outputNum: 0,
+        })
+      ).to.be.reverted;
     });
   });
 });
