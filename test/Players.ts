@@ -52,6 +52,7 @@ import {
   COOKED_BOWFISH,
   RUBY,
   LEAF_FRAGMENTS,
+  getActionChoiceIds,
 } from "../scripts/utils";
 import {PlayerNFT, PlayersImplRewards__factory} from "../typechain-types";
 
@@ -2267,7 +2268,6 @@ describe("Players", () => {
 
         const scrollsConsumedRate = 1 * 100; // per hour
         // Combat uses none as it's not tied to a specific action (only combat ones)
-        // Fire blast
         tx = await world.addActionChoice(NONE, 1, {
           skill: Skill.MAGIC,
           diff: 2,
@@ -2427,6 +2427,61 @@ describe("Players", () => {
         // Check that no scrolls are consumed
         expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(0);
         expect(await itemNFT.balanceOf(alice.address, SHADOW_SCROLL)).to.eq(100);
+      });
+
+      it("Add multi actionChoice", async () => {
+        const {playerId, players, alice, world, queuedAction} = await loadFixture(deployContractsMagic);
+
+        const _queuedAction = {...queuedAction};
+        const scrollsConsumedRate = 1 * 100; // per hour
+
+        let choiceId = 2;
+        const tx = await world.addActionChoices(
+          NONE,
+          [choiceId, choiceId + 1],
+          [
+            {
+              skill: Skill.MAGIC,
+              diff: 2,
+              xpPerHour: 0,
+              minSkillPoints: 0,
+              rate: scrollsConsumedRate,
+              inputTokenId1: AIR_SCROLL,
+              num1: 1,
+              inputTokenId2: SHADOW_SCROLL,
+              num2: 1,
+              inputTokenId3: NONE,
+              num3: 0,
+              outputTokenId: NONE,
+              outputNum: 0,
+            },
+            {
+              skill: Skill.MAGIC,
+              diff: 2,
+              xpPerHour: 0,
+              minSkillPoints: 0,
+              rate: scrollsConsumedRate,
+              inputTokenId1: AIR_SCROLL,
+              num1: 3,
+              inputTokenId2: SHADOW_SCROLL,
+              num2: 1,
+              inputTokenId3: NONE,
+              num3: 0,
+              outputTokenId: NONE,
+              outputNum: 0,
+            },
+          ]
+        );
+
+        const choiceIds = await getActionChoiceIds(tx);
+        expect(choiceIds).to.eql([choiceId, choiceId + 1]);
+        _queuedAction.choiceId = choiceId + 2;
+
+        // Non-existent actionChoiceId
+        await expect(players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)).to.be
+          .reverted;
+        _queuedAction.choiceId = choiceId;
+        await players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE);
       });
     });
 

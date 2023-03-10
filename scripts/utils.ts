@@ -545,6 +545,14 @@ export const getActionChoiceId = async (tx: ContractTransaction): Promise<number
   return event?.actionChoiceId;
 };
 
+export const getActionChoiceIds = async (tx: ContractTransaction): Promise<number[]> => {
+  const receipt = await tx.wait();
+  const event = receipt?.events?.filter((x) => {
+    return x.event == "AddActionChoices";
+  })[0].args;
+  return event?.actionChoiceIds;
+};
+
 // Actions
 export enum ActionQueueStatus {
   NONE,
