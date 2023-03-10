@@ -52,6 +52,9 @@ const config: HardhatUserConfig = {
       gasPrice: 150000000000,
     },
   },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
   contractSizer: {
     alphaSort: true,
     runOnCompile: true,
