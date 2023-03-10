@@ -21,7 +21,7 @@ import {
   COPPER_ORE,
   createPlayer,
   emptyActionChoice,
-  emptyStats,
+  emptyCombatStats,
   Equipment,
   EquipPosition,
   FIRE_LIGHTER,
@@ -181,6 +181,7 @@ describe("Players", () => {
       editNameCost,
       mockOracleClient,
       avatarInfo,
+      playersImplQueueActions,
     };
   }
 
@@ -210,7 +211,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
@@ -262,7 +263,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
@@ -310,7 +311,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
     const actionId = await getActionId(tx);
 
@@ -369,7 +370,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
     const actionId = await getActionId(tx);
 
@@ -452,7 +453,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
 
     const tx = await world.addActionChoice(NONE, {
@@ -513,7 +514,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
@@ -593,7 +594,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
@@ -716,7 +717,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
@@ -756,6 +757,87 @@ describe("Players", () => {
   });
 
   // TODO: Check attire stats are as expected
+
+  it("Attire equipPositions", async () => {
+    const {playerId, players, itemNFT, world, alice, playersImplQueueActions} = await loadFixture(deployContracts);
+
+    let tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: Skill.COMBAT,
+        xpPerHour: 3600,
+        minSkillPoints: 0,
+        isDynamic: false,
+        numSpawn: 1,
+        handItemTokenIdRangeMin: COMBAT_BASE,
+        handItemTokenIdRangeMax: COMBAT_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: true,
+      },
+      guaranteedRewards: [],
+      randomRewards: [],
+      combatStats: emptyCombatStats,
+    });
+    const actionId = await getActionId(tx);
+
+    tx = await world.addActionChoice(NONE, 1, {
+      ...emptyActionChoice,
+      skill: Skill.ATTACK,
+    });
+    const choiceId = await getActionChoiceId(tx);
+    const timespan = 3600;
+
+    const queuedAction: QueuedAction = {
+      attire: {...noAttire, helmet: BRONZE_GAUNTLETS}, // Incorrect attire
+      actionId,
+      combatStyle: CombatStyle.MELEE,
+      choiceId,
+      choiceId1: NONE,
+      choiceId2: NONE,
+      regenerateId: NONE,
+      timespan,
+      rightHandEquipmentTokenId: NONE,
+      leftHandEquipmentTokenId: NONE,
+      startTime: "0",
+      isValid: true,
+    };
+
+    await itemNFT.addItem({
+      ...defaultInputItem,
+      tokenId: BRONZE_GAUNTLETS,
+      combatStats: emptyCombatStats,
+      equipPosition: EquipPosition.ARMS,
+      metadataURI: "someIPFSURI.json",
+    });
+    await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);
+
+    await expect(
+      players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    queuedAction.attire.helmet = NONE;
+    queuedAction.attire.amulet = BRONZE_GAUNTLETS;
+    await expect(
+      players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    queuedAction.attire.amulet = NONE;
+    queuedAction.attire.armor = BRONZE_GAUNTLETS;
+    await expect(
+      players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    queuedAction.attire.armor = NONE;
+    queuedAction.attire.boots = BRONZE_GAUNTLETS;
+    await expect(
+      players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    queuedAction.attire.boots = NONE;
+    queuedAction.attire.tassets = BRONZE_GAUNTLETS;
+    await expect(
+      players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    queuedAction.attire.tassets = NONE;
+    queuedAction.attire.gauntlets = BRONZE_GAUNTLETS; // Correct
+    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+  });
 
   /*  it("Check already equipped", async () => {
     const {playerId, players, playerNFT, itemNFT, alice} = await loadFixture(deployContracts);
@@ -846,7 +928,7 @@ describe("Players", () => {
       },
       guaranteedRewards: [{itemTokenId: LOG, rate}],
       randomRewards: [],
-      combatStats: emptyStats,
+      combatStats: emptyCombatStats,
     });
     const actionId = await getActionId(tx);
     await itemNFT.addItem({
@@ -931,7 +1013,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1004,7 +1086,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1070,7 +1152,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1138,7 +1220,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1247,7 +1329,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1331,7 +1413,7 @@ describe("Players", () => {
           },
           guaranteedRewards: [{itemTokenId: LOG, rate}],
           randomRewards: [],
-          combatStats: emptyStats,
+          combatStats: emptyCombatStats,
         });
         const actionId = await getActionId(tx);
         await itemNFT.addItem({
@@ -1374,7 +1456,7 @@ describe("Players", () => {
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: emptyStats,
+          combatStats: emptyCombatStats,
         });
         const actionId = await getActionId(tx);
 
@@ -1469,7 +1551,7 @@ describe("Players", () => {
           },
           guaranteedRewards: [{itemTokenId: LOG, rate}],
           randomRewards: [],
-          combatStats: emptyStats,
+          combatStats: emptyCombatStats,
         });
         const actionId = await getActionId(tx);
         await itemNFT.addItem({
@@ -1512,7 +1594,7 @@ describe("Players", () => {
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: emptyStats,
+          combatStats: emptyCombatStats,
         });
         const actionId = await getActionId(tx);
 
@@ -1606,7 +1688,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 100}], // 100.00
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
 
       const actionId = await getActionId(tx);
@@ -1660,7 +1742,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1750,7 +1832,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1815,7 +1897,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
 
       const actionId = await getActionId(tx);
@@ -1861,7 +1943,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
 
@@ -1996,7 +2078,7 @@ describe("Players", () => {
       await itemNFT.addItem({
         ...defaultInputItem,
         combatStats: {
-          ...emptyStats,
+          ...emptyCombatStats,
           melee: 5,
         },
         tokenId: BRONZE_SWORD,
@@ -2093,7 +2175,7 @@ describe("Players", () => {
       await itemNFT.addItem({
         ...defaultInputItem,
         combatStats: {
-          ...emptyStats,
+          ...emptyCombatStats,
           melee: 5,
         },
         tokenId: BRONZE_SWORD,
@@ -2188,7 +2270,7 @@ describe("Players", () => {
       await itemNFT.addItem({
         ...defaultInputItem,
         combatStats: {
-          ...emptyStats,
+          ...emptyCombatStats,
           melee: 5,
         },
         tokenId: BRONZE_SWORD,
@@ -2524,7 +2606,7 @@ describe("Players", () => {
         },
         guaranteedRewards: [{itemTokenId: LOG, rate}],
         randomRewards: [{itemTokenId: BRONZE_ARROW, rate: randomChance}],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
 
       const actionId = await getActionId(tx);

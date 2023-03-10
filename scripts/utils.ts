@@ -601,7 +601,7 @@ type ActionChoice = {
   outputNum: number; // Not used yet, always 1
 };
 
-export const emptyStats: CombatStats = {
+export const emptyCombatStats: CombatStats = {
   melee: 0,
   magic: 0,
   range: 0,
@@ -681,7 +681,7 @@ type XPThresholdReward = {
 };
 
 export const defaultInputItem = {
-  combatStats: emptyStats,
+  combatStats: emptyCombatStats,
   nonCombatStats: [],
   isTransferable: true,
   skill: Skill.NONE,
@@ -871,7 +871,7 @@ export const allActions: Action[] = [
     },
     guaranteedRewards: [{itemTokenId: LOG, rate: 1220 * 100}],
     randomRewards: [],
-    combatStats: emptyStats,
+    combatStats: emptyCombatStats,
   },
   {
     actionId: 2,
@@ -888,7 +888,7 @@ export const allActions: Action[] = [
     },
     guaranteedRewards: [],
     randomRewards: [],
-    combatStats: emptyStats,
+    combatStats: emptyCombatStats,
   },
   {
     actionId: 3,
@@ -905,7 +905,7 @@ export const allActions: Action[] = [
     },
     guaranteedRewards: [{itemTokenId: COPPER_ORE, rate: 1220 * 100}],
     randomRewards: [],
-    combatStats: emptyStats,
+    combatStats: emptyCombatStats,
   },
   {
     actionId: 4,
@@ -922,7 +922,7 @@ export const allActions: Action[] = [
     },
     guaranteedRewards: [{itemTokenId: TIN_ORE, rate: 1220 * 100}],
     randomRewards: [],
-    combatStats: emptyStats,
+    combatStats: emptyCombatStats,
   },
   {
     actionId: 5,
@@ -939,7 +939,7 @@ export const allActions: Action[] = [
     },
     guaranteedRewards: [],
     randomRewards: [],
-    combatStats: emptyStats,
+    combatStats: emptyCombatStats,
   },
   // Combat
   {
@@ -962,7 +962,7 @@ export const allActions: Action[] = [
     ],
     randomRewards: [],
     combatStats: {
-      ...emptyStats,
+      ...emptyCombatStats,
       melee: 1,
       health: 20,
     },

@@ -25,6 +25,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   error InvalidCombatStyle();
   error InvalidSkill();
   error ActionChoiceIdRequired();
+  error InvalidEquipPosition();
 
   function _handleDailyRewards(address _from, uint _playerId) private {
     uint streakStart = (block.timestamp / 1 weeks) * 1 weeks;
@@ -313,9 +314,54 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     //     if (_queuedAction.choiceId2 != NONE) {
   }
 
+  function _checkEquipPosition(Attire storage _attire) private view {
+    uint attireLength;
+    uint16[] memory itemTokenIds = new uint16[](8);
+    EquipPosition[] memory expectedEquipPositions = new EquipPosition[](8);
+    if (_attire.helmet != NONE) {
+      itemTokenIds[attireLength] = _attire.helmet;
+      expectedEquipPositions[attireLength++] = EquipPosition.HEAD;
+    }
+    if (_attire.amulet != NONE) {
+      itemTokenIds[attireLength] = _attire.amulet;
+      expectedEquipPositions[attireLength++] = EquipPosition.NECK;
+    }
+    if (_attire.armor != NONE) {
+      itemTokenIds[attireLength] = _attire.armor;
+      expectedEquipPositions[attireLength++] = EquipPosition.BODY;
+    }
+    if (_attire.gauntlets != NONE) {
+      itemTokenIds[attireLength] = _attire.gauntlets;
+      expectedEquipPositions[attireLength++] = EquipPosition.ARMS;
+    }
+    if (_attire.tassets != NONE) {
+      itemTokenIds[attireLength] = _attire.tassets;
+      expectedEquipPositions[attireLength++] = EquipPosition.LEGS;
+    }
+    if (_attire.boots != NONE) {
+      itemTokenIds[attireLength] = _attire.boots;
+      expectedEquipPositions[attireLength++] = EquipPosition.BOOTS;
+    }
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, attireLength)
+    }
+
+    if (attireLength != 0) {
+      EquipPosition[] memory equipPositions = itemNFT.getEquipPositions(itemTokenIds);
+      for (uint i = 0; i < attireLength; i++) {
+        if (expectedEquipPositions[i] != equipPositions[i]) {
+          revert InvalidEquipPosition();
+        }
+      }
+    }
+  }
+
   // Checks they have sufficient balance to equip the items, and minimum skill points
   function _checkAttire(address _from, uint _playerId, Attire storage _attire) private view {
     // Check the user has these items
+    _checkEquipPosition(_attire);
+
     bool skipNeck;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length != 0) {

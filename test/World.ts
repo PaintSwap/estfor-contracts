@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {AIR_SCROLL, COMBAT_BASE, COMBAT_MAX, emptyStats, getActionId, NONE, Skill} from "../scripts/utils";
+import {AIR_SCROLL, COMBAT_BASE, COMBAT_MAX, emptyCombatStats, getActionId, NONE, Skill} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -111,7 +111,7 @@ describe("World", () => {
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(Skill.COMBAT);
@@ -130,7 +130,7 @@ describe("World", () => {
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       expect((await world.actions(actionId)).xpPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
@@ -155,7 +155,7 @@ describe("World", () => {
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyStats,
+        combatStats: emptyCombatStats,
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });

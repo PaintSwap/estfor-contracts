@@ -180,7 +180,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return (items[_tokenId].skill, items[_tokenId].minSkillPoints);
   }
 
-  function getEquipPosition(uint16 _tokenId) external view returns (EquipPosition) {
+  function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
     return items[_tokenId].equipPosition;
   }
 
@@ -202,6 +202,17 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       _items[i] = _getItem(_tokenIds[i]);
+    }
+  }
+
+  function getEquipPositions(
+    uint16[] calldata _tokenIds
+  ) external view returns (EquipPosition[] memory equipPositions) {
+    U256 tokenIdsLength = U256.wrap(_tokenIds.length);
+    equipPositions = new EquipPosition[](tokenIdsLength.asUint256());
+    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      equipPositions[i] = getEquipPosition(_tokenIds[i]);
     }
   }
 
