@@ -996,6 +996,8 @@ export const magicChoices: ActionChoice[] = [
   },
 ];
 
+export const magicChoiceIds: number[] = [4];
+
 // TODO: Add all the different types of arrows
 export const rangeChoices: ActionChoice[] = [];
 

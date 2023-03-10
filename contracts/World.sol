@@ -28,7 +28,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
   event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
-  event AddActionChoices(uint16 actionId, uint16 startActionChoice, ActionChoice[] choices);
+  event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
   event NewDailyRewards(Equipment[8] dailyRewards);
 
   struct Action {
@@ -67,7 +67,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
   mapping(uint actionId => ActionInfo actionInfo) public actions;
-  uint16 public nextActionChoiceId;
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
@@ -85,7 +84,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
-    nextActionChoiceId = 1;
     startTime = (block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME; // Floor to the nearest day 00:00 UTC
     lastSeedUpdatedTime = startTime;
 
@@ -343,52 +341,61 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit EditAction(_action);
   }
 
-  // actionId of 0 means it is not tied to a specific action
-  function addActionChoice(uint16 _actionId, ActionChoice calldata _actionChoice) external onlyOwner {
-    uint16 actionChoiceId = nextActionChoiceId;
+  function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
     if (_actionChoice.outputTokenId != 0) {
       require(_actionChoice.outputNum == 1); // Only supporting max 1 for now
     }
-    actionChoices[_actionId][actionChoiceId] = _actionChoice;
-    emit AddActionChoice(_actionId, actionChoiceId, _actionChoice);
-    nextActionChoiceId = actionChoiceId + 1;
+    // Check it isn't added already
+    require(actionChoices[_actionId][_actionChoiceId].skill == Skill.NONE);
+    actionChoices[_actionId][_actionChoiceId] = _actionChoice;
   }
 
-  function addActionChoices(uint16 _actionId, ActionChoice[] calldata _actionChoices) external onlyOwner {
+  // actionId of 0 means it is not tied to a specific action
+  function addActionChoice(
+    uint16 _actionId,
+    uint16 _actionChoiceId,
+    ActionChoice calldata _actionChoice
+  ) external onlyOwner {
+    _addActionChoice(_actionId, _actionChoiceId, _actionChoice);
+    emit AddActionChoice(_actionId, _actionChoiceId, _actionChoice);
+  }
+
+  function addActionChoices(
+    uint16 _actionId,
+    uint16[] calldata _actionChoiceIds,
+    ActionChoice[] calldata _actionChoices
+  ) external onlyOwner {
+    require(_actionChoiceIds.length == _actionChoices.length);
     U256 iter = U256.wrap(_actionChoices.length);
     require(iter.neq(0));
-    uint16 actionChoiceId = nextActionChoiceId;
-    nextActionChoiceId = actionChoiceId + iter.asUint16();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
-      actionChoices[_actionId][actionChoiceId + i] = _actionChoices[i];
+      _addActionChoice(_actionId, _actionChoiceIds[i], _actionChoices[i]);
     }
-    emit AddActionChoices(_actionId, actionChoiceId, _actionChoices);
+    emit AddActionChoices(_actionId, _actionChoiceIds, _actionChoices);
   }
 
   function addBulkActionChoices(
     uint16[] calldata _actionIds,
+    uint16[][] calldata _actionChoiceIds,
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
     U256 iter = U256.wrap(0);
     require(_actionIds.length != (0) && _actionIds.length == _actionChoices.length);
-    U256 actionChoiceId = U256.wrap(nextActionChoiceId);
-    U256 count;
     while (iter.lt(_actionIds.length)) {
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
-      emit AddActionChoices(actionId, (actionChoiceId + count).asUint16(), _actionChoices[i]);
+      emit AddActionChoices(actionId, _actionChoiceIds[i], _actionChoices[i]);
       U256 iter2 = U256.wrap(0);
+      require(_actionChoiceIds[i].length == _actionChoices[i].length);
       while (iter2.lt(_actionChoices[i].length)) {
         uint16 j = iter2.asUint16();
-        actionChoices[actionId][(actionChoiceId + count).asUint16()] = _actionChoices[i][j];
-        count = count.inc();
+        _addActionChoice(actionId, _actionChoiceIds[i][j], _actionChoices[i][j]);
         iter2 = iter2.inc();
       }
       iter = iter.inc();
     }
-    nextActionChoiceId = (actionChoiceId + count).asUint16();
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {

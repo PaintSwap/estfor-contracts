@@ -1251,7 +1251,7 @@ describe("Players", () => {
       const actionId = await getActionId(tx);
 
       // Logs go in, nothing comes out
-      tx = await world.addActionChoice(actionId, {
+      tx = await world.addActionChoice(actionId, 1, {
         skill: Skill.FIREMAKING,
         diff: 0,
         xpPerHour: 3600,
@@ -1378,7 +1378,7 @@ describe("Players", () => {
         const actionId = await getActionId(tx);
 
         // Logs go in, nothing comes out
-        tx = await world.addActionChoice(actionId, {
+        tx = await world.addActionChoice(actionId, 1, {
           skill: Skill.FIREMAKING,
           diff: 0,
           xpPerHour: 3600,
@@ -1516,7 +1516,7 @@ describe("Players", () => {
         const actionId = await getActionId(tx);
 
         // Logs go in, nothing comes out
-        tx = await world.addActionChoice(actionId, {
+        tx = await world.addActionChoice(actionId, 1, {
           skill: Skill.FIREMAKING,
           diff: 0,
           xpPerHour: 3600,
@@ -1664,7 +1664,7 @@ describe("Players", () => {
       const actionId = await getActionId(tx);
 
       // Ores go in, bars come out
-      tx = await world.addActionChoice(actionId, {
+      tx = await world.addActionChoice(actionId, 1, {
         skill: Skill.SMITHING,
         diff: 0,
         xpPerHour: 3600,
@@ -1969,7 +1969,7 @@ describe("Players", () => {
       });
       const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(NONE, {
+      tx = await world.addActionChoice(NONE, 1, {
         ...emptyActionChoice,
         skill: Skill.ATTACK,
       });
@@ -2066,7 +2066,7 @@ describe("Players", () => {
       });
       const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(NONE, {
+      tx = await world.addActionChoice(NONE, 1, {
         ...emptyActionChoice,
         skill: Skill.ATTACK,
       });
@@ -2161,7 +2161,7 @@ describe("Players", () => {
       });
       const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(NONE, {
+      tx = await world.addActionChoice(NONE, 1, {
         ...emptyActionChoice,
         skill: Skill.ATTACK,
       });
@@ -2268,7 +2268,7 @@ describe("Players", () => {
         const scrollsConsumedRate = 1 * 100; // per hour
         // Combat uses none as it's not tied to a specific action (only combat ones)
         // Fire blast
-        tx = await world.addActionChoice(NONE, {
+        tx = await world.addActionChoice(NONE, 1, {
           skill: Skill.MAGIC,
           diff: 2,
           xpPerHour: 0,
@@ -2607,7 +2607,7 @@ describe("Players", () => {
       await itemNFT.testOnlyMint(alice.address, BRONZE_SWORD, 1);
       await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 2);
       const timespan = 3600 * 3; // 3 hours
-      tx = await world.addActionChoice(NONE, {
+      tx = await world.addActionChoice(NONE, 1, {
         ...emptyActionChoice,
         skill: Skill.ATTACK,
       });

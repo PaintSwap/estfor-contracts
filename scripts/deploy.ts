@@ -233,6 +233,7 @@ async function main() {
 
   tx = await world.addBulkActionChoices(
     [fireMakingActionId, smithMakingActionId, NONE, NONE],
+    [[1, 2], [3, 4], [5], [6]],
     [firemakingChoices, smithingChoices, meleeChoices, magicChoices]
   );
 
