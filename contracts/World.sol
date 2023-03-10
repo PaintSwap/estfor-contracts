@@ -374,23 +374,22 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     uint16[] calldata _actionIds,
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
-    U256 iter = U256.wrap(_actionIds.length);
-    require(iter.neq(0));
-    require(iter.eq(_actionChoices.length));
+    U256 iter = U256.wrap(0);
+    require(_actionIds.length != (0) && _actionIds.length == _actionChoices.length);
     U256 actionChoiceId = U256.wrap(nextActionChoiceId);
     U256 count;
-    while (iter.neq(0)) {
-      iter = iter.dec();
+    while (iter.lt(_actionIds.length)) {
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
       emit AddActionChoices(actionId, (actionChoiceId + count).asUint16(), _actionChoices[i]);
-      U256 iter2 = U256.wrap(_actionChoices[i].length);
-      while (iter2.neq(0)) {
-        iter2 = iter2.dec();
+      U256 iter2 = U256.wrap(0);
+      while (iter2.lt(_actionChoices[i].length)) {
         uint16 j = iter2.asUint16();
         actionChoices[actionId][(actionChoiceId + count).asUint16()] = _actionChoices[i][j];
         count = count.inc();
+        iter2 = iter2.inc();
       }
+      iter = iter.inc();
     }
     nextActionChoiceId = (actionChoiceId + count).asUint16();
   }

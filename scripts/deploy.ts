@@ -276,7 +276,7 @@ async function main() {
 
   // Next firemaking
   const queuedActionFiremaking: QueuedAction = {
-    attire: {...noAttire, helmet: BRONZE_HELMET, gauntlets: BRONZE_GAUNTLETS},
+    attire: {...noAttire},
     actionId: allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1,
     combatStyle: CombatStyle.NONE,
     choiceId: 1,
