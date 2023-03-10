@@ -89,7 +89,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert ItemCannotBeBought();
     }
     // Pay
-    brush.transferFrom(msg.sender, address(this), price);
+    if (!brush.transferFrom(msg.sender, address(this), price)) {
+      revert TransferFailed();
+    }
     // Burn half, the rest goes into the pool for sellable items
     brush.burn(price / 2);
 
@@ -119,7 +121,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
 
     // Pay
-    brush.transferFrom(msg.sender, address(this), totalBrush);
+    if (!brush.transferFrom(msg.sender, address(this), totalBrush)) {
+      revert TransferFailed();
+    }
     // Burn half, the rest goes into the pool for sellable items
     brush.burn(totalBrush / 2);
 
