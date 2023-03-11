@@ -57,8 +57,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   uint public royaltyFee;
   address public royaltyReceiver;
 
-  bytes32 merkleRoot; // For airdrop
-  mapping(address whitelistedUser => uint amount) numMintedFromWhitelist;
+  bytes32 public merkleRoot; // For airdrop
+  mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
   uint public constant MAX_ALPHA_WHITELIST = 2;
 
   modifier isOwnerOfPlayer(uint playerId) {
@@ -308,5 +308,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     editNameCost = _editNameCost;
   }
 
+  // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

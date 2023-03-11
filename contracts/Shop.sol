@@ -35,8 +35,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     uint128 price;
   }
 
-  IBrushToken brush;
-  ItemNFT itemNFT;
+  IBrushToken public brush;
+  ItemNFT public itemNFT;
   mapping(uint itemId => uint price) public shopItems;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -190,5 +190,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     itemNFT = _itemNFT;
   }
 
+  // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

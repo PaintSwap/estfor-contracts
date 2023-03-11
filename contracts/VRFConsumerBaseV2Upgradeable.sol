@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /** ****************************************************************************
  * @notice Interface for contracts using VRF randomness
@@ -103,6 +103,7 @@ abstract contract VRFConsumerBaseV2Upgradeable is Initializable {
   /**
    * @dev Initializes the contract setting the deployer as the initial owner.
    */
+  // solhint-disable-next-line func-name-mixedcase
   function __VRFConsumerBaseV2_init(address _vrfCoordinator) internal onlyInitializing {
     vrfCoordinator = _vrfCoordinator;
   }

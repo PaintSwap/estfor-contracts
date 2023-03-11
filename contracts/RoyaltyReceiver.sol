@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IBrushToken.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IBrushToken} from "./interfaces/IBrushToken.sol";
 
 interface Router {
   function swapExactETHForTokens(
@@ -16,11 +16,11 @@ interface Router {
 contract RoyaltyReceiver is Ownable {
   error AddressZero();
 
-  Router router;
-  address pool;
-  IBrushToken brush;
-  address[] buyPath;
-  uint constant deadlineDuration = 10 minutes; // Doesn't matter
+  Router public router;
+  address public pool;
+  IBrushToken public brush;
+  address[] public buyPath;
+  uint public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
   constructor(Router _router, address _pool, IBrushToken _brush, address[] memory _buyPath) {
     pool = _pool;
@@ -39,7 +39,7 @@ contract RoyaltyReceiver is Ownable {
   }
 
   receive() external payable {
-    uint deadline = block.timestamp + deadlineDuration;
+    uint deadline = block.timestamp + DEADLINE_DURATION;
     // Buy brush and send it to the pool
     uint[] memory amounts = router.swapExactETHForTokens{value: msg.value}(0, buyPath, address(this), deadline);
     brush.transfer(pool, amounts[amounts.length - 1]);

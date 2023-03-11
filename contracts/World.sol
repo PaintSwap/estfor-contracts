@@ -57,6 +57,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     CombatStats combatStats;
   }
 
+  // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface public COORDINATOR;
 
   // Your subscription ID.
@@ -72,14 +73,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   // The gas lane to use, which specifies the maximum gas price to bump to.
   // For a list of available gas lanes on each network, this is 10000gwei
   // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
-  bytes32 constant keyHash = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
+  bytes32 public constant KEY_HASH = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
 
-  uint32 constant CALLBACK_GAS_LIMIT = 100000;
+  uint32 public constant CALLBACK_GAS_LIMIT = 100000;
   // The default is 3, but you can set this higher.
-  uint16 constant REQUEST_CONFIRMATIONS = 1;
+  uint16 public constant REQUEST_CONFIRMATIONS = 1;
   // For this example, retrieve 1 random value in one request.
   // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-  uint32 constant NUM_WORDS = 1;
+  uint32 public constant NUM_WORDS = 1;
 
   uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
@@ -88,10 +89,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  bytes32 dailyRewards; // Effectively stores equipment[8] which is packed, first 7 are daily, last one is weekly reward
+  bytes32 public dailyRewards; // Effectively stores equipment[8] which is packed, first 7 are daily, last one is weekly reward
 
-  mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) public actionChoices;
-  mapping(uint actionId => CombatStats combatStats) actionCombatStats;
+  mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private actionChoices;
+  mapping(uint actionId => CombatStats combatStats) private actionCombatStats;
 
   mapping(uint actionId => ActionRewards actionRewards) private actionRewards;
 
@@ -171,7 +172,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // Will revert if subscription is not set and funded.
     requestId = COORDINATOR.requestRandomWords(
-      keyHash,
+      KEY_HASH,
       subscriptionId,
       REQUEST_CONFIRMATIONS,
       CALLBACK_GAS_LIMIT,
@@ -506,5 +507,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit SetAvailableAction(_actionId, _isAvailable);
   }
 
+  // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
