@@ -71,6 +71,7 @@ enum Skill {
 }
 
 enum EquipPosition {
+  NONE,
   HEAD,
   NECK,
   BODY,
@@ -82,7 +83,6 @@ enum EquipPosition {
   LEFT_HAND,
   RIGHT_HAND,
   BOTH_HANDS,
-  NONE,
   ARROW_SATCHEL,
   MAGIC_BAG,
   FOOD,

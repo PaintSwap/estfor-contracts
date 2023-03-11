@@ -32,6 +32,12 @@ To deploy the contracts:
 yarn deploy
 ```
 
+To check storage slot packing of the test file:
+
+```shell
+yarn umlStorage
+```
+
 ### Fantom mainnet deployed contract addresses:
 
 PlayerNFT [0x...](https://ftmscan.com/address/)  

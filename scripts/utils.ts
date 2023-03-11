@@ -433,6 +433,7 @@ export const MYSTERY_BOX = 65535;
 export const RAID_PASS = MYSTERY_BOX - 1;
 
 export enum EquipPosition {
+  NONE,
   HEAD,
   NECK,
   BODY,
@@ -444,7 +445,6 @@ export enum EquipPosition {
   LEFT_HAND,
   RIGHT_HAND,
   BOTH_HANDS,
-  NONE,
   ARROW_SATCHEL,
   MAGIC_BAG,
   FOOD,

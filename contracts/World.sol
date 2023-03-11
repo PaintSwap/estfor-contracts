@@ -48,6 +48,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
 
+  // This is only used as an input arg
   struct Action {
     uint16 actionId;
     ActionInfo info;

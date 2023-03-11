@@ -11,3 +11,5 @@ typechain-types
 cache
 artifacts
 
+# sol2uml
+TestStorageSlots.svg
