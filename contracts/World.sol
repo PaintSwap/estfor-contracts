@@ -346,6 +346,16 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // Set the rewards
     ActionRewards storage actionReward = actionRewards[_action.actionId];
+    _setActionGuaranteedRewards(_action, actionReward);
+    // Now do the same for randomRewards
+    _setActionRandomRewards(_action, actionReward);
+
+    if (_action.info.skill == Skill.COMBAT) {
+      actionCombatStats[_action.actionId] = _action.combatStats;
+    }
+  }
+
+  function _setActionGuaranteedRewards(Action calldata _action, ActionRewards storage actionReward) private {
     if (_action.guaranteedRewards.length != 0) {
       actionReward.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
       actionReward.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
@@ -358,7 +368,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       actionReward.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
       actionReward.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
     }
-    // Now do the same for randomRewards
+  }
+
+  function _setActionRandomRewards(Action calldata _action, ActionRewards storage actionReward) private {
     if (_action.randomRewards.length != 0) {
       actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
       actionReward.randomRewardChance1 = uint16(_action.randomRewards[0].rate);
@@ -374,10 +386,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (_action.randomRewards.length > 3) {
       actionReward.randomRewardTokenId4 = _action.randomRewards[3].itemTokenId;
       actionReward.randomRewardChance4 = uint16(_action.randomRewards[3].rate);
-    }
-
-    if (_action.info.skill == Skill.COMBAT) {
-      actionCombatStats[_action.actionId] = _action.combatStats;
     }
   }
 
