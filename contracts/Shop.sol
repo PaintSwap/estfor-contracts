@@ -10,8 +10,6 @@ import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 
 // solhint-disable-next-line no-global-import
-import "./globals/types.sol";
-// solhint-disable-next-line no-global-import
 import "./globals/items.sol";
 
 // The contract allows items to be bought/sold

@@ -8,9 +8,11 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 // solhint-disable-next-line no-global-import
-import "../globals/types.sol";
+import "../globals/players.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/items.sol";
+// solhint-disable-next-line no-global-import
+import "../globals/rewards.sol";
 
 abstract contract PlayersBase {
   using Unsafe256 for U256;

@@ -7,8 +7,12 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 
+// solhint-disable-next-line no-global-import
+import "../globals/players.sol";
+// solhint-disable-next-line no-global-import
+import "../globals/actions.sol";
+// solhint-disable-next-line no-global-import
 import "../globals/items.sol";
-import "../globals/types.sol";
 
 library PlayerLibrary {
   using Strings for uint32;
@@ -100,7 +104,7 @@ library PlayerLibrary {
   // Index not level, add one after (check for > max)
   function getLevel(uint256 _xp) public pure returns (uint16) {
     uint256 low = 0;
-    uint256 high = xpBytes.length / 3;
+    uint256 high = XP_BYTES.length / 3;
 
     while (low < high) {
       uint256 mid = (low + high) / 2;
@@ -122,7 +126,7 @@ library PlayerLibrary {
 
   function _getXP(uint256 _index) private pure returns (uint24) {
     uint256 index = _index * 3;
-    return uint24(xpBytes[index] | (bytes3(xpBytes[index + 1]) >> 8) | (bytes3(xpBytes[index + 2]) >> 16));
+    return uint24(XP_BYTES[index] | (bytes3(XP_BYTES[index + 1]) >> 8) | (bytes3(XP_BYTES[index + 2]) >> 16));
   }
 
   function foodConsumedView(

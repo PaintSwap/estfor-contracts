@@ -14,7 +14,7 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
 
 // solhint-disable-next-line no-global-import
-import "./globals/types.sol";
+import "./globals/players.sol";
 // solhint-disable-next-line no-global-import
 import "./globals/items.sol";
 

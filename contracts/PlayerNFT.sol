@@ -13,8 +13,6 @@ import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
 // solhint-disable-next-line no-global-import
-import "./globals/types.sol";
-// solhint-disable-next-line no-global-import
 import "./globals/items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data

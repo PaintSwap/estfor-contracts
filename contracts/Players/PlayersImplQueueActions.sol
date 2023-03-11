@@ -5,9 +5,11 @@ import {Unsafe256, U256} from "../lib/Unsafe256.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 
 // solhint-disable-next-line no-global-import
+import "../globals/players.sol";
+// solhint-disable-next-line no-global-import
 import "../globals/items.sol";
 // solhint-disable-next-line no-global-import
-import "../globals/types.sol";
+import "../globals/actions.sol";
 
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using Unsafe256 for U256;
