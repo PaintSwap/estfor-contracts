@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "./PlayersBase.sol";
+import {PlayersBase} from "./PlayersBase.sol";
 
 // Use this first to get the same storage layout for implementation files as the main contract
 contract PlayersUpgradeableImplDummyBase {

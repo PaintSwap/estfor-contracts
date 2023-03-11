@@ -4,7 +4,9 @@ pragma solidity ^0.8.19;
 import {Unsafe256, U256} from "../lib/Unsafe256.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 
+// solhint-disable-next-line no-global-import
 import "../items.sol";
+// solhint-disable-next-line no-global-import
 import "../types.sol";
 
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {

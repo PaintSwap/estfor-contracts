@@ -10,7 +10,9 @@ import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {Unsafe256, U256} from "./lib/Unsafe256.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
+// solhint-disable-next-line no-global-import
 import "./types.sol";
+// solhint-disable-next-line no-global-import
 import "./items.sol";
 
 // Fantom VRF

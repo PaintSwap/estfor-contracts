@@ -5,7 +5,9 @@ import {Unsafe256, U256, UnsafeMath} from "../lib/Unsafe256.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
+// solhint-disable-next-line no-global-import
 import "../items.sol";
+// solhint-disable-next-line no-global-import
 import "../types.sol";
 
 contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {

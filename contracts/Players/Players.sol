@@ -14,7 +14,9 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
+// solhint-disable-next-line no-global-import
 import "../types.sol";
+// solhint-disable-next-line no-global-import
 import "../items.sol";
 
 // External view functions that are in other implementation files

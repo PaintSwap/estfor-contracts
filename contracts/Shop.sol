@@ -9,7 +9,9 @@ import {Unsafe256, U256} from "./lib/Unsafe256.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 
+// solhint-disable-next-line no-global-import
 import "./types.sol";
+// solhint-disable-next-line no-global-import
 import "./items.sol";
 
 // The contract allows items to be bought/sold

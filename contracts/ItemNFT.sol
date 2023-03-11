@@ -13,7 +13,9 @@ import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
 
+// solhint-disable-next-line no-global-import
 import "./types.sol";
+// solhint-disable-next-line no-global-import
 import "./items.sol";
 
 // The NFT contract contains data related to the items and who owns them
