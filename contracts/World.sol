@@ -73,12 +73,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
   bytes32 constant keyHash = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
 
-  uint32 constant callbackGasLimit = 100000;
+  uint32 constant CALLBACK_GAS_LIMIT = 100000;
   // The default is 3, but you can set this higher.
-  uint16 constant requestConfirmations = 3;
+  uint16 constant REQUEST_CONFIRMATIONS = 1;
   // For this example, retrieve 1 random value in one request.
   // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-  uint32 constant numWords = 1;
+  uint32 constant NUM_WORDS = 1;
 
   uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
@@ -137,14 +137,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     requestId = COORDINATOR.requestRandomWords(
       keyHash,
       subscriptionId,
-      requestConfirmations,
-      callbackGasLimit,
-      numWords
+      REQUEST_CONFIRMATIONS,
+      CALLBACK_GAS_LIMIT,
+      NUM_WORDS
     );
 
     requestIds.push(requestId);
     lastSeedUpdatedTime += MIN_SEED_UPDATE_TIME;
-    emit RequestSent(requestId, numWords);
+    emit RequestSent(requestId, NUM_WORDS);
     return requestId;
   }
 
