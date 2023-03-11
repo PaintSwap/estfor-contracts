@@ -87,7 +87,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  Equipment[8] public dailyRewards; // Last one is the weekly reward
+  bytes32 dailyRewards; // Effectively stores equipment[8] which is packed, first 7 are daily, last one is weekly reward
 
   mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) public actionChoices;
   mapping(uint actionId => CombatStats combatStats) actionCombatStats;
@@ -110,18 +110,53 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     lastSeedUpdatedTime = startTime;
 
     // Issue new daily rewards
-    dailyRewards[0] = Equipment(COPPER_ORE, 100);
-    dailyRewards[1] = Equipment(COAL_ORE, 200);
-    dailyRewards[2] = Equipment(RUBY, 100);
-    dailyRewards[3] = Equipment(MITHRIL_BAR, 200);
-    dailyRewards[4] = Equipment(COOKED_BOWFISH, 100);
-    dailyRewards[5] = Equipment(LEAF_FRAGMENTS, 20);
-    dailyRewards[6] = Equipment(HELL_SCROLL, 300);
+    Equipment[8] memory rewards = [
+      Equipment(COPPER_ORE, 100),
+      Equipment(COAL_ORE, 200),
+      Equipment(RUBY, 100),
+      Equipment(MITHRIL_BAR, 200),
+      Equipment(COOKED_BOWFISH, 100),
+      Equipment(LEAF_FRAGMENTS, 20),
+      Equipment(HELL_SCROLL, 300),
+      Equipment(XP_BOOST, 1)
+    ];
 
-    // The weekly reward
-    dailyRewards[7] = Equipment(XP_BOOST, 1);
+    _storeDailyRewards(rewards);
+    emit NewDailyRewards(rewards);
+  }
 
-    emit NewDailyRewards(dailyRewards);
+  function _getDailyReward(uint256 _day) private view returns (Equipment memory equipment) {
+    bytes32 rewardItemTokenId = (dailyRewards & ((bytes32(hex"ffff0000") >> (_day * 32)))) >> ((7 - _day) * 32 + 16);
+    bytes32 rewardAmount = (dailyRewards & ((bytes32(hex"0000ffff") >> (_day * 32)))) >> ((7 - _day) * 32);
+    assembly ("memory-safe") {
+      mstore(equipment, rewardItemTokenId)
+      mstore(add(equipment, 32), rewardAmount)
+    }
+  }
+
+  function _getUpdatedDailyReward(
+    uint _index,
+    Equipment memory _equipment,
+    bytes32 _rewards
+  ) private pure returns (bytes32) {
+    bytes32 rewardItemTokenId;
+    bytes32 rewardAmount;
+    assembly ("memory-safe") {
+      rewardItemTokenId := mload(_equipment)
+      rewardAmount := mload(add(_equipment, 32))
+    }
+
+    _rewards = _rewards | (rewardItemTokenId << ((7 - _index) * 32 + 16));
+    _rewards = _rewards | (rewardAmount << ((7 - _index) * 32));
+    return _rewards;
+  }
+
+  function _storeDailyRewards(Equipment[8] memory equipments) private {
+    bytes32 rewards;
+    for (uint i = 0; i < equipments.length; ++i) {
+      rewards = _getUpdatedDailyReward(i, equipments[i], rewards);
+    }
+    dailyRewards = rewards;
   }
 
   function requestSeedUpdate() external returns (uint256 requestId) {
@@ -168,27 +203,29 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     // Are we at the threshold for a new week
     if (checkpoint == (block.timestamp / 1 days) * 1 days) {
       // Issue new daily rewards based on the new seed (TODO)
-      dailyRewards[0] = Equipment(COPPER_ORE, 100);
-      dailyRewards[1] = Equipment(COAL_ORE, 200);
-      dailyRewards[2] = Equipment(RUBY, 100);
-      dailyRewards[3] = Equipment(MITHRIL_BAR, 200);
-      dailyRewards[4] = Equipment(COOKED_BOWFISH, 100);
-      dailyRewards[5] = Equipment(LEAF_FRAGMENTS, 20);
-      dailyRewards[6] = Equipment(HELL_SCROLL, 300);
-
-      // The weekly reward
-      dailyRewards[7] = Equipment(XP_BOOST, 1);
+      Equipment[8] memory rewards = [
+        Equipment(COPPER_ORE, 100),
+        Equipment(COAL_ORE, 200),
+        Equipment(RUBY, 100),
+        Equipment(MITHRIL_BAR, 200),
+        Equipment(COOKED_BOWFISH, 100),
+        Equipment(LEAF_FRAGMENTS, 20),
+        Equipment(HELL_SCROLL, 300),
+        Equipment(XP_BOOST, 1)
+      ];
+      _storeDailyRewards(rewards);
+      emit NewDailyRewards(rewards);
     }
   }
 
   function getDailyReward() external view returns (Equipment memory equipment) {
     uint checkpoint = (block.timestamp / 1 weeks) * 1 weeks;
-    uint offset = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
-    equipment = dailyRewards[offset];
+    uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
+    equipment = _getDailyReward(day);
   }
 
   function getWeeklyReward() external view returns (Equipment memory equipment) {
-    equipment = dailyRewards[7];
+    equipment = _getDailyReward(7);
   }
 
   function _getSeed(uint _timestamp) private view returns (uint) {
