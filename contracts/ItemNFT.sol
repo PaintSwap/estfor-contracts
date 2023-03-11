@@ -14,9 +14,9 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
 
 // solhint-disable-next-line no-global-import
-import "./types.sol";
+import "./globals/types.sol";
 // solhint-disable-next-line no-global-import
-import "./items.sol";
+import "./globals/items.sol";
 
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {

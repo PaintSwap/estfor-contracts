@@ -11,9 +11,9 @@ import {Unsafe256, U256} from "./lib/Unsafe256.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
 // solhint-disable-next-line no-global-import
-import "./types.sol";
+import "./globals/types.sol";
 // solhint-disable-next-line no-global-import
-import "./items.sol";
+import "./globals/items.sol";
 
 // Fantom VRF
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634

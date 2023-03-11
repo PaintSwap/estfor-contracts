@@ -15,9 +15,9 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 // solhint-disable-next-line no-global-import
-import "../types.sol";
+import "../globals/types.sol";
 // solhint-disable-next-line no-global-import
-import "../items.sol";
+import "../globals/items.sol";
 
 // External view functions that are in other implementation files
 interface PlayerDelegateView {

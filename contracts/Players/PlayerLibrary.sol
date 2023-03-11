@@ -7,8 +7,8 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 
-import "../items.sol";
-import "../types.sol";
+import "../globals/items.sol";
+import "../globals/types.sol";
 
 library PlayerLibrary {
   using Strings for uint32;

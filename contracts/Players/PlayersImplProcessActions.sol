@@ -5,9 +5,9 @@ import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.so
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
 // solhint-disable-next-line no-global-import
-import "../items.sol";
+import "../globals/items.sol";
 // solhint-disable-next-line no-global-import
-import "../types.sol";
+import "../globals/types.sol";
 
 contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   constructor() {

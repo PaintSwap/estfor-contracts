@@ -10,9 +10,9 @@ import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 
 // solhint-disable-next-line no-global-import
-import "./types.sol";
+import "./globals/types.sol";
 // solhint-disable-next-line no-global-import
-import "./items.sol";
+import "./globals/items.sol";
 
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {

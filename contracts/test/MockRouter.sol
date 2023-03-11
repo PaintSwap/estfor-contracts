@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "./MockBrushToken.sol";
+import {MockBrushToken} from "./MockBrushToken.sol";
 
 contract MockRouter {
   function swapExactETHForTokens(

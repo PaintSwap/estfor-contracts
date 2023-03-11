@@ -13,9 +13,9 @@ import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
 // solhint-disable-next-line no-global-import
-import "./types.sol";
+import "./globals/types.sol";
 // solhint-disable-next-line no-global-import
-import "./items.sol";
+import "./globals/items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
