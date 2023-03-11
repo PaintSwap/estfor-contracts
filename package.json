@@ -19,6 +19,7 @@
     "@openzeppelin/contracts": "^4.8.2",
     "@openzeppelin/contracts-upgradeable": "^4.8.2",
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "@solidity-parser/parser": "./modules/parser",
     "@typechain/ethers-v5": "^10.2.0",
     "@typechain/hardhat": "^6.1.5",
     "@types/chai": "^4.3.4",
@@ -45,7 +46,14 @@
     "typechain": "^8.1.1",
     "typescript": "^4.9.5"
   },
+  "resolutions": {
+    "prettier-plugin-solidity/@solidity-parser/parser": "./modules/parser",
+    "solidity-coverage/@solidity-parser/parser": "./modules/parser",
+    "solhint/@solidity-parser/parser": "./modules/parser",
+    "sol2uml/@solidity-parser/parser": "./modules/parser"
+  },
   "scripts": {
+    "preinstall": "git submodule update --recursive; cd modules/parser; npm install; npm run build;",
     "console": "npx hardhat console",
     "compile": "npx hardhat compile",
     "clean": "npx hardhat clean",
