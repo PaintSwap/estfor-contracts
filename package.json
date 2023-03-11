@@ -53,7 +53,7 @@
     "sol2uml/@solidity-parser/parser": "./modules/parser"
   },
   "scripts": {
-    "preinstall": "git submodule update --recursive; cd modules/parser; npm install; npm run build;",
+    "preinstall": "git submodule update --init --recursive; cd modules/parser; npm install; npm run build;",
     "console": "npx hardhat console",
     "compile": "npx hardhat compile",
     "clean": "npx hardhat clean",
