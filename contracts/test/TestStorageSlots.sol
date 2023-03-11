@@ -5,33 +5,28 @@ pragma solidity ^0.8.19;
 contract TestStorageSlots {
   struct Item {
     EquipPosition equipPosition;
-    bool hasNonCombatStats;
-    bool hasCombatStats;
-    bool exists;
+    // Can it be transferred?
+    bool isTransferable;
     // Food
     uint16 healthRestored;
     // Boost vial
     BoostType boostType;
     uint16 boostValue; // Varies, could be the % increase
     uint24 boostDuration; // How long the effect of the boost last
-    // Can it be transferred?
-    bool isTransferable;
-    // Minimum requirements in this skill to use this item
+    // Combat stats
+    int16 melee;
+    int16 magic;
+    int16 range;
+    int16 meleeDefence;
+    int16 magicDefence;
+    int16 rangeDefence;
+    int16 health;
+    // Minimum requirements in this skill to use this item (can be NONE)
     Skill skill;
     uint32 minSkillPoints;
-    // Combat stats
-    int8 melee;
-    int8 magic;
-    int8 range;
-    int8 meleeDefence;
-    int8 magicDefence;
-    int8 rangeDefence;
-    int8 health;
-    // Noncombat skills
+    // Noncombat skill
     Skill skill1;
     int16 skillDiff1;
-    //    Skill skill2;
-    //    int16 diff2;
   }
 
   enum BoostType {
@@ -72,7 +67,7 @@ contract TestStorageSlots {
   }
 
   enum EquipPosition {
-    NONE,
+    NONE, // Used as a sentinel value
     HEAD,
     NECK,
     BODY,
@@ -88,7 +83,8 @@ contract TestStorageSlots {
     MAGIC_BAG,
     FOOD,
     AUX, // wood, seeds  etc..
-    BOOST_VIAL
+    BOOST_VIAL,
+    NO_POSITION
   }
 
   // Loot

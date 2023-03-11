@@ -38,7 +38,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotPlayersOrShop();
 
   // Input only
-  struct NonCombatStat {
+  struct NonCombatStats {
     Skill skill;
     int16 diff;
   }
@@ -46,7 +46,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // Contains everything you need to create an item
   struct InputItem {
     CombatStats combatStats;
-    NonCombatStat[] nonCombatStats;
+    NonCombatStats nonCombatStats;
     uint16 tokenId;
     EquipPosition equipPosition;
     // Can it be transferred?
@@ -163,7 +163,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _exists(uint _tokenId) private view returns (bool) {
-    return items[_tokenId].exists;
+    return items[_tokenId].equipPosition != EquipPosition.NONE;
   }
 
   function _getItem(uint _tokenId) private view returns (Item memory) {
@@ -182,7 +182,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
-    if (!items[_tokenId].exists) {
+    if (!_exists(_tokenId)) {
       revert ItemDoesNotExist();
     }
     return items[_tokenId].equipPosition;
@@ -235,7 +235,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      if (items[_ids[i]].exists && !items[_ids[i]].isTransferable) {
+      if (_exists(_ids[i]) && !items[_ids[i]].isTransferable) {
         revert ItemNotTransferable();
       }
     }
@@ -300,11 +300,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     assembly ("memory-safe") {
       hasCombat := not(iszero(_combatStats))
     }
-    bool hasNonCombat = _item.nonCombatStats.length != 0;
     item = items[_item.tokenId];
-    item.exists = true;
-    item.hasCombatStats = hasCombat;
-    item.hasNonCombatStats = hasNonCombat;
     item.equipPosition = _item.equipPosition;
     item.isTransferable = _item.isTransferable;
 
@@ -318,11 +314,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       item.rangeDefence = int8(_item.combatStats.rangeDefence);
       item.health = int8(_item.combatStats.health);
     }
-    if (hasNonCombat) {
-      item.skill1 = _item.nonCombatStats[0].skill;
-      item.skillDiff1 = _item.nonCombatStats[0].diff;
-      // TODO: Add more later if necessary
-    }
+    item.skill1 = _item.nonCombatStats.skill;
+    item.skillDiff1 = _item.nonCombatStats.diff;
 
     if (_item.healthRestored != 0) {
       item.healthRestored = _item.healthRestored;

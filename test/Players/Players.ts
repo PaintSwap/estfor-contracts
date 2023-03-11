@@ -413,6 +413,14 @@ describe("Players", () => {
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
   });
 
+  describe("Minimum skill points", () => {
+    it("Actions", async () => {});
+    it("ActionChoices", async () => {});
+    it("Consumeables", async () => {});
+    it("Attire", async () => {});
+    it("Left/Right equipment", async () => {});
+  });
+
   /*  it("Check already equipped", async () => {
     const {playerId, players, playerNFT, itemNFT, alice} = await loadFixture(playersFixture);
     await itemNFT.testOnlyMint(alice.address, BRONZE_GAUNTLETS, 1);

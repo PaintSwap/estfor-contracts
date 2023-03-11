@@ -32,58 +32,16 @@ import {
   WOODCUTTING_MAX,
 } from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
+import {setupBasicWoodcutting} from "./utils";
 
 const actionIsAvailable = true;
 
 describe("Non-Combat Actions", () => {
-  // Test minSkillPoints
   // Test isDynamic
-  // Test incorrect item position and range
   it("Woodcutting", async () => {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
 
-    const rate = 100 * 100; // per hour
-    const tx = await world.addAction({
-      actionId: 1,
-      info: {
-        skill: Skill.WOODCUTTING,
-        xpPerHour: 3600,
-        minSkillPoints: 0,
-        isDynamic: false,
-        numSpawn: 0,
-        handItemTokenIdRangeMin: BRONZE_AXE,
-        handItemTokenIdRangeMax: WOODCUTTING_MAX,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: false,
-      },
-      guaranteedRewards: [{itemTokenId: LOG, rate}],
-      randomRewards: [],
-      combatStats: emptyCombatStats,
-    });
-    const actionId = await getActionId(tx);
-
-    const timespan = 3600;
-    const queuedAction: QueuedAction = {
-      attire: noAttire,
-      actionId,
-      combatStyle: CombatStyle.NONE,
-      choiceId: NONE,
-      choiceId1: NONE,
-      choiceId2: NONE,
-      regenerateId: NONE,
-      timespan,
-      rightHandEquipmentTokenId: BRONZE_AXE,
-      leftHandEquipmentTokenId: NONE,
-      startTime: "0",
-      isValid: true,
-    };
-
-    await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
-    });
+    const {queuedAction, timespan, rate} = await setupBasicWoodcutting();
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
 

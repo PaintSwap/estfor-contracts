@@ -433,7 +433,7 @@ export const MYSTERY_BOX = 65535;
 export const RAID_PASS = MYSTERY_BOX - 1;
 
 export enum EquipPosition {
-  NONE,
+  NONE, // Used as a sentinel value
   HEAD,
   NECK,
   BODY,
@@ -450,6 +450,7 @@ export enum EquipPosition {
   FOOD,
   AUX, // wood, seeds etc..
   BOOST_VIAL,
+  NO_POSITION, // Use this if this can't be equipped
 }
 
 export type CombatStats = {
@@ -601,6 +602,11 @@ type ActionChoice = {
   outputNum: number; // Not used yet, always 1
 };
 
+export const emptyNonCombatStats: NonCombatStats = {
+  skill: Skill.NONE,
+  diff: 0,
+};
+
 export const emptyCombatStats: CombatStats = {
   melee: 0,
   magic: 0,
@@ -650,14 +656,14 @@ export enum BoostType {
   ABSENCE,
 }
 // Input only
-type NonCombatStat = {
+type NonCombatStats = {
   skill: Skill;
   diff: number;
 };
 // Contains everything you need to create an item
 type InputItem = {
   combatStats: CombatStats;
-  nonCombatStats: NonCombatStat[];
+  nonCombatStats: NonCombatStats;
   tokenId: number;
   equipPosition: EquipPosition;
   // Can this be transferred to another player?
@@ -682,7 +688,7 @@ type XPThresholdReward = {
 
 export const defaultInputItem = {
   combatStats: emptyCombatStats,
-  nonCombatStats: [],
+  nonCombatStats: emptyNonCombatStats,
   isTransferable: true,
   skill: Skill.NONE,
   minSkillPoints: 0,
