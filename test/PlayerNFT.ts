@@ -128,7 +128,10 @@ describe("PlayerNFT", () => {
     const {playerNFT, alice} = await loadFixture(deployContracts);
     const nameTooLong = ethers.utils.formatBytes32String("");
     const avatarId = 1;
-    await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong, true)).to.be.reverted;
+    await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong, true)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NameCannotBeEmpty"
+    );
   });
 
   it("Name too long", async () => {
@@ -149,18 +152,22 @@ describe("PlayerNFT", () => {
     const avatarId = 1;
     const makeActive = true;
     await createPlayer(playerNFT, avatarId, alice, name, makeActive);
-    await expect(createPlayer(playerNFT, avatarId, alice, name, true)).to.be.reverted;
+    await expect(createPlayer(playerNFT, avatarId, alice, name, true)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NameAlreadyExists"
+    );
   });
 
   it("Edit Name", async () => {
     const {playerId, playerNFT, alice, brush, origName, editNameCost} = await loadFixture(deployContracts);
     const name = ethers.utils.formatBytes32String("My name is edited");
-    await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.reverted; // Haven't got the brush
+    await brush.connect(alice).approve(playerNFT.address, editNameCost * 3);
+    await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.revertedWith(
+      "ERC20: transfer amount exceeds balance"
+    );
+    await brush.mint(alice.address, editNameCost * 3);
 
-    await brush.mint(alice.address, editNameCost * 2);
-    await brush.connect(alice).approve(playerNFT.address, editNameCost * 2);
-
-    await expect(playerNFT.editName(playerId, name)).to.be.reverted; // Not the owner
+    await expect(playerNFT.editName(playerId, name)).to.be.revertedWithCustomError(playerNFT, "NotOwner");
     expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
       .be.true;
 
@@ -179,7 +186,10 @@ describe("PlayerNFT", () => {
       ethers.utils.formatBytes32String("name"),
       makeActive
     );
-    await expect(playerNFT.connect(alice).editName(newPlayerId, name)).to.be.reverted;
+    await expect(playerNFT.connect(alice).editName(newPlayerId, name)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NameAlreadyExists"
+    );
   });
 
   it("uri", async () => {

@@ -40,7 +40,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error NotInWhitelist();
   error ERC1155Metadata_URIQueryForNonexistentToken();
   error ERC1155BurnForbidden();
-  error TransferFailed();
 
   uint public nextPlayerId;
 
@@ -215,13 +214,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function editName(uint _playerId, bytes32 _newName) external isOwnerOfPlayer(_playerId) {
     uint brushCost = editNameCost;
     // Pay
-    if (!brush.transferFrom(msg.sender, address(this), brushCost)) {
-      revert TransferFailed();
-    }
+    brush.transferFrom(msg.sender, address(this), brushCost);
     // Send half to the pool (currently shop)
-    if (!brush.transferFrom(msg.sender, pool, brushCost - (brushCost / 2))) {
-      revert TransferFailed();
-    }
+    brush.transferFrom(msg.sender, pool, brushCost - (brushCost / 2));
     // Burn the other half
     brush.burn(brushCost / 2);
 

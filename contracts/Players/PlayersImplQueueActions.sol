@@ -14,19 +14,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _checkStartSlot();
   }
 
-  error NoItemBalance(uint16 itemTokenId);
-  error CannotEquipTwoHandedAndOtherEquipment();
-  error IncorrectRightHandEquipment(uint16 equippedItemTokenId);
-  error IncorrectLeftHandEquipment(uint16 equippedItemTokenId);
-  error IncorrectEquippedItem();
-  error NotABoostVial();
-  error StartTimeTooFarInTheFuture();
-  error UnsupportedRegenerateItem();
-  error InvalidCombatStyle();
-  error InvalidSkill();
-  error ActionChoiceIdRequired();
-  error InvalidEquipPosition();
-
   function _handleDailyRewards(address _from, uint _playerId) private {
     uint streakStart = (block.timestamp / 1 weeks) * 1 weeks;
     uint streakStartIndex = streakStart / 1 weeks;

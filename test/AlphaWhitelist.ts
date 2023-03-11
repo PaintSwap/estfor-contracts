@@ -116,7 +116,13 @@ describe("AlphaWhitelist", () => {
     }
 
     const newName = ethers.utils.formatBytes32String("Cheesy poofs");
-    await expect(playerNFT.mintWhitelist(1, newName, true, proof)).to.be.reverted; // Cannot mint again
-    await expect(playerNFT.connect(alice).mintWhitelist(1, newName, true, proof)).to.be.reverted; // Not whitelisted
+    await expect(playerNFT.mintWhitelist(1, newName, true, proof)).to.be.revertedWithCustomError(
+      playerNFT,
+      "MintedMoreThanAllowed"
+    );
+    await expect(playerNFT.connect(alice).mintWhitelist(1, newName, true, proof)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NotInWhitelist"
+    );
   });
 });

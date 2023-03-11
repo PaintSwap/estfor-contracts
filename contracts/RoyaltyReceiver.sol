@@ -15,7 +15,7 @@ interface Router {
 
 contract RoyaltyReceiver is Ownable {
   error AddressZero();
-  error TransferFailed();
+
   Router router;
   address pool;
   IBrushToken brush;
@@ -42,8 +42,6 @@ contract RoyaltyReceiver is Ownable {
     uint deadline = block.timestamp + deadlineDuration;
     // Buy brush and send it to the pool
     uint[] memory amounts = router.swapExactETHForTokens{value: msg.value}(0, buyPath, address(this), deadline);
-    if (!brush.transfer(pool, amounts[amounts.length - 1])) {
-      revert TransferFailed();
-    }
+    brush.transfer(pool, amounts[amounts.length - 1]);
   }
 }

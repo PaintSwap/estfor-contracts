@@ -61,6 +61,19 @@ abstract contract PlayersBase {
   error MinimumSkillPointsNotReached();
   error InvalidStartSlot();
 
+  error NoItemBalance(uint16 itemTokenId);
+  error CannotEquipTwoHandedAndOtherEquipment();
+  error IncorrectRightHandEquipment(uint16 equippedItemTokenId);
+  error IncorrectLeftHandEquipment(uint16 equippedItemTokenId);
+  error IncorrectEquippedItem();
+  error NotABoostVial();
+  error StartTimeTooFarInTheFuture();
+  error UnsupportedRegenerateItem();
+  error InvalidCombatStyle();
+  error InvalidSkill();
+  error ActionChoiceIdRequired();
+  error InvalidEquipPosition();
+
   uint32 public constant MAX_TIME = 1 days;
 
   uint constant MAX_MAIN_EQUIPMENT_ID = 65536 * 8;

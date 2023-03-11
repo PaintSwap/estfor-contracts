@@ -181,7 +181,6 @@ describe("Players", () => {
       editNameCost,
       mockOracleClient,
       avatarInfo,
-      playersImplQueueActions,
     };
   }
 
@@ -534,7 +533,10 @@ describe("Players", () => {
     };
 
     const equipments: Equipment[] = [{itemTokenId: BRONZE_BAR, amount: 3}];
-    await expect(players.addXPThresholdReward({xpThreshold: 499, equipments})).to.be.reverted;
+    await expect(players.addXPThresholdReward({xpThreshold: 499, equipments})).to.be.revertedWithCustomError(
+      players,
+      "XPThresholdNotFound"
+    );
     await players.addXPThresholdReward({xpThreshold: 500, equipments});
 
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
@@ -759,7 +761,7 @@ describe("Players", () => {
   // TODO: Check attire stats are as expected
 
   it("Attire equipPositions", async () => {
-    const {playerId, players, itemNFT, world, alice, playersImplQueueActions} = await loadFixture(deployContracts);
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
     let tx = await world.addAction({
       actionId: 1,
@@ -813,27 +815,27 @@ describe("Players", () => {
 
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.helmet = NONE;
     queuedAction.attire.amulet = BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.amulet = NONE;
     queuedAction.attire.armor = BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.armor = NONE;
     queuedAction.attire.boots = BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.boots = NONE;
     queuedAction.attire.tassets = BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(playersImplQueueActions, "InvalidEquipPosition");
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.tassets = NONE;
     queuedAction.attire.gauntlets = BRONZE_GAUNTLETS; // Correct
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
@@ -1924,7 +1926,7 @@ describe("Players", () => {
       expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(1); // Should be rounded down
     });
 
-    it("Incorrect equipment", async () => {
+    it("Incorrect left/right hand equipment", async () => {
       const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(deployContracts);
 
       const rate = 100 * 100; // per hour
@@ -1977,19 +1979,40 @@ describe("Players", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      // Incorrect equipment
-      await expect(players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.be.reverted;
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "InvalidArmEquipment");
 
-      // No equipment specified but is required
       queuedAction.rightHandEquipmentTokenId = NONE;
-      await expect(players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.be.reverted;
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "IncorrectEquippedItem");
 
+      queuedAction.leftHandEquipmentTokenId = BRONZE_AXE;
       queuedAction.rightHandEquipmentTokenId = BRONZE_AXE;
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "IncorrectLeftHandEquipment");
+
+      queuedAction.leftHandEquipmentTokenId = NONE;
+      queuedAction.rightHandEquipmentTokenId = BRONZE_AXE;
+      await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, BRONZE_AXE, 1, "0x");
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "DoNotHaveEnoughQuantityToEquipToAction");
+
+      await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
+
       // This works
       await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+
       // Specifying a combat style should fail
       queuedAction.combatStyle = CombatStyle.MELEE;
-      await expect(players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.be.reverted;
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "InvalidCombatStyle");
+
+      // TODO IncorrectRightHandEquipment
 
       // Transfer away, the action should just be skipped and no xp/loot should be given
       expect(await itemNFT.balanceOf(alice.address, BRONZE_AXE)).to.eq(1);
@@ -2019,7 +2042,7 @@ describe("Players", () => {
   });
 
   describe("Combat Actions", () => {
-    describe.only("Melee", async () => {
+    describe("Melee", async () => {
       async function deployContractsMelee() {
         const {playerId, players, itemNFT, world, alice} = await loadFixture(deployContracts);
 
