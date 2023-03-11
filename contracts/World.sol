@@ -57,17 +57,17 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     CombatStats combatStats;
   }
 
-  VRFCoordinatorV2Interface COORDINATOR;
+  VRFCoordinatorV2Interface public COORDINATOR;
 
   // Your subscription ID.
-  uint64 subscriptionId;
+  uint64 public subscriptionId;
 
   // Past request ids
   uint[] public requestIds; // Each one is a seed for a day
   mapping(uint requestId => uint randomWord) public randomWords;
   uint public lastSeedUpdatedTime;
 
-  uint startTime;
+  uint public startTime;
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
   // For a list of available gas lanes on each network, this is 10000gwei
