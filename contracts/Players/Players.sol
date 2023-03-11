@@ -160,6 +160,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (makeActive) {
       _setActivePlayer(_from, _playerId);
     }
+    Player storage player = players[_playerId];
+    player.health = 1;
+    player.melee = 1;
+    player.magic = 1;
+    player.range = 1;
+    player.defence = 1;
   }
 
   function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
@@ -210,8 +216,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     player.actionQueue = _queuedActions;
     emit SetActionQueue(_playerId, player.actionQueue);
   }
-
-  error err(bytes);
 
   function _startActions(
     uint _playerId,

@@ -73,6 +73,7 @@ abstract contract PlayersBase {
   error InvalidSkill();
   error ActionChoiceIdRequired();
   error InvalidEquipPosition();
+  error ItemDoesNotExist();
 
   uint32 public constant MAX_TIME = 1 days;
 

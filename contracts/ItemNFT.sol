@@ -26,7 +26,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   event EditItem(Item item, uint16 tokenId);
 
   error IdTooHigh();
-  error TokenDoesNotExist();
   error ItemNotTransferable();
   error InvalidChainId();
   error InvalidTokenId();
@@ -158,7 +157,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     if (!_exists(_tokenId)) {
-      revert TokenDoesNotExist();
+      revert ItemDoesNotExist();
     }
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
@@ -169,7 +168,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function _getItem(uint _tokenId) private view returns (Item memory) {
     if (!_exists(_tokenId)) {
-      revert TokenDoesNotExist();
+      revert ItemDoesNotExist();
     }
     return items[_tokenId];
   }
@@ -183,6 +182,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
+    if (!items[_tokenId].exists) {
+      revert ItemDoesNotExist();
+    }
     return items[_tokenId].equipPosition;
   }
 

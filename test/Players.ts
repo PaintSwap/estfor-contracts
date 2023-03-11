@@ -2012,8 +2012,6 @@ describe("Players", () => {
         players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "InvalidCombatStyle");
 
-      // TODO IncorrectRightHandEquipment
-
       // Transfer away, the action should just be skipped and no xp/loot should be given
       expect(await itemNFT.balanceOf(alice.address, BRONZE_AXE)).to.eq(1);
       await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, BRONZE_AXE, 1, "0x");
@@ -2150,7 +2148,7 @@ describe("Players", () => {
         expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
         // Check food is consumed
-        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 25);
       });
 
       it("Don't kill anything", async () => {
@@ -2187,7 +2185,49 @@ describe("Players", () => {
         expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
 
         // Check food is consumed, update later
-        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 30);
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 25);
+      });
+
+      it("Equip shield", async () => {
+        const {playerId, players, itemNFT, alice, queuedAction, rate} = await loadFixture(deployContractsMelee);
+
+        const _queuedAction = {...queuedAction};
+        _queuedAction.rightHandEquipmentTokenId = BRONZE_SHIELD;
+
+        await itemNFT.testOnlyMint(alice.address, BRONZE_SHIELD, 1);
+
+        await expect(
+          players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)
+        ).to.be.revertedWithCustomError(itemNFT, "ItemDoesNotExist");
+
+        await itemNFT.addItem({
+          ...defaultInputItem,
+          tokenId: BRONZE_SHIELD,
+          equipPosition: EquipPosition.LEFT_HAND,
+          metadataURI: "someIPFSURI.json",
+        });
+
+        await expect(
+          players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)
+        ).to.be.revertedWithCustomError(players, "IncorrectRightHandEquipment");
+
+        _queuedAction.rightHandEquipmentTokenId = BRONZE_SWORD;
+
+        _queuedAction.leftHandEquipmentTokenId = BRONZE_SHIELD;
+
+        await players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE);
+
+        const time = 3600;
+        await ethers.provider.send("evm_increaseTime", [time]);
+
+        await players.connect(alice).processActions(playerId);
+        expect(await players.skillPoints(playerId, Skill.ATTACK)).to.oneOf([time, time + 1]);
+
+        // Check the drops are as expected
+        expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(Math.floor((time * rate) / (3600 * 100)));
+
+        // Check food is consumed, update later
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(255 - 25);
       });
     });
 
@@ -2326,7 +2366,7 @@ describe("Players", () => {
         );
 
         // Check food is consumed, update later
-        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 25);
 
         // Check that scrolls are consumed
         expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);
@@ -2354,7 +2394,7 @@ describe("Players", () => {
         );
 
         // Check food is consumed, update later
-        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 25);
 
         // Check that scrolls are consumed
         expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(200 - 2);
@@ -2367,8 +2407,9 @@ describe("Players", () => {
         const _queuedAction = {...queuedAction};
 
         _queuedAction.leftHandEquipmentTokenId = BRONZE_SHIELD;
-        await expect(players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)).to.be
-          .reverted;
+        await expect(
+          players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)
+        ).to.be.revertedWithCustomError(players, "CannotEquipTwoHandedAndOtherEquipment");
         _queuedAction.leftHandEquipmentTokenId = NONE;
         await expect(players.connect(alice).startAction(playerId, _queuedAction, ActionQueueStatus.NONE)).to.not.be
           .reverted;
@@ -2387,7 +2428,7 @@ describe("Players", () => {
         expect(await players.skillPoints(playerId, Skill.MAGIC)).to.eq(0);
         expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
         // Check food is consumed, update later
-        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 30);
+        expect(await itemNFT.balanceOf(alice.address, COOKED_HUPPY)).to.eq(1000 - 25);
 
         // Check that no scrolls are consumed
         expect(await itemNFT.balanceOf(alice.address, AIR_SCROLL)).to.eq(0);

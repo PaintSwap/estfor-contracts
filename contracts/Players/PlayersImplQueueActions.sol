@@ -399,6 +399,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
           revert MinimumSkillPointsNotReached();
         }
         EquipPosition equipPosition = itemNFT.getEquipPosition(equippedItemTokenId);
+        if (equipPosition == EquipPosition.NONE) {
+          revert ItemDoesNotExist();
+        }
         if (isRightHand) {
           if (equipPosition != EquipPosition.RIGHT_HAND && equipPosition != EquipPosition.BOTH_HANDS) {
             revert IncorrectRightHandEquipment(equippedItemTokenId);
