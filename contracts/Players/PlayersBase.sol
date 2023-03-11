@@ -58,7 +58,12 @@ abstract contract PlayersBase {
   error TooManyActionsQueuedSomeAlreadyExist();
   error ActionTimespanExceedsMaxTime();
   error ActionTimespanZero();
-  error MinimumSkillPointsNotReached();
+  error ActionMinimumSkillPointsNotReached();
+  error ActionChoiceMinimumSkillPointsNotReached();
+  error ItemMinimumSkillPointsNotReached();
+  error AttireMinimumSkillPointsNotReached();
+  error ConsumeableMinimumSkillPointsNotReached();
+
   error InvalidStartSlot();
 
   error NoItemBalance(uint16 itemTokenId);

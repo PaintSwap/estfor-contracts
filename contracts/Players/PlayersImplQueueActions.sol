@@ -209,7 +209,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     bool isCombat = skill == Skill.COMBAT;
     if (!isCombat && skillPoints[_playerId][skill] < actionMinSkillPoints) {
-      revert MinimumSkillPointsNotReached();
+      revert ActionMinimumSkillPointsNotReached();
     }
 
     // Check the actionChoice is valid
@@ -221,7 +221,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
 
       if (skillPoints[_playerId][actionChoice.skill] < actionChoice.minSkillPoints) {
-        revert MinimumSkillPointsNotReached();
+        revert ActionChoiceMinimumSkillPointsNotReached();
       }
 
       if (actionChoice.skill == Skill.NONE) {
@@ -289,7 +289,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
           iter = iter.dec();
           uint i = iter.asUint256();
           if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
-            revert MinimumSkillPointsNotReached();
+            revert ConsumeableMinimumSkillPointsNotReached();
           }
           if (balances[i] == 0) {
             revert NoItemBalance(itemTokenIds[i]);
@@ -358,7 +358,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         iter = iter.dec();
         uint i = iter.asUint256();
         if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
-          revert MinimumSkillPointsNotReached();
+          revert AttireMinimumSkillPointsNotReached();
         }
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
@@ -396,7 +396,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         }
         (Skill skill, uint32 minSkillPoints) = itemNFT.getMinRequirement(equippedItemTokenId);
         if (skillPoints[_playerId][skill] < minSkillPoints) {
-          revert MinimumSkillPointsNotReached();
+          revert ItemMinimumSkillPointsNotReached();
         }
         EquipPosition equipPosition = itemNFT.getEquipPosition(equippedItemTokenId);
         if (isRightHand) {

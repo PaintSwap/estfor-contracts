@@ -21,8 +21,10 @@ import {
   Skill,
   WOODCUTTING_BASE,
   WOODCUTTING_MAX,
+  ORCHALCUM_AXE,
 } from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
+import {getXPFromLevel} from "./utils";
 
 const actionIsAvailable = true;
 
@@ -414,11 +416,127 @@ describe("Players", () => {
   });
 
   describe("Minimum skill points", () => {
-    it("Actions", async () => {});
+    it("Action", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minSkillPoints: getXPFromLevel(70),
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: ORCHALCUM_AXE,
+          handItemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.NONE,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightHandEquipmentTokenId: ORCHALCUM_AXE,
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      await itemNFT.addItem({
+        ...defaultInputItem,
+        minSkillPoints: 0,
+        tokenId: ORCHALCUM_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.testOnlyMint(alice.address, ORCHALCUM_AXE, 1);
+
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionMinimumSkillPointsNotReached");
+
+      // Update to level 70, check it works
+      await players.testOnlyModifyLevel(playerId, Skill.WOODCUTTING, getXPFromLevel(70));
+      expect(await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.not.be
+        .reverted;
+    });
+
     it("ActionChoices", async () => {});
     it("Consumeables", async () => {});
     it("Attire", async () => {});
-    it("Left/Right equipment", async () => {});
+    it("Left/Right equipment", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: ORCHALCUM_AXE,
+          handItemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.NONE,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightHandEquipmentTokenId: ORCHALCUM_AXE,
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      const minSkillPoints = getXPFromLevel(70);
+      await itemNFT.addItem({
+        ...defaultInputItem,
+        skill: Skill.WOODCUTTING,
+        minSkillPoints,
+        tokenId: ORCHALCUM_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.testOnlyMint(alice.address, ORCHALCUM_AXE, 1);
+
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ItemMinimumSkillPointsNotReached");
+
+      // Update to level 70, check it works
+      console.log(minSkillPoints);
+      await players.testOnlyModifyLevel(playerId, Skill.WOODCUTTING, minSkillPoints);
+      expect(await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.not.be
+        .reverted;
+    });
   });
 
   /*  it("Check already equipped", async () => {

@@ -286,6 +286,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     dailyRewardsEnabled = _dailyRewardsEnabled;
   }
 
+  function testOnlyModifyLevel(uint _playerId, Skill _skill, uint32 _xp) external onlyOwner {
+    skillPoints[_playerId][_skill] = _xp;
+  }
+
   // For the various view functions that require delegatecall
   fallback() external {
     bytes4 selector = bytes4(msg.data);
