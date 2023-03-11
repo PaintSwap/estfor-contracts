@@ -53,7 +53,7 @@
     "sol2uml/@solidity-parser/parser": "./modules/parser"
   },
   "scripts": {
-    "preinstall": "git submodule update --init --recursive && cd modules/parser && npm install && npm run build:node && npm run build:browser && npm run generate-types && ./node_modules/.bin/shx mkdir -p dist/antlr && ./node_modules/.bin/shx cp \"./src/antlr/*tokens\" dist/antlr;",
+    "preinstall": "git submodule update --init --recursive && cd modules/parser && npm install && npm run build:node && npm run build:browser && npm run generate-types && npx shx mkdir -p dist/antlr && npx shx cp \"./src/antlr/*tokens\" dist/antlr",
     "console": "npx hardhat console",
     "compile": "npx hardhat compile",
     "clean": "npx hardhat clean",
