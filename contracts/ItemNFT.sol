@@ -64,14 +64,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     string metadataURI;
   }
 
-  World world;
+  World public world;
   string private baseURI;
 
   // How many of this item exist
   mapping(uint itemId => uint amount) public itemBalances;
 
-  address players;
-  address shop;
+  address public players;
+  address public shop;
 
   // Royalties
   uint public royaltyFee;
@@ -80,8 +80,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   uint public uniqueItems; // unique number of items
 
   mapping(uint itemId => string tokenURI) private tokenURIs;
-  mapping(uint itemId => CombatStats combatStats) combatStats;
-  mapping(uint itemId => Item) items;
+  mapping(uint itemId => CombatStats combatStats) public combatStats;
+  mapping(uint itemId => Item) public items;
 
   modifier onlyPlayersOrShop() {
     if (msg.sender != players && msg.sender != shop) {
@@ -105,8 +105,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
   }
-
-  function _mintItem1() internal {}
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
     if (_tokenId >= type(uint16).max) {
