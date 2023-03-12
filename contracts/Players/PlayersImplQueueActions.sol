@@ -270,8 +270,13 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       // Get all items for this
       uint16[] memory itemTokenIds = new uint16[](4);
       uint itemLength;
+
       if (_queuedAction.regenerateId != NONE) {
         itemTokenIds[itemLength++] = _queuedAction.regenerateId;
+        (Skill skill, uint32 minSkillPoint) = itemNFT.getMinRequirement(itemTokenIds[itemLength - 1]);
+        if (skillPoints[_playerId][skill] < minSkillPoint) {
+          revert ConsumeableMinimumSkillPointsNotReached();
+        }
       }
       if (actionChoice.inputTokenId1 != NONE) {
         itemTokenIds[itemLength++] = actionChoice.inputTokenId1;
@@ -287,14 +292,11 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
       if (itemLength != 0) {
         uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
-        (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
+
         U256 iter = U256.wrap(balances.length);
         while (iter.neq(0)) {
           iter = iter.dec();
           uint i = iter.asUint256();
-          if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
-            revert ConsumeableMinimumSkillPointsNotReached();
-          }
           if (balances[i] == 0) {
             revert NoItemBalance(itemTokenIds[i]);
           }
@@ -307,8 +309,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function _checkEquipPosition(Attire storage _attire) private view {
     uint attireLength;
-    uint16[] memory itemTokenIds = new uint16[](8);
-    EquipPosition[] memory expectedEquipPositions = new EquipPosition[](8);
+    uint16[] memory itemTokenIds = new uint16[](6);
+    EquipPosition[] memory expectedEquipPositions = new EquipPosition[](6);
     if (_attire.helmet != NONE) {
       itemTokenIds[attireLength] = _attire.helmet;
       expectedEquipPositions[attireLength++] = EquipPosition.HEAD;
@@ -340,7 +342,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     if (attireLength != 0) {
       EquipPosition[] memory equipPositions = itemNFT.getEquipPositions(itemTokenIds);
-      for (uint i = 0; i < attireLength; i++) {
+      for (uint i = 0; i < attireLength; ++i) {
         if (expectedEquipPositions[i] != equipPositions[i]) {
           revert InvalidEquipPosition();
         }

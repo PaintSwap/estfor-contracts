@@ -22,6 +22,14 @@ import {
   WOODCUTTING_BASE,
   WOODCUTTING_MAX,
   ORCHALCUM_AXE,
+  FIRE_LIGHTER,
+  FIRE_MAX,
+  COOKED_HUPPY,
+  AMETHYST_AMULET,
+  BRONZE_ARMOR,
+  BRONZE_BOOTS,
+  BRONZE_HELMET,
+  BRONZE_TASSETS,
 } from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel} from "./utils";
@@ -474,9 +482,311 @@ describe("Players", () => {
         .reverted;
     });
 
-    it("ActionChoices", async () => {});
-    it("Consumeables", async () => {});
-    it("Attire", async () => {});
+    it("ActionChoices", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: Skill.FIREMAKING,
+          xpPerHour: 0,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: FIRE_LIGHTER,
+          handItemTokenIdRangeMax: FIRE_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const minSkillPoints = getXPFromLevel(70);
+
+      // Logs go in, nothing comes out
+      tx = await world.addActionChoice(actionId, 1, {
+        skill: Skill.FIREMAKING,
+        diff: 0,
+        xpPerHour: 3600,
+        minSkillPoints,
+        rate,
+        inputTokenId1: LOG,
+        num1: 1,
+        inputTokenId2: NONE,
+        num2: 0,
+        inputTokenId3: NONE,
+        num3: 0,
+        outputTokenId: NONE,
+        outputNum: 0,
+      });
+      const choiceId = await getActionChoiceId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.NONE,
+        choiceId,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightHandEquipmentTokenId: FIRE_LIGHTER,
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      await itemNFT.addItem({
+        ...defaultInputItem,
+        tokenId: FIRE_LIGHTER,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...defaultInputItem,
+        tokenId: LOG,
+        equipPosition: EquipPosition.AUX,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.testOnlyMint(alice.address, LOG, 5);
+
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumSkillPointsNotReached");
+
+      // Update firemamking level, check it works
+      await players.testOnlyModifyLevel(playerId, Skill.FIREMAKING, minSkillPoints);
+      expect(await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.not.be
+        .reverted;
+
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    });
+
+    it("Consumeables (food)", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: Skill.FIREMAKING,
+          xpPerHour: 0,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: FIRE_LIGHTER,
+          handItemTokenIdRangeMax: FIRE_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      // Logs go in, nothing comes out
+      tx = await world.addActionChoice(actionId, 1, {
+        skill: Skill.FIREMAKING,
+        diff: 0,
+        xpPerHour: 3600,
+        minSkillPoints: 0,
+        rate,
+        inputTokenId1: LOG,
+        num1: 1,
+        inputTokenId2: NONE,
+        num2: 0,
+        inputTokenId3: NONE,
+        num3: 0,
+        outputTokenId: NONE,
+        outputNum: 0,
+      });
+      const choiceId = await getActionChoiceId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.NONE,
+        choiceId,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: COOKED_HUPPY,
+        timespan,
+        rightHandEquipmentTokenId: FIRE_LIGHTER,
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      const minSkillPoints = getXPFromLevel(70);
+      await itemNFT.addItems([
+        {
+          ...defaultInputItem,
+          tokenId: FIRE_LIGHTER,
+          equipPosition: EquipPosition.RIGHT_HAND,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...defaultInputItem,
+          tokenId: LOG,
+          equipPosition: EquipPosition.AUX,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...defaultInputItem,
+          skill: Skill.HEALTH,
+          minSkillPoints,
+          healthRestored: 12,
+          tokenId: COOKED_HUPPY,
+          equipPosition: EquipPosition.FOOD,
+          metadataURI: "someIPFSURI.json",
+        },
+      ]);
+
+      await itemNFT.testOnlyMint(alice.address, LOG, 5);
+      await itemNFT.testOnlyMint(alice.address, COOKED_HUPPY, 1);
+
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ConsumeableMinimumSkillPointsNotReached");
+
+      await players.testOnlyModifyLevel(playerId, Skill.HEALTH, minSkillPoints);
+
+      // Update health level, check it works
+      expect(await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.not.be
+        .reverted;
+
+      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    });
+
+    it("Attire", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minSkillPoints: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: BRONZE_AXE,
+          handItemTokenIdRangeMax: WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+        },
+        guaranteedRewards: [{itemTokenId: LOG, rate}],
+        randomRewards: [],
+        combatStats: emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600;
+      const queuedAction: QueuedAction = {
+        attire: noAttire,
+        actionId,
+        combatStyle: CombatStyle.NONE,
+        choiceId: NONE,
+        choiceId1: NONE,
+        choiceId2: NONE,
+        regenerateId: NONE,
+        timespan,
+        rightHandEquipmentTokenId: BRONZE_AXE,
+        leftHandEquipmentTokenId: NONE,
+        startTime: "0",
+        isValid: true,
+      };
+
+      const minSkillPoints = getXPFromLevel(70);
+      await itemNFT.addItem({
+        ...defaultInputItem,
+        skill: Skill.WOODCUTTING,
+        minSkillPoints: 0,
+        tokenId: BRONZE_AXE,
+        equipPosition: EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.testOnlyMints(
+        alice.address,
+        [BRONZE_AXE, AMETHYST_AMULET, BRONZE_ARMOR, BRONZE_BOOTS, BRONZE_GAUNTLETS, BRONZE_HELMET, BRONZE_TASSETS],
+        [1, 1, 1, 1, 1, 1, 1]
+      );
+
+      const attireEquipped = [
+        {
+          ...defaultInputItem,
+          skill: Skill.DEFENCE,
+          minSkillPoints,
+          tokenId: AMETHYST_AMULET,
+          equipPosition: EquipPosition.NECK,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...defaultInputItem,
+          skill: Skill.DEFENCE,
+          minSkillPoints,
+          tokenId: BRONZE_ARMOR,
+          equipPosition: EquipPosition.BODY,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...defaultInputItem,
+          skill: Skill.DEFENCE,
+          minSkillPoints,
+          tokenId: BRONZE_BOOTS,
+          equipPosition: EquipPosition.BOOTS,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...defaultInputItem,
+          skill: Skill.DEFENCE,
+          minSkillPoints,
+          tokenId: BRONZE_GAUNTLETS,
+          equipPosition: EquipPosition.ARMS,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...defaultInputItem,
+          skill: Skill.DEFENCE,
+          minSkillPoints,
+          tokenId: BRONZE_HELMET,
+          equipPosition: EquipPosition.HEAD,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...defaultInputItem,
+          skill: Skill.DEFENCE,
+          minSkillPoints,
+          tokenId: BRONZE_TASSETS,
+          equipPosition: EquipPosition.LEGS,
+          metadataURI: "someIPFSURI.json",
+        },
+      ];
+
+      await itemNFT.addItems(attireEquipped);
+
+      const equips = ["amulet", "armor", "boots", "gauntlets", "helmet", "tassets"];
+      for (let i = 0; i < attireEquipped.length; ++i) {
+        const attire = {...noAttire};
+        attire[equips[i]] = attireEquipped[i].tokenId;
+        queuedAction.attire = attire;
+        await expect(
+          players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)
+        ).to.be.revertedWithCustomError(players, "AttireMinimumSkillPointsNotReached");
+        await players.testOnlyModifyLevel(playerId, Skill.DEFENCE, minSkillPoints);
+        expect(await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.not.be
+          .reverted;
+        await players.testOnlyModifyLevel(playerId, Skill.DEFENCE, 1);
+      }
+    });
+
     it("Left/Right equipment", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 100; // per hour
@@ -532,7 +842,6 @@ describe("Players", () => {
       ).to.be.revertedWithCustomError(players, "ItemMinimumSkillPointsNotReached");
 
       // Update to level 70, check it works
-      console.log(minSkillPoints);
       await players.testOnlyModifyLevel(playerId, Skill.WOODCUTTING, minSkillPoints);
       expect(await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE)).to.not.be
         .reverted;

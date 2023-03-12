@@ -25,7 +25,7 @@ struct ActionRewards {
   uint24 guaranteedRewardRate3;
   // Random chance rewards
   uint16 randomRewardTokenId1;
-  uint16 randomRewardChance1; // percentage, base 100 (2 decimals)
+  uint16 randomRewardChance1; // out of 65335
   uint16 randomRewardTokenId2;
   uint16 randomRewardChance2;
   uint16 randomRewardTokenId3;
