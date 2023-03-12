@@ -55,7 +55,7 @@
     "hardhat/solc": "^0.8.19"
   },
   "scripts": {
-    "preinstall": "git submodule update --init --recursive && cd modules/parser && npx -y shx test -d './dist' && echo '@solidity-parser/parser already built' || (npm install && npm run build:node && npm run build:browser && npm run generate-types && npx shx mkdir -p dist/antlr && npx shx cp \"./src/antlr/*tokens\" dist/antlr)",
+    "preinstall": "git submodule update --init --recursive && cd modules/parser && npx -y shx test -d \"./dist\" && echo \"@solidity-parser/parser already built\" || (npm install && npm run build:node && npm run build:browser && npm run generate-types && npx shx mkdir -p dist/antlr && npx shx cp \"./src/antlr/*tokens\" dist/antlr)",
     "console": "npx hardhat console",
     "lint": "npx solhint ./contracts/*",
     "compile": "npx hardhat compile",
