@@ -36,7 +36,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error NotPlayers();
   error NameCannotBeEmpty();
   error NameAlreadyExists();
-  error errorNotInWhitelist();
   error MintedMoreThanAllowed();
   error NotInWhitelist();
   error ERC1155Metadata_URIQueryForNonexistentToken();
