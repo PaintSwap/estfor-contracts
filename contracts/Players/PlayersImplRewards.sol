@@ -40,13 +40,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     bool noLuck;
     (length, noLuck) = _appendRandomRewards(
       _skillEndTime,
-      _elapsedTime,
+      isCombat ? monstersKilled : _elapsedTime / 3600,
       ids,
       amounts,
       length,
-      actionRewards,
-      monstersKilled,
-      isCombat
+      actionRewards
     );
 
     assembly ("memory-safe") {
@@ -64,7 +62,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     amounts = new uint[](pendingRandomRewardsLength.asUint256());
 
     uint length;
-    for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc())  {
+    for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       bool isCombat = world.getSkill(_pendingRandomRewards[i].actionId) == Skill.COMBAT;
       uint numSpawnedPerHour = world.getNumSpawn(_pendingRandomRewards[i].actionId);
@@ -75,13 +73,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       bool noLuck;
       (length, noLuck) = _appendRandomRewards(
         _pendingRandomRewards[i].timestamp,
-        _pendingRandomRewards[i].elapsedTime,
+        isCombat ? monstersKilled : _pendingRandomRewards[i].elapsedTime / 3600,
         ids,
         amounts,
         oldLength,
-        actionRewards,
-        monstersKilled,
-        isCombat
+        actionRewards
       );
 
       if (length - oldLength != 0 || noLuck) {
@@ -347,13 +343,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
   function _appendRandomRewards(
     uint40 skillEndTime,
-    uint elapsedTime,
+    uint _numTickets,
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _oldLength,
-    ActionRewards memory _actionRewards,
-    uint16 _monstersKilled,
-    bool _isCombat
+    ActionRewards memory _actionRewards
   ) private view returns (uint length, bool noLuck) {
     length = _oldLength;
 
@@ -392,22 +386,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       bool hasSeed = world.hasSeed(skillEndTime);
       if (hasSeed) {
         uint seed = world.getSeed(skillEndTime);
-
-        // If combat use monsters killed, otherwise use elapsed time to see how many chances they get
-        uint numTickets;
-        if (_isCombat) {
-          numTickets = _monstersKilled;
-        } else {
-          // (1 per hour spent)
-          numTickets = elapsedTime / 3600;
-        }
         bytes32 randomComponent = bytes32(seed) ^
           (bytes32(uint256(skillEndTime)) |
             (bytes32(uint256(skillEndTime)) << 64) |
             (bytes32(uint256(skillEndTime)) << 128) |
             (bytes32(uint256(skillEndTime)) << 192));
         uint startLootLength = length;
-        for (U256 iter; iter.lt(numTickets); iter = iter.inc()) {
+        for (U256 iter; iter.lt(_numTickets); iter = iter.inc()) {
           uint i = iter.asUint256();
           // The random component is out of 65535, so we can take 2 bytes at a time
           uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
@@ -469,7 +454,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    uint16 numConsumed;
+    uint24 numConsumed;
     bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
     if (isCombat) {
       // Fetch the requirements for it
@@ -489,7 +474,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         betaCombat
       );
 
-      uint16 foodConsumed;
+      uint24 foodConsumed;
       (foodConsumed, died) = PlayerLibrary.foodConsumedView(
         _from,
         _queuedAction,

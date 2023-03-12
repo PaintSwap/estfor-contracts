@@ -175,7 +175,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     ActionChoice memory _actionChoice
   ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died) {
     bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
-    uint16 numConsumed;
+    uint24 numConsumed;
 
     if (isCombat) {
       CombatStats memory _enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
@@ -223,7 +223,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     address _from,
     uint _playerId,
     ActionChoice memory _actionChoice,
-    uint16 _numConsumed,
+    uint24 _numConsumed,
     uint128 _queueId
   ) private {
     _processConsumable(_from, _playerId, _actionChoice.inputTokenId1, _numConsumed * _actionChoice.num1, _queueId);
@@ -235,7 +235,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     address _from,
     uint _playerId,
     uint16 _itemTokenId,
-    uint16 _numConsumed,
+    uint24 _numConsumed,
     uint128 _queueId
   ) private {
     if (_itemTokenId == 0) {
@@ -254,7 +254,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     CombatStats memory _combatStats,
     CombatStats memory _enemyCombatStats
   ) private returns (bool died) {
-    uint16 foodConsumed;
+    uint24 foodConsumed;
     // Figure out how much food should be used
     (foodConsumed, died) = PlayerLibrary.foodConsumedView(
       _from,

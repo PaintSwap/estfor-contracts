@@ -138,7 +138,7 @@ library PlayerLibrary {
     CombatStats memory _enemyCombatStats,
     uint128 _alphaCombat,
     uint128 _betaCombat
-  ) public view returns (uint16 foodConsumed, bool died) {
+  ) external view returns (uint24 foodConsumed, bool died) {
     uint32 totalHealthLost = uint32(
       int32(_dmg(_enemyCombatStats.melee, _combatStats.meleeDefence, _alphaCombat, _betaCombat, _combatElapsedTime)) -
         _combatStats.health
@@ -163,7 +163,7 @@ library PlayerLibrary {
       died = totalHealthLost != 0;
     } else {
       // Round up
-      foodConsumed = uint16(
+      foodConsumed = uint24(
         uint32(totalHealthLost) / healthRestored + (uint32(totalHealthLost) % healthRestored == 0 ? 0 : 1)
       );
       uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
@@ -178,7 +178,7 @@ library PlayerLibrary {
   function _getMaxRequiredRatio(
     address _from,
     ActionChoice memory _actionChoice,
-    uint16 _numConsumed,
+    uint24 _numConsumed,
     ItemNFT _itemNFT
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _numConsumed;
@@ -220,7 +220,7 @@ library PlayerLibrary {
     address _from,
     uint16 _inputTokenId,
     uint16 _num,
-    uint16 _numConsumed,
+    uint24 _numConsumed,
     uint _maxRequiredRatio,
     ItemNFT _itemNFT
   ) private view returns (uint maxRequiredRatio) {
@@ -341,16 +341,16 @@ library PlayerLibrary {
     ItemNFT _itemNFT,
     uint _elapsedTime,
     ActionChoice memory _actionChoice
-  ) external view returns (uint xpElapsedTime, uint16 numConsumed) {
+  ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
     // Update these as necessary
     xpElapsedTime = _elapsedTime;
 
     // Check the max that can be used
-    numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * 100));
+    numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 100));
     // This checks the balances
     uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
     if (numConsumed > maxRequiredRatio) {
-      numConsumed = uint16(maxRequiredRatio);
+      numConsumed = uint24(maxRequiredRatio);
       if (numConsumed > 0) {
         // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
         xpElapsedTime = (_elapsedTime * maxRequiredRatio) / numConsumed;
