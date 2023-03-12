@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
+import {Unsafe256, U256} from "../lib/Unsafe256.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 
@@ -17,6 +18,7 @@ import "../globals/items.sol";
 library PlayerLibrary {
   using Strings for uint32;
   using Strings for bytes32;
+  using Unsafe256 for U256;
 
   // Show all the player stats, return metadata json
   function uri(
@@ -74,14 +76,12 @@ library PlayerLibrary {
   }
 
   function _trimBytes32(bytes32 _bytes32) private pure returns (bytes memory _bytes) {
-    uint256 _len;
-    while (_len < 32) {
-      if (_bytes32[_len] == 0) {
+    U256 _len;
+    while (_len.lt(32)) {
+      if (_bytes32[_len.asUint256()] == 0) {
         break;
       }
-      unchecked {
-        ++_len;
-      }
+      _len = _len.inc();
     }
     _bytes = abi.encodePacked(_bytes32);
     assembly ("memory-safe") {
@@ -103,22 +103,22 @@ library PlayerLibrary {
 
   // Index not level, add one after (check for > max)
   function getLevel(uint256 _xp) public pure returns (uint16) {
-    uint256 low = 0;
-    uint256 high = XP_BYTES.length / 3;
+    U256 low;
+    U256 high = U256.wrap(XP_BYTES.length).div(3);
 
     while (low < high) {
-      uint256 mid = (low + high) / 2;
+      U256 mid = (low + high).div(2);
 
       // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
-      if (_getXP(mid) > _xp) {
+      if (_getXP(mid.asUint256()) > _xp) {
         high = mid;
       } else {
-        low = mid + 1;
+        low = mid.inc();
       }
     }
 
-    if (low != 0) {
-      return uint16(low);
+    if (low.neq(0)) {
+      return low.asUint16();
     } else {
       return 1;
     }
