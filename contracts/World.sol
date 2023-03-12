@@ -72,9 +72,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   // Past request ids
   uint[] public requestIds; // Each one is a seed for a day
   mapping(uint requestId => uint randomWord) public randomWords;
-  uint public lastSeedUpdatedTime;
-
-  uint public startTime;
+  uint40 public lastSeedUpdatedTime;
+  uint40 public startTime;
+  uint40 public nextCheckpoint;
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
   // For a list of available gas lanes on each network, this is 10000gwei
@@ -95,7 +95,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint16[] private lastAddedDynamicActions;
   uint public lastDynamicUpdatedTime;
 
-  bytes32 public dailyRewards; // Effectively stores equipment[8] which is packed, first 7 are daily, last one is weekly reward
+  bytes32 public dailyRewards; // Effectively stores Equipment[8] which is packed, first 7 are daily, last one is weekly reward
 
   mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private actionChoices;
   mapping(uint actionId => CombatStats combatStats) private actionCombatStats;
@@ -114,8 +114,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
-    startTime = (block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME; // Floor to the nearest day 00:00 UTC
+    startTime = uint40((block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME); // Floor to the nearest day 00:00 UTC
     lastSeedUpdatedTime = startTime;
+    nextCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
 
     // Issue new daily rewards
     Equipment[8] memory rewards = [
@@ -206,10 +207,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     randomWords[_requestId] = random;
     emit RequestFulfilled(_requestId, random);
 
-    uint checkpoint = (block.timestamp / 1 weeks) * 1 weeks;
-
     // Are we at the threshold for a new week
-    if (checkpoint == (block.timestamp / 1 days) * 1 days) {
+    if (nextCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
       // Issue new daily rewards based on the new seed (TODO)
       Equipment[8] memory rewards = [
         Equipment(COPPER_ORE, 100),
@@ -223,11 +222,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       ];
       _storeDailyRewards(rewards);
       emit NewDailyRewards(rewards);
+      nextCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
     }
   }
 
   function getDailyReward() external view returns (Equipment memory equipment) {
-    uint checkpoint = (block.timestamp / 1 weeks) * 1 weeks;
+    uint checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
     uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
     equipment = _getDailyReward(day);
   }

@@ -162,7 +162,7 @@ describe("Rewards", () => {
 
     const oneDay = 24 * 3600;
     const oneWeek = oneDay * 7;
-    const timestamp = Math.floor(Date.now() / 1000 / oneWeek) * (2 * oneWeek) + oneDay + 1; // Start next friday
+    const timestamp = Math.floor((Date.now() / 1000 - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 5 * oneDay + 1); // Start next tuesday
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await ethers.provider.send("evm_mine", []);
@@ -196,7 +196,7 @@ describe("Rewards", () => {
     );
 
     for (let i = 1; i < 6; ++i) {
-      expect(beforeBalances[i].toNumber() + equipments[i].amount).to.eq(afterBalances[i]);
+      expect(afterBalances[i]).to.eq(beforeBalances[i].toNumber() + equipments[i].amount);
     }
 
     // This isn't a full week so shouldn't get weekly rewards, but still get daily rewards
@@ -285,7 +285,7 @@ describe("Rewards", () => {
 
     const oneDay = 24 * 3600;
     const oneWeek = oneDay * 7;
-    const timestamp = Math.floor(Date.now() / 1000 / oneWeek) * 2 * oneWeek + 1; // Start next thursday
+    const timestamp = Math.floor((Date.now() / 1000 - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay + 1); // Start next monday
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await ethers.provider.send("evm_mine", []);
@@ -301,5 +301,9 @@ describe("Rewards", () => {
     await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
     balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
     expect(balanceAfter).to.eq(balanceBefore);
+  });
+
+  it("Daily Rewards, test rewards in new week", async () => {
+    // TODO
   });
 });
