@@ -49,9 +49,10 @@
   },
   "resolutions": {
     "prettier-plugin-solidity/@solidity-parser/parser": "./modules/parser",
-    "solidity-coverage/@solidity-parser/parser": "./modules/parser",
     "solhint/@solidity-parser/parser": "./modules/parser",
-    "sol2uml/@solidity-parser/parser": "./modules/parser"
+    "sol2uml/@solidity-parser/parser": "./modules/parser",
+    "solidity-coverage/@solidity-parser/parser": "./modules/parser",
+    "hardhat/solc": "^0.8.19"
   },
   "scripts": {
     "preinstall": "git submodule update --init --recursive && cd modules/parser && npm install && npm run build:node && npm run build:browser && npm run generate-types && npx shx mkdir -p dist/antlr && npx shx cp \"./src/antlr/*tokens\" dist/antlr",
