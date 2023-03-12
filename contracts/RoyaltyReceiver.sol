@@ -16,9 +16,9 @@ interface Router {
 contract RoyaltyReceiver is Ownable {
   error AddressZero();
 
-  Router public router;
-  address public pool;
-  IBrushToken public brush;
+  Router public immutable router;
+  address public immutable pool;
+  IBrushToken public immutable brush;
   address[] public buyPath;
   uint public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
