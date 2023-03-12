@@ -7,8 +7,8 @@ import {
   allShopItems,
   allXPThresholdRewards,
   BRONZE_AXE,
-  BRONZE_GAUNTLETS,
   BRONZE_HELMET,
+  BRONZE_SWORD,
   CombatStyle,
   createPlayer,
   firemakingChoices,
@@ -260,7 +260,7 @@ async function main() {
   await tx.wait();
   console.log("start actions");
 
-  tx = await players.setSpeedMultiplier(playerId, 3600); // Turns 1 hour into 1 second
+  tx = await players.setSpeedMultiplier(playerId, 60); // Turns 1 hour into 1 second
   await tx.wait();
   console.log("Set speed multiiplier");
 
@@ -271,7 +271,7 @@ async function main() {
 
   tx = await players.processActions(playerId);
   await tx.wait();
-  console.log("consume actions");
+  console.log("process actions");
 
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
 
@@ -302,7 +302,7 @@ async function main() {
 
   tx = await players.processActions(playerId);
   await tx.wait();
-  console.log("consume actions (firemaking)");
+  console.log("process actions (firemaking)");
 
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
 
@@ -310,6 +310,40 @@ async function main() {
   tx = await players.startAction(playerId, queuedAction, ActionQueueStatus.NONE);
   await tx.wait();
   console.log("start an unconsumed action");
+
+  if (network.chainId == 31337) {
+    console.log("Increase time");
+    await ethers.provider.send("evm_increaseTime", [1000000]);
+  }
+
+  // Start a combat action
+  const queuedActionCombat: QueuedAction = {
+    attire: {...noAttire, helmet: BRONZE_HELMET},
+    actionId: allActions.findIndex((action) => action.info.skill == Skill.COMBAT) + 1,
+    combatStyle: CombatStyle.MELEE,
+    choiceId: 5,
+    choiceId1: NONE,
+    choiceId2: NONE,
+    regenerateId: NONE,
+    timespan: 7200,
+    rightHandEquipmentTokenId: BRONZE_SWORD,
+    leftHandEquipmentTokenId: NONE,
+    startTime: "0",
+    isValid: true,
+  };
+
+  tx = await players.startAction(playerId, queuedActionCombat, ActionQueueStatus.NONE);
+  await tx.wait();
+  console.log("start a combat action");
+
+  if (network.chainId == 31337) {
+    console.log("Increase time");
+    await ethers.provider.send("evm_increaseTime", [10]);
+  }
+
+  tx = await players.processActions(playerId);
+  await tx.wait();
+  console.log("process actions (melee combat)");
 
   // Add shop item
   tx = await shop.addBuyableItems(allShopItems);
