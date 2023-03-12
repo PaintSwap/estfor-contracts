@@ -111,7 +111,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (pointsAccrued != 0) {
         if (_isCombatStyle(queuedAction.combatStyle)) {
           // Update health too with 33% of the points gained from combat
-          _updateSkillPoints(_playerId, Skill.HEALTH, (pointsAccrued * 33) / 100);
+          _updateSkillPoints(_playerId, Skill.HEALTH, uint32((uint(pointsAccrued) * 333333) / 1000000));
           _cacheCombatStats(
             players[_playerId],
             skillPoints[_playerId][Skill.HEALTH],

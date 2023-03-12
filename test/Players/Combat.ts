@@ -138,6 +138,10 @@ describe("Combat Actions", () => {
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
       expect(await players.skillPoints(playerId, Skill.ATTACK)).to.be.oneOf([time, time + 1]);
+      expect(await players.skillPoints(playerId, Skill.HEALTH)).to.be.oneOf([
+        Math.floor(time / 3) - 1,
+        Math.floor(time / 3),
+      ]); // Health should get 33% of the stats
       expect(await players.skillPoints(playerId, Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
