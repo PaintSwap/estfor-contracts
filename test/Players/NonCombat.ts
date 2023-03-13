@@ -20,8 +20,7 @@ describe("Non-Combat Actions", () => {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await ethers.provider.send("evm_mine", []);
 
-    const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-    const pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
+    const pendingOutput = await players.pendingRewards(alice.address, playerId, {
       includeLoot: true,
       includePastRandomRewards: true,
       includeXPRewards: true,

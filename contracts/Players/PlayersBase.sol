@@ -412,4 +412,15 @@ abstract contract PlayersBase {
       }
     }
   }
+
+  function _staticcall(address target, bytes memory data) internal view returns (bytes memory returndata) {
+    bool success;
+    (success, returndata) = target.staticcall(data);
+    if (!success) {
+      if (returndata.length == 0) revert();
+      assembly ("memory-safe") {
+        revert(add(32, returndata), mload(returndata))
+      }
+    }
+  }
 }

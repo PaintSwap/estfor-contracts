@@ -64,8 +64,7 @@ describe("Rewards", () => {
     await ethers.provider.send("evm_increaseTime", [250]);
     await ethers.provider.send("evm_mine", []);
 
-    const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-    let pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
       includeLoot: true,
       includePastRandomRewards: true,
       includeXPRewards: true,
@@ -75,7 +74,7 @@ describe("Rewards", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [250]);
     await ethers.provider.send("evm_mine", []);
-    pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
+    pendingOutput = await players.pendingRewards(alice.address, playerId, {
       includeLoot: true,
       includePastRandomRewards: true,
       includeXPRewards: true,

@@ -135,7 +135,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
   }
 
   // Get any changes that are pending and not on the blockchain yet.
-  function pendingRewards(
+  function pendingRewardsImpl(
     address _owner,
     uint _playerId,
     PendingFlags memory _flags

@@ -555,8 +555,7 @@ describe("Combat Actions", () => {
 
       expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
-      const playerDelegateView = await ethers.getContractAt("PlayerDelegateView", players.address);
-      const pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
+      const pendingOutput = await players.pendingRewards(alice.address, playerId, {
         includeLoot: true,
         includePastRandomRewards: true,
         includeXPRewards: true,
@@ -572,7 +571,7 @@ describe("Combat Actions", () => {
 
       if (
         (
-          await playerDelegateView.pendingRewards(alice.address, playerId, {
+          await players.pendingRewards(alice.address, playerId, {
             includeLoot: false,
             includePastRandomRewards: true,
             includeXPRewards: false,
@@ -581,7 +580,7 @@ describe("Combat Actions", () => {
       ) {
         expect(
           (
-            await playerDelegateView.pendingRewards(alice.address, playerId, {
+            await players.pendingRewards(alice.address, playerId, {
               includeLoot: false,
               includePastRandomRewards: true,
               includeXPRewards: false,
@@ -590,7 +589,7 @@ describe("Combat Actions", () => {
         ).to.eq(1);
 
         const produced = (
-          await playerDelegateView.pendingRewards(alice.address, playerId, {
+          await players.pendingRewards(alice.address, playerId, {
             includeLoot: false,
             includePastRandomRewards: true,
             includeXPRewards: false,
@@ -599,7 +598,7 @@ describe("Combat Actions", () => {
         numProduced += produced;
         expect(
           (
-            await playerDelegateView.pendingRewards(alice.address, playerId, {
+            await players.pendingRewards(alice.address, playerId, {
               includeLoot: false,
               includePastRandomRewards: true,
               includeXPRewards: false,

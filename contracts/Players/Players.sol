@@ -24,8 +24,8 @@ import "../globals/actions.sol";
 import "../globals/rewards.sol";
 
 // External view functions that are in other implementation files
-interface PlayerDelegateView {
-  function pendingRewards(
+interface PlayersDelegateView {
+  function pendingRewardsImpl(
     address _owner,
     uint _playerId,
     PendingFlags memory _flags
@@ -256,6 +256,19 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActivePlayer(msg.sender, _playerId);
   }
 
+  function pendingRewards(
+    address _owner,
+    uint _playerId,
+    PendingFlags memory _flags
+  ) external view returns (PendingOutput memory pendingOutput) {
+    // Staticcall into ourselves and hit the fallback. This is done so that pendingRewards can be exposed on the json abi.
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(PlayersDelegateView.pendingRewardsImpl.selector, _owner, _playerId, _flags)
+    );
+    return abi.decode(data, (PendingOutput));
+  }
+
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(address _implQueueActions, address _implProcessActions, address _implRewards) external onlyOwner {
@@ -301,7 +314,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     bytes4 selector = bytes4(msg.data);
 
     address implementation;
-    if (selector == PlayerDelegateView.pendingRewards.selector) {
+    if (selector == PlayersDelegateView.pendingRewardsImpl.selector) {
       implementation = implRewards;
     } else {
       revert InvalidSelector();
