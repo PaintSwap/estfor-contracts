@@ -1,25 +1,15 @@
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {ethers, upgrades} from "hardhat";
 import {MockBrushToken, MockWrappedFantom, PlayerNFT} from "../typechain-types";
 import {
-  ActionQueueStatus,
   allActions,
   allItems,
   allShopItems,
   allXPThresholdRewards,
-  BRONZE_AXE,
-  BRONZE_HELMET,
-  BRONZE_SWORD,
-  CombatStyle,
   createPlayer,
   firemakingChoices,
-  FIRE_LIGHTER,
-  LOG,
   magicChoices,
   meleeChoices,
-  noAttire,
-  NONE,
-  QueuedAction,
-  Skill,
   smithingChoices,
 } from "./utils";
 
@@ -228,11 +218,11 @@ async function main() {
   await tx.wait();
   console.log("Add actions");
 
-  const fireMakingActionId = allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1;
-  const smithMakingActionId = allActions.findIndex((action) => action.info.skill == Skill.SMITHING) + 1;
+  const fireMakingActionId = allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.FIREMAKING) + 1;
+  const smithMakingActionId = allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.SMITHING) + 1;
 
   tx = await world.addBulkActionChoices(
-    [fireMakingActionId, smithMakingActionId, NONE, NONE],
+    [fireMakingActionId, smithMakingActionId, EstforConstants.NONE, EstforConstants.NONE],
     [[1, 2], [3, 4], [5], [6]],
     [firemakingChoices, smithingChoices, meleeChoices, magicChoices]
   );
@@ -241,22 +231,22 @@ async function main() {
   console.log("Add action choices");
 
   // First woodcutting
-  const queuedAction: QueuedAction = {
-    attire: noAttire,
-    actionId: allActions.findIndex((action) => action.info.skill == Skill.WOODCUTTING) + 1,
-    combatStyle: CombatStyle.NONE,
-    choiceId: NONE,
-    choiceId1: NONE,
-    choiceId2: NONE,
-    regenerateId: NONE,
+  const queuedAction: EstforTypes.QueuedAction = {
+    attire: EstforTypes.noAttire,
+    actionId: allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.WOODCUTTING) + 1,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId: EstforConstants.NONE,
+    choiceId1: EstforConstants.NONE,
+    choiceId2: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
     timespan: 3600,
-    rightHandEquipmentTokenId: BRONZE_AXE,
-    leftHandEquipmentTokenId: NONE,
+    rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
     startTime: "0",
     isValid: true,
   };
 
-  tx = await players.startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
   await tx.wait();
   console.log("start actions");
 
@@ -273,25 +263,25 @@ async function main() {
   await tx.wait();
   console.log("process actions");
 
-  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
+  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
 
   // Next firemaking
-  const queuedActionFiremaking: QueuedAction = {
-    attire: {...noAttire},
-    actionId: allActions.findIndex((action) => action.info.skill == Skill.FIREMAKING) + 1,
-    combatStyle: CombatStyle.NONE,
+  const queuedActionFiremaking: EstforTypes.QueuedAction = {
+    attire: {...EstforTypes.noAttire},
+    actionId: allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.FIREMAKING) + 1,
+    combatStyle: EstforTypes.CombatStyle.NONE,
     choiceId: 1,
-    choiceId1: NONE,
-    choiceId2: NONE,
-    regenerateId: NONE,
+    choiceId1: EstforConstants.NONE,
+    choiceId2: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
     timespan: 3600,
-    rightHandEquipmentTokenId: FIRE_LIGHTER,
-    leftHandEquipmentTokenId: NONE,
+    rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
     startTime: "0",
     isValid: true,
   };
 
-  tx = await players.startAction(playerId, queuedActionFiremaking, ActionQueueStatus.NONE);
+  tx = await players.startAction(playerId, queuedActionFiremaking, EstforTypes.ActionQueueStatus.NONE);
   await tx.wait();
   console.log("start actions");
 
@@ -304,10 +294,10 @@ async function main() {
   await tx.wait();
   console.log("process actions (firemaking)");
 
-  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, LOG)).toNumber());
+  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
 
   // Start another action
-  tx = await players.startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
   await tx.wait();
   console.log("start an unconsumed action");
 
@@ -317,22 +307,22 @@ async function main() {
   }
 
   // Start a combat action
-  const queuedActionCombat: QueuedAction = {
-    attire: {...noAttire, helmet: BRONZE_HELMET},
-    actionId: allActions.findIndex((action) => action.info.skill == Skill.COMBAT) + 1,
-    combatStyle: CombatStyle.MELEE,
+  const queuedActionCombat: EstforTypes.QueuedAction = {
+    attire: {...EstforTypes.noAttire, helmet: EstforConstants.BRONZE_HELMET},
+    actionId: allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.COMBAT) + 1,
+    combatStyle: EstforTypes.CombatStyle.MELEE,
     choiceId: 5,
-    choiceId1: NONE,
-    choiceId2: NONE,
-    regenerateId: NONE,
+    choiceId1: EstforConstants.NONE,
+    choiceId2: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
     timespan: 7200,
-    rightHandEquipmentTokenId: BRONZE_SWORD,
-    leftHandEquipmentTokenId: NONE,
+    rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
     startTime: "0",
     isValid: true,
   };
 
-  tx = await players.startAction(playerId, queuedActionCombat, ActionQueueStatus.NONE);
+  tx = await players.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE);
   await tx.wait();
   console.log("start a combat action");
 

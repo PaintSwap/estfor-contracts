@@ -1,32 +1,8 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {
-  ActionQueueStatus,
-  BRONZE_AXE,
-  BRONZE_BAR,
-  COAL_ORE,
-  CombatStyle,
-  COOKED_BOWFISH,
-  COPPER_ORE,
-  defaultInputItem,
-  emptyCombatStats,
-  Equipment,
-  EquipPosition,
-  getActionId,
-  HELL_SCROLL,
-  LEAF_FRAGMENTS,
-  LOG,
-  MITHRIL_BAR,
-  noAttire,
-  NONE,
-  QueuedAction,
-  RUBY,
-  Skill,
-  WOODCUTTING_BASE,
-  WOODCUTTING_MAX,
-  XP_BOOST,
-} from "../../scripts/utils";
+import {getActionId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
@@ -36,9 +12,9 @@ describe("Rewards", () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_HAND,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -46,45 +22,45 @@ describe("Rewards", () => {
     const tx = await world.addAction({
       actionId: 1,
       info: {
-        skill: Skill.WOODCUTTING,
+        skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
         numSpawn: 0,
-        handItemTokenIdRangeMin: WOODCUTTING_BASE,
-        handItemTokenIdRangeMax: WOODCUTTING_MAX,
+        handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
       },
-      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
-      combatStats: emptyCombatStats,
+      combatStats: EstforTypes.emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: QueuedAction = {
-      attire: noAttire,
+    const queuedAction: EstforTypes.QueuedAction = {
+      attire: EstforTypes.noAttire,
       actionId,
-      combatStyle: CombatStyle.NONE,
-      choiceId: NONE,
-      choiceId1: NONE,
-      choiceId2: NONE,
-      regenerateId: NONE,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
       timespan: 500,
-      rightHandEquipmentTokenId: BRONZE_AXE,
-      leftHandEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
     };
 
-    const equipments: Equipment[] = [{itemTokenId: BRONZE_BAR, amount: 3}];
+    const equipments: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
     await expect(players.addXPThresholdReward({xpThreshold: 499, equipments})).to.be.revertedWithCustomError(
       players,
       "XPThresholdNotFound"
     );
     await players.addXPThresholdReward({xpThreshold: 500, equipments});
 
-    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [250]);
     await ethers.provider.send("evm_mine", []);
 
@@ -96,7 +72,7 @@ describe("Rewards", () => {
     });
     expect(pendingOutput.produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
-    expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(0);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [250]);
     await ethers.provider.send("evm_mine", []);
     pendingOutput = await playerDelegateView.pendingRewards(alice.address, playerId, {
@@ -106,11 +82,11 @@ describe("Rewards", () => {
     });
     expect(pendingOutput.produced.length).is.eq(1);
     expect(pendingOutput.producedXPRewards.length).is.eq(1);
-    expect(pendingOutput.producedXPRewards[0].itemTokenId).is.eq(BRONZE_BAR);
+    expect(pendingOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
     expect(pendingOutput.producedXPRewards[0].amount).is.eq(3);
 
     await players.connect(alice).processActions(playerId);
-    expect(await itemNFT.balanceOf(alice.address, BRONZE_BAR)).to.eq(3);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
   });
 
   it("Daily Rewards", async () => {
@@ -119,9 +95,9 @@ describe("Rewards", () => {
     players.setDailyRewardsEnabled(true);
 
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_HAND,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -129,33 +105,33 @@ describe("Rewards", () => {
     const tx = await world.addAction({
       actionId: 1,
       info: {
-        skill: Skill.WOODCUTTING,
+        skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
         numSpawn: 0,
-        handItemTokenIdRangeMin: WOODCUTTING_BASE,
-        handItemTokenIdRangeMax: WOODCUTTING_MAX,
+        handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
       },
-      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
-      combatStats: emptyCombatStats,
+      combatStats: EstforTypes.emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: QueuedAction = {
-      attire: noAttire,
+    const queuedAction: EstforTypes.QueuedAction = {
+      attire: EstforTypes.noAttire,
       actionId,
-      combatStyle: CombatStyle.NONE,
-      choiceId: NONE,
-      choiceId1: NONE,
-      choiceId2: NONE,
-      regenerateId: NONE,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
       timespan: 500,
-      rightHandEquipmentTokenId: BRONZE_AXE,
-      leftHandEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
     };
@@ -167,16 +143,16 @@ describe("Rewards", () => {
     await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await ethers.provider.send("evm_mine", []);
 
-    let balanceBeforeWeeklyReward = await itemNFT.balanceOf(alice.address, XP_BOOST);
+    let balanceBeforeWeeklyReward = await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST);
 
     const equipments = [
-      {itemTokenId: COPPER_ORE, amount: 100},
-      {itemTokenId: COAL_ORE, amount: 200},
-      {itemTokenId: RUBY, amount: 100},
-      {itemTokenId: MITHRIL_BAR, amount: 200},
-      {itemTokenId: COOKED_BOWFISH, amount: 100},
-      {itemTokenId: LEAF_FRAGMENTS, amount: 20},
-      {itemTokenId: HELL_SCROLL, amount: 300},
+      {itemTokenId: EstforConstants.COPPER_ORE, amount: 100},
+      {itemTokenId: EstforConstants.COAL_ORE, amount: 200},
+      {itemTokenId: EstforConstants.RUBY, amount: 100},
+      {itemTokenId: EstforConstants.MITHRIL_BAR, amount: 200},
+      {itemTokenId: EstforConstants.COOKED_BOWFISH, amount: 100},
+      {itemTokenId: EstforConstants.LEAF_FRAGMENTS, amount: 20},
+      {itemTokenId: EstforConstants.HELL_SCROLL, amount: 300},
     ];
 
     let beforeBalances = await itemNFT.balanceOfs(
@@ -185,7 +161,7 @@ describe("Rewards", () => {
     );
 
     for (let i = 0; i < 5; ++i) {
-      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
     }
@@ -200,11 +176,11 @@ describe("Rewards", () => {
     }
 
     // This isn't a full week so shouldn't get weekly rewards, but still get daily rewards
-    let balanceAfterWeeklyReward = await itemNFT.balanceOf(alice.address, XP_BOOST);
+    let balanceAfterWeeklyReward = await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST);
     expect(balanceBeforeWeeklyReward).to.eq(balanceAfterWeeklyReward);
     let prevBalanceDailyReward = await itemNFT.balanceOf(alice.address, equipments[equipments.length - 1].itemTokenId);
-    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
-    expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, XP_BOOST));
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST));
     let balanceAfterDailyReward = await itemNFT.balanceOf(alice.address, equipments[equipments.length - 1].itemTokenId);
     expect(balanceAfterDailyReward).to.eq(prevBalanceDailyReward.toNumber() + equipments[equipments.length - 1].amount);
 
@@ -218,7 +194,7 @@ describe("Rewards", () => {
     );
 
     for (let i = 0; i < 7; ++i) {
-      await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
     }
@@ -233,7 +209,9 @@ describe("Rewards", () => {
     }
 
     // Also check extra week streak reward
-    expect(balanceAfterWeeklyReward.toNumber() + 1).to.eq(await itemNFT.balanceOf(alice.address, XP_BOOST));
+    expect(balanceAfterWeeklyReward.toNumber() + 1).to.eq(
+      await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)
+    );
   });
 
   it("Daily Rewards, only 1 claim", async () => {
@@ -242,9 +220,9 @@ describe("Rewards", () => {
     players.setDailyRewardsEnabled(true);
 
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_HAND,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -252,33 +230,33 @@ describe("Rewards", () => {
     const tx = await world.addAction({
       actionId: 1,
       info: {
-        skill: Skill.WOODCUTTING,
+        skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
         numSpawn: 0,
-        handItemTokenIdRangeMin: WOODCUTTING_BASE,
-        handItemTokenIdRangeMax: WOODCUTTING_MAX,
+        handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
       },
-      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
-      combatStats: emptyCombatStats,
+      combatStats: EstforTypes.emptyCombatStats,
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: QueuedAction = {
-      attire: noAttire,
+    const queuedAction: EstforTypes.QueuedAction = {
+      attire: EstforTypes.noAttire,
       actionId,
-      combatStyle: CombatStyle.NONE,
-      choiceId: NONE,
-      choiceId1: NONE,
-      choiceId2: NONE,
-      regenerateId: NONE,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
       timespan: 500,
-      rightHandEquipmentTokenId: BRONZE_AXE,
-      leftHandEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
     };
@@ -290,15 +268,15 @@ describe("Rewards", () => {
     await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await ethers.provider.send("evm_mine", []);
 
-    const equipment = {itemTokenId: COPPER_ORE, amount: 100};
+    const equipment = {itemTokenId: EstforConstants.COPPER_ORE, amount: 100};
     let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
-    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     let balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
     expect(balanceAfter).to.eq(balanceBefore.toNumber() + equipment.amount);
 
     // Start again, shouldn't get any more rewards
     balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
-    await players.connect(alice).startAction(playerId, queuedAction, ActionQueueStatus.NONE);
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
     expect(balanceAfter).to.eq(balanceBefore);
   });

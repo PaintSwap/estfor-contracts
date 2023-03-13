@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {BRONZE_AXE, EquipPosition, defaultInputItem} from "../scripts/utils";
 
 describe("ItemNFT", () => {
   async function deployContracts() {
@@ -90,34 +90,35 @@ describe("ItemNFT", () => {
     const {itemNFT, alice, owner} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_HAND,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
-    expect(await itemNFT.balanceOf(alice.address, BRONZE_AXE)).to.be.eq(1);
-    await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, BRONZE_AXE, 1, "0x");
-    expect(await itemNFT.balanceOf(alice.address, BRONZE_AXE)).to.be.eq(0);
+    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.be.eq(1);
+    await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.be.eq(0);
   });
 
   it("Non-transferable NFT", async () => {
     const {itemNFT, alice, owner} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
       isTransferable: false, // Cannot be transferred
-      equipPosition: EquipPosition.RIGHT_HAND,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testOnlyMint(alice.address, BRONZE_AXE, 1);
-    await expect(itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, BRONZE_AXE, 1, "0x")).to.be
-      .reverted;
+    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    await expect(
+      itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x")
+    ).to.be.reverted;
 
     // Allow it to be burnt
-    await expect(itemNFT.connect(alice).burn(BRONZE_AXE, 1));
+    await expect(itemNFT.connect(alice).burn(EstforConstants.BRONZE_AXE, 1));
   });
 });

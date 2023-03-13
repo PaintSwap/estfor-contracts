@@ -1,7 +1,8 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {AIR_SCROLL, COMBAT_BASE, COMBAT_MAX, emptyCombatStats, getActionId, NONE, Skill} from "../scripts/utils";
+import {getActionId} from "../scripts/utils";
 
 describe("World", () => {
   const deployContracts = async () => {
@@ -99,38 +100,38 @@ describe("World", () => {
       let tx = await world.addAction({
         actionId: 1,
         info: {
-          skill: Skill.COMBAT,
+          skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: false,
           numSpawn: 1,
-          handItemTokenIdRangeMin: COMBAT_BASE,
-          handItemTokenIdRangeMax: COMBAT_MAX,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyCombatStats,
+        combatStats: EstforTypes.emptyCombatStats,
       });
       const actionId = await getActionId(tx);
-      expect((await world.actions(actionId)).skill).to.eq(Skill.COMBAT);
+      expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
       await world.editAction({
         actionId,
         info: {
-          skill: Skill.COMBAT,
+          skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 20,
           minSkillPoints: 0,
           isDynamic: false,
           numSpawn: 1,
-          handItemTokenIdRangeMin: COMBAT_BASE,
-          handItemTokenIdRangeMax: COMBAT_MAX,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyCombatStats,
+        combatStats: EstforTypes.emptyCombatStats,
       });
       expect((await world.actions(actionId)).xpPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
@@ -143,19 +144,19 @@ describe("World", () => {
       await world.editAction({
         actionId,
         info: {
-          skill: Skill.COMBAT,
+          skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minSkillPoints: 0,
           isDynamic: true,
           numSpawn: 1,
-          handItemTokenIdRangeMin: COMBAT_BASE,
-          handItemTokenIdRangeMax: COMBAT_MAX,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: emptyCombatStats,
+        combatStats: EstforTypes.emptyCombatStats,
       });
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });
@@ -170,19 +171,19 @@ describe("World", () => {
       const {world} = await loadFixture(deployContracts);
       const choiceId = 0;
       await expect(
-        world.addActionChoice(NONE, choiceId, {
-          skill: Skill.MAGIC,
+        world.addActionChoice(EstforConstants.NONE, choiceId, {
+          skill: EstforTypes.Skill.MAGIC,
           diff: 2,
           xpPerHour: 0,
           minSkillPoints: 0,
           rate: 1 * 100,
-          inputTokenId1: AIR_SCROLL,
+          inputTokenId1: EstforConstants.AIR_SCROLL,
           num1: 1,
-          inputTokenId2: NONE,
+          inputTokenId2: EstforConstants.NONE,
           num2: 0,
-          inputTokenId3: NONE,
+          inputTokenId3: EstforConstants.NONE,
           num3: 0,
-          outputTokenId: NONE,
+          outputTokenId: EstforConstants.NONE,
           outputNum: 0,
         })
       ).to.be.reverted;

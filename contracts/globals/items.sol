@@ -109,24 +109,24 @@ uint16 constant SHAMAN_BOOTS = BOOTS_BASE + 14;
 uint16 constant MASTER_BOOTS = BOOTS_BASE + 15;
 uint16 constant BOOTS_MAX = BOOTS_BASE + 254;
 
-// 1537 - 1791 ring(1)
-// 1793 - 2047 spare(2)
-
-// All other ones for the first arm
+// 1536 - 1791 spare(1)
+// 1792 - 2047 spare(2)
 
 // Combat (right arm) (2048 - 2303)
 uint16 constant COMBAT_BASE = 2048;
 // Melee
-uint16 constant BRONZE_SWORD = COMBAT_BASE;
+uint16 constant SWORD_BASE = COMBAT_BASE;
+uint16 constant BRONZE_SWORD = SWORD_BASE;
 uint16 constant IRON_SWORD = COMBAT_BASE + 1;
 uint16 constant MITHRIL_SWORD = COMBAT_BASE + 2;
 uint16 constant ADAMANTINE_SWORD = COMBAT_BASE + 3;
 uint16 constant RUNITE_SWORD = COMBAT_BASE + 4;
 uint16 constant TITANIUM_SWORD = COMBAT_BASE + 5;
-uint16 constant ORCHALCUM_SWORD = COMBAT_BASE + 6;
+uint16 constant ORICHALCUM_SWORD = COMBAT_BASE + 6;
+uint16 constant SWORD_MAX = SWORD_BASE + 49;
 // Magic
 uint16 constant STAFF_BASE = COMBAT_BASE + 50;
-uint16 constant STAFF_OF_THE_PHOENIX = STAFF_BASE;
+uint16 constant TOTEM_STAFF = STAFF_BASE;
 uint16 constant SAPPHIRE_STAFF = STAFF_BASE + 1;
 uint16 constant EMERALD_STAFF = STAFF_BASE + 2;
 uint16 constant RUBY_STAFF = STAFF_BASE + 3;
@@ -135,8 +135,9 @@ uint16 constant DIAMOND_STAFF = STAFF_BASE + 5;
 uint16 constant DRAGONSTONE_STAFF = STAFF_BASE + 6;
 uint16 constant STAFF_MAX = STAFF_BASE + 49;
 // Ranged
-uint16 constant BOW = COMBAT_BASE + 100;
-// Combat (left arm)
+uint16 constant BOW_BASE = COMBAT_BASE + 100;
+uint16 constant BOW_MAX = BOW_BASE + 49;
+// Shields (left arm)
 uint16 constant SHIELD_BASE = COMBAT_BASE + 150;
 uint16 constant BRONZE_SHIELD = SHIELD_BASE;
 uint16 constant IRON_SHIELD = SHIELD_BASE + 1;
@@ -144,7 +145,8 @@ uint16 constant MITHRIL_SHIELD = SHIELD_BASE + 2;
 uint16 constant ADAMANTINE_SHIELD = SHIELD_BASE + 3;
 uint16 constant RUNITE_SHIELD = SHIELD_BASE + 4;
 uint16 constant TITANIUM_SHIELD = SHIELD_BASE + 5;
-uint16 constant ORCHALCUM_SHIELD = SHIELD_BASE + 6;
+uint16 constant ORICHALCUM_SHIELD = SHIELD_BASE + 6;
+uint16 constant SHIELD_MAX = SHIELD_BASE + 49;
 
 uint16 constant COMBAT_MAX = COMBAT_BASE + 255;
 
@@ -156,7 +158,7 @@ uint16 constant MITHRIL_PICKAXE = MINING_BASE + 2;
 uint16 constant ADAMANTINE_PICKAXE = MINING_BASE + 3;
 uint16 constant RUNITE_PICKAXE = MINING_BASE + 4;
 uint16 constant TITANIUM_PICKAXE = MINING_BASE + 5;
-uint16 constant ORCHALCUM_PICKAXE = MINING_BASE + 6;
+uint16 constant ORICHALCUM_PICKAXE = MINING_BASE + 6;
 uint16 constant MINING_MAX = MINING_BASE + 255;
 
 // Woodcutting (2816 - 3071)
@@ -167,26 +169,27 @@ uint16 constant MITHRIL_AXE = WOODCUTTING_BASE + 2;
 uint16 constant ADAMANTINE_AXE = WOODCUTTING_BASE + 3;
 uint16 constant RUNITE_AXE = WOODCUTTING_BASE + 4;
 uint16 constant TITANIUM_AXE = WOODCUTTING_BASE + 5;
-uint16 constant ORCHALCUM_AXE = WOODCUTTING_BASE + 6;
+uint16 constant ORICHALCUM_AXE = WOODCUTTING_BASE + 6;
 uint16 constant WOODCUTTING_MAX = WOODCUTTING_BASE + 255;
 
-// Fishing (3072)
+// Fishing (3072 - 3327)
 uint16 constant FISHING_BASE = 3072;
-uint16 constant SMALL_NET = FISHING_BASE;
+uint16 constant NET_STICK = FISHING_BASE;
 uint16 constant MEDIUM_NET = FISHING_BASE + 1;
-uint16 constant FISHING_ROD = FISHING_BASE + 2;
-uint16 constant HARPOON = FISHING_BASE + 3;
-uint16 constant LARGE_NET = FISHING_BASE + 4;
-uint16 constant MAGIC_NET = FISHING_BASE + 5;
+uint16 constant WOOD_FISHING_ROD = FISHING_BASE + 2;
+uint16 constant TITANIUM_FISHING_ROD = FISHING_BASE + 3;
+uint16 constant HARPOON = FISHING_BASE + 4;
+uint16 constant LARGE_NET = FISHING_BASE + 5;
+uint16 constant MAGIC_NET = FISHING_BASE + 6;
+uint16 constant CAGE = FISHING_BASE + 7;
 uint16 constant FISHING_MAX = FISHING_BASE + 255;
 
-// Firemaking (3328)
+// Firemaking (3328 - 3583)
 uint16 constant FIRE_BASE = 3328;
-uint16 constant FIRE_LIGHTER = FIRE_BASE;
+uint16 constant MAGIC_FIRE_STARTER = FIRE_BASE;
 uint16 constant FIRE_MAX = FIRE_BASE + 255;
 
 // Smithing (none needed)
-// Thieiving (none needed)
 // Crafting (none needed)
 // Cooking (none needed)
 
@@ -200,7 +203,7 @@ uint16 constant MITHRIL_BAR = BAR_BASE + 2;
 uint16 constant ADAMANTINE_BAR = BAR_BASE + 3;
 uint16 constant RUNITE_BAR = BAR_BASE + 4;
 uint16 constant TITANIUM_BAR = BAR_BASE + 5;
-uint16 constant ORCHALCUM_BAR = BAR_BASE + 6;
+uint16 constant ORICHALCUM_BAR = BAR_BASE + 6;
 uint16 constant BAR_MAX = BAR_BASE + 255;
 
 // Logs
@@ -212,65 +215,85 @@ uint16 constant MAPLE_LOG = LOG_BASE + 3;
 uint16 constant REDWOOD_LOG = LOG_BASE + 4;
 uint16 constant MAGICAL_LOG = LOG_BASE + 5;
 uint16 constant ASH_LOG = LOG_BASE + 6;
+uint16 constant ENCHANTED_LOG = LOG_BASE + 7;
+uint16 constant LIVING_LOG = LOG_BASE + 8;
 uint16 constant LOG_MAX = LOG_BASE + 255;
 
 // Fish
 uint16 constant RAW_FISH_BASE = 10752;
-uint16 constant RAW_HUPPY = RAW_FISH_BASE;
-uint16 constant RAW_MINNOW = RAW_FISH_BASE + 1;
-uint16 constant RAW_SUNFISH = RAW_FISH_BASE + 2;
-uint16 constant RAW_PERCH = RAW_FISH_BASE + 3;
-uint16 constant RAW_CRAYFISH = RAW_FISH_BASE + 4;
-uint16 constant RAW_BLUEGILL = RAW_FISH_BASE + 5;
-uint16 constant RAW_CATFISH = RAW_FISH_BASE + 6;
-uint16 constant RAW_CARP = RAW_FISH_BASE + 7;
-uint16 constant RAW_TILAPIA = RAW_FISH_BASE + 8;
-uint16 constant RAW_MUSKELLUNGE = RAW_FISH_BASE + 9;
-uint16 constant RAW_SWORDFISH = RAW_FISH_BASE + 10;
-uint16 constant RAW_SHARK = RAW_FISH_BASE + 11;
-uint16 constant RAW_BARRIMUNDI = RAW_FISH_BASE + 12;
-uint16 constant RAW_KINGFISH = RAW_FISH_BASE + 13;
-uint16 constant RAW_MARLIN = RAW_FISH_BASE + 14;
-uint16 constant RAW_GIANT_CATFISH = RAW_FISH_BASE + 15;
-uint16 constant RAW_ELECTRIC_EEL = RAW_FISH_BASE + 16;
-uint16 constant RAW_MANTA_RAY = RAW_FISH_BASE + 17;
-uint16 constant RAW_LEVIATHAN = RAW_FISH_BASE + 18;
-uint16 constant RAW_DRAGONFISH = RAW_FISH_BASE + 19;
-uint16 constant RAW_SKRIMP = RAW_FISH_BASE + 20;
-uint16 constant RAW_FIRE_MAX = RAW_FISH_BASE + 255;
+uint16 constant RAW_MINNUS = RAW_FISH_BASE;
+uint16 constant RAW_BLEKK = RAW_FISH_BASE + 1;
+uint16 constant RAW_SKRIMP = RAW_FISH_BASE + 2;
+uint16 constant RAW_FEOLA = RAW_FISH_BASE + 3;
+uint16 constant RAW_ANCHO = RAW_FISH_BASE + 4;
+uint16 constant RAW_TROUT = RAW_FISH_BASE + 5;
+uint16 constant RAW_ROJJA = RAW_FISH_BASE + 6;
+uint16 constant RAW_BOWFISH = RAW_FISH_BASE + 7;
+uint16 constant RAW_GOLDFISH = RAW_FISH_BASE + 8;
+uint16 constant RAW_MYSTY_BLUE = RAW_FISH_BASE + 9;
+uint16 constant RAW_FLITFISH = RAW_FISH_BASE + 10;
+uint16 constant RAW_RAZORFISH = RAW_FISH_BASE + 11;
+uint16 constant RAW_QUAFFER = RAW_FISH_BASE + 12;
+uint16 constant RAW_ROXA = RAW_FISH_BASE + 13;
+uint16 constant RAW_AZACUDDA = RAW_FISH_BASE + 14;
+uint16 constant RAW_STONECLAW = RAW_FISH_BASE + 15;
+uint16 constant RAW_CRUSKAN = RAW_FISH_BASE + 16;
+uint16 constant RAW_CHODFISH = RAW_FISH_BASE + 17;
+uint16 constant RAW_DOUBTFISH = RAW_FISH_BASE + 18;
+uint16 constant RAW_ROSEFIN = RAW_FISH_BASE + 19;
+uint16 constant RAW_SPHINX_FISH = RAW_FISH_BASE + 20;
+uint16 constant RAW_SHAW = RAW_FISH_BASE + 21;
+uint16 constant RAW_VANISHING_PERCH = RAW_FISH_BASE + 22;
+uint16 constant RAW_VIPER_BASS = RAW_FISH_BASE + 23;
+uint16 constant RAW_WATER_SERPENT = RAW_FISH_BASE + 24;
+uint16 constant RAW_WHISKFIN = RAW_FISH_BASE + 25;
+uint16 constant RAW_MHARA = RAW_FISH_BASE + 26;
+uint16 constant RAW_GRAN_SQUIN = RAW_FISH_BASE + 27;
+uint16 constant RAW_LANCER = RAW_FISH_BASE + 28;
+uint16 constant RAW_OCTACLE = RAW_FISH_BASE + 29;
+uint16 constant RAW_DRAGONFISH = RAW_FISH_BASE + 30;
+uint16 constant RAW_YERESPATUM = RAW_FISH_BASE + 31;
+uint16 constant RAW_FISH_MAX = RAW_FISH_BASE + 255;
 
 // Cooked fish
 uint16 constant COOKED_FISH_BASE = 11008;
-uint16 constant COOKED_HUPPY = COOKED_FISH_BASE;
-uint16 constant COOKED_MINNOW = COOKED_FISH_BASE + 1;
-uint16 constant COOKED_SUNFISH = COOKED_FISH_BASE + 2;
-uint16 constant COOKED_PERCH = COOKED_FISH_BASE + 3;
-uint16 constant COOKED_CRAYFISH = COOKED_FISH_BASE + 4;
-uint16 constant COOKED_BLUEGILL = COOKED_FISH_BASE + 5;
-uint16 constant COOKED_CATFISH = COOKED_FISH_BASE + 6;
-uint16 constant COOKED_CARP = COOKED_FISH_BASE + 7;
-uint16 constant COOKED_TILAPIA = COOKED_FISH_BASE + 8;
-uint16 constant COOKED_MUSKELLUNGE = COOKED_FISH_BASE + 9;
-uint16 constant COOKED_SWORDFISH = COOKED_FISH_BASE + 10;
-uint16 constant COOKED_SHARK = COOKED_FISH_BASE + 11;
-uint16 constant COOKED_BARRIMUNDI = COOKED_FISH_BASE + 12;
-uint16 constant COOKED_KINGFISH = COOKED_FISH_BASE + 13;
-uint16 constant COOKED_MARLIN = COOKED_FISH_BASE + 14;
-uint16 constant COOKED_GIANT_CATFISH = COOKED_FISH_BASE + 15;
-uint16 constant COOKED_ELECTRIC_EEL = COOKED_FISH_BASE + 16;
-uint16 constant COOKED_MANTA_RAY = COOKED_FISH_BASE + 17;
-uint16 constant COOKED_LEVIATHAN = COOKED_FISH_BASE + 18;
-uint16 constant COOKED_DRAGONFISH = COOKED_FISH_BASE + 19;
-uint16 constant COOKED_SKRIMP = COOKED_FISH_BASE + 20;
-uint16 constant COOKED_BOWFISH = COOKED_FISH_BASE + 21;
+uint16 constant COOKED_MINNUS = COOKED_FISH_BASE;
+uint16 constant COOKED_BLEKK = COOKED_FISH_BASE + 1;
+uint16 constant COOKED_SKRIMP = COOKED_FISH_BASE + 2;
+uint16 constant COOKED_FEOLA = COOKED_FISH_BASE + 3;
+uint16 constant COOKED_ANCHO = COOKED_FISH_BASE + 4;
+uint16 constant COOKED_TROUT = COOKED_FISH_BASE + 5;
+uint16 constant COOKED_ROJJA = COOKED_FISH_BASE + 6;
+uint16 constant COOKED_BOWFISH = COOKED_FISH_BASE + 7;
+uint16 constant COOKED_GOLDFISH = COOKED_FISH_BASE + 8;
+uint16 constant COOKED_MYSTY_BLUE = COOKED_FISH_BASE + 9;
+uint16 constant COOKED_FLITFISH = COOKED_FISH_BASE + 10;
+uint16 constant COOKED_RAZORFISH = COOKED_FISH_BASE + 11;
+uint16 constant COOKED_QUAFFER = COOKED_FISH_BASE + 12;
+uint16 constant COOKED_ROXA = COOKED_FISH_BASE + 13;
+uint16 constant COOKED_AZACUDDA = COOKED_FISH_BASE + 14;
+uint16 constant COOKED_STONECLAW = COOKED_FISH_BASE + 15;
+uint16 constant COOKED_CRUSKAN = COOKED_FISH_BASE + 16;
+uint16 constant COOKED_CHODFISH = COOKED_FISH_BASE + 17;
+uint16 constant COOKED_DOUBTFISH = COOKED_FISH_BASE + 18;
+uint16 constant COOKED_ROSEFIN = COOKED_FISH_BASE + 19;
+uint16 constant COOKED_SPHINX_FISH = COOKED_FISH_BASE + 20;
+uint16 constant COOKED_SHAW = COOKED_FISH_BASE + 21;
+uint16 constant COOKED_VANISHING_PERCH = COOKED_FISH_BASE + 22;
+uint16 constant COOKED_VIPER_BASS = COOKED_FISH_BASE + 23;
+uint16 constant COOKED_WATER_SERPENT = COOKED_FISH_BASE + 24;
+uint16 constant COOKED_WHISKFIN = COOKED_FISH_BASE + 25;
+uint16 constant COOKED_MHARA = COOKED_FISH_BASE + 26;
+uint16 constant COOKED_GRAN_SQUIN = COOKED_FISH_BASE + 27;
+uint16 constant COOKED_LANCER = COOKED_FISH_BASE + 28;
+uint16 constant COOKED_OCTACLE = COOKED_FISH_BASE + 29;
+uint16 constant COOKED_DRAGONFISH = COOKED_FISH_BASE + 30;
+uint16 constant COOKED_YERESPATUM = COOKED_FISH_BASE + 31;
 uint16 constant COOKED_FISH_MAX = COOKED_FISH_BASE + 255;
 
 // Farming
 uint16 constant FARMING_BASE = 11264;
 uint16 constant BONEMEAL = FARMING_BASE;
-uint16 constant BONEMEALX2 = FARMING_BASE + 1;
-uint16 constant BONEMEALX5 = FARMING_BASE + 2;
-uint16 constant BONEMEALX10 = FARMING_BASE + 3;
 uint16 constant FARMING_MAX = FARMING_BASE + 255;
 
 // Mining
@@ -278,19 +301,20 @@ uint16 constant ORE_BASE = 11520;
 uint16 constant COPPER_ORE = ORE_BASE;
 uint16 constant TIN_ORE = ORE_BASE + 1;
 uint16 constant IRON_ORE = ORE_BASE + 2;
-uint16 constant SAPPHIRE_ORE = ORE_BASE + 3;
+uint16 constant SAPPHIRE = ORE_BASE + 3;
 uint16 constant COAL_ORE = ORE_BASE + 4;
-uint16 constant EMERALD_ORE = ORE_BASE + 5;
+uint16 constant EMERALD = ORE_BASE + 5;
 uint16 constant MITHRIL_ORE = ORE_BASE + 6;
-uint16 constant RUBY_ORE = ORE_BASE + 7;
+uint16 constant RUBY = ORE_BASE + 7;
 uint16 constant ADAMANTINE_ORE = ORE_BASE + 8;
-uint16 constant AMETHYST_ORE = ORE_BASE + 9;
-uint16 constant DIAMOND_ORE = ORE_BASE + 10;
+uint16 constant AMETHYST = ORE_BASE + 9;
+uint16 constant DIAMOND = ORE_BASE + 10;
 uint16 constant RUNITE_ORE = ORE_BASE + 11;
-uint16 constant DRAGONSTONE_ORE = ORE_BASE + 12;
+uint16 constant DRAGONSTONE = ORE_BASE + 12;
 uint16 constant TITANIUM_ORE = ORE_BASE + 13;
-uint16 constant ORCHALCUM_ORE = ORE_BASE + 14;
+uint16 constant ORICHALCUM_ORE = ORE_BASE + 14;
 uint16 constant ORE_MAX = ORE_BASE + 255;
+
 // Arrows
 uint16 constant ARROW_BASE = 11776;
 uint16 constant BRONZE_ARROW = ARROW_BASE;
@@ -305,97 +329,64 @@ uint16 constant HELL_SCROLL = SCROLL_BASE + 3;
 uint16 constant AIR_SCROLL = SCROLL_BASE + 4;
 uint16 constant BARRAGE_SCROLL = SCROLL_BASE + 5;
 uint16 constant FREEZE_SCROLL = SCROLL_BASE + 6;
+uint16 constant ANCIENT_SCROLL = SCROLL_BASE + 7;
 uint16 constant SCROLL_MAX = SCROLL_BASE + 255;
 
-// Spells
-uint16 constant SPELL_BASE = 12544;
-uint16 constant SHADOW_BLAST = SPELL_BASE;
-uint16 constant NATURES_FURU = SPELL_BASE + 1;
-uint16 constant DEATH_WAVE = SPELL_BASE + 2;
-uint16 constant VORTEX = SPELL_BASE + 3;
-uint16 constant MYSTIC_BLAST = SPELL_BASE + 4;
-uint16 constant MAGIC_BREATH = SPELL_BASE + 5;
-uint16 constant SUMMON_HELL_HOUND = SPELL_BASE + 6;
-uint16 constant AIR_BALL = SPELL_BASE + 7;
-uint16 constant FURY_FISTS = SPELL_BASE + 8;
-uint16 constant CONCUSSION_BEAMS = SPELL_BASE + 9;
-uint16 constant ICE_SPIKES = SPELL_BASE + 10;
-uint16 constant SPELL_MAX = SPELL_BASE + 255;
+// Free interval
+uint16 constant NOT_USED_BASE = 12544;
+uint16 constant NOT_USED_MAX = 12799;
 
 // Boosts
 uint16 constant BOOST_BASE = 12800;
 uint16 constant COMBAT_BOOST = BOOST_BASE;
 uint16 constant XP_BOOST = BOOST_BASE + 1;
 uint16 constant GATHERING_BOOST = BOOST_BASE + 2;
-uint16 constant SKILLER_BOOST = BOOST_BASE + 3;
+uint16 constant SKILL_BOOST = BOOST_BASE + 3;
 uint16 constant ABSENCE_BOOST = BOOST_BASE + 4;
-uint16 constant COMBAT_BOOST_NON_TRANSFERABLE = BOOST_BASE + 5;
-uint16 constant XP_BOOST_NON_TRANSFERABLE = BOOST_BASE + 6;
-uint16 constant GATHERING_BOOST_NON_TRANSFERABLE = BOOST_BASE + 7;
-uint16 constant SKILLER_BOOST_NON_TRANSFERABLE = BOOST_BASE + 8;
-uint16 constant ABSENCE_BOOST_NON_TRANSFERABLE = BOOST_BASE + 9;
-uint16 constant BOOST_MAX = BOOST_BASE + 255;
+uint16 constant PRAY_TO_THE_BEARDIE = BOOST_BASE + 5;
+uint16 constant GO_OUTSIDE = BOOST_BASE + 6;
+uint16 constant RAINING_RARES = BOOST_BASE + 7;
+uint16 constant BOOST_MAX = 13055;
 
-// Thieving
-uint16 constant THIEVING_BASE = 13056;
-uint16 constant PICKPOCKET_CHILD = THIEVING_BASE;
-uint16 constant PICKPOCKET_MAN = THIEVING_BASE + 1;
-uint16 constant PICKPOCKET_GUARD = THIEVING_BASE + 2;
-uint16 constant LOCKPICK_CHEST = THIEVING_BASE + 3;
-uint16 constant STEAL_FROM_STALL = THIEVING_BASE + 4;
-uint16 constant STEAL_FROM_FARMER = THIEVING_BASE + 5;
-uint16 constant STEAL_FROM_FISHERMAN = THIEVING_BASE + 6;
-uint16 constant STEAL_FROM_LUMBERJACK = THIEVING_BASE + 7;
-uint16 constant STEAL_FROM_BLACKSMITH = THIEVING_BASE + 8;
-uint16 constant PICKPOCKET_HEAD_GUARD = THIEVING_BASE + 9;
-uint16 constant PICKPOCKET_WIZARD = THIEVING_BASE + 10;
-uint16 constant STEAL_FROM_POTION_SHOP = THIEVING_BASE + 11;
-uint16 constant STEAL_FROM_GEM_MERCHANT = THIEVING_BASE + 12;
-uint16 constant STEAL_FROM_BANK = THIEVING_BASE + 13;
-uint16 constant PICKPOCKET_MASTER_THIEF = THIEVING_BASE + 14;
-uint16 constant THIEVING_MAX = THIEVING_BASE + 255;
-
-// Misc
-uint16 constant MISC_BASE = 32768;
-uint16 constant NATUOW_HIDE = MISC_BASE;
-uint16 constant NATUOW_LEATHER = MISC_BASE + 1;
-uint16 constant SMALL_BONE = MISC_BASE + 2;
-uint16 constant MEDIUM_BONE = MISC_BASE + 3;
-uint16 constant LARGE_BONE = MISC_BASE + 4;
-uint16 constant DRAGON_BONE = MISC_BASE + 5;
-uint16 constant DRAGON_TEETH = MISC_BASE + 6;
-uint16 constant DRAGON_SCALE = MISC_BASE + 7;
-uint16 constant POISON = MISC_BASE + 8;
-uint16 constant STRING = MISC_BASE + 9;
-uint16 constant ROPE = MISC_BASE + 10;
-uint16 constant LEAF_FRAGMENTS = MISC_BASE + 11;
-uint16 constant VENOM_POUCH = MISC_BASE + 12;
-uint16 constant BAT_WING = MISC_BASE + 13;
-uint16 constant BAT_WING_PATCH = MISC_BASE + 14;
-uint16 constant THREAD_NEEDLE = MISC_BASE + 15;
-uint16 constant LOSSUTH_TEETH = MISC_BASE + 16;
-uint16 constant LOSSUTH_SCALE = MISC_BASE + 17;
-uint16 constant FEATHER = MISC_BASE + 18;
-uint16 constant QUARTZ_INFUSED_FEATHER = MISC_BASE + 19;
-uint16 constant BARK_CHUNK = MISC_BASE + 20;
-uint16 constant APPRENTICE_FABRIC = MISC_BASE + 21;
-uint16 constant MAGE_FABRIC = MISC_BASE + 22;
-uint16 constant SORCERER_FABRIC = MISC_BASE + 23;
-uint16 constant SEERS_FABRIC = MISC_BASE + 24;
-uint16 constant SHAMAN_FABRIC = MISC_BASE + 25;
-uint16 constant MASTER_FABRIC = MISC_BASE + 26;
-uint16 constant DRAGON_KEY = MISC_BASE + 27;
-uint16 constant BONE_KEY = MISC_BASE + 28;
-uint16 constant NATURE_KEY = MISC_BASE + 29;
-uint16 constant AQUA_KEY = MISC_BASE + 30;
-uint16 constant BLUECANAR = MISC_BASE + 31;
-uint16 constant ANURGAT = MISC_BASE + 32;
-uint16 constant RUFARUM = MISC_BASE + 33;
-uint16 constant WHITE_DEATH_SPORE = MISC_BASE + 34;
-uint16 constant BONES = MISC_BASE + 35;
-uint16 constant RUBY = MISC_BASE + 36;
-uint16 constant MISC_MAX = MISC_BASE + (10 + 256) + 255;
-
-// Other
-uint16 constant MYSTERY_BOX = 65535;
+// MISC
+uint16 constant MISC_BASE = 65535;
+uint16 constant MYSTERY_BOX = MISC_BASE;
 uint16 constant RAID_PASS = MISC_BASE - 1;
+uint16 constant NATUOW_HIDE = MISC_BASE - 2;
+uint16 constant NATUOW_LEATHER = MISC_BASE - 3;
+uint16 constant SMALL_BONE = MISC_BASE - 4;
+uint16 constant MEDIUM_BONE = MISC_BASE - 5;
+uint16 constant LARGE_BONE = MISC_BASE - 6;
+uint16 constant DRAGON_BONE = MISC_BASE - 7;
+uint16 constant DRAGON_TEETH = MISC_BASE - 8;
+uint16 constant DRAGON_SCALE = MISC_BASE - 9;
+uint16 constant POISON = MISC_BASE - 10;
+uint16 constant STRING = MISC_BASE - 11;
+uint16 constant ROPE = MISC_BASE - 12;
+uint16 constant LEAF_FRAGMENTS = MISC_BASE - 13;
+uint16 constant VENOM_POUCH = MISC_BASE - 14;
+uint16 constant BAT_WING = MISC_BASE - 15;
+uint16 constant BAT_WING_PATCH = MISC_BASE - 16;
+uint16 constant THREAD_NEEDLE = MISC_BASE - 17;
+uint16 constant LOSSUTH_TEETH = MISC_BASE - 18;
+uint16 constant LOSSUTH_SCALE = MISC_BASE - 19;
+uint16 constant FEATHER = MISC_BASE - 20;
+uint16 constant QUARTZ_INFUSED_FEATHER = MISC_BASE - 21;
+uint16 constant BARK_CHUNK = MISC_BASE - 22;
+uint16 constant APPRENTICE_FABRIC = MISC_BASE - 23;
+uint16 constant MAGE_FABRIC = MISC_BASE - 24;
+uint16 constant SORCERER_FABRIC = MISC_BASE - 25;
+uint16 constant SEERS_FABRIC = MISC_BASE - 26;
+uint16 constant SHAMAN_FABRIC = MISC_BASE - 27;
+uint16 constant MASTER_FABRIC = MISC_BASE - 28;
+uint16 constant DRAGON_KEY = MISC_BASE - 29;
+uint16 constant BONE_KEY = MISC_BASE - 30;
+uint16 constant NATURE_KEY = MISC_BASE - 31;
+uint16 constant AQUA_KEY = MISC_BASE - 32;
+uint16 constant BLUECANAR = MISC_BASE - 33;
+uint16 constant ANURGAT = MISC_BASE - 34;
+uint16 constant RUFARUM = MISC_BASE - 35;
+uint16 constant WHITE_DEATH_SPORE = MISC_BASE - 36;
+uint16 constant ENCHANTED_ACORN = MISC_BASE - 37;
+uint16 constant ACORN_PATCH = MISC_BASE - 38;
+uint16 constant MISC_MIN = 32768;

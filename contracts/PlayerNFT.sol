@@ -103,8 +103,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint[] memory itemNFTs = new uint[](5);
     itemNFTs[0] = BRONZE_SWORD;
     itemNFTs[1] = BRONZE_AXE;
-    itemNFTs[2] = FIRE_LIGHTER;
-    itemNFTs[3] = SMALL_NET;
+    itemNFTs[2] = MAGIC_FIRE_STARTER;
+    itemNFTs[3] = NET_STICK;
     itemNFTs[4] = BRONZE_PICKAXE;
 
     uint[] memory quantities = new uint[](5);

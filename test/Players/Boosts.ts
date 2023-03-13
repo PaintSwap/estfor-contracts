@@ -1,23 +1,8 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {
-  ActionQueueStatus,
-  BoostType,
-  BRONZE_AXE,
-  CombatStyle,
-  defaultInputItem,
-  emptyCombatStats,
-  EquipPosition,
-  getActionId,
-  LOG,
-  noAttire,
-  NONE,
-  QueuedAction,
-  Skill,
-  WOODCUTTING_MAX,
-  XP_BOOST,
-} from "../../scripts/utils";
+import {getActionId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
@@ -29,12 +14,12 @@ describe("Boosts", () => {
     const boostValue = 10;
     const boostDuration = 3300;
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: XP_BOOST,
-      equipPosition: EquipPosition.BOOST_VIAL,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.XP_BOOST,
+      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
       metadataURI: "someIPFSURI.json",
       // Boost
-      boostType: BoostType.NON_COMBAT_XP,
+      boostType: EstforTypes.BoostType.NON_COMBAT_XP,
       boostValue,
       boostDuration,
     });
@@ -43,58 +28,62 @@ describe("Boosts", () => {
     const tx = await world.addAction({
       actionId: 1,
       info: {
-        skill: Skill.WOODCUTTING,
+        skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
         numSpawn: 0,
-        handItemTokenIdRangeMin: BRONZE_AXE,
-        handItemTokenIdRangeMax: WOODCUTTING_MAX,
+        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
       },
-      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
-      combatStats: emptyCombatStats,
+      combatStats: EstforTypes.emptyCombatStats,
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, XP_BOOST, 1);
+    await itemNFT.testOnlyMint(alice.address, EstforConstants.XP_BOOST, 1);
 
     const timespan = 3600;
-    const queuedAction: QueuedAction = {
-      attire: noAttire,
+    const queuedAction: EstforTypes.QueuedAction = {
+      attire: EstforTypes.noAttire,
       actionId,
-      combatStyle: CombatStyle.NONE,
-      choiceId: NONE,
-      choiceId1: NONE,
-      choiceId2: NONE,
-      regenerateId: NONE,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
       timespan,
-      rightHandEquipmentTokenId: BRONZE_AXE,
-      leftHandEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
     };
 
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_HAND,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
-    expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(1);
-    await players.connect(alice).startActions(playerId, [queuedAction], XP_BOOST, ActionQueueStatus.NONE);
-    expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(0);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction], EstforConstants.XP_BOOST, EstforTypes.ActionQueueStatus.NONE);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(
+    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (boostDuration * boostValue) / 100
     ); //
     // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      Math.floor((timespan * rate) / (3600 * 100))
+    );
   });
 
   it("Add Boost, partial consume", async () => {
@@ -102,12 +91,12 @@ describe("Boosts", () => {
 
     const boostValue = 10;
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: XP_BOOST,
-      equipPosition: EquipPosition.BOOST_VIAL,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.XP_BOOST,
+      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
       metadataURI: "someIPFSURI.json",
       // Boost
-      boostType: BoostType.NON_COMBAT_XP,
+      boostType: EstforTypes.BoostType.NON_COMBAT_XP,
       boostValue,
       boostDuration: 7200,
     });
@@ -116,57 +105,61 @@ describe("Boosts", () => {
     const tx = await world.addAction({
       actionId: 1,
       info: {
-        skill: Skill.WOODCUTTING,
+        skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minSkillPoints: 0,
         isDynamic: false,
         numSpawn: 0,
-        handItemTokenIdRangeMin: BRONZE_AXE,
-        handItemTokenIdRangeMax: WOODCUTTING_MAX,
+        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
       },
-      guaranteedRewards: [{itemTokenId: LOG, rate}],
+      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
-      combatStats: emptyCombatStats,
+      combatStats: EstforTypes.emptyCombatStats,
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, XP_BOOST, 1);
+    await itemNFT.testOnlyMint(alice.address, EstforConstants.XP_BOOST, 1);
 
     const timespan = 3600;
-    const queuedAction: QueuedAction = {
-      attire: noAttire,
+    const queuedAction: EstforTypes.QueuedAction = {
+      attire: EstforTypes.noAttire,
       actionId,
-      combatStyle: CombatStyle.NONE,
-      choiceId: NONE,
-      choiceId1: NONE,
-      choiceId2: NONE,
-      regenerateId: NONE,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
       timespan,
-      rightHandEquipmentTokenId: BRONZE_AXE,
-      leftHandEquipmentTokenId: NONE,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
     };
 
     await itemNFT.addItem({
-      ...defaultInputItem,
-      tokenId: BRONZE_AXE,
-      equipPosition: EquipPosition.RIGHT_HAND,
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       metadataURI: "someIPFSURI.json",
     });
 
-    expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(1);
-    await players.connect(alice).startActions(playerId, [queuedAction], XP_BOOST, ActionQueueStatus.NONE);
-    expect(await itemNFT.balanceOf(alice.address, XP_BOOST)).to.eq(0);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction], EstforConstants.XP_BOOST, EstforTypes.ActionQueueStatus.NONE);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, Skill.WOODCUTTING)).to.eq(
+    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
     ); //
     // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, LOG)).to.eq(Math.floor((timespan * rate) / (3600 * 100)));
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      Math.floor((timespan * rate) / (3600 * 100))
+    );
   });
 });
