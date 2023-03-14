@@ -188,10 +188,15 @@ export const allItems: EstforTypes.InputItem[] = [
   },
 ];
 
-export const allXPThresholdRewards: EstforTypes.XPThresholdReward[] = [
+type XPThresholdReward = {
+  xpThreshold: number;
+  rewards: EstforTypes.Equipment[];
+};
+
+export const allXPThresholdRewards: XPThresholdReward[] = [
   {
     xpThreshold: 500,
-    equipments: [
+    rewards: [
       {
         itemTokenId: EstforConstants.BRONZE_HELMET,
         amount: 1,
@@ -200,7 +205,7 @@ export const allXPThresholdRewards: EstforTypes.XPThresholdReward[] = [
   },
   {
     xpThreshold: 1000,
-    equipments: [
+    rewards: [
       {
         itemTokenId: EstforConstants.XP_BOOST,
         amount: 1,
@@ -209,7 +214,7 @@ export const allXPThresholdRewards: EstforTypes.XPThresholdReward[] = [
   },
   {
     xpThreshold: 2500,
-    equipments: [
+    rewards: [
       {
         itemTokenId: EstforConstants.GATHERING_BOOST,
         amount: 1,
@@ -218,7 +223,7 @@ export const allXPThresholdRewards: EstforTypes.XPThresholdReward[] = [
   },
   {
     xpThreshold: 5000,
-    equipments: [
+    rewards: [
       {
         itemTokenId: EstforConstants.COOKED_SKRIMP,
         amount: 20,

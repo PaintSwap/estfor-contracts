@@ -218,12 +218,17 @@ async function main() {
   await tx.wait();
   console.log("Add actions");
 
-  const fireMakingActionId = allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.FIREMAKING) + 1;
-  const smithMakingActionId = allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.SMITHING) + 1;
+  const fireMakingActionId = EstforConstants.ACTION_FIREMAKING_ITEM;
+  const smithMakingActionId = EstforConstants.ACTION_SMITHING_ITEM;
 
   tx = await world.addBulkActionChoices(
     [fireMakingActionId, smithMakingActionId, EstforConstants.NONE, EstforConstants.NONE],
-    [[1, 2], [3, 4], [5], [6]],
+    [
+      [EstforConstants.ACTIONCHOICE_FIREMAKING_LOG, EstforConstants.ACTIONCHOICE_FIREMAKING_OAK],
+      [EstforConstants.ACTIONCHOICE_SMITHING_BRONZE_BAR, EstforConstants.ACTIONCHOICE_SMITHING_IRON_BAR],
+      [EstforConstants.ACTION_ATTACK_MONSTER],
+      [EstforConstants.ACTIONCHOICE_MAGIC_SHADOW_BLAST],
+    ],
     [firemakingChoices, smithingChoices, meleeChoices, magicChoices]
   );
 
@@ -233,7 +238,7 @@ async function main() {
   // First woodcutting
   const queuedAction: EstforTypes.QueuedAction = {
     attire: EstforTypes.noAttire,
-    actionId: allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.WOODCUTTING) + 1,
+    actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
     combatStyle: EstforTypes.CombatStyle.NONE,
     choiceId: EstforConstants.NONE,
     choiceId1: EstforConstants.NONE,
@@ -268,9 +273,9 @@ async function main() {
   // Next firemaking
   const queuedActionFiremaking: EstforTypes.QueuedAction = {
     attire: {...EstforTypes.noAttire},
-    actionId: allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.FIREMAKING) + 1,
+    actionId: EstforConstants.ACTION_FIREMAKING_ITEM,
     combatStyle: EstforTypes.CombatStyle.NONE,
-    choiceId: 1,
+    choiceId: EstforConstants.ACTIONCHOICE_FIREMAKING_LOG,
     choiceId1: EstforConstants.NONE,
     choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,
@@ -309,9 +314,9 @@ async function main() {
   // Start a combat action
   const queuedActionCombat: EstforTypes.QueuedAction = {
     attire: {...EstforTypes.noAttire, helmet: EstforConstants.BRONZE_HELMET},
-    actionId: allActions.findIndex((action) => action.info.skill == EstforTypes.Skill.COMBAT) + 1,
+    actionId: EstforConstants.ACTION_COMBAT_NATUOW,
     combatStyle: EstforTypes.CombatStyle.MELEE,
-    choiceId: 5,
+    choiceId: EstforConstants.ACTION_ATTACK_MONSTER,
     choiceId1: EstforConstants.NONE,
     choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,
@@ -345,7 +350,7 @@ async function main() {
   await tx.wait();
   console.log("Approve brush");
 
-  tx = await shop.buy(BRONZE_HELMET, 1);
+  tx = await shop.buy(EstforConstants.BRONZE_HELMET, 1);
   await tx.wait();
   console.log("buy from shop");
 
@@ -355,7 +360,7 @@ async function main() {
   console.log("Transfer some brush");
 
   // Sell to shop (can be anything)
-  tx = await shop.sell(BRONZE_HELMET, 1, 1);
+  tx = await shop.sell(EstforConstants.BRONZE_HELMET, 1, 1);
   await tx.wait();
   console.log("Sell");
 }
