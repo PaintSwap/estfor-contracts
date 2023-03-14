@@ -285,7 +285,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       revert XPThresholdNotFound();
     }
 
-    xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.equipments;
+    xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.rewards;
     emit AdminAddThresholdReward(_xpThresholdReward);
   }
 

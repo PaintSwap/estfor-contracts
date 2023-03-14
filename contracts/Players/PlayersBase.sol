@@ -24,6 +24,7 @@ abstract contract PlayersBase {
   event UnconsumeBoostVial(uint playerId);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
   event AddPendingRandomReward(uint playerId, uint timestamp, uint elapsed);
+  event PendingRandomRewardsClaimed(uint playerId, uint numRemoved);
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
 
   // For logging
@@ -33,9 +34,9 @@ abstract contract PlayersBase {
   event Consume(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
   event ActionFinished(address from, uint playerId, uint128 queueId);
   event ActionPartiallyFinished(address from, uint playerId, uint128 queueId, uint elapsedTime);
-  event ActionAborted(uint playerId, uint128 queueId);
-  event XPThresholdRewards(uint[] itemTokenIds, uint[] amounts);
-  event LevelUp(uint playerId, Skill skill, uint32 level);
+  event ActionAborted(address from, uint playerId, uint128 queueId);
+  event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
+  event LevelUp(address from, uint playerId, Skill skill, uint32 level);
 
   error SkillsArrayZero();
   error NotOwner();

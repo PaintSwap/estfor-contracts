@@ -19,10 +19,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);
   event RemoveShopItem(uint16 tokenId);
-  event Buy(address buyer, uint16 tokenId, uint quantity, uint price);
+  event Buy(address buyer, uint tokenId, uint quantity, uint price);
   event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
-  event Sell(address seller, uint16 tokenId, uint quantity, uint price);
-  event SellBatch(address seller, uint16[] tokenIds, uint[] quantities, uint[] prices);
+  event Sell(address seller, uint tokenId, uint quantity, uint price);
+  event SellBatch(address seller, uint[] tokenIds, uint[] quantities, uint[] prices);
 
   error LengthMismatch();
   error LengthEmpty();
@@ -137,7 +137,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
   }
 
-  function sellBatch(uint16[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
+  function sellBatch(uint[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
     U256 iter = U256.wrap(_tokenIds.length);
     if (iter.eq(0)) {
       revert LengthEmpty();
@@ -150,7 +150,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     do {
       iter = iter.dec();
       uint i = iter.asUint256();
-      U256 brushPerToken = U256.wrap(getPriceForItem(_tokenIds[i]));
+      U256 brushPerToken = U256.wrap(getPriceForItem(uint16(_tokenIds[i])));
       totalBrush = totalBrush + (brushPerToken * U256.wrap(_quantities[i]));
       itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
       prices[i] = brushPerToken.asUint256();

@@ -105,6 +105,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
         pendingRandomRewards[_playerId].pop();
       }
 
+      emit PendingRandomRewardsClaimed(_playerId, numRemoved);
+
       itemNFT.mintBatch(from, ids, amounts);
       emit Rewards(from, _playerId, 0, ids, amounts);
     }

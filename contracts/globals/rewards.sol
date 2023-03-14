@@ -51,7 +51,7 @@ struct PendingFlags {
 
 struct XPThresholdReward {
   uint32 xpThreshold;
-  Equipment[] equipments;
+  Equipment[] rewards;
 }
 
 uint constant MAX_GUARANTEED_REWARDS_PER_ACTION = 3;
