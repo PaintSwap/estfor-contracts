@@ -53,12 +53,12 @@ describe("Rewards", () => {
       isValid: true,
     };
 
-    const equipments: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
-    await expect(players.addXPThresholdReward({xpThreshold: 499, equipments})).to.be.revertedWithCustomError(
+    const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
+    await expect(players.addXPThresholdReward({xpThreshold: 499, rewards})).to.be.revertedWithCustomError(
       players,
       "XPThresholdNotFound"
     );
-    await players.addXPThresholdReward({xpThreshold: 500, equipments});
+    await players.addXPThresholdReward({xpThreshold: 500, rewards});
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [250]);
