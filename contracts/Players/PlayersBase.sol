@@ -18,19 +18,12 @@ abstract contract PlayersBase {
   using Unsafe256 for U256;
 
   event ClearAll(uint playerId);
-
   event AddSkillPoints(uint playerId, Skill skill, uint32 points);
-
   event SetActionQueue(uint playerId, QueuedAction[] queuedActions);
-
   event ConsumeBoostVial(uint playerId, PlayerBoostInfo playerBoostInfo);
-
   event UnconsumeBoostVial(uint playerId);
-
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
-
   event AddPendingRandomReward(uint playerId, uint timestamp, uint elapsed);
-
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
 
   // For logging

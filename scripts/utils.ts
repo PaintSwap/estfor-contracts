@@ -357,7 +357,23 @@ export const allActions: EstforTypes.Action[] = [
   },
 ];
 
-export const emptyActionChoice: EstforTypes.ActionChoice = {
+type ActionChoice = {
+  skill: EstforTypes.Skill;
+  diff: number;
+  rate: number;
+  xpPerHour: number;
+  minSkillPoints: number;
+  inputTokenId1: number;
+  num1: number;
+  inputTokenId2: number;
+  num2: number;
+  inputTokenId3: number;
+  num3: number;
+  outputTokenId: number;
+  outputNum: number; // Not used yet, always 1
+};
+
+export const emptyActionChoice: ActionChoice = {
   skill: EstforTypes.Skill.NONE,
   diff: 0,
   rate: 0,
@@ -373,14 +389,14 @@ export const emptyActionChoice: EstforTypes.ActionChoice = {
   outputNum: 0,
 };
 
-export const meleeChoices: EstforTypes.ActionChoice[] = [
+export const meleeChoices: ActionChoice[] = [
   {
     ...emptyActionChoice,
     skill: EstforTypes.Skill.ATTACK,
   },
 ];
 
-export const magicChoices: EstforTypes.ActionChoice[] = [
+export const magicChoices: ActionChoice[] = [
   // All the different types of spells
   // SHADOW BLAST
   {
@@ -395,9 +411,9 @@ export const magicChoices: EstforTypes.ActionChoice[] = [
 export const magicChoiceIds: number[] = [4];
 
 // TODO: Add all the different types of arrows
-export const rangeChoices: EstforTypes.ActionChoice[] = [];
+export const rangeChoices: ActionChoice[] = [];
 
-export const firemakingChoices: EstforTypes.ActionChoice[] = [
+export const firemakingChoices: ActionChoice[] = [
   {
     skill: EstforTypes.Skill.FIREMAKING,
     diff: 0,
@@ -430,7 +446,7 @@ export const firemakingChoices: EstforTypes.ActionChoice[] = [
   },
 ];
 
-export const smithingChoices: EstforTypes.ActionChoice[] = [
+export const smithingChoices: ActionChoice[] = [
   {
     skill: EstforTypes.Skill.SMITHING,
     diff: 0,
