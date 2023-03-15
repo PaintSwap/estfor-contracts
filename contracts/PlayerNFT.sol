@@ -40,7 +40,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   uint public nextPlayerId;
 
   mapping(uint avatarId => AvatarInfo avatarInfo) public avatars;
-  string public baseURI;
+  string public imageBaseUri;
   mapping(uint playerId => uint avatar) public playerIdToAvatar;
   mapping(uint playerId => bytes32 name) public names;
   mapping(bytes name => bool exists) public lowercaseNames;
@@ -80,14 +80,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     IBrushToken _brush,
     address _pool,
     address _royaltyReceiver,
-    uint _editNameCost
+    uint _editNameCost,
+    string calldata _imageBaseUri
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
     __UUPSUpgradeable_init();
     brush = _brush;
     nextPlayerId = 1;
-    baseURI = "ipfs://";
+    imageBaseUri = _imageBaseUri;
     pool = _pool;
     editNameCost = _editNameCost;
     royaltyFee = 250; // 2.5%
@@ -173,7 +174,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
     AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
-    string memory imageURI = string(abi.encodePacked(baseURI, avatarInfo.imageURI));
+    string memory imageURI = string(abi.encodePacked(imageBaseUri, avatarInfo.imageURI));
     return players.getURI(_playerId, names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
   }
 
@@ -292,8 +293,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     emit SetAvatars(_startAvatarId, _avatarInfos);
   }
 
-  function setBaseURI(string calldata _baseURI) external onlyOwner {
-    _setURI(_baseURI);
+  function setImageBaseUri(string calldata _imageBaseUri) external onlyOwner {
+    _setURI(_imageBaseUri);
   }
 
   function setPlayers(IPlayers _players) external onlyOwner {

@@ -45,10 +45,11 @@ describe("AlphaWhitelist", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const editBrushCost = 5000;
+    const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
+    const imageBaseUri = "ipfs://";
     const playerNFT = await upgrades.deployProxy(
       PlayerNFT,
-      [brush.address, shop.address, royaltyReceiver.address, editBrushCost],
+      [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
       {kind: "uups"}
     );
 

@@ -46,10 +46,11 @@ describe("PlayerNFT", () => {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const editNameCost = 5000;
+    const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
+    const imageBaseUri = "ipfs://";
     const playerNFT = (await upgrades.deployProxy(
       PlayerNFT,
-      [brush.address, shop.address, royaltyReceiver.address, editNameCost],
+      [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
       {
         kind: "uups",
       }
@@ -122,7 +123,7 @@ describe("PlayerNFT", () => {
       brush,
       alice,
       origName,
-      editNameCost,
+      EDIT_NAME_BRUSH_PRICE,
       mockOracleClient,
       avatarInfo,
     };
@@ -163,13 +164,13 @@ describe("PlayerNFT", () => {
   });
 
   it("Edit Name", async () => {
-    const {playerId, playerNFT, alice, brush, origName, editNameCost} = await loadFixture(deployContracts);
+    const {playerId, playerNFT, alice, brush, origName, EDIT_NAME_BRUSH_PRICE} = await loadFixture(deployContracts);
     const name = ethers.utils.formatBytes32String("My name is edited");
-    await brush.connect(alice).approve(playerNFT.address, editNameCost * 3);
+    await brush.connect(alice).approve(playerNFT.address, EDIT_NAME_BRUSH_PRICE.mul(3));
     await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.revertedWith(
       "ERC20: transfer amount exceeds balance"
     );
-    await brush.mint(alice.address, editNameCost * 3);
+    await brush.mint(alice.address, EDIT_NAME_BRUSH_PRICE.mul(3));
 
     await expect(playerNFT.editName(playerId, name)).to.be.revertedWithCustomError(playerNFT, "NotOwner");
     expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
