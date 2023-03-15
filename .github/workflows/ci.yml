@@ -2,7 +2,7 @@ name: CI
 on: push
 
 jobs:
-  Deploy and tests:
+  Deploy_and_tests:
     runs-on: ubuntu-latest
 
     steps:
