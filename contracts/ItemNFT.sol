@@ -7,8 +7,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import {UnsafeMath} from "./lib/UnsafeMath.sol";
-import {Unsafe256, U256} from "./lib/Unsafe256.sol";
+import {UnsafeMath, UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
@@ -21,7 +20,7 @@ import "./globals/items.sol";
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
   using UnsafeMath for uint256;
-  using Unsafe256 for U256;
+  using UnsafeU256 for U256;
 
   event AddItem(Item item, uint16 tokenId);
   event AddItems(Item[] items, uint16[] tokenIds);
@@ -115,7 +114,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     //    require(_exists(_tokenId));
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
-      uniqueItems = uniqueItems.unsafe_increment();
+      uniqueItems = uniqueItems.inc();
     }
 
     itemBalances[_tokenId] = existingBalance + _amount;

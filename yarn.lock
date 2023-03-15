@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@0xdoublesharp/unsafe-math@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@0xdoublesharp/unsafe-math/-/unsafe-math-0.0.8.tgz#6c349701990e17fce028e21f3ef444cb178755e5"
+  integrity sha512-gK07YFeWiHUIQwjXd7x2Y+Ve5GpMy4vBcy7xyUZjLi82uJE+v2AaRhT9jdu1O7UAfHFn7IvM0WtNIHSiK1uR2g==
+
 "@aduh95/viz.js@^3.7.0":
   version "3.7.0"
   resolved "https://registry.npmjs.org/@aduh95/viz.js/-/viz.js-3.7.0.tgz"
@@ -1012,7 +1017,7 @@
   resolved "https://registry.npmjs.org/@types/ms/-/ms-0.7.31.tgz"
   integrity sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==
 
-"@types/node@*", "@types/node@^18.15.0":
+"@types/node@*":
   version "18.15.0"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.15.0.tgz"
   integrity sha512-z6nr0TTEOBGkzLGmbypWOGnpSpSIBorEhC4L+4HeQ2iezKCi4f77kyslRwvHeNitymGQ+oFyIWGP96l/DPSV9w==
@@ -1021,6 +1026,11 @@
   version "10.17.60"
   resolved "https://registry.npmjs.org/@types/node/-/node-10.17.60.tgz"
   integrity sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==
+
+"@types/node@^18.15.3":
+  version "18.15.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.3.tgz#f0b991c32cfc6a4e7f3399d6cb4b8cf9a0315014"
+  integrity sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==
 
 "@types/node@^8.0.0":
   version "8.10.66"
@@ -5384,10 +5394,10 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-sol2uml@^2.5.2:
-  version "2.5.2"
-  resolved "https://registry.npmjs.org/sol2uml/-/sol2uml-2.5.2.tgz"
-  integrity sha512-Zf0bEn+J2hvBBf/i/NYIk2ZqY8MqUXGLz7t96ReyzYI0+ynD9DHaDsRrBEE1HcurHR0+78NREqqZdnwtfHiKqQ==
+sol2uml@^2.5.3:
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/sol2uml/-/sol2uml-2.5.3.tgz#e759fd68617f11f68fdbe2521b69a5a28a930c03"
+  integrity sha512-7rgek612YfHfznBI/9cfH8PQ1SZut2mPbHRfpVsBfeDOOtJ/Pf+YgayaVjAbeHr9tXx0AMwBafiaOoY13emrYA==
   dependencies:
     "@aduh95/viz.js" "^3.7.0"
     "@solidity-parser/parser" "^0.15.0"

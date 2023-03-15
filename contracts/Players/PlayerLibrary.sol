@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {Unsafe256, U256} from "../lib/Unsafe256.sol";
+import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 
@@ -18,7 +18,7 @@ import "../globals/items.sol";
 library PlayerLibrary {
   using Strings for uint32;
   using Strings for bytes32;
-  using Unsafe256 for U256;
+  using UnsafeU256 for U256;
 
   // Show all the player stats, return metadata json
   function uri(
