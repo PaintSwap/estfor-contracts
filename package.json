@@ -6,6 +6,7 @@
   "repository": "https://github.com/PaintSwap/estfor-contracts",
   "license": "MIT",
   "devDependencies": {
+    "@0xdoublesharp/unsafe-math": "^0.0.4",
     "@chainlink/contracts": "^0.6.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5",

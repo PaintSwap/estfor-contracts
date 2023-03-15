@@ -7,7 +7,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 
-import {Unsafe256, U256} from "./lib/Unsafe256.sol";
+import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
 // solhint-disable-next-line no-global-import
@@ -24,7 +24,7 @@ import "./globals/rewards.sol";
 // LINK token 0x6F43FF82CCA38001B6699a8AC47A2d0E66939407
 // PREMIUM 0.0005 LINK
 contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
-  using Unsafe256 for U256;
+  using UnsafeU256 for U256;
 
   event RequestSent(uint256 requestId, uint32 numWords);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);

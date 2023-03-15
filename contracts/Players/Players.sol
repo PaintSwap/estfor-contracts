@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-import {Unsafe256, U256} from "../lib/Unsafe256.sol";
+import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -43,7 +43,7 @@ interface IPlayerDelegate {
 }
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall {
-  using Unsafe256 for U256;
+  using UnsafeU256 for U256;
 
   error InvalidSelector();
   error XPThresholdNotFound();

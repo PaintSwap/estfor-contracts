@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@0xdoublesharp/unsafe-math@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@0xdoublesharp/unsafe-math/-/unsafe-math-0.0.4.tgz#b80cc7b868a7ae98675bfbe504f41392d9b07eed"
+  integrity sha512-5ESCQTo9+71re16vArJVJqWDTJ2uns7oGtYsSOm7V0fhtZKHJ4/mZmoG0nxX3rPyfB//HHC3FUDJ7FSzwYQB/A==
+
 "@aduh95/viz.js@^3.7.0":
   version "3.7.0"
   resolved "https://registry.npmjs.org/@aduh95/viz.js/-/viz.js-3.7.0.tgz"

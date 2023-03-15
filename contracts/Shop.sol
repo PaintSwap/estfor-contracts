@@ -5,7 +5,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 
-import {Unsafe256, U256} from "./lib/Unsafe256.sol";
+import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 
@@ -14,7 +14,7 @@ import "./globals/items.sol";
 
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
-  using Unsafe256 for U256;
+  using UnsafeU256 for U256;
 
   event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Unsafe256, U256} from "../lib/Unsafe256.sol";
+import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 
 // solhint-disable-next-line no-global-import
@@ -12,7 +12,7 @@ import "../globals/items.sol";
 import "../globals/actions.sol";
 
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
-  using Unsafe256 for U256;
+  using UnsafeU256 for U256;
 
   constructor() {
     _checkStartSlot();

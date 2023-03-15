@@ -8,7 +8,7 @@ import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProo
 import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import {Unsafe256, U256} from "./lib/Unsafe256.sol";
+import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
@@ -17,7 +17,7 @@ import "./globals/items.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
-  using Unsafe256 for U256;
+  using UnsafeU256 for U256;
 
   event NewPlayer(uint playerId, uint avatarId, bytes20 name);
   event EditPlayer(uint playerId, bytes20 newName);
