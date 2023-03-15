@@ -70,11 +70,13 @@ async function main() {
   await shop.deployed();
   console.log(`Shop deployed at ${shop.address.toLowerCase()}`);
 
-  const buyPath = [wftm.address, brush.address];
   const MockRouter = await ethers.getContractFactory("MockRouter");
   const router = await MockRouter.deploy();
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-  const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+  const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, [
+    wftm.address,
+    brush.address,
+  ]);
   await royaltyReceiver.deployed();
   console.log(`RoyaltyReceiver deployed at ${royaltyReceiver.address.toLowerCase()}`);
 
