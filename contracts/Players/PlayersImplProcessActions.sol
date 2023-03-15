@@ -272,7 +272,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     int16 _level = int16(PlayerLibrary.getLevel(_xp));
-    if (_skill == Skill.ATTACK) {
+    if (_skill == Skill.MELEE) {
       _player.melee = _level;
     } else if (_skill == Skill.MAGIC) {
       _player.magic = _level;
@@ -287,7 +287,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function _getSkillFromStyle(CombatStyle _combatStyle, uint16 _actionId) private view returns (Skill skill) {
     if (_combatStyle == CombatStyle.MELEE) {
-      skill = Skill.ATTACK;
+      skill = Skill.MELEE;
     } else if (_combatStyle == CombatStyle.MAGIC) {
       skill = Skill.MAGIC;
     }

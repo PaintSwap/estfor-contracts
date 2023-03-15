@@ -398,7 +398,7 @@ export const emptyActionChoice: ActionChoice = {
 export const meleeChoices: ActionChoice[] = [
   {
     ...emptyActionChoice,
-    skill: EstforTypes.Skill.ATTACK,
+    skill: EstforTypes.Skill.MELEE,
   },
 ];
 

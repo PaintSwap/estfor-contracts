@@ -188,7 +188,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       int16 level = int16(PlayerLibrary.getLevel(xpEach));
       if (skill == Skill.HEALTH) {
         player.health = level;
-      } else if (skill == Skill.ATTACK) {
+      } else if (skill == Skill.MELEE) {
         player.melee = level;
       } else if (skill == Skill.MAGIC) {
         player.magic = level;

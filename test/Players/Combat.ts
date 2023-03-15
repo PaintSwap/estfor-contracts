@@ -44,7 +44,7 @@ describe("Combat Actions", () => {
 
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
         ...emptyActionChoice,
-        skill: EstforTypes.Skill.ATTACK,
+        skill: EstforTypes.Skill.MELEE,
       });
       const choiceId = await getActionChoiceId(tx);
       await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
@@ -109,7 +109,7 @@ describe("Combat Actions", () => {
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.be.oneOf([time, time + 1]);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.be.oneOf([time, time + 1]);
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.oneOf([
         Math.floor(time / 3) - 1,
         Math.floor(time / 3),
@@ -133,7 +133,7 @@ describe("Combat Actions", () => {
       const time = 360;
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
@@ -153,7 +153,7 @@ describe("Combat Actions", () => {
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
-      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -197,7 +197,7 @@ describe("Combat Actions", () => {
       await ethers.provider.send("evm_increaseTime", [time]);
 
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.oneOf([time, time + 1]);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.oneOf([time, time + 1]);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -653,7 +653,7 @@ describe("Combat Actions", () => {
     const timespan = 3600 * 3; // 3 hours
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
       ...emptyActionChoice,
-      skill: EstforTypes.Skill.ATTACK,
+      skill: EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);
     const queuedAction: EstforTypes.QueuedAction = {
@@ -698,7 +698,7 @@ describe("Combat Actions", () => {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await players.connect(alice).processActions(playerId);
     // Should die so doesn't get any attack skill points, and food should be consumed
-    expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
+    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
   });

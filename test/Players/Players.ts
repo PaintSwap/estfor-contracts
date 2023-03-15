@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {Attire, Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer, emptyActionChoice, getActionChoiceId, getActionId} from "../../scripts/utils";
@@ -11,7 +11,7 @@ const actionIsAvailable = true;
 
 describe("Players", () => {
   it("New player stats", async () => {
-    const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {players, playerNFT, alice} = await loadFixture(playersFixture);
 
     const avatarId = 2;
     const avatarInfo: AvatarInfo = {
@@ -321,7 +321,7 @@ describe("Players", () => {
 
     const tx = await world.addActionChoice(EstforConstants.NONE, {
       ...emptyActionChoice,
-      skill:EstforTypes.Skill.ATTACK,
+      skill:EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);
 
@@ -344,7 +344,7 @@ describe("Players", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId,EstforTypes.Skill.ATTACK)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId,EstforTypes.Skill.MELEE)).to.eq(queuedAction.timespan);
   });
 */
   it("Multi-skill points", async () => {
@@ -377,7 +377,7 @@ describe("Players", () => {
 
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
       ...emptyActionChoice,
-      skill: EstforTypes.Skill.ATTACK,
+      skill: EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);
     const timespan = 3600;
@@ -793,8 +793,8 @@ describe("Players", () => {
 
       const equips = ["amulet", "armor", "boots", "gauntlets", "helmet", "tassets"];
       for (let i = 0; i < attireEquipped.length; ++i) {
-        const attire = {...EstforTypes.noAttire};
-        attire[equips[i]] = attireEquipped[i].tokenId;
+        const attire: Attire = {...EstforTypes.noAttire};
+        attire[equips[i] as keyof Attire] = attireEquipped[i].tokenId;
         queuedAction.attire = attire;
         await expect(
           players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)

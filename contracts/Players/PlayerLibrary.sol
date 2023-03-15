@@ -32,7 +32,7 @@ library PlayerLibrary {
       abi.encodePacked(
         _getTraitStringJSON("Avatar", avatarName),
         ",",
-        _getTraitNumberJSON("Attack", getLevel(xp[Skill.ATTACK])),
+        _getTraitNumberJSON("Melee", getLevel(xp[Skill.MELEE])),
         ",",
         _getTraitNumberJSON("Magic", getLevel(xp[Skill.MAGIC])),
         ",",
@@ -278,7 +278,7 @@ library PlayerLibrary {
     uint maxHealthEnemy = (numSpawnedPerHour * _elapsedTime * uint16(_enemyCombatStats.health)) / 3600;
     if (maxHealthEnemy != 0) {
       uint32 totalHealthDealt;
-      if (_actionChoice.skill == Skill.ATTACK) {
+      if (_actionChoice.skill == Skill.MELEE) {
         totalHealthDealt = _dmg(
           _combatStats.melee,
           _enemyCombatStats.meleeDefence,

@@ -214,7 +214,7 @@ describe("PlayerNFT", () => {
     expect(metadata.attributes[0]).to.have.property("value");
     expect(metadata.attributes[0].value).to.equal("Name goes here");
     expect(metadata.attributes[1]).to.have.property("trait_type");
-    expect(metadata.attributes[1].trait_type).to.equal("Attack");
+    expect(metadata.attributes[1].trait_type).to.equal("Melee");
     expect(metadata.attributes[1]).to.have.property("value");
     expect(metadata.attributes[1].value).to.equal(1);
   });

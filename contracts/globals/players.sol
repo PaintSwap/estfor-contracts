@@ -127,7 +127,7 @@ struct PlayerBoostInfo {
 enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates all combat skills, attack <-> magic, defence, health etc
-  ATTACK,
+  MELEE,
   RANGE,
   MAGIC,
   DEFENCE,

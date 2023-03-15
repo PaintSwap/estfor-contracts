@@ -7,6 +7,7 @@ import {
   allItems,
   allShopItems,
   allXPThresholdRewards,
+  AvatarInfo,
   createPlayer,
   firemakingChoices,
   magicChoices,
@@ -31,17 +32,18 @@ async function main() {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       wftm = await MockWrappedFantom.deploy();
+      await wftm.deployed();
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
       tx = await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       console.log("Minted brush");
       await tx.wait();
-      wftm = MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
+      wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach("0x85dec8c4B2680793661bCA91a8F129607571863d");
-      wftm = MockWrappedFantom.attach("0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
+      wftm = await MockWrappedFantom.attach("0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
     } else {
       throw Error("Not a supported network");
     }
@@ -189,7 +191,7 @@ async function main() {
       description:
         "King Lionel is a powerful warrior who is skilled in swordplay and hand-to-hand combat. A natural leader, he inspires confidence in all those around him.",
       imageURI: "4.jpg",
-      startSkills: [Skill.ATTACK, Skill.NONE],
+      startSkills: [Skill.MELEE, Skill.NONE],
     },
     {
       name: ethers.utils.formatBytes32String("Raging Ears"),
@@ -203,7 +205,7 @@ async function main() {
       description:
         "Sleepless Piggy is a brawny and powerful barbarian who is skilled in hard combat. He is quick to anger and fiercely protective of his friends and allies.",
       imageURI: "6.jpg",
-      startSkills: [Skill.ATTACK, Skill.DEFENCE],
+      startSkills: [Skill.MELEE, Skill.DEFENCE],
     },
     {
       name: ethers.utils.formatBytes32String("Wolfgang Companion"),
@@ -217,7 +219,7 @@ async function main() {
       description:
         "Slaying Doggo is a proud, ambitious warrior who is skilled in close combat and magic. His unshakable sense of duty makes him a powerful ally in battle.",
       imageURI: "8.jpg",
-      startSkills: [Skill.ATTACK, Skill.MAGIC],
+      startSkills: [Skill.MELEE, Skill.MAGIC],
     },
   ];
 
@@ -278,7 +280,7 @@ async function main() {
     [
       [EstforConstants.ACTIONCHOICE_FIREMAKING_LOG, EstforConstants.ACTIONCHOICE_FIREMAKING_OAK],
       [EstforConstants.ACTIONCHOICE_SMITHING_BRONZE_BAR, EstforConstants.ACTIONCHOICE_SMITHING_IRON_BAR],
-      [EstforConstants.ACTIONCHOICE_ATTACK_MONSTER],
+      [EstforConstants.ACTIONCHOICE_MELEE_MONSTER],
       [EstforConstants.ACTIONCHOICE_MAGIC_SHADOW_BLAST],
     ],
     [firemakingChoices, smithingChoices, meleeChoices, magicChoices]
@@ -311,7 +313,7 @@ async function main() {
   await tx.wait();
   console.log("Set speed multiiplier");
 
-  if (network.chainId == 31337) {
+  if (network.chainId == 31337 || network.chainId == 1337) {
     console.log("Increase time");
     await ethers.provider.send("evm_increaseTime", [1]);
   }
@@ -340,9 +342,9 @@ async function main() {
 
   tx = await players.startAction(playerId, queuedActionFiremaking, EstforTypes.ActionQueueStatus.NONE);
   await tx.wait();
-  console.log("start actions");
+  console.log("start firemaking action");
 
-  if (network.chainId == 31337) {
+  if (network.chainId == 31337 || network.chainId == 1337) {
     console.log("Increase time");
     await ethers.provider.send("evm_increaseTime", [1]);
   }
@@ -368,7 +370,7 @@ async function main() {
     attire: {...EstforTypes.noAttire, helmet: EstforConstants.BRONZE_HELMET},
     actionId: EstforConstants.ACTION_COMBAT_NATUOW,
     combatStyle: EstforTypes.CombatStyle.MELEE,
-    choiceId: EstforConstants.ACTIONCHOICE_ATTACK_MONSTER,
+    choiceId: EstforConstants.ACTIONCHOICE_MELEE_MONSTER,
     choiceId1: EstforConstants.NONE,
     choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,
