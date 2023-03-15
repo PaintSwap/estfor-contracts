@@ -28,12 +28,12 @@ async function main() {
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     if (network.chainId == 31337 || network.chainId == 1337) {
       brush = await MockBrushToken.deploy();
-      await brush.mint(owner.address, 10000000000000);
+      await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       wftm = await MockWrappedFantom.deploy();
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
-      tx = await brush.mint(owner.address, 10000000000000);
+      tx = await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       console.log("Minted brush");
       await tx.wait();
       wftm = MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
@@ -89,7 +89,7 @@ async function main() {
 
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const EDIT_NAME_BRUSH_PRICE = 5000;
+  const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE],
@@ -346,7 +346,7 @@ async function main() {
   console.log("add shop");
 
   // Buy from shop
-  tx = await brush.approve(shop.address, "10000000");
+  tx = await brush.approve(shop.address, ethers.utils.parseEther("100"));
   await tx.wait();
   console.log("Approve brush");
 

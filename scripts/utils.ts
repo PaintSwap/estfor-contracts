@@ -241,11 +241,11 @@ type ShopItem = {
 export const allShopItems: ShopItem[] = [
   {
     tokenId: EstforConstants.BRONZE_HELMET,
-    price: "20",
+    price: ethers.utils.parseEther("2").toString(),
   },
   {
     tokenId: EstforConstants.BRONZE_AXE,
-    price: "30",
+    price: ethers.utils.parseEther("3").toString(),
   },
 ];
 
