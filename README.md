@@ -2,6 +2,8 @@
 
 ![image](https://user-images.githubusercontent.com/84033732/223739503-c53a888a-443f-4fb5-98a3-d40f94956799.png)
 
+[![Continuous integration](https://github.com/PaintSwap/estfor-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/PaintSwap/estfor-contracts/actions/workflows/ci.yml)
+
 All the smart contract code for the Estfor Kingdom RPG game on the Fantom Blockchain.
 
 Make sure `yarn` is installed (or replace with equivalent npm instructions)

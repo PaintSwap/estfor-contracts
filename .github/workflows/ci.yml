@@ -1,0 +1,23 @@
+name: CI
+on: push
+
+jobs:
+  Hardhat:
+    runs-on: ubuntu-latest
+    env:
+      # These are just dummy values to prevent hardhat complaining about config issues
+      FTM_RPC: NA
+      FTM_RPC_TESTNET: NA
+      PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install packages
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - run: yarn install
+        shell: bash
+      - name: Deploy
+        run: yarn deploy
+      - name: Tests
+        run: yarn test
