@@ -2,7 +2,7 @@ name: CI
 on: push
 
 jobs:
-  tests:
+  Deploy and tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,6 +14,6 @@ jobs:
       - run: yarn install
         shell: bash
       - name: Create local node and deploy
-        run: yarn deploy.ts
+        run: yarn deploy
       - name: Run Tests
-        run: yarn hardhat test
+        run: yarn test
