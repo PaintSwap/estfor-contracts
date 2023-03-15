@@ -2,9 +2,8 @@ name: CI
 on: push
 
 jobs:
-  Deploy_and_tests:
+  Hardhat:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Install packages
@@ -13,7 +12,11 @@ jobs:
           node-version: "16.x"
       - run: yarn install
         shell: bash
-      - name: Create local node and deploy
+      - name: Deploy
+        env:
+          FTM_RPC: NA
+          FTM_RPC_TESTNET: NA
+          PRIVATE_KEY: NA
         run: yarn deploy
-      - name: Run Tests
+      - name: Tests
         run: yarn test
