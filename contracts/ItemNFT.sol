@@ -55,7 +55,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     bool isTransferable;
     // Minimum requirements in this skill
     Skill skill;
-    uint32 minSkillPoints;
+    uint32 minXP;
     // Food
     uint16 healthRestored;
     // Boost
@@ -178,7 +178,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function getMinRequirement(uint16 _tokenId) public view returns (Skill, uint32) {
-    return (items[_tokenId].skill, items[_tokenId].minSkillPoints);
+    return (items[_tokenId].skill, items[_tokenId].minXP);
   }
 
   function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
@@ -190,13 +190,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function getMinRequirements(
     uint16[] calldata _tokenIds
-  ) external view returns (Skill[] memory skills, uint32[] memory minSkillPoints) {
+  ) external view returns (Skill[] memory skills, uint32[] memory minXPs) {
     skills = new Skill[](_tokenIds.length);
-    minSkillPoints = new uint32[](_tokenIds.length);
+    minXPs = new uint32[](_tokenIds.length);
     U256 tokenIdsLength = U256.wrap(_tokenIds.length);
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      (skills[i], minSkillPoints[i]) = getMinRequirement(_tokenIds[i]);
+      (skills[i], minXPs[i]) = getMinRequirement(_tokenIds[i]);
     }
   }
 
@@ -327,7 +327,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       item.boostDuration = _item.boostDuration;
     }
 
-    item.minSkillPoints = _item.minSkillPoints;
+    item.minXP = _item.minXP;
     item.skill = _item.skill;
     tokenURIs[_item.tokenId] = _item.metadataURI;
   }

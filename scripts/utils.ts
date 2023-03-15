@@ -255,7 +255,7 @@ export const allActions: EstforTypes.Action[] = [
     info: {
       skill: EstforTypes.Skill.WOODCUTTING,
       xpPerHour: 25,
-      minSkillPoints: 0,
+      minXP: 0,
       isDynamic: false,
       numSpawn: 0,
       handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -272,7 +272,7 @@ export const allActions: EstforTypes.Action[] = [
     info: {
       skill: EstforTypes.Skill.FIREMAKING,
       xpPerHour: 0, // Decided by the type of log burned
-      minSkillPoints: 0,
+      minXP: 0,
       isDynamic: false,
       numSpawn: 0,
       handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
@@ -289,7 +289,7 @@ export const allActions: EstforTypes.Action[] = [
     info: {
       skill: EstforTypes.Skill.MINING,
       xpPerHour: 25,
-      minSkillPoints: 0,
+      minXP: 0,
       isDynamic: false,
       numSpawn: 0,
       handItemTokenIdRangeMin: EstforConstants.BRONZE_PICKAXE,
@@ -306,7 +306,7 @@ export const allActions: EstforTypes.Action[] = [
     info: {
       skill: EstforTypes.Skill.MINING,
       xpPerHour: 35,
-      minSkillPoints: 274,
+      minXP: 274,
       isDynamic: false,
       numSpawn: 0,
       handItemTokenIdRangeMin: EstforConstants.BRONZE_PICKAXE,
@@ -323,7 +323,7 @@ export const allActions: EstforTypes.Action[] = [
     info: {
       skill: EstforTypes.Skill.SMITHING,
       xpPerHour: 0, // Decided by the ores smelted
-      minSkillPoints: 0,
+      minXP: 0,
       isDynamic: false,
       numSpawn: 0,
       handItemTokenIdRangeMin: EstforConstants.NONE,
@@ -341,7 +341,7 @@ export const allActions: EstforTypes.Action[] = [
     info: {
       skill: EstforTypes.Skill.COMBAT,
       xpPerHour: 3600,
-      minSkillPoints: 0,
+      minXP: 0,
       isDynamic: false,
       numSpawn: 10,
       handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -367,7 +367,7 @@ type ActionChoice = {
   diff: number;
   rate: number;
   xpPerHour: number;
-  minSkillPoints: number;
+  minXP: number;
   inputTokenId1: number;
   num1: number;
   inputTokenId2: number;
@@ -383,7 +383,7 @@ export const emptyActionChoice: ActionChoice = {
   diff: 0,
   rate: 0,
   xpPerHour: 0,
-  minSkillPoints: 0,
+  minXP: 0,
   inputTokenId1: EstforConstants.NONE,
   num1: 0,
   inputTokenId2: EstforConstants.NONE,
@@ -424,7 +424,7 @@ export const firemakingChoices: ActionChoice[] = [
     diff: 0,
     rate: 1220 * 100,
     xpPerHour: 25,
-    minSkillPoints: 0,
+    minXP: 0,
     inputTokenId1: EstforConstants.LOG,
     num1: 1,
     inputTokenId2: EstforConstants.NONE,
@@ -439,7 +439,7 @@ export const firemakingChoices: ActionChoice[] = [
     diff: 0,
     rate: 1220 * 100,
     xpPerHour: 45,
-    minSkillPoints: 1021,
+    minXP: 1021,
     inputTokenId1: EstforConstants.OAK_LOG,
     num1: 1,
     inputTokenId2: EstforConstants.NONE,
@@ -457,7 +457,7 @@ export const smithingChoices: ActionChoice[] = [
     diff: 0,
     rate: 2440 * 100,
     xpPerHour: 25,
-    minSkillPoints: 0,
+    minXP: 0,
     inputTokenId1: EstforConstants.COPPER_ORE,
     num1: 1,
     inputTokenId2: EstforConstants.TIN_ORE,
@@ -472,7 +472,7 @@ export const smithingChoices: ActionChoice[] = [
     diff: 0,
     rate: 1220 * 100,
     xpPerHour: 35,
-    minSkillPoints: 0,
+    minXP: 0,
     inputTokenId1: EstforConstants.IRON_ORE,
     num1: 1,
     inputTokenId2: EstforConstants.NONE,

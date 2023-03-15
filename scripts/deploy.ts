@@ -226,7 +226,7 @@ async function main() {
     [
       [EstforConstants.ACTIONCHOICE_FIREMAKING_LOG, EstforConstants.ACTIONCHOICE_FIREMAKING_OAK],
       [EstforConstants.ACTIONCHOICE_SMITHING_BRONZE_BAR, EstforConstants.ACTIONCHOICE_SMITHING_IRON_BAR],
-      [EstforConstants.ACTION_ATTACK_MONSTER],
+      [EstforConstants.ACTIONCHOICE_ATTACK_MONSTER],
       [EstforConstants.ACTIONCHOICE_MAGIC_SHADOW_BLAST],
     ],
     [firemakingChoices, smithingChoices, meleeChoices, magicChoices]
@@ -316,7 +316,7 @@ async function main() {
     attire: {...EstforTypes.noAttire, helmet: EstforConstants.BRONZE_HELMET},
     actionId: EstforConstants.ACTION_COMBAT_NATUOW,
     combatStyle: EstforTypes.CombatStyle.MELEE,
-    choiceId: EstforConstants.ACTION_ATTACK_MONSTER,
+    choiceId: EstforConstants.ACTIONCHOICE_ATTACK_MONSTER,
     choiceId1: EstforConstants.NONE,
     choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,

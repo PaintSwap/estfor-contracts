@@ -203,7 +203,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       uint16 handItemTokenIdRangeMax,
       bool actionChoiceRequired,
       Skill skill,
-      uint32 actionMinSkillPoints,
+      uint32 actionMinXP,
       bool actionAvailable
     ) = world.getPermissibleItemsForAction(actionId);
 
@@ -212,8 +212,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
 
     bool isCombat = skill == Skill.COMBAT;
-    if (!isCombat && skillPoints[_playerId][skill] < actionMinSkillPoints) {
-      revert ActionMinimumSkillPointsNotReached();
+    if (!isCombat && xp[_playerId][skill] < actionMinXP) {
+      revert ActionMinimumXPNotReached();
     }
 
     // Check the actionChoice is valid
@@ -224,8 +224,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
 
-      if (skillPoints[_playerId][actionChoice.skill] < actionChoice.minSkillPoints) {
-        revert ActionChoiceMinimumSkillPointsNotReached();
+      if (xp[_playerId][actionChoice.skill] < actionChoice.minXP) {
+        revert ActionChoiceMinimumXPNotReached();
       }
 
       if (actionChoice.skill == Skill.NONE) {
@@ -273,9 +273,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
       if (_queuedAction.regenerateId != NONE) {
         itemTokenIds[itemLength++] = _queuedAction.regenerateId;
-        (Skill skill, uint32 minSkillPoint) = itemNFT.getMinRequirement(itemTokenIds[itemLength - 1]);
-        if (skillPoints[_playerId][skill] < minSkillPoint) {
-          revert ConsumeableMinimumSkillPointsNotReached();
+        (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(itemTokenIds[itemLength - 1]);
+        if (xp[_playerId][skill] < minXP) {
+          revert ConsumeableMinimumXPNotReached();
         }
       }
       if (actionChoice.inputTokenId1 != NONE) {
@@ -358,13 +358,13 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     bool skipNeck;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
     if (itemTokenIds.length != 0) {
-      (Skill[] memory skills, uint32[] memory minSkillPoints) = itemNFT.getMinRequirements(itemTokenIds);
+      (Skill[] memory skills, uint32[] memory minXPs) = itemNFT.getMinRequirements(itemTokenIds);
       U256 iter = U256.wrap(balances.length);
       while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
-        if (skillPoints[_playerId][skills[i]] < minSkillPoints[i]) {
-          revert AttireMinimumSkillPointsNotReached();
+        if (xp[_playerId][skills[i]] < minXPs[i]) {
+          revert AttireMinimumXPNotReached();
         }
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
@@ -400,9 +400,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         if (balance == 0) {
           revert DoNotHaveEnoughQuantityToEquipToAction();
         }
-        (Skill skill, uint32 minSkillPoints) = itemNFT.getMinRequirement(equippedItemTokenId);
-        if (skillPoints[_playerId][skill] < minSkillPoints) {
-          revert ItemMinimumSkillPointsNotReached();
+        (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(equippedItemTokenId);
+        if (xp[_playerId][skill] < minXP) {
+          revert ItemMinimumXPNotReached();
         }
         EquipPosition equipPosition = itemNFT.getEquipPosition(equippedItemTokenId);
         if (isRightHand) {

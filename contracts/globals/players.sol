@@ -60,7 +60,7 @@ struct Player {
   int16 defence;
   int16 health;
   uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
-  uint160 totalSkillPoints;
+  uint160 totalXP;
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
 }
@@ -110,7 +110,7 @@ struct Item {
   int16 health;
   // Minimum requirements in this skill to use this item (can be NONE)
   Skill skill;
-  uint32 minSkillPoints;
+  uint32 minXP;
   // Noncombat skill
   Skill skill1;
   int16 skillDiff1;
@@ -141,4 +141,3 @@ enum Skill {
   COOKING,
   FIREMAKING
 }
-

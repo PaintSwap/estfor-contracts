@@ -311,7 +311,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       uint16 handItemTokenIdRangeMax,
       bool actionChoiceRequired,
       Skill skill,
-      uint32 minSkillPoints,
+      uint32 minXP,
       bool actionAvailable
     )
   {
@@ -321,7 +321,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       actionInfo.handItemTokenIdRangeMax,
       actionInfo.actionChoiceRequired,
       actionInfo.skill,
-      actionInfo.minSkillPoints,
+      actionInfo.minXP,
       actionInfo.isAvailable
     );
   }

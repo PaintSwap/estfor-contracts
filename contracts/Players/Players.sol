@@ -158,7 +158,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     string calldata _avatarDescription,
     string calldata imageURI
   ) external view returns (string memory) {
-    return PlayerLibrary.uri(_name, skillPoints[_playerId], _avatarName, _avatarDescription, imageURI);
+    return PlayerLibrary.uri(_name, xp[_playerId], _avatarName, _avatarDescription, imageURI);
   }
 
   // Callback after minting a player. If they aren't the active player then set it.
@@ -306,7 +306,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function testOnlyModifyLevel(uint _playerId, Skill _skill, uint32 _xp) external onlyOwner {
-    skillPoints[_playerId][_skill] = _xp;
+    xp[_playerId][_skill] = _xp;
   }
 
   // For the various view functions that require delegatecall

@@ -25,7 +25,7 @@ describe("Players", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
@@ -57,7 +57,7 @@ describe("Players", () => {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [361]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(10); // Should be rounded down
   });
 
@@ -77,7 +77,7 @@ describe("Players", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
@@ -111,7 +111,7 @@ describe("Players", () => {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND);
       await ethers.provider.send("evm_increaseTime", [7200]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.eq((i + 1) * 3600);
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.eq((i + 1) * 3600);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq((i + 1) * 100); // Should be rounded down
     }
   });
@@ -125,7 +125,7 @@ describe("Players", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -167,7 +167,7 @@ describe("Players", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((queuedAction.timespan * rate) / (3600 * 100))
@@ -184,7 +184,7 @@ describe("Players", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -225,7 +225,7 @@ describe("Players", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor(((queuedAction.timespan / 2) * rate) / (3600 * 100))
@@ -267,7 +267,7 @@ describe("Players", () => {
       info: {
         skill:EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 10,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -305,7 +305,7 @@ describe("Players", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId,EstforTypes.Skill.ATTACK)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId,EstforTypes.Skill.ATTACK)).to.eq(queuedAction.timespan);
   });
 */
   it("Multi-skill points", async () => {
@@ -322,7 +322,7 @@ describe("Players", () => {
       info: {
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 1,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -404,7 +404,7 @@ describe("Players", () => {
         info: {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
-          minSkillPoints: getXPFromLevel(70),
+          minXP: getXPFromLevel(70),
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
@@ -436,7 +436,7 @@ describe("Players", () => {
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
-        minSkillPoints: 0,
+        minXP: 0,
         tokenId: EstforConstants.ORICHALCUM_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -446,7 +446,7 @@ describe("Players", () => {
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
-      ).to.be.revertedWithCustomError(players, "ActionMinimumSkillPointsNotReached");
+      ).to.be.revertedWithCustomError(players, "ActionMinimumXPNotReached");
 
       // Update to level 70, check it works
       await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.WOODCUTTING, getXPFromLevel(70));
@@ -462,7 +462,7 @@ describe("Players", () => {
         info: {
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
@@ -476,14 +476,14 @@ describe("Players", () => {
       });
       const actionId = await getActionId(tx);
 
-      const minSkillPoints = getXPFromLevel(70);
+      const minXP = getXPFromLevel(70);
 
       // Logs go in, nothing comes out
       tx = await world.addActionChoice(actionId, 1, {
         skill: EstforTypes.Skill.FIREMAKING,
         diff: 0,
         xpPerHour: 3600,
-        minSkillPoints,
+        minXP,
         rate,
         inputTokenId1: EstforConstants.LOG,
         num1: 1,
@@ -530,10 +530,10 @@ describe("Players", () => {
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
-      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumSkillPointsNotReached");
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update firemamking level, check it works
-      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.FIREMAKING, minSkillPoints);
+      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.FIREMAKING, minXP);
       expect(await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
 
@@ -548,7 +548,7 @@ describe("Players", () => {
         info: {
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
@@ -567,7 +567,7 @@ describe("Players", () => {
         skill: EstforTypes.Skill.FIREMAKING,
         diff: 0,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
         num1: 1,
@@ -596,7 +596,7 @@ describe("Players", () => {
         isValid: true,
       };
 
-      const minSkillPoints = getXPFromLevel(70);
+      const minXP = getXPFromLevel(70);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultInputItem,
@@ -613,7 +613,7 @@ describe("Players", () => {
         {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.HEALTH,
-          minSkillPoints,
+          minXP,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
           equipPosition: EstforTypes.EquipPosition.FOOD,
@@ -626,9 +626,9 @@ describe("Players", () => {
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
-      ).to.be.revertedWithCustomError(players, "ConsumeableMinimumSkillPointsNotReached");
+      ).to.be.revertedWithCustomError(players, "ConsumeableMinimumXPNotReached");
 
-      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.HEALTH, minSkillPoints);
+      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.HEALTH, minXP);
 
       // Update health level, check it works
       expect(await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to
@@ -645,7 +645,7 @@ describe("Players", () => {
         info: {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -675,11 +675,11 @@ describe("Players", () => {
         isValid: true,
       };
 
-      const minSkillPoints = getXPFromLevel(70);
+      const minXP = getXPFromLevel(70);
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         skill: EstforTypes.Skill.WOODCUTTING,
-        minSkillPoints: 0,
+        minXP: 0,
         tokenId: EstforConstants.BRONZE_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -703,7 +703,7 @@ describe("Players", () => {
         {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.DEFENCE,
-          minSkillPoints,
+          minXP,
           tokenId: EstforConstants.AMETHYST_AMULET,
           equipPosition: EstforTypes.EquipPosition.NECK,
           metadataURI: "someIPFSURI.json",
@@ -711,7 +711,7 @@ describe("Players", () => {
         {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.DEFENCE,
-          minSkillPoints,
+          minXP,
           tokenId: EstforConstants.BRONZE_ARMOR,
           equipPosition: EstforTypes.EquipPosition.BODY,
           metadataURI: "someIPFSURI.json",
@@ -719,7 +719,7 @@ describe("Players", () => {
         {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.DEFENCE,
-          minSkillPoints,
+          minXP,
           tokenId: EstforConstants.BRONZE_BOOTS,
           equipPosition: EstforTypes.EquipPosition.BOOTS,
           metadataURI: "someIPFSURI.json",
@@ -727,7 +727,7 @@ describe("Players", () => {
         {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.DEFENCE,
-          minSkillPoints,
+          minXP,
           tokenId: EstforConstants.BRONZE_GAUNTLETS,
           equipPosition: EstforTypes.EquipPosition.ARMS,
           metadataURI: "someIPFSURI.json",
@@ -735,7 +735,7 @@ describe("Players", () => {
         {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.DEFENCE,
-          minSkillPoints,
+          minXP,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
           metadataURI: "someIPFSURI.json",
@@ -743,7 +743,7 @@ describe("Players", () => {
         {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.DEFENCE,
-          minSkillPoints,
+          minXP,
           tokenId: EstforConstants.BRONZE_TASSETS,
           equipPosition: EstforTypes.EquipPosition.LEGS,
           metadataURI: "someIPFSURI.json",
@@ -759,8 +759,8 @@ describe("Players", () => {
         queuedAction.attire = attire;
         await expect(
           players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
-        ).to.be.revertedWithCustomError(players, "AttireMinimumSkillPointsNotReached");
-        await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.DEFENCE, minSkillPoints);
+        ).to.be.revertedWithCustomError(players, "AttireMinimumXPNotReached");
+        await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.DEFENCE, minXP);
         expect(await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to
           .not.be.reverted;
         await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.DEFENCE, 1);
@@ -775,7 +775,7 @@ describe("Players", () => {
         info: {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
@@ -805,11 +805,11 @@ describe("Players", () => {
         isValid: true,
       };
 
-      const minSkillPoints = getXPFromLevel(70);
+      const minXP = getXPFromLevel(70);
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         skill: EstforTypes.Skill.WOODCUTTING,
-        minSkillPoints,
+        minXP,
         tokenId: EstforConstants.ORICHALCUM_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         metadataURI: "someIPFSURI.json",
@@ -819,10 +819,10 @@ describe("Players", () => {
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
-      ).to.be.revertedWithCustomError(players, "ItemMinimumSkillPointsNotReached");
+      ).to.be.revertedWithCustomError(players, "ItemMinimumXPNotReached");
 
       // Update to level 70, check it works
-      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.WOODCUTTING, minSkillPoints);
+      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.WOODCUTTING, minXP);
       expect(await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
     });

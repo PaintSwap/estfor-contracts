@@ -30,7 +30,7 @@ describe("Boosts", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -77,7 +77,7 @@ describe("Boosts", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (boostDuration * boostValue) / 100
     ); //
     // Check the drops are as expected
@@ -107,7 +107,7 @@ describe("Boosts", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -154,7 +154,7 @@ describe("Boosts", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
     ); //
     // Check the drops are as expected

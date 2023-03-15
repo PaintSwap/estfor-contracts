@@ -12,7 +12,7 @@ export const setupBasicWoodcutting = async () => {
     info: {
       skill: EstforTypes.Skill.WOODCUTTING,
       xpPerHour: 3600,
-      minSkillPoints: 0,
+      minXP: 0,
       isDynamic: false,
       numSpawn: 0,
       handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,

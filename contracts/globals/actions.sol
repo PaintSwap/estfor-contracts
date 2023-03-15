@@ -13,7 +13,7 @@ enum ActionQueueStatus {
 // Fixed based available actions that can be undertaken for an action
 struct ActionChoice {
   Skill skill;
-  uint32 minSkillPoints;
+  uint32 minXP;
   uint32 diff;
   uint32 rate; // rate of output produced per hour (base 100) 2 decimals
   uint16 xpPerHour;
@@ -53,7 +53,7 @@ struct ActionInfo {
   bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint16 xpPerHour;
   uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
-  uint32 minSkillPoints;
+  uint32 minXP;
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
 }

@@ -23,7 +23,7 @@ contract TestStorageSlots {
     int16 health;
     // Minimum requirements in this skill to use this item (can be NONE)
     Skill skill;
-    uint32 minSkillPoints;
+    uint32 minXP;
     // Noncombat skill
     Skill skill1;
     int16 skillDiff1;
@@ -125,7 +125,7 @@ contract TestStorageSlots {
   // Fixed based available actions that can be undertaken for an action
   struct ActionChoice {
     Skill skill;
-    uint32 minSkillPoints;
+    uint32 minXP;
     uint32 diff;
     uint32 rate; // rate of output produced per hour (base 100) 2 decimals
     uint16 xpPerHour;
@@ -165,7 +165,7 @@ contract TestStorageSlots {
     bool actionChoiceRequired; // If true, then the user must choose an action choice
     uint16 xpPerHour;
     uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
-    uint32 minSkillPoints;
+    uint32 minXP;
     uint16 handItemTokenIdRangeMin; // Inclusive
     uint16 handItemTokenIdRangeMax; // Inclusive
   }
@@ -203,7 +203,7 @@ contract TestStorageSlots {
     int16 defence;
     int16 health;
     uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
-    uint160 totalSkillPoints;
+    uint160 totalXP;
     // TODO: Can be up to 7
     QueuedAction[] actionQueue;
   }

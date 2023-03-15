@@ -102,7 +102,7 @@ describe("World", () => {
         info: {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 1,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -121,7 +121,7 @@ describe("World", () => {
         info: {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 20,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 1,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -146,7 +146,7 @@ describe("World", () => {
         info: {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: true,
           numSpawn: 1,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -175,7 +175,7 @@ describe("World", () => {
           skill: EstforTypes.Skill.MAGIC,
           diff: 2,
           xpPerHour: 0,
-          minSkillPoints: 0,
+          minXP: 0,
           rate: 1 * 100,
           inputTokenId1: EstforConstants.AIR_SCROLL,
           num1: 1,

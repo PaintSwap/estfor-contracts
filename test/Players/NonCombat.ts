@@ -31,7 +31,7 @@ describe("Non-Combat Actions", () => {
     const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
     expect(pendingOutput.produced[0].amount).is.eq(balanceExpected);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
   });
@@ -45,7 +45,7 @@ describe("Non-Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -145,7 +145,7 @@ describe("Non-Combat Actions", () => {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + queuedAction.timespan * 0.03
     );
     // Check the drops are as expected
@@ -160,7 +160,7 @@ describe("Non-Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.FIREMAKING,
         xpPerHour: 0,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
@@ -179,7 +179,7 @@ describe("Non-Combat Actions", () => {
       skill: EstforTypes.Skill.FIREMAKING,
       diff: 0,
       xpPerHour: 3600,
-      minSkillPoints: 0,
+      minXP: 0,
       rate,
       inputTokenId1: EstforConstants.LOG,
       num1: 1,
@@ -228,7 +228,7 @@ describe("Non-Combat Actions", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedAction.timespan);
 
     // Check how many logs they have now, 100 logs burnt per hour
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
@@ -244,7 +244,7 @@ describe("Non-Combat Actions", () => {
         info: {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -287,7 +287,7 @@ describe("Non-Combat Actions", () => {
         info: {
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
@@ -306,7 +306,7 @@ describe("Non-Combat Actions", () => {
         skill: EstforTypes.Skill.FIREMAKING,
         diff: 0,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
         num1: 1,
@@ -356,14 +356,14 @@ describe("Non-Combat Actions", () => {
     await players.connect(alice).startAction(playerId, queuedActions[0], EstforTypes.ActionQueueStatus.APPEND);
     await ethers.provider.send("evm_increaseTime", [10]);
     await players.connect(alice).startAction(playerId, queuedActions[1], EstforTypes.ActionQueueStatus.APPEND);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(10); // Should be partially completed
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(10); // Should be partially completed
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(3);
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan]);
     expect(await players.actionQueueLength(playerId)).to.eq(2);
 
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 1220 logs burnt per hour, 2 hours producing logs, 1 hour burning
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((queuedActions[0].timespan * rate) / (3600 * 100)) - rate / 100
@@ -382,7 +382,7 @@ describe("Non-Combat Actions", () => {
         info: {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -425,7 +425,7 @@ describe("Non-Combat Actions", () => {
         info: {
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
@@ -444,7 +444,7 @@ describe("Non-Combat Actions", () => {
         skill: EstforTypes.Skill.FIREMAKING,
         diff: 0,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
         num1: 1,
@@ -505,8 +505,8 @@ describe("Non-Combat Actions", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((queuedActions[0].timespan * rate) / (3600 * 100)) -
@@ -524,7 +524,7 @@ describe("Non-Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.MINING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_PICKAXE,
@@ -566,7 +566,7 @@ describe("Non-Combat Actions", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.MINING)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.MINING)).to.eq(queuedAction.timespan);
   });
 
   it("Smithing", async () => {
@@ -578,7 +578,7 @@ describe("Non-Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.SMITHING,
         xpPerHour: 0,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.NONE,
@@ -597,7 +597,7 @@ describe("Non-Combat Actions", () => {
       skill: EstforTypes.Skill.SMITHING,
       diff: 0,
       xpPerHour: 3600,
-      minSkillPoints: 0,
+      minXP: 0,
       rate,
       inputTokenId1: EstforConstants.COAL_ORE,
       num1: 2,
@@ -647,7 +647,7 @@ describe("Non-Combat Actions", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
 
     // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
@@ -670,7 +670,7 @@ describe("Non-Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -711,7 +711,7 @@ describe("Non-Combat Actions", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan - 1);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan - 1);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor(((queuedAction.timespan - 1) * rate) / (3600 * 100))
@@ -735,7 +735,7 @@ describe("Non-Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
@@ -768,7 +768,7 @@ describe("Non-Combat Actions", () => {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [timespan]);
     await players.connect(alice).processActions(playerId);
-    //      expect(await players.skillPoints(playerId,EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
+    //      expect(await players.xp(playerId,EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(1); // Should be rounded down
   });
 
@@ -781,7 +781,7 @@ describe("Non-Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
@@ -864,7 +864,7 @@ describe("Non-Combat Actions", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
   });
 
@@ -872,15 +872,15 @@ describe("Non-Combat Actions", () => {
     // Try wood cut, and then burning them when having none equipped
   });
 
-  it("Attire, equipment and conusmeable minSkillPoints", async () => {
+  it("Attire, equipment and conusmeable minXP", async () => {
     // TODO
   });
 
-  it("Action minSkillPoints", async () => {
+  it("Action minXP", async () => {
     // TODO
   });
 
-  it("ActionChoice minSkillPoints", async () => {
+  it("ActionChoice minXP", async () => {
     // TODO
   });
 });

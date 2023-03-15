@@ -28,7 +28,7 @@ describe("Combat Actions", () => {
         info: {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 1,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -109,12 +109,12 @@ describe("Combat Actions", () => {
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.ATTACK)).to.be.oneOf([time, time + 1]);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.HEALTH)).to.be.oneOf([
+      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.be.oneOf([time, time + 1]);
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.oneOf([
         Math.floor(time / 3) - 1,
         Math.floor(time / 3),
       ]); // Health should get 33% of the stats
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -133,7 +133,7 @@ describe("Combat Actions", () => {
       const time = 360;
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
@@ -152,8 +152,8 @@ describe("Combat Actions", () => {
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.be.oneOf([time, time + 1]);
+      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -197,7 +197,7 @@ describe("Combat Actions", () => {
       await ethers.provider.send("evm_increaseTime", [time]);
 
       await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.ATTACK)).to.oneOf([time, time + 1]);
+      expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.oneOf([time, time + 1]);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -229,7 +229,7 @@ describe("Combat Actions", () => {
         info: {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
-          minSkillPoints: 0,
+          minXP: 0,
           isDynamic: false,
           numSpawn: 1,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -261,7 +261,7 @@ describe("Combat Actions", () => {
         skill: EstforTypes.Skill.MAGIC,
         diff: 2,
         xpPerHour: 0,
-        minSkillPoints: 0,
+        minXP: 0,
         rate: scrollsConsumedRate,
         inputTokenId1: EstforConstants.AIR_SCROLL,
         num1: 2,
@@ -341,8 +341,8 @@ describe("Combat Actions", () => {
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.MAGIC)).to.eq(queuedAction.timespan);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(queuedAction.timespan);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -369,8 +369,8 @@ describe("Combat Actions", () => {
 
       await ethers.provider.send("evm_increaseTime", [_queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.MAGIC)).to.eq(_queuedAction.timespan);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(_queuedAction.timespan);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -409,8 +409,8 @@ describe("Combat Actions", () => {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
       // Should get no XP
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.MAGIC)).to.eq(0);
-      expect(await players.skillPoints(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       // Check food is consumed, update later
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 25);
 
@@ -434,7 +434,7 @@ describe("Combat Actions", () => {
             skill: EstforTypes.Skill.MAGIC,
             diff: 2,
             xpPerHour: 0,
-            minSkillPoints: 0,
+            minXP: 0,
             rate: scrollsConsumedRate,
             inputTokenId1: EstforConstants.AIR_SCROLL,
             num1: 1,
@@ -449,7 +449,7 @@ describe("Combat Actions", () => {
             skill: EstforTypes.Skill.MAGIC,
             diff: 2,
             xpPerHour: 0,
-            minSkillPoints: 0,
+            minXP: 0,
             rate: scrollsConsumedRate,
             inputTokenId1: EstforConstants.AIR_SCROLL,
             num1: 3,
@@ -504,7 +504,7 @@ describe("Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
@@ -634,7 +634,7 @@ describe("Combat Actions", () => {
       info: {
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
-        minSkillPoints: 0,
+        minXP: 0,
         isDynamic: false,
         numSpawn: 1,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
@@ -698,7 +698,7 @@ describe("Combat Actions", () => {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await players.connect(alice).processActions(playerId);
     // Should die so doesn't get any attack skill points, and food should be consumed
-    expect(await players.skillPoints(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
+    expect(await players.xp(playerId, EstforTypes.Skill.ATTACK)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
   });

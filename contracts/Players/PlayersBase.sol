@@ -18,7 +18,7 @@ abstract contract PlayersBase {
   using Unsafe256 for U256;
 
   event ClearAll(uint playerId);
-  event AddSkillPoints(uint playerId, Skill skill, uint32 points);
+  event AddXP(uint playerId, Skill skill, uint32 points);
   event SetActionQueue(uint playerId, QueuedAction[] queuedActions);
   event ConsumeBoostVial(uint playerId, PlayerBoostInfo playerBoostInfo);
   event UnconsumeBoostVial(uint playerId);
@@ -56,11 +56,11 @@ abstract contract PlayersBase {
   error TooManyActionsQueuedSomeAlreadyExist();
   error ActionTimespanExceedsMaxTime();
   error ActionTimespanZero();
-  error ActionMinimumSkillPointsNotReached();
-  error ActionChoiceMinimumSkillPointsNotReached();
-  error ItemMinimumSkillPointsNotReached();
-  error AttireMinimumSkillPointsNotReached();
-  error ConsumeableMinimumSkillPointsNotReached();
+  error ActionMinimumXPNotReached();
+  error ActionChoiceMinimumXPNotReached();
+  error ItemMinimumXPNotReached();
+  error AttireMinimumXPNotReached();
+  error ConsumeableMinimumXPNotReached();
 
   error InvalidStartSlot();
 
@@ -93,7 +93,7 @@ abstract contract PlayersBase {
   uint64 internal nextQueueId; // Global queued action id
   World internal world;
 
-  mapping(uint playerId => mapping(Skill skill => uint32 skillPoint)) public skillPoints;
+  mapping(uint playerId => mapping(Skill skill => uint32 xp)) public xp;
 
   mapping(uint playerId => Player player) public players;
   ItemNFT internal itemNFT;

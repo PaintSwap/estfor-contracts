@@ -113,11 +113,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
   }
 
   function claimableXPThresholdRewards(
-    uint _oldTotalSkillPoints,
-    uint _newTotalSkillPoints
+    uint _oldTotalXP,
+    uint _newTotalXP
   ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts) {
-    uint16 prevIndex = _findBaseXPThreshold(_oldTotalSkillPoints);
-    uint16 nextIndex = _findBaseXPThreshold(_newTotalSkillPoints);
+    uint16 prevIndex = _findBaseXPThreshold(_oldTotalXP);
+    uint16 nextIndex = _findBaseXPThreshold(_newTotalXP);
     if (prevIndex != nextIndex) {
       uint32 xpThreshold = _getXPReward(nextIndex);
       Equipment[] memory items = xpRewardThresholds[xpThreshold];
@@ -159,7 +159,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     uint producedPastRandomRewardsLength;
     uint producedXPRewardsLength;
     address from = _owner;
-    uint previousSkillPoints = player.totalSkillPoints;
+    uint previousTotalXP = player.totalXP;
     uint32 allPointsAccrued;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
@@ -245,8 +245,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
     if (_flags.includeXPRewards && allPointsAccrued != 0) {
       (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
-        previousSkillPoints,
-        previousSkillPoints + allPointsAccrued
+        previousTotalXP,
+        previousTotalXP + allPointsAccrued
       );
       U256 idsLength = U256.wrap(ids.length);
       for (U256 iter; iter < idsLength; iter = iter.inc()) {

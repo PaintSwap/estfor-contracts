@@ -25,7 +25,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       return remainingSkills;
     }
 
-    uint previousSkillPoints = player.totalSkillPoints;
+    uint previousTotalXP = player.totalXP;
     uint32 allPointsAccrued;
 
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
@@ -111,15 +111,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (pointsAccrued != 0) {
         if (_isCombatStyle(queuedAction.combatStyle)) {
           // Update health too with 33% of the points gained from combat
-          _updateSkillPoints(_from, _playerId, Skill.HEALTH, uint32((uint(pointsAccrued) * 333333) / 1000000));
-          _cacheCombatStats(
-            players[_playerId],
-            skillPoints[_playerId][Skill.HEALTH],
-            skill,
-            skillPoints[_playerId][skill]
-          );
+          _updateXP(_from, _playerId, Skill.HEALTH, uint32((uint(pointsAccrued) * 333333) / 1000000));
+          _cacheCombatStats(players[_playerId], xp[_playerId][Skill.HEALTH], skill, xp[_playerId][skill]);
         }
-        _updateSkillPoints(_from, _playerId, skill, pointsAccrued);
+        _updateXP(_from, _playerId, skill, pointsAccrued);
 
         (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
           uint40(queuedAction.startTime + xpElapsedTime),
@@ -155,8 +150,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     if (allPointsAccrued != 0) {
-      _claimTotalXPThresholdRewards(_from, _playerId, previousSkillPoints, previousSkillPoints + allPointsAccrued);
-      player.totalSkillPoints = uint160(previousSkillPoints + allPointsAccrued);
+      _claimTotalXPThresholdRewards(_from, _playerId, previousTotalXP, previousTotalXP + allPointsAccrued);
+      player.totalXP = uint160(previousTotalXP + allPointsAccrued);
     }
 
     _claimRandomRewards(_playerId);
@@ -270,18 +265,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.attire.queueId);
   }
 
-  function _cacheCombatStats(
-    Player storage _player,
-    uint32 _healthSkillPoints,
-    Skill _skill,
-    uint32 _skillPoints
-  ) private {
+  function _cacheCombatStats(Player storage _player, uint32 _healthXP, Skill _skill, uint32 _xp) private {
     {
-      int16 _health = int16(PlayerLibrary.getLevel(_healthSkillPoints));
+      int16 _health = int16(PlayerLibrary.getLevel(_healthXP));
       _player.health = _health;
     }
 
-    int16 _level = int16(PlayerLibrary.getLevel(_skillPoints));
+    int16 _level = int16(PlayerLibrary.getLevel(_xp));
     if (_skill == Skill.ATTACK) {
       _player.melee = _level;
     } else if (_skill == Skill.MAGIC) {
@@ -344,11 +334,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     remainingSkills[length] = remainingAction;
   }
 
-  function _updateSkillPoints(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
-    uint32 oldPoints = skillPoints[_playerId][_skill];
+  function _updateXP(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
+    uint32 oldPoints = xp[_playerId][_skill];
     uint32 newPoints = oldPoints + _pointsAccrued;
-    skillPoints[_playerId][_skill] = newPoints;
-    emit AddSkillPoints(_playerId, _skill, _pointsAccrued);
+    xp[_playerId][_skill] = newPoints;
+    emit AddXP(_playerId, _skill, _pointsAccrued);
 
     uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
     uint16 newLevel = PlayerLibrary.getLevel(newPoints);
@@ -385,30 +375,18 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _claimableXPThresholdRewards(
-    uint _oldTotalSkillPoints,
-    uint _newTotalSkillPoints
+    uint _oldTotalXP,
+    uint _newTotalXP
   ) private returns (uint[] memory ids, uint[] memory amounts) {
     bytes memory data = _delegatecall(
       implRewards,
-      abi.encodeWithSignature(
-        "claimableXPThresholdRewards(uint256,uint256)",
-        _oldTotalSkillPoints,
-        _newTotalSkillPoints
-      )
+      abi.encodeWithSignature("claimableXPThresholdRewards(uint256,uint256)", _oldTotalXP, _newTotalXP)
     );
     return abi.decode(data, (uint[], uint[]));
   }
 
-  function _claimTotalXPThresholdRewards(
-    address _from,
-    uint _playerId,
-    uint _oldTotalSkillPoints,
-    uint _newTotalSkillPoints
-  ) private {
-    (uint[] memory itemTokenIds, uint[] memory amounts) = _claimableXPThresholdRewards(
-      _oldTotalSkillPoints,
-      _newTotalSkillPoints
-    );
+  function _claimTotalXPThresholdRewards(address _from, uint _playerId, uint _oldTotalXP, uint _newTotalXP) private {
+    (uint[] memory itemTokenIds, uint[] memory amounts) = _claimableXPThresholdRewards(_oldTotalXP, _newTotalXP);
     if (itemTokenIds.length != 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
       emit ClaimedXPThresholdRewards(_from, _playerId, itemTokenIds, amounts);
