@@ -14,6 +14,8 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/items.sol";
+// solhint-disable-next-line no-global-import
+import "./globals/players.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
@@ -24,12 +26,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
-
-  struct AvatarInfo {
-    bytes32 name;
-    string description;
-    string imageURI;
-  }
 
   error NotOwner();
   error AvatarNotExists();
@@ -144,7 +140,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     emit NewPlayer(playerId, _avatarId, bytes20(_name));
     _mint(from, playerId, 1, "");
     _setName(playerId, bytes20(_name));
-    players.mintedPlayer(from, playerId, _makeActive);
+    players.mintedPlayer(from, playerId, avatars[_avatarId].startSkills, _makeActive);
     _mintStartingItems();
     _setTokenIdToAvatar(playerId, _avatarId);
   }

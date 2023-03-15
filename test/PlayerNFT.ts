@@ -1,7 +1,8 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {createPlayer} from "../scripts/utils";
+import {AvatarInfo, createPlayer} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 
 describe("PlayerNFT", () => {
@@ -95,10 +96,11 @@ describe("PlayerNFT", () => {
     await playerNFT.setPlayers(players.address);
 
     const avatarId = 1;
-    const avatarInfo = {
+    const avatarInfo: AvatarInfo = {
       name: ethers.utils.formatBytes32String("Name goes here"),
       description: "Hi I'm a description",
       imageURI: "1234.png",
+      startSkills: [Skill.NONE, Skill.NONE],
     };
     await playerNFT.setAvatar(avatarId, avatarInfo);
 

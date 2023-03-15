@@ -141,3 +141,10 @@ enum Skill {
   COOKING,
   FIREMAKING
 }
+
+struct AvatarInfo {
+  bytes32 name;
+  string description;
+  string imageURI;
+  Skill[2] startSkills; // Can be NONE
+}

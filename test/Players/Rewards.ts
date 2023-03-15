@@ -61,7 +61,7 @@ describe("Rewards", () => {
     await players.addXPThresholdReward({xpThreshold: 500, rewards});
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-    await ethers.provider.send("evm_increaseTime", [250]);
+    await ethers.provider.send("evm_increaseTime", [50]);
     await ethers.provider.send("evm_mine", []);
 
     let pendingOutput = await players.pendingRewards(alice.address, playerId, {
@@ -72,7 +72,7 @@ describe("Rewards", () => {
     expect(pendingOutput.produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
-    await ethers.provider.send("evm_increaseTime", [250]);
+    await ethers.provider.send("evm_increaseTime", [450]);
     await ethers.provider.send("evm_mine", []);
     pendingOutput = await players.pendingRewards(alice.address, playerId, {
       includeLoot: true,

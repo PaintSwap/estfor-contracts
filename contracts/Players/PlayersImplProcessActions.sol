@@ -334,20 +334,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     remainingSkills[length] = remainingAction;
   }
 
-  function _updateXP(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
-    uint32 oldPoints = xp[_playerId][_skill];
-    uint32 newPoints = oldPoints + _pointsAccrued;
-    xp[_playerId][_skill] = newPoints;
-    emit AddXP(_playerId, _skill, _pointsAccrued);
-
-    uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
-    uint16 newLevel = PlayerLibrary.getLevel(newPoints);
-    // Update the player's level
-    if (newLevel > oldLevel) {
-      emit LevelUp(_from, _playerId, _skill, newLevel);
-    }
-  }
-
   function _addPendingRandomReward(
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,

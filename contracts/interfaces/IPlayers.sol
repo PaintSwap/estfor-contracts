@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {Skill} from "../globals/players.sol";
+
 interface IPlayers {
   function clearEverythingBeforeTokenTransfer(address from, uint tokenId) external;
 
@@ -16,5 +18,5 @@ interface IPlayers {
 
   function itemBeforeTokenTransfer(address from, uint[] calldata tokenIds, uint256[] calldata amounts) external;
 
-  function mintedPlayer(address from, uint playerId, bool makeActive) external;
+  function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills, bool makeActive) external;
 }

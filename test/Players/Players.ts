@@ -1,14 +1,53 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {emptyActionChoice, getActionChoiceId, getActionId} from "../../scripts/utils";
+import {AvatarInfo, createPlayer, emptyActionChoice, getActionChoiceId, getActionId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel} from "./utils";
 
 const actionIsAvailable = true;
 
 describe("Players", () => {
+  it("New player stats", async () => {
+    const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const avatarId = 2;
+    const avatarInfo: AvatarInfo = {
+      name: ethers.utils.formatBytes32String("Name goes here"),
+      description: "Hi I'm a description",
+      imageURI: "1234.png",
+      startSkills: [Skill.FIREMAKING, Skill.NONE],
+    };
+    await playerNFT.setAvatar(avatarId, avatarInfo);
+    const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("Name"), true);
+
+    const startXP = await players.startXP();
+    expect(startXP).to.be.gt(0);
+    expect(await players.xp(playerId, Skill.FIREMAKING)).to.eq(startXP);
+
+    avatarInfo.startSkills = [Skill.FIREMAKING, Skill.HEALTH];
+
+    await playerNFT.setAvatar(avatarId, avatarInfo);
+    const newPlayerId = await createPlayer(
+      playerNFT,
+      avatarId,
+      alice,
+      ethers.utils.formatBytes32String("New name"),
+      true
+    );
+    expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(startXP.div(2));
+    expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(startXP.div(2));
+
+    expect((await players.players(newPlayerId)).totalXP).to.eq(startXP);
+    expect((await players.players(newPlayerId)).health).to.eq(3);
+    expect((await players.players(newPlayerId)).melee).to.eq(1);
+    expect((await players.players(newPlayerId)).range).to.eq(1);
+    expect((await players.players(newPlayerId)).magic).to.eq(1);
+    expect((await players.players(newPlayerId)).defence).to.eq(1);
+  });
+
   it("Skill points", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 

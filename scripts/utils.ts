@@ -2,6 +2,7 @@ import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ContractTransaction, ethers} from "ethers";
 import {PlayerNFT} from "../typechain-types";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {Skill} from "@paintswap/estfor-definitions/types";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -483,3 +484,10 @@ export const smithingChoices: ActionChoice[] = [
     outputNum: 1,
   },
 ];
+
+export type AvatarInfo = {
+  name: string;
+  description: string;
+  imageURI: string;
+  startSkills: [Skill, Skill];
+};

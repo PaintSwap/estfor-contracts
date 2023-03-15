@@ -1,6 +1,8 @@
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {MerkleTreeWhitelist} from "../scripts/MerkleTreeWhitelist";
+import {AvatarInfo} from "../scripts/utils";
 
 describe("AlphaWhitelist", () => {
   it("Merkle proof minting", async () => {
@@ -104,10 +106,11 @@ describe("AlphaWhitelist", () => {
     expect(await playerNFT.connect(alice).checkInWhitelist(proof)).to.be.false;
 
     const avatarId = 1;
-    const avatarInfo = {
+    const avatarInfo: AvatarInfo = {
       name: ethers.utils.formatBytes32String("Name goes here"),
       description: "Hi I'm a description",
       imageURI: "1234.png",
+      startSkills: [Skill.NONE, Skill.NONE],
     };
     await playerNFT.setAvatar(avatarId, avatarInfo);
 

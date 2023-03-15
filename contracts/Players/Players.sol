@@ -13,6 +13,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
+import {IPlayers} from "../interfaces/IPlayers.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/players.sol";
@@ -42,7 +43,7 @@ interface IPlayerDelegate {
   ) external;
 }
 
-contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall {
+contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall, IPlayers {
   using UnsafeU256 for U256;
 
   error InvalidSelector();
@@ -142,7 +143,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return players[_playerId].actionQueue.length;
   }
 
-  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayerNFT {
+  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external override onlyPlayerNFT {
     itemNFT.mintBatch(_to, _ids, _amounts);
   }
 
@@ -157,28 +158,54 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     bytes32 _avatarName,
     string calldata _avatarDescription,
     string calldata imageURI
-  ) external view returns (string memory) {
+  ) external view override returns (string memory) {
     return PlayerLibrary.uri(_name, xp[_playerId], _avatarName, _avatarDescription, imageURI);
   }
 
   // Callback after minting a player. If they aren't the active player then set it.
-  function mintedPlayer(address _from, uint _playerId, bool makeActive) external onlyPlayerNFT {
-    if (makeActive) {
+  function mintedPlayer(
+    address _from,
+    uint _playerId,
+    Skill[2] calldata _startSkills,
+    bool _makeActive
+  ) external override onlyPlayerNFT {
+    if (_makeActive) {
       _setActivePlayer(_from, _playerId);
     }
+
     Player storage player = players[_playerId];
     player.health = 1;
     player.melee = 1;
     player.magic = 1;
     player.range = 1;
     player.defence = 1;
+    player.totalXP = uint160(startXP);
+
+    uint length = _startSkills[1] != Skill.NONE ? 2 : 1;
+    uint32 xpEach = uint32(startXP / length);
+    for (uint i = 0; i < length; i++) {
+      Skill skill = _startSkills[i];
+      int16 level = int16(PlayerLibrary.getLevel(xpEach));
+      if (skill == Skill.HEALTH) {
+        player.health = level;
+      } else if (skill == Skill.ATTACK) {
+        player.melee = level;
+      } else if (skill == Skill.MAGIC) {
+        player.magic = level;
+      } else if (skill == Skill.RANGE) {
+        player.range = level;
+      } else if (skill == Skill.DEFENCE) {
+        player.defence = level;
+      }
+      _updateXP(_from, _playerId, skill, xpEach);
+    }
   }
 
   function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     _clearEverything(msg.sender, _playerId);
   }
 
-  function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external onlyPlayerNFT {
+  function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
     _clearEverything(_from, _playerId);
   }
 

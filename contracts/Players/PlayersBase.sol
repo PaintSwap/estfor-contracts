@@ -61,9 +61,7 @@ abstract contract PlayersBase {
   error ItemMinimumXPNotReached();
   error AttireMinimumXPNotReached();
   error ConsumeableMinimumXPNotReached();
-
   error InvalidStartSlot();
-
   error NoItemBalance(uint16 itemTokenId);
   error CannotEquipTwoHandedAndOtherEquipment();
   error IncorrectRightHandEquipment(uint16 equippedItemTokenId);
@@ -80,7 +78,7 @@ abstract contract PlayersBase {
 
   uint32 public constant MAX_TIME = 1 days;
 
-  uint constant MAX_MAIN_EQUIPMENT_ID = 65536 * 8;
+  uint public constant startXP = 374;
 
   uint internal startSlot; // Keep as the first non-constant state variable
 
@@ -198,6 +196,20 @@ abstract contract PlayersBase {
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
     pointsAccrued += _extraXPFromFullEquipment(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);
+  }
+
+  function _updateXP(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) internal {
+    uint32 oldPoints = xp[_playerId][_skill];
+    uint32 newPoints = oldPoints + _pointsAccrued;
+    xp[_playerId][_skill] = newPoints;
+    emit AddXP(_playerId, _skill, _pointsAccrued);
+
+    uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
+    uint16 newLevel = PlayerLibrary.getLevel(newPoints);
+    // Update the player's level
+    if (newLevel > oldLevel) {
+      emit LevelUp(_from, _playerId, _skill, newLevel);
+    }
   }
 
   function _updateStatsFromHandEquipment(
