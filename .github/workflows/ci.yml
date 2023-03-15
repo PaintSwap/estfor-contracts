@@ -4,6 +4,11 @@ on: push
 jobs:
   Hardhat:
     runs-on: ubuntu-latest
+    env:
+      # These are just dummy values to prevent hardhat complaining about config issues
+      FTM_RPC: NA
+      FTM_RPC_TESTNET: NA
+      PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
     steps:
       - uses: actions/checkout@v3
       - name: Install packages
@@ -13,11 +18,6 @@ jobs:
       - run: yarn install
         shell: bash
       - name: Deploy
-        env:
-          # These are just dummy values to prevent hardhat complaining about config issues
-          FTM_RPC: NA
-          FTM_RPC_TESTNET: NA
-          PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
         run: yarn deploy
       - name: Tests
         run: yarn test
