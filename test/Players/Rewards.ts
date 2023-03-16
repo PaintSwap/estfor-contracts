@@ -38,7 +38,7 @@ describe("Rewards", () => {
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -120,7 +120,7 @@ describe("Rewards", () => {
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -258,7 +258,7 @@ describe("Rewards", () => {
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,

@@ -27,7 +27,7 @@ export const setupBasicWoodcutting = async () => {
   const actionId = await getActionId(tx);
 
   const timespan = 3600;
-  const queuedAction: EstforTypes.QueuedAction = {
+  const queuedAction: EstforTypes.QueuedActionInput = {
     attire: EstforTypes.noAttire,
     actionId,
     combatStyle: EstforTypes.CombatStyle.NONE,

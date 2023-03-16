@@ -60,7 +60,7 @@ describe("Combat Actions", () => {
 
       await itemNFT.testOnlyMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
       const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
         actionId,
         combatStyle: EstforTypes.CombatStyle.MELEE,
@@ -319,7 +319,7 @@ describe("Combat Actions", () => {
       });
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.MAGIC,
@@ -564,7 +564,7 @@ describe("Combat Actions", () => {
 
     const actionId = await getActionId(tx);
     const numHours = 5;
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -701,7 +701,7 @@ describe("Combat Actions", () => {
       skill: EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.MELEE,

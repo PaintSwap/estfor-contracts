@@ -47,7 +47,7 @@ describe("Boosts", () => {
     await itemNFT.testOnlyMint(alice.address, EstforConstants.XP_BOOST, 1);
 
     const timespan = 3600;
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -124,7 +124,7 @@ describe("Boosts", () => {
     await itemNFT.testOnlyMint(alice.address, EstforConstants.XP_BOOST, 1);
 
     const timespan = 3600;
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,

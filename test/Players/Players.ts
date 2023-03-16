@@ -78,7 +78,7 @@ describe("Players", () => {
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -130,7 +130,7 @@ describe("Players", () => {
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -179,7 +179,7 @@ describe("Players", () => {
     const actionId = await getActionId(tx);
 
     const timespan = 3600;
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -238,7 +238,7 @@ describe("Players", () => {
     const actionId = await getActionId(tx);
 
     const timespan = 3600;
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -328,7 +328,7 @@ describe("Players", () => {
     });
     const choiceId = await getActionChoiceId(tx);
 
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...noAttire, arms: BRONZE_GAUNTLETS},
       actionId: 1,
       combatStyle: EstforTypes.CombatStyle.MELEE,
@@ -385,7 +385,7 @@ describe("Players", () => {
     const choiceId = await getActionChoiceId(tx);
     const timespan = 3600;
 
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
       actionId,
       combatStyle: EstforTypes.CombatStyle.MELEE,
@@ -597,7 +597,7 @@ describe("Players", () => {
       const actionId = await getActionId(tx);
 
       const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -675,7 +675,7 @@ describe("Players", () => {
       const choiceId = await getActionChoiceId(tx);
 
       const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -759,7 +759,7 @@ describe("Players", () => {
       const choiceId = await getActionChoiceId(tx);
 
       const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -838,7 +838,7 @@ describe("Players", () => {
       const actionId = await getActionId(tx);
 
       const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -968,7 +968,7 @@ describe("Players", () => {
       const actionId = await getActionId(tx);
 
       const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,

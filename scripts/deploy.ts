@@ -291,7 +291,7 @@ async function main() {
   console.log("Add action choices");
 
   // First woodcutting
-  const queuedAction: EstforTypes.QueuedAction = {
+  const queuedAction: EstforTypes.QueuedActionInput = {
     attire: EstforTypes.noAttire,
     actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
     combatStyle: EstforTypes.CombatStyle.NONE,
@@ -333,7 +333,7 @@ async function main() {
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
 
   // Next firemaking
-  const queuedActionFiremaking: EstforTypes.QueuedAction = {
+  const queuedActionFiremaking: EstforTypes.QueuedActionInput = {
     attire: {...EstforTypes.noAttire},
     actionId: EstforConstants.ACTION_FIREMAKING_ITEM,
     combatStyle: EstforTypes.CombatStyle.NONE,
@@ -387,7 +387,7 @@ async function main() {
   }
 
   // Start a combat action
-  const queuedActionCombat: EstforTypes.QueuedAction = {
+  const queuedActionCombat: EstforTypes.QueuedActionInput = {
     attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
     actionId: EstforConstants.ACTION_COMBAT_NATUOW,
     combatStyle: EstforTypes.CombatStyle.MELEE,

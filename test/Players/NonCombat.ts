@@ -104,7 +104,7 @@ describe("Non-Combat Actions", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {
         head: EstforConstants.NATURE_MASK,
         neck: EstforConstants.NONE,
@@ -194,7 +194,7 @@ describe("Non-Combat Actions", () => {
     const choiceId = await getActionChoiceId(tx);
 
     const timespan = 3600;
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -237,7 +237,7 @@ describe("Non-Combat Actions", () => {
 
   it("Multi skill appending, woodcutting + firemaking", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const queuedActions: EstforTypes.QueuedAction[] = [];
+    const queuedActions: EstforTypes.QueuedActionInput[] = [];
     const rate = 1220 * 100; // per hour
     {
       const tx = await world.addAction({
@@ -265,7 +265,7 @@ describe("Non-Combat Actions", () => {
         metadataURI: "someIPFSURI.json",
       });
       const timespan = 7200 + 10;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -329,7 +329,7 @@ describe("Non-Combat Actions", () => {
       });
       const timespan = 3600;
 
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -375,7 +375,7 @@ describe("Non-Combat Actions", () => {
 
   it("Multi skill, woodcutting + firemaking", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const queuedActions: EstforTypes.QueuedAction[] = [];
+    const queuedActions: EstforTypes.QueuedActionInput[] = [];
     const rate = 100 * 100; // per hour
     {
       const tx = await world.addAction({
@@ -403,7 +403,7 @@ describe("Non-Combat Actions", () => {
         metadataURI: "someIPFSURI.json",
       });
       const timespan = 7200;
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -467,7 +467,7 @@ describe("Non-Combat Actions", () => {
       });
       const timespan = 3600;
 
-      const queuedAction: EstforTypes.QueuedAction = {
+      const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -541,7 +541,7 @@ describe("Non-Combat Actions", () => {
     const actionId = await getActionId(tx);
 
     await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_PICKAXE, 1);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -613,7 +613,7 @@ describe("Non-Combat Actions", () => {
 
     const timespan = 3600;
 
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -686,7 +686,7 @@ describe("Non-Combat Actions", () => {
     const actionId = await getActionId(tx);
 
     const timespan = maxTime + 1; // Exceed maximum
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -751,7 +751,7 @@ describe("Non-Combat Actions", () => {
 
     const actionId = await getActionId(tx);
     const timespan = 3600 * 19; // Should make 1
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -797,7 +797,7 @@ describe("Non-Combat Actions", () => {
     const actionId = await getActionId(tx);
 
     const timespan = 3600;
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,

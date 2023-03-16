@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@0xdoublesharp/unsafe-math@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@0xdoublesharp/unsafe-math/-/unsafe-math-0.0.8.tgz#6c349701990e17fce028e21f3ef444cb178755e5"
-  integrity sha512-gK07YFeWiHUIQwjXd7x2Y+Ve5GpMy4vBcy7xyUZjLi82uJE+v2AaRhT9jdu1O7UAfHFn7IvM0WtNIHSiK1uR2g==
+"@0xdoublesharp/unsafe-math@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@0xdoublesharp/unsafe-math/-/unsafe-math-0.0.9.tgz#4a32a56190ec9cd73cebb3bf2d613dce445b89bf"
+  integrity sha512-lK1RPnCo81twKK/I1hjz/DIfTTzauf9m1COZ8h2kLf8+ByscHSPT/fnx7M/hwaJRcT86ez3IIEn21+bpGXSIzA==
 
 "@aduh95/viz.js@^3.7.0":
   version "3.7.0"
@@ -788,10 +788,10 @@
     proper-lockfile "^4.1.1"
     solidity-ast "^0.4.15"
 
-"@paintswap/estfor-definitions@^0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@paintswap/estfor-definitions/-/estfor-definitions-0.1.15.tgz#790fdfd1644c6168cd0fa995d63bc82deaf0dad8"
-  integrity sha512-z+YCy/jlwmJbAT59cxgAFB6MilYafiBq+2DIUwFqA20RHeT4H0AOHKvtrdCEeZ5rn/JuYqA6Am4KRrx5J4Ll6w==
+"@paintswap/estfor-definitions@^0.1.17":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@paintswap/estfor-definitions/-/estfor-definitions-0.1.17.tgz#ecff23625073dbbb3aab426ea7a34fa25bccd4e6"
+  integrity sha512-Bxw6PoGeyTpyZRfZZts9aE0pqvQNmbFuvcUm+pTC1cbT3ji2Ra2Faxg5JKsMdD+GsBEZbnaEGEx1IZE+W8sS6A==
   dependencies:
     assemblyscript "0.19.10"
 

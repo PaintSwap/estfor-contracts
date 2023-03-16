@@ -6,7 +6,7 @@
   "repository": "https://github.com/PaintSwap/estfor-contracts",
   "license": "MIT",
   "devDependencies": {
-    "@0xdoublesharp/unsafe-math": "^0.0.8",
+    "@0xdoublesharp/unsafe-math": "^0.0.9",
     "@chainlink/contracts": "^0.6.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5",
@@ -20,7 +20,7 @@
     "@openzeppelin/contracts": "^4.8.2",
     "@openzeppelin/contracts-upgradeable": "^4.8.2",
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
-    "@paintswap/estfor-definitions": "^0.1.15",
+    "@paintswap/estfor-definitions": "^0.1.17",
     "@solidity-parser/parser": "./modules/parser",
     "@typechain/ethers-v5": "^10.2.0",
     "@typechain/hardhat": "^6.1.5",
