@@ -338,7 +338,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       _amounts,
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId2,
-      _actionRewards.guaranteedRewardRate3,
+      _actionRewards.guaranteedRewardRate2,
       length,
       _monstersKilled,
       _isCombat
@@ -348,7 +348,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       _amounts,
       _elapsedTime,
       _actionRewards.guaranteedRewardTokenId3,
-      _actionRewards.guaranteedRewardRate2,
+      _actionRewards.guaranteedRewardRate3,
       length,
       _monstersKilled,
       _isCombat
