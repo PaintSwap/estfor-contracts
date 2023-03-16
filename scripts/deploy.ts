@@ -95,7 +95,8 @@ async function main() {
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
   const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
-  const imageBaseUri = "ipfs://";
+  const imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/"; // live
+  //  const imageBaseUri = "ipfs://"; // alpha
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
