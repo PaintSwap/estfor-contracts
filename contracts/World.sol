@@ -10,14 +10,13 @@ import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
-// solhint-disable-next-line no-global-import
+/* solhint-disable no-global-import */
 import "./globals/players.sol";
-// solhint-disable-next-line no-global-import
 import "./globals/actions.sol";
-// solhint-disable-next-line no-global-import
 import "./globals/items.sol";
-// solhint-disable-next-line no-global-import
 import "./globals/rewards.sol";
+
+/* solhint-enable no-global-import */
 
 // Fantom VRF
 // VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634

@@ -15,14 +15,13 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 
-// solhint-disable-next-line no-global-import
+/* solhint-disable no-global-import */
 import "../globals/players.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/items.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/actions.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/rewards.sol";
+
+/* solhint-enable no-global-import */
 
 // Functions to help with delegatecall selectors
 interface IPlayerDelegate {

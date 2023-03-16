@@ -8,12 +8,12 @@ import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.
 import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 
-// solhint-disable-next-line no-global-import
+/* solhint-disable no-global-import */
 import "../globals/players.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/actions.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/items.sol";
+
+/* solhint-enable no-global-import */
 
 library PlayerLibrary {
   using Strings for uint32;

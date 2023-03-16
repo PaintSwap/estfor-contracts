@@ -7,12 +7,12 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-// solhint-disable-next-line no-global-import
+/* solhint-disable no-global-import */
 import "../globals/players.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/items.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/rewards.sol";
+
+/* solhint-enable no-global-import */
 
 abstract contract PlayersBase {
   using UnsafeU256 for U256;

@@ -12,10 +12,11 @@ import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
 
-// solhint-disable-next-line no-global-import
+/* solhint-disable no-global-import */
 import "./globals/players.sol";
-// solhint-disable-next-line no-global-import
 import "./globals/items.sol";
+
+/* solhint-enable no-global-import */
 
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {

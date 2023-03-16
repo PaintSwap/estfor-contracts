@@ -5,14 +5,13 @@ import {UnsafeMath, UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-// solhint-disable-next-line no-global-import
+/* solhint-disable no-global-import */
 import "../globals/players.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/items.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/actions.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/rewards.sol";
+
+/* solhint-enable no-global-import */
 
 contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPlayersDelegateView {
   using UnsafeU256 for U256;

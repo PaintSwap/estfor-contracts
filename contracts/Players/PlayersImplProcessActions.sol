@@ -4,14 +4,13 @@ pragma solidity ^0.8.19;
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayerLibrary} from "./PlayerLibrary.sol";
 
-// solhint-disable-next-line no-global-import
+/* solhint-disable no-global-import */
 import "../globals/players.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/items.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/actions.sol";
-// solhint-disable-next-line no-global-import
 import "../globals/rewards.sol";
+
+/* solhint-enable no-global-import */
 
 contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   constructor() {
