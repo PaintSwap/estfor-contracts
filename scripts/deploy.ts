@@ -152,10 +152,10 @@ async function main() {
 
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
-  console.log("setPlayers");
+  console.log("itemNFT setPlayers");
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
-  console.log("setPlayers");
+  console.log("playerNFT setPlayers");
   await shop.setItemNFT(itemNFT.address);
   console.log("setItemNFT");
 
@@ -243,10 +243,6 @@ async function main() {
   //  console.log("Set active player");
 
   // === Test stuff ===
-  tx = await itemNFT.addItems(allItems);
-  await tx.wait();
-  console.log("add items");
-
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();
   console.log("add xp threshold rewards");
@@ -257,6 +253,10 @@ async function main() {
     tokenIds.push(item.tokenId);
     amounts.push(200);
   });
+
+  tx = await itemNFT.addItems(allItems);
+  await tx.wait();
+  console.log("add items");
 
   // Batch mint all the items
   if (network.chainId == 31337) {
@@ -305,7 +305,11 @@ async function main() {
     isValid: true,
   };
 
-  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+  let gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE, {
+    gasLimit: gasLimit.add(300000),
+  });
+
   await tx.wait();
   console.log("start actions");
 
@@ -318,7 +322,10 @@ async function main() {
     await ethers.provider.send("evm_increaseTime", [1]);
   }
 
-  tx = await players.processActions(playerId);
+  // Because of the speed multiplier, gas estimates may not be accurate as other things could be minted by the time the tx is executed,
+  // so adding 300k gas to be safe
+  gasLimit = await players.estimateGas.processActions(playerId);
+  tx = await players.processActions(playerId, {gasLimit: gasLimit.add(300000)});
   await tx.wait();
   console.log("process actions");
 
@@ -340,7 +347,14 @@ async function main() {
     isValid: true,
   };
 
-  tx = await players.startAction(playerId, queuedActionFiremaking, EstforTypes.ActionQueueStatus.NONE);
+  gasLimit = await players.estimateGas.startAction(
+    playerId,
+    queuedActionFiremaking,
+    EstforTypes.ActionQueueStatus.NONE
+  );
+  tx = await players.startAction(playerId, queuedActionFiremaking, EstforTypes.ActionQueueStatus.NONE, {
+    gasLimit: gasLimit.add(300000),
+  });
   await tx.wait();
   console.log("start firemaking action");
 
@@ -349,16 +363,22 @@ async function main() {
     await ethers.provider.send("evm_increaseTime", [1]);
   }
 
-  tx = await players.processActions(playerId);
+  gasLimit = await players.estimateGas.processActions(playerId);
+  tx = await players.processActions(playerId, {
+    gasLimit: gasLimit.add(300000),
+  });
   await tx.wait();
   console.log("process actions (firemaking)");
 
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
 
   // Start another action
-  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+  gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE, {
+    gasLimit: gasLimit.add(300000),
+  });
   await tx.wait();
-  console.log("start an unconsumed action");
+  console.log("start an unprocessed action");
 
   if (network.chainId == 31337) {
     console.log("Increase time");
@@ -381,7 +401,10 @@ async function main() {
     isValid: true,
   };
 
-  tx = await players.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE);
+  gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+  tx = await players.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE, {
+    gasLimit: gasLimit.add(300000),
+  });
   await tx.wait();
   console.log("start a combat action");
 
@@ -390,7 +413,10 @@ async function main() {
     await ethers.provider.send("evm_increaseTime", [10]);
   }
 
-  tx = await players.processActions(playerId);
+  gasLimit = await players.estimateGas.processActions(playerId);
+  tx = await players.processActions(playerId, {
+    gasLimit: gasLimit.add(300000),
+  });
   await tx.wait();
   console.log("process actions (melee combat)");
 
