@@ -788,7 +788,7 @@
     proper-lockfile "^4.1.1"
     solidity-ast "^0.4.15"
 
-"@paintswap/estfor-definitions@^0.1.14":
+"@paintswap/estfor-definitions@0.1.14":
   version "0.1.14"
   resolved "https://registry.yarnpkg.com/@paintswap/estfor-definitions/-/estfor-definitions-0.1.14.tgz#76b97a03748236eb3e6375b953beccc5d5b4aec0"
   integrity sha512-BR0bDrGey2BdDpYSMzizXB2ifLulfU90X/uCcr1qvHLnWF2wrmiVn8MUYRJDekMfLzeXYt1VsSFlB8XQ88uucg==

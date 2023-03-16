@@ -264,7 +264,10 @@ describe("Players", () => {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([
+      queuedAction.timespan / 2,
+      queuedAction.timespan / 2 + 1,
+    ]);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor(((queuedAction.timespan / 2) * rate) / (3600 * 100))

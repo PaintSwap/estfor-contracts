@@ -52,7 +52,7 @@ export const getActionChoiceIds = async (tx: ContractTransaction): Promise<numbe
 };
 
 // Actions
-const bronzeHelmentStats: EstforTypes.CombatStats = {
+export const bronzeHelmentStats: EstforTypes.CombatStats = {
   melee: 1,
   magic: 0,
   range: 0,
@@ -185,6 +185,19 @@ export const allItems: EstforTypes.InputItem[] = [
     ...EstforTypes.defaultInputItem,
     tokenId: EstforConstants.BRONZE_BAR,
     equipPosition: EstforTypes.EquipPosition.AUX,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.SHADOW_SCROLL,
+    equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    ...EstforTypes.defaultInputItem,
+    healthRestored: 2,
+    tokenId: EstforConstants.COOKED_MINNUS,
+    equipPosition: EstforTypes.EquipPosition.FOOD,
     metadataURI: "someIPFSURI.json",
   },
 ];

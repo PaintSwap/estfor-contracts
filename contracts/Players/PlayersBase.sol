@@ -17,14 +17,14 @@ import "../globals/rewards.sol";
 abstract contract PlayersBase {
   using UnsafeU256 for U256;
 
-  event ClearAll(uint playerId);
-  event AddXP(uint playerId, Skill skill, uint32 points);
-  event SetActionQueue(uint playerId, QueuedAction[] queuedActions);
-  event ConsumeBoostVial(uint playerId, PlayerBoostInfo playerBoostInfo);
-  event UnconsumeBoostVial(uint playerId);
+  event ClearAll(address from, uint playerId);
+  event AddXP(address from, uint playerId, Skill skill, uint32 points);
+  event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions);
+  event ConsumeBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
+  event UnconsumeBoostVial(address from, uint playerId);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
-  event AddPendingRandomReward(uint playerId, uint timestamp, uint elapsed);
-  event PendingRandomRewardsClaimed(uint playerId, uint numRemoved);
+  event AddPendingRandomReward(address from, uint playerId, uint queueId, uint timestamp, uint elapsed);
+  event PendingRandomRewardsClaimed(address from, uint playerId, uint numRemoved);
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
 
   // For logging
@@ -202,7 +202,7 @@ abstract contract PlayersBase {
     uint32 oldPoints = xp[_playerId][_skill];
     uint32 newPoints = oldPoints + _pointsAccrued;
     xp[_playerId][_skill] = newPoints;
-    emit AddXP(_playerId, _skill, _pointsAccrued);
+    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
 
     uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
     uint16 newLevel = PlayerLibrary.getLevel(newPoints);

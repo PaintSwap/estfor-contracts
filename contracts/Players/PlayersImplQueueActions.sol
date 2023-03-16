@@ -67,7 +67,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
 
     if (_boostItemTokenId != NONE) {
-      consumeBoost(_playerId, _boostItemTokenId, uint40(block.timestamp));
+      consumeBoost(from, _playerId, _boostItemTokenId, uint40(block.timestamp));
     }
 
     Player storage player = players[_playerId];
@@ -125,7 +125,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       prevEndTime += queuedAction.timespan;
     } while (iter.neq(_queuedActions.length));
 
-    emit SetActionQueue(_playerId, player.actionQueue);
+    emit SetActionQueue(from, _playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
     nextQueueId = queueId.asUint64();
@@ -133,7 +133,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _handleDailyRewards(from, _playerId);
   }
 
-  function consumeBoost(uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
+  function consumeBoost(address _from, uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
     PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
 
     Item memory item = itemNFT.getItem(_itemTokenId);
@@ -162,7 +162,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     playerBoost.boostType = item.boostType;
     playerBoost.itemTokenId = _itemTokenId;
 
-    emit ConsumeBoostVial(_playerId, playerBoost);
+    emit ConsumeBoostVial(_from, _playerId, playerBoost);
   }
 
   function _checkAddToQueue(QueuedAction memory _queuedAction) private view {

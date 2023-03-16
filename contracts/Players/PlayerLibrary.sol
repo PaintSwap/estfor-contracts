@@ -139,9 +139,12 @@ library PlayerLibrary {
     uint128 _alphaCombat,
     uint128 _betaCombat
   ) external view returns (uint24 foodConsumed, bool died) {
-    uint32 totalHealthLost = uint32(
-      int32(_dmg(_enemyCombatStats.melee, _combatStats.meleeDefence, _alphaCombat, _betaCombat, _combatElapsedTime)) -
-        _combatStats.health
+    uint32 totalHealthLost = _dmg(
+      _enemyCombatStats.melee,
+      _combatStats.meleeDefence,
+      _alphaCombat,
+      _betaCombat,
+      _combatElapsedTime
     );
     totalHealthLost += _dmg(
       _enemyCombatStats.magic,
@@ -150,6 +153,14 @@ library PlayerLibrary {
       _betaCombat,
       _combatElapsedTime
     );
+
+    if (int32(totalHealthLost) > _combatStats.health) {
+      // Take away our health points from the total dealt
+      totalHealthLost -= uint16(int16(_max(0, _combatStats.health)));
+    } else {
+      totalHealthLost = 0;
+    }
+
     //    totalHealthLost +=  _dmg(_enemyCombatStats.range, _combatStats.rangeDefence, _alphaCombat, _betaCombat, _combatElapsedTime);
 
     uint healthRestored;
@@ -250,7 +261,7 @@ library PlayerLibrary {
     return
       uint32(
         int32(
-          (_max(0, attack * int128(_alphaCombat) + (attack - defence) * int128(_betaCombat)) *
+          (_max(1, attack * int128(_alphaCombat) + (attack - defence) * int128(_betaCombat)) *
             int32(int(_elapsedTime))) / 60
         )
       );

@@ -124,6 +124,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
         ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
         _addPendingRandomReward(
+          _from,
+          _playerId,
           pendingRandomRewards[_playerId],
           actionRewards,
           queuedAction.actionId,
@@ -335,6 +337,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _addPendingRandomReward(
+    address _from,
+    uint _playerId,
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint16 _actionId,
@@ -355,7 +359,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             elapsedTime: uint24(_elapsedTime)
           })
         );
-        emit AddPendingRandomReward(_actionId, _skillEndTime, _elapsedTime);
+        emit AddPendingRandomReward(_from, _playerId, _queueId, _skillEndTime, _elapsedTime);
       }
     }
   }

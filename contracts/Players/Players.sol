@@ -101,7 +101,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
-    _setActionQueue(_playerId, remainingSkillQueue);
+    _setActionQueue(msg.sender, _playerId, remainingSkillQueue);
   }
 
   function claimRandomRewards(uint _playerId) external nonReentrant {
@@ -128,7 +128,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
     address from = msg.sender;
     itemNFT.mint(from, activeBoosts[_playerId].itemTokenId, 1);
-    emit UnconsumeBoostVial(_playerId);
+    emit UnconsumeBoostVial(from, _playerId);
   }
 
   function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
@@ -229,8 +229,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   // Removes all the actions from the queue
   function _clearEverything(address _from, uint _playerId) private {
     _processActions(_from, _playerId);
-    emit ClearAll(_playerId);
-    _clearActionQueue(_playerId);
+    emit ClearAll(_from, _playerId);
+    _clearActionQueue(_from, _playerId);
     // Can re-mint boost if it hasn't been consumed at all yet
     if (activeBoosts[_playerId].boostType != BoostType.NONE && activeBoosts[_playerId].startTime < block.timestamp) {
       uint itemTokenId = activeBoosts[_playerId].itemTokenId;
@@ -239,15 +239,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
   }
 
-  function _clearActionQueue(uint _playerId) private {
+  function _clearActionQueue(address _from, uint _playerId) private {
     QueuedAction[] memory queuedActions;
-    _setActionQueue(_playerId, queuedActions);
+    _setActionQueue(_from, _playerId, queuedActions);
   }
 
-  function _setActionQueue(uint _playerId, QueuedAction[] memory _queuedActions) private {
+  function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) private {
     Player storage player = players[_playerId];
     player.actionQueue = _queuedActions;
-    emit SetActionQueue(_playerId, player.actionQueue);
+    emit SetActionQueue(_from, _playerId, player.actionQueue);
   }
 
   function _startActions(
