@@ -61,7 +61,7 @@ describe("Combat Actions", () => {
       await itemNFT.testOnlyMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedAction = {
-        attire: {...EstforTypes.noAttire, helmet: EstforConstants.BRONZE_HELMET},
+        attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
         actionId,
         combatStyle: EstforTypes.CombatStyle.MELEE,
         choiceId,

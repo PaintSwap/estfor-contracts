@@ -172,11 +172,11 @@ contract TestStorageSlots {
 
   // Equipment (leave at the bottom to allow for further ones)
   struct Attire {
-    uint16 helmet; // tokenId for the head (1 - 255)
-    uint16 amulet; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
-    uint16 armor;
-    uint16 gauntlets;
-    uint16 tassets;
+    uint16 head; // tokenId for the head (1 - 255)
+    uint16 neck; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
+    uint16 body;
+    uint16 arms;
+    uint16 legs;
     uint16 boots;
     uint16 ring;
     uint16 reserved1;

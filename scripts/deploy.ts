@@ -387,7 +387,7 @@ async function main() {
 
   // Start a combat action
   const queuedActionCombat: EstforTypes.QueuedAction = {
-    attire: {...EstforTypes.noAttire, helmet: EstforConstants.BRONZE_HELMET},
+    attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
     actionId: EstforConstants.ACTION_COMBAT_NATUOW,
     combatStyle: EstforTypes.CombatStyle.MELEE,
     choiceId: EstforConstants.ACTIONCHOICE_MELEE_MONSTER,

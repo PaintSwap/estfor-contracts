@@ -105,11 +105,11 @@ describe("Non-Combat Actions", () => {
 
     const queuedAction: EstforTypes.QueuedAction = {
       attire: {
-        helmet: EstforConstants.NATURE_MASK,
-        amulet: EstforConstants.NONE,
-        armor: EstforConstants.NATURE_BODY,
-        gauntlets: EstforConstants.NATURE_BRACERS,
-        tassets: EstforConstants.NATURE_TROUSERS,
+        head: EstforConstants.NATURE_MASK,
+        neck: EstforConstants.NONE,
+        body: EstforConstants.NATURE_BODY,
+        arms: EstforConstants.NATURE_BRACERS,
+        legs: EstforConstants.NATURE_TROUSERS,
         boots: EstforConstants.NATURE_BOOTS,
         ring: EstforConstants.NONE, // Always NONE for now
         reserved1: EstforConstants.NONE, // Always NONE for now

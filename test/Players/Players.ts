@@ -329,7 +329,7 @@ describe("Players", () => {
     const choiceId = await getActionChoiceId(tx);
 
     const queuedAction: EstforTypes.QueuedAction = {
-      attire: {...noAttire, gauntlets: BRONZE_GAUNTLETS},
+      attire: {...noAttire, arms: BRONZE_GAUNTLETS},
       actionId: 1,
       combatStyle: EstforTypes.CombatStyle.MELEE,
       choiceId,
@@ -386,7 +386,7 @@ describe("Players", () => {
     const timespan = 3600;
 
     const queuedAction: EstforTypes.QueuedAction = {
-      attire: {...EstforTypes.noAttire, helmet: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
       actionId,
       combatStyle: EstforTypes.CombatStyle.MELEE,
       choiceId,
@@ -412,28 +412,28 @@ describe("Players", () => {
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
-    queuedAction.attire.helmet = EstforConstants.NONE;
-    queuedAction.attire.amulet = EstforConstants.BRONZE_GAUNTLETS;
+    queuedAction.attire.head = EstforConstants.NONE;
+    queuedAction.attire.neck = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
-    queuedAction.attire.amulet = EstforConstants.NONE;
-    queuedAction.attire.armor = EstforConstants.BRONZE_GAUNTLETS;
+    queuedAction.attire.neck = EstforConstants.NONE;
+    queuedAction.attire.body = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
-    queuedAction.attire.armor = EstforConstants.NONE;
+    queuedAction.attire.body = EstforConstants.NONE;
     queuedAction.attire.boots = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.boots = EstforConstants.NONE;
-    queuedAction.attire.tassets = EstforConstants.BRONZE_GAUNTLETS;
+    queuedAction.attire.legs = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
-    queuedAction.attire.tassets = EstforConstants.NONE;
-    queuedAction.attire.gauntlets = EstforConstants.BRONZE_GAUNTLETS; // Correct
+    queuedAction.attire.legs = EstforConstants.NONE;
+    queuedAction.attire.arms = EstforConstants.BRONZE_GAUNTLETS; // Correct
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
   });
 
@@ -794,7 +794,7 @@ describe("Players", () => {
 
       await itemNFT.addItems(attireEquipped);
 
-      const equips = ["amulet", "armor", "boots", "gauntlets", "helmet", "tassets"];
+      const equips = ["neck", "body", "boots", "arms", "head", "legs"];
       for (let i = 0; i < attireEquipped.length; ++i) {
         const attire: Attire = {...EstforTypes.noAttire};
         attire[equips[i] as keyof Attire] = attireEquipped[i].tokenId;

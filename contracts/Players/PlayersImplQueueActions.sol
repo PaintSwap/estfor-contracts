@@ -311,24 +311,24 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint attireLength;
     uint16[] memory itemTokenIds = new uint16[](6);
     EquipPosition[] memory expectedEquipPositions = new EquipPosition[](6);
-    if (_attire.helmet != NONE) {
-      itemTokenIds[attireLength] = _attire.helmet;
+    if (_attire.head != NONE) {
+      itemTokenIds[attireLength] = _attire.head;
       expectedEquipPositions[attireLength++] = EquipPosition.HEAD;
     }
-    if (_attire.amulet != NONE) {
-      itemTokenIds[attireLength] = _attire.amulet;
+    if (_attire.neck != NONE) {
+      itemTokenIds[attireLength] = _attire.neck;
       expectedEquipPositions[attireLength++] = EquipPosition.NECK;
     }
-    if (_attire.armor != NONE) {
-      itemTokenIds[attireLength] = _attire.armor;
+    if (_attire.body != NONE) {
+      itemTokenIds[attireLength] = _attire.body;
       expectedEquipPositions[attireLength++] = EquipPosition.BODY;
     }
-    if (_attire.gauntlets != NONE) {
-      itemTokenIds[attireLength] = _attire.gauntlets;
+    if (_attire.arms != NONE) {
+      itemTokenIds[attireLength] = _attire.arms;
       expectedEquipPositions[attireLength++] = EquipPosition.ARMS;
     }
-    if (_attire.tassets != NONE) {
-      itemTokenIds[attireLength] = _attire.tassets;
+    if (_attire.legs != NONE) {
+      itemTokenIds[attireLength] = _attire.legs;
       expectedEquipPositions[attireLength++] = EquipPosition.LEGS;
     }
     if (_attire.boots != NONE) {

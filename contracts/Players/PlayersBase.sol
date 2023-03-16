@@ -272,20 +272,20 @@ abstract contract PlayersBase {
   ) internal view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
     uint attireLength;
     itemTokenIds = new uint16[](8);
-    if (_attire.helmet != NONE) {
-      itemTokenIds[attireLength++] = _attire.helmet;
+    if (_attire.head != NONE) {
+      itemTokenIds[attireLength++] = _attire.head;
     }
-    if (_attire.amulet != NONE && !_skipNeck) {
-      itemTokenIds[attireLength++] = _attire.amulet;
+    if (_attire.neck != NONE && !_skipNeck) {
+      itemTokenIds[attireLength++] = _attire.neck;
     }
-    if (_attire.armor != NONE) {
-      itemTokenIds[attireLength++] = _attire.armor;
+    if (_attire.body != NONE) {
+      itemTokenIds[attireLength++] = _attire.body;
     }
-    if (_attire.gauntlets != NONE) {
-      itemTokenIds[attireLength++] = _attire.gauntlets;
+    if (_attire.arms != NONE) {
+      itemTokenIds[attireLength++] = _attire.arms;
     }
-    if (_attire.tassets != NONE) {
-      itemTokenIds[attireLength++] = _attire.tassets;
+    if (_attire.legs != NONE) {
+      itemTokenIds[attireLength++] = _attire.legs;
     }
     if (_attire.boots != NONE) {
       itemTokenIds[attireLength++] = _attire.boots;
