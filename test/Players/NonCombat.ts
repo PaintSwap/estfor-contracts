@@ -1173,16 +1173,4 @@ describe("Non-Combat Actions", () => {
   it("Action pipelining", async () => {
     // Try wood cut, and then burning them when having none equipped
   });
-
-  it("Attire, equipment and conusmeable minXP", async () => {
-    // TODO
-  });
-
-  it("Action minXP", async () => {
-    // TODO
-  });
-
-  it("ActionChoice minXP", async () => {
-    // TODO
-  });
 });
