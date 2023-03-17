@@ -1,5 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {getActionId} from "../../scripts/utils";
@@ -60,6 +61,7 @@ describe("Boosts", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -137,6 +139,7 @@ describe("Boosts", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({

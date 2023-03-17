@@ -127,6 +127,7 @@ describe("Non-Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await itemNFT.testOnlyMints(
@@ -207,6 +208,7 @@ describe("Non-Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.FIREMAKING,
     };
 
     await itemNFT.addItem({
@@ -278,6 +280,7 @@ describe("Non-Combat Actions", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       queuedActions.push(queuedAction);
@@ -342,6 +345,7 @@ describe("Non-Combat Actions", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.FIREMAKING,
       };
 
       queuedActions.push(queuedAction);
@@ -416,6 +420,7 @@ describe("Non-Combat Actions", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       queuedActions.push(queuedAction);
@@ -480,6 +485,7 @@ describe("Non-Combat Actions", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.FIREMAKING,
       };
 
       queuedActions.push(queuedAction);
@@ -554,6 +560,7 @@ describe("Non-Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.MINING,
     };
 
     await itemNFT.addItem({
@@ -626,6 +633,7 @@ describe("Non-Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.SMITHING,
     };
 
     await itemNFT.addItem({
@@ -699,6 +707,7 @@ describe("Non-Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -764,6 +773,7 @@ describe("Non-Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -810,6 +820,7 @@ describe("Non-Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({

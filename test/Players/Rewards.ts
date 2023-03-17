@@ -51,6 +51,7 @@ describe("Rewards", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
@@ -133,6 +134,7 @@ describe("Rewards", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const oneDay = 24 * 3600;
@@ -271,6 +273,7 @@ describe("Rewards", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const oneDay = 24 * 3600;

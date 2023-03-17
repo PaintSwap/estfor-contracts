@@ -91,6 +91,7 @@ describe("Players", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -143,6 +144,7 @@ describe("Players", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     // start a bunch of actions 1 after each other
@@ -192,6 +194,7 @@ describe("Players", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -251,6 +254,7 @@ describe("Players", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -341,6 +345,8 @@ describe("Players", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+            skill: EstforTypes.Skill.COMBAT,
+
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -398,6 +404,7 @@ describe("Players", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.COMBAT,
     };
 
     await itemNFT.addItem({
@@ -610,6 +617,7 @@ describe("Players", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       await itemNFT.addItem({
@@ -688,6 +696,7 @@ describe("Players", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.FIREMAKING,
       };
 
       await itemNFT.addItem({
@@ -772,6 +781,7 @@ describe("Players", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.FIREMAKING,
       };
 
       const minXP = getXPFromLevel(70);
@@ -851,6 +861,7 @@ describe("Players", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       const minXP = getXPFromLevel(70);
@@ -981,6 +992,7 @@ describe("Players", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       const minXP = getXPFromLevel(70);

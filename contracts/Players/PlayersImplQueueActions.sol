@@ -204,6 +204,10 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       bool actionAvailable
     ) = world.getPermissibleItemsForAction(actionId);
 
+    if (_queuedAction.skill != skill) {
+      revert InvalidSkill();
+    }
+
     if (!actionAvailable) {
       revert ActionNotAvailable();
     }

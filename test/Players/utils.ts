@@ -40,6 +40,7 @@ export const setupBasicWoodcutting = async () => {
     leftHandEquipmentTokenId: EstforConstants.NONE,
     startTime: "0",
     isValid: true,
+    skill: EstforTypes.Skill.WOODCUTTING,
   };
 
   await itemNFT.addItem({

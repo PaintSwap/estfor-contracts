@@ -304,6 +304,7 @@ async function main() {
     leftHandEquipmentTokenId: EstforConstants.NONE,
     startTime: "0",
     isValid: true,
+    skill: Skill.WOODCUTTING,
   };
 
   let gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -346,6 +347,7 @@ async function main() {
     leftHandEquipmentTokenId: EstforConstants.NONE,
     startTime: "0",
     isValid: true,
+    skill: Skill.FIREMAKING,
   };
 
   gasLimit = await players.estimateGas.startAction(
@@ -400,6 +402,7 @@ async function main() {
     leftHandEquipmentTokenId: EstforConstants.NONE,
     startTime: "0",
     isValid: true,
+    skill: Skill.COMBAT,
   };
 
   gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);

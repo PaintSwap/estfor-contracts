@@ -73,6 +73,7 @@ describe("Combat Actions", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE,
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.COMBAT,
       };
 
       await itemNFT.addItem({
@@ -141,6 +142,8 @@ describe("Combat Actions", () => {
 
       // Check food is consumed
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 10);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.NONE)).to.eq(0);
     });
 
     it("No defence equipment", async () => {
@@ -332,6 +335,7 @@ describe("Combat Actions", () => {
         leftHandEquipmentTokenId: EstforConstants.NONE, // 2 handed, must specify this for both?
         startTime: "0",
         isValid: true,
+        skill: EstforTypes.Skill.COMBAT,
       };
 
       await itemNFT.addItems([
@@ -577,6 +581,7 @@ describe("Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     let numProduced = 0;
@@ -714,6 +719,7 @@ describe("Combat Actions", () => {
       leftHandEquipmentTokenId: EstforConstants.NONE,
       startTime: "0",
       isValid: true,
+      skill: EstforTypes.Skill.COMBAT,
     };
 
     await itemNFT.addItem({

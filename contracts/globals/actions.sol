@@ -42,8 +42,9 @@ struct QueuedAction {
   CombatStyle combatStyle; // specific style of combat,  can also be used
   uint40 startTime; // Filled in by the function
   bool isValid; // If we still have the item, TODO: Not used yet
+  Skill skill; // Skill from the action, so will be Skill.COMBAT for combat actions for instance
   //  bool reusePrev; // If true, then the previous queued action attire is reused?
-  // 9 bytes left
+  // 8 bytes left
 }
 
 struct ActionInfo {
