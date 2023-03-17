@@ -286,8 +286,8 @@ abstract contract PlayersBase {
     if (_attire.legs != NONE) {
       itemTokenIds[attireLength++] = _attire.legs;
     }
-    if (_attire.boots != NONE) {
-      itemTokenIds[attireLength++] = _attire.boots;
+    if (_attire.feet != NONE) {
+      itemTokenIds[attireLength++] = _attire.feet;
     }
 
     assembly ("memory-safe") {

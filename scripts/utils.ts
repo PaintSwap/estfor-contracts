@@ -129,7 +129,7 @@ export const allItems: EstforTypes.InputItem[] = [
     ...EstforTypes.defaultInputItem,
     tokenId: EstforConstants.BRONZE_BOOTS,
     combatStats: bronzeHelmentStats,
-    equipPosition: EstforTypes.EquipPosition.BOOTS,
+    equipPosition: EstforTypes.EquipPosition.FEET,
     metadataURI: "someIPFSURI.json",
   },
   {

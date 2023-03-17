@@ -422,7 +422,7 @@ library PlayerLibrary {
           itemTokenIds[3] == NATUOW_TASSETS &&
           balances[3] != 0 && // legs
           itemTokenIds[4] == NATUOW_BOOTS &&
-          balances[4] != 0 // boots
+          balances[4] != 0 // feet
         ) {
           extraBoost = 3; // %
         }
@@ -437,7 +437,7 @@ library PlayerLibrary {
           itemTokenIds[3] == NATURE_TROUSERS &&
           balances[3] != 0 && // legs
           itemTokenIds[4] == NATURE_BOOTS &&
-          balances[4] != 0 // boots
+          balances[4] != 0 // feet
         ) {
           extraBoost = 3; // %
         }
@@ -452,7 +452,7 @@ library PlayerLibrary {
           itemTokenIds[3] == BAT_WING_TROUSERS &&
           balances[3] != 0 && // legs
           itemTokenIds[4] == BAT_WING_BOOTS &&
-          balances[4] != 0 // boots
+          balances[4] != 0 // feet
         ) {
           extraBoost = 3; // %
         }

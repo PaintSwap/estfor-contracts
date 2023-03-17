@@ -73,7 +73,7 @@ contract DebugStorageSlots {
     BODY,
     ARMS,
     LEGS,
-    BOOTS,
+    FEET,
     SPARE1,
     SPARE2,
     LEFT_HAND,
@@ -181,7 +181,7 @@ contract DebugStorageSlots {
     uint16 body;
     uint16 arms;
     uint16 legs;
-    uint16 boots;
+    uint16 feet;
     uint16 ring;
     uint16 reserved1;
     uint128 queueId; // Just here for packing purposes

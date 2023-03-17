@@ -436,11 +436,11 @@ describe("Players", () => {
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.body = EstforConstants.NONE;
-    queuedAction.attire.boots = EstforConstants.BRONZE_GAUNTLETS;
+    queuedAction.attire.feet = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
-    queuedAction.attire.boots = EstforConstants.NONE;
+    queuedAction.attire.feet = EstforConstants.NONE;
     queuedAction.attire.legs = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
@@ -922,7 +922,7 @@ describe("Players", () => {
           skill: EstforTypes.Skill.DEFENCE,
           minXP,
           tokenId: EstforConstants.BRONZE_BOOTS,
-          equipPosition: EstforTypes.EquipPosition.BOOTS,
+          equipPosition: EstforTypes.EquipPosition.FEET,
           metadataURI: "someIPFSURI.json",
         },
         {
@@ -953,7 +953,7 @@ describe("Players", () => {
 
       await itemNFT.addItems(attireEquipped);
 
-      const equips = ["neck", "body", "boots", "arms", "head", "legs"];
+      const equips = ["neck", "body", "feet", "arms", "head", "legs"];
       for (let i = 0; i < attireEquipped.length; ++i) {
         const attire: Attire = {...EstforTypes.noAttire};
         attire[equips[i] as keyof Attire] = attireEquipped[i].tokenId;

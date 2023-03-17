@@ -332,9 +332,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       itemTokenIds[attireLength] = _attire.legs;
       expectedEquipPositions[attireLength++] = EquipPosition.LEGS;
     }
-    if (_attire.boots != NONE) {
-      itemTokenIds[attireLength] = _attire.boots;
-      expectedEquipPositions[attireLength++] = EquipPosition.BOOTS;
+    if (_attire.feet != NONE) {
+      itemTokenIds[attireLength] = _attire.feet;
+      expectedEquipPositions[attireLength++] = EquipPosition.FEET;
     }
 
     assembly ("memory-safe") {

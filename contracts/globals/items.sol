@@ -89,25 +89,25 @@ uint16 constant SHAMAN_TROUSERS = LEGS_BASE + 14;
 uint16 constant MASTER_TROUSERS = LEGS_BASE + 15;
 uint16 constant LEGS_MAX = LEGS_BASE + 254;
 
-// 1281 - 1535 (boots)
-uint16 constant BOOTS_BASE = 1281;
-uint16 constant BRONZE_BOOTS = BOOTS_BASE;
-uint16 constant IRON_BOOTS = BOOTS_BASE + 1;
-uint16 constant MITHRIL_BOOTS = BOOTS_BASE + 2;
-uint16 constant ADAMANTINE_BOOTS = BOOTS_BASE + 3;
-uint16 constant RUNITE_BOOTS = BOOTS_BASE + 4;
-uint16 constant TITANIUM_BOOTS = BOOTS_BASE + 5;
-uint16 constant ORICHALCUM_BOOTS = BOOTS_BASE + 6;
-uint16 constant NATUOW_BOOTS = BOOTS_BASE + 7;
-uint16 constant BAT_WING_BOOTS = BOOTS_BASE + 8;
-uint16 constant NATURE_BOOTS = BOOTS_BASE + 9;
-uint16 constant APPRENTICE_BOOTS = BOOTS_BASE + 10;
-uint16 constant MAGE_BOOTS = BOOTS_BASE + 11;
-uint16 constant SORCERER_BOOTS = BOOTS_BASE + 12;
-uint16 constant SEERS_BOOTS = BOOTS_BASE + 13;
-uint16 constant SHAMAN_BOOTS = BOOTS_BASE + 14;
-uint16 constant MASTER_BOOTS = BOOTS_BASE + 15;
-uint16 constant BOOTS_MAX = BOOTS_BASE + 254;
+// 1281 - 1535 (feet)
+uint16 constant FEET_BASE = 1281;
+uint16 constant BRONZE_BOOTS = FEET_BASE;
+uint16 constant IRON_BOOTS = FEET_BASE + 1;
+uint16 constant MITHRIL_BOOTS = FEET_BASE + 2;
+uint16 constant ADAMANTINE_BOOTS = FEET_BASE + 3;
+uint16 constant RUNITE_BOOTS = FEET_BASE + 4;
+uint16 constant TITANIUM_BOOTS = FEET_BASE + 5;
+uint16 constant ORICHALCUM_BOOTS = FEET_BASE + 6;
+uint16 constant NATUOW_BOOTS = FEET_BASE + 7;
+uint16 constant BAT_WING_BOOTS = FEET_BASE + 8;
+uint16 constant NATURE_BOOTS = FEET_BASE + 9;
+uint16 constant APPRENTICE_BOOTS = FEET_BASE + 10;
+uint16 constant MAGE_BOOTS = FEET_BASE + 11;
+uint16 constant SORCERER_BOOTS = FEET_BASE + 12;
+uint16 constant SEERS_BOOTS = FEET_BASE + 13;
+uint16 constant SHAMAN_BOOTS = FEET_BASE + 14;
+uint16 constant MASTER_BOOTS = FEET_BASE + 15;
+uint16 constant BOOTS_MAX = FEET_BASE + 254;
 
 // 1536 - 1791 spare(1)
 // 1792 - 2047 spare(2)

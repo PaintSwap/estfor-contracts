@@ -101,7 +101,7 @@ describe("Non-Combat Actions", () => {
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.NATURE_BOOTS,
-      equipPosition: EstforTypes.EquipPosition.BOOTS,
+      equipPosition: EstforTypes.EquipPosition.FEET,
       metadataURI: "someIPFSURI.json",
     });
 
@@ -112,7 +112,7 @@ describe("Non-Combat Actions", () => {
         body: EstforConstants.NATURE_BODY,
         arms: EstforConstants.NATURE_BRACERS,
         legs: EstforConstants.NATURE_TROUSERS,
-        boots: EstforConstants.NATURE_BOOTS,
+        feet: EstforConstants.NATURE_BOOTS,
         ring: EstforConstants.NONE, // Always NONE for now
         reserved1: EstforConstants.NONE, // Always NONE for now
         queueId: 0, // Doesn't matter
