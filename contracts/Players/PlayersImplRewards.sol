@@ -21,13 +21,16 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     _checkStartSlot();
   }
 
+  // Action rewards
   function getRewards(
     uint40 _skillEndTime,
     uint _elapsedTime,
-    uint16 _actionId
+    uint16 _actionId,
+    uint8 _successPercent
   ) public view returns (uint[] memory ids, uint[] memory amounts) {
     ActionRewards memory actionRewards = world.getActionRewards(_actionId);
-    bool isCombat = world.getSkill(_actionId) == Skill.COMBAT;
+    Skill actionSkill = world.getSkill(_actionId);
+    bool isCombat = actionSkill == Skill.COMBAT;
 
     ids = new uint[](MAX_REWARDS_PER_ACTION);
     amounts = new uint[](MAX_REWARDS_PER_ACTION);
@@ -35,7 +38,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint numSpawnedPerHour = world.getNumSpawn(_actionId);
     uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / 3600);
 
-    uint length = _appendGuaranteedRewards(ids, amounts, _elapsedTime, actionRewards, monstersKilled, isCombat);
+    uint length = _appendGuaranteedRewards(
+      ids,
+      amounts,
+      _elapsedTime,
+      actionRewards,
+      monstersKilled,
+      isCombat,
+      _successPercent
+    );
     bool noLuck;
     (length, noLuck) = _appendRandomRewards(
       _skillEndTime,
@@ -43,7 +54,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       ids,
       amounts,
       length,
-      actionRewards
+      actionRewards,
+      _successPercent
     );
 
     assembly ("memory-safe") {
@@ -70,13 +82,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       ActionRewards memory actionRewards = world.getActionRewards(_pendingRandomRewards[i].actionId);
       uint oldLength = length;
       bool noLuck;
+      uint8 successPercent = world.getActionSuccessPercent(_pendingRandomRewards[i].actionId);
       (length, noLuck) = _appendRandomRewards(
         _pendingRandomRewards[i].timestamp,
         isCombat ? monstersKilled : _pendingRandomRewards[i].elapsedTime / 3600,
         ids,
         amounts,
         oldLength,
-        actionRewards
+        actionRewards,
+        successPercent
       );
 
       if (length - oldLength != 0 || noLuck) {
@@ -192,8 +206,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
+      uint8 successPercent = 100;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+
+        if (actionChoice.successPercent != 100) {
+          successPercent = actionChoice.successPercent;
+        }
 
         Equipment[] memory consumedEquipment;
         Equipment memory output;
@@ -226,7 +245,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
-          queuedAction.actionId
+          queuedAction.actionId,
+          successPercent
         );
 
         U256 newIdsLength = U256.wrap(newIds.length);
@@ -297,7 +317,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint24 _rewardRate,
     uint _oldLength,
     uint16 _monstersKilled,
-    bool _isCombat
+    bool _isCombat,
+    uint8 _successPercent
   ) private pure returns (uint length) {
     length = _oldLength;
     if (_rewardTokenId != NONE) {
@@ -305,7 +326,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (_isCombat) {
         numRewards = _monstersKilled;
       } else {
-        numRewards = (_elapsedTime * _rewardRate) / (3600 * 100);
+        numRewards = (_elapsedTime * _rewardRate * _successPercent) / (3600 * 100 * 100);
       }
 
       if (numRewards != 0) {
@@ -322,7 +343,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint _elapsedTime,
     ActionRewards memory _actionRewards,
     uint16 _monstersKilled,
-    bool _isCombat
+    bool _isCombat,
+    uint8 _successPercent
   ) private pure returns (uint length) {
     length = _appendGuaranteedReward(
       _ids,
@@ -332,7 +354,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       _actionRewards.guaranteedRewardRate1,
       length,
       _monstersKilled,
-      _isCombat
+      _isCombat,
+      _successPercent
     );
     length = _appendGuaranteedReward(
       _ids,
@@ -342,7 +365,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       _actionRewards.guaranteedRewardRate2,
       length,
       _monstersKilled,
-      _isCombat
+      _isCombat,
+      _successPercent
     );
     length = _appendGuaranteedReward(
       _ids,
@@ -352,7 +376,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       _actionRewards.guaranteedRewardRate3,
       length,
       _monstersKilled,
-      _isCombat
+      _isCombat,
+      _successPercent
     );
   }
 
@@ -362,7 +387,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint[] memory _ids,
     uint[] memory _amounts,
     uint _oldLength,
-    ActionRewards memory _actionRewards
+    ActionRewards memory _actionRewards,
+    uint8 _successPercent
   ) private view returns (uint length, bool noLuck) {
     length = _oldLength;
 

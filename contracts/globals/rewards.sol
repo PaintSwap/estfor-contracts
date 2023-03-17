@@ -11,9 +11,10 @@ struct ActionReward {
 
 struct PendingRandomReward {
   uint16 actionId;
-  uint128 queueId;
+  uint16 choiceId;
   uint40 timestamp;
   uint24 elapsedTime;
+  uint128 queueId;
 }
 
 struct ActionRewards {

@@ -113,10 +113,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         }
         _updateXP(_from, _playerId, skill, pointsAccrued);
 
+        uint8 actionSuccessPercent = world.getActionSuccessPercent(queuedAction.actionId);
         (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
-          queuedAction.actionId
+          queuedAction.actionId,
+          actionSuccessPercent
         );
 
         ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
@@ -126,6 +128,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           pendingRandomRewards[_playerId],
           actionRewards,
           queuedAction.actionId,
+          queuedAction.choiceId,
           _queueId,
           uint40(skillEndTime),
           uint24(xpElapsedTime)
@@ -208,8 +211,25 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     if (_actionChoice.outputTokenId != 0) {
-      itemNFT.mint(_from, _actionChoice.outputTokenId, numConsumed);
-      emit Reward(_from, _playerId, _queuedAction.attire.queueId, _actionChoice.outputTokenId, numConsumed);
+      uint8 successPercent = 100;
+      if (_actionChoice.successPercent != 100) {
+        uint minLevel = PlayerLibrary.getLevel(_actionChoice.minXP);
+        uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][_actionChoice.skill]);
+        uint extraBoost = skillLevel - minLevel;
+
+        successPercent = uint8(
+          PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, _actionChoice.successPercent + extraBoost)
+        );
+      }
+
+      itemNFT.mint(_from, _actionChoice.outputTokenId, (numConsumed * successPercent) / 100);
+      emit Reward(
+        _from,
+        _playerId,
+        _queuedAction.attire.queueId,
+        _actionChoice.outputTokenId,
+        (numConsumed * successPercent) / 100
+      );
     }
   }
 
@@ -308,11 +328,18 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   function _getRewards(
     uint40 _skillEndTime,
     uint _elapsedTime,
-    uint16 _actionId
+    uint16 _actionId,
+    uint8 _successPercent
   ) private returns (uint[] memory newIds, uint[] memory newAmounts) {
     bytes memory data = _delegatecall(
       implRewards,
-      abi.encodeWithSignature("getRewards(uint40,uint256,uint16)", _skillEndTime, _elapsedTime, _actionId)
+      abi.encodeWithSignature(
+        "getRewards(uint40,uint256,uint16,uint8)",
+        _skillEndTime,
+        _elapsedTime,
+        _actionId,
+        _successPercent
+      )
     );
     return abi.decode(data, (uint[], uint[]));
   }
@@ -339,6 +366,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint16 _actionId,
+    uint16 _choiceId,
     uint128 _queueId,
     uint40 _skillEndTime,
     uint24 _elapsedTime
@@ -351,6 +379,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _pendingRandomRewards.push(
           PendingRandomReward({
             actionId: _actionId,
+            choiceId: _choiceId,
             queueId: _queueId,
             timestamp: uint40(_skillEndTime),
             elapsedTime: uint24(_elapsedTime)

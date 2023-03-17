@@ -76,8 +76,8 @@ abstract contract PlayersBase {
   error ItemDoesNotExist();
 
   uint32 public constant MAX_TIME = 1 days;
-
   uint public constant startXP = 374;
+  uint public constant MAX_SUCCESS_PERCENT_CHANCE = 90; // 90%
 
   uint internal startSlot; // Keep as the first non-constant state variable
 
