@@ -142,7 +142,7 @@ describe("Combat Actions", () => {
 
       // Check food is consumed
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 10);
-
+      // Only no 0 id items produced
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NONE)).to.eq(0);
     });
 

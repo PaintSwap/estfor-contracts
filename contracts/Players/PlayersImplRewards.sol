@@ -300,18 +300,19 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     bool _isCombat
   ) private pure returns (uint length) {
     length = _oldLength;
+    if (_rewardTokenId != NONE) {
+      uint numRewards;
+      if (_isCombat) {
+        numRewards = _monstersKilled;
+      } else {
+        numRewards = (_elapsedTime * _rewardRate) / (3600 * 100);
+      }
 
-    uint numRewards;
-    if (_isCombat) {
-      numRewards = _monstersKilled;
-    } else {
-      numRewards = (_elapsedTime * _rewardRate) / (3600 * 100);
-    }
-
-    if (numRewards != 0) {
-      _ids[length] = _rewardTokenId;
-      _amounts[length] = numRewards;
-      ++length;
+      if (numRewards != 0) {
+        _ids[length] = _rewardTokenId;
+        _amounts[length] = numRewards;
+        ++length;
+      }
     }
   }
 
@@ -396,7 +397,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       mstore(_randomRewards, randomRewardLength)
     }
 
-    if (_randomRewards.length != 0) {
+    if (randomRewardLength != 0) {
       bool hasSeed = world.hasSeed(skillEndTime);
       if (hasSeed) {
         uint seed = world.getSeed(skillEndTime);
@@ -412,7 +413,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
 
           // Take each byte and check
-          U256 randomRewardsLength = U256.wrap(_randomRewards.length);
+          U256 randomRewardsLength = U256.wrap(randomRewardLength);
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();
 
