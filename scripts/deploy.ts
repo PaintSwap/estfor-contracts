@@ -220,7 +220,7 @@ async function main() {
       startSkills: [Skill.RANGE, Skill.NONE],
     },
     {
-      name: ethers.utils.formatBytes32String("Slaying Doggo"),
+      name: ethers.utils.formatBytes32String("Alpha v1) Slaying Doggo"),
       description:
         "Slaying Doggo is a proud, ambitious warrior who is skilled in close combat and magic. His unshakable sense of duty makes him a powerful ally in battle.",
       imageURI: "8.jpg",

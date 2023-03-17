@@ -362,6 +362,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
   }
 
+  function name() external pure returns (string memory) {
+    return "Estfor Items (Alpha)";
+  }
+
+  function symbol() external pure returns (string memory) {
+    return "EST4I_A";
+  }
+
   function setRoyaltyReceiver(address _receiver) external onlyOwner {
     royaltyReceiver = _receiver;
   }

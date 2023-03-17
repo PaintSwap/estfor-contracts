@@ -289,6 +289,14 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
   }
 
+  function name() external pure returns (string memory) {
+    return "Estfor Players (Alpha)";
+  }
+
+  function symbol() external pure returns (string memory) {
+    return "EST4P_A";
+  }
+
   function setRoyaltyReceiver(address _receiver) external onlyOwner {
     royaltyReceiver = _receiver;
   }
