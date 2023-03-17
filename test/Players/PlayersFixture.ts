@@ -35,10 +35,14 @@ export const playersFixture = async () => {
 
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
-    kind: "uups",
-    unsafeAllow: ["delegatecall"],
-  });
+  const itemNFT = await upgrades.deployProxy(
+    ItemNFT,
+    [world.address, shop.address, royaltyReceiver.address, [owner.address, alice.address]],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall"],
+    }
+  );
 
   await shop.setItemNFT(itemNFT.address);
   // Create NFT contract which contains all the players
@@ -47,7 +51,14 @@ export const playersFixture = async () => {
   const imageBaseUri = "ipfs://";
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
-    [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
+    [
+      brush.address,
+      shop.address,
+      royaltyReceiver.address,
+      EDIT_NAME_BRUSH_PRICE,
+      imageBaseUri,
+      [owner.address, alice.address],
+    ],
     {
       kind: "uups",
     }

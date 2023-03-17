@@ -14,6 +14,7 @@ import {
   meleeChoices,
   smithingChoices,
 } from "./utils";
+import adminAddresses from "../whitelist/admins.json";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -83,9 +84,14 @@ async function main() {
   await royaltyReceiver.deployed();
   console.log(`RoyaltyReceiver deployed at ${royaltyReceiver.address.toLowerCase()}`);
 
+  const admins = adminAddresses.map((el) => ethers.utils.getAddress(el.address));
+  if (!admins.includes(owner.address)) {
+    admins.push(owner.address);
+  }
+
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
+  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address, admins], {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
   });
@@ -99,7 +105,7 @@ async function main() {
   //  const imageBaseUri = "ipfs://"; // alpha
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
-    [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
+    [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri, admins],
     {
       kind: "uups",
     }
@@ -261,7 +267,7 @@ async function main() {
 
   // Batch mint all the items
   if (network.chainId == 31337) {
-    tx = await itemNFT.testOnlyMints(owner.address, tokenIds, amounts);
+    tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
   } else {
     // TODO: This should fail when we go live
     tx = await itemNFT.testMints(owner.address, tokenIds, amounts);

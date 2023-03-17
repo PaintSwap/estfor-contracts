@@ -15,7 +15,6 @@ describe("PlayerNFT", () => {
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
     const mockOracleClient = await MockOracleClient.deploy();
 
-    // Create the world
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World");
     const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
@@ -38,10 +37,14 @@ describe("PlayerNFT", () => {
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
-      kind: "uups",
-      unsafeAllow: ["delegatecall"],
-    });
+    const itemNFT = await upgrades.deployProxy(
+      ItemNFT,
+      [world.address, shop.address, royaltyReceiver.address, [owner.address, alice.address]],
+      {
+        kind: "uups",
+        unsafeAllow: ["delegatecall"],
+      }
+    );
 
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
@@ -50,7 +53,14 @@ describe("PlayerNFT", () => {
     const imageBaseUri = "ipfs://";
     const playerNFT = (await upgrades.deployProxy(
       PlayerNFT,
-      [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
+      [
+        brush.address,
+        shop.address,
+        royaltyReceiver.address,
+        EDIT_NAME_BRUSH_PRICE,
+        imageBaseUri,
+        [owner.address, alice.address],
+      ],
       {
         kind: "uups",
       }
@@ -115,7 +125,6 @@ describe("PlayerNFT", () => {
       ethers.utils.formatBytes32String(origName),
       makeActive
     );
-    await players.connect(alice).setActivePlayer(playerId);
 
     return {
       playerId,
@@ -131,9 +140,9 @@ describe("PlayerNFT", () => {
 
   it("Empty name", async () => {
     const {playerNFT, alice} = await loadFixture(deployContracts);
-    const nameTooLong = ethers.utils.formatBytes32String("");
+    const emptyName = ethers.utils.formatBytes32String("");
     const avatarId = 1;
-    await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong, true)).to.be.revertedWithCustomError(
+    await expect(createPlayer(playerNFT, avatarId, alice, emptyName, true)).to.be.revertedWithCustomError(
       playerNFT,
       "NameCannotBeEmpty"
     );

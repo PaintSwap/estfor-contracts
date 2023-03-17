@@ -55,10 +55,10 @@ describe("Combat Actions", () => {
         skill: EstforTypes.Skill.MELEE,
       });
       const choiceId = await getActionChoiceId(tx);
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -218,7 +218,7 @@ describe("Combat Actions", () => {
       const _queuedAction = {...queuedAction};
       _queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SHIELD, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1);
 
       await expect(
         players.connect(alice).startAction(playerId, _queuedAction, EstforTypes.ActionQueueStatus.NONE)
@@ -291,7 +291,7 @@ describe("Combat Actions", () => {
       });
       const actionId = await getActionId(tx);
 
-      await itemNFT.testOnlyMints(
+      await itemNFT.testMints(
         alice.address,
         [
           EstforConstants.TOTEM_STAFF,
@@ -698,8 +698,8 @@ describe("Combat Actions", () => {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.COOKED_MINNUS, 2);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 2);
     const timespan = 3600 * 3; // 3 hours
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
       ...emptyActionChoice,

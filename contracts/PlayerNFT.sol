@@ -29,8 +29,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
   error NotOwner();
-  error AvatarNotExists();
+  error NotAdmin();
   error NotPlayers();
+  error AvatarNotExists();
   error NameCannotBeEmpty();
   error NameAlreadyExists();
   error MintedMoreThanAllowed();
@@ -57,6 +58,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   bytes32 public merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
   uint public constant MAX_ALPHA_WHITELIST = 2;
+  mapping(address => bool) public admins;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(msg.sender, playerId) != 1) {
@@ -72,6 +74,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _;
   }
 
+  modifier isAdmin() {
+    if (!admins[_msgSender()]) {
+      revert NotAdmin();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -82,7 +91,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     address _pool,
     address _royaltyReceiver,
     uint _editNameCost,
-    string calldata _imageBaseUri
+    string calldata _imageBaseUri,
+    address[] calldata _admins
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
@@ -94,6 +104,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     editNameCost = _editNameCost;
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
+
+    for (uint i = 0; i < _admins.length; i++) {
+      admins[_admins[i]] = true;
+    }
   }
 
   function _mintStartingItems() private {
@@ -147,6 +161,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _setTokenIdToAvatar(playerId, _avatarId);
   }
 
+  // Costs nothing to mint, only gas
   function mintWhitelist(uint _avatarId, bytes32 _name, bool _makeActive, bytes32[] calldata _proof) external {
     if (!checkInWhitelist(_proof)) {
       revert NotInWhitelist();
@@ -158,8 +173,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 
-  // Costs nothing to mint, only gas
-  function mint(uint _avatarId, bytes32 _name, bool _makeActive) external {
+  function mint(uint _avatarId, bytes32 _name, bool _makeActive) external isAdmin {
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 

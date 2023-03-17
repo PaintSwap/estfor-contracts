@@ -27,7 +27,7 @@ describe("Shop", function () {
       unsafeAllow: ["delegatecall"],
     });
 
-    const buyPath = [alice.address, brush.address];
+    const buyPath: [string, string] = [alice.address, brush.address];
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const router = await MockRouter.deploy();
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
@@ -35,10 +35,14 @@ describe("Shop", function () {
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
-      kind: "uups",
-      unsafeAllow: ["delegatecall"],
-    });
+    const itemNFT = await upgrades.deployProxy(
+      ItemNFT,
+      [world.address, shop.address, royaltyReceiver.address, [owner.address, alice.address]],
+      {
+        kind: "uups",
+        unsafeAllow: ["delegatecall"],
+      }
+    );
 
     await shop.setItemNFT(itemNFT.address);
 
@@ -119,8 +123,8 @@ describe("Shop", function () {
   it("Sell", async () => {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
+    await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
     expect(await itemNFT.uniqueItems()).to.eq(2);
 
     expect(await shop.getPriceForItem(EstforConstants.BRONZE_SHIELD)).to.eq(0);
@@ -149,8 +153,8 @@ describe("Shop", function () {
   it("SellBatch", async () => {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
+    await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
 
     // Give the contract some brush to assign to the items
     const totalBrush = 1200;
@@ -173,8 +177,8 @@ describe("Shop", function () {
   it("Sell Slippage", async () => {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
+    await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
 
     // Give the contract some brush to assign to the items
     const totalBrush = 1200;

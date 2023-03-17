@@ -297,8 +297,8 @@ describe("Players", () => {
       equipPosition: EstforTypes.EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
@@ -414,7 +414,7 @@ describe("Players", () => {
       equipPosition: EstforTypes.EquipPosition.ARMS,
       metadataURI: "someIPFSURI.json",
     });
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
 
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
@@ -628,7 +628,7 @@ describe("Players", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
@@ -713,7 +713,7 @@ describe("Players", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.LOG, 5);
+      await itemNFT.testMint(alice.address, EstforConstants.LOG, 5);
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
@@ -809,8 +809,8 @@ describe("Players", () => {
         },
       ]);
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.LOG, 5);
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.COOKED_MINNUS, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.LOG, 5);
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 1);
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
@@ -874,7 +874,7 @@ describe("Players", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await itemNFT.testOnlyMints(
+      await itemNFT.testMints(
         alice.address,
         [
           EstforConstants.BRONZE_AXE,
@@ -1005,7 +1005,7 @@ describe("Players", () => {
         metadataURI: "someIPFSURI.json",
       });
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)

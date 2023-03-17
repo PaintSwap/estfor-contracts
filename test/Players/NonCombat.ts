@@ -130,7 +130,7 @@ describe("Non-Combat Actions", () => {
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
-    await itemNFT.testOnlyMints(
+    await itemNFT.testMints(
       alice.address,
       [
         EstforConstants.NATURE_MASK,
@@ -225,7 +225,7 @@ describe("Non-Combat Actions", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.LOG, 5); // Mint less than will be used
+    await itemNFT.testMint(alice.address, EstforConstants.LOG, 5); // Mint less than will be used
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -323,7 +323,7 @@ describe("Non-Combat Actions", () => {
       });
       const choiceId = await getActionChoiceId(tx);
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
@@ -463,7 +463,7 @@ describe("Non-Combat Actions", () => {
       });
       const choiceId = await getActionChoiceId(tx);
 
-      await itemNFT.testOnlyMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
+      await itemNFT.testMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
@@ -505,7 +505,7 @@ describe("Non-Combat Actions", () => {
         .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.reverted;
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.LOG, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.LOG, 1);
     await players
       .connect(alice)
       .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStatus.NONE);
@@ -546,7 +546,7 @@ describe("Non-Combat Actions", () => {
 
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_PICKAXE, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_PICKAXE, 1);
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
@@ -650,8 +650,8 @@ describe("Non-Combat Actions", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.COAL_ORE, 255);
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.MITHRIL_ORE, 255);
+    await itemNFT.testMint(alice.address, EstforConstants.COAL_ORE, 255);
+    await itemNFT.testMint(alice.address, EstforConstants.MITHRIL_ORE, 255);
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -859,7 +859,7 @@ describe("Non-Combat Actions", () => {
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "DoNotHaveEnoughQuantityToEquipToAction");
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
 
     // This works
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);

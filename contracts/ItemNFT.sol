@@ -38,6 +38,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAllowedHardhat();
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
+  error NotAdmin();
 
   // Input only
   struct NonCombatStats {
@@ -85,9 +86,18 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(uint itemId => CombatStats combatStats) public combatStats;
   mapping(uint itemId => Item) public items;
 
+  mapping(address => bool) public admins;
+
   modifier onlyPlayersOrShop() {
     if (msg.sender != players && msg.sender != shop) {
       revert NotPlayersOrShop();
+    }
+    _;
+  }
+
+  modifier isAdmin() {
+    if (!admins[_msgSender()]) {
+      revert NotAdmin();
     }
     _;
   }
@@ -97,7 +107,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _disableInitializers();
   }
 
-  function initialize(World _world, address _shop, address _royaltyReceiver) public initializer {
+  function initialize(
+    World _world,
+    address _shop,
+    address _royaltyReceiver,
+    address[] calldata _admins
+  ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
     __UUPSUpgradeable_init();
@@ -106,6 +121,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     baseURI = "ipfs://";
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
+    for (uint i; i < _admins.length; i++) {
+      admins[_admins[i]] = true;
+    }
   }
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
@@ -395,35 +413,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  modifier isHardhat() {
-    if (block.chainid != 31337) {
-      revert OnlyForHardhat();
-    }
-    _;
-  }
-
-  modifier isNotHardhat() {
-    if (block.chainid == 31337) {
-      revert NotAllowedHardhat();
-    }
-    _;
-  }
-
-  // TODO: Remove in live version!! Just using it for live testing atm
-  function testMint(address _to, uint _tokenId, uint _amount) external isNotHardhat {
-    _mintItem(_to, _tokenId, _amount);
-  }
-
-  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isNotHardhat {
-    _mintBatchItems(_to, _tokenIds, _amounts);
-  }
-
   // These are just to make tests easier to run by allowing arbitrary minting
-  function testOnlyMint(address _to, uint _tokenId, uint _amount) external isHardhat {
+  function testMint(address _to, uint _tokenId, uint _amount) external isAdmin {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function testOnlyMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isHardhat {
+  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isAdmin {
     _mintBatchItems(_to, _tokenIds, _amounts);
   }
 }

@@ -36,10 +36,14 @@ describe("ItemNFT", () => {
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
-    const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address], {
-      kind: "uups",
-      unsafeAllow: ["delegatecall"],
-    });
+    const itemNFT = await upgrades.deployProxy(
+      ItemNFT,
+      [world.address, shop.address, royaltyReceiver.address, [owner.address, alice.address]],
+      {
+        kind: "uups",
+        unsafeAllow: ["delegatecall"],
+      }
+    );
 
     return {
       itemNFT,
@@ -98,7 +102,7 @@ describe("ItemNFT", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.be.eq(1);
     await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.be.eq(0);
@@ -115,7 +119,7 @@ describe("ItemNFT", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
     await expect(
       itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.be.reverted;

@@ -45,7 +45,7 @@ describe("Boosts", () => {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.XP_BOOST, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
 
     const timespan = 3600;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -123,7 +123,7 @@ describe("Boosts", () => {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testOnlyMint(alice.address, EstforConstants.XP_BOOST, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
 
     const timespan = 3600;
     const queuedAction: EstforTypes.QueuedActionInput = {
