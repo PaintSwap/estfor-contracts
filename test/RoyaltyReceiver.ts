@@ -10,15 +10,13 @@ describe("RoyaltyReceiver", () => {
     const brush = await MockBrushToken.deploy();
 
     const wftm = owner.address; // doesn't matter
+    const buyPath: [string, string] = [wftm, brush.address];
 
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const router = await MockRouter.deploy();
 
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, pool.address, brush.address, [
-      wftm,
-      brush.address,
-    ]);
+    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, pool.address, brush.address, buyPath);
 
     return {
       royaltyReceiver,
