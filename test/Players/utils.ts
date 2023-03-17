@@ -19,6 +19,7 @@ export const setupBasicWoodcutting = async () => {
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       isAvailable: true,
       actionChoiceRequired: false,
+      successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
     randomRewards: [],

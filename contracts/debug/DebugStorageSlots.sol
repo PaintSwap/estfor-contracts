@@ -137,6 +137,7 @@ contract DebugStorageSlots {
     uint8 num3;
     uint16 outputTokenId; // Always num of 1
     uint8 outputNum; // Not used yet
+    uint8 successPercent; // 0-100
   }
 
   // The user chooses these
@@ -169,6 +170,7 @@ contract DebugStorageSlots {
     uint32 minXP;
     uint16 handItemTokenIdRangeMin; // Inclusive
     uint16 handItemTokenIdRangeMax; // Inclusive
+    uint8 successPercent; // 0-100
   }
 
   // Equipment (leave at the bottom to allow for further ones)

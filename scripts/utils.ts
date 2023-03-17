@@ -2,7 +2,7 @@ import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ContractTransaction, ethers} from "ethers";
 import {PlayerNFT} from "../typechain-types";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {ActionInput, Skill} from "@paintswap/estfor-definitions/types";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -263,7 +263,7 @@ export const allShopItems: ShopItem[] = [
   },
 ];
 
-export const allActions: EstforTypes.Action[] = [
+export const allActions: ActionInput[] = [
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
     info: {
@@ -276,6 +276,7 @@ export const allActions: EstforTypes.Action[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       isAvailable: true,
       actionChoiceRequired: false,
+      successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate: 1220 * 100}],
     randomRewards: [],
@@ -293,6 +294,7 @@ export const allActions: EstforTypes.Action[] = [
       handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
       isAvailable: true,
       actionChoiceRequired: true,
+      successPercent: 100,
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -310,6 +312,7 @@ export const allActions: EstforTypes.Action[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       isAvailable: true,
       actionChoiceRequired: false,
+      successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 1220 * 100}],
     randomRewards: [],
@@ -327,6 +330,7 @@ export const allActions: EstforTypes.Action[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       isAvailable: true,
       actionChoiceRequired: true,
+      successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.TIN_ORE, rate: 1220 * 100}],
     randomRewards: [],
@@ -344,6 +348,7 @@ export const allActions: EstforTypes.Action[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       isAvailable: true,
       actionChoiceRequired: true,
+      successPercent: 100,
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -362,6 +367,7 @@ export const allActions: EstforTypes.Action[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       isAvailable: true,
       actionChoiceRequired: true,
+      successPercent: 100,
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 100},
@@ -389,7 +395,8 @@ type ActionChoice = {
   inputTokenId3: number;
   num3: number;
   outputTokenId: number;
-  outputNum: number; // Not used yet, always 1
+  outputNum: number; // Just 0 or 1 for now
+  successPercent: number;
 };
 
 export const emptyActionChoice: ActionChoice = {
@@ -406,6 +413,7 @@ export const emptyActionChoice: ActionChoice = {
   num3: 0,
   outputTokenId: EstforConstants.NONE,
   outputNum: 0,
+  successPercent: 100,
 };
 
 export const meleeChoices: ActionChoice[] = [
@@ -447,6 +455,7 @@ export const firemakingChoices: ActionChoice[] = [
     num3: 0,
     outputTokenId: EstforConstants.NONE,
     outputNum: 0,
+    successPercent: 100,
   },
   {
     skill: EstforTypes.Skill.FIREMAKING,
@@ -462,6 +471,7 @@ export const firemakingChoices: ActionChoice[] = [
     num3: 0,
     outputTokenId: EstforConstants.NONE,
     outputNum: 0,
+    successPercent: 100,
   },
 ];
 
@@ -480,6 +490,7 @@ export const smithingChoices: ActionChoice[] = [
     num3: 0,
     outputTokenId: EstforConstants.BRONZE_BAR,
     outputNum: 1,
+    successPercent: 100,
   },
   {
     skill: EstforTypes.Skill.SMITHING,
@@ -495,6 +506,7 @@ export const smithingChoices: ActionChoice[] = [
     num3: 0,
     outputTokenId: EstforConstants.IRON_BAR,
     outputNum: 1,
+    successPercent: 100,
   },
 ];
 

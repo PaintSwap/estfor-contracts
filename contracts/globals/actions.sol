@@ -25,6 +25,7 @@ struct ActionChoice {
   uint8 num3;
   uint16 outputTokenId; // Always num of 1
   uint8 outputNum; // Not used yet
+  uint8 successPercent; // 0-100
 }
 
 // The user chooses these
@@ -57,4 +58,5 @@ struct ActionInfo {
   uint32 minXP;
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
+  uint8 successPercent; // 0-100
 }

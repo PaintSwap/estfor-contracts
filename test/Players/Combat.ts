@@ -43,6 +43,7 @@ describe("Combat Actions", () => {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: true,
+          successPercent: 100,
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
         randomRewards: [],
@@ -284,6 +285,7 @@ describe("Combat Actions", () => {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: true,
+          successPercent: 100,
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
         randomRewards: [],
@@ -319,6 +321,7 @@ describe("Combat Actions", () => {
         num3: 0,
         outputTokenId: EstforConstants.NONE,
         outputNum: 0,
+        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
@@ -493,6 +496,7 @@ describe("Combat Actions", () => {
             num3: 0,
             outputTokenId: EstforConstants.NONE,
             outputNum: 0,
+            successPercent: 100,
           },
           {
             skill: EstforTypes.Skill.MAGIC,
@@ -508,6 +512,7 @@ describe("Combat Actions", () => {
             num3: 0,
             outputTokenId: EstforConstants.NONE,
             outputNum: 0,
+            successPercent: 100,
           },
         ]
       );
@@ -560,6 +565,7 @@ describe("Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: randomChance}],
@@ -691,6 +697,7 @@ describe("Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: true,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
       randomRewards: [],

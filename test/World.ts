@@ -109,6 +109,7 @@ describe("World", () => {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
+          successPercent: 100,
         },
         guaranteedRewards: [],
         randomRewards: [],
@@ -128,6 +129,7 @@ describe("World", () => {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
+          successPercent: 100,
         },
         guaranteedRewards: [],
         randomRewards: [],
@@ -153,6 +155,7 @@ describe("World", () => {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
+          successPercent: 100,
         },
         guaranteedRewards: [],
         randomRewards: [],
@@ -185,6 +188,7 @@ describe("World", () => {
           num3: 0,
           outputTokenId: EstforConstants.NONE,
           outputNum: 0,
+          successPercent: 100,
         })
       ).to.be.reverted;
     });

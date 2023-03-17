@@ -53,6 +53,7 @@ describe("Non-Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
@@ -169,6 +170,7 @@ describe("Non-Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: true,
+        successPercent: 100,
       },
       guaranteedRewards: [],
       randomRewards: [],
@@ -191,6 +193,7 @@ describe("Non-Combat Actions", () => {
       num3: 0,
       outputTokenId: EstforConstants.NONE,
       outputNum: 0,
+      successPercent: 100,
     });
     const choiceId = await getActionChoiceId(tx);
 
@@ -254,6 +257,7 @@ describe("Non-Combat Actions", () => {
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: false,
+          successPercent: 100,
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
         randomRewards: [],
@@ -298,6 +302,7 @@ describe("Non-Combat Actions", () => {
           handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: true,
+          successPercent: 100,
         },
         guaranteedRewards: [],
         randomRewards: [],
@@ -320,6 +325,7 @@ describe("Non-Combat Actions", () => {
         num3: 0,
         outputTokenId: EstforConstants.NONE,
         outputNum: 0,
+        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
 
@@ -394,6 +400,7 @@ describe("Non-Combat Actions", () => {
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: false,
+          successPercent: 100,
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
         randomRewards: [],
@@ -438,6 +445,7 @@ describe("Non-Combat Actions", () => {
           handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: true,
+          successPercent: 100,
         },
         guaranteedRewards: [],
         randomRewards: [],
@@ -460,6 +468,7 @@ describe("Non-Combat Actions", () => {
         num3: 0,
         outputTokenId: EstforConstants.NONE,
         outputNum: 0,
+        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
 
@@ -538,6 +547,7 @@ describe("Non-Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 100}], // 100.00
       randomRewards: [],
@@ -593,6 +603,7 @@ describe("Non-Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: true,
+        successPercent: 100,
       },
       guaranteedRewards: [],
       randomRewards: [],
@@ -615,6 +626,7 @@ describe("Non-Combat Actions", () => {
       num3: 0,
       outputTokenId: EstforConstants.MITHRIL_BAR,
       outputNum: 1,
+      successPercent: 100,
     });
     const choiceId = await getActionChoiceId(tx);
 
@@ -686,6 +698,7 @@ describe("Non-Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
@@ -752,6 +765,7 @@ describe("Non-Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
@@ -799,6 +813,7 @@ describe("Non-Combat Actions", () => {
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
