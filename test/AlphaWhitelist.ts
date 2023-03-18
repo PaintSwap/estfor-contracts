@@ -36,11 +36,13 @@ describe("AlphaWhitelist", () => {
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
 
+    const admins = [owner.address];
+
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, [owner.address]],
+      [world.address, shop.address, royaltyReceiver.address, admins],
       {
         kind: "uups",
         unsafeAllow: ["delegatecall"],
@@ -54,7 +56,7 @@ describe("AlphaWhitelist", () => {
     const imageBaseUri = "ipfs://";
     const playerNFT = await upgrades.deployProxy(
       PlayerNFT,
-      [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri, [owner.address]],
+      [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri, admins],
       {kind: "uups"}
     );
 
@@ -85,6 +87,7 @@ describe("AlphaWhitelist", () => {
         itemNFT.address,
         playerNFT.address,
         world.address,
+        admins,
         playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,

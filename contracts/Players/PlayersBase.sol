@@ -26,6 +26,7 @@ abstract contract PlayersBase {
   event AddPendingRandomReward(address from, uint playerId, uint queueId, uint timestamp, uint elapsed);
   event PendingRandomRewardsClaimed(address from, uint playerId, uint numRemoved);
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
+  event SetSpeedMultiplier(uint playerId, uint16 multiplier);
 
   // For logging
   event Died(address from, uint playerId, uint128 queueId);
@@ -74,12 +75,17 @@ abstract contract PlayersBase {
   error ActionChoiceIdRequired();
   error InvalidEquipPosition();
   error ItemDoesNotExist();
+  error NoActionsToProcess();
+  error InvalidSpeedMultiplier();
+  error NotAdmin();
 
   uint32 public constant MAX_TIME = 1 days;
   uint public constant startXP = 374;
-  uint public constant MAX_SUCCESS_PERCENT_CHANCE = 90; // 90%
+  // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
+  uint public constant MAX_SUCCESS_PERCENT_CHANCE = 90;
 
-  uint internal startSlot; // Keep as the first non-constant state variable
+  // *IMPORTANT* keep as the first non-constant state variable
+  uint internal startSlot;
 
   mapping(uint playerId => uint multiplier) internal speedMultiplier; // 0 or 1 is diabled, for testing only
 
@@ -116,6 +122,8 @@ abstract contract PlayersBase {
   address implRewards;
   address reserved1;
 
+  mapping(address admin => bool isAdmin) public admins;
+
   modifier isOwnerOfPlayer(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
       revert NotOwner();
@@ -143,6 +151,13 @@ abstract contract PlayersBase {
   modifier onlyItemNFT() {
     if (msg.sender != address(itemNFT)) {
       revert NotItemNFT();
+    }
+    _;
+  }
+
+  modifier isAdmin() {
+    if (!admins[msg.sender]) {
+      revert NotAdmin();
     }
     _;
   }

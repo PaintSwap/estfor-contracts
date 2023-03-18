@@ -76,12 +76,8 @@ enum BoostType {
 
 enum CombatStyle {
   NONE,
-  MELEE,
-  RANGE,
-  MAGIC,
-  MELEE_DEFENCE,
-  RANGE_DEFENCE,
-  MAGIC_DEFENCE
+  ATTACK,
+  DEFENCE
 }
 
 struct Equipment {

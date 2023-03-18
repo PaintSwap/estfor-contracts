@@ -99,8 +99,8 @@ async function main() {
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
   const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
-  const imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/"; // live
-  //  const imageBaseUri = "ipfs://"; // alpha
+  //  const imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/"; // live
+  const imageBaseUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; // alpha
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri, admins],
@@ -143,6 +143,7 @@ async function main() {
       itemNFT.address,
       playerNFT.address,
       world.address,
+      admins,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -396,7 +397,7 @@ async function main() {
   const queuedActionCombat: EstforTypes.QueuedActionInput = {
     attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
     actionId: EstforConstants.ACTION_COMBAT_NATUOW,
-    combatStyle: EstforTypes.CombatStyle.MELEE,
+    combatStyle: EstforTypes.CombatStyle.ATTACK,
     choiceId: EstforConstants.ACTIONCHOICE_MELEE_MONSTER,
     choiceId1: EstforConstants.NONE,
     choiceId2: EstforConstants.NONE,

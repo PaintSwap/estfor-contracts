@@ -1155,7 +1155,7 @@ describe("Non-Combat Actions", () => {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
     // Specifying a combat style should fail
-    queuedAction.combatStyle = EstforTypes.CombatStyle.MELEE;
+    queuedAction.combatStyle = EstforTypes.CombatStyle.ATTACK;
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidCombatStyle");

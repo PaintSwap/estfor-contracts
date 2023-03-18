@@ -91,7 +91,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       uint128 _queueId = queuedAction.attire.queueId;
-      Skill skill = _getSkillFromStyle(queuedAction.combatStyle, queuedAction.actionId);
+      Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
 
       if (!died) {
         pointsAccrued = _getPointsAccrued(_from, _playerId, queuedAction, skill, xpElapsedTime);
@@ -304,23 +304,18 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function _getSkillFromStyle(CombatStyle _combatStyle, uint16 _actionId) private view returns (Skill skill) {
-    if (_combatStyle == CombatStyle.MELEE) {
-      skill = Skill.MELEE;
-    } else if (_combatStyle == CombatStyle.MAGIC) {
-      skill = Skill.MAGIC;
-    }
-    /* else if (_combatStyle == Skill.RANGE) {
-            skill = Skill.RANGE;
-          } */
-    else if (
-      _combatStyle == CombatStyle.MELEE_DEFENCE ||
-      _combatStyle == CombatStyle.RANGE_DEFENCE ||
-      _combatStyle == CombatStyle.MAGIC_DEFENCE
-    ) {
-      skill = Skill.DEFENCE;
+  function _getSkillFromChoiceOrStyle(
+    ActionChoice memory _choice,
+    CombatStyle _combatStyle,
+    uint16 _actionId
+  ) private view returns (Skill skill) {
+    if (_choice.skill != Skill.NONE) {
+      if (_combatStyle == CombatStyle.DEFENCE) {
+        return Skill.DEFENCE;
+      }
+      skill = _choice.skill;
     } else {
-      // Not a combat style, get the skill from the action
+      // No action choice
       skill = world.getSkill(_actionId);
     }
   }

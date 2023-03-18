@@ -64,7 +64,7 @@ describe("Combat Actions", () => {
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
         actionId,
-        combatStyle: EstforTypes.CombatStyle.MELEE,
+        combatStyle: EstforTypes.CombatStyle.ATTACK,
         choiceId,
         choiceId1: EstforConstants.NONE,
         choiceId2: EstforConstants.NONE,
@@ -194,7 +194,7 @@ describe("Combat Actions", () => {
       const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawn} = await loadFixture(playersFixtureMelee);
 
       const _queuedAction = {...queuedAction};
-      _queuedAction.combatStyle = EstforTypes.CombatStyle.MELEE_DEFENCE;
+      _queuedAction.combatStyle = EstforTypes.CombatStyle.DEFENCE;
 
       await players.connect(alice).startAction(playerId, _queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -328,7 +328,7 @@ describe("Combat Actions", () => {
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
-        combatStyle: EstforTypes.CombatStyle.MAGIC,
+        combatStyle: EstforTypes.CombatStyle.ATTACK,
         choiceId,
         choiceId1: EstforConstants.NONE,
         choiceId2: EstforConstants.NONE,
@@ -716,7 +716,7 @@ describe("Combat Actions", () => {
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
-      combatStyle: EstforTypes.CombatStyle.MELEE,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
       choiceId,
       choiceId1: EstforConstants.NONE,
       choiceId2: EstforConstants.NONE,

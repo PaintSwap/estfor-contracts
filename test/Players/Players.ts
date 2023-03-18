@@ -340,7 +340,7 @@ describe("Players", () => {
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...noAttire, arms: BRONZE_GAUNTLETS},
       actionId: 1,
-      combatStyle: EstforTypes.CombatStyle.MELEE,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
       choiceId,
       choiceId1: EstforConstants.NONE,
       choiceId2: EstforConstants.NONE,
@@ -400,7 +400,7 @@ describe("Players", () => {
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
       actionId,
-      combatStyle: EstforTypes.CombatStyle.MELEE,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
       choiceId,
       choiceId1: EstforConstants.NONE,
       choiceId2: EstforConstants.NONE,
