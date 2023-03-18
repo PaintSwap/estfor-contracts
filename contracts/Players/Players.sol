@@ -26,13 +26,17 @@ import "../globals/rewards.sol";
 // Functions to help with delegatecall selectors
 interface IPlayerDelegate {
   function startActions(
-    uint _playerId,
-    QueuedActionInput[] calldata _queuedActions,
-    uint16 _boostItemTokenId,
-    ActionQueueStatus _queueStatus
+    uint playerId,
+    QueuedActionInput[] calldata queuedActions,
+    uint16 boostItemTokenId,
+    ActionQueueStatus queueStatus
   ) external;
 
-  function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external;
+  function addXPThresholdReward(XPThresholdReward calldata xpThresholdReward) external;
+
+  function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external;
+
+  function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills) external;
 }
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall, IPlayers {
@@ -175,32 +179,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       _setActivePlayer(_from, _playerId);
     }
 
-    Player storage player = players[_playerId];
-    player.health = 1;
-    player.melee = 1;
-    player.magic = 1;
-    player.range = 1;
-    player.defence = 1;
-    player.totalXP = uint160(startXP);
-
-    uint length = _startSkills[1] != Skill.NONE ? 2 : 1;
-    uint32 xpEach = uint32(startXP / length);
-    for (uint i = 0; i < length; i++) {
-      Skill skill = _startSkills[i];
-      int16 level = int16(PlayerLibrary.getLevel(xpEach));
-      if (skill == Skill.HEALTH) {
-        player.health = level;
-      } else if (skill == Skill.MELEE) {
-        player.melee = level;
-      } else if (skill == Skill.MAGIC) {
-        player.magic = level;
-      } else if (skill == Skill.RANGE) {
-        player.range = level;
-      } else if (skill == Skill.DEFENCE) {
-        player.defence = level;
-      }
-      _updateXP(_from, _playerId, skill, xpEach);
-    }
+    _delegatecall(
+      implProcessActions,
+      abi.encodeWithSelector(IPlayerDelegate.mintedPlayer.selector, _from, _playerId, _startSkills)
+    );
   }
 
   function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
@@ -339,6 +321,23 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function testOnlyModifyLevel(uint _playerId, Skill _skill, uint32 _xp) external onlyOwner {
     xp[_playerId][_skill] = _xp;
+  }
+
+  function _addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) private {
+    _delegatecall(
+      implProcessActions,
+      abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonus.selector, _fullAttireBonus)
+    );
+  }
+
+  function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external onlyOwner {
+    _addFullAttireBonus(_fullAttireBonus);
+  }
+
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
+    for (uint i = 0; i < _fullAttireBonuses.length; i++) {
+      _addFullAttireBonus(_fullAttireBonuses[i]);
+    }
   }
 
   // For the various view functions that require delegatecall

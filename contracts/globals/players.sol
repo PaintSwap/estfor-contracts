@@ -171,3 +171,9 @@ interface IPlayersDelegateView {
 
   function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
 }
+
+struct FullAttireBonusInput {
+  Skill skill;
+  uint8 bonusPercent; // 3 = 3%
+  uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
+}

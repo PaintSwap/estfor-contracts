@@ -4,6 +4,7 @@ import {ethers, upgrades} from "hardhat";
 import {MockBrushToken, MockWrappedFantom, PlayerNFT} from "../typechain-types";
 import {
   allActions,
+  allFullAttireBonuses,
   allItems,
   allShopItems,
   allXPThresholdRewards,
@@ -221,7 +222,7 @@ async function main() {
       startSkills: [Skill.RANGE, Skill.NONE],
     },
     {
-      name: ethers.utils.formatBytes32String("Alpha v1) Slaying Doggo"),
+      name: ethers.utils.formatBytes32String("Slaying Doggo"),
       description:
         "Slaying Doggo is a proud, ambitious warrior who is skilled in close combat and magic. His unshakable sense of duty makes him a powerful ally in battle.",
       imageURI: "8.jpg",
@@ -263,6 +264,11 @@ async function main() {
   tx = await itemNFT.addItems(allItems);
   await tx.wait();
   console.log("add items");
+
+  // Add full equipment bonuses (TODO: Only enable once we have all these items added)
+  //  tx = await players.addFullAttireBonuses(allFullAttireBonuses);
+  //  await tx.wait();
+  //  console.log("add full attire bonuses");
 
   // Batch mint all the items
   if (network.chainId == 31337) {

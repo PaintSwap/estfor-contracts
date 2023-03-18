@@ -403,4 +403,74 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       emit ClaimedXPThresholdRewards(_from, _playerId, itemTokenIds, amounts);
     }
   }
+
+  function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external {
+    if (_fullAttireBonus.skill == Skill.NONE) {
+      revert InvalidSkill();
+    }
+    EquipPosition[5] memory expectedEquipPositions = [
+      EquipPosition.HEAD,
+      EquipPosition.BODY,
+      EquipPosition.ARMS,
+      EquipPosition.LEGS,
+      EquipPosition.FEET
+    ];
+    for (uint i = 0; i < expectedEquipPositions.length; ++i) {
+      if (_fullAttireBonus.itemTokenIds[i] == NONE) {
+        revert InvalidItemTokenId();
+      }
+      if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[i]).equipPosition != expectedEquipPositions[i]) {
+        revert InvalidEquipPosition();
+      }
+    }
+
+    fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
+      _fullAttireBonus.bonusPercent,
+      _fullAttireBonus.itemTokenIds
+    );
+    emit AddFullAttireBonus(_fullAttireBonus.skill, _fullAttireBonus.itemTokenIds, _fullAttireBonus.bonusPercent);
+  }
+
+  function mintedPlayer(address _from, uint _playerId, Skill[2] calldata _startSkills) external {
+    Player storage player = players[_playerId];
+    player.health = 1;
+    player.melee = 1;
+    player.magic = 1;
+    player.range = 1;
+    player.defence = 1;
+    player.totalXP = uint160(startXP);
+
+    uint length = _startSkills[1] != Skill.NONE ? 2 : 1;
+    uint32 xpEach = uint32(startXP / length);
+    for (uint i = 0; i < length; i++) {
+      Skill skill = _startSkills[i];
+      int16 level = int16(PlayerLibrary.getLevel(xpEach));
+      if (skill == Skill.HEALTH) {
+        player.health = level;
+      } else if (skill == Skill.MELEE) {
+        player.melee = level;
+      } else if (skill == Skill.MAGIC) {
+        player.magic = level;
+      } else if (skill == Skill.RANGE) {
+        player.range = level;
+      } else if (skill == Skill.DEFENCE) {
+        player.defence = level;
+      }
+      _updateXP(_from, _playerId, skill, xpEach);
+    }
+  }
+
+  function _updateXP(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
+    uint32 oldPoints = xp[_playerId][_skill];
+    uint32 newPoints = oldPoints + _pointsAccrued;
+    xp[_playerId][_skill] = newPoints;
+    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
+
+    uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
+    uint16 newLevel = PlayerLibrary.getLevel(newPoints);
+    // Update the player's level
+    if (newLevel > oldLevel) {
+      emit LevelUp(_from, _playerId, _skill, newLevel);
+    }
+  }
 }

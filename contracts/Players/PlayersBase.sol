@@ -38,6 +38,12 @@ abstract contract PlayersBase {
   event ActionAborted(address from, uint playerId, uint128 queueId);
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 level);
+  event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 _bonus);
+
+  struct FullAttireBonus {
+    uint8 bonusPercent; // 3 = 3%
+    uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
+  }
 
   error NotOwner();
   error NotActive();
@@ -74,11 +80,11 @@ abstract contract PlayersBase {
   error InvalidSkill();
   error ActionChoiceIdRequired();
   error InvalidEquipPosition();
-  error ItemDoesNotExist();
   error NoActionsToProcess();
   error InvalidSpeedMultiplier();
   error NotAdmin();
   error XPThresholdNotFound();
+  error InvalidItemTokenId();
 
   uint32 public constant MAX_TIME = 1 days;
   uint public constant startXP = 374;
@@ -124,6 +130,8 @@ abstract contract PlayersBase {
   address reserved1;
 
   mapping(address admin => bool isAdmin) public admins;
+
+  mapping(Skill skill => FullAttireBonus) public fullAttireBonus;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
@@ -180,22 +188,28 @@ abstract contract PlayersBase {
       );
   }
 
-  function _extraXPFromFullEquipment(
+  function _extraXPFromFullAttire(
     address _from,
     Attire storage _attire,
     Skill _skill,
     uint _elapsedTime,
     uint16 _xpPerHour
   ) internal view returns (uint32 extraPointsAccrued) {
-    if (_skill == Skill.THIEVING || _skill == Skill.CRAFTING || _skill == Skill.WOODCUTTING) {
-      // Check if they have the full equipment set, if so they can get some bonus
-      bool skipNeck = true;
-      (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
-      uint extraBoost = PlayerLibrary.extraBoostFromFullEquipment(_skill, itemTokenIds, balances);
+    uint8 bonusPercent = fullAttireBonus[_skill].bonusPercent;
+    if (bonusPercent == 0) {
+      return 0;
+    }
 
-      if (extraBoost != 0) {
-        extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * extraBoost) / (3600 * 100));
-      }
+    // Check if they have the full equipment set, if so they can get some bonus
+    bool skipNeck = true;
+    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+    bool hasFullAttire = PlayerLibrary.extraBoostFromFullAttire(
+      itemTokenIds,
+      balances,
+      fullAttireBonus[_skill].itemTokenIds
+    );
+    if (hasFullAttire) {
+      extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * bonusPercent) / (3600 * 100));
     }
   }
 
@@ -210,21 +224,7 @@ abstract contract PlayersBase {
     uint16 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
-    pointsAccrued += _extraXPFromFullEquipment(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);
-  }
-
-  function _updateXP(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) internal {
-    uint32 oldPoints = xp[_playerId][_skill];
-    uint32 newPoints = oldPoints + _pointsAccrued;
-    xp[_playerId][_skill] = newPoints;
-    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
-
-    uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
-    uint16 newLevel = PlayerLibrary.getLevel(newPoints);
-    // Update the player's level
-    if (newLevel > oldLevel) {
-      emit LevelUp(_from, _playerId, _skill, newLevel);
-    }
+    pointsAccrued += _extraXPFromFullAttire(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);
   }
 
   function _updateStatsFromHandEquipment(

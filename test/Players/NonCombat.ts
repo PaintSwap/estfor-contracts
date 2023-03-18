@@ -1,5 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {getActionChoiceId, getActionId} from "../../scripts/utils";
@@ -103,6 +104,18 @@ describe("Non-Combat Actions", () => {
       tokenId: EstforConstants.NATURE_BOOTS,
       equipPosition: EstforTypes.EquipPosition.FEET,
       metadataURI: "someIPFSURI.json",
+    });
+
+    await players.addFullAttireBonus({
+      skill: Skill.WOODCUTTING,
+      itemTokenIds: [
+        EstforConstants.NATURE_MASK,
+        EstforConstants.NATURE_BODY,
+        EstforConstants.NATURE_BRACERS,
+        EstforConstants.NATURE_TROUSERS,
+        EstforConstants.NATURE_BOOTS,
+      ],
+      bonusPercent: 3,
     });
 
     const queuedAction: EstforTypes.QueuedActionInput = {
