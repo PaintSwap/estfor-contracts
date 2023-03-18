@@ -381,6 +381,29 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     );
   }
 
+  function _setupRandomRewards(
+    ActionRewards memory _rewards
+  ) private pure returns (ActionReward[] memory randomRewards) {
+    randomRewards = new ActionReward[](4);
+    uint randomRewardLength;
+    if (_rewards.randomRewardTokenId1 != 0) {
+      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId1, _rewards.randomRewardChance1);
+    }
+    if (_rewards.randomRewardTokenId2 != 0) {
+      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId2, _rewards.randomRewardChance2);
+    }
+    if (_rewards.randomRewardTokenId3 != 0) {
+      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId3, _rewards.randomRewardChance3);
+    }
+    if (_rewards.randomRewardTokenId4 != 0) {
+      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId4, _rewards.randomRewardChance4);
+    }
+
+    assembly ("memory-safe") {
+      mstore(randomRewards, randomRewardLength)
+    }
+  }
+
   function _appendRandomRewards(
     uint40 skillEndTime,
     uint _numTickets,
@@ -392,38 +415,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   ) private view returns (uint length, bool noLuck) {
     length = _oldLength;
 
-    ActionReward[] memory _randomRewards = new ActionReward[](4);
-    uint randomRewardLength;
-    if (_actionRewards.randomRewardTokenId1 != 0) {
-      _randomRewards[randomRewardLength++] = ActionReward(
-        _actionRewards.randomRewardTokenId1,
-        _actionRewards.randomRewardChance1
-      );
-    }
-    if (_actionRewards.randomRewardTokenId2 != 0) {
-      _randomRewards[randomRewardLength++] = ActionReward(
-        _actionRewards.randomRewardTokenId2,
-        _actionRewards.randomRewardChance2
-      );
-    }
-    if (_actionRewards.randomRewardTokenId3 != 0) {
-      _randomRewards[randomRewardLength++] = ActionReward(
-        _actionRewards.randomRewardTokenId3,
-        _actionRewards.randomRewardChance3
-      );
-    }
-    if (_actionRewards.randomRewardTokenId4 != 0) {
-      _randomRewards[randomRewardLength++] = ActionReward(
-        _actionRewards.randomRewardTokenId4,
-        _actionRewards.randomRewardChance4
-      );
-    }
+    ActionReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
 
-    assembly ("memory-safe") {
-      mstore(_randomRewards, randomRewardLength)
-    }
-
-    if (randomRewardLength != 0) {
+    if (_randomRewards.length != 0) {
       bool hasSeed = world.hasSeed(skillEndTime);
       if (hasSeed) {
         uint seed = world.getSeed(skillEndTime);
@@ -439,7 +433,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
 
           // Take each byte and check
-          U256 randomRewardsLength = U256.wrap(randomRewardLength);
+          U256 randomRewardsLength = U256.wrap(_randomRewards.length);
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();
 
