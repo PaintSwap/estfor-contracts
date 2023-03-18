@@ -54,7 +54,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function startActions(
     uint _playerId,
-    QueuedAction[] calldata _queuedActions,
+    QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
   ) external {
@@ -104,7 +104,21 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     while (iter.neq(_queuedActions.length)) {
       uint i = iter.asUint256();
-      QueuedAction memory queuedAction = _queuedActions[i];
+
+      QueuedAction memory queuedAction;
+      queuedAction.attire = _queuedActions[i].attire;
+      queuedAction.actionId = _queuedActions[i].actionId;
+      queuedAction.regenerateId = _queuedActions[i].regenerateId;
+      queuedAction.choiceId = _queuedActions[i].choiceId;
+      queuedAction.choiceId1 = _queuedActions[i].choiceId1;
+      queuedAction.choiceId2 = _queuedActions[i].choiceId2;
+      queuedAction.rightHandEquipmentTokenId = _queuedActions[i].rightHandEquipmentTokenId;
+      queuedAction.leftHandEquipmentTokenId = _queuedActions[i].leftHandEquipmentTokenId;
+      queuedAction.timespan = _queuedActions[i].timespan;
+      queuedAction.combatStyle = _queuedActions[i].combatStyle;
+      queuedAction.skill = _queuedActions[i].skill;
+      queuedAction.isValid = true;
+      // startTime filled in later
 
       if (totalTimespan + queuedAction.timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time

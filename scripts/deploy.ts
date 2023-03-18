@@ -307,8 +307,6 @@ async function main() {
     timespan: 3600,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    startTime: "0",
-    isValid: true,
     skill: Skill.WOODCUTTING,
   };
 
@@ -350,8 +348,6 @@ async function main() {
     timespan: 3600,
     rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    startTime: "0",
-    isValid: true,
     skill: Skill.FIREMAKING,
   };
 
@@ -405,8 +401,6 @@ async function main() {
     timespan: 7200,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    startTime: "0",
-    isValid: true,
     skill: Skill.COMBAT,
   };
 

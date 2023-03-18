@@ -78,6 +78,7 @@ abstract contract PlayersBase {
   error NoActionsToProcess();
   error InvalidSpeedMultiplier();
   error NotAdmin();
+  error XPThresholdNotFound();
 
   uint32 public constant MAX_TIME = 1 days;
   uint public constant startXP = 374;
@@ -370,41 +371,6 @@ abstract contract PlayersBase {
       abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)
     );
     return abi.decode(data, (QueuedAction[]));
-  }
-
-  // Index not level, add one after (check for > max)
-  function _findBaseXPThreshold(uint256 _xp) internal pure returns (uint16) {
-    U256 low;
-    U256 high = U256.wrap(xpRewardBytes.length).div(4);
-
-    while (low < high) {
-      U256 mid = (low + high).div(2);
-
-      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
-      // Math.average rounds down (it does integer division with truncation).
-      if (_getXPReward(mid.asUint256()) > _xp) {
-        high = mid;
-      } else {
-        low = mid.inc();
-      }
-    }
-
-    if (low.neq(0)) {
-      return low.dec().asUint16();
-    } else {
-      return 0;
-    }
-  }
-
-  function _getXPReward(uint256 _index) internal pure returns (uint32) {
-    U256 index = U256.wrap(_index).mul(4);
-    return
-      uint32(
-        xpRewardBytes[index.asUint256()] |
-          (bytes4(xpRewardBytes[index.add(1).asUint256()]) >> 8) |
-          (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
-          (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
-      );
   }
 
   function _claimRandomRewards(uint _playerId) internal {

@@ -309,13 +309,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     CombatStyle _combatStyle,
     uint16 _actionId
   ) private view returns (Skill skill) {
+    if (_combatStyle == CombatStyle.DEFENCE) {
+      return Skill.DEFENCE;
+    }
+
     if (_choice.skill != Skill.NONE) {
-      if (_combatStyle == CombatStyle.DEFENCE) {
-        return Skill.DEFENCE;
-      }
       skill = _choice.skill;
     } else {
-      // No action choice
       skill = world.getSkill(_actionId);
     }
   }

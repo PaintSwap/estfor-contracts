@@ -50,8 +50,6 @@ describe("Rewards", () => {
       timespan: 500,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -134,8 +132,6 @@ describe("Rewards", () => {
       timespan: 500,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -274,8 +270,6 @@ describe("Rewards", () => {
       timespan: 500,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 

@@ -72,8 +72,6 @@ describe("Combat Actions", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.COMBAT,
       };
 
@@ -336,8 +334,6 @@ describe("Combat Actions", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
         leftHandEquipmentTokenId: EstforConstants.NONE, // 2 handed, must specify this for both?
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.COMBAT,
       };
 
@@ -585,8 +581,6 @@ describe("Combat Actions", () => {
       timespan: 3600 * numHours,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -724,8 +718,6 @@ describe("Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.COMBAT,
     };
 

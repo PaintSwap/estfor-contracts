@@ -39,8 +39,6 @@ export const setupBasicWoodcutting = async () => {
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    startTime: "0",
-    isValid: true,
     skill: EstforTypes.Skill.WOODCUTTING,
   };
 

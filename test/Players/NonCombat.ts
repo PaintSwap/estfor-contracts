@@ -126,8 +126,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -209,8 +207,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.FIREMAKING,
     };
 
@@ -282,8 +278,6 @@ describe("Non-Combat Actions", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.WOODCUTTING,
       };
 
@@ -349,8 +343,6 @@ describe("Non-Combat Actions", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.FIREMAKING,
       };
 
@@ -425,8 +417,6 @@ describe("Non-Combat Actions", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.WOODCUTTING,
       };
 
@@ -492,8 +482,6 @@ describe("Non-Combat Actions", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.FIREMAKING,
       };
 
@@ -568,8 +556,6 @@ describe("Non-Combat Actions", () => {
       timespan: 100,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_PICKAXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.MINING,
     };
 
@@ -643,8 +629,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.SMITHING,
     };
 
@@ -737,8 +721,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.COOKING,
     };
 
@@ -828,8 +810,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.COOKING,
     };
 
@@ -920,8 +900,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.COOKING,
     };
 
@@ -993,8 +971,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -1060,8 +1036,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -1108,8 +1082,6 @@ describe("Non-Combat Actions", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_PICKAXE, // Incorrect
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 

@@ -27,17 +27,18 @@ import "../globals/rewards.sol";
 interface IPlayerDelegate {
   function startActions(
     uint _playerId,
-    QueuedAction[] memory _queuedActions,
+    QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
   ) external;
+
+  function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external;
 }
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall, IPlayers {
   using UnsafeU256 for U256;
 
   error InvalidSelector();
-  error XPThresholdNotFound();
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -75,10 +76,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function startAction(
     uint _playerId,
-    QueuedAction calldata _queuedAction,
+    QueuedActionInput calldata _queuedAction,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    QueuedAction[] memory queuedActions = new QueuedAction[](1);
+    QueuedActionInput[] memory queuedActions = new QueuedActionInput[](1);
     queuedActions[0] = _queuedAction;
     _startActions(_playerId, queuedActions, NONE, _queueStatus);
   }
@@ -86,7 +87,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
   function startActions(
     uint _playerId,
-    QueuedAction[] calldata _queuedActions,
+    QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
@@ -253,7 +254,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function _startActions(
     uint _playerId,
-    QueuedAction[] memory _queuedActions,
+    QueuedActionInput[] memory _queuedActions,
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
   ) private {
@@ -314,15 +315,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) private {
-    // Check that it is part of the hexBytes
-    uint16 index = _findBaseXPThreshold(_xpThresholdReward.xpThreshold);
-    uint32 xpThreshold = _getXPReward(index);
-    if (_xpThresholdReward.xpThreshold != xpThreshold) {
-      revert XPThresholdNotFound();
-    }
-
-    xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.rewards;
-    emit AdminAddThresholdReward(_xpThresholdReward);
+    _delegatecall(
+      implRewards,
+      abi.encodeWithSelector(IPlayerDelegate.addXPThresholdReward.selector, _xpThresholdReward)
+    );
   }
 
   function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external onlyOwner {

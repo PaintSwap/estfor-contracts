@@ -90,8 +90,6 @@ describe("Players", () => {
       timespan: 3600,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -144,8 +142,6 @@ describe("Players", () => {
       timespan: 3600,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -195,8 +191,6 @@ describe("Players", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -256,8 +250,6 @@ describe("Players", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.WOODCUTTING,
     };
 
@@ -348,10 +340,7 @@ describe("Players", () => {
       timespan: 100,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
-            skill: EstforTypes.Skill.COMBAT,
-
+      skill: EstforTypes.Skill.COMBAT,
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -408,8 +397,6 @@ describe("Players", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: EstforTypes.Skill.COMBAT,
     };
 
@@ -622,8 +609,6 @@ describe("Players", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.WOODCUTTING,
       };
 
@@ -703,8 +688,6 @@ describe("Players", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.FIREMAKING,
       };
 
@@ -790,8 +773,6 @@ describe("Players", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.FIREMAKING,
       };
 
@@ -871,8 +852,6 @@ describe("Players", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.WOODCUTTING,
       };
 
@@ -1003,8 +982,6 @@ describe("Players", () => {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        startTime: "0",
-        isValid: true,
         skill: EstforTypes.Skill.WOODCUTTING,
       };
 

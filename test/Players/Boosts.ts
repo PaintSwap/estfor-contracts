@@ -60,8 +60,6 @@ describe("Boosts", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: Skill.WOODCUTTING,
     };
 
@@ -139,8 +137,6 @@ describe("Boosts", () => {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
       skill: Skill.WOODCUTTING,
     };
 

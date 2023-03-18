@@ -153,7 +153,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   function pendingRewardsImpl(
     address _owner,
     uint _playerId,
-    PendingFlags memory _flags
+    PendingFlags calldata _flags
   ) external view returns (PendingOutput memory pendingOutput) {
     Player storage player = players[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
@@ -567,5 +567,52 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     assembly ("memory-safe") {
       mstore(consumedEquipment, consumedEquipmentLength)
     }
+  }
+
+  function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external {
+    // Check that it is part of the hexBytes
+    uint16 index = _findBaseXPThreshold(_xpThresholdReward.xpThreshold);
+    uint32 xpThreshold = _getXPReward(index);
+    if (_xpThresholdReward.xpThreshold != xpThreshold) {
+      revert XPThresholdNotFound();
+    }
+
+    xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.rewards;
+    emit AdminAddThresholdReward(_xpThresholdReward);
+  }
+
+  // Index not level, add one after (check for > max)
+  function _findBaseXPThreshold(uint256 _xp) private pure returns (uint16) {
+    U256 low;
+    U256 high = U256.wrap(xpRewardBytes.length).div(4);
+
+    while (low < high) {
+      U256 mid = (low + high).div(2);
+
+      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+      // Math.average rounds down (it does integer division with truncation).
+      if (_getXPReward(mid.asUint256()) > _xp) {
+        high = mid;
+      } else {
+        low = mid.inc();
+      }
+    }
+
+    if (low.neq(0)) {
+      return low.dec().asUint16();
+    } else {
+      return 0;
+    }
+  }
+
+  function _getXPReward(uint256 _index) private pure returns (uint32) {
+    U256 index = U256.wrap(_index).mul(4);
+    return
+      uint32(
+        xpRewardBytes[index.asUint256()] |
+          (bytes4(xpRewardBytes[index.add(1).asUint256()]) >> 8) |
+          (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
+          (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
+      );
   }
 }
