@@ -11,159 +11,162 @@ const actionIsAvailable = true;
 
 describe("Non-Combat Actions", () => {
   // Test isDynamic
-  it("Woodcutting", async () => {
-    const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
 
-    const {queuedAction, timespan, rate} = await setupBasicWoodcutting();
+  describe("Woodcutting", () => {
+    it("Cut wood", async () => {
+      const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      const {queuedAction, timespan, rate} = await setupBasicWoodcutting();
 
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-    await ethers.provider.send("evm_mine", []);
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
-    const pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await ethers.provider.send("evm_mine", []);
+
+      const pendingOutput = await players.pendingRewards(alice.address, playerId, {
+        includeLoot: true,
+        includePastRandomRewards: true,
+        includeXPRewards: true,
+      });
+      expect(pendingOutput.consumed.length).is.eq(0);
+      expect(pendingOutput.produced.length).is.eq(1);
+      expect(pendingOutput.produced[0].itemTokenId).is.eq(EstforConstants.LOG);
+      const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
+      expect(pendingOutput.produced[0].amount).is.eq(balanceExpected);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      expect(pendingOutput.xpGained).to.eq(queuedAction.timespan);
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
     });
-    expect(pendingOutput.consumed.length).is.eq(0);
-    expect(pendingOutput.produced.length).is.eq(1);
-    expect(pendingOutput.produced[0].itemTokenId).is.eq(EstforConstants.LOG);
-    const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
-    expect(pendingOutput.produced[0].amount).is.eq(balanceExpected);
-    await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
-    expect(pendingOutput.xpGained).to.eq(queuedAction.timespan);
-    // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
-  });
 
-  it("Woodcutting, full nature equipment", async () => {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    it("Full nature equipment", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-    const rate = 100 * 100; // per hour
-    const tx = await world.addAction({
-      actionId: 1,
-      info: {
+      const rate = 100 * 100; // per hour
+      const tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600;
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.NATURE_MASK,
+        equipPosition: EstforTypes.EquipPosition.HEAD,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.NATURE_BODY,
+        equipPosition: EstforTypes.EquipPosition.BODY,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.NATURE_BRACERS,
+        equipPosition: EstforTypes.EquipPosition.ARMS,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.NATURE_TROUSERS,
+        equipPosition: EstforTypes.EquipPosition.LEGS,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.NATURE_BOOTS,
+        equipPosition: EstforTypes.EquipPosition.FEET,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await players.addFullAttireBonus({
+        skill: Skill.WOODCUTTING,
+        itemTokenIds: [
+          EstforConstants.NATURE_MASK,
+          EstforConstants.NATURE_BODY,
+          EstforConstants.NATURE_BRACERS,
+          EstforConstants.NATURE_TROUSERS,
+          EstforConstants.NATURE_BOOTS,
+        ],
+        bonusPercent: 3,
+      });
+
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: {
+          head: EstforConstants.NATURE_MASK,
+          neck: EstforConstants.NONE,
+          body: EstforConstants.NATURE_BODY,
+          arms: EstforConstants.NATURE_BRACERS,
+          legs: EstforConstants.NATURE_TROUSERS,
+          feet: EstforConstants.NATURE_BOOTS,
+          ring: EstforConstants.NONE, // Always NONE for now
+          reserved1: EstforConstants.NONE, // Always NONE for now
+          queueId: 0, // Doesn't matter
+        },
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        choiceId1: EstforConstants.NONE,
+        choiceId2: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
         skill: EstforTypes.Skill.WOODCUTTING,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        numSpawn: 0,
-        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
-        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: false,
-        successPercent: 100,
-      },
-      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
+      };
+
+      await itemNFT.testMints(
+        alice.address,
+        [
+          EstforConstants.NATURE_MASK,
+          EstforConstants.NATURE_BODY,
+          EstforConstants.NATURE_BRACERS,
+          EstforConstants.NATURE_TROUSERS,
+          EstforConstants.NATURE_BOOTS,
+        ],
+        [1, 1, 1, 1, 1]
+      );
+
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+        queuedAction.timespan + queuedAction.timespan * 0.03
+      );
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
     });
-    const actionId = await getActionId(tx);
-
-    const timespan = 3600;
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.NATURE_MASK,
-      equipPosition: EstforTypes.EquipPosition.HEAD,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.NATURE_BODY,
-      equipPosition: EstforTypes.EquipPosition.BODY,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.NATURE_BRACERS,
-      equipPosition: EstforTypes.EquipPosition.ARMS,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.NATURE_TROUSERS,
-      equipPosition: EstforTypes.EquipPosition.LEGS,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.NATURE_BOOTS,
-      equipPosition: EstforTypes.EquipPosition.FEET,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await players.addFullAttireBonus({
-      skill: Skill.WOODCUTTING,
-      itemTokenIds: [
-        EstforConstants.NATURE_MASK,
-        EstforConstants.NATURE_BODY,
-        EstforConstants.NATURE_BRACERS,
-        EstforConstants.NATURE_TROUSERS,
-        EstforConstants.NATURE_BOOTS,
-      ],
-      bonusPercent: 3,
-    });
-
-    const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: {
-        head: EstforConstants.NATURE_MASK,
-        neck: EstforConstants.NONE,
-        body: EstforConstants.NATURE_BODY,
-        arms: EstforConstants.NATURE_BRACERS,
-        legs: EstforConstants.NATURE_TROUSERS,
-        feet: EstforConstants.NATURE_BOOTS,
-        ring: EstforConstants.NONE, // Always NONE for now
-        reserved1: EstforConstants.NONE, // Always NONE for now
-        queueId: 0, // Doesn't matter
-      },
-      actionId,
-      combatStyle: EstforTypes.CombatStyle.NONE,
-      choiceId: EstforConstants.NONE,
-      choiceId1: EstforConstants.NONE,
-      choiceId2: EstforConstants.NONE,
-      regenerateId: EstforConstants.NONE,
-      timespan,
-      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
-    };
-
-    await itemNFT.testMints(
-      alice.address,
-      [
-        EstforConstants.NATURE_MASK,
-        EstforConstants.NATURE_BODY,
-        EstforConstants.NATURE_BRACERS,
-        EstforConstants.NATURE_TROUSERS,
-        EstforConstants.NATURE_BOOTS,
-      ],
-      [1, 1, 1, 1, 1]
-    );
-
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-    const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
-    await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-      queuedAction.timespan + queuedAction.timespan * 0.03
-    );
-    // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
   });
 
   it("Firemaking", async () => {
@@ -679,273 +682,275 @@ describe("Non-Combat Actions", () => {
     );
   });
 
-  it("Cooking", async () => {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * 100; // per hour
+  describe("Cooking", () => {
+    it("Cook", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
 
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      tx = await world.addActionChoice(actionId, 1, {
         skill: EstforTypes.Skill.COOKING,
-        xpPerHour: 0,
+        diff: 0,
+        xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
-        numSpawn: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
+        rate,
+        inputTokenId1: EstforConstants.RAW_MINNUS,
+        num1: 1,
+        inputTokenId2: EstforConstants.NONE,
+        num2: 0,
+        inputTokenId3: EstforConstants.NONE,
+        num3: 0,
+        outputTokenId: EstforConstants.COOKED_MINNUS,
+        outputNum: 1,
         successPercent: 100,
-      },
-      guaranteedRewards: [],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
-    const actionId = await getActionId(tx);
+      });
+      const choiceId = await getActionChoiceId(tx);
 
-    tx = await world.addActionChoice(actionId, 1, {
-      skill: EstforTypes.Skill.COOKING,
-      diff: 0,
-      xpPerHour: 3600,
-      minXP: 0,
-      rate,
-      inputTokenId1: EstforConstants.RAW_MINNUS,
-      num1: 1,
-      inputTokenId2: EstforConstants.NONE,
-      num2: 0,
-      inputTokenId3: EstforConstants.NONE,
-      num3: 0,
-      outputTokenId: EstforConstants.COOKED_MINNUS,
-      outputNum: 1,
-      successPercent: 100,
-    });
-    const choiceId = await getActionChoiceId(tx);
+      const timespan = 3600;
 
-    const timespan = 3600;
-
-    const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: EstforTypes.noAttire,
-      actionId,
-      combatStyle: EstforTypes.CombatStyle.NONE,
-      choiceId,
-      choiceId1: EstforConstants.NONE,
-      choiceId2: EstforConstants.NONE,
-      regenerateId: EstforConstants.NONE,
-      timespan,
-      rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.COOKING,
-    };
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.RAW_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
-
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-    await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
-
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((timespan * rate) / (3600 * 100))
-    );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-      1000 - Math.floor((timespan * rate) / (3600 * 100))
-    );
-  });
-
-  // Changes based on level
-  it("Cooking, burnt food", async () => {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * 100; // per hour
-
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId,
+        choiceId1: EstforConstants.NONE,
+        choiceId2: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
         skill: EstforTypes.Skill.COOKING,
-        xpPerHour: 0,
-        minXP: 0,
-        isDynamic: false,
-        numSpawn: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
-        successPercent: 100,
-      },
-      guaranteedRewards: [],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
-    const actionId = await getActionId(tx);
+      };
 
-    // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
-    tx = await world.addActionChoice(actionId, 1, {
-      skill: EstforTypes.Skill.COOKING,
-      diff: 0,
-      xpPerHour: 3600,
-      minXP: getXPFromLevel(65),
-      rate,
-      inputTokenId1: EstforConstants.RAW_MINNUS,
-      num1: 1,
-      inputTokenId2: EstforConstants.NONE,
-      num2: 0,
-      inputTokenId3: EstforConstants.NONE,
-      num3: 0,
-      outputTokenId: EstforConstants.COOKED_MINNUS,
-      outputNum: 1,
-      successPercent: 25,
-    });
-    const choiceId = await getActionChoiceId(tx);
-    const timespan = 3600;
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.RAW_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+        metadataURI: "someIPFSURI.json",
+      });
 
-    const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: EstforTypes.noAttire,
-      actionId,
-      combatStyle: EstforTypes.CombatStyle.NONE,
-      choiceId,
-      choiceId1: EstforConstants.NONE,
-      choiceId2: EstforConstants.NONE,
-      regenerateId: EstforConstants.NONE,
-      timespan,
-      rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.COOKING,
-    };
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.COOKED_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+        metadataURI: "someIPFSURI.json",
+      });
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.RAW_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
+      await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+        Math.floor((timespan * rate) / (3600 * 100))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
+        1000 - Math.floor((timespan * rate) / (3600 * 100))
+      );
     });
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-      metadataURI: "someIPFSURI.json",
-    });
+    // Changes based on level
+    it("Burn some food", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
 
-    await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
 
-    await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
-
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-    await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
-
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((timespan * rate) / (3600 * 100 * 2))
-    );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-      1000 - Math.floor((timespan * rate) / (3600 * 100))
-    );
-  });
-
-  it("Cooking, burnt (max 90% success)", async () => {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * 100; // per hour
-
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
+      // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
+      tx = await world.addActionChoice(actionId, 1, {
         skill: EstforTypes.Skill.COOKING,
-        xpPerHour: 0,
-        minXP: 0,
-        isDynamic: false,
-        numSpawn: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
-        successPercent: 100,
-      },
-      guaranteedRewards: [],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
+        diff: 0,
+        xpPerHour: 3600,
+        minXP: getXPFromLevel(65),
+        rate,
+        inputTokenId1: EstforConstants.RAW_MINNUS,
+        num1: 1,
+        inputTokenId2: EstforConstants.NONE,
+        num2: 0,
+        inputTokenId3: EstforConstants.NONE,
+        num3: 0,
+        outputTokenId: EstforConstants.COOKED_MINNUS,
+        outputNum: 1,
+        successPercent: 25,
+      });
+      const choiceId = await getActionChoiceId(tx);
+      const timespan = 3600;
+
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId,
+        choiceId1: EstforConstants.NONE,
+        choiceId2: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        skill: EstforTypes.Skill.COOKING,
+      };
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.RAW_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.COOKED_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+
+      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+        Math.floor((timespan * rate) / (3600 * 100 * 2))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
+        1000 - Math.floor((timespan * rate) / (3600 * 100))
+      );
     });
-    const actionId = await getActionId(tx);
 
-    // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
-    tx = await world.addActionChoice(actionId, 1, {
-      skill: EstforTypes.Skill.COOKING,
-      diff: 0,
-      xpPerHour: 3600,
-      minXP: getXPFromLevel(65),
-      rate,
-      inputTokenId1: EstforConstants.RAW_MINNUS,
-      num1: 1,
-      inputTokenId2: EstforConstants.NONE,
-      num2: 0,
-      inputTokenId3: EstforConstants.NONE,
-      num3: 0,
-      outputTokenId: EstforConstants.COOKED_MINNUS,
-      outputNum: 1,
-      successPercent: 85,
+    it("Burn food, check max 90% success upper bound", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 100; // per hour
+
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
+      tx = await world.addActionChoice(actionId, 1, {
+        skill: EstforTypes.Skill.COOKING,
+        diff: 0,
+        xpPerHour: 3600,
+        minXP: getXPFromLevel(65),
+        rate,
+        inputTokenId1: EstforConstants.RAW_MINNUS,
+        num1: 1,
+        inputTokenId2: EstforConstants.NONE,
+        num2: 0,
+        inputTokenId3: EstforConstants.NONE,
+        num3: 0,
+        outputTokenId: EstforConstants.COOKED_MINNUS,
+        outputNum: 1,
+        successPercent: 85,
+      });
+      const choiceId = await getActionChoiceId(tx);
+      const timespan = 3600;
+
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId,
+        choiceId1: EstforConstants.NONE,
+        choiceId2: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        skill: EstforTypes.Skill.COOKING,
+      };
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.RAW_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.COOKED_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+
+      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+        Math.floor((timespan * rate * 0.9) / (3600 * 100)) // Max 90% success
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
+        1000 - Math.floor((timespan * rate) / (3600 * 100))
+      );
     });
-    const choiceId = await getActionChoiceId(tx);
-    const timespan = 3600;
-
-    const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: EstforTypes.noAttire,
-      actionId,
-      combatStyle: EstforTypes.CombatStyle.NONE,
-      choiceId,
-      choiceId1: EstforConstants.NONE,
-      choiceId2: EstforConstants.NONE,
-      regenerateId: EstforConstants.NONE,
-      timespan,
-      rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.COOKING,
-    };
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.RAW_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
-
-    await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
-
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-    await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
-
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((timespan * rate * 0.9) / (3600 * 100)) // Max 90% success
-    );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-      1000 - Math.floor((timespan * rate) / (3600 * 100))
-    );
   });
 
   it("Set past max timespan ", async () => {

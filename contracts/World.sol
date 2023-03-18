@@ -444,7 +444,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     actionChoices[_actionId][_actionChoiceId] = _actionChoice;
   }
 
-  // actionId of 0 means it is not tied to a specific action
+  // actionId of 0 means it is not tied to a specific action (combat)
   function addActionChoice(
     uint16 _actionId,
     uint16 _actionChoiceId,
