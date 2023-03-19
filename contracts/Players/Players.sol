@@ -24,15 +24,6 @@ import "../globals/actions.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/rewards.sol";
 
-// External view functions that are in other implementation files
-interface PlayersDelegateView {
-  function pendingRewardsImpl(
-    address _owner,
-    uint _playerId,
-    PendingFlags memory _flags
-  ) external view returns (PendingOutput memory pendingOutput);
-}
-
 // Functions to help with delegatecall selectors
 interface IPlayerDelegate {
   function startActions(
@@ -283,17 +274,25 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActivePlayer(msg.sender, _playerId);
   }
 
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingRewards/dailyClaimedRewards can be exposed on the json abi.
   function pendingRewards(
     address _owner,
     uint _playerId,
     PendingFlags memory _flags
   ) external view returns (PendingOutput memory pendingOutput) {
-    // Staticcall into ourselves and hit the fallback. This is done so that pendingRewards can be exposed on the json abi.
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(PlayersDelegateView.pendingRewardsImpl.selector, _owner, _playerId, _flags)
+      abi.encodeWithSelector(IPlayersDelegateView.pendingRewardsImpl.selector, _owner, _playerId, _flags)
     );
     return abi.decode(data, (PendingOutput));
+  }
+
+  function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(IPlayersDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
+    );
+    return abi.decode(data, (bool[7]));
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -341,7 +340,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     bytes4 selector = bytes4(msg.data);
 
     address implementation;
-    if (selector == PlayersDelegateView.pendingRewardsImpl.selector) {
+    if (
+      selector == IPlayersDelegateView.pendingRewardsImpl.selector ||
+      selector == IPlayersDelegateView.dailyClaimedRewardsImpl.selector
+    ) {
       implementation = implRewards;
     } else {
       revert InvalidSelector();

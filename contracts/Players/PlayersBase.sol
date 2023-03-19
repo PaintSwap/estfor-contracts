@@ -102,7 +102,7 @@ abstract contract PlayersBase {
   uint128 betaCombat;
 
   // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
-  mapping(uint playerId => bytes32) dailyRewardMasks;
+  mapping(uint playerId => bytes32) internal dailyRewardMasks;
 
   // 4 bytes for each threshold, starts at 500 xp in decimal
   bytes constant xpRewardBytes =

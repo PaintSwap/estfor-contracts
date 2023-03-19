@@ -159,11 +159,12 @@ describe("Rewards", () => {
       equipments.map((equipment) => equipment.itemTokenId)
     );
 
-    for (let i = 0; i < 5; ++i) {
+    for (let i = 0; i < 4; ++i) {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
     }
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
     let afterBalances = await itemNFT.balanceOfs(
       alice.address,
@@ -174,18 +175,26 @@ describe("Rewards", () => {
       expect(afterBalances[i]).to.eq(beforeBalances[i].toNumber() + equipments[i].amount);
     }
 
-    // This isn't a full week so shouldn't get weekly rewards, but still get daily rewards
+    expect(await players.dailyClaimedRewards(playerId)).to.eql([false, true, true, true, true, true, false]);
+
+    // Last day of the week. This isn't a full week so shouldn't get weekly rewards, but still get daily rewards
     let balanceAfterWeeklyReward = await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST);
     expect(balanceBeforeWeeklyReward).to.eq(balanceAfterWeeklyReward);
     let prevBalanceDailyReward = await itemNFT.balanceOf(alice.address, equipments[equipments.length - 1].itemTokenId);
+    await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST));
     let balanceAfterDailyReward = await itemNFT.balanceOf(alice.address, equipments[equipments.length - 1].itemTokenId);
     expect(balanceAfterDailyReward).to.eq(prevBalanceDailyReward.toNumber() + equipments[equipments.length - 1].amount);
 
+    expect(await players.dailyClaimedRewards(playerId)).to.eql([false, true, true, true, true, true, true]);
+
     // Next one should start the next round
     await ethers.provider.send("evm_increaseTime", [3600 * 24]);
     await ethers.provider.send("evm_mine", []);
+
+    expect(await players.dailyClaimedRewards(playerId)).to.eql([false, false, false, false, false, false, false]);
 
     beforeBalances = await itemNFT.balanceOfs(
       alice.address,
@@ -194,9 +203,13 @@ describe("Rewards", () => {
 
     for (let i = 0; i < 7; ++i) {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await ethers.provider.send("evm_mine", []);
+      if (i != 6) {
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+        await ethers.provider.send("evm_mine", []);
+      }
     }
+
+    expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, true, true, true, true, true]);
 
     afterBalances = await itemNFT.balanceOfs(
       alice.address,

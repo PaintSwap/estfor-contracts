@@ -148,3 +148,30 @@ struct AvatarInfo {
   string imageURI;
   Skill[2] startSkills; // Can be NONE
 }
+
+struct PendingFlags {
+  bool includeLoot; // Guaranteed loot from actions, and random loot if claiming quite late
+  bool includePastRandomRewards; // This is random loot from previous actions
+  bool includeXPRewards; // Passing any xp thresholds gives you extra rewards
+}
+
+// This is only for viewing so doesn't need to be optimized
+struct PendingOutput {
+  Equipment[] consumed;
+  Equipment[] produced;
+  Equipment[] producedPastRandomRewards;
+  Equipment[] producedXPRewards;
+  uint32 xpGained;
+  bool died;
+}
+
+// External view functions that are in other implementation files
+interface IPlayersDelegateView {
+  function pendingRewardsImpl(
+    address _owner,
+    uint _playerId,
+    PendingFlags memory _flags
+  ) external view returns (PendingOutput memory pendingOutput);
+
+  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
+}

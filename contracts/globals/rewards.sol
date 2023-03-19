@@ -34,22 +34,6 @@ struct ActionRewards {
   uint16 randomRewardChance4;
 }
 
-// This is only for viewing so doesn't need to be optimized
-struct PendingOutput {
-  Equipment[] consumed;
-  Equipment[] produced;
-  Equipment[] producedPastRandomRewards;
-  Equipment[] producedXPRewards;
-  uint32 xpGained;
-  bool died;
-}
-
-struct PendingFlags {
-  bool includeLoot; // Guaranteed loot from actions, and random loot if claiming quite late
-  bool includePastRandomRewards; // This is random loot from previous actions
-  bool includeXPRewards; // Passing any xp thresholds gives you extra rewards
-}
-
 struct XPThresholdReward {
   uint32 xpThreshold;
   Equipment[] rewards;

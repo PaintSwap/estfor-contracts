@@ -19,12 +19,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {
-    uint streakStart = (block.timestamp / 1 weeks) * 1 weeks;
+    uint streakStart = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
     uint streakStartIndex = streakStart / 1 weeks;
     bytes32 mask = dailyRewardMasks[_playerId];
     uint16 lastRewardStartIndex = uint16(uint256(mask));
     if (lastRewardStartIndex < streakStartIndex) {
-      mask = bytes32(streakStartIndex);
+      mask = bytes32(streakStartIndex); // Reset the mask
     }
 
     uint maskIndex = ((block.timestamp / 1 days) * 1 days - streakStart) / 1 days;

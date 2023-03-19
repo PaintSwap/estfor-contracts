@@ -14,7 +14,7 @@ import "../globals/actions.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/rewards.sol";
 
-contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
+contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPlayersDelegateView {
   using UnsafeU256 for U256;
   using UnsafeMath for uint256;
 
@@ -273,6 +273,20 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
       mstore(mload(add(pendingOutput, 32)), producedLength)
       mstore(mload(add(pendingOutput, 64)), producedPastRandomRewardsLength)
       mstore(mload(add(pendingOutput, 96)), producedXPRewardsLength)
+    }
+  }
+
+  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed) {
+    uint streakStart = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
+    uint streakStartIndex = streakStart / 1 weeks;
+    bytes32 mask = dailyRewardMasks[_playerId];
+    uint16 lastRewardStartIndex = uint16(uint256(mask));
+    if (lastRewardStartIndex < streakStartIndex) {
+      mask = bytes32(streakStartIndex);
+    }
+
+    for (uint i = 0; i < 7; ++i) {
+      claimed[i] = mask[i] != 0;
     }
   }
 
