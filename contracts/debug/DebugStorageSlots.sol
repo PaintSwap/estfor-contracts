@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 // This file just contains various definitions to be run with sol2uml to test that storage slots are packed as expected
-contract TestStorageSlots {
+contract DebugStorageSlots {
   struct Item {
     EquipPosition equipPosition;
     // Can it be transferred?

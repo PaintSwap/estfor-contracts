@@ -63,7 +63,7 @@
     "clean": "npx hardhat clean",
     "deploy": "npx hardhat run scripts/deploy.ts",
     "deployUpgrade": "npx hardhat run scripts/deployUpgrade.ts",
-    "umlStorage": "sol2uml storage ./contracts/test/TestStorageSlots.sol -c TestStorageSlots",
+    "umlStorage": "sol2uml storage ./contracts/debug/DebugStorageSlots.sol -c DebugStorageSlots",
     "setMerkleRoot": "npx hardhat run scripts/setMerkleTreeWhitelist.ts",
     "test": "npx hardhat test --network hardhat",
     "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol",
