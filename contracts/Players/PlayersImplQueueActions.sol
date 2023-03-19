@@ -58,10 +58,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint16 _boostItemTokenId,
     ActionQueueStatus _queueStatus
   ) external {
-    if (_queuedActions.length == 0) {
-      revert SkillsArrayZero();
-    }
-
     address from = msg.sender;
     uint totalTimespan;
     QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
@@ -105,7 +101,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     U256 iter;
     U256 queueId = U256.wrap(nextQueueId);
     U256 queuedActionsLength = U256.wrap(_queuedActions.length);
-    do {
+
+    while (iter.neq(_queuedActions.length)) {
       uint i = iter.asUint256();
       QueuedAction memory queuedAction = _queuedActions[i];
 
@@ -123,7 +120,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       queueId = queueId.inc();
       totalTimespan += queuedAction.timespan;
       prevEndTime += queuedAction.timespan;
-    } while (iter.neq(_queuedActions.length));
+    }
 
     emit SetActionQueue(from, _playerId, player.actionQueue);
 

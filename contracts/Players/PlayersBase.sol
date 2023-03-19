@@ -38,7 +38,6 @@ abstract contract PlayersBase {
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 level);
 
-  error SkillsArrayZero();
   error NotOwner();
   error NotActive();
   error EquipSameItem();

@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
-import {Attire, Skill} from "@paintswap/estfor-definitions/types";
+import {Attire, BoostType, Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer, emptyActionChoice, getActionChoiceId, getActionId} from "../../scripts/utils";
@@ -449,6 +449,92 @@ describe("Players", () => {
     expect(actionQueue.length).to.eq(2);
     expect(actionQueue[0].attire.queueId).to.eq(2);
     expect(actionQueue[1].attire.queueId).to.eq(3);
+  });
+
+  it("Case 1 - 1 in-progress, 1 queued after, remove in-progress", async () => {
+    const {playerId, players, alice} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicWoodcutting();
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(1);
+    expect(actionQueue[0].attire.queueId).to.eq(3);
+    expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
+  });
+
+  it("Case 2 - 1 in-progress, remove a pending queue action", async () => {
+    const {playerId, players, alice} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicWoodcutting();
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
+    await players
+      .connect(alice)
+      .startActions(playerId, [], BoostType.NONE, EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+    actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(1);
+    expect(actionQueue[0].attire.queueId).to.eq(1);
+    expect(actionQueue[0].timespan).to.eq(queuedAction.timespan / 2);
+  });
+
+  it("Case 3 - 1 in-progress, 1 queued after, trash both", async () => {
+    const {playerId, players, alice} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicWoodcutting();
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
+    await players.connect(alice).startActions(playerId, [], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(0);
+  });
+
+  it("Case 4 - 1 in-progress, 1 queued after, trash both, add 1", async () => {
+    const {playerId, players, alice} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicWoodcutting();
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(1);
+    expect(actionQueue[0].attire.queueId).to.eq(3);
+  });
+
+  it("Case 5 - 1 in-progress, 1 queued after, add 1", async () => {
+    const {playerId, players, alice} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicWoodcutting();
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.APPEND);
+    actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(3);
+    expect(actionQueue[0].attire.queueId).to.eq(1);
+    expect(actionQueue[1].attire.queueId).to.eq(2);
+    expect(actionQueue[2].attire.queueId).to.eq(3);
   });
 
   describe("Minimum skill points", () => {
