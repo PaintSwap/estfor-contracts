@@ -37,7 +37,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         dailyRewardMasks[_playerId] = mask;
 
         itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
-        emit Reward(_from, _playerId, 0, dailyReward.itemTokenId, dailyReward.amount);
+        emit DailyReward(_from, _playerId, dailyReward.itemTokenId, dailyReward.amount);
 
         // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
         bool canClaimWeeklyRewards = uint(mask >> (25 * 8)) == 2 ** (7 * 8) - 1;
@@ -45,7 +45,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
           Equipment memory weeklyReward = world.getWeeklyReward();
           if (weeklyReward.itemTokenId != NONE) {
             itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
-            emit Reward(_from, _playerId, 0, weeklyReward.itemTokenId, weeklyReward.amount);
+            emit WeeklyReward(_from, _playerId, weeklyReward.itemTokenId, weeklyReward.amount);
           }
         }
       }

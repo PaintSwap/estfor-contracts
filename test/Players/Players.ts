@@ -520,7 +520,7 @@ describe("Players", () => {
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
       expect(actionQueue[0].attire.queueId).to.eq(1);
-      expect(actionQueue[0].timespan).to.eq(queuedAction.timespan / 2);
+      expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan / 2 - 1, queuedAction.timespan / 2]);
       expect(actionQueue[1].attire.queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
     });

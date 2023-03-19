@@ -32,6 +32,8 @@ abstract contract PlayersBase {
   event Died(address from, uint playerId, uint128 queueId);
   event Rewards(address from, uint playerId, uint128 queueId, uint[] itemTokenIds, uint[] amounts);
   event Reward(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
+  event DailyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
+  event WeeklyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
   event Consume(address from, uint playerId, uint128 queueId, uint16 itemTokenId, uint amount);
   event ActionFinished(address from, uint playerId, uint128 queueId);
   event ActionPartiallyFinished(address from, uint playerId, uint128 queueId, uint elapsedTime);
