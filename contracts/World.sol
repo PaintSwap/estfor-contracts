@@ -52,6 +52,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error LengthMismatch();
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
+  error GuaranteedRewardsNoDuplicates();
+  error RandomRewardsMustBeInOrder();
+  error RandomRewardNoDuplicates();
 
   // This is only used as an input arg
   struct Action {
@@ -373,13 +376,26 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (_action.guaranteedRewards.length > 1) {
       actionReward.guaranteedRewardTokenId2 = _action.guaranteedRewards[1].itemTokenId;
       actionReward.guaranteedRewardRate2 = _action.guaranteedRewards[1].rate;
+      if (actionReward.guaranteedRewardTokenId1 == actionReward.guaranteedRewardTokenId2) {
+        revert GuaranteedRewardsNoDuplicates();
+      }
     }
     if (_action.guaranteedRewards.length > 2) {
       actionReward.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
       actionReward.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
+
+      for (uint i; i < _action.guaranteedRewards.length; ++i) {
+        if (
+          _action.guaranteedRewards[i].itemTokenId ==
+          _action.guaranteedRewards[_action.guaranteedRewards.length - 1].itemTokenId
+        ) {
+          revert GuaranteedRewardsNoDuplicates();
+        }
+      }
     }
   }
 
+  // Random rewards but have most common one first
   function _setActionRandomRewards(Action calldata _action, ActionRewards storage actionReward) private {
     if (_action.randomRewards.length != 0) {
       actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
@@ -388,14 +404,37 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (_action.randomRewards.length > 1) {
       actionReward.randomRewardTokenId2 = _action.randomRewards[1].itemTokenId;
       actionReward.randomRewardChance2 = uint16(_action.randomRewards[1].rate);
+      if (actionReward.randomRewardChance2 > actionReward.randomRewardChance1) {
+        revert RandomRewardsMustBeInOrder();
+      }
+      if (actionReward.randomRewardTokenId1 == actionReward.randomRewardTokenId2) {
+        revert RandomRewardNoDuplicates();
+      }
     }
     if (_action.randomRewards.length > 2) {
       actionReward.randomRewardTokenId3 = _action.randomRewards[2].itemTokenId;
       actionReward.randomRewardChance3 = uint16(_action.randomRewards[2].rate);
+      if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
+        revert RandomRewardsMustBeInOrder();
+      }
+      for (uint i; i < _action.randomRewards.length; ++i) {
+        if (
+          _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
+        ) {
+          revert RandomRewardNoDuplicates();
+        }
+      }
     }
     if (_action.randomRewards.length > 3) {
       actionReward.randomRewardTokenId4 = _action.randomRewards[3].itemTokenId;
       actionReward.randomRewardChance4 = uint16(_action.randomRewards[3].rate);
+      for (uint i; i < _action.randomRewards.length; ++i) {
+        if (
+          _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
+        ) {
+          revert RandomRewardNoDuplicates();
+        }
+      }
     }
   }
 

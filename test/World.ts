@@ -1,5 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
+import {ActionInput} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId} from "../scripts/utils";
@@ -191,6 +193,98 @@ describe("World", () => {
           successPercent: 100,
         })
       ).to.be.reverted;
+    });
+  });
+
+  describe("ActionRewards", () => {
+    it("Guaranteed reward duplicates not allowed", async () => {
+      const {world} = await loadFixture(deployContracts);
+      const actionAvailable = false;
+      const action: ActionInput = {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 1,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [
+          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
+          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 100},
+        ],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      };
+
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "GuaranteedRewardsNoDuplicates");
+      action.guaranteedRewards[0].itemTokenId = SHADOW_SCROLL;
+      await expect(world.addAction(action)).to.not.be.reverted;
+    });
+
+    it("Random reward order", async () => {
+      const {world} = await loadFixture(deployContracts);
+      const actionAvailable = false;
+      const action: ActionInput = {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 1,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [
+          {itemTokenId: EstforConstants.SHADOW_SCROLL, rate: 100},
+          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
+        ],
+        combatStats: EstforTypes.emptyCombatStats,
+      };
+
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "RandomRewardsMustBeInOrder");
+      action.randomRewards[0].rate = 300;
+      await expect(world.addAction(action)).to.not.be.reverted;
+    });
+
+    it("Random reward duplicate not allowed", async () => {
+      const {world} = await loadFixture(deployContracts);
+      const actionAvailable = false;
+      const action: ActionInput = {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 1,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [
+          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
+          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 100},
+        ],
+        combatStats: EstforTypes.emptyCombatStats,
+      };
+
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "RandomRewardNoDuplicates");
+      action.randomRewards[0].itemTokenId = SHADOW_SCROLL;
+      await expect(world.addAction(action)).to.not.be.reverted;
     });
   });
 });
