@@ -40,6 +40,7 @@ struct PendingOutput {
   Equipment[] produced;
   Equipment[] producedPastRandomRewards;
   Equipment[] producedXPRewards;
+  uint32 xpGained;
   bool died;
 }
 

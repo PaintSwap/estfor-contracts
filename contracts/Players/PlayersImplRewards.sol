@@ -160,7 +160,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
     uint producedXPRewardsLength;
     address from = _owner;
     uint previousTotalXP = player.totalXP;
-    uint32 allPointsAccrued;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
       CombatStats memory combatStats;
@@ -239,14 +238,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase {
 
         // This loot might be needed for a future task so mint now rather than later
         // But this could be improved
-        allPointsAccrued += pointsAccrued;
+        pendingOutput.xpGained += pointsAccrued;
       }
     } // end of loop
 
-    if (_flags.includeXPRewards && allPointsAccrued != 0) {
+    if (_flags.includeXPRewards && pendingOutput.xpGained != 0) {
       (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
         previousTotalXP,
-        previousTotalXP + allPointsAccrued
+        previousTotalXP + pendingOutput.xpGained
       );
       U256 idsLength = U256.wrap(ids.length);
       for (U256 iter; iter < idsLength; iter = iter.inc()) {

@@ -32,6 +32,7 @@ describe("Non-Combat Actions", () => {
     expect(pendingOutput.produced[0].amount).is.eq(balanceExpected);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    expect(pendingOutput.xpGained).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
   });
