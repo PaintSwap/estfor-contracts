@@ -1,4 +1,5 @@
 import {ethers, upgrades} from "hardhat";
+import {PlayerLibrary} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -8,29 +9,35 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   // Players
+  const newPlayersLibrary = false;
   const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
-  const playerLibrary = await PlayerLibrary.deploy();
-  await playerLibrary.deployed();
-  console.log(`PlayerLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
+  let playerLibrary: PlayerLibrary;
+  if (newPlayersLibrary) {
+    playerLibrary = await PlayerLibrary.deploy();
+    await playerLibrary.deployed();
+    console.log(`PlayerLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
+  } else {
+    playerLibrary = await PlayerLibrary.attach("0xaaececb8429c524420820cf8d610d7a49dc887d2");
+  }
 
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayerLibrary: playerLibrary.address},
   });
-  const playersAddress = "0x4e6736c52c2cca692a97201fdc63d9bfce4dd315";
+  const playersAddress = "0x8958e25967d36e2f8d79f0991c7ac5a34d54ea8b";
   const players = await upgrades.upgradeProxy(playersAddress, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
   await players.deployed();
   console.log(`Players deployed at ${players.address.toLowerCase()}`);
-
+  /*
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
   const playerNFT = await upgrades.upgradeProxy("0xc461dc373f434622ecb91a43cecb84d777d29b7f", PlayerNFT, {
     kind: "uups",
   });
 
-  console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
+  console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`); */
 }
 
 // We recommend this pattern to be able to use async/await everywhere
