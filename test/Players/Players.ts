@@ -5,7 +5,7 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer, emptyActionChoice, getActionChoiceId, getActionId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
-import {getXPFromLevel} from "./utils";
+import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
 const actionIsAvailable = true;
 
@@ -435,6 +435,20 @@ describe("Players", () => {
     queuedAction.attire.legs = EstforConstants.NONE;
     queuedAction.attire.arms = EstforConstants.BRONZE_GAUNTLETS; // Correct
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+  });
+
+  it("Queueing after 1 action is completely finished", async () => {
+    const {playerId, players, alice} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicWoodcutting();
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2 + 1]); // First one is now finished
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND); // This should complete the first one
+    const actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
+    expect(actionQueue[0].attire.queueId).to.eq(2);
+    expect(actionQueue[1].attire.queueId).to.eq(3);
   });
 
   describe("Minimum skill points", () => {

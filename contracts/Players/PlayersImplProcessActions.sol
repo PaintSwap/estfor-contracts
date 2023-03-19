@@ -29,7 +29,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint32 allPointsAccrued;
 
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
-    uint length;
+    uint remainingSkillsLength;
     uint nextStartTime = block.timestamp;
     for (uint i = 0; i < player.actionQueue.length; ++i) {
       QueuedAction storage queuedAction = player.actionQueue[i];
@@ -62,9 +62,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
       if (elapsedTime == 0) {
         // Haven't touched this action yet so add it all
-        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, length);
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength++);
         nextStartTime += queuedAction.timespan;
-        length = i + 1;
         continue;
       }
 
@@ -103,9 +102,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
       if (!fullyFinished) {
         // Add the remainder if this action is not fully consumed
-        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, length);
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength++);
         nextStartTime += elapsedTime;
-        length = i + 1;
       }
 
       if (pointsAccrued != 0) {
@@ -159,7 +157,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     _claimRandomRewards(_playerId);
 
     assembly ("memory-safe") {
-      mstore(remainingSkills, length)
+      mstore(remainingSkills, remainingSkillsLength)
     }
   }
 
