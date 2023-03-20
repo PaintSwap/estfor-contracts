@@ -131,20 +131,17 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts) {
     uint16 prevIndex = _findBaseXPThreshold(_oldTotalXP);
     uint16 nextIndex = _findBaseXPThreshold(_newTotalXP);
-    if (prevIndex != nextIndex) {
-      uint32 xpThreshold = _getXPReward(nextIndex);
-      Equipment[] memory items = xpRewardThresholds[xpThreshold];
-      if (items.length != 0) {
-        U256 iter = U256.wrap(items.length);
-        itemTokenIds = new uint[](iter.asUint256());
-        amounts = new uint[](iter.asUint256());
 
-        while (iter.neq(0)) {
-          iter = iter.dec();
-          uint i = iter.asUint256();
-          itemTokenIds[i] = items[i].itemTokenId;
-          amounts[i] = items[i].amount;
-        }
+    uint diff = nextIndex - prevIndex;
+    itemTokenIds = new uint[](diff);
+    amounts = new uint[](diff);
+    for (uint i = 0; i < diff; ++i) {
+      uint32 xpThreshold = _getXPReward(prevIndex + 1 + i);
+      Equipment[] memory items = xpRewardThresholds[xpThreshold];
+      if (items.length > 0) {
+        // TODO: Currently assumes there is only 1 item per threshold
+        itemTokenIds[i] = items[0].itemTokenId;
+        amounts[i] = items[0].amount;
       }
     }
   }
@@ -254,11 +251,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           uint j = iter.asUint256();
           pendingOutput.produced[producedLength++] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
         }
-
-        // This loot might be needed for a future task so mint now rather than later
-        // But this could be improved
-        pendingOutput.xpGained += pointsAccrued;
       }
+      // But this could be improved
+      pendingOutput.xpGained += pointsAccrued;
     } // end of loop
 
     if (_flags.includeXPRewards && pendingOutput.xpGained != 0) {
@@ -569,6 +564,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint32 xpThreshold = _getXPReward(index);
     if (_xpThresholdReward.xpThreshold != xpThreshold) {
       revert XPThresholdNotFound();
+    }
+
+    for (uint i = 0; i < _xpThresholdReward.rewards.length; ++i) {
+      if (_xpThresholdReward.rewards[i].itemTokenId == NONE) {
+        revert InvalidItemTokenId();
+      }
+      if (_xpThresholdReward.rewards[i].amount == 0) {
+        revert InvalidAmount();
+      }
     }
 
     xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.rewards;

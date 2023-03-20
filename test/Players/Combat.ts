@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
-  bronzeHelmentStats,
+  bronzeHelmetStats,
   emptyActionChoice,
   getActionChoiceId,
   getActionChoiceIds,
@@ -87,7 +87,7 @@ describe("Combat Actions", () => {
       });
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
-        combatStats: bronzeHelmentStats,
+        combatStats: bronzeHelmetStats,
         tokenId: EstforConstants.BRONZE_HELMET,
         equipPosition: EstforTypes.EquipPosition.HEAD,
         metadataURI: "someIPFSURI.json",

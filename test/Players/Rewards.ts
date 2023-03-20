@@ -8,7 +8,7 @@ import {playersFixture} from "./PlayersFixture";
 const actionIsAvailable = true;
 
 describe("Rewards", () => {
-  it("XP threshold rewards", async () => {
+  it("XP threshold rewards, single", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
@@ -86,6 +86,76 @@ describe("Rewards", () => {
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
+  });
+
+  it("XP threshold rewards, multiple", async () => {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    const rate = 100 * 100; // per hour
+    const tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.WOODCUTTING,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawn: 0,
+        handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+      },
+      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const queuedAction: EstforTypes.QueuedAction = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan: 1600,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      startTime: "0",
+      isValid: true,
+    };
+
+    const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
+    await players.addXPThresholdReward({xpThreshold: 500, rewards});
+    const rewards1: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_HELMET, amount: 4}];
+    await players.addXPThresholdReward({xpThreshold: 1000, rewards: rewards1});
+
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [1600]);
+    await ethers.provider.send("evm_mine", []);
+
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
+      includeLoot: false,
+      includePastRandomRewards: false,
+      includeXPRewards: true,
+    });
+    expect(pendingOutput.producedXPRewards.length).is.eq(2);
+    expect(pendingOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
+    expect(pendingOutput.producedXPRewards[0].amount).is.eq(3);
+    expect(pendingOutput.producedXPRewards[1].itemTokenId).is.eq(EstforConstants.BRONZE_HELMET);
+    expect(pendingOutput.producedXPRewards[1].amount).is.eq(4);
+
+    await players.connect(alice).processActions(playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_HELMET)).to.eq(4);
   });
 
   it("Daily Rewards", async () => {

@@ -87,6 +87,8 @@ abstract contract PlayersBase {
   error NotAdmin();
   error XPThresholdNotFound();
   error InvalidItemTokenId();
+  error ItemDoesNotExist();
+  error InvalidAmount();
 
   uint32 public constant MAX_TIME = 1 days;
   uint public constant startXP = 374;
