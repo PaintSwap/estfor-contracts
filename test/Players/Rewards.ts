@@ -18,7 +18,7 @@ describe("Rewards", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -98,7 +98,8 @@ describe("Rewards", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
+
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -111,6 +112,7 @@ describe("Rewards", () => {
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
         actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
       randomRewards: [],
@@ -118,7 +120,7 @@ describe("Rewards", () => {
     });
 
     const actionId = await getActionId(tx);
-    const queuedAction: EstforTypes.QueuedAction = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.NONE,
@@ -129,8 +131,7 @@ describe("Rewards", () => {
       timespan: 1600,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      startTime: "0",
-      isValid: true,
+      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
@@ -170,7 +171,7 @@ describe("Rewards", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -308,7 +309,7 @@ describe("Rewards", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {

@@ -124,7 +124,7 @@ contract DebugStorageSlots {
     Skill skill;
     uint32 minXP;
     uint32 diff;
-    uint32 rate; // rate of output produced per hour (base 100) 2 decimals
+    uint32 rate; // rate of output produced per hour (base 10) 1 decimal
     uint16 xpPerHour;
     uint16 inputTokenId1;
     uint8 num1;

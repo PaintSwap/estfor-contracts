@@ -5,16 +5,23 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2
 
 contract MockOracleClient {
   uint counter = 1;
+  uint numWords;
 
-  function requestRandomWords(bytes32, uint64, uint16, uint32, uint32) external returns (uint256 requestId) {
+  function requestRandomWords(bytes32, uint64, uint16, uint32, uint32 _numWords) external returns (uint256 requestId) {
     requestId = counter;
     ++counter;
+    if (numWords == 0) {
+      numWords = _numWords;
+    }
   }
 
   function fulfill(uint _requestId, address _consumer) external {
     VRFConsumerBaseV2 consumer = VRFConsumerBaseV2(_consumer);
-    uint256[] memory randomWords = new uint256[](1);
-    randomWords[0] = uint(blockhash(block.number - 1) | bytes32(counter));
+    uint256[] memory randomWords = new uint256[](numWords);
+    for (uint i = 0; i < numWords; ++i) {
+      randomWords[i] = uint(blockhash(block.number - (i + 1)) | bytes32(counter));
+      ++counter;
+    }
     consumer.rawFulfillRandomWords(_requestId, randomWords);
   }
 }

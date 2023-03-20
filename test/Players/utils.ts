@@ -6,7 +6,7 @@ import {playersFixture} from "./PlayersFixture";
 export const setupBasicWoodcutting = async () => {
   const {itemNFT, world} = await loadFixture(playersFixture);
 
-  const rate = 100 * 100; // per hour
+  const rate = 100 * 10; // per hour
   const tx = await world.addAction({
     actionId: 1,
     info: {

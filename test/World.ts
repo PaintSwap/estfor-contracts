@@ -42,12 +42,12 @@ describe("World", () => {
       let requestId = await world.requestIds(0);
       expect(requestId).to.be.greaterThanOrEqual(1);
 
-      let randomWord = await world.randomWords(requestId);
+      let randomWord = await world.randomWords(requestId, 0);
       expect(randomWord).to.eq(0);
 
       // Retrieve the random number
       await mockOracleClient.fulfill(requestId, world.address);
-      randomWord = await world.randomWords(requestId);
+      randomWord = await world.randomWords(requestId, 0);
       expect(randomWord).to.not.eq(0);
 
       // Try fulfill same request should fail
@@ -181,7 +181,7 @@ describe("World", () => {
           diff: 2,
           xpPerHour: 0,
           minXP: 0,
-          rate: 1 * 100,
+          rate: 1 * 10,
           inputTokenId1: EstforConstants.AIR_SCROLL,
           num1: 1,
           inputTokenId2: EstforConstants.NONE,

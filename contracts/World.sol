@@ -26,7 +26,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   using UnsafeU256 for U256;
 
   event RequestSent(uint256 requestId, uint32 numWords);
-  event RequestFulfilled(uint256 requestId, uint256 randomWord);
+  event RequestFulfilled(uint256 requestId, uint256[3] randomWords);
   event AddAction(Action action);
   event EditAction(Action action);
   event SetAvailableAction(uint16 actionId, bool available);
@@ -55,6 +55,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error GuaranteedRewardsNoDuplicates();
   error RandomRewardsMustBeInOrder();
   error RandomRewardNoDuplicates();
+  error TooManySpawned();
 
   // This is only used as an input arg
   struct Action {
@@ -73,7 +74,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   // Past request ids
   uint[] public requestIds; // Each one is a seed for a day
-  mapping(uint requestId => uint randomWord) public randomWords;
+  mapping(uint requestId => uint[3] randomWord) public randomWords;
   uint40 public lastSeedUpdatedTime;
   uint40 public startTime;
   uint40 public nextCheckpoint;
@@ -86,9 +87,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint32 public constant CALLBACK_GAS_LIMIT = 100000;
   // The default is 3, but you can set this higher.
   uint16 public constant REQUEST_CONFIRMATIONS = 1;
-  // For this example, retrieve 1 random value in one request.
+  // For this example, retrieve 3 random values in one request.
   // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-  uint32 public constant NUM_WORDS = 1;
+  uint32 public constant NUM_WORDS = 3;
 
   uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
@@ -172,7 +173,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function requestSeedUpdate() external returns (uint256 requestId) {
     // Last one has not been fulfilled yet
-    if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]] == 0) {
+    if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]][0] == 0) {
       revert SeedCannotBeUpdatedYet();
     }
     if (lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME > block.timestamp) {
@@ -196,14 +197,21 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
     //    require(_requestId == requestIds[requestIds.length - 1], "request not found");
-    if (randomWords[_requestId] != 0) {
+    if (randomWords[_requestId][0] != 0) {
       revert RequestAlreadyFulfilled();
     }
 
-    uint random = _randomWords[0];
-    if (random == 0) {
+    uint256[3] memory random = [_randomWords[0], _randomWords[1], _randomWords[2]];
+
+    if (random[0] == 0) {
       // Not sure if 0 can be selected, but in case use previous block hash as pseudo random number
-      random = uint(blockhash(block.number - 1));
+      random[0] = uint(blockhash(block.number - 1));
+    }
+    if (random[1] == 0) {
+      random[1] = uint(blockhash(block.number - 2));
+    }
+    if (random[2] == 0) {
+      random[2] = uint(blockhash(block.number - 3));
     }
 
     randomWords[_requestId] = random;
@@ -238,26 +246,49 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     equipment = _getDailyReward(7);
   }
 
+  function _getSeedOffset(uint _timestamp) private view returns (uint) {
+    return (_timestamp - startTime) / MIN_SEED_UPDATE_TIME;
+  }
+
   function _getSeed(uint _timestamp) private view returns (uint) {
-    uint offset = (_timestamp - startTime) / MIN_SEED_UPDATE_TIME;
+    uint offset = _getSeedOffset(_timestamp);
     if (requestIds.length <= offset) {
       return 0;
     }
-    return randomWords[requestIds[offset]];
+    return randomWords[requestIds[offset]][0];
   }
 
   function hasSeed(uint _timestamp) external view returns (bool) {
     return _getSeed(_timestamp) != 0;
   }
 
-  function getSeed(uint _timestamp) public view returns (uint seed) {
+  function getSeed(uint _timestamp) external view returns (uint seed) {
     seed = _getSeed(_timestamp);
     if (seed == 0) {
       revert NoValidSeed();
     }
   }
 
+  function _getFullWords(uint _timestamp) private view returns (uint[3] memory) {
+    uint offset = _getSeedOffset(_timestamp);
+    if (requestIds.length <= offset) {
+      return [uint256(0), uint256(0), uint256(0)];
+    }
+    return randomWords[requestIds[offset]];
+  }
+
+  function getFullWords(uint _timestamp) external view returns (uint[3] memory) {
+    return _getFullWords(_timestamp);
+  }
+
+  function getMultipleWords(uint _numDays) external view returns (uint[3][5] memory seeds) {
+    for (uint i = 0; i < _numDays; ++i) {
+      seeds[i] = _getFullWords(block.timestamp - i * 1 days);
+    }
+  }
+
   // Can be called by anyone as long as over 1 day has passed since the last call
+  /*
   function updateDynamicActions() external {
     if ((lastDynamicUpdatedTime + MIN_DYNAMIC_ACTION_UPDATE_TIME) > block.timestamp) {
       revert CanOnlyRequestAfter1DayHasPassed();
@@ -293,7 +324,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     lastDynamicUpdatedTime = block.timestamp;
     emit AddDynamicActions(actionIdsToAdd);
-  }
+  } */
 
   function getSkill(uint _actionId) external view returns (Skill) {
     return actions[_actionId].skill;
@@ -354,6 +385,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
     if (_action.info.handItemTokenIdRangeMin > _action.info.handItemTokenIdRangeMax) {
       revert MinCannotBeGreaterThanMax();
+    }
+    if (_action.info.numSpawn > 10) {
+      revert TooManySpawned();
     }
     actions[_action.actionId] = _action.info;
 

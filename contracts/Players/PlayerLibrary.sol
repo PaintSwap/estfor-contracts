@@ -330,7 +330,7 @@ library PlayerLibrary {
       }
 
       // Check the max that can be used
-      numConsumed = uint16((combatElapsedTime * _actionChoice.rate) / (3600 * 100));
+      numConsumed = uint16((combatElapsedTime * _actionChoice.rate) / (3600 * 10));
       if (numConsumed != 0) {
         // This checks the balances
         uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
@@ -361,7 +361,7 @@ library PlayerLibrary {
     xpElapsedTime = _elapsedTime;
 
     // Check the max that can be used
-    numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 100));
+    numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 10));
     // This checks the balances
     uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
     if (numConsumed > maxRequiredRatio) {

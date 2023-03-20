@@ -293,7 +293,7 @@ export const allActions: ActionInput[] = [
       actionChoiceRequired: false,
       successPercent: 100,
     },
-    guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate: 1220 * 100}],
+    guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate: 1220 * 10}],
     randomRewards: [],
     combatStats: EstforTypes.emptyCombatStats,
   },
@@ -329,7 +329,7 @@ export const allActions: ActionInput[] = [
       actionChoiceRequired: false,
       successPercent: 100,
     },
-    guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 1220 * 100}],
+    guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 1220 * 10}],
     randomRewards: [],
     combatStats: EstforTypes.emptyCombatStats,
   },
@@ -347,7 +347,7 @@ export const allActions: ActionInput[] = [
       actionChoiceRequired: true,
       successPercent: 100,
     },
-    guaranteedRewards: [{itemTokenId: EstforConstants.TIN_ORE, rate: 1220 * 100}],
+    guaranteedRewards: [{itemTokenId: EstforConstants.TIN_ORE, rate: 1220 * 10}],
     randomRewards: [],
     combatStats: EstforTypes.emptyCombatStats,
   },
@@ -385,8 +385,8 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 100},
-      {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 1 * 100},
+      {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
+      {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 1 * 10},
     ],
     randomRewards: [],
     combatStats: {
@@ -459,7 +459,7 @@ export const firemakingChoices: ActionChoice[] = [
   {
     skill: EstforTypes.Skill.FIREMAKING,
     diff: 0,
-    rate: 1220 * 100,
+    rate: 1220 * 10,
     xpPerHour: 25,
     minXP: 0,
     inputTokenId1: EstforConstants.LOG,
@@ -475,7 +475,7 @@ export const firemakingChoices: ActionChoice[] = [
   {
     skill: EstforTypes.Skill.FIREMAKING,
     diff: 0,
-    rate: 1220 * 100,
+    rate: 1220 * 10,
     xpPerHour: 45,
     minXP: 1021,
     inputTokenId1: EstforConstants.OAK_LOG,
@@ -494,7 +494,7 @@ export const smithingChoices: ActionChoice[] = [
   {
     skill: EstforTypes.Skill.SMITHING,
     diff: 0,
-    rate: 2440 * 100,
+    rate: 2440 * 10,
     xpPerHour: 25,
     minXP: 0,
     inputTokenId1: EstforConstants.COPPER_ORE,
@@ -510,7 +510,7 @@ export const smithingChoices: ActionChoice[] = [
   {
     skill: EstforTypes.Skill.SMITHING,
     diff: 0,
-    rate: 1220 * 100,
+    rate: 1220 * 10,
     xpPerHour: 35,
     minXP: 0,
     inputTokenId1: EstforConstants.IRON_ORE,

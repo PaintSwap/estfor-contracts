@@ -25,7 +25,7 @@ describe("Boosts", () => {
       boostDuration,
     });
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -83,7 +83,7 @@ describe("Boosts", () => {
     ); //
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((timespan * rate) / (3600 * 100))
+      Math.floor((timespan * rate) / (3600 * 10))
     );
   });
 
@@ -102,7 +102,7 @@ describe("Boosts", () => {
       boostDuration: 7200,
     });
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -160,7 +160,7 @@ describe("Boosts", () => {
     ); //
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((timespan * rate) / (3600 * 100))
+      Math.floor((timespan * rate) / (3600 * 10))
     );
   });
 });

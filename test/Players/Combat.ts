@@ -29,7 +29,7 @@ describe("Combat Actions", () => {
         health: 20,
       };
 
-      const rate = 1 * 100; // per hour
+      const rate = 1 * 10; // per hour
       const numSpawn = 10;
       let tx = await world.addAction({
         actionId: 1,
@@ -136,7 +136,7 @@ describe("Combat Actions", () => {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawn) / (3600 * 100))
+        Math.floor((time * rate * numSpawn) / (3600 * 10))
       );
 
       // Check food is consumed
@@ -165,7 +165,7 @@ describe("Combat Actions", () => {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawn) / (3600 * 100))
+        Math.floor((time * rate * numSpawn) / (3600 * 10))
       );
 
       // Check food is consumed
@@ -204,7 +204,7 @@ describe("Combat Actions", () => {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawn) / (3600 * 100))
+        Math.floor((time * rate * numSpawn) / (3600 * 10))
       );
 
       // Check food is consumed, update later
@@ -248,7 +248,7 @@ describe("Combat Actions", () => {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawn) / (3600 * 100))
+        Math.floor((time * rate * numSpawn) / (3600 * 10))
       );
 
       // Check food is consumed, update later
@@ -270,7 +270,7 @@ describe("Combat Actions", () => {
         health: 5,
       };
 
-      const dropRate = 1 * 100; // per hour
+      const dropRate = 1 * 10; // per hour
       let tx = await world.addAction({
         actionId: 1,
         info: {
@@ -303,7 +303,7 @@ describe("Combat Actions", () => {
         [1, 1, 1000, 200, 100]
       );
 
-      const scrollsConsumedRate = 1 * 100; // per hour
+      const scrollsConsumedRate = 1 * 10; // per hour
       // Combat uses none as it's not tied to a specific action (only combat ones)
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
         skill: EstforTypes.Skill.MAGIC,
@@ -394,7 +394,7 @@ describe("Combat Actions", () => {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate) / (3600 * 100))
+        Math.floor((timespan * dropRate) / (3600 * 10))
       );
 
       // Check food is consumed, update later
@@ -422,7 +422,7 @@ describe("Combat Actions", () => {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate) / (3600 * 100))
+        Math.floor((timespan * dropRate) / (3600 * 10))
       );
 
       // Check food is consumed, update later
@@ -452,7 +452,8 @@ describe("Combat Actions", () => {
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
-      await itemNFT.connect(alice).burn(alice.address, EstforConstants.AIR_SCROLL, 200);
+      const balance = await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL);
+      await itemNFT.connect(alice).burn(alice.address, EstforConstants.AIR_SCROLL, balance);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
@@ -471,7 +472,7 @@ describe("Combat Actions", () => {
       const {playerId, players, alice, world, queuedAction} = await loadFixture(playersFixtureMagic);
 
       const _queuedAction = {...queuedAction};
-      const scrollsConsumedRate = 1 * 100; // per hour
+      const scrollsConsumedRate = 1 * 10; // per hour
 
       let choiceId = 2;
       const tx = await world.addActionChoices(
@@ -545,7 +546,7 @@ describe("Combat Actions", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const randomChanceFraction = 50.0 / 100; // 50% chance
     const randomChance = Math.floor(65535 * randomChanceFraction);
 
@@ -678,7 +679,7 @@ describe("Combat Actions", () => {
       health: 0,
     };
 
-    const rate = 1 * 100; // per hour
+    const rate = 1 * 10; // per hour
     let tx = await world.addAction({
       actionId: 1,
       info: {

@@ -321,13 +321,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (_isCombat) {
         numRewards = _monstersKilled;
       } else {
-        numRewards = (_elapsedTime * _rewardRate * _successPercent) / (3600 * 100 * 100);
+        numRewards = (_elapsedTime * _rewardRate * _successPercent) / (3600 * 10 * 100);
       }
 
       if (numRewards != 0) {
         _ids[length] = _rewardTokenId;
-        _amounts[length] = numRewards;
-        ++length;
+        _amounts[length++] = numRewards;
       }
     }
   }
@@ -453,8 +452,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
               if (!found) {
                 // New item
                 _ids[length] = potentialReward.itemTokenId;
-                _amounts[length] = 1;
-                ++length;
+                _amounts[length++] = 1;
               }
               break;
             }

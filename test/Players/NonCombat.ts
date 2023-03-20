@@ -31,7 +31,7 @@ describe("Non-Combat Actions", () => {
       expect(pendingOutput.consumed.length).is.eq(0);
       expect(pendingOutput.produced.length).is.eq(1);
       expect(pendingOutput.produced[0].itemTokenId).is.eq(EstforConstants.LOG);
-      const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
+      const balanceExpected = Math.floor((timespan * rate) / (3600 * 10));
       expect(pendingOutput.produced[0].amount).is.eq(balanceExpected);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
@@ -43,7 +43,7 @@ describe("Non-Combat Actions", () => {
     it("Full nature equipment", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-      const rate = 100 * 100; // per hour
+      const rate = 100 * 10; // per hour
       const tx = await world.addAction({
         actionId: 1,
         info: {
@@ -159,7 +159,7 @@ describe("Non-Combat Actions", () => {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      const balanceExpected = Math.floor((timespan * rate) / (3600 * 100));
+      const balanceExpected = Math.floor((timespan * rate) / (3600 * 10));
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
         queuedAction.timespan + queuedAction.timespan * 0.03
@@ -171,7 +171,7 @@ describe("Non-Combat Actions", () => {
 
   it("Firemaking", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     let tx = await world.addAction({
       actionId: 1,
       info: {
@@ -255,7 +255,7 @@ describe("Non-Combat Actions", () => {
   it("Multi skill appending, woodcutting + firemaking", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
-    const rate = 1220 * 100; // per hour
+    const rate = 1220 * 10; // per hour
     {
       const tx = await world.addAction({
         actionId: 1,
@@ -385,7 +385,7 @@ describe("Non-Combat Actions", () => {
     expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 1220 logs burnt per hour, 2 hours producing logs, 1 hour burning
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * 100)) - rate / 100
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10
     );
     // Action queue should be empty
     expect(await players.actionQueueLength(playerId)).to.eq(0);
@@ -394,7 +394,7 @@ describe("Non-Combat Actions", () => {
   it("Multi skill, woodcutting + firemaking", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     {
       const tx = await world.addAction({
         actionId: 1,
@@ -529,8 +529,8 @@ describe("Non-Combat Actions", () => {
     expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * 100)) -
-        Math.floor((queuedActions[1].timespan * rate) / (3600 * 100)) +
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) -
+        Math.floor((queuedActions[1].timespan * rate) / (3600 * 10)) +
         1
     );
     expect(await players.actionQueueLength(playerId)).to.eq(0);
@@ -553,7 +553,7 @@ describe("Non-Combat Actions", () => {
         actionChoiceRequired: false,
         successPercent: 100,
       },
-      guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 100}], // 100.00
+      guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 10}], // 1.0
       randomRewards: [],
       combatStats: EstforTypes.emptyCombatStats,
     });
@@ -591,7 +591,7 @@ describe("Non-Combat Actions", () => {
 
   it("Smithing", async () => {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
 
     let tx = await world.addAction({
       actionId: 1,
@@ -672,20 +672,20 @@ describe("Non-Combat Actions", () => {
 
     // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
-      Math.floor((timespan * rate) / (3600 * 100))
+      Math.floor((timespan * rate) / (3600 * 10))
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COAL_ORE)).to.eq(
-      255 - Math.floor((timespan * rate) / (3600 * 100)) * 2
+      255 - Math.floor((timespan * rate) / (3600 * 10)) * 2
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ORE)).to.eq(
-      255 - Math.floor((timespan * rate) / (3600 * 100))
+      255 - Math.floor((timespan * rate) / (3600 * 10))
     );
   });
 
   describe("Cooking", () => {
     it("Cook", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 100; // per hour
+      const rate = 100 * 10; // per hour
 
       let tx = await world.addAction({
         actionId: 1,
@@ -764,17 +764,17 @@ describe("Non-Combat Actions", () => {
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((timespan * rate) / (3600 * 100))
+        Math.floor((timespan * rate) / (3600 * 10))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((timespan * rate) / (3600 * 100))
+        1000 - Math.floor((timespan * rate) / (3600 * 10))
       );
     });
 
     // Changes based on level
     it("Burn some food", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 100; // per hour
+      const rate = 100 * 10; // per hour
 
       let tx = await world.addAction({
         actionId: 1,
@@ -855,16 +855,16 @@ describe("Non-Combat Actions", () => {
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((timespan * rate) / (3600 * 100 * 2))
+        Math.floor((timespan * rate) / (3600 * 10 * 2))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((timespan * rate) / (3600 * 100))
+        1000 - Math.floor((timespan * rate) / (3600 * 10))
       );
     });
 
     it("Burn food, check max 90% success upper bound", async () => {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 100; // per hour
+      const rate = 100 * 10; // per hour
 
       let tx = await world.addAction({
         actionId: 1,
@@ -945,10 +945,10 @@ describe("Non-Combat Actions", () => {
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((timespan * rate * 0.9) / (3600 * 100)) // Max 90% success
+        Math.floor((timespan * rate * 0.9) / (3600 * 10)) // Max 90% success
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((timespan * rate) / (3600 * 100))
+        1000 - Math.floor((timespan * rate) / (3600 * 10))
       );
     });
   });
@@ -956,7 +956,7 @@ describe("Non-Combat Actions", () => {
   it("Set past max timespan ", async () => {
     const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(playersFixture);
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -1006,7 +1006,7 @@ describe("Non-Combat Actions", () => {
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan - 1);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor(((queuedAction.timespan - 1) * rate) / (3600 * 100))
+      Math.floor(((queuedAction.timespan - 1) * rate) / (3600 * 10))
     );
   });
 
@@ -1021,7 +1021,7 @@ describe("Non-Combat Actions", () => {
       metadataURI: "someIPFSURI.json",
     });
 
-    const rate = 0.1 * 100; // 0.1 per hour
+    const rate = 0.1 * 10; // 0.1 per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -1067,7 +1067,7 @@ describe("Non-Combat Actions", () => {
   it("Incorrect left/right hand equipment", async () => {
     const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
 
-    const rate = 100 * 100; // per hour
+    const rate = 100 * 10; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
