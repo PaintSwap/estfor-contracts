@@ -52,7 +52,7 @@ export const getActionChoiceIds = async (tx: ContractTransaction): Promise<numbe
 };
 
 // Actions
-export const bronzeHelmentStats: EstforTypes.CombatStats = {
+export const bronzeHelmetStats: EstforTypes.CombatStats = {
   melee: 1,
   magic: 0,
   range: 0,
@@ -86,7 +86,7 @@ export const allItems: EstforTypes.InputItem[] = [
   {
     ...EstforTypes.defaultInputItem,
     tokenId: EstforConstants.BRONZE_HELMET,
-    combatStats: bronzeHelmentStats,
+    combatStats: bronzeHelmetStats,
     equipPosition: EstforTypes.EquipPosition.HEAD,
     metadataURI: "someIPFSURI.json",
   },
@@ -100,7 +100,7 @@ export const allItems: EstforTypes.InputItem[] = [
   {
     ...EstforTypes.defaultInputItem,
     tokenId: EstforConstants.IRON_HELMET,
-    combatStats: bronzeHelmentStats,
+    combatStats: bronzeHelmetStats,
     equipPosition: EstforTypes.EquipPosition.HEAD,
     metadataURI: "someIPFSURI.json",
   },
@@ -114,7 +114,7 @@ export const allItems: EstforTypes.InputItem[] = [
   {
     ...EstforTypes.defaultInputItem,
     tokenId: EstforConstants.BRONZE_ARMOR,
-    combatStats: bronzeHelmentStats,
+    combatStats: bronzeHelmetStats,
     equipPosition: EstforTypes.EquipPosition.BODY,
     metadataURI: "someIPFSURI.json",
   },
@@ -128,8 +128,15 @@ export const allItems: EstforTypes.InputItem[] = [
   {
     ...EstforTypes.defaultInputItem,
     tokenId: EstforConstants.BRONZE_BOOTS,
-    combatStats: bronzeHelmentStats,
+    combatStats: bronzeHelmetStats,
     equipPosition: EstforTypes.EquipPosition.FEET,
+    metadataURI: "someIPFSURI.json",
+  },
+  {
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.BRONZE_SHIELD,
+    combatStats: bronzeHelmetStats,
+    equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
     metadataURI: "someIPFSURI.json",
   },
   {
