@@ -207,6 +207,14 @@ export const allItems: EstforTypes.InputItem[] = [
     equipPosition: EstforTypes.EquipPosition.FOOD,
     metadataURI: "someIPFSURI.json",
   },
+  {
+    ...EstforTypes.defaultInputItem,
+    combatStats: {...bronzeGauntletStats, magic: 2},
+    healthRestored: 2,
+    tokenId: EstforConstants.TOTEM_STAFF,
+    equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+    metadataURI: "someIPFSURI.json",
+  },
 ];
 
 type XPThresholdReward = {
