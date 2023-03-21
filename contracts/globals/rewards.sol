@@ -4,9 +4,15 @@ pragma solidity ^0.8.19;
 import {Equipment} from "./players.sol";
 
 // Loot
-struct ActionReward {
+struct GuaranteedReward {
   uint16 itemTokenId;
   uint16 rate; // num per hour, base 10 (1 decimals) or percentage chance (out of 65535)
+}
+
+struct RandomReward {
+  uint16 itemTokenId;
+  uint16 chance; // out of 65535
+  uint8 amount; // out of 255
 }
 
 struct PendingRandomReward {

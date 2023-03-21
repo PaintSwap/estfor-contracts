@@ -274,14 +274,14 @@ describe("World", () => {
         },
         guaranteedRewards: [],
         randomRewards: [
-          {itemTokenId: EstforConstants.SHADOW_SCROLL, rate: 100},
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
+          {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 100, amount: 1},
+          {itemTokenId: EstforConstants.AIR_SCROLL, chance: 200, amount: 1},
         ],
         combatStats: EstforTypes.emptyCombatStats,
       };
 
       await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "RandomRewardsMustBeInOrder");
-      action.randomRewards[0].rate = 300;
+      action.randomRewards[0].chance = 300;
       await expect(world.addAction(action)).to.not.be.reverted;
     });
 
@@ -304,8 +304,8 @@ describe("World", () => {
         },
         guaranteedRewards: [],
         randomRewards: [
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 100},
+          {itemTokenId: EstforConstants.AIR_SCROLL, chance: 200, amount: 1},
+          {itemTokenId: EstforConstants.AIR_SCROLL, chance: 100, amount: 1},
         ],
         combatStats: EstforTypes.emptyCombatStats,
       };

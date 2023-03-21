@@ -84,10 +84,16 @@ contract DebugStorageSlots {
   }
 
   // Loot
-  struct ActionReward {
+  struct GuaranteedReward {
     uint16 itemTokenId;
     uint24 rate; // num per hour, base 100 (2 decimals) or percentage chance
   }
+  struct RandomReward {
+    uint16 itemTokenId;
+    uint16 chance; // out of 65535
+    uint8 amount; // out of 255
+  }
+
   struct PendingRandomReward {
     uint16 actionId;
     uint16 choiceId;
@@ -102,20 +108,25 @@ contract DebugStorageSlots {
 
   struct ActionRewards {
     uint16 guaranteedRewardTokenId1;
-    uint24 guaranteedRewardRate1; // num per hour, base 100 (2 decimals)
+    uint16 guaranteedRewardRate1; // Num per hour, base 10 (1 decimal). Max 6533.5 per hour
     uint16 guaranteedRewardTokenId2;
-    uint24 guaranteedRewardRate2;
+    uint16 guaranteedRewardRate2;
     uint16 guaranteedRewardTokenId3;
-    uint24 guaranteedRewardRate3;
+    uint16 guaranteedRewardRate3;
     // Random chance rewards
     uint16 randomRewardTokenId1;
     uint16 randomRewardChance1; // out of 65335
+    uint8 randomRewardAmount1; // out of 255
     uint16 randomRewardTokenId2;
     uint16 randomRewardChance2;
+    uint8 randomRewardAmount2;
     uint16 randomRewardTokenId3;
     uint16 randomRewardChance3;
+    uint8 randomRewardAmount3;
     uint16 randomRewardTokenId4;
     uint16 randomRewardChance4;
+    uint8 randomRewardAmount4;
+    // No more room!
   }
 
   // This is effectively a ratio to produce 1 of outputTokenId.
@@ -255,7 +266,8 @@ contract DebugStorageSlots {
   }
 
   Item item;
-  ActionReward actionReward;
+  GuaranteedReward guaranteeedReward;
+  RandomReward randomReward;
   PendingRandomReward pendingRandomReward;
   Equipment equipment;
   ActionRewards actionRewards;

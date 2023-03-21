@@ -61,8 +61,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   struct Action {
     uint16 actionId;
     ActionInfo info;
-    ActionReward[] guaranteedRewards;
-    ActionReward[] randomRewards;
+    GuaranteedReward[] guaranteedRewards;
+    RandomReward[] randomRewards;
     CombatStats combatStats;
   }
 
@@ -421,21 +421,21 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function _setActionGuaranteedRewards(Action calldata _action, ActionRewards storage actionReward) private {
+  function _setActionGuaranteedRewards(Action calldata _action, ActionRewards storage _actionRewards) private {
     if (_action.guaranteedRewards.length != 0) {
-      actionReward.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
-      actionReward.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
+      _actionRewards.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
+      _actionRewards.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
     }
     if (_action.guaranteedRewards.length > 1) {
-      actionReward.guaranteedRewardTokenId2 = _action.guaranteedRewards[1].itemTokenId;
-      actionReward.guaranteedRewardRate2 = _action.guaranteedRewards[1].rate;
-      if (actionReward.guaranteedRewardTokenId1 == actionReward.guaranteedRewardTokenId2) {
+      _actionRewards.guaranteedRewardTokenId2 = _action.guaranteedRewards[1].itemTokenId;
+      _actionRewards.guaranteedRewardRate2 = _action.guaranteedRewards[1].rate;
+      if (_actionRewards.guaranteedRewardTokenId1 == _actionRewards.guaranteedRewardTokenId2) {
         revert GuaranteedRewardsNoDuplicates();
       }
     }
     if (_action.guaranteedRewards.length > 2) {
-      actionReward.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
-      actionReward.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
+      _actionRewards.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
+      _actionRewards.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
 
       for (uint i; i < _action.guaranteedRewards.length; ++i) {
         if (
@@ -452,11 +452,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function _setActionRandomRewards(Action calldata _action, ActionRewards storage actionReward) private {
     if (_action.randomRewards.length != 0) {
       actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
-      actionReward.randomRewardChance1 = uint16(_action.randomRewards[0].rate);
+      actionReward.randomRewardChance1 = _action.randomRewards[0].chance;
+      actionReward.randomRewardAmount1 = _action.randomRewards[0].amount;
     }
     if (_action.randomRewards.length > 1) {
       actionReward.randomRewardTokenId2 = _action.randomRewards[1].itemTokenId;
-      actionReward.randomRewardChance2 = uint16(_action.randomRewards[1].rate);
+      actionReward.randomRewardChance2 = _action.randomRewards[1].chance;
+      actionReward.randomRewardAmount2 = _action.randomRewards[1].amount;
+
       if (actionReward.randomRewardChance2 > actionReward.randomRewardChance1) {
         revert RandomRewardsMustBeInOrder();
       }
@@ -466,7 +469,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
     if (_action.randomRewards.length > 2) {
       actionReward.randomRewardTokenId3 = _action.randomRewards[2].itemTokenId;
-      actionReward.randomRewardChance3 = uint16(_action.randomRewards[2].rate);
+      actionReward.randomRewardChance3 = _action.randomRewards[2].chance;
+      actionReward.randomRewardAmount3 = _action.randomRewards[2].amount;
+
       if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
         revert RandomRewardsMustBeInOrder();
       }
@@ -480,7 +485,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
     if (_action.randomRewards.length > 3) {
       actionReward.randomRewardTokenId4 = _action.randomRewards[3].itemTokenId;
-      actionReward.randomRewardChance4 = uint16(_action.randomRewards[3].rate);
+      actionReward.randomRewardChance4 = _action.randomRewards[3].chance;
+      actionReward.randomRewardAmount4 = _action.randomRewards[3].amount;
       for (uint i; i < _action.randomRewards.length; ++i) {
         if (
           _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId

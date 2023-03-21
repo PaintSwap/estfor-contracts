@@ -526,7 +526,9 @@ describe("Combat Actions", () => {
     });
   });
 
-  it("Guaranteed rewards", async () => {});
+  it("Guaranteed rewards", async () => {
+    // TODO
+  });
 
   // This test only works if the timespan does not go over 00:00 utc
   it("Random rewards (many)", async () => {
@@ -565,7 +567,7 @@ describe("Combat Actions", () => {
         successPercent: 100,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: randomChance}],
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
       combatStats: EstforTypes.emptyCombatStats,
     });
 

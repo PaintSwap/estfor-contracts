@@ -377,20 +377,36 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
   function _setupRandomRewards(
     ActionRewards memory _rewards
-  ) private pure returns (ActionReward[] memory randomRewards) {
-    randomRewards = new ActionReward[](4);
+  ) private pure returns (RandomReward[] memory randomRewards) {
+    randomRewards = new RandomReward[](4);
     uint randomRewardLength;
     if (_rewards.randomRewardTokenId1 != 0) {
-      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId1, _rewards.randomRewardChance1);
+      randomRewards[randomRewardLength++] = RandomReward(
+        _rewards.randomRewardTokenId1,
+        _rewards.randomRewardChance1,
+        _rewards.randomRewardAmount1
+      );
     }
     if (_rewards.randomRewardTokenId2 != 0) {
-      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId2, _rewards.randomRewardChance2);
+      randomRewards[randomRewardLength++] = RandomReward(
+        _rewards.randomRewardTokenId2,
+        _rewards.randomRewardChance2,
+        _rewards.randomRewardAmount2
+      );
     }
     if (_rewards.randomRewardTokenId3 != 0) {
-      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId3, _rewards.randomRewardChance3);
+      randomRewards[randomRewardLength++] = RandomReward(
+        _rewards.randomRewardTokenId3,
+        _rewards.randomRewardChance3,
+        _rewards.randomRewardAmount3
+      );
     }
     if (_rewards.randomRewardTokenId4 != 0) {
-      randomRewards[randomRewardLength++] = ActionReward(_rewards.randomRewardTokenId4, _rewards.randomRewardChance4);
+      randomRewards[randomRewardLength++] = RandomReward(
+        _rewards.randomRewardTokenId4,
+        _rewards.randomRewardChance4,
+        _rewards.randomRewardAmount4
+      );
     }
 
     assembly ("memory-safe") {
@@ -409,7 +425,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   ) private view returns (uint length, bool noLuck) {
     length = _oldLength;
 
-    ActionReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
+    RandomReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
 
     if (_randomRewards.length != 0) {
       bool hasRandomWord = world.hasRandomWord(skillEndTime);
@@ -420,6 +436,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             (bytes32(uint256(skillEndTime)) << 64) |
             (bytes32(uint256(skillEndTime)) << 128) |
             (bytes32(uint256(skillEndTime)) << 192));
+
         uint startLootLength = length;
         for (U256 iter; iter.lt(_numTickets); iter = iter.inc()) {
           uint i = iter.asUint256();
@@ -431,8 +448,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();
 
-            ActionReward memory potentialReward = _randomRewards[j];
-            if (rand < potentialReward.rate) {
+            RandomReward memory potentialReward = _randomRewards[j];
+            if (rand < potentialReward.chance) {
               // Get the lowest chance one
 
               // Compare with previous and append amounts if an entry already exists
