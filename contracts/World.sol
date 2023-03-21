@@ -77,7 +77,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   mapping(uint requestId => uint[3] randomWord) public randomWords;
   uint40 public lastSeedUpdatedTime;
   uint40 public startTime;
-  uint40 public nextCheckpoint;
+  uint40 public weeklyRewardCheckpoint;
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
   // For a list of available gas lanes on each network, this is 10000gwei
@@ -117,11 +117,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
-    startTime = uint40((block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME); // Floor to the nearest day 00:00 UTC
-    lastSeedUpdatedTime = startTime;
-    nextCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
+    startTime = uint40((block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME) - 5 days; // Floor to the nearest day 00:00 UTC
+    lastSeedUpdatedTime = startTime + 5 days;
+    weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
 
-    // Issue new daily rewards
+    // Issue new available daily rewards
     Equipment[8] memory rewards = [
       Equipment(COPPER_ORE, 100),
       Equipment(COAL_ORE, 200),
@@ -135,6 +135,24 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     _storeDailyRewards(rewards);
     emit NewDailyRewards(rewards);
+
+    // Initialize 5 days worth of seeds
+    for (uint i = 0; i < 5; ++i) {
+      uint requestId = 200 + i;
+      requestIds.push(requestId);
+      emit RequestSent(requestId, NUM_WORDS);
+      uint[] memory _randomWords = new uint[](3);
+      _randomWords[0] = uint(
+        blockhash(block.number - 5 + i) ^ 0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
+      );
+      _randomWords[1] = uint(
+        blockhash(block.number - 5 + i) ^ 0xca820e9e57e5e703aeebfa2dc60ae09067f931b6e888c0a7c7a15a76341ab2c2
+      );
+      _randomWords[2] = uint(
+        blockhash(block.number - 5 + i) ^ 0xd1f1b7d57307aee9687ae39dbb462b1c1f07a406d34cd380670360ef02f243b6
+      );
+      fulfillRandomWords(requestId, _randomWords);
+    }
   }
 
   function _getDailyReward(uint256 _day) private view returns (Equipment memory equipment) {
@@ -218,7 +236,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit RequestFulfilled(_requestId, random);
 
     // Are we at the threshold for a new week
-    if (nextCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
+    if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
       // Issue new daily rewards based on the new seed (TODO)
       Equipment[8] memory rewards = [
         Equipment(COPPER_ORE, 100),
@@ -232,7 +250,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       ];
       _storeDailyRewards(rewards);
       emit NewDailyRewards(rewards);
-      nextCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
+      weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
     }
   }
 

@@ -14,6 +14,14 @@ describe("World", () => {
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
     const mockOracleClient = await MockOracleClient.deploy();
 
+    // Add some dummy blocks so that world can access them
+    for (let i = 0; i < 5; ++i) {
+      await owner.sendTransaction({
+        to: owner.address,
+        value: 1,
+      });
+    }
+
     // Create the world
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World");
@@ -39,7 +47,8 @@ describe("World", () => {
       await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
       await world.requestSeedUpdate();
 
-      let requestId = await world.requestIds(0);
+      const startOffset = 5;
+      let requestId = await world.requestIds(startOffset);
       expect(requestId).to.be.greaterThanOrEqual(1);
 
       let randomWord = await world.randomWords(requestId, 0);
@@ -59,16 +68,16 @@ describe("World", () => {
       // Increase time and check it works
       await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
       await world.requestSeedUpdate();
-      requestId = await world.requestIds(1);
+      requestId = await world.requestIds(startOffset + 1);
       await mockOracleClient.fulfill(requestId, world.address);
 
       // Increase it 2x more, should allow 2 random seeds to be requested
       await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime * 2]);
       await world.requestSeedUpdate();
-      requestId = await world.requestIds(2);
+      requestId = await world.requestIds(startOffset + 2);
       await mockOracleClient.fulfill(requestId, world.address);
       await world.requestSeedUpdate();
-      requestId = await world.requestIds(3);
+      requestId = await world.requestIds(startOffset + 3);
       await mockOracleClient.fulfill(requestId, world.address);
       await expect(world.requestSeedUpdate()).to.be.reverted;
     });
@@ -80,16 +89,14 @@ describe("World", () => {
       const currentTimestamp = currentBlock.timestamp;
       await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
       await world.requestSeedUpdate();
-
-      let requestId = await world.requestIds(0);
+      let requestId = await world.requestIds(5);
       await mockOracleClient.fulfill(requestId, world.address);
 
       expect(await world.hasSeed(currentTimestamp)).to.be.true;
-
-      await world.getSeed(currentTimestamp);
+      await expect(world.getSeed(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
-      // Before offset
-      await expect(world.getSeed(currentTimestamp - minSeedUpdateTime)).to.be.reverted;
+      // Before 5 day offset
+      await expect(world.getSeed(currentTimestamp - minSeedUpdateTime * 6)).to.be.reverted;
       // After offset
       await expect(world.getSeed(currentTimestamp + minSeedUpdateTime)).to.be.reverted;
     });
