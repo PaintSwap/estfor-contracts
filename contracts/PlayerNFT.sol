@@ -228,7 +228,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     // Pay
     brush.transferFrom(msg.sender, address(this), brushCost);
     // Send half to the pool (currently shop)
-    brush.transferFrom(msg.sender, pool, brushCost - (brushCost / 2));
+    brush.transfer(pool, brushCost - (brushCost / 2));
     // Burn the other half
     brush.burn(brushCost / 2);
 
