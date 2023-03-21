@@ -305,6 +305,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       assembly ("memory-safe") {
         mstore(itemTokenIds, itemLength)
       }
+      /* Not checking item balances for now. It's possible a previous action consumes them all (like food) and
+      // will cause errors trying to queue it up. Probably should check but meh
       if (itemLength != 0) {
         uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
 
@@ -316,7 +318,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
             revert NoItemBalance(itemTokenIds[i]);
           }
         }
-      }
+      } */
     }
     //     if (_queuedAction.choiceId1 != NONE) {
     //     if (_queuedAction.choiceId2 != NONE) {

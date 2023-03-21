@@ -512,17 +512,17 @@ describe("Non-Combat Actions", () => {
     });
 
     // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
-    await expect(
+    /*    await expect(
       players
         .connect(alice)
         .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.reverted;
-
-    await itemNFT.testMint(alice.address, EstforConstants.LOG, 1);
+*/
     await players
       .connect(alice)
       .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStatus.NONE);
 
+    await itemNFT.testMint(alice.address, EstforConstants.LOG, 1);
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
