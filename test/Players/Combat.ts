@@ -598,7 +598,7 @@ describe("Combat Actions", () => {
         endTime = actionQueue[0].startTime + actionQueue[0].timespan;
       }
 
-      expect(await world.hasSeed(endTime)).to.be.false;
+      expect(await world.hasRandomWord(endTime)).to.be.false;
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await players.connect(alice).processActions(playerId);
@@ -618,7 +618,7 @@ describe("Combat Actions", () => {
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
 
-      expect(await world.hasSeed(endTime)).to.be.true;
+      expect(await world.hasRandomWord(endTime)).to.be.true;
 
       if (
         (

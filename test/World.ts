@@ -82,7 +82,7 @@ describe("World", () => {
       await expect(world.requestSeedUpdate()).to.be.reverted;
     });
 
-    it("getSeed", async () => {
+    it("getRandomWord", async () => {
       const {world, mockOracleClient, minSeedUpdateTime} = await loadFixture(deployContracts);
       const blockNum = await ethers.provider.getBlockNumber();
       const currentBlock = await ethers.provider.getBlock(blockNum);
@@ -92,13 +92,34 @@ describe("World", () => {
       let requestId = await world.requestIds(5);
       await mockOracleClient.fulfill(requestId, world.address);
 
-      expect(await world.hasSeed(currentTimestamp)).to.be.true;
-      await expect(world.getSeed(currentTimestamp)).to.not.be.reverted;
+      expect(await world.hasRandomWord(currentTimestamp)).to.be.true;
+      await expect(world.getRandomWord(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
       // Before 5 day offset
-      await expect(world.getSeed(currentTimestamp - minSeedUpdateTime * 6)).to.be.reverted;
+      await expect(world.getRandomWord(currentTimestamp - minSeedUpdateTime * 6)).to.be.reverted;
       // After offset
-      await expect(world.getSeed(currentTimestamp + minSeedUpdateTime)).to.be.reverted;
+      await expect(world.getRandomWord(currentTimestamp + minSeedUpdateTime)).to.be.reverted;
+    });
+
+    it("Get full/multiple words", async () => {
+      const {world, mockOracleClient, minSeedUpdateTime} = await loadFixture(deployContracts);
+      const blockNum = await ethers.provider.getBlockNumber();
+      const currentBlock = await ethers.provider.getBlock(blockNum);
+      const currentTimestamp = currentBlock.timestamp;
+      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
+      await world.requestSeedUpdate();
+      let requestId = await world.requestIds(5);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      const fullWords = await world.getFullRandomWords(currentTimestamp);
+      const multipleWords = await world.getMultipleFullRandomWords(currentTimestamp);
+      expect(fullWords).to.eql(multipleWords[0]);
+      expect(multipleWords.length).to.eq(5);
+      for (let i = 0; i < 5; ++i) {
+        expect(multipleWords[i][0]).to.not.eq(0);
+        expect(multipleWords[i][1]).to.not.eq(0);
+        expect(multipleWords[i][2]).to.not.eq(0);
+      }
     });
   });
 

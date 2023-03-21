@@ -264,44 +264,45 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     equipment = _getDailyReward(7);
   }
 
-  function _getSeedOffset(uint _timestamp) private view returns (uint) {
+  function _getRandomWordOffset(uint _timestamp) private view returns (uint) {
     return (_timestamp - startTime) / MIN_SEED_UPDATE_TIME;
   }
 
-  function _getSeed(uint _timestamp) private view returns (uint) {
-    uint offset = _getSeedOffset(_timestamp);
+  // Just returns the first random word of the array
+  function _getRandomWord(uint _timestamp) private view returns (uint) {
+    uint offset = _getRandomWordOffset(_timestamp);
     if (requestIds.length <= offset) {
       return 0;
     }
     return randomWords[requestIds[offset]][0];
   }
 
-  function hasSeed(uint _timestamp) external view returns (bool) {
-    return _getSeed(_timestamp) != 0;
+  function hasRandomWord(uint _timestamp) external view returns (bool) {
+    return _getRandomWord(_timestamp) != 0;
   }
 
-  function getSeed(uint _timestamp) external view returns (uint seed) {
-    seed = _getSeed(_timestamp);
+  function getRandomWord(uint _timestamp) external view returns (uint seed) {
+    seed = _getRandomWord(_timestamp);
     if (seed == 0) {
       revert NoValidSeed();
     }
   }
 
-  function _getFullWords(uint _timestamp) private view returns (uint[3] memory) {
-    uint offset = _getSeedOffset(_timestamp);
+  function _getFullRandomWords(uint _timestamp) private view returns (uint[3] memory) {
+    uint offset = _getRandomWordOffset(_timestamp);
     if (requestIds.length <= offset) {
       return [uint256(0), uint256(0), uint256(0)];
     }
     return randomWords[requestIds[offset]];
   }
 
-  function getFullWords(uint _timestamp) external view returns (uint[3] memory) {
-    return _getFullWords(_timestamp);
+  function getFullRandomWords(uint _timestamp) external view returns (uint[3] memory) {
+    return _getFullRandomWords(_timestamp);
   }
 
-  function getMultipleWords(uint _numDays) external view returns (uint[3][5] memory seeds) {
-    for (uint i = 0; i < _numDays; ++i) {
-      seeds[i] = _getFullWords(block.timestamp - i * 1 days);
+  function getMultipleFullRandomWords(uint _timestamp) external view returns (uint[3][5] memory seeds) {
+    for (uint i = 0; i < 5; ++i) {
+      seeds[i] = _getFullRandomWords(_timestamp - i * 1 days);
     }
   }
 
@@ -322,7 +323,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     delete lastAddedDynamicActions;
-    uint seed = getSeed(block.timestamp);
+    uint seed = getRandomWord(block.timestamp);
 
     uint16[] memory actionIdsToAdd = new uint16[](1);
 

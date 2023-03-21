@@ -412,9 +412,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     ActionReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
 
     if (_randomRewards.length != 0) {
-      bool hasSeed = world.hasSeed(skillEndTime);
-      if (hasSeed) {
-        uint seed = world.getSeed(skillEndTime);
+      bool hasRandomWord = world.hasRandomWord(skillEndTime);
+      if (hasRandomWord) {
+        uint seed = world.getRandomWord(skillEndTime);
         bytes32 randomComponent = bytes32(seed) ^
           (bytes32(uint256(skillEndTime)) |
             (bytes32(uint256(skillEndTime)) << 64) |
