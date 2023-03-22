@@ -23,6 +23,7 @@ describe("Boosts", () => {
       boostType: EstforTypes.BoostType.NON_COMBAT_XP,
       boostValue,
       boostDuration,
+      isTransferable: false,
     });
 
     const rate = 100 * 10; // per hour
@@ -100,6 +101,7 @@ describe("Boosts", () => {
       boostType: EstforTypes.BoostType.NON_COMBAT_XP,
       boostValue,
       boostDuration: 7200,
+      isTransferable: false,
     });
 
     const rate = 100 * 10; // per hour
