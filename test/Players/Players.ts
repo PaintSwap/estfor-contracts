@@ -818,7 +818,7 @@ describe("Players", () => {
     });
 
     it("Attire", async () => {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       const tx = await world.addAction({
         actionId: 1,
@@ -945,6 +945,11 @@ describe("Players", () => {
           .not.be.reverted;
         await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.DEFENCE, 1);
       }
+
+      // Test case, create a player
+      const makeActive = true;
+      await expect(playerNFT.connect(alice).mint(1, ethers.utils.formatBytes32String("0xSamWitch123"), makeActive)).to
+        .not.be.reverted;
     });
 
     it("Left/Right equipment", async () => {

@@ -106,7 +106,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue);
   }
 
-  function claimRandomRewards(uint _playerId) external nonReentrant {
+  function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     _claimRandomRewards(_playerId);
   }
 
