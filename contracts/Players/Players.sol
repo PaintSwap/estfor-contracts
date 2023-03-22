@@ -252,6 +252,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
+  function _addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) private {
+    _delegatecall(
+      implRewards,
+      abi.encodeWithSelector(IPlayerDelegate.addXPThresholdReward.selector, _xpThresholdReward)
+    );
+  }
+
   function _setActivePlayer(address _from, uint _playerId) private {
     uint existingActivePlayer = activePlayer[_from];
     // All attire and actions can be made for this player
@@ -267,7 +274,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActivePlayer(msg.sender, _playerId);
   }
 
-  // Staticcall into ourselves and hit the fallback. This is done so that pendingRewards/dailyClaimedRewards can be exposed on the json abi.
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingRewards/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
   function pendingRewards(
     address _owner,
     uint _playerId,
@@ -288,19 +295,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bool[7]));
   }
 
+  function getRandomBytes(uint _numTickets, uint256 _skillEndTime) external view returns (bytes memory b) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(IPlayersDelegateView.getRandomBytesImpl.selector, _numTickets, _skillEndTime)
+    );
+    return abi.decode(data, (bytes));
+  }
+
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(address _implQueueActions, address _implProcessActions, address _implRewards) external onlyOwner {
     implQueueActions = _implQueueActions;
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;
-  }
-
-  function _addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) private {
-    _delegatecall(
-      implRewards,
-      abi.encodeWithSelector(IPlayerDelegate.addXPThresholdReward.selector, _xpThresholdReward)
-    );
   }
 
   function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external onlyOwner {
@@ -347,7 +355,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address implementation;
     if (
       selector == IPlayersDelegateView.pendingRewardsImpl.selector ||
-      selector == IPlayersDelegateView.dailyClaimedRewardsImpl.selector
+      selector == IPlayersDelegateView.dailyClaimedRewardsImpl.selector ||
+      selector == IPlayersDelegateView.getRandomBytesImpl.selector
     ) {
       implementation = implRewards;
     } else {

@@ -300,9 +300,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return _getFullRandomWords(_timestamp);
   }
 
-  function getMultipleFullRandomWords(uint _timestamp) external view returns (uint[3][5] memory seeds) {
+  function getMultipleFullRandomWords(uint _timestamp) external view returns (uint[3][5] memory words) {
     for (uint i = 0; i < 5; ++i) {
-      seeds[i] = _getFullRandomWords(_timestamp - i * 1 days);
+      words[i] = _getFullRandomWords(_timestamp - i * 1 days);
     }
   }
 

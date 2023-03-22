@@ -414,6 +414,54 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
+  // Move to world?
+  function _getRandomComponent(bytes32 _word, uint256 _skillEndTime) private pure returns (bytes32) {
+    return
+      _word ^
+      (bytes32(uint256(_skillEndTime)) |
+        (bytes32(uint256(_skillEndTime)) << 64) |
+        (bytes32(uint256(_skillEndTime)) << 128) |
+        (bytes32(uint256(_skillEndTime)) << 192));
+  }
+
+  function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
+    uint256 index = _index * 2;
+    return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
+  }
+
+  function _getRandomBytes(uint _numTickets, uint256 _skillEndTime) private view returns (bytes memory b) {
+    if (_numTickets <= 16) {
+      // 32 bytes
+      bytes32 word = bytes32(world.getRandomWord(_skillEndTime));
+      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime));
+    } else if (_numTickets <= 48) {
+      uint256[3] memory fullWords = world.getFullRandomWords(_skillEndTime);
+      // 3 * 32 bytes
+      for (uint i = 0; i < 3; ++i) {
+        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime));
+      }
+      b = abi.encodePacked(fullWords);
+    } else {
+      // 5 * 3 * 32 bytes
+      uint256[3][5] memory multipleFullWords = world.getMultipleFullRandomWords(_skillEndTime);
+      for (uint i = 0; i < 5; ++i) {
+        for (uint j = 0; j < 3; ++j) {
+          multipleFullWords[i][j] = uint(_getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime));
+          // XOR all the full words with the first fresh random number to give more randomness to the existing random words
+          if (i > 0) {
+            multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
+          }
+        }
+      }
+
+      b = abi.encodePacked(multipleFullWords);
+    }
+  }
+
+  function getRandomBytesImpl(uint _numTickets, uint256 _skillEndTime) external view override returns (bytes memory b) {
+    return _getRandomBytes(_numTickets, _skillEndTime);
+  }
+
   // hasRandomWord means there was pending reward we tried to get a reward from
   function _appendRandomRewards(
     uint40 skillEndTime,
@@ -431,21 +479,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     if (_randomRewards.length != 0) {
       hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {
-        uint seed = world.getRandomWord(skillEndTime);
-        bytes32 randomComponent = bytes32(seed) ^
-          (bytes32(uint256(skillEndTime)) |
-            (bytes32(uint256(skillEndTime)) << 64) |
-            (bytes32(uint256(skillEndTime)) << 128) |
-            (bytes32(uint256(skillEndTime)) << 192));
-
-        uint maxUniqueTickets = 240;
         uint numIterations = PlayerLibrary.min(maxUniqueTickets, _numTickets);
 
+        bytes memory b = _getRandomBytes(numIterations, skillEndTime);
         uint startLootLength = length;
         for (U256 iter; iter.lt(numIterations); iter = iter.inc()) {
           uint i = iter.asUint256();
-          // The random component is out of 65535, so we can take 2 bytes at a time
-          uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
+          // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
+          uint16 rand = _getSlice(b, i);
           U256 randomRewardsLength = U256.wrap(_randomRewards.length);
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();

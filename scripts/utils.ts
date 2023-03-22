@@ -2,7 +2,8 @@ import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ContractTransaction, ethers} from "ethers";
 import {PlayerNFT} from "../typechain-types";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {ActionInput, Skill} from "@paintswap/estfor-definitions/types";
+import {ActionInput, EquipPosition, Skill} from "@paintswap/estfor-definitions/types";
+import {COMBAT_BOOST} from "@paintswap/estfor-definitions/constants";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,

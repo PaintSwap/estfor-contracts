@@ -1,8 +1,9 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionId} from "../../scripts/utils";
+import {getActionId, getRequestId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
@@ -366,5 +367,274 @@ describe("Rewards", () => {
 
   it("Daily Rewards, test rewards in new week", async () => {
     // TODO
+  });
+
+  it("Guaranteed rewards", async () => {
+    // TODO
+  });
+
+  // This test only works if the timespan does not go over 00:00 utc
+  it("Random rewards (many)", async () => {
+    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_ARROW,
+      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    const randomChanceFraction = 50.0 / 100; // 50% chance
+    const randomChance = Math.floor(65535 * randomChanceFraction);
+
+    let tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.WOODCUTTING,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawn: 0,
+        handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const numHours = 5;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan: 3600 * numHours,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      skill: EstforTypes.Skill.WOODCUTTING,
+    };
+
+    let numProduced = 0;
+
+    // Repeat the test a bunch of times to check the random rewards are as expected
+    const numRepeats = 50;
+    for (let i = 0; i < numRepeats; ++i) {
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      let endTime;
+      {
+        const actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(1);
+        endTime = actionQueue[0].startTime + actionQueue[0].timespan;
+      }
+
+      expect(await world.hasRandomWord(endTime)).to.be.false;
+
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await players.connect(alice).processActions(playerId);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(numProduced);
+
+      expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
+
+      const pendingOutput = await players.pendingRewards(alice.address, playerId, {
+        includeLoot: true,
+        includePastRandomRewards: true,
+        includeXPRewards: true,
+      });
+      expect(pendingOutput.produced.length).to.eq(0);
+
+      tx = await world.requestSeedUpdate();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      expect(await world.hasRandomWord(endTime)).to.be.true;
+
+      const pendingRewards = await players.pendingRewards(alice.address, playerId, {
+        includeLoot: false,
+        includePastRandomRewards: true,
+        includeXPRewards: false,
+      });
+
+      if (pendingRewards.producedPastRandomRewards.length != 0) {
+        expect(pendingRewards.producedPastRandomRewards.length).to.eq(1);
+
+        const produced = pendingRewards.producedPastRandomRewards[0].amount;
+        numProduced += produced;
+        expect(pendingRewards.producedPastRandomRewards[0].itemTokenId).to.be.eq(EstforConstants.BRONZE_ARROW);
+      }
+    }
+    const expectedTotal = numRepeats * randomChanceFraction * numHours;
+    expect(numProduced).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
+    expect(numProduced).to.be.gte(expectedTotal * 0.85); // Within 15% below
+    expect(numProduced).to.be.lte(expectedTotal * 1.15); // 15% of the time we should get more than 50% of the reward
+  });
+
+  it("Multiple random rewards (many)", async () => {
+    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_ARROW,
+      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    const randomChanceFractions = [80.0 / 100, 50.0 / 100, 50.0 / 100, 20.0 / 100]; // 80%, 50%, 50%, 20%
+    const randomChance = Math.floor(65535 * randomChanceFractions[0]);
+    const randomChance1 = Math.floor(65535 * randomChanceFractions[1]);
+    const randomChance2 = Math.floor(65535 * randomChanceFractions[2]);
+    const randomChance3 = Math.floor(65535 * randomChanceFractions[3]);
+
+    let tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.WOODCUTTING,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawn: 0,
+        handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [
+        {itemTokenId: EstforConstants.BRONZE_BAR, chance: randomChance, amount: 1},
+        {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance1, amount: 1},
+        {itemTokenId: EstforConstants.BRONZE_TASSETS, chance: randomChance2, amount: 1},
+        {itemTokenId: EstforConstants.BRONZE_GAUNTLETS, chance: randomChance3, amount: 1},
+      ],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const numHours = 2;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan: 3600 * numHours,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      skill: EstforTypes.Skill.WOODCUTTING,
+    };
+
+    const balanceMap = new Map<number, number>();
+    balanceMap.set(EstforConstants.BRONZE_BAR, 0);
+    balanceMap.set(EstforConstants.BRONZE_ARROW, 0);
+    balanceMap.set(EstforConstants.BRONZE_TASSETS, 0);
+    balanceMap.set(EstforConstants.BRONZE_GAUNTLETS, 0);
+
+    // Repeat the test a bunch of times to check the random rewards are as expected
+    const numRepeats = 50;
+    for (let i = 0; i < numRepeats; ++i) {
+      await players
+        .connect(alice)
+        .startActions(
+          playerId,
+          [queuedAction, queuedAction],
+          BoostType.NONE,
+          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
+        );
+      let endTime;
+      {
+        const actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(2);
+        endTime = actionQueue[1].startTime + actionQueue[1].timespan;
+      }
+
+      expect(await world.hasRandomWord(endTime)).to.be.false;
+
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await players.connect(alice).processActions(playerId);
+      for (const [itemTokenId, amount] of balanceMap) {
+        expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(balanceMap.get(itemTokenId));
+      }
+
+      expect((await players.getPendingRandomRewards(playerId)).length).to.eq(2);
+
+      const pendingOutput = await players.pendingRewards(alice.address, playerId, {
+        includeLoot: false,
+        includePastRandomRewards: true,
+        includeXPRewards: false,
+      });
+      expect(pendingOutput.producedPastRandomRewards.length).to.eq(0);
+
+      tx = await world.requestSeedUpdate();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      expect(await world.hasRandomWord(endTime)).to.be.true;
+
+      const pendingRewards = await players.pendingRewards(alice.address, playerId, {
+        includeLoot: false,
+        includePastRandomRewards: true,
+        includeXPRewards: false,
+      });
+      if (pendingRewards.producedPastRandomRewards.length != 0) {
+        expect(pendingRewards.producedPastRandomRewards.length).to.be.oneOf([1, 2, 3, 4, 5, 6, 7, 8]);
+
+        for (const reward of pendingRewards.producedPastRandomRewards) {
+          balanceMap.set(reward.itemTokenId, balanceMap.get(reward.itemTokenId)! + reward.amount);
+        }
+      }
+    }
+
+    let i = 0;
+    for (const [itemTokenId, amount] of balanceMap) {
+      const randomChanceFraction = randomChanceFractions[i];
+      const expectedTotal = numRepeats * randomChanceFraction * numHours;
+      // Have 2 queued actions so twice as much
+      expect(balanceMap.get(itemTokenId)).to.not.eq(expectedTotal * 2); // Very unlikely to be exact, but possible. This checks there is at least some randomness
+      expect(balanceMap.get(itemTokenId)).to.be.gte(expectedTotal * 0.75 * 2); // Within 25% below
+      expect(balanceMap.get(itemTokenId)).to.be.lte(expectedTotal * 1.25 * 2); // Within 25% above
+      ++i;
+    }
+  });
+
+  // Could be a part of world or if there was space
+  it("Check random bytes", async () => {
+    const {players} = await loadFixture(playersFixture);
+    const timestamp = Math.floor(Date.now() / 1000);
+    let numTickets = 16; // 240
+    let randomBytes = await players.getRandomBytes(numTickets, timestamp - 86400);
+    expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32);
+    numTickets = 48;
+
+    const randomBytes1 = await players.getRandomBytes(numTickets, timestamp - 86400);
+    expect(ethers.utils.hexDataLength(randomBytes1)).to.be.eq(32 * 3);
+
+    numTickets = 49;
+    const randomBytes2 = await players.getRandomBytes(numTickets, timestamp - 86400);
+    expect(ethers.utils.hexDataLength(randomBytes2)).to.be.eq(32 * 3 * 5);
   });
 });

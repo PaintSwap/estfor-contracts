@@ -170,6 +170,8 @@ interface IPlayersDelegateView {
   ) external view returns (PendingOutput memory pendingOutput);
 
   function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
+
+  function getRandomBytesImpl(uint _numTickets, uint256 _skillEndTime) external view returns (bytes memory b);
 }
 
 struct FullAttireBonusInput {
