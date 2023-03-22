@@ -475,7 +475,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
         revert RandomRewardsMustBeInOrder();
       }
-      for (uint i; i < _action.randomRewards.length; ++i) {
+      for (uint i; i < _action.randomRewards.length - 1; ++i) {
         if (
           _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
         ) {
@@ -487,7 +487,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       actionReward.randomRewardTokenId4 = _action.randomRewards[3].itemTokenId;
       actionReward.randomRewardChance4 = _action.randomRewards[3].chance;
       actionReward.randomRewardAmount4 = _action.randomRewards[3].amount;
-      for (uint i; i < _action.randomRewards.length; ++i) {
+      if (actionReward.randomRewardChance4 > actionReward.randomRewardChance3) {
+        revert RandomRewardsMustBeInOrder();
+      }
+      for (uint i; i < _action.randomRewards.length - 1; ++i) {
         if (
           _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
         ) {

@@ -47,8 +47,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       isCombat,
       _successPercent
     );
-    bool noLuck;
-    (length, noLuck) = _appendRandomRewards(
+    bool processedAny;
+    (length, processedAny) = _appendRandomRewards(
       _skillEndTime,
       isCombat ? monstersKilled : _elapsedTime / 3600,
       ids,
@@ -69,8 +69,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   ) private view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
     U256 pendingRandomRewardsLength = U256.wrap(_pendingRandomRewards.length);
-    ids = new uint[](pendingRandomRewardsLength.asUint256());
-    amounts = new uint[](pendingRandomRewardsLength.asUint256());
+    ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
 
     uint length;
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
@@ -81,9 +81,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       ActionRewards memory actionRewards = world.getActionRewards(_pendingRandomRewards[i].actionId);
       uint oldLength = length;
-      bool noLuck;
       uint8 successPercent = world.getActionSuccessPercent(_pendingRandomRewards[i].actionId);
-      (length, noLuck) = _appendRandomRewards(
+      bool processedAny;
+      (length, processedAny) = _appendRandomRewards(
         _pendingRandomRewards[i].timestamp,
         isCombat ? monstersKilled : _pendingRandomRewards[i].elapsedTime / 3600,
         ids,
@@ -93,7 +93,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         successPercent
       );
 
-      if (length - oldLength != 0 || noLuck) {
+      if (processedAny) {
         numRemoved = numRemoved.inc();
       }
     }
@@ -414,21 +414,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
+  // hasRandomWord means there was pending reward we tried to get a reward from
   function _appendRandomRewards(
     uint40 skillEndTime,
     uint _numTickets,
-    uint[] memory _ids,
-    uint[] memory _amounts,
+    uint[] memory _ids, // in-out
+    uint[] memory _amounts, // in-out
     uint _oldLength,
     ActionRewards memory _actionRewards,
     uint8 _successPercent
-  ) private view returns (uint length, bool noLuck) {
+  ) private view returns (uint length, bool hasRandomWord) {
     length = _oldLength;
 
     RandomReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
 
     if (_randomRewards.length != 0) {
-      bool hasRandomWord = world.hasRandomWord(skillEndTime);
+      hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {
         uint seed = world.getRandomWord(skillEndTime);
         bytes32 randomComponent = bytes32(seed) ^
@@ -437,30 +438,29 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             (bytes32(uint256(skillEndTime)) << 128) |
             (bytes32(uint256(skillEndTime)) << 192));
 
+        uint maxUniqueTickets = 240;
+        uint numIterations = PlayerLibrary.min(maxUniqueTickets, _numTickets);
+
         uint startLootLength = length;
-        for (U256 iter; iter.lt(_numTickets); iter = iter.inc()) {
+        for (U256 iter; iter.lt(numIterations); iter = iter.inc()) {
           uint i = iter.asUint256();
           // The random component is out of 65535, so we can take 2 bytes at a time
           uint16 rand = uint16(uint256(randomComponent >> (i * 16)));
-
-          // Take each byte and check
           U256 randomRewardsLength = U256.wrap(_randomRewards.length);
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();
 
             RandomReward memory potentialReward = _randomRewards[j];
             if (rand < potentialReward.chance) {
-              // Get the lowest chance one
-
-              // Compare with previous and append amounts if an entry already exists
+              // This random reward's chance was hit, so add it
               bool found;
-
               U256 idsLength = U256.wrap(_ids.length);
+              // Add this random item
               for (U256 iterK = U256.wrap(startLootLength); iterK < idsLength; iterK = iterK.inc()) {
                 uint k = iterK.asUint256();
-                if (potentialReward.itemTokenId == _ids[k]) {
-                  // exists
-                  ++_amounts[k];
+                if (k > 0 && potentialReward.itemTokenId == _ids[k - 1]) {
+                  // This item exists so accumulate it with the existing value
+                  _amounts[k - 1] += potentialReward.amount;
                   found = true;
                   break;
                 }
@@ -469,15 +469,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
               if (!found) {
                 // New item
                 _ids[length] = potentialReward.itemTokenId;
-                _amounts[length++] = 1;
+                _amounts[length++] = potentialReward.amount;
               }
+            } else {
+              // A common one isn't found so a rarer one won't be.
               break;
             }
           }
-        }
-
-        if (length == 0) {
-          noLuck = true;
         }
       }
     }

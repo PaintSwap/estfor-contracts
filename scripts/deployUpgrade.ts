@@ -33,7 +33,7 @@ async function main() {
   /*
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const playerNFT = await upgrades.upgradeProxy("0xc461dc373f434622ecb91a43cecb84d777d29b7f", PlayerNFT, {
+  const playerNFT = await upgrades.upgradeProxy("0xa7bfb7cf00762043765701d06ac4a8f338ded25a", PlayerNFT, {
     kind: "uups",
   });
 

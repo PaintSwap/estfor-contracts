@@ -12,6 +12,14 @@ export const playersFixture = async () => {
   const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
   const mockOracleClient = await MockOracleClient.deploy();
 
+  // Add some dummy blocks so that world can access previous blocks for random numbers
+  for (let i = 0; i < 5; ++i) {
+    await owner.sendTransaction({
+      to: owner.address,
+      value: 1,
+    });
+  }
+
   // Create the world
   const subscriptionId = 2;
   const World = await ethers.getContractFactory("World");
