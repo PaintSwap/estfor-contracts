@@ -94,7 +94,7 @@ abstract contract PlayersBase {
   uint public constant startXP = 374;
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
   uint public constant MAX_SUCCESS_PERCENT_CHANCE = 90;
-  uint constant maxUniqueTickets = 240;
+  uint public constant maxUniqueTickets = 240;
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;

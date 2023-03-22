@@ -115,6 +115,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
         uint8 actionSuccessPercent = world.getActionSuccessPercent(queuedAction.actionId);
         (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
+          _playerId,
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
           queuedAction.actionId,
@@ -321,6 +322,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _getRewards(
+    uint _playerId,
     uint40 _skillEndTime,
     uint _elapsedTime,
     uint16 _actionId,
@@ -329,7 +331,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     bytes memory data = _delegatecall(
       implRewards,
       abi.encodeWithSignature(
-        "getRewards(uint40,uint256,uint16,uint8)",
+        "getRewards(uint256,uint40,uint256,uint16,uint8)",
+        _playerId,
         _skillEndTime,
         _elapsedTime,
         _actionId,

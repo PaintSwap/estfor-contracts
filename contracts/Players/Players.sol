@@ -295,10 +295,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bool[7]));
   }
 
-  function getRandomBytes(uint _numTickets, uint256 _skillEndTime) external view returns (bytes memory b) {
+  function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersDelegateView.getRandomBytesImpl.selector, _numTickets, _skillEndTime)
+      abi.encodeWithSelector(IPlayersDelegateView.getRandomBytesImpl.selector, _numTickets, _skillEndTime, _playerId)
     );
     return abi.decode(data, (bytes));
   }

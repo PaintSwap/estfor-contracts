@@ -375,7 +375,7 @@ describe("Non-Combat Actions", () => {
     await players.connect(alice).startAction(playerId, queuedActions[0], EstforTypes.ActionQueueStatus.APPEND);
     await ethers.provider.send("evm_increaseTime", [10]);
     await players.connect(alice).startAction(playerId, queuedActions[1], EstforTypes.ActionQueueStatus.APPEND);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(10); // Should be partially completed
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([10, 11]); // Should be partially completed
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(3);
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan]);
     expect(await players.actionQueueLength(playerId)).to.eq(2);

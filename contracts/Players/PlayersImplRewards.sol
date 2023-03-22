@@ -23,6 +23,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
   // Action rewards
   function getRewards(
+    uint _playerId,
     uint40 _skillEndTime,
     uint _elapsedTime,
     uint16 _actionId,
@@ -49,6 +50,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     );
     bool processedAny;
     (length, processedAny) = _appendRandomRewards(
+      _playerId,
       _skillEndTime,
       isCombat ? monstersKilled : _elapsedTime / 3600,
       ids,
@@ -84,6 +86,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint8 successPercent = world.getActionSuccessPercent(_pendingRandomRewards[i].actionId);
       bool processedAny;
       (length, processedAny) = _appendRandomRewards(
+        _playerId,
         _pendingRandomRewards[i].timestamp,
         isCombat ? monstersKilled : _pendingRandomRewards[i].elapsedTime / 3600,
         ids,
@@ -240,6 +243,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       if (_flags.includeLoot && pointsAccrued != 0) {
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
+          _playerId,
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
           queuedAction.actionId,
@@ -415,13 +419,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   }
 
   // Move to world?
-  function _getRandomComponent(bytes32 _word, uint256 _skillEndTime) private pure returns (bytes32) {
-    return
-      _word ^
-      (bytes32(uint256(_skillEndTime)) |
-        (bytes32(uint256(_skillEndTime)) << 64) |
-        (bytes32(uint256(_skillEndTime)) << 128) |
-        (bytes32(uint256(_skillEndTime)) << 192));
+  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
   }
 
   function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
@@ -429,24 +428,26 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
   }
 
-  function _getRandomBytes(uint _numTickets, uint256 _skillEndTime) private view returns (bytes memory b) {
+  function _getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) private view returns (bytes memory b) {
     if (_numTickets <= 16) {
       // 32 bytes
       bytes32 word = bytes32(world.getRandomWord(_skillEndTime));
-      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime));
+      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime, _playerId));
     } else if (_numTickets <= 48) {
-      uint256[3] memory fullWords = world.getFullRandomWords(_skillEndTime);
+      uint[3] memory fullWords = world.getFullRandomWords(_skillEndTime);
       // 3 * 32 bytes
       for (uint i = 0; i < 3; ++i) {
-        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime));
+        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime, _playerId));
       }
       b = abi.encodePacked(fullWords);
     } else {
       // 5 * 3 * 32 bytes
-      uint256[3][5] memory multipleFullWords = world.getMultipleFullRandomWords(_skillEndTime);
+      uint[3][5] memory multipleFullWords = world.getMultipleFullRandomWords(_skillEndTime);
       for (uint i = 0; i < 5; ++i) {
         for (uint j = 0; j < 3; ++j) {
-          multipleFullWords[i][j] = uint(_getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime));
+          multipleFullWords[i][j] = uint(
+            _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
+          );
           // XOR all the full words with the first fresh random number to give more randomness to the existing random words
           if (i > 0) {
             multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
@@ -458,12 +459,17 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
-  function getRandomBytesImpl(uint _numTickets, uint256 _skillEndTime) external view override returns (bytes memory b) {
-    return _getRandomBytes(_numTickets, _skillEndTime);
+  function getRandomBytesImpl(
+    uint _numTickets,
+    uint _skillEndTime,
+    uint _playerId
+  ) external view override returns (bytes memory b) {
+    return _getRandomBytes(_numTickets, _skillEndTime, _playerId);
   }
 
   // hasRandomWord means there was pending reward we tried to get a reward from
   function _appendRandomRewards(
+    uint _playerId,
     uint40 skillEndTime,
     uint _numTickets,
     uint[] memory _ids, // in-out
@@ -481,10 +487,20 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (hasRandomWord) {
         uint numIterations = PlayerLibrary.min(maxUniqueTickets, _numTickets);
 
-        bytes memory b = _getRandomBytes(numIterations, skillEndTime);
+        bytes memory b = _getRandomBytes(numIterations, skillEndTime, _playerId);
         uint startLootLength = length;
         for (U256 iter; iter.lt(numIterations); iter = iter.inc()) {
           uint i = iter.asUint256();
+          uint mintMultiplier = 1;
+          // If there is above 240 tickets we need to mint more if a ticket is hit
+          if (_numTickets > maxUniqueTickets) {
+            mintMultiplier = _numTickets / maxUniqueTickets;
+            uint remainder = _numTickets % maxUniqueTickets;
+            if (i < remainder) {
+              ++mintMultiplier;
+            }
+          }
+
           // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
           uint16 rand = _getSlice(b, i);
           U256 randomRewardsLength = U256.wrap(_randomRewards.length);
@@ -501,7 +517,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
                 uint k = iterK.asUint256();
                 if (k > 0 && potentialReward.itemTokenId == _ids[k - 1]) {
                   // This item exists so accumulate it with the existing value
-                  _amounts[k - 1] += potentialReward.amount;
+                  _amounts[k - 1] += potentialReward.amount * mintMultiplier;
                   found = true;
                   break;
                 }
@@ -510,7 +526,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
               if (!found) {
                 // New item
                 _ids[length] = potentialReward.itemTokenId;
-                _amounts[length++] = potentialReward.amount;
+                _amounts[length++] = potentialReward.amount * mintMultiplier;
               }
             } else {
               // A common one isn't found so a rarer one won't be.

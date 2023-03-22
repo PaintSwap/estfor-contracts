@@ -1,9 +1,10 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
 import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionId, getRequestId} from "../../scripts/utils";
+import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, getRequestId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
@@ -373,6 +374,132 @@ describe("Rewards", () => {
     // TODO
   });
 
+  it("Random reward ticket excess", async () => {
+    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+    const maxUniqueTickets = await players.maxUniqueTickets();
+
+    const monsterCombatStats: EstforTypes.CombatStats = {
+      melee: 1,
+      magic: 0,
+      range: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 1,
+    };
+
+    const randomChance = 65535; // 100%
+    const numSpawn = 100;
+    let tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.COMBAT,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawn,
+        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: true,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+      combatStats: monsterCombatStats,
+    });
+    const actionId = await getActionId(tx);
+
+    tx = await world.addActionChoice(EstforConstants.NONE, 1, {
+      ...emptyActionChoice,
+      skill: EstforTypes.Skill.MELEE,
+    });
+    const choiceId = await getActionChoiceId(tx);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
+
+    await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
+    const timespan = 3600 * 5;
+
+    expect((timespan / 3600) * numSpawn).to.be.greaterThan(maxUniqueTickets);
+
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
+      choiceId,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.COOKED_MINNUS,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      skill: EstforTypes.Skill.COMBAT,
+    };
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      combatStats: {
+        ...EstforTypes.emptyCombatStats,
+        melee: 50,
+      },
+      tokenId: EstforConstants.BRONZE_SWORD,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      combatStats: bronzeHelmetStats,
+      tokenId: EstforConstants.BRONZE_HELMET,
+      equipPosition: EstforTypes.EquipPosition.HEAD,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_ARROW,
+      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      healthRestored: 12,
+      tokenId: EstforConstants.COOKED_MINNUS,
+      equipPosition: EstforTypes.EquipPosition.FOOD,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+
+    await ethers.provider.send("evm_increaseTime", [timespan * 24]);
+    await ethers.provider.send("evm_mine", []);
+
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
+      includeLoot: true,
+      includePastRandomRewards: true,
+      includeXPRewards: true,
+    });
+    expect(pendingOutput.produced.length).to.eq(0);
+
+    tx = await world.requestSeedUpdate();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+
+    pendingOutput = await players.pendingRewards(alice.address, playerId, {
+      includeLoot: true,
+      includePastRandomRewards: true,
+      includeXPRewards: true,
+    });
+    expect(pendingOutput.produced.length).to.eq(1);
+
+    await players.connect(alice).processActions(playerId);
+
+    // Check output
+    expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq((timespan / 3600) * numSpawn);
+  });
+
   // This test only works if the timespan does not go over 00:00 utc
   it("Random rewards (many)", async () => {
     const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
@@ -623,18 +750,18 @@ describe("Rewards", () => {
 
   // Could be a part of world or if there was space
   it("Check random bytes", async () => {
-    const {players} = await loadFixture(playersFixture);
+    const {players, playerId} = await loadFixture(playersFixture);
     const timestamp = Math.floor(Date.now() / 1000);
     let numTickets = 16; // 240
-    let randomBytes = await players.getRandomBytes(numTickets, timestamp - 86400);
+    let randomBytes = await players.getRandomBytes(numTickets, timestamp - 86400, playerId);
     expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32);
     numTickets = 48;
 
-    const randomBytes1 = await players.getRandomBytes(numTickets, timestamp - 86400);
+    const randomBytes1 = await players.getRandomBytes(numTickets, timestamp - 86400, playerId);
     expect(ethers.utils.hexDataLength(randomBytes1)).to.be.eq(32 * 3);
 
     numTickets = 49;
-    const randomBytes2 = await players.getRandomBytes(numTickets, timestamp - 86400);
+    const randomBytes2 = await players.getRandomBytes(numTickets, timestamp - 86400, playerId);
     expect(ethers.utils.hexDataLength(randomBytes2)).to.be.eq(32 * 3 * 5);
   });
 });

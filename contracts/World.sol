@@ -55,7 +55,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error GuaranteedRewardsNoDuplicates();
   error RandomRewardsMustBeInOrder();
   error RandomRewardNoDuplicates();
-  error TooManySpawned();
 
   // This is only used as an input arg
   struct Action {
@@ -404,9 +403,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
     if (_action.info.handItemTokenIdRangeMin > _action.info.handItemTokenIdRangeMax) {
       revert MinCannotBeGreaterThanMax();
-    }
-    if (_action.info.numSpawn > 10) {
-      revert TooManySpawned();
     }
     actions[_action.actionId] = _action.info;
 
