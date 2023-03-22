@@ -26,8 +26,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint _playerId,
     uint40 _skillEndTime,
     uint _elapsedTime,
-    uint16 _actionId,
-    uint8 _successPercent
+    uint16 _actionId
   ) public view returns (uint[] memory ids, uint[] memory amounts) {
     ActionRewards memory actionRewards = world.getActionRewards(_actionId);
     Skill actionSkill = world.getSkill(_actionId);
@@ -39,6 +38,20 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint numSpawnedPerHour = world.getNumSpawn(_actionId);
     uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / 3600);
 
+    uint8 successPercent = 100;
+    uint8 actionSuccessPercent = world.getActionSuccessPercent(_actionId);
+    if (actionSuccessPercent != 100) {
+      if (isCombat) {
+        revert InvalidAction();
+      }
+
+      uint minLevel = PlayerLibrary.getLevel(world.getActionMinXP(_actionId));
+      uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][actionSkill]);
+      uint extraBoost = skillLevel - minLevel;
+
+      successPercent = uint8(PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
+    }
+
     uint length = _appendGuaranteedRewards(
       ids,
       amounts,
@@ -46,7 +59,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       actionRewards,
       monstersKilled,
       isCombat,
-      _successPercent
+      successPercent
     );
     bool processedAny;
     (length, processedAny) = _appendRandomRewards(
@@ -57,7 +70,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       amounts,
       length,
       actionRewards,
-      _successPercent
+      successPercent
     );
 
     assembly ("memory-safe") {
@@ -77,13 +90,27 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint length;
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      bool isCombat = world.getSkill(_pendingRandomRewards[i].actionId) == Skill.COMBAT;
+      Skill actionSkill = world.getSkill(_pendingRandomRewards[i].actionId);
+      bool isCombat = actionSkill == Skill.COMBAT;
       uint numSpawnedPerHour = world.getNumSpawn(_pendingRandomRewards[i].actionId);
       uint16 monstersKilled = uint16((numSpawnedPerHour * _pendingRandomRewards[i].elapsedTime) / 3600);
 
       ActionRewards memory actionRewards = world.getActionRewards(_pendingRandomRewards[i].actionId);
       uint oldLength = length;
-      uint8 successPercent = world.getActionSuccessPercent(_pendingRandomRewards[i].actionId);
+
+      uint8 successPercent = 100;
+      uint8 actionSuccessPercent = world.getActionSuccessPercent(_pendingRandomRewards[i].actionId);
+      if (actionSuccessPercent != 100) {
+        if (isCombat) {
+          revert InvalidAction();
+        }
+        uint minLevel = PlayerLibrary.getLevel(world.getActionMinXP(_pendingRandomRewards[i].actionId));
+        uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][actionSkill]);
+        uint extraBoost = skillLevel - minLevel;
+
+        successPercent = uint8(PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
+      }
+
       bool processedAny;
       (length, processedAny) = _appendRandomRewards(
         _playerId,
@@ -206,13 +233,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
-      uint8 successPercent = 100;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
-
-        if (actionChoice.successPercent != 100) {
-          successPercent = actionChoice.successPercent;
-        }
 
         Equipment[] memory consumedEquipment;
         Equipment memory output;
@@ -246,8 +268,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           _playerId,
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
-          queuedAction.actionId,
-          successPercent
+          queuedAction.actionId
         );
 
         U256 newIdsLength = U256.wrap(newIds.length);
@@ -502,13 +523,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           }
 
           // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
-          uint16 rand = _getSlice(b, i);
+          uint operation = (uint(_getSlice(b, i)) * 100) / _successPercent;
+          uint16 rand = uint16(PlayerLibrary.min(type(uint16).max, operation));
+
           U256 randomRewardsLength = U256.wrap(_randomRewards.length);
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();
 
             RandomReward memory potentialReward = _randomRewards[j];
-            if (rand < potentialReward.chance) {
+            if (rand <= potentialReward.chance) {
               // This random reward's chance was hit, so add it
               bool found;
               U256 idsLength = U256.wrap(_ids.length);

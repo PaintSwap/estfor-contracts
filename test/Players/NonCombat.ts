@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionChoiceId, getActionId} from "../../scripts/utils";
+import {getActionChoiceId, getActionId, getRequestId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
@@ -950,6 +950,139 @@ describe("Non-Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
         1000 - Math.floor((timespan * rate) / (3600 * 10))
       );
+    });
+  });
+
+  describe("Thieving", () => {
+    it("Steal (many)", async () => {
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      const randomChanceFraction = 50.0 / 100; // 50% chance
+      const randomChance = Math.floor(65536 * randomChanceFraction);
+
+      const xpPerHour = 2;
+      const tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+
+      const actionId = await getActionId(tx);
+
+      const numHours = 2;
+      const timespan = 3600 * numHours;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        choiceId1: EstforConstants.NONE,
+        choiceId2: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        skill: EstforTypes.Skill.THIEVING,
+      };
+
+      const numRepeats = 10;
+      for (let i = 0; i < numRepeats; ++i) {
+        await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+        const tx = await world.requestSeedUpdate();
+        let requestId = getRequestId(tx);
+        expect(requestId).to.not.eq(0);
+        await mockOracleClient.fulfill(requestId, world.address);
+        await players.connect(alice).processActions(playerId);
+      }
+
+      expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
+
+      const expectedTotal = numRepeats * randomChanceFraction * numHours;
+      const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
+      // Have 2 queued actions so twice as much
+      expect(balance).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
+      expect(balance).to.be.gte(expectedTotal * 0.8); // Within 20% below
+      expect(balance).to.be.lte(expectedTotal * 1.2); // Within 20% above
+    });
+
+    it("Steal, success percent (many)", async () => {
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      const randomChanceFraction = 50.0 / 100; // 50% chance
+      const randomChance = Math.floor(65536 * randomChanceFraction);
+      const successPercent = 50; // Makes it 25% chance in total
+
+      const xpPerHour = 2;
+      const tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: false,
+          successPercent,
+        },
+        guaranteedRewards: [],
+        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+
+      const actionId = await getActionId(tx);
+
+      const numHours = 2;
+      const timespan = 3600 * numHours;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        choiceId1: EstforConstants.NONE,
+        choiceId2: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        skill: EstforTypes.Skill.THIEVING,
+      };
+
+      const numRepeats = 10;
+      for (let i = 0; i < numRepeats; ++i) {
+        await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+        const tx = await world.requestSeedUpdate();
+        let requestId = getRequestId(tx);
+        expect(requestId).to.not.eq(0);
+        await mockOracleClient.fulfill(requestId, world.address);
+        await players.connect(alice).processActions(playerId);
+      }
+
+      expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
+
+      const expectedTotal = numRepeats * randomChanceFraction * numHours * (successPercent / 100);
+      const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
+      // Have 2 queued actions so twice as much
+      expect(balance).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
+      expect(balance).to.be.gte(expectedTotal * 0.8); // Within 20% below
+      expect(balance).to.be.lte(expectedTotal * 1.2); // Within 20% above
     });
   });
 

@@ -397,6 +397,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actions[_actionId].successPercent;
   }
 
+  function getActionMinXP(uint16 _actionId) external view returns (uint32) {
+    return actions[_actionId].minXP;
+  }
+
   function _setAction(Action calldata _action) private {
     if (_action.actionId == 0) {
       revert ActionIdZeroNotAllowed();

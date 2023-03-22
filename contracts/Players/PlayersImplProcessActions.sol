@@ -113,13 +113,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         }
         _updateXP(_from, _playerId, skill, pointsAccrued);
 
-        uint8 actionSuccessPercent = world.getActionSuccessPercent(queuedAction.actionId);
         (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
           _playerId,
           uint40(queuedAction.startTime + xpElapsedTime),
           xpElapsedTime,
-          queuedAction.actionId,
-          actionSuccessPercent
+          queuedAction.actionId
         );
 
         ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
@@ -325,18 +323,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     uint40 _skillEndTime,
     uint _elapsedTime,
-    uint16 _actionId,
-    uint8 _successPercent
+    uint16 _actionId
   ) private returns (uint[] memory newIds, uint[] memory newAmounts) {
     bytes memory data = _delegatecall(
       implRewards,
       abi.encodeWithSignature(
-        "getRewards(uint256,uint40,uint256,uint16,uint8)",
+        "getRewards(uint256,uint40,uint256,uint16)",
         _playerId,
         _skillEndTime,
         _elapsedTime,
-        _actionId,
-        _successPercent
+        _actionId
       )
     );
     return abi.decode(data, (uint[], uint[]));

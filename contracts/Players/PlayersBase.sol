@@ -89,6 +89,7 @@ abstract contract PlayersBase {
   error InvalidItemTokenId();
   error ItemDoesNotExist();
   error InvalidAmount();
+  error InvalidAction();
 
   uint32 public constant MAX_TIME = 1 days;
   uint public constant startXP = 374;

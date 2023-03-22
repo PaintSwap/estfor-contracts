@@ -419,9 +419,10 @@ describe("Rewards", () => {
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
 
     await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
-    const timespan = 3600 * 5;
 
-    expect((timespan / 3600) * numSpawn).to.be.greaterThan(maxUniqueTickets);
+    const numHours = 5;
+    const timespan = 3600 * numHours;
+    expect(numHours * numSpawn).to.be.greaterThan(maxUniqueTickets);
 
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -472,7 +473,7 @@ describe("Rewards", () => {
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
-    await ethers.provider.send("evm_increaseTime", [timespan * 24]);
+    await ethers.provider.send("evm_increaseTime", [3600 * 24]);
     await ethers.provider.send("evm_mine", []);
 
     let pendingOutput = await players.pendingRewards(alice.address, playerId, {
@@ -497,7 +498,7 @@ describe("Rewards", () => {
     await players.connect(alice).processActions(playerId);
 
     // Check output
-    expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq((timespan / 3600) * numSpawn);
+    expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(numHours * numSpawn);
   });
 
   // This test only works if the timespan does not go over 00:00 utc
