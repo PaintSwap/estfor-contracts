@@ -215,6 +215,16 @@ export const allItems: EstforTypes.InputItem[] = [
     equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
     metadataURI: "someIPFSURI.json",
   },
+  {
+    ...EstforTypes.defaultInputItem,
+    tokenId: COMBAT_BOOST,
+    equipPosition: EquipPosition.BOOST_VIAL,
+    metadataURI: "someIPFSURI.json",
+    // Boost
+    boostType: EstforTypes.BoostType.COMBAT_XP,
+    boostValue: 20,
+    boostDuration: 3600 * 24,
+  },
 ];
 
 type XPThresholdReward = {
