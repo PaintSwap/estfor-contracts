@@ -3,7 +3,7 @@ import {ContractTransaction, ethers} from "ethers";
 import {PlayerNFT} from "../typechain-types";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {ActionInput, EquipPosition, Skill} from "@paintswap/estfor-definitions/types";
-import {COMBAT_BOOST} from "@paintswap/estfor-definitions/constants";
+import {COMBAT_BOOST, XP_BOOST} from "@paintswap/estfor-definitions/constants";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -221,9 +221,17 @@ export const allItems: EstforTypes.InputItem[] = [
     tokenId: COMBAT_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
     metadataURI: "someIPFSURI.json",
-    // Boost
     boostType: EstforTypes.BoostType.COMBAT_XP,
     boostValue: 20,
+    boostDuration: 3600 * 24,
+  },
+  {
+    ...EstforTypes.defaultInputItem,
+    tokenId: XP_BOOST,
+    equipPosition: EquipPosition.BOOST_VIAL,
+    metadataURI: "someIPFSURI.json",
+    boostType: EstforTypes.BoostType.ANY_XP,
+    boostValue: 10,
     boostDuration: 3600 * 24,
   },
 ];
