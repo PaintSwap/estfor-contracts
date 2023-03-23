@@ -72,7 +72,7 @@ struct ActionInfo {
   bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint24 xpPerHour;
   uint32 minXP;
-  uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
+  uint16 numSpawned; // Mostly for combat, capped respawn rate for xp/drops
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
   uint8 successPercent; // 0-100

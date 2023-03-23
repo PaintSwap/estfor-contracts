@@ -381,8 +381,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return _actionChoiceId != 0 ? actionChoices[_actionId][_actionChoiceId].xpPerHour : actions[_actionId].xpPerHour;
   }
 
-  function getNumSpawn(uint16 _actionId) external view returns (uint numSpawn) {
-    return actions[_actionId].numSpawn;
+  function getNumSpawn(uint16 _actionId) external view returns (uint numSpawned) {
+    return actions[_actionId].numSpawned;
   }
 
   function getCombatStats(uint16 _actionId) external view returns (CombatStats memory stats) {
@@ -400,7 +400,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function getRewardsHelper(uint16 _actionId) external view returns (ActionRewards memory, Skill, uint) {
-    return (actionRewards[_actionId], actions[_actionId].skill, actions[_actionId].numSpawn);
+    return (actionRewards[_actionId], actions[_actionId].skill, actions[_actionId].numSpawned);
   }
 
   function _setAction(Action calldata _action) private {

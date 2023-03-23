@@ -28,7 +28,7 @@ describe("Rewards", () => {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawn: 0,
+        numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -109,7 +109,7 @@ describe("Rewards", () => {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawn: 0,
+        numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -181,7 +181,7 @@ describe("Rewards", () => {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawn: 0,
+        numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -319,7 +319,7 @@ describe("Rewards", () => {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawn: 0,
+        numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -389,7 +389,7 @@ describe("Rewards", () => {
     };
 
     const randomChance = 65535; // 100%
-    const numSpawn = 100;
+    const numSpawned = 100;
     let tx = await world.addAction({
       actionId: 1,
       info: {
@@ -397,7 +397,7 @@ describe("Rewards", () => {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawn,
+        numSpawned,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionIsAvailable,
@@ -433,7 +433,7 @@ describe("Rewards", () => {
     await mockOracleClient.fulfill(requestId, world.address);
 
     const timespan = 3600 * numHours;
-    expect(numHours * numSpawn).to.be.greaterThan(maxUniqueTickets);
+    expect(numHours * numSpawned).to.be.greaterThan(maxUniqueTickets);
 
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -509,7 +509,7 @@ describe("Rewards", () => {
     await players.connect(alice).processActions(playerId);
 
     // Check output
-    expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(numHours * numSpawn);
+    expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(numHours * numSpawned);
   });
 
   // This test only works if the timespan does not go over 00:00 utc
@@ -540,7 +540,7 @@ describe("Rewards", () => {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawn: 0,
+        numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,
@@ -664,7 +664,7 @@ describe("Rewards", () => {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawn: 0,
+        numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
         isAvailable: actionIsAvailable,

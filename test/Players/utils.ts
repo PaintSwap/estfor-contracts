@@ -14,7 +14,7 @@ export const setupBasicWoodcutting = async () => {
       xpPerHour: 3600,
       minXP: 0,
       isDynamic: false,
-      numSpawn: 0,
+      numSpawned: 0,
       handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       isAvailable: true,
