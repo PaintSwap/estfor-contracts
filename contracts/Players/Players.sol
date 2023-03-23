@@ -216,7 +216,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);
     // Can re-mint boost if it hasn't been consumed at all yet
-    if (activeBoosts[_playerId].boostType != BoostType.NONE && activeBoosts[_playerId].startTime < block.timestamp) {
+    if (activeBoosts[_playerId].boostType != BoostType.NONE && activeBoosts[_playerId].startTime > block.timestamp) {
       uint itemTokenId = activeBoosts[_playerId].itemTokenId;
       delete activeBoosts[_playerId];
       itemNFT.mint(_from, itemTokenId, 1);
