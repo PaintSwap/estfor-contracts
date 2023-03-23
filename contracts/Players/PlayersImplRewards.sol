@@ -28,29 +28,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint _elapsedTime,
     uint16 _actionId
   ) public view returns (uint[] memory ids, uint[] memory amounts) {
-    ActionRewards memory actionRewards = world.getActionRewards(_actionId);
-    Skill actionSkill = world.getSkill(_actionId);
+    (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(_actionId);
     bool isCombat = actionSkill == Skill.COMBAT;
 
     ids = new uint[](MAX_REWARDS_PER_ACTION);
     amounts = new uint[](MAX_REWARDS_PER_ACTION);
 
-    uint numSpawnedPerHour = world.getNumSpawn(_actionId);
     uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / 3600);
-
-    uint8 successPercent = 100;
-    uint8 actionSuccessPercent = world.getActionSuccessPercent(_actionId);
-    if (actionSuccessPercent != 100) {
-      if (isCombat) {
-        revert InvalidAction();
-      }
-
-      uint minLevel = PlayerLibrary.getLevel(world.getActionMinXP(_actionId));
-      uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][actionSkill]);
-      uint extraBoost = skillLevel - minLevel;
-
-      successPercent = uint8(PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
-    }
+    uint8 successPercent = _getSuccessPercent(_playerId, _actionId, actionSkill, isCombat);
 
     uint length = _appendGuaranteedRewards(
       ids,
@@ -79,6 +64,27 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
+  function _getSuccessPercent(
+    uint _playerId,
+    uint16 _actionId,
+    Skill _actionSkill,
+    bool _isCombat
+  ) private view returns (uint8 successPercent) {
+    successPercent = 100;
+    (uint8 actionSuccessPercent, uint32 minXP) = world.getActionSuccessPercentAndMinXP(_actionId);
+    if (actionSuccessPercent != 100) {
+      if (_isCombat) {
+        revert InvalidAction();
+      }
+
+      uint minLevel = PlayerLibrary.getLevel(minXP);
+      uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][_actionSkill]);
+      uint extraBoost = skillLevel - minLevel;
+
+      successPercent = uint8(PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
+    }
+  }
+
   function _claimableRandomRewards(
     uint _playerId
   ) private view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
@@ -90,27 +96,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint length;
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      Skill actionSkill = world.getSkill(_pendingRandomRewards[i].actionId);
+
+      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
+        _pendingRandomRewards[i].actionId
+      );
       bool isCombat = actionSkill == Skill.COMBAT;
-      uint numSpawnedPerHour = world.getNumSpawn(_pendingRandomRewards[i].actionId);
       uint16 monstersKilled = uint16((numSpawnedPerHour * _pendingRandomRewards[i].elapsedTime) / 3600);
-
-      ActionRewards memory actionRewards = world.getActionRewards(_pendingRandomRewards[i].actionId);
+      uint8 successPercent = _getSuccessPercent(_playerId, _pendingRandomRewards[i].actionId, actionSkill, isCombat);
       uint oldLength = length;
-
-      uint8 successPercent = 100;
-      uint8 actionSuccessPercent = world.getActionSuccessPercent(_pendingRandomRewards[i].actionId);
-      if (actionSuccessPercent != 100) {
-        if (isCombat) {
-          revert InvalidAction();
-        }
-        uint minLevel = PlayerLibrary.getLevel(world.getActionMinXP(_pendingRandomRewards[i].actionId));
-        uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][actionSkill]);
-        uint extraBoost = skillLevel - minLevel;
-
-        successPercent = uint8(PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
-      }
-
       bool processedAny;
       (length, processedAny) = _appendRandomRewards(
         _playerId,

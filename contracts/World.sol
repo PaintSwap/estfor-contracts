@@ -393,12 +393,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actionChoices[_actionId][_choiceId];
   }
 
-  function getActionSuccessPercent(uint16 _actionId) external view returns (uint8) {
-    return actions[_actionId].successPercent;
+  function getActionSuccessPercentAndMinXP(
+    uint16 _actionId
+  ) external view returns (uint8 successPercent, uint32 minXP) {
+    return (actions[_actionId].successPercent, actions[_actionId].minXP);
   }
 
-  function getActionMinXP(uint16 _actionId) external view returns (uint32) {
-    return actions[_actionId].minXP;
+  function getRewardsHelper(uint16 _actionId) external view returns (ActionRewards memory, Skill, uint) {
+    return (actionRewards[_actionId], actions[_actionId].skill, actions[_actionId].numSpawn);
   }
 
   function _setAction(Action calldata _action) private {
@@ -555,6 +557,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit AddActionChoice(_actionId, _actionChoiceId, _actionChoice);
   }
 
+  /*
   function addActionChoices(
     uint16 _actionId,
     uint16[] calldata _actionChoiceIds,
@@ -573,7 +576,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       _addActionChoice(_actionId, _actionChoiceIds[i], _actionChoices[i]);
     }
     emit AddActionChoices(_actionId, _actionChoiceIds, _actionChoices);
-  }
+  } */
 
   function addBulkActionChoices(
     uint16[] calldata _actionIds,
