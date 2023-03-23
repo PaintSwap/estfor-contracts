@@ -382,7 +382,7 @@ describe("Combat Actions", () => {
       return {playerId, players, itemNFT, world, alice, timespan, actionId, dropRate, queuedAction};
     }
 
-    it("Simple", async () => {
+    it("Attack", async () => {
       const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction} = await loadFixture(
         playersFixtureMagic
       );
@@ -527,6 +527,58 @@ describe("Combat Actions", () => {
         .be.reverted;
       _queuedAction.choiceId = choiceId;
       await players.connect(alice).startAction(playerId, _queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    });
+
+    it("Use too much food", async () => {
+      const {playerId, players, alice, world, queuedAction, itemNFT} = await loadFixture(playersFixtureMagic);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 10000,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * 10; // per hour
+      await world.addAction({
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 100,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+
+      const _queuedAction = {...queuedAction};
+      _queuedAction.actionId = 2;
+
+      // Exceed 2^16
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 70000);
+      const foodBalance = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+
+      await players.connect(alice).startAction(playerId, _queuedAction, EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [_queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      // Died
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+        foodBalance.sub(Math.pow(2, 16) - 1)
+      );
     });
   });
 
