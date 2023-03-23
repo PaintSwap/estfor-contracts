@@ -982,7 +982,7 @@ describe("Non-Combat Actions", () => {
 
       const actionId = await getActionId(tx);
 
-      const numHours = 2;
+      const numHours = 4;
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -998,7 +998,7 @@ describe("Non-Combat Actions", () => {
         skill: EstforTypes.Skill.THIEVING,
       };
 
-      const numRepeats = 10;
+      const numRepeats = 25;
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
@@ -1024,7 +1024,7 @@ describe("Non-Combat Actions", () => {
 
       const randomChanceFraction = 50.0 / 100; // 50% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
-      const successPercent = 50; // Makes it 25% chance in total
+      const successPercent = 60; // Makes it 30% chance in total
 
       const xpPerHour = 2;
       const tx = await world.addAction({
@@ -1064,7 +1064,7 @@ describe("Non-Combat Actions", () => {
         skill: EstforTypes.Skill.THIEVING,
       };
 
-      const numRepeats = 10;
+      const numRepeats = 25;
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
