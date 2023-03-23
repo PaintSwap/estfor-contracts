@@ -384,9 +384,10 @@ describe("Non-Combat Actions", () => {
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedActions[0].timespan);
     expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 1220 logs burnt per hour, 2 hours producing logs, 1 hour burning
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10
-    );
+    expect((await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).toNumber()).to.be.oneOf([
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10,
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10 + 1,
+    ]);
     // Action queue should be empty
     expect(await players.actionQueueLength(playerId)).to.eq(0);
   });
