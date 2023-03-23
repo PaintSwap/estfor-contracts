@@ -421,6 +421,17 @@ describe("Rewards", () => {
     await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
 
     const numHours = 5;
+
+    // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+    const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+    await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+
+    tx = await world.requestSeedUpdate();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+
     const timespan = 3600 * numHours;
     expect(numHours * numSpawn).to.be.greaterThan(maxUniqueTickets);
 
@@ -484,7 +495,7 @@ describe("Rewards", () => {
     expect(pendingOutput.produced.length).to.eq(0);
 
     tx = await world.requestSeedUpdate();
-    let requestId = getRequestId(tx);
+    requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
 
@@ -543,6 +554,17 @@ describe("Rewards", () => {
 
     const actionId = await getActionId(tx);
     const numHours = 5;
+
+    // Make sure it passes the next checkpoint so there are no issues running
+    const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+    await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+
+    tx = await world.requestSeedUpdate();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
@@ -661,6 +683,17 @@ describe("Rewards", () => {
 
     const actionId = await getActionId(tx);
     const numHours = 2;
+
+    // Make sure it passes the next checkpoint so there are no issues running
+    const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+    await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+
+    tx = await world.requestSeedUpdate();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,

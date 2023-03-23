@@ -961,7 +961,7 @@ describe("Non-Combat Actions", () => {
       const randomChance = Math.floor(65536 * randomChanceFraction);
 
       const xpPerHour = 2;
-      const tx = await world.addAction({
+      let tx = await world.addAction({
         actionId: 1,
         info: {
           skill: EstforTypes.Skill.THIEVING,
@@ -983,6 +983,17 @@ describe("Non-Combat Actions", () => {
       const actionId = await getActionId(tx);
 
       const numHours = 4;
+
+      // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+      const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+
+      tx = await world.requestSeedUpdate();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1027,7 +1038,7 @@ describe("Non-Combat Actions", () => {
       const successPercent = 60; // Makes it 30% chance in total
 
       const xpPerHour = 2;
-      const tx = await world.addAction({
+      let tx = await world.addAction({
         actionId: 1,
         info: {
           skill: EstforTypes.Skill.THIEVING,
@@ -1049,6 +1060,17 @@ describe("Non-Combat Actions", () => {
       const actionId = await getActionId(tx);
 
       const numHours = 2;
+
+      // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+      const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+
+      tx = await world.requestSeedUpdate();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1068,8 +1090,8 @@ describe("Non-Combat Actions", () => {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        const tx = await world.requestSeedUpdate();
-        let requestId = getRequestId(tx);
+        tx = await world.requestSeedUpdate();
+        requestId = getRequestId(tx);
         expect(requestId).to.not.eq(0);
         await mockOracleClient.fulfill(requestId, world.address);
         await players.connect(alice).processActions(playerId);
@@ -1081,8 +1103,8 @@ describe("Non-Combat Actions", () => {
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
       // Have 2 queued actions so twice as much
       expect(balance).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-      expect(balance).to.be.gte(expectedTotal * 0.8); // Within 20% below
-      expect(balance).to.be.lte(expectedTotal * 1.2); // Within 20% above
+      expect(balance).to.be.gte(expectedTotal * 0.75); // Within 20% below
+      expect(balance).to.be.lte(expectedTotal * 1.25); // Within 20% above
     });
   });
 

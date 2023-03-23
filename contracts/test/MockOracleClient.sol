@@ -5,6 +5,7 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2
 
 contract MockOracleClient {
   uint counter = 1;
+  uint randomWord = 1;
   uint numWords;
 
   function requestRandomWords(bytes32, uint64, uint16, uint32, uint32 _numWords) external returns (uint256 requestId) {
@@ -19,8 +20,8 @@ contract MockOracleClient {
     VRFConsumerBaseV2 consumer = VRFConsumerBaseV2(_consumer);
     uint256[] memory randomWords = new uint256[](numWords);
     for (uint i = 0; i < numWords; ++i) {
-      randomWords[i] = uint(blockhash(block.number - (i + 1)) | bytes32(counter));
-      ++counter;
+      randomWords[i] = uint(blockhash(block.number - (i + 1)) | bytes32(randomWord));
+      ++randomWord;
     }
     consumer.rawFulfillRandomWords(_requestId, randomWords);
   }
