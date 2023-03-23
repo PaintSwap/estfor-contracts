@@ -254,7 +254,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     if (_itemTokenId == 0) {
       return;
     }
-    // Balance should be checked beforehand
     emit Consume(_from, _playerId, _queueId, _itemTokenId, _numConsumed);
     itemNFT.burn(_from, _itemTokenId, _numConsumed);
   }

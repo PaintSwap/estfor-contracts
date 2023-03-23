@@ -177,11 +177,18 @@ library PlayerLibrary {
       foodConsumed = uint24(
         uint32(totalHealthLost) / healthRestored + (uint32(totalHealthLost) % healthRestored == 0 ? 0 : 1)
       );
-      uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
 
-      died = foodConsumed > balance;
-      if (died) {
-        foodConsumed = uint16(balance);
+      // Can only consume a maximum of 65535 food
+      if (foodConsumed > type(uint16).max) {
+        foodConsumed = type(uint16).max;
+        died = true;
+      } else {
+        uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
+
+        died = foodConsumed > balance;
+        if (died) {
+          foodConsumed = uint16(balance);
+        }
       }
     }
   }
@@ -236,6 +243,11 @@ library PlayerLibrary {
     ItemNFT _itemNFT
   ) private view returns (uint maxRequiredRatio) {
     uint balance = _itemNFT.balanceOf(_from, _inputTokenId);
+    if (_numConsumed > type(uint16).max && _numConsumed < balance / _num) {
+      // Have enough balance but numConsumed exceeds 65535, too much so limit it.
+      balance = type(uint16).max * _num;
+    }
+
     uint tempMaxRequiredRatio = _maxRequiredRatio;
     if (_numConsumed > balance / _num) {
       tempMaxRequiredRatio = balance / _num;
