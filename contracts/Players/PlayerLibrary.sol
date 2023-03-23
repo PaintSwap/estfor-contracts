@@ -104,7 +104,7 @@ library PlayerLibrary {
   // Index not level, add one after (check for > max)
   function getLevel(uint256 _xp) public pure returns (uint16) {
     U256 low;
-    U256 high = U256.wrap(XP_BYTES.length).div(3);
+    U256 high = U256.wrap(XP_BYTES.length).div(4);
 
     while (low < high) {
       U256 mid = (low + high).div(2);
@@ -124,9 +124,15 @@ library PlayerLibrary {
     }
   }
 
-  function _getXP(uint256 _index) private pure returns (uint24) {
-    uint256 index = _index * 3;
-    return uint24(XP_BYTES[index] | (bytes3(XP_BYTES[index + 1]) >> 8) | (bytes3(XP_BYTES[index + 2]) >> 16));
+  function _getXP(uint256 _index) private pure returns (uint32) {
+    uint256 index = _index * 4;
+    return
+      uint32(
+        XP_BYTES[index] |
+          (bytes4(XP_BYTES[index + 1]) >> 8) |
+          (bytes4(XP_BYTES[index + 2]) >> 16) |
+          (bytes4(XP_BYTES[index + 3]) >> 24)
+      );
   }
 
   function foodConsumedView(
