@@ -182,7 +182,7 @@ abstract contract PlayersBase {
     bool _isCombatSkill,
     uint _actionStartTime,
     uint _elapsedTime,
-    uint16 _xpPerHour
+    uint24 _xpPerHour
   ) internal view returns (uint32 boostPointsAccrued) {
     return
       PlayerLibrary.extraXPFromBoost(
@@ -199,7 +199,7 @@ abstract contract PlayersBase {
     Attire storage _attire,
     Skill _skill,
     uint _elapsedTime,
-    uint16 _xpPerHour
+    uint24 _xpPerHour
   ) internal view returns (uint32 extraPointsAccrued) {
     uint8 bonusPercent = fullAttireBonus[_skill].bonusPercent;
     if (bonusPercent == 0) {
@@ -227,7 +227,7 @@ abstract contract PlayersBase {
     uint _xpElapsedTime
   ) internal view returns (uint32 pointsAccrued) {
     bool _isCombatSkill = _isCombatStyle(_queuedAction.combatStyle);
-    uint16 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
+    uint24 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
     pointsAccrued += _extraXPFromFullAttire(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);

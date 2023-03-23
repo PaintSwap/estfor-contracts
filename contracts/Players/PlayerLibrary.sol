@@ -395,7 +395,7 @@ library PlayerLibrary {
     bool _isCombatSkill,
     uint _actionStartTime,
     uint _elapsedTime,
-    uint16 _xpPerHour,
+    uint24 _xpPerHour,
     PlayerBoostInfo storage activeBoost
   ) public view returns (uint32 boostPointsAccrued) {
     if (activeBoost.itemTokenId != NONE && activeBoost.startTime < block.timestamp) {

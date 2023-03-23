@@ -459,9 +459,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _updateXP(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
-    uint32 oldPoints = xp[_playerId][_skill];
-    uint32 newPoints = oldPoints + _pointsAccrued;
-    xp[_playerId][_skill] = newPoints;
+    uint oldPoints = xp[_playerId][_skill];
+    uint newPoints = oldPoints + _pointsAccrued;
+    if (newPoints > type(uint32).max) {
+      newPoints = type(uint32).max;
+    }
+    xp[_playerId][_skill] = uint32(newPoints);
     emit AddXP(_from, _playerId, _skill, _pointsAccrued);
 
     uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);

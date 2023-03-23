@@ -377,7 +377,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     );
   }
 
-  function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint16 xpPerHour) {
+  function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint24 xpPerHour) {
     return _actionChoiceId != 0 ? actionChoices[_actionId][_actionChoiceId].xpPerHour : actions[_actionId].xpPerHour;
   }
 

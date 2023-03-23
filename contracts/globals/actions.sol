@@ -16,7 +16,7 @@ struct ActionChoice {
   uint32 minXP;
   uint32 diff;
   uint32 rate; // rate of output produced per hour (base 10) 1 decimal
-  uint16 xpPerHour;
+  uint24 xpPerHour;
   uint16 inputTokenId1;
   uint8 num1;
   uint16 inputTokenId2;
@@ -70,9 +70,9 @@ struct ActionInfo {
   bool isAvailable;
   bool isDynamic;
   bool actionChoiceRequired; // If true, then the user must choose an action choice
-  uint16 xpPerHour;
-  uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
+  uint24 xpPerHour;
   uint32 minXP;
+  uint16 numSpawn; // Mostly for combat, capped respawn rate for xp/drops
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
   uint8 successPercent; // 0-100

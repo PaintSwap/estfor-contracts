@@ -1011,5 +1011,66 @@ describe("Players", () => {
       expect(await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
     });
+
+    it("Maxing out XP", async () => {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * 10; // per hour
+      const tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.WOODCUTTING,
+          xpPerHour: 16000000, // 16MM
+          minXP: 0,
+          isDynamic: false,
+          numSpawn: 0,
+          handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const timespan = 3600 * 24;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        choiceId1: EstforConstants.NONE,
+        choiceId2: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        skill: EstforTypes.Skill.WOODCUTTING,
+      };
+
+      const minXP = getXPFromLevel(98);
+      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.WOODCUTTING, minXP);
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        skill: EstforTypes.Skill.WOODCUTTING,
+        minXP,
+        tokenId: EstforConstants.ORICHALCUM_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      });
+
+      await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
+
+      // 16MM is the maximum xp per hour that can be gained, so need to loop it many time to go over
+      for (let i = 0; i < 25; ++i) {
+        await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+        await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      }
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(Math.pow(2, 32) - 1);
+    });
   });
 });
