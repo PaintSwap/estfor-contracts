@@ -439,7 +439,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       _actionRewards.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
       _actionRewards.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
 
-      for (uint i; i < _action.guaranteedRewards.length; ++i) {
+      for (uint i; i < _action.guaranteedRewards.length - 1; ++i) {
         if (
           _action.guaranteedRewards[i].itemTokenId ==
           _action.guaranteedRewards[_action.guaranteedRewards.length - 1].itemTokenId

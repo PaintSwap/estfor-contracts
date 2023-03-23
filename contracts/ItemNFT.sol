@@ -32,7 +32,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error InvalidChainId();
   error InvalidTokenId();
   error ItemAlreadyExists();
-  error ItemDoesNotExist();
+  error ItemDoesNotExist(uint16);
   error EquipmentPositionShouldNotChange();
   error OnlyForHardhat();
   error NotAllowedHardhat();
@@ -175,18 +175,18 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     if (!_exists(_tokenId)) {
-      revert ItemDoesNotExist();
+      revert ItemDoesNotExist(uint16(_tokenId));
     }
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
 
   function _exists(uint _tokenId) private view returns (bool) {
-    return items[_tokenId].equipPosition != EquipPosition.NONE;
+    return items[_tokenId].exists;
   }
 
-  function _getItem(uint _tokenId) private view returns (Item memory) {
+  function _getItem(uint16 _tokenId) private view returns (Item memory) {
     if (!_exists(_tokenId)) {
-      revert ItemDoesNotExist();
+      revert ItemDoesNotExist(_tokenId);
     }
     return items[_tokenId];
   }
@@ -201,7 +201,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
     if (!_exists(_tokenId)) {
-      revert ItemDoesNotExist();
+      revert ItemDoesNotExist(_tokenId);
     }
     return items[_tokenId].equipPosition;
   }
@@ -321,6 +321,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     item = items[_item.tokenId];
     item.equipPosition = _item.equipPosition;
     item.isTransferable = _item.isTransferable;
+    item.exists = true;
 
     if (hasCombat) {
       // Combat stats
@@ -401,7 +402,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function editItem(InputItem calldata _inputItem) external onlyOwner {
     if (!_exists(_inputItem.tokenId)) {
-      revert ItemDoesNotExist();
+      revert ItemDoesNotExist(_inputItem.tokenId);
     }
     if (items[_inputItem.tokenId].equipPosition != _inputItem.equipPosition) {
       revert EquipmentPositionShouldNotChange();

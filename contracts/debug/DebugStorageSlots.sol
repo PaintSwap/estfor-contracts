@@ -63,7 +63,7 @@ contract DebugStorageSlots {
   }
 
   enum EquipPosition {
-    NONE, // Used as a sentinel value
+    NONE,
     HEAD,
     NECK,
     BODY,
@@ -79,8 +79,7 @@ contract DebugStorageSlots {
     MAGIC_BAG,
     FOOD,
     AUX, // wood, seeds  etc..
-    BOOST_VIAL,
-    NO_POSITION
+    BOOST_VIAL
   }
 
   // Loot

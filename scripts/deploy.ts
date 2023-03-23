@@ -2,20 +2,27 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {MockBrushToken, MockWrappedFantom, PlayerNFT} from "../typechain-types";
-import {
-  allActions,
-  allFullAttireBonuses,
-  allItems,
-  allShopItems,
-  allXPThresholdRewards,
-  AvatarInfo,
-  createPlayer,
-  firemakingChoices,
-  magicChoices,
-  meleeChoices,
-  smithingChoices,
-} from "./utils";
+import {allFullAttireBonuses, allShopItems, allXPThresholdRewards, AvatarInfo, createPlayer} from "./utils";
 import adminAddresses from "../whitelist/admins.json";
+import {allItems} from "./data/items";
+import {allActions} from "./data/actions";
+
+import {
+  allActionChoicesFiremaking,
+  allActionChoicesCooking,
+  allActionChoicesCrafting,
+  allActionChoicesMagic,
+  allActionChoicesMelee,
+  allActionChoicesSmithing,
+} from "./data/actionChoices";
+import {
+  allActionChoiceIdsFiremaking,
+  allActionChoiceIdsCooking,
+  allActionChoiceIdsCrafting,
+  allActionChoiceIdsMagic,
+  allActionChoiceIdsMelee,
+  allActionChoiceIdsSmithing,
+} from "./data/actionChoiceIds";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -245,57 +252,74 @@ async function main() {
   );
   console.log("createPlayer");
 
-  //  tx = await players.setActivePlayer(playerId);
-  //  await tx.wait();
-  //  console.log("Set active player");
-
-  // === Test stuff ===
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();
   console.log("add xp threshold rewards");
 
-  const tokenIds: number[] = [];
-  const amounts: number[] = [];
-  allItems.forEach((item) => {
-    tokenIds.push(item.tokenId);
-    amounts.push(200);
-  });
+  const chunkSize = 100;
+  for (let i = 0; i < allItems.length; i += chunkSize) {
+    const tokenIds: number[] = [];
+    const amounts: number[] = [];
+    const chunk = allItems.slice(i, i + chunkSize);
+    chunk.forEach((item) => {
+      tokenIds.push(item.tokenId);
+      amounts.push(200);
+    });
+    tx = await itemNFT.addItems(chunk);
+    await tx.wait();
+    console.log("add items chunk ", i);
 
-  tx = await itemNFT.addItems(allItems);
-  await tx.wait();
-  console.log("add items");
+    // Batch mint all the items (testing)
+    if (network.chainId == 31337) {
+      tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
+    } else {
+      // TODO: This should fail when we go live
+      tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
+    }
+    await tx.wait();
+    console.log("batch mint");
+  }
 
   // Add full equipment bonuses (TODO: Only enable once we have all these items added)
-  //  tx = await players.addFullAttireBonuses(allFullAttireBonuses);
-  //  await tx.wait();
-  //  console.log("add full attire bonuses");
-
-  // Batch mint all the items
-  if (network.chainId == 31337) {
-    tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
-  } else {
-    // TODO: This should fail when we go live
-    tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
-  }
+  tx = await players.addFullAttireBonuses(allFullAttireBonuses);
   await tx.wait();
-  console.log("batch mint");
+  console.log("add full attire bonuses");
 
   tx = await world.addActions(allActions);
   await tx.wait();
   console.log("Add actions");
 
   const fireMakingActionId = EstforConstants.ACTION_FIREMAKING_ITEM;
-  const smithMakingActionId = EstforConstants.ACTION_SMITHING_ITEM;
+  const smithingActionId = EstforConstants.ACTION_SMITHING_ITEM;
+  const cookingActionId = EstforConstants.ACTION_COOKING_ITEM;
+  const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
+  const genericCombatActionId = EstforConstants.NONE;
 
   tx = await world.addBulkActionChoices(
-    [fireMakingActionId, smithMakingActionId, EstforConstants.NONE, EstforConstants.NONE],
     [
-      [EstforConstants.ACTIONCHOICE_FIREMAKING_LOG, EstforConstants.ACTIONCHOICE_FIREMAKING_OAK],
-      [EstforConstants.ACTIONCHOICE_SMITHING_BRONZE_BAR, EstforConstants.ACTIONCHOICE_SMITHING_IRON_BAR],
-      [EstforConstants.ACTIONCHOICE_MELEE_MONSTER],
-      [EstforConstants.ACTIONCHOICE_MAGIC_SHADOW_BLAST],
+      fireMakingActionId,
+      smithingActionId,
+      cookingActionId,
+      craftingActionId,
+      genericCombatActionId,
+      genericCombatActionId,
     ],
-    [firemakingChoices, smithingChoices, meleeChoices, magicChoices]
+    [
+      allActionChoiceIdsFiremaking,
+      allActionChoiceIdsSmithing,
+      allActionChoiceIdsCooking,
+      allActionChoiceIdsCrafting,
+      allActionChoiceIdsMelee,
+      allActionChoiceIdsMagic,
+    ],
+    [
+      allActionChoicesFiremaking,
+      allActionChoicesSmithing,
+      allActionChoicesCooking,
+      allActionChoicesCrafting,
+      allActionChoicesMelee,
+      allActionChoicesMagic,
+    ]
   );
 
   await tx.wait();
