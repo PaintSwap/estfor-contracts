@@ -424,7 +424,7 @@ describe("Rewards", () => {
 
     // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
     const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
     tx = await world.requestSeedUpdate();
@@ -557,7 +557,7 @@ describe("Rewards", () => {
 
     // Make sure it passes the next checkpoint so there are no issues running
     const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
     tx = await world.requestSeedUpdate();
@@ -686,7 +686,7 @@ describe("Rewards", () => {
 
     // Make sure it passes the next checkpoint so there are no issues running
     const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000 + 1);
+    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
     tx = await world.requestSeedUpdate();
