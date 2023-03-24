@@ -24,7 +24,14 @@ abstract contract PlayersBase {
   event UnconsumeBoostVial(address from, uint playerId);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
   event AddPendingRandomReward(address from, uint playerId, uint queueId, uint timestamp, uint elapsed);
-  event PendingRandomRewardsClaimed(address from, uint playerId, uint numRemoved);
+  event PendingRandomRewardsClaimed(
+    address from,
+    uint playerId,
+    uint numRemoved,
+    uint[] itemTokenIds,
+    uint[] amounts,
+    bool separateTransaction
+  );
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
   event SetSpeedMultiplier(uint playerId, uint16 multiplier);
 
@@ -386,8 +393,11 @@ abstract contract PlayersBase {
     return abi.decode(data, (QueuedAction[]));
   }
 
-  function _claimRandomRewards(uint _playerId) internal {
-    _delegatecall(implRewards, abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
+  function _claimRandomRewards(uint _playerId, bool _separateTransaction) internal {
+    _delegatecall(
+      implRewards,
+      abi.encodeWithSignature("claimRandomRewards(uint256,bool)", _playerId, _separateTransaction)
+    );
   }
 
   function _checkStartSlot() internal pure {

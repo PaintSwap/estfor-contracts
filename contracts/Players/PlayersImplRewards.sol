@@ -127,7 +127,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
-  function claimRandomRewards(uint _playerId) external {
+  function claimRandomRewards(uint _playerId, bool _separateTransaction) external {
     address from = msg.sender;
     (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
     if (numRemoved != 0) {
@@ -141,10 +141,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         pendingRandomRewards[_playerId].pop();
       }
 
-      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved);
-
       itemNFT.mintBatch(from, ids, amounts);
-      emit Rewards(from, _playerId, 0, ids, amounts);
+      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, _separateTransaction);
     }
   }
 
