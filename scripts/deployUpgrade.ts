@@ -23,21 +23,30 @@ async function main() {
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayerLibrary: playerLibrary.address},
   });
-  const playersAddress = "0x8958e25967d36e2f8d79f0991c7ac5a34d54ea8b";
+  const playersAddress = "0x214d683218cb8550290ec3191cc03ed81b7172c6";
   const players = await upgrades.upgradeProxy(playersAddress, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
   await players.deployed();
   console.log(`Players deployed at ${players.address.toLowerCase()}`);
+
   /*
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const playerNFT = await upgrades.upgradeProxy("0xa7bfb7cf00762043765701d06ac4a8f338ded25a", PlayerNFT, {
+  const playerNFT = await upgrades.upgradeProxy("0xbb417a7d6fd3ad2fbf2195a98d6a1bf55c301108", PlayerNFT, {
     kind: "uups",
   });
 
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`); */
+
+  // PlayerNFT
+  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const itemNFT = await upgrades.upgradeProxy("0x23d689db5ac193afccd387dd6008970302ca0494", ItemNFT, {
+    kind: "uups",
+  });
+
+  console.log(`ItemNFT deployed at ${itemNFT.address.toLowerCase()}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

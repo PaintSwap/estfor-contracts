@@ -111,6 +111,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     World _world,
     address _shop,
     address _royaltyReceiver,
+    string calldata _baseURI,
     address[] calldata _admins
   ) public initializer {
     __ERC1155_init("");
@@ -118,7 +119,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     __UUPSUpgradeable_init();
     world = _world;
     shop = _shop;
-    baseURI = "ipfs://";
+    baseURI = _baseURI;
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
     for (uint i; i < _admins.length; i++) {
@@ -416,7 +417,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function setBaseURI(string calldata _baseURI) external onlyOwner {
-    _setURI(_baseURI);
+    baseURI = _baseURI;
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -45,9 +45,10 @@ describe("PlayerNFT", function () {
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
+    const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, admins],
+      [world.address, shop.address, royaltyReceiver.address, itemsUri, admins],
       {
         kind: "uups",
         unsafeAllow: ["delegatecall"],
@@ -219,7 +220,7 @@ describe("PlayerNFT", function () {
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");
-    expect(metadata.attributes).to.have.length(13);
+    expect(metadata.attributes).to.have.length(14);
     expect(metadata.attributes[0]).to.have.property("trait_type");
     expect(metadata.attributes[0].trait_type).to.equal("Avatar");
     expect(metadata.attributes[0]).to.have.property("value");

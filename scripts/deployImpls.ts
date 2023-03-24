@@ -17,7 +17,7 @@ async function main() {
     await playerLibrary.deployed();
     console.log(`PlayerLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
   } else {
-    playerLibrary = await PlayerLibrary.attach("0xaaececb8429c524420820cf8d610d7a49dc887d2");
+    playerLibrary = await PlayerLibrary.attach("0xedc2f018dfe54aeadb8e21c1c86e3c803ad7f7d9");
   }
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
@@ -40,7 +40,7 @@ async function main() {
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayerLibrary: playerLibrary.address},
   });
-  const playersAddress = "0x8958e25967d36e2f8d79f0991c7ac5a34d54ea8b";
+  const playersAddress = "0x214d683218cb8550290ec3191cc03ed81b7172c6";
   const players = Players.attach(playersAddress);
   await players.setImpls(
     playersImplQueueActions.address,

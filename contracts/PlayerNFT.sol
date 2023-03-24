@@ -317,7 +317,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function setImageBaseUri(string calldata _imageBaseUri) external onlyOwner {
-    _setURI(_imageBaseUri);
+    imageBaseUri = _imageBaseUri;
   }
 
   function setPlayers(IPlayers _players) external onlyOwner {

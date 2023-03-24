@@ -41,11 +41,14 @@ describe("Shop", function () {
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
 
+    const admins = [owner.address, alice.address];
+
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
+    const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, [owner.address, alice.address]],
+      [world.address, shop.address, royaltyReceiver.address, itemsUri, admins],
       {
         kind: "uups",
         unsafeAllow: ["delegatecall"],

@@ -11,7 +11,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = ItemNFT.attach("0x1b0233bea032ff44bf1ed5862b81e17e4f7a2a44");
+  const itemNFT = ItemNFT.attach("0x23d689db5ac193afccd387dd6008970302ca0494");
 
   const item: EstforTypes.InputItem = {
     ...defaultInputItem,

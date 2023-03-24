@@ -166,7 +166,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     string calldata _avatarDescription,
     string calldata imageURI
   ) external view override returns (string memory) {
-    return PlayerLibrary.uri(_name, xp[_playerId], _avatarName, _avatarDescription, imageURI);
+    return
+      PlayerLibrary.uri(_name, xp[_playerId], players[_playerId].totalXP, _avatarName, _avatarDescription, imageURI);
   }
 
   // Callback after minting a player. If they aren't the active player then set it.

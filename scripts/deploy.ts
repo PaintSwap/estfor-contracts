@@ -95,12 +95,19 @@ async function main() {
     admins.push(owner.address);
   }
 
+  //  const itemsUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; //
+  const itemsUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; // alpha
+
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.deployProxy(ItemNFT, [world.address, shop.address, royaltyReceiver.address, admins], {
-    kind: "uups",
-    unsafeAllow: ["delegatecall"],
-  });
+  const itemNFT = await upgrades.deployProxy(
+    ItemNFT,
+    [world.address, shop.address, royaltyReceiver.address, itemsUri, admins],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall"],
+    }
+  );
   await itemNFT.deployed();
   console.log(`Item NFT deployed at ${itemNFT.address.toLowerCase()}`);
 

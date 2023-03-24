@@ -15,6 +15,7 @@ import "../globals/items.sol";
 
 /* solhint-enable no-global-import */
 
+// This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayerLibrary {
   using Strings for uint32;
   using Strings for bytes32;
@@ -24,6 +25,7 @@ library PlayerLibrary {
   function uri(
     bytes32 name,
     mapping(Skill skill => uint32 xp) storage xp,
+    uint overallXP,
     bytes32 avatarName,
     string calldata avatarDescription,
     string calldata imageURI
@@ -32,29 +34,31 @@ library PlayerLibrary {
       abi.encodePacked(
         _getTraitStringJSON("Avatar", avatarName),
         ",",
-        _getTraitNumberJSON("Melee", getLevel(xp[Skill.MELEE])),
+        _getTraitNumberJSON("Melee level", getLevel(xp[Skill.MELEE])),
         ",",
-        _getTraitNumberJSON("Magic", getLevel(xp[Skill.MAGIC])),
+        _getTraitNumberJSON("Magic level", getLevel(xp[Skill.MAGIC])),
         ",",
-        _getTraitNumberJSON("Defence", getLevel(xp[Skill.DEFENCE])),
+        _getTraitNumberJSON("Defence level", getLevel(xp[Skill.DEFENCE])),
         ",",
-        _getTraitNumberJSON("Health", getLevel(xp[Skill.HEALTH])),
+        _getTraitNumberJSON("Health level", getLevel(xp[Skill.HEALTH])),
         ",",
-        _getTraitNumberJSON("Mining", getLevel(xp[Skill.MINING])),
+        _getTraitNumberJSON("Mining level", getLevel(xp[Skill.MINING])),
         ",",
-        _getTraitNumberJSON("WoodCutting", getLevel(xp[Skill.WOODCUTTING])),
+        _getTraitNumberJSON("Woodcutting level", getLevel(xp[Skill.WOODCUTTING])),
         ",",
-        _getTraitNumberJSON("Fishing", getLevel(xp[Skill.FISHING])),
+        _getTraitNumberJSON("Fishing level", getLevel(xp[Skill.FISHING])),
         ",",
-        _getTraitNumberJSON("Smithing", getLevel(xp[Skill.SMITHING])),
+        _getTraitNumberJSON("Smithing level", getLevel(xp[Skill.SMITHING])),
         ",",
-        _getTraitNumberJSON("Thieving", getLevel(xp[Skill.THIEVING])),
+        _getTraitNumberJSON("Thieving level", getLevel(xp[Skill.THIEVING])),
         ",",
-        _getTraitNumberJSON("Crafting", getLevel(xp[Skill.CRAFTING])),
+        _getTraitNumberJSON("Crafting level", getLevel(xp[Skill.CRAFTING])),
         ",",
-        _getTraitNumberJSON("Cooking", getLevel(xp[Skill.COOKING])),
+        _getTraitNumberJSON("Cooking level", getLevel(xp[Skill.COOKING])),
         ",",
-        _getTraitNumberJSON("FireMaking", getLevel(xp[Skill.FIREMAKING]))
+        _getTraitNumberJSON("Firemaking level", getLevel(xp[Skill.FIREMAKING])),
+        ",",
+        _getTraitNumberJSON("Total level", getLevel(overallXP))
       )
     );
 
