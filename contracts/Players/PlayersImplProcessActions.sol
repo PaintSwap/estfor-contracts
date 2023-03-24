@@ -144,9 +144,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       if (fullyFinished) {
-        emit ActionFinished(_from, _playerId, _queueId);
+        emit ActionFinished(_from, _playerId, queuedAction.actionId, queuedAction.skill, _queueId);
       } else {
-        emit ActionPartiallyFinished(_from, _playerId, _queueId, elapsedTime);
+        emit ActionPartiallyFinished(
+          _from,
+          _playerId,
+          queuedAction.actionId,
+          queuedAction.skill,
+          _queueId,
+          elapsedTime
+        );
       }
     }
 
