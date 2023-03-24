@@ -281,9 +281,11 @@ library PlayerLibrary {
     uint _elapsedTime
   ) private pure returns (uint32) {
     return
+      // Formula is max(1, a(atk) + b(2 * atk - def))
+      // Always do at last 1 damage per minute
       uint32(
         int32(
-          (_max(1, attack * int128(_alphaCombat) + (attack - defence) * int128(_betaCombat)) *
+          (_max(1, attack * int128(_alphaCombat) + (attack * 2 - defence) * int128(_betaCombat)) *
             int32(int(_elapsedTime))) / 60
         )
       );
