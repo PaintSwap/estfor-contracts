@@ -37,7 +37,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event NewDailyRewards(Equipment[8] dailyRewards);
 
   error SeedCannotBeUpdatedYet();
-  error CanOnlyRequestAfterTheNextCheckpoint();
+  error CanOnlyRequestAfterTheNextCheckpoint(uint256 checkpoint);
   error RequestAlreadyFulfilled();
   error NoValidSeed();
   error CanOnlyRequestAfter1DayHasPassed();
@@ -194,7 +194,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       revert SeedCannotBeUpdatedYet();
     }
     if (lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME > block.timestamp) {
-      revert CanOnlyRequestAfterTheNextCheckpoint();
+      revert CanOnlyRequestAfterTheNextCheckpoint(lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME);
     }
 
     // Will revert if subscription is not set and funded.
