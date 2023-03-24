@@ -11,7 +11,6 @@ const actionIsAvailable = true;
 
 describe("Non-Combat Actions", () => {
   // Test isDynamic
-
   describe("Woodcutting", () => {
     it("Cut wood", async () => {
       const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
@@ -387,6 +386,7 @@ describe("Non-Combat Actions", () => {
     expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 1220 logs burnt per hour, 2 hours producing logs, 1 hour burning
     expect((await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).toNumber()).to.be.oneOf([
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10 - 1,
       Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10,
       Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10 + 1,
     ]);
@@ -988,11 +988,12 @@ describe("Non-Combat Actions", () => {
       const numHours = 4;
 
       // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
-      const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-      const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
+      const {timestamp} = await ethers.provider.getBlock("latest");
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      tx = await world.requestSeedUpdate();
+      tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
@@ -1016,7 +1017,7 @@ describe("Non-Combat Actions", () => {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        const tx = await world.requestSeedUpdate();
+        const tx = await world.requestRandomWords();
         let requestId = getRequestId(tx);
         expect(requestId).to.not.eq(0);
         await mockOracleClient.fulfill(requestId, world.address);
@@ -1065,11 +1066,12 @@ describe("Non-Combat Actions", () => {
       const numHours = 2;
 
       // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
-      const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-      const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
+      const {timestamp} = await ethers.provider.getBlock("latest");
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      tx = await world.requestSeedUpdate();
+      tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
@@ -1093,7 +1095,7 @@ describe("Non-Combat Actions", () => {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        tx = await world.requestSeedUpdate();
+        tx = await world.requestRandomWords();
         requestId = getRequestId(tx);
         expect(requestId).to.not.eq(0);
         await mockOracleClient.fulfill(requestId, world.address);

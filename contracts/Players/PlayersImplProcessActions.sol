@@ -368,7 +368,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     if (hasRandomRewards) {
       bool hasRandomWord = world.hasRandomWord(_skillEndTime);
       if (!hasRandomWord) {
-        // There's no seed for this yet, so add it to the loot queue. (TODO: They can force add it later)
+        // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
         _pendingRandomRewards.push(
           PendingRandomReward({
             actionId: _actionId,

@@ -29,12 +29,12 @@ describe("World", () => {
       kind: "uups",
     });
 
-    const minSeedUpdateTime = await world.MIN_SEED_UPDATE_TIME();
+    const minRandomWordsUpdateTime = await world.MIN_RANDOM_WORDS_UPDATE_TIME();
 
     return {
       world,
       mockOracleClient,
-      minSeedUpdateTime,
+      minRandomWordsUpdateTime,
       owner,
       alice,
     };
@@ -42,10 +42,10 @@ describe("World", () => {
 
   describe("Seed", () => {
     it("Requesting random words", async () => {
-      const {world, mockOracleClient, minSeedUpdateTime} = await loadFixture(deployContracts);
-      await expect(world.requestSeedUpdate()).to.be.reverted; // Too soon
-      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
-      await world.requestSeedUpdate();
+      const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
+      await expect(world.requestRandomWords()).to.be.reverted; // Too soon
+      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
+      await world.requestRandomWords();
 
       const startOffset = 5;
       let requestId = await world.requestIds(startOffset);
@@ -62,33 +62,31 @@ describe("World", () => {
       // Try fulfill same request should fail
       await expect(mockOracleClient.fulfill(requestId, world.address)).to.be.reverted;
 
-      // Requesting new seed too soon
-      await expect(world.requestSeedUpdate()).to.be.reverted;
+      // Requesting new random word too soon
+      await expect(world.requestRandomWords()).to.be.reverted;
 
       // Increase time and check it works
-      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
-      await world.requestSeedUpdate();
+      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
+      await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 1);
       await mockOracleClient.fulfill(requestId, world.address);
 
       // Increase it 2x more, should allow 2 random seeds to be requested
-      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime * 2]);
-      await world.requestSeedUpdate();
+      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime * 2]);
+      await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 2);
       await mockOracleClient.fulfill(requestId, world.address);
-      await world.requestSeedUpdate();
+      await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 3);
       await mockOracleClient.fulfill(requestId, world.address);
-      await expect(world.requestSeedUpdate()).to.be.reverted;
+      await expect(world.requestRandomWords()).to.be.reverted;
     });
 
     it("getRandomWord", async () => {
-      const {world, mockOracleClient, minSeedUpdateTime} = await loadFixture(deployContracts);
-      const blockNum = await ethers.provider.getBlockNumber();
-      const currentBlock = await ethers.provider.getBlock(blockNum);
-      const currentTimestamp = currentBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
-      await world.requestSeedUpdate();
+      const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
+      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
+      await world.requestRandomWords();
       let requestId = await world.requestIds(5);
       await mockOracleClient.fulfill(requestId, world.address);
 
@@ -96,18 +94,16 @@ describe("World", () => {
       await expect(world.getRandomWord(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
       // Before 5 day offset
-      await expect(world.getRandomWord(currentTimestamp - minSeedUpdateTime * 6)).to.be.reverted;
+      await expect(world.getRandomWord(currentTimestamp - minRandomWordsUpdateTime * 6)).to.be.reverted;
       // After offset
-      await expect(world.getRandomWord(currentTimestamp + minSeedUpdateTime)).to.be.reverted;
+      await expect(world.getRandomWord(currentTimestamp + minRandomWordsUpdateTime)).to.be.reverted;
     });
 
     it("Get full/multiple words", async () => {
-      const {world, mockOracleClient, minSeedUpdateTime} = await loadFixture(deployContracts);
-      const blockNum = await ethers.provider.getBlockNumber();
-      const currentBlock = await ethers.provider.getBlock(blockNum);
-      const currentTimestamp = currentBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [minSeedUpdateTime]);
-      await world.requestSeedUpdate();
+      const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
+      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
+      await world.requestRandomWords();
       let requestId = await world.requestIds(5);
       await mockOracleClient.fulfill(requestId, world.address);
 

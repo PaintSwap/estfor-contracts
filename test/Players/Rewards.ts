@@ -210,7 +210,8 @@ describe("Rewards", () => {
 
     const oneDay = 24 * 3600;
     const oneWeek = oneDay * 7;
-    const timestamp = Math.floor((Date.now() / 1000 - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 5 * oneDay + 1); // Start next tuesday
+    const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+    const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 5 * oneDay + 1); // Start next tuesday
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await ethers.provider.send("evm_mine", []);
@@ -348,7 +349,8 @@ describe("Rewards", () => {
 
     const oneDay = 24 * 3600;
     const oneWeek = oneDay * 7;
-    const timestamp = Math.floor((Date.now() / 1000 - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay + 1); // Start next monday
+    const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+    const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay + 1); // Start next monday
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await ethers.provider.send("evm_mine", []);
@@ -423,11 +425,12 @@ describe("Rewards", () => {
     const numHours = 5;
 
     // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
-    const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
+    const {timestamp} = await ethers.provider.getBlock("latest");
+    const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-    tx = await world.requestSeedUpdate();
+    tx = await world.requestRandomWords();
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
@@ -494,7 +497,7 @@ describe("Rewards", () => {
     });
     expect(pendingOutput.produced.length).to.eq(0);
 
-    tx = await world.requestSeedUpdate();
+    tx = await world.requestRandomWords();
     requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
@@ -556,11 +559,12 @@ describe("Rewards", () => {
     const numHours = 5;
 
     // Make sure it passes the next checkpoint so there are no issues running
-    const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
+    const {timestamp} = await ethers.provider.getBlock("latest");
+    const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-    tx = await world.requestSeedUpdate();
+    tx = await world.requestRandomWords();
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
@@ -607,7 +611,7 @@ describe("Rewards", () => {
       });
       expect(pendingOutput.produced.length).to.eq(0);
 
-      tx = await world.requestSeedUpdate();
+      tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
@@ -685,11 +689,12 @@ describe("Rewards", () => {
     const numHours = 2;
 
     // Make sure it passes the next checkpoint so there are no issues running
-    const nextCheckpoint = Math.floor(Date.now() / 1000 / 86400) * 86400 + 86400;
-    const durationToNextCheckpoint = nextCheckpoint - Math.floor(Date.now() / 1000) + 1;
+    const {timestamp} = await ethers.provider.getBlock("latest");
+    const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-    tx = await world.requestSeedUpdate();
+    tx = await world.requestRandomWords();
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
@@ -749,7 +754,7 @@ describe("Rewards", () => {
       });
       expect(pendingOutput.producedPastRandomRewards.length).to.eq(0);
 
-      tx = await world.requestSeedUpdate();
+      tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
@@ -785,7 +790,7 @@ describe("Rewards", () => {
   // Could be a part of world or if there was space
   it("Check random bytes", async () => {
     const {players, playerId} = await loadFixture(playersFixture);
-    const timestamp = Math.floor(Date.now() / 1000);
+    const {timestamp} = await ethers.provider.getBlock("latest");
     let numTickets = 16; // 240
     let randomBytes = await players.getRandomBytes(numTickets, timestamp - 86400, playerId);
     expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32);

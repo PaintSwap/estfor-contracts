@@ -35,11 +35,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
   event NewDailyRewards(Equipment[8] dailyRewards);
-
-  error SeedCannotBeUpdatedYet();
-  error CanOnlyRequestAfterTheNextCheckpoint(uint256 checkpoint);
+  error RandomWordsCannotBeUpdatedYet();
+  error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
   error RequestAlreadyFulfilled();
-  error NoValidSeed();
+  error NoValidRandomWord();
   error CanOnlyRequestAfter1DayHasPassed();
   error ActionIdZeroNotAllowed();
   error MinCannotBeGreaterThanMax();
@@ -72,9 +71,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint64 public subscriptionId;
 
   // Past request ids
-  uint[] public requestIds; // Each one is a seed for a day
+  uint[] public requestIds; // Each one is a set of random words for 1 day
   mapping(uint requestId => uint[3] randomWord) public randomWords;
-  uint40 public lastSeedUpdatedTime;
+  uint40 public lastRandomWordsUpdatedTime;
   uint40 public startTime;
   uint40 public weeklyRewardCheckpoint;
 
@@ -90,7 +89,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
   uint32 public constant NUM_WORDS = 3;
 
-  uint32 public constant MIN_SEED_UPDATE_TIME = 1 days;
+  uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
   uint32 public constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
 
   mapping(uint actionId => ActionInfo actionInfo) public actions;
@@ -116,8 +115,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
-    startTime = uint40((block.timestamp / MIN_SEED_UPDATE_TIME) * MIN_SEED_UPDATE_TIME) - 5 days; // Floor to the nearest day 00:00 UTC
-    lastSeedUpdatedTime = startTime + 5 days;
+    startTime = uint40((block.timestamp / MIN_RANDOM_WORDS_UPDATE_TIME) * MIN_RANDOM_WORDS_UPDATE_TIME) - 5 days; // Floor to the nearest day 00:00 UTC
+    lastRandomWordsUpdatedTime = startTime + 5 days;
     weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
 
     // Issue new available daily rewards
@@ -135,7 +134,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _storeDailyRewards(rewards);
     emit NewDailyRewards(rewards);
 
-    // Initialize 5 days worth of seeds
+    // Initialize 5 days worth of random words
     for (uint i = 0; i < 5; ++i) {
       uint requestId = 200 + i;
       requestIds.push(requestId);
@@ -188,13 +187,27 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     dailyRewards = rewards;
   }
 
-  function requestSeedUpdate() external returns (uint256 requestId) {
+  function canRequestRandomWord() external view returns (bool) {
     // Last one has not been fulfilled yet
     if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]][0] == 0) {
-      revert SeedCannotBeUpdatedYet();
+      return false;
     }
-    if (lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME > block.timestamp) {
-      revert CanOnlyRequestAfterTheNextCheckpoint(lastSeedUpdatedTime + MIN_SEED_UPDATE_TIME);
+    if (lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME > block.timestamp) {
+      return false;
+    }
+    return true;
+  }
+
+  function requestRandomWords() external returns (uint256 requestId) {
+    // Last one has not been fulfilled yet
+    if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]][0] == 0) {
+      revert RandomWordsCannotBeUpdatedYet();
+    }
+    if (lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME > block.timestamp) {
+      revert CanOnlyRequestAfterTheNextCheckpoint(
+        block.timestamp,
+        lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME
+      );
     }
 
     // Will revert if subscription is not set and funded.
@@ -207,7 +220,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     );
 
     requestIds.push(requestId);
-    lastSeedUpdatedTime += MIN_SEED_UPDATE_TIME;
+    lastRandomWordsUpdatedTime += MIN_RANDOM_WORDS_UPDATE_TIME;
     emit RequestSent(requestId, NUM_WORDS);
     return requestId;
   }
@@ -236,7 +249,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // Are we at the threshold for a new week
     if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
-      // Issue new daily rewards based on the new seed (TODO)
+      // Issue new daily rewards based on the new random words (TODO)
       Equipment[8] memory rewards = [
         Equipment(COPPER_ORE, 100),
         Equipment(COAL_ORE, 200),
@@ -264,7 +277,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _getRandomWordOffset(uint _timestamp) private view returns (uint) {
-    return (_timestamp - startTime) / MIN_SEED_UPDATE_TIME;
+    return (_timestamp - startTime) / MIN_RANDOM_WORDS_UPDATE_TIME;
   }
 
   // Just returns the first random word of the array
@@ -280,10 +293,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return _getRandomWord(_timestamp) != 0;
   }
 
-  function getRandomWord(uint _timestamp) external view returns (uint seed) {
-    seed = _getRandomWord(_timestamp);
-    if (seed == 0) {
-      revert NoValidSeed();
+  function getRandomWord(uint _timestamp) external view returns (uint randomWord) {
+    randomWord = _getRandomWord(_timestamp);
+    if (randomWord == 0) {
+      revert NoValidRandomWord();
     }
   }
 
@@ -322,11 +335,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     delete lastAddedDynamicActions;
-    uint seed = getRandomWord(block.timestamp);
+    uint randomWord = getRandomWord(block.timestamp);
 
     uint16[] memory actionIdsToAdd = new uint16[](1);
 
-    if (seed % 2 == 0) {
+    if (randomWord % 2 == 0) {
       // If it's even do X
       actionIdsToAdd[0] = 1; // ?
     } else {
