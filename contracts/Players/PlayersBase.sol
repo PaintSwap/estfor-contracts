@@ -344,18 +344,18 @@ abstract contract PlayersBase {
     if (_item.magic != 0) {
       _combatStats.magic += _item.magic;
     }
-    if (_item.range != 0) {
-      _combatStats.range += _item.range;
-    }
+    //    if (_item.range != 0) {
+    //      _combatStats.range += _item.range;
+    //    }
     if (_item.meleeDefence != 0) {
       _combatStats.meleeDefence += _item.meleeDefence;
     }
     if (_item.magicDefence != 0) {
       _combatStats.magicDefence += _item.magicDefence;
     }
-    if (_item.rangeDefence != 0) {
-      _combatStats.rangeDefence += _item.rangeDefence;
-    }
+    //    if (_item.rangeDefence != 0) {
+    //      _combatStats.rangeDefence += _item.rangeDefence;
+    //    }
     if (_item.health != 0) {
       _combatStats.health += _item.health;
     }
