@@ -6,8 +6,8 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId} from "../scripts/utils";
 
-describe("World", () => {
-  const deployContracts = async () => {
+describe("World", function () {
+  const deployContracts = async function () {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice] = await ethers.getSigners();
 
@@ -40,8 +40,8 @@ describe("World", () => {
     };
   };
 
-  describe("Seed", () => {
-    it("Requesting random words", async () => {
+  describe("Seed", function () {
+    it("Requesting random words", async function () {
       const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
       await expect(world.requestRandomWords()).to.be.reverted; // Too soon
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
@@ -82,7 +82,7 @@ describe("World", () => {
       await expect(world.requestRandomWords()).to.be.reverted;
     });
 
-    it("getRandomWord", async () => {
+    it("getRandomWord", async function () {
       const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
@@ -99,7 +99,7 @@ describe("World", () => {
       await expect(world.getRandomWord(currentTimestamp + minRandomWordsUpdateTime)).to.be.reverted;
     });
 
-    it("Get full/multiple words", async () => {
+    it("Get full/multiple words", async function () {
       const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
@@ -119,8 +119,8 @@ describe("World", () => {
     });
   });
 
-  describe("Actions", () => {
-    it("Add/Edit/Delete normal", async () => {
+  describe("Actions", function () {
+    it("Add/Edit/Delete normal", async function () {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
       let tx = await world.addAction({
@@ -190,13 +190,13 @@ describe("World", () => {
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });
 
-    it("Dynamic actions", async () => {
+    it("Dynamic actions", async function () {
       // Dynamic actions TODO
     });
   });
 
-  describe("ActionChoices", () => {
-    it("Cannot use id 0", async () => {
+  describe("ActionChoices", function () {
+    it("Cannot use id 0", async function () {
       const {world} = await loadFixture(deployContracts);
       const choiceId = 0;
       await expect(
@@ -220,8 +220,8 @@ describe("World", () => {
     });
   });
 
-  describe("ActionRewards", () => {
-    it("Guaranteed reward duplicates not allowed", async () => {
+  describe("ActionRewards", function () {
+    it("Guaranteed reward duplicates not allowed", async function () {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {
@@ -251,7 +251,7 @@ describe("World", () => {
       await expect(world.addAction(action)).to.not.be.reverted;
     });
 
-    it("Random reward order", async () => {
+    it("Random reward order", async function () {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {
@@ -287,7 +287,7 @@ describe("World", () => {
       await expect(world.addAction(action)).to.not.be.reverted;
     });
 
-    it("Random reward duplicate not allowed", async () => {
+    it("Random reward duplicate not allowed", async function () {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {

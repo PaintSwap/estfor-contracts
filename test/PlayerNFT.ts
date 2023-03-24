@@ -5,7 +5,7 @@ import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 
-describe("PlayerNFT", () => {
+describe("PlayerNFT", function () {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
 
@@ -140,7 +140,7 @@ describe("PlayerNFT", () => {
     };
   }
 
-  it("Empty name", async () => {
+  it("Empty name", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
     const emptyName = ethers.utils.formatBytes32String("");
     const avatarId = 1;
@@ -150,7 +150,7 @@ describe("PlayerNFT", () => {
     );
   });
 
-  it("Name too long", async () => {
+  it("Name too long", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
     const nameTooLong = ethers.utils.formatBytes32String("F12345678901234567890");
     const avatarId = 1;
@@ -161,7 +161,7 @@ describe("PlayerNFT", () => {
     expect(await playerNFT.lowercaseNames(ethers.utils.formatBytes32String("f1234567890123456789"))).to.be.true;
   });
 
-  it("Duplicate names not allowed", async () => {
+  it("Duplicate names not allowed", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
 
     const name = ethers.utils.formatBytes32String("123");
@@ -174,7 +174,7 @@ describe("PlayerNFT", () => {
     );
   });
 
-  it("Edit Name", async () => {
+  it("Edit Name", async function () {
     const {playerId, playerNFT, alice, brush, origName, EDIT_NAME_BRUSH_PRICE} = await loadFixture(deployContracts);
     const name = ethers.utils.formatBytes32String("My name is edited");
     await brush.connect(alice).approve(playerNFT.address, EDIT_NAME_BRUSH_PRICE.mul(3));
@@ -208,7 +208,7 @@ describe("PlayerNFT", () => {
     );
   });
 
-  it("uri", async () => {
+  it("uri", async function () {
     const {playerId, playerNFT, avatarInfo, origName} = await loadFixture(deployContracts);
     const uri = await playerNFT.uri(playerId);
 
@@ -230,23 +230,23 @@ describe("PlayerNFT", () => {
     expect(metadata.attributes[1].value).to.equal(1);
   });
 
-  describe("supportsInterface", async () => {
-    it("IERC165", async () => {
+  describe("supportsInterface", async function () {
+    it("IERC165", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
       expect(await playerNFT.supportsInterface("0x01ffc9a7")).to.equal(true);
     });
 
-    it("IERC1155", async () => {
+    it("IERC1155", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
       expect(await playerNFT.supportsInterface("0xd9b67a26")).to.equal(true);
     });
 
-    it("IERC1155Metadata", async () => {
+    it("IERC1155Metadata", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
       expect(await playerNFT.supportsInterface("0x0e89341c")).to.equal(true);
     });
 
-    it("IERC2981 royalties", async () => {
+    it("IERC2981 royalties", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
       expect(await playerNFT.supportsInterface("0x2a55205a")).to.equal(true);
     });

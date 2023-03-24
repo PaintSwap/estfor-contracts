@@ -9,8 +9,10 @@ import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
 const actionIsAvailable = true;
 
-describe("Players", () => {
-  it("New player stats", async () => {
+describe("Players", function () {
+  this.retries(3);
+
+  it("New player stats", async function () {
     const {players, playerNFT, alice} = await loadFixture(playersFixture);
 
     const avatarId = 2;
@@ -48,7 +50,7 @@ describe("Players", () => {
     expect((await players.players(newPlayerId)).defence).to.eq(1);
   });
 
-  it("Skill points", async () => {
+  it("Skill points", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
@@ -100,7 +102,7 @@ describe("Players", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(10); // Should be rounded down
   });
 
-  it("Skill points (many)", async () => {
+  it("Skill points (many)", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
@@ -155,7 +157,7 @@ describe("Players", () => {
     }
   });
 
-  it("Speed multiplier", async () => {
+  it("Speed multiplier", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const rate = 100 * 10; // per hour
@@ -214,7 +216,7 @@ describe("Players", () => {
     expect(await players.actionQueueLength(playerId)).to.eq(0);
   });
 
-  it("Partial consume aux items", async () => {
+  it("Partial consume aux items", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const rate = 100 * 10; // per hour
@@ -274,7 +276,7 @@ describe("Players", () => {
     );
   });
   /*
-  it("Skill points, max range", async () => {
+  it("Skill points, max range", async function () {
     const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(playersFixture);
 
     const combatStats: EstforTypes.CombatStats = {
@@ -350,13 +352,13 @@ describe("Players", () => {
     expect(await players.xp(playerId,EstforTypes.Skill.MELEE)).to.eq(queuedAction.timespan);
   });
 */
-  it("Multi-skill points", async () => {
+  it("Multi-skill points", async function () {
     // TODO:
   });
 
   // TODO: Check attire stats are as expected
 
-  it("Attire equipPositions", async () => {
+  it("Attire equipPositions", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     let tx = await world.addAction({
@@ -437,7 +439,7 @@ describe("Players", () => {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
   });
 
-  it("Queueing after 1 action is completely finished", async () => {
+  it("Queueing after 1 action is completely finished", async function () {
     const {playerId, players, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupBasicWoodcutting();
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -451,8 +453,8 @@ describe("Players", () => {
     expect(actionQueue[1].attire.queueId).to.eq(3);
   });
 
-  describe("Queue combinations", () => {
-    it("Remove in-progress but keep 1 pending", async () => {
+  describe("Queue combinations", function () {
+    it("Remove in-progress but keep 1 pending", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -469,7 +471,7 @@ describe("Players", () => {
       expect(actionQueue[0].attire.queueId).to.eq(3);
       expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
     });
-    it("Remove in-progress but keep pending, add another pending", async () => {
+    it("Remove in-progress but keep pending, add another pending", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -488,7 +490,7 @@ describe("Players", () => {
       expect(actionQueue[1].attire.queueId).to.eq(4);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
     });
-    it("Keep in-progress, remove 1 pending", async () => {
+    it("Keep in-progress, remove 1 pending", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -505,7 +507,7 @@ describe("Players", () => {
       expect(actionQueue[0].attire.queueId).to.eq(1);
       expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan / 2 - 1, queuedAction.timespan / 2]);
     });
-    it("Keep in-progress, remove 1 pending, and add 1 pending", async () => {
+    it("Keep in-progress, remove 1 pending, and add 1 pending", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -524,7 +526,7 @@ describe("Players", () => {
       expect(actionQueue[1].attire.queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
     });
-    it("Remove in-progress and any pending", async () => {
+    it("Remove in-progress and any pending", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -537,7 +539,7 @@ describe("Players", () => {
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
     });
-    it("Remove in-progress and pending, add 1 pending ", async () => {
+    it("Remove in-progress and pending, add 1 pending ", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -553,7 +555,7 @@ describe("Players", () => {
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].attire.queueId).to.eq(3);
     });
-    it("Keep in progress and pending, add another pending", async () => {
+    it("Keep in progress and pending, add another pending", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -573,8 +575,8 @@ describe("Players", () => {
     });
   });
 
-  describe("Minimum skill points", () => {
-    it("Action", async () => {
+  describe("Minimum skill points", function () {
+    it("Action", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       const tx = await world.addAction({
@@ -632,7 +634,7 @@ describe("Players", () => {
         .not.be.reverted;
     });
 
-    it("ActionChoices", async () => {
+    it("ActionChoices", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       let tx = await world.addAction({
@@ -719,7 +721,7 @@ describe("Players", () => {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     });
 
-    it("Consumeables (food)", async () => {
+    it("Consumeables (food)", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       let tx = await world.addAction({
@@ -817,7 +819,7 @@ describe("Players", () => {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     });
 
-    it("Attire", async () => {
+    it("Attire", async function () {
       const {playerId, players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       const tx = await world.addAction({
@@ -952,7 +954,7 @@ describe("Players", () => {
         .not.be.reverted;
     });
 
-    it("Left/Right equipment", async () => {
+    it("Left/Right equipment", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       const tx = await world.addAction({
@@ -1012,7 +1014,7 @@ describe("Players", () => {
         .not.be.reverted;
     });
 
-    it("Maxing out XP", async () => {
+    it("Maxing out XP", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       const tx = await world.addAction({

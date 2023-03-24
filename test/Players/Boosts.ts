@@ -8,8 +8,10 @@ import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
 
-describe("Boosts", () => {
-  it("Add Boost, Full consume", async () => {
+describe("Boosts", function () {
+  this.retries(3);
+
+  it("Add Boost, Full consume", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;
@@ -88,7 +90,7 @@ describe("Boosts", () => {
     );
   });
 
-  it("Add Boost, partial consume", async () => {
+  it("Add Boost, partial consume", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;

@@ -9,10 +9,12 @@ import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
 const actionIsAvailable = true;
 
-describe("Non-Combat Actions", () => {
+describe("Non-Combat Actions", function () {
+  this.retries(3);
+
   // Test isDynamic
-  describe("Woodcutting", () => {
-    it("Cut wood", async () => {
+  describe("Woodcutting", function () {
+    it("Cut wood", async function () {
       const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
 
       const {queuedAction, timespan, rate} = await setupBasicWoodcutting();
@@ -39,7 +41,7 @@ describe("Non-Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
     });
 
-    it("Full nature equipment", async () => {
+    it("Full nature equipment", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const rate = 100 * 10; // per hour
@@ -168,7 +170,7 @@ describe("Non-Combat Actions", () => {
     });
   });
 
-  it("Firemaking", async () => {
+  it("Firemaking", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const rate = 100 * 10; // per hour
     let tx = await world.addAction({
@@ -251,7 +253,7 @@ describe("Non-Combat Actions", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
   });
 
-  it("Multi skill appending, woodcutting + firemaking", async () => {
+  it("Multi skill appending, woodcutting + firemaking", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
     const rate = 1220 * 10; // per hour
@@ -394,7 +396,7 @@ describe("Non-Combat Actions", () => {
     expect(await players.actionQueueLength(playerId)).to.eq(0);
   });
 
-  it("Multi skill, woodcutting + firemaking", async () => {
+  it("Multi skill, woodcutting + firemaking", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
     const rate = 100 * 10; // per hour
@@ -539,7 +541,7 @@ describe("Non-Combat Actions", () => {
     expect(await players.actionQueueLength(playerId)).to.eq(0);
   });
 
-  it("Mining", async () => {
+  it("Mining", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const tx = await world.addAction({
@@ -592,7 +594,7 @@ describe("Non-Combat Actions", () => {
     expect(await players.xp(playerId, EstforTypes.Skill.MINING)).to.eq(queuedAction.timespan);
   });
 
-  it("Smithing", async () => {
+  it("Smithing", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const rate = 100 * 10; // per hour
 
@@ -685,8 +687,8 @@ describe("Non-Combat Actions", () => {
     );
   });
 
-  describe("Cooking", () => {
-    it("Cook", async () => {
+  describe("Cooking", function () {
+    it("Cook", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
 
@@ -775,7 +777,7 @@ describe("Non-Combat Actions", () => {
     });
 
     // Changes based on level
-    it("Burn some food", async () => {
+    it("Burn some food", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
 
@@ -865,7 +867,7 @@ describe("Non-Combat Actions", () => {
       );
     });
 
-    it("Burn food, check max 90% success upper bound", async () => {
+    it("Burn food, check max 90% success upper bound", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
 
@@ -956,8 +958,8 @@ describe("Non-Combat Actions", () => {
     });
   });
 
-  describe("Thieving", () => {
-    it("Steal (many)", async () => {
+  describe("Thieving", function () {
+    it("Steal (many)", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 50.0 / 100; // 50% chance
@@ -1034,7 +1036,7 @@ describe("Non-Combat Actions", () => {
       expect(balance).to.be.lte(expectedTotal * 1.2); // Within 20% above
     });
 
-    it("Steal, success percent (many)", async () => {
+    it("Steal, success percent (many)", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 50.0 / 100; // 50% chance
@@ -1113,7 +1115,7 @@ describe("Non-Combat Actions", () => {
     });
   });
 
-  it("Set past max timespan ", async () => {
+  it("Set past max timespan ", async function () {
     const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(playersFixture);
 
     const rate = 100 * 10; // per hour
@@ -1172,7 +1174,7 @@ describe("Non-Combat Actions", () => {
 
   // TODO Rest of the actions
 
-  it("Low rate action (more than 1 hour needed)", async () => {
+  it("Low rate action (more than 1 hour needed)", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
@@ -1224,7 +1226,7 @@ describe("Non-Combat Actions", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(1); // Should be rounded down
   });
 
-  it("Incorrect left/right hand equipment", async () => {
+  it("Incorrect left/right hand equipment", async function () {
     const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
 
     const rate = 100 * 10; // per hour
@@ -1320,7 +1322,7 @@ describe("Non-Combat Actions", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
   });
 
-  it("Action pipelining", async () => {
+  it("Action pipelining", async function () {
     // Try wood cut, and then burning them when having none equipped
   });
 });

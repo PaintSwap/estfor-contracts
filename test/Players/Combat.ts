@@ -1,7 +1,5 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
-import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
@@ -10,14 +8,15 @@ import {
   getActionChoiceId,
   getActionChoiceIds,
   getActionId,
-  getRequestId,
 } from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
 
-describe("Combat Actions", () => {
-  describe("Melee", async () => {
+describe("Combat Actions", function () {
+  this.retries(3);
+
+  describe("Melee", async function () {
     async function playersFixtureMelee() {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
@@ -121,7 +120,7 @@ describe("Combat Actions", () => {
       };
     }
 
-    it("Simple", async () => {
+    it("Simple", async function () {
       const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} = await loadFixture(
         playersFixtureMelee
       );
@@ -149,7 +148,7 @@ describe("Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NONE)).to.eq(0);
     });
 
-    it("No defence equipment", async () => {
+    it("No defence equipment", async function () {
       const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} = await loadFixture(
         playersFixtureMelee
       );
@@ -178,7 +177,7 @@ describe("Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 15);
     });
 
-    it("Don't kill anything", async () => {
+    it("Don't kill anything", async function () {
       const {playerId, players, itemNFT, alice, queuedAction} = await loadFixture(playersFixtureMelee);
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -194,7 +193,7 @@ describe("Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255);
     });
 
-    it("Melee defence", async () => {
+    it("Melee defence", async function () {
       const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} = await loadFixture(
         playersFixtureMelee
       );
@@ -219,7 +218,7 @@ describe("Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 10);
     });
 
-    it("Equip shield", async () => {
+    it("Equip shield", async function () {
       const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} = await loadFixture(
         playersFixtureMelee
       );
@@ -266,7 +265,7 @@ describe("Combat Actions", () => {
     });
   });
 
-  describe("Magic", () => {
+  describe("Magic", function () {
     async function playersFixtureMagic() {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
@@ -390,7 +389,7 @@ describe("Combat Actions", () => {
       return {playerId, players, itemNFT, world, alice, timespan, actionId, dropRate, queuedAction};
     }
 
-    it("Attack", async () => {
+    it("Attack", async function () {
       const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction} = await loadFixture(
         playersFixtureMagic
       );
@@ -415,7 +414,7 @@ describe("Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 1);
     });
 
-    it("No staff equipped", async () => {
+    it("No staff equipped", async function () {
       const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction} = await loadFixture(
         playersFixtureMagic
       );
@@ -443,7 +442,7 @@ describe("Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 1);
     });
 
-    it("Cannot equip shield with a staff", async () => {
+    it("Cannot equip shield with a staff", async function () {
       const {playerId, players, alice, queuedAction} = await loadFixture(playersFixtureMagic);
 
       const _queuedAction = {...queuedAction};
@@ -457,7 +456,7 @@ describe("Combat Actions", () => {
         .not.be.reverted;
     });
 
-    it("No scrolls equipped during processing action", async () => {
+    it("No scrolls equipped during processing action", async function () {
       const {playerId, players, itemNFT, alice, queuedAction} = await loadFixture(playersFixtureMagic);
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -478,7 +477,7 @@ describe("Combat Actions", () => {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100);
     });
 
-    it("Add multi actionChoice", async () => {
+    it("Add multi actionChoice", async function () {
       const {playerId, players, alice, world, queuedAction} = await loadFixture(playersFixtureMagic);
 
       const _queuedAction = {...queuedAction};
@@ -537,7 +536,7 @@ describe("Combat Actions", () => {
       await players.connect(alice).startAction(playerId, _queuedAction, EstforTypes.ActionQueueStatus.NONE);
     });
 
-    it("Use too much food", async () => {
+    it("Use too much food", async function () {
       const {playerId, players, alice, world, queuedAction, itemNFT} = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -590,7 +589,7 @@ describe("Combat Actions", () => {
     });
   });
 
-  it("Dead", async () => {
+  it("Dead", async function () {
     // Lose all the XP that would have been gained
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 

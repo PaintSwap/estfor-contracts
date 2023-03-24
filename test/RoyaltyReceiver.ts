@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 
-describe("RoyaltyReceiver", () => {
+describe("RoyaltyReceiver", function () {
   async function deployContracts() {
     const [owner, alice, pool] = await ethers.getSigners();
 
@@ -27,7 +27,7 @@ describe("RoyaltyReceiver", () => {
     };
   }
 
-  it("Brush buyback", async () => {
+  it("Brush buyback", async function () {
     const {royaltyReceiver, alice, brush, pool} = await loadFixture(deployContracts);
 
     await alice.sendTransaction({

@@ -3,7 +3,7 @@ import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {PlayerNFT} from "../../typechain-types";
 
-export const playersFixture = async () => {
+export const playersFixture = async function () {
   const [owner, alice] = await ethers.getSigners();
 
   const MockBrushToken = await ethers.getContractFactory("MockBrushToken");

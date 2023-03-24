@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {getActionId} from "../../scripts/utils";
 import {playersFixture} from "./PlayersFixture";
 
-export const setupBasicWoodcutting = async () => {
+export const setupBasicWoodcutting = async function () {
   const {itemNFT, world} = await loadFixture(playersFixture);
 
   const rate = 100 * 10; // per hour

@@ -7,7 +7,7 @@ import {AvatarInfo} from "../scripts/utils";
 import alphaSnapShotAddresses from "../whitelist/alpha_snapshot.json";
 import adminAddresses from "../whitelist/admins.json";
 
-describe("AlphaWhitelist", () => {
+describe("AlphaWhitelist", function () {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
 
@@ -112,7 +112,7 @@ describe("AlphaWhitelist", () => {
     return {owner, playerNFT, alice};
   }
 
-  it("Merkle proof minting", async () => {
+  it("Merkle proof minting", async function () {
     const {owner, playerNFT, alice} = await loadFixture(deployContracts);
 
     const whitelistAddresses = [
@@ -154,7 +154,7 @@ describe("AlphaWhitelist", () => {
     );
   });
 
-  it("Read file", async () => {
+  it("Read file", async function () {
     expect(alphaSnapShotAddresses.find((el) => el.address == "0x003c06a6168e9d2474e2c7f588d819b75f8025e5")).to.not.be
       .undefined;
     expect(adminAddresses.find((el) => el.address == "0x316342122a9ae36de41b231260579b92f4c8be7f")).to.not.be.undefined;

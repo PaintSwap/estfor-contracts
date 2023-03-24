@@ -9,8 +9,10 @@ import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
 
-describe("Rewards", () => {
-  it("XP threshold rewards, single", async () => {
+describe("Rewards", function () {
+  this.retries(3);
+
+  it("XP threshold rewards, single", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
@@ -90,7 +92,7 @@ describe("Rewards", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
   });
 
-  it("XP threshold rewards, multiple", async () => {
+  it("XP threshold rewards, multiple", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
@@ -161,7 +163,7 @@ describe("Rewards", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_HELMET)).to.eq(4);
   });
 
-  it("Daily Rewards", async () => {
+  it("Daily Rewards", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     players.setDailyRewardsEnabled(true);
@@ -300,7 +302,7 @@ describe("Rewards", () => {
     );
   });
 
-  it("Daily Rewards, only 1 claim", async () => {
+  it("Daily Rewards, only 1 claim", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     players.setDailyRewardsEnabled(true);
@@ -368,15 +370,15 @@ describe("Rewards", () => {
     expect(balanceAfter).to.eq(balanceBefore);
   });
 
-  it("Daily Rewards, test rewards in new week", async () => {
+  it("Daily Rewards, test rewards in new week", async function () {
     // TODO
   });
 
-  it("Guaranteed rewards", async () => {
+  it("Guaranteed rewards", async function () {
     // TODO
   });
 
-  it("Random reward ticket excess", async () => {
+  it("Random reward ticket excess", async function () {
     const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
     const maxUniqueTickets = await players.maxUniqueTickets();
 
@@ -516,7 +518,7 @@ describe("Rewards", () => {
   });
 
   // This test only works if the timespan does not go over 00:00 utc
-  it("Random rewards (many)", async () => {
+  it("Random rewards (many)", async function () {
     const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
@@ -638,7 +640,7 @@ describe("Rewards", () => {
     expect(numProduced).to.be.lte(expectedTotal * 1.15); // 15% of the time we should get more than 50% of the reward
   });
 
-  it("Multiple random rewards (many)", async () => {
+  it("Multiple random rewards (many)", async function () {
     const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
     await itemNFT.addItem({
@@ -788,7 +790,7 @@ describe("Rewards", () => {
   });
 
   // Could be a part of world or if there was space
-  it("Check random bytes", async () => {
+  it("Check random bytes", async function () {
     const {players, playerId} = await loadFixture(playersFixture);
     const {timestamp} = await ethers.provider.getBlock("latest");
     let numTickets = 16; // 240

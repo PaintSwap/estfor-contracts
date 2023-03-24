@@ -4,7 +4,7 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 
 describe("Shop", function () {
-  const deployContracts = async () => {
+  const deployContracts = async function () {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice] = await ethers.getSigners();
 
@@ -63,7 +63,7 @@ describe("Shop", function () {
     };
   };
 
-  it("Set up shop", async () => {
+  it("Set up shop", async function () {
     const {shop} = await loadFixture(deployContracts);
     await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
 
@@ -78,7 +78,7 @@ describe("Shop", function () {
     expect(await shop.shopItems(9999)).to.eq(0);
   });
 
-  it("Set up shop batch ", async () => {
+  it("Set up shop batch ", async function () {
     const {shop} = await loadFixture(deployContracts);
     await shop.addBuyableItems([
       {tokenId: EstforConstants.BRONZE_SHIELD, price: 500},
@@ -102,7 +102,7 @@ describe("Shop", function () {
     expect(await shop.shopItems(EstforConstants.BRONZE_SWORD)).to.eq(10);
   });
 
-  it("Buy", async () => {
+  it("Buy", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
     await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
 
@@ -116,7 +116,7 @@ describe("Shop", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
   });
 
-  it("Buy batch", async () => {
+  it("Buy batch", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
     await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
     await shop.addBuyableItem({tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200});
@@ -128,7 +128,7 @@ describe("Shop", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(2);
   });
 
-  it("Sell", async () => {
+  it("Sell", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
@@ -158,7 +158,7 @@ describe("Shop", function () {
     expect(await brush.balanceOf(alice.address)).to.eq(priceShield);
   });
 
-  it("SellBatch", async () => {
+  it("SellBatch", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
@@ -182,7 +182,7 @@ describe("Shop", function () {
     expect(await brush.balanceOf(alice.address)).to.eq(expectedTotal);
   });
 
-  it("Sell Slippage", async () => {
+  it("Sell Slippage", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);

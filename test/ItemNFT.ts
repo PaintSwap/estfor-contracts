@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 
-describe("ItemNFT", () => {
+describe("ItemNFT", function () {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
 
@@ -63,44 +63,44 @@ describe("ItemNFT", () => {
     };
   }
 
-  describe("supportsInterface", async () => {
-    it("IERC165", async () => {
+  describe("supportsInterface", async function () {
+    it("IERC165", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
       expect(await itemNFT.supportsInterface("0x01ffc9a7")).to.equal(true);
     });
 
-    it("IERC1155", async () => {
+    it("IERC1155", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
       expect(await itemNFT.supportsInterface("0xd9b67a26")).to.equal(true);
     });
 
-    it("IERC1155Metadata", async () => {
+    it("IERC1155Metadata", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
       expect(await itemNFT.supportsInterface("0x0e89341c")).to.equal(true);
     });
 
-    it("IERC2981 royalties", async () => {
+    it("IERC2981 royalties", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
       expect(await itemNFT.supportsInterface("0x2a55205a")).to.equal(true);
     });
   });
 
-  it("getItem", async () => {
+  it("getItem", async function () {
     const {itemNFT} = await loadFixture(deployContracts);
     // TODO
   });
 
-  it("balanceOfs", async () => {
+  it("balanceOfs", async function () {
     const {itemNFT} = await loadFixture(deployContracts);
     // TODO
   });
 
-  it("editItem", async () => {
+  it("editItem", async function () {
     const {itemNFT} = await loadFixture(deployContracts);
     // TODO
   });
 
-  it("Transferable NFT", async () => {
+  it("Transferable NFT", async function () {
     const {itemNFT, alice, owner} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
@@ -116,7 +116,7 @@ describe("ItemNFT", () => {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.be.eq(0);
   });
 
-  it("Non-transferable NFT", async () => {
+  it("Non-transferable NFT", async function () {
     const {itemNFT, alice, owner} = await loadFixture(deployContracts);
 
     await itemNFT.addItem({
