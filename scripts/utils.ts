@@ -1,9 +1,9 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-import {ContractTransaction, ethers} from "ethers";
+import {ContractTransaction} from "ethers";
+import {ethers, run} from "hardhat";
 import {PlayerNFT} from "../typechain-types";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {ActionChoiceInput, ActionInput, EquipPosition, Skill} from "@paintswap/estfor-definitions/types";
-import {COMBAT_BOOST, XP_BOOST} from "@paintswap/estfor-definitions/constants";
+import {ActionChoiceInput, Skill} from "@paintswap/estfor-definitions/types";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -248,3 +248,13 @@ export const allFullAttireBonuses: FullAttireBonus[] = [
     bonusPercent: 3,
   },
 ];
+
+// If there's an error with build-info not matching then delete cache/artifacts folder and try again
+export const verifyContracts = async (addresses: string[]) => {
+  for (const address of addresses) {
+    await run("verify:verify", {
+      address,
+    });
+  }
+  console.log("Verified all contracts");
+};

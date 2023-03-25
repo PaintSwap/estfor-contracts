@@ -5,7 +5,8 @@ import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
-import {PlayerLibrary} from "./PlayerLibrary.sol";
+import {AdminAccess} from "../AdminAccess.sol";
+import {PlayersLibrary} from "./PlayersLibrary.sol";
 
 /* solhint-disable no-global-import */
 import "../globals/players.sol";
@@ -106,10 +107,10 @@ abstract contract PlayersBase {
   error InvalidAction();
 
   uint32 public constant MAX_TIME = 1 days;
-  uint public constant startXP = 374;
+  uint public constant START_XP = 374;
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
   uint public constant MAX_SUCCESS_PERCENT_CHANCE = 90;
-  uint public constant maxUniqueTickets = 240;
+  uint public constant MAX_UNIQUE_TICKETS = 240;
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;
@@ -131,8 +132,8 @@ abstract contract PlayersBase {
   mapping(uint playerId => PendingRandomReward[] pendingRandomRewards) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
   // Constants for the damage formula
-  uint128 alphaCombat;
-  uint128 betaCombat;
+  uint128 internal alphaCombat;
+  uint128 internal betaCombat;
 
   // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
   mapping(uint playerId => bytes32) internal dailyRewardMasks;
@@ -140,16 +141,16 @@ abstract contract PlayersBase {
   // 4 bytes for each threshold, starts at 500 xp in decimal
   bytes constant xpRewardBytes =
     hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";
-  mapping(uint xp => Equipment[] equipments) xpRewardThresholds; // Thresholds and all items rewarded for it
+  mapping(uint xp => Equipment[] equipments) internal xpRewardThresholds; // Thresholds and all items rewarded for it
 
-  bool dailyRewardsEnabled;
+  bool internal dailyRewardsEnabled;
 
-  address implQueueActions;
-  address implProcessActions;
-  address implRewards;
-  address reserved1;
+  address internal implQueueActions;
+  address internal implProcessActions;
+  address internal implRewards;
+  address internal reserved1;
 
-  mapping(address admin => bool isAdmin) public admins;
+  AdminAccess internal adminAccess;
 
   mapping(Skill skill => FullAttireBonus) public fullAttireBonus;
 
@@ -185,7 +186,7 @@ abstract contract PlayersBase {
   }
 
   modifier isAdmin() {
-    if (!admins[msg.sender]) {
+    if (!adminAccess.isAdmin(msg.sender)) {
       revert NotAdmin();
     }
     _;
@@ -199,7 +200,7 @@ abstract contract PlayersBase {
     uint24 _xpPerHour
   ) internal view returns (uint32 boostPointsAccrued) {
     return
-      PlayerLibrary.extraXPFromBoost(
+      PlayersLibrary.extraXPFromBoost(
         _isCombatSkill,
         _actionStartTime,
         _elapsedTime,
@@ -223,7 +224,7 @@ abstract contract PlayersBase {
     // Check if they have the full equipment set, if so they can get some bonus
     bool skipNeck = true;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
-    bool hasFullAttire = PlayerLibrary.extraBoostFromFullAttire(
+    bool hasFullAttire = PlayersLibrary.extraBoostFromFullAttire(
       itemTokenIds,
       balances,
       fullAttireBonus[_skill].itemTokenIds

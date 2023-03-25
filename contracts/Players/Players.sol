@@ -10,9 +10,10 @@ import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.
 
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
+import {AdminAccess} from "../AdminAccess.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
-import {PlayerLibrary} from "./PlayerLibrary.sol";
+import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 
 /* solhint-disable no-global-import */
@@ -54,7 +55,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     ItemNFT _itemNFT,
     PlayerNFT _playerNFT,
     World _world,
-    address[] calldata _admins,
+    AdminAccess _adminAccess,
     address _implQueueActions,
     address _implProcessActions,
     address _implRewards
@@ -66,6 +67,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
     world = _world;
+    adminAccess = _adminAccess;
     implQueueActions = _implQueueActions;
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;
@@ -73,9 +75,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     nextQueueId = 1;
     alphaCombat = 1;
     betaCombat = 1;
-    for (uint i = 0; i < _admins.length; ++i) {
-      admins[_admins[i]] = true;
-    }
   }
 
   function startAction(
@@ -167,7 +166,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     string calldata imageURI
   ) external view override returns (string memory) {
     return
-      PlayerLibrary.uri(_name, xp[_playerId], players[_playerId].totalXP, _avatarName, _avatarDescription, imageURI);
+      PlayersLibrary.uri(_name, xp[_playerId], players[_playerId].totalXP, _avatarName, _avatarDescription, imageURI);
   }
 
   // Callback after minting a player. If they aren't the active player then set it.

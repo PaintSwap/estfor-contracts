@@ -11,6 +11,7 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {AdminAccess} from "./AdminAccess.sol";
 
 /* solhint-disable no-global-import */
 import "./globals/items.sol";
@@ -58,7 +59,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   bytes32 public merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
   uint public constant MAX_ALPHA_WHITELIST = 2;
-  mapping(address => bool) public admins;
+  AdminAccess private adminAccess;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(msg.sender, playerId) != 1) {
@@ -75,7 +76,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   modifier isAdmin() {
-    if (!admins[_msgSender()]) {
+    if (!adminAccess.isAdmin(_msgSender())) {
       revert NotAdmin();
     }
     _;
@@ -90,9 +91,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     IBrushToken _brush,
     address _pool,
     address _royaltyReceiver,
+    AdminAccess _adminAccess,
     uint _editNameCost,
-    string calldata _imageBaseUri,
-    address[] calldata _admins
+    string calldata _imageBaseUri
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
@@ -104,10 +105,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     editNameCost = _editNameCost;
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
-
-    for (uint i = 0; i < _admins.length; i++) {
-      admins[_admins[i]] = true;
-    }
+    adminAccess = _adminAccess;
   }
 
   function _mintStartingItems() private {
@@ -256,8 +254,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
   }
 
-  function _toLower(bytes32 _name) private pure returns (bytes memory) {
-    bytes memory lowerName = bytes(abi.encodePacked(_name));
+  function _toLower(bytes32 _name) private pure returns (bytes memory lowerName) {
+    lowerName = bytes(abi.encodePacked(_name));
     U256 iter = U256.wrap(lowerName.length);
     while (iter.neq(0)) {
       iter = iter.dec();
@@ -267,7 +265,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
         lowerName[i] = bytes1(uint8(lowerName[i]) + 32);
       }
     }
-    return lowerName;
   }
 
   function burn(address _from, uint _playerId) external {
@@ -295,10 +292,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function symbol() external pure returns (string memory) {
     return "EST4P_A";
-  }
-
-  function setRoyaltyReceiver(address _receiver) external onlyOwner {
-    royaltyReceiver = _receiver;
   }
 
   function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
-import {PlayerLibrary} from "./PlayerLibrary.sol";
+import {PlayersLibrary} from "./PlayersLibrary.sol";
 
 /* solhint-disable no-global-import */
 import "../globals/players.sol";
@@ -183,7 +183,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
     if (isCombat) {
       CombatStats memory _enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
-      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getCombatAdjustedElapsedTimes(
+      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayersLibrary.getCombatAdjustedElapsedTimes(
         _from,
         itemNFT,
         world,
@@ -205,7 +205,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _enemyCombatStats
       );
     } else {
-      (xpElapsedTime, numConsumed) = PlayerLibrary.getNonCombatAdjustedElapsedTime(
+      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
         itemNFT,
         _elapsedTime,
@@ -220,12 +220,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     if (_actionChoice.outputTokenId != 0) {
       uint8 successPercent = 100;
       if (_actionChoice.successPercent != 100) {
-        uint minLevel = PlayerLibrary.getLevel(_actionChoice.minXP);
-        uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][_actionChoice.skill]);
+        uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
+        uint skillLevel = PlayersLibrary.getLevel(xp[_playerId][_actionChoice.skill]);
         uint extraBoost = skillLevel - minLevel;
 
         successPercent = uint8(
-          PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, _actionChoice.successPercent + extraBoost)
+          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, _actionChoice.successPercent + extraBoost)
         );
       }
 
@@ -276,7 +276,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   ) private returns (bool died) {
     uint24 foodConsumed;
     // Figure out how much food should be used
-    (foodConsumed, died) = PlayerLibrary.foodConsumedView(
+    (foodConsumed, died) = PlayersLibrary.foodConsumedView(
       _from,
       _queuedAction,
       _combatElapsedTime,
@@ -292,11 +292,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function _cacheCombatStats(Player storage _player, uint32 _healthXP, Skill _skill, uint32 _xp) private {
     {
-      int16 _health = int16(PlayerLibrary.getLevel(_healthXP));
+      int16 _health = int16(PlayersLibrary.getLevel(_healthXP));
       _player.health = _health;
     }
 
-    int16 _level = int16(PlayerLibrary.getLevel(_xp));
+    int16 _level = int16(PlayersLibrary.getLevel(_xp));
     if (_skill == Skill.MELEE) {
       _player.melee = _level;
     } else if (_skill == Skill.MAGIC) {
@@ -444,13 +444,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     player.magic = 1;
     player.range = 1;
     player.defence = 1;
-    player.totalXP = uint160(startXP);
+    player.totalXP = uint160(START_XP);
 
     uint length = _startSkills[1] != Skill.NONE ? 2 : 1;
-    uint32 xpEach = uint32(startXP / length);
+    uint32 xpEach = uint32(START_XP / length);
     for (uint i = 0; i < length; i++) {
       Skill skill = _startSkills[i];
-      int16 level = int16(PlayerLibrary.getLevel(xpEach));
+      int16 level = int16(PlayersLibrary.getLevel(xpEach));
       if (skill == Skill.HEALTH) {
         player.health = level;
       } else if (skill == Skill.MELEE) {
@@ -475,8 +475,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     xp[_playerId][_skill] = uint32(newPoints);
     emit AddXP(_from, _playerId, _skill, _pointsAccrued);
 
-    uint16 oldLevel = PlayerLibrary.getLevel(oldPoints);
-    uint16 newLevel = PlayerLibrary.getLevel(newPoints);
+    uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
+    uint16 newLevel = PlayersLibrary.getLevel(newPoints);
     // Update the player's level
     if (newLevel > oldLevel) {
       emit LevelUp(_from, _playerId, _skill, newLevel);

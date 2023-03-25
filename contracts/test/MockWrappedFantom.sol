@@ -16,8 +16,8 @@ contract MockWrappedFantom {
   string public symbol = "WFTM";
   uint8 public decimals = 18;
 
-  mapping(address user => uint balance) public balanceOf;
-  mapping(address => mapping(address => uint)) public allowance;
+  mapping(address owner => uint balance) public balanceOf;
+  mapping(address owner => mapping(address spender => uint)) public allowance;
 
   receive() external payable {
     deposit();

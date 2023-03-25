@@ -35,26 +35,36 @@ describe("AlphaWhitelist", function () {
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(Shop, [brush.address], {
       kind: "uups",
-      unsafeAllow: ["delegatecall"],
     });
 
     const buyPath: [string, string] = [alice.address, brush.address];
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const router = await MockRouter.deploy();
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+    const royaltyReceiver = await upgrades.deployProxy(
+      RoyaltyReceiver,
+      [router.address, shop.address, brush.address, buyPath],
+      {
+        kind: "uups",
+      }
+    );
+    await royaltyReceiver.deployed();
 
     const admins = [owner.address];
+    const AdminAccess = await ethers.getContractFactory("AdminAccess");
+    const adminAccess = await upgrades.deployProxy(AdminAccess, [admins], {
+      kind: "uups",
+    });
+    await adminAccess.deployed();
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, itemsUri, admins],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
       {
         kind: "uups",
-        unsafeAllow: ["delegatecall"],
       }
     );
 
@@ -65,29 +75,29 @@ describe("AlphaWhitelist", function () {
     const imageBaseUri = "ipfs://";
     const playerNFT = await upgrades.deployProxy(
       PlayerNFT,
-      [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri, admins],
+      [brush.address, shop.address, royaltyReceiver.address, adminAccess.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
       {kind: "uups"}
     );
 
     // This contains all the player data
-    const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
-    const playerLibrary = await PlayerLibrary.deploy();
+    const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
+    const playerLibrary = await PlayersLibrary.deploy();
 
     const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
     const playersImplQueueActions = await PlayersImplQueueActions.deploy();
 
     const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
-      libraries: {PlayerLibrary: playerLibrary.address},
+      libraries: {PlayersLibrary: playerLibrary.address},
     });
     const playersImplProcessActions = await PlayersImplProcessActions.deploy();
 
     const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
-      libraries: {PlayerLibrary: playerLibrary.address},
+      libraries: {PlayersLibrary: playerLibrary.address},
     });
     const playersImplRewards = await PlayersImplRewards.deploy();
 
     const Players = await ethers.getContractFactory("Players", {
-      libraries: {PlayerLibrary: playerLibrary.address},
+      libraries: {PlayersLibrary: playerLibrary.address},
     });
 
     const players = await upgrades.deployProxy(
@@ -96,7 +106,7 @@ describe("AlphaWhitelist", function () {
         itemNFT.address,
         playerNFT.address,
         world.address,
-        admins,
+        adminAccess.address,
         playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,

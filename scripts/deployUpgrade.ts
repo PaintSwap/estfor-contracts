@@ -1,5 +1,6 @@
 import {ethers, upgrades} from "hardhat";
-import {PlayerLibrary} from "../typechain-types";
+import {PlayersLibrary} from "../typechain-types";
+import {ITEM_NFT_ADDRESS, PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS} from "./constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -10,20 +11,20 @@ async function main() {
 
   // Players
   const newPlayersLibrary = false;
-  const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
-  let playerLibrary: PlayerLibrary;
+  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
+  let playerLibrary: PlayersLibrary;
   if (newPlayersLibrary) {
-    playerLibrary = await PlayerLibrary.deploy();
+    playerLibrary = await PlayersLibrary.deploy();
     await playerLibrary.deployed();
-    console.log(`PlayerLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
+    console.log(`PlayersLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
   } else {
-    playerLibrary = await PlayerLibrary.attach("0xaaececb8429c524420820cf8d610d7a49dc887d2");
+    playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
 
   const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayerLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playerLibrary.address},
   });
-  const playersAddress = "0x214d683218cb8550290ec3191cc03ed81b7172c6";
+  const playersAddress = PLAYERS_ADDRESS;
   const players = await upgrades.upgradeProxy(playersAddress, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
@@ -34,15 +35,15 @@ async function main() {
   /*
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const playerNFT = await upgrades.upgradeProxy("0xbb417a7d6fd3ad2fbf2195a98d6a1bf55c301108", PlayerNFT, {
+  const playerNFT = await upgrades.upgradeProxy("PLAYER_NFT_ADDRESS", PlayerNFT, {
     kind: "uups",
   });
 
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`); */
 
-  // PlayerNFT
+  // ItemNFT
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.upgradeProxy("0x23d689db5ac193afccd387dd6008970302ca0494", ItemNFT, {
+  const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
   });
 

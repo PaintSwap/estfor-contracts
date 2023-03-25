@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import {UnsafeMath, UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
-import {PlayerLibrary} from "./PlayerLibrary.sol";
+import {PlayersLibrary} from "./PlayersLibrary.sol";
 
 /* solhint-disable no-global-import */
 import "../globals/players.sol";
@@ -77,11 +77,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         revert InvalidAction();
       }
 
-      uint minLevel = PlayerLibrary.getLevel(minXP);
-      uint skillLevel = PlayerLibrary.getLevel(xp[_playerId][_actionSkill]);
+      uint minLevel = PlayersLibrary.getLevel(minXP);
+      uint skillLevel = PlayersLibrary.getLevel(xp[_playerId][_actionSkill]);
       uint extraBoost = skillLevel - minLevel;
 
-      successPercent = uint8(PlayerLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
+      successPercent = uint8(PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
     }
   }
 
@@ -497,7 +497,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     if (_randomRewards.length != 0) {
       hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {
-        uint numIterations = PlayerLibrary.min(maxUniqueTickets, _numTickets);
+        uint numIterations = PlayersLibrary.min(MAX_UNIQUE_TICKETS, _numTickets);
 
         bytes memory b = _getRandomBytes(numIterations, skillEndTime, _playerId);
         uint startLootLength = length;
@@ -505,9 +505,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           uint i = iter.asUint256();
           uint mintMultiplier = 1;
           // If there is above 240 tickets we need to mint more if a ticket is hit
-          if (_numTickets > maxUniqueTickets) {
-            mintMultiplier = _numTickets / maxUniqueTickets;
-            uint remainder = _numTickets % maxUniqueTickets;
+          if (_numTickets > MAX_UNIQUE_TICKETS) {
+            mintMultiplier = _numTickets / MAX_UNIQUE_TICKETS;
+            uint remainder = _numTickets % MAX_UNIQUE_TICKETS;
             if (i < remainder) {
               ++mintMultiplier;
             }
@@ -515,7 +515,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
           // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
           uint operation = (uint(_getSlice(b, i)) * 100) / _successPercent;
-          uint16 rand = uint16(PlayerLibrary.min(type(uint16).max, operation));
+          uint16 rand = uint16(PlayersLibrary.min(type(uint16).max, operation));
 
           U256 randomRewardsLength = U256.wrap(_randomRewards.length);
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
@@ -575,7 +575,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
 
       uint combatElapsedTime;
-      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayerLibrary.getCombatAdjustedElapsedTimes(
+      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayersLibrary.getCombatAdjustedElapsedTimes(
         _from,
         itemNFT,
         world,
@@ -589,7 +589,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       );
 
       uint24 foodConsumed;
-      (foodConsumed, died) = PlayerLibrary.foodConsumedView(
+      (foodConsumed, died) = PlayersLibrary.foodConsumedView(
         _from,
         _queuedAction,
         combatElapsedTime,
@@ -604,7 +604,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         consumedEquipment[consumedEquipmentLength++] = Equipment(_queuedAction.regenerateId, foodConsumed);
       }
     } else {
-      (xpElapsedTime, numConsumed) = PlayerLibrary.getNonCombatAdjustedElapsedTime(
+      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
         itemNFT,
         _elapsedTime,

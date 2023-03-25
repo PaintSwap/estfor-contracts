@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 
 interface Router {
@@ -13,18 +14,31 @@ interface Router {
   ) external payable returns (uint[] memory amounts);
 }
 
-contract RoyaltyReceiver is Ownable {
+contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
   error AddressZero();
 
-  Router public immutable router;
-  address public immutable pool;
-  IBrushToken public immutable brush;
-  address private immutable buyPath1;
-  address private immutable buyPath2;
+  Router public router;
+  address public pool;
+  IBrushToken public brush;
+  address private buyPath1;
+  address private buyPath2;
 
   uint public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
-  constructor(Router _router, address _pool, IBrushToken _brush, address[2] memory _buyPath) {
+  function initialize(
+    Router _router,
+    address _pool,
+    IBrushToken _brush,
+    address[2] memory _buyPath
+  ) public initializer {
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+
     pool = _pool;
     router = _router;
     brush = _brush;
@@ -54,4 +68,7 @@ contract RoyaltyReceiver is Ownable {
     uint[] memory amounts = router.swapExactETHForTokens{value: msg.value}(0, buyPath(), address(this), deadline);
     brush.transfer(pool, amounts[amounts.length - 1]);
   }
+
+  // solhint-disable-next-line no-empty-blocks
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

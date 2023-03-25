@@ -1,8 +1,8 @@
-import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {EstforConstants} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
-import {MockBrushToken, MockWrappedFantom, PlayerNFT} from "../typechain-types";
-import {allFullAttireBonuses, allShopItems, allXPThresholdRewards, AvatarInfo, createPlayer} from "./utils";
+import {ItemNFT, MockBrushToken, MockWrappedFantom, PlayerNFT, Players, Shop} from "../typechain-types";
+import {allFullAttireBonuses, allShopItems, allXPThresholdRewards, AvatarInfo, verifyContracts} from "./utils";
 import adminAddresses from "../whitelist/admins.json";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
@@ -23,6 +23,8 @@ import {
   allActionChoiceIdsMelee,
   allActionChoiceIdsSmithing,
 } from "./data/actionChoiceIds";
+import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./constants";
+import {addTestData} from "./addTestData";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -51,8 +53,8 @@ async function main() {
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
     } else if (network.chainId == 250) {
       // Fantom mainnet
-      brush = await MockBrushToken.attach("0x85dec8c4B2680793661bCA91a8F129607571863d");
-      wftm = await MockWrappedFantom.attach("0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
+      brush = await MockBrushToken.attach(BRUSH_ADDRESS);
+      wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
     } else {
       throw Error("Not a supported network");
     }
@@ -74,10 +76,9 @@ async function main() {
   console.log(`World deployed at ${world.address.toLowerCase()}`);
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = await upgrades.deployProxy(Shop, [brush.address], {
+  const shop = (await upgrades.deployProxy(Shop, [brush.address], {
     kind: "uups",
-    unsafeAllow: ["delegatecall"],
-  });
+  })) as Shop;
 
   await shop.deployed();
   console.log(`Shop deployed at ${shop.address.toLowerCase()}`);
@@ -86,7 +87,13 @@ async function main() {
   const MockRouter = await ethers.getContractFactory("MockRouter");
   const router = await MockRouter.deploy();
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-  const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+  const royaltyReceiver = await upgrades.deployProxy(
+    RoyaltyReceiver,
+    [router.address, shop.address, brush.address, buyPath],
+    {
+      kind: "uups",
+    }
+  );
   await royaltyReceiver.deployed();
   console.log(`RoyaltyReceiver deployed at ${royaltyReceiver.address.toLowerCase()}`);
 
@@ -95,19 +102,25 @@ async function main() {
     admins.push(owner.address);
   }
 
+  const AdminAccess = await ethers.getContractFactory("AdminAccess");
+  const adminAccess = await upgrades.deployProxy(AdminAccess, [admins], {
+    kind: "uups",
+  });
+  await adminAccess.deployed();
+  console.log(`AdminAccess deployed at ${adminAccess.address.toLowerCase()}`);
+
   //  const itemsUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; //
   const itemsUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; // alpha
 
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = await upgrades.deployProxy(
+  const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [world.address, shop.address, royaltyReceiver.address, itemsUri, admins],
+    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall"],
     }
-  );
+  )) as ItemNFT;
   await itemNFT.deployed();
   console.log(`Item NFT deployed at ${itemNFT.address.toLowerCase()}`);
 
@@ -118,7 +131,7 @@ async function main() {
   const imageBaseUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; // alpha
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
-    [brush.address, shop.address, royaltyReceiver.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri, admins],
+    [brush.address, shop.address, royaltyReceiver.address, adminAccess.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
     {
       kind: "uups",
     }
@@ -127,38 +140,38 @@ async function main() {
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 
   // This contains all the player data
-  const PlayerLibrary = await ethers.getContractFactory("PlayerLibrary");
-  const playerLibrary = await PlayerLibrary.deploy();
+  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
+  const playerLibrary = await PlayersLibrary.deploy();
   await playerLibrary.deployed();
-  console.log(`PlayerLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
+  console.log(`PlayersLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
   console.log(`PlayersImplQueueActions deployed at ${playersImplQueueActions.address.toLowerCase()}`);
 
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
-    libraries: {PlayerLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplProcessActions = await PlayersImplProcessActions.deploy();
   console.log(`PlayersImplProcessActions deployed at ${playersImplProcessActions.address.toLowerCase()}`);
 
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
-    libraries: {PlayerLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplRewards = await PlayersImplRewards.deploy();
   console.log(`PlayersImplRewards deployed at ${playersImplRewards.address.toLowerCase()}`);
 
   const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayerLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playerLibrary.address},
   });
 
-  const players = await upgrades.deployProxy(
+  const players = (await upgrades.deployProxy(
     Players,
     [
       itemNFT.address,
       playerNFT.address,
       world.address,
-      admins,
+      adminAccess.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -167,7 +180,7 @@ async function main() {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     }
-  );
+  )) as Players;
   await players.deployed();
   console.log(`Players deployed at ${players.address.toLowerCase()}`);
 
@@ -248,17 +261,6 @@ async function main() {
   await tx.wait();
   console.log("addAvatars");
 
-  // Create player
-  const makeActive = true;
-  const playerId = await createPlayer(
-    playerNFT,
-    startAvatarId,
-    owner,
-    ethers.utils.formatBytes32String("0xSamWitch"),
-    makeActive
-  );
-  console.log("createPlayer");
-
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();
   console.log("add xp threshold rewards");
@@ -332,157 +334,35 @@ async function main() {
   await tx.wait();
   console.log("Add action choices");
 
-  // First woodcutting
-  const queuedAction: EstforTypes.QueuedActionInput = {
-    attire: EstforTypes.noAttire,
-    actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
-    combatStyle: EstforTypes.CombatStyle.NONE,
-    choiceId: EstforConstants.NONE,
-    choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
-    regenerateId: EstforConstants.NONE,
-    timespan: 3600,
-    rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
-    skill: Skill.WOODCUTTING,
-  };
-
-  let gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
-  });
-
-  await tx.wait();
-  console.log("start actions");
-
-  tx = await players.setSpeedMultiplier(playerId, 60); // Turns 1 hour into 1 second
-  await tx.wait();
-  console.log("Set speed multiiplier");
-
-  if (network.chainId == 31337 || network.chainId == 1337) {
-    console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [1]);
-  }
-
-  // Because of the speed multiplier, gas estimates may not be accurate as other things could be minted by the time the tx is executed,
-  // so adding 300k gas to be safe
-  gasLimit = await players.estimateGas.processActions(playerId);
-  tx = await players.processActions(playerId, {gasLimit: gasLimit.add(300000)});
-  await tx.wait();
-  console.log("process actions");
-
-  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
-
-  // Next firemaking
-  const queuedActionFiremaking: EstforTypes.QueuedActionInput = {
-    attire: {...EstforTypes.noAttire},
-    actionId: EstforConstants.ACTION_FIREMAKING_ITEM,
-    combatStyle: EstforTypes.CombatStyle.NONE,
-    choiceId: EstforConstants.ACTIONCHOICE_FIREMAKING_LOG,
-    choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
-    regenerateId: EstforConstants.NONE,
-    timespan: 3600,
-    rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
-    skill: Skill.FIREMAKING,
-  };
-
-  gasLimit = await players.estimateGas.startAction(
-    playerId,
-    queuedActionFiremaking,
-    EstforTypes.ActionQueueStatus.NONE
-  );
-  tx = await players.startAction(playerId, queuedActionFiremaking, EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
-  });
-  await tx.wait();
-  console.log("start firemaking action");
-
-  if (network.chainId == 31337 || network.chainId == 1337) {
-    console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [1]);
-  }
-
-  gasLimit = await players.estimateGas.processActions(playerId);
-  tx = await players.processActions(playerId, {
-    gasLimit: gasLimit.add(300000),
-  });
-  await tx.wait();
-  console.log("process actions (firemaking)");
-
-  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
-
-  // Start another action
-  gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
-  });
-  await tx.wait();
-  console.log("start an unprocessed action");
-
-  if (network.chainId == 31337) {
-    console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [1000000]);
-  }
-
-  // Start a combat action
-  const queuedActionCombat: EstforTypes.QueuedActionInput = {
-    attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
-    actionId: EstforConstants.ACTION_COMBAT_NATUOW,
-    combatStyle: EstforTypes.CombatStyle.ATTACK,
-    choiceId: EstforConstants.ACTIONCHOICE_MELEE_MONSTER,
-    choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
-    regenerateId: EstforConstants.NONE,
-    timespan: 7200,
-    rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
-    skill: Skill.COMBAT,
-  };
-
-  gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-  tx = await players.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
-  });
-  await tx.wait();
-  console.log("start a combat action");
-
-  if (network.chainId == 31337) {
-    console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [10]);
-  }
-
-  gasLimit = await players.estimateGas.processActions(playerId);
-  tx = await players.processActions(playerId, {
-    gasLimit: gasLimit.add(300000),
-  });
-  await tx.wait();
-  console.log("process actions (melee combat)");
-
-  // Add shop item
+  // Add shop items
   tx = await shop.addBuyableItems(allShopItems);
   await tx.wait();
   console.log("add shop");
 
-  // Buy from shop
-  tx = await brush.approve(shop.address, ethers.utils.parseEther("100"));
-  await tx.wait();
-  console.log("Approve brush");
+  // Try to verify the contracts now, but often you'll get an error with build-info not matching
+  // Delete cache/artifacts and call yarn verifyContracts script
+  if (network.chainId == 250) {
+    try {
+      const addresses = [
+        players.address,
+        playerNFT.address,
+        itemNFT.address,
+        adminAccess.address,
+        shop.address,
+        world.address,
+        royaltyReceiver.address,
+      ];
+      console.log("Verifying contracts...");
+      await verifyContracts(addresses);
+    } catch (e) {
+      console.log("Error verifying contracts", e);
+    }
+  } else {
+    console.log("Skipping verifying contracts");
+  }
 
-  tx = await shop.buy(EstforConstants.BRONZE_HELMET, 1);
-  await tx.wait();
-  console.log("buy from shop");
-
-  // Transfer some brush to the pool so we can sell something
-  tx = await brush.transfer(shop.address, "100000");
-  await tx.wait();
-  console.log("Transfer some brush");
-
-  // Sell to shop (can be anything)
-  tx = await shop.sell(EstforConstants.BRONZE_HELMET, 1, 1);
-  await tx.wait();
-  console.log("Sell");
+  // Add test data for the game (don't use in live release)
+  await addTestData(itemNFT, playerNFT, players, shop, brush);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

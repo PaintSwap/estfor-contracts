@@ -16,7 +16,7 @@ import "../globals/items.sol";
 /* solhint-enable no-global-import */
 
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
-library PlayerLibrary {
+library PlayersLibrary {
   using Strings for uint32;
   using Strings for bytes32;
   using UnsafeU256 for U256;

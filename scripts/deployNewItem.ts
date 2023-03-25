@@ -2,6 +2,7 @@ import {EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {defaultInputItem, EquipPosition} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
+import {ITEM_NFT_ADDRESS} from "./constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -11,7 +12,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
-  const itemNFT = ItemNFT.attach("0x23d689db5ac193afccd387dd6008970302ca0494");
+  const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
 
   const item: EstforTypes.InputItem = {
     ...defaultInputItem,

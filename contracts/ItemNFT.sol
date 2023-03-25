@@ -11,6 +11,7 @@ import {UnsafeMath, UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
+import {AdminAccess} from "./AdminAccess.sol";
 
 /* solhint-disable no-global-import */
 import "./globals/players.sol";
@@ -84,9 +85,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   mapping(uint itemId => string tokenURI) private tokenURIs;
   mapping(uint itemId => CombatStats combatStats) public combatStats;
-  mapping(uint itemId => Item) public items;
+  mapping(uint itemId => Item item) public items;
 
-  mapping(address => bool) public admins;
+  AdminAccess private adminAccess;
 
   modifier onlyPlayersOrShop() {
     if (msg.sender != players && msg.sender != shop) {
@@ -96,7 +97,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   modifier isAdmin() {
-    if (!admins[_msgSender()]) {
+    if (!adminAccess.isAdmin(_msgSender())) {
       revert NotAdmin();
     }
     _;
@@ -111,8 +112,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     World _world,
     address _shop,
     address _royaltyReceiver,
-    string calldata _baseURI,
-    address[] calldata _admins
+    AdminAccess _adminAccess,
+    string calldata _baseURI
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
@@ -122,9 +123,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     baseURI = _baseURI;
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
-    for (uint i; i < _admins.length; i++) {
-      admins[_admins[i]] = true;
-    }
+    adminAccess = _adminAccess;
   }
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
@@ -370,10 +369,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function symbol() external pure returns (string memory) {
     return "EST4I_A";
-  }
-
-  function setRoyaltyReceiver(address _receiver) external onlyOwner {
-    royaltyReceiver = _receiver;
   }
 
   // Or make it constants and redeploy the contracts

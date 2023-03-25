@@ -31,26 +31,36 @@ describe("ItemNFT", function () {
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(Shop, [brush.address], {
       kind: "uups",
-      unsafeAllow: ["delegatecall"],
     });
 
     const buyPath: [string, string] = [alice.address, brush.address];
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const router = await MockRouter.deploy();
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, shop.address, brush.address, buyPath);
+    const royaltyReceiver = await upgrades.deployProxy(
+      RoyaltyReceiver,
+      [router.address, shop.address, brush.address, buyPath],
+      {
+        kind: "uups",
+      }
+    );
+    await royaltyReceiver.deployed();
 
     const admins = [owner.address, alice.address];
+    const AdminAccess = await ethers.getContractFactory("AdminAccess");
+    const adminAccess = await upgrades.deployProxy(AdminAccess, [admins], {
+      kind: "uups",
+    });
+    await adminAccess.deployed();
 
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, itemsUri, admins],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
       {
         kind: "uups",
-        unsafeAllow: ["delegatecall"],
       }
     );
 

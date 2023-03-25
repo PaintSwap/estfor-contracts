@@ -380,7 +380,7 @@ describe("Rewards", function () {
 
   it("Random reward ticket excess", async function () {
     const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
-    const maxUniqueTickets = await players.maxUniqueTickets();
+    const MAX_UNIQUE_TICKETS = await players.MAX_UNIQUE_TICKETS();
 
     const monsterCombatStats: EstforTypes.CombatStats = {
       melee: 1,
@@ -438,7 +438,7 @@ describe("Rewards", function () {
     await mockOracleClient.fulfill(requestId, world.address);
 
     const timespan = 3600 * numHours;
-    expect(numHours * numSpawned).to.be.greaterThan(maxUniqueTickets);
+    expect(numHours * numSpawned).to.be.greaterThan(MAX_UNIQUE_TICKETS);
 
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},

@@ -25,9 +25,9 @@ describe("Players", function () {
     await playerNFT.setAvatar(avatarId, avatarInfo);
     const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("Name"), true);
 
-    const startXP = await players.startXP();
-    expect(startXP).to.be.gt(0);
-    expect(await players.xp(playerId, Skill.FIREMAKING)).to.eq(startXP);
+    const START_XP = await players.START_XP();
+    expect(START_XP).to.be.gt(0);
+    expect(await players.xp(playerId, Skill.FIREMAKING)).to.eq(START_XP);
 
     avatarInfo.startSkills = [Skill.FIREMAKING, Skill.HEALTH];
 
@@ -39,10 +39,10 @@ describe("Players", function () {
       ethers.utils.formatBytes32String("New name"),
       true
     );
-    expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(startXP.div(2));
-    expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(startXP.div(2));
+    expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP.div(2));
+    expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(START_XP.div(2));
 
-    expect((await players.players(newPlayerId)).totalXP).to.eq(startXP);
+    expect((await players.players(newPlayerId)).totalXP).to.eq(START_XP);
     expect((await players.players(newPlayerId)).health).to.eq(3);
     expect((await players.players(newPlayerId)).melee).to.eq(1);
     expect((await players.players(newPlayerId)).range).to.eq(1);

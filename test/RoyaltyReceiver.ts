@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 
 describe("RoyaltyReceiver", function () {
   async function deployContracts() {
@@ -16,7 +16,14 @@ describe("RoyaltyReceiver", function () {
     const router = await MockRouter.deploy();
 
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-    const royaltyReceiver = await RoyaltyReceiver.deploy(router.address, pool.address, brush.address, buyPath);
+    const royaltyReceiver = await upgrades.deployProxy(
+      RoyaltyReceiver,
+      [router.address, pool.address, brush.address, buyPath],
+      {
+        kind: "uups",
+      }
+    );
+    await royaltyReceiver.deployed();
 
     return {
       royaltyReceiver,
