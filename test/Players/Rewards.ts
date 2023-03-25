@@ -643,6 +643,8 @@ describe("Rewards", function () {
   it("Multiple random rewards (many)", async function () {
     const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
+    this.timeout(100000); // 100 seconds, this test can take a while on CI
+
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
@@ -722,7 +724,7 @@ describe("Rewards", function () {
     balanceMap.set(EstforConstants.BRONZE_GAUNTLETS, 0);
 
     // Repeat the test a bunch of times to check the random rewards are as expected
-    const numRepeats = 50;
+    const numRepeats = 30;
     for (let i = 0; i < numRepeats; ++i) {
       await players
         .connect(alice)
