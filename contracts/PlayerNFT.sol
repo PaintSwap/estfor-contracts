@@ -255,7 +255,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function _toLower(bytes32 _name) private pure returns (bytes memory lowerName) {
-    lowerName = bytes(abi.encodePacked(_name));
+    lowerName = abi.encodePacked(_name);
     U256 iter = U256.wrap(lowerName.length);
     while (iter.neq(0)) {
       iter = iter.dec();
