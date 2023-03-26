@@ -109,8 +109,8 @@ async function main() {
   await adminAccess.deployed();
   console.log(`AdminAccess deployed at ${adminAccess.address.toLowerCase()}`);
 
-  //  const itemsUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; //
-  const itemsUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; // alpha
+  //  const itemsUri = "ipfs:// /"; //
+  const itemsUri = "ipfs://Qmdhaz6jRnpQjvzzJB1PuN2Y33Nc1hAKg1sCMVc18ftcAL/"; // alpha
 
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
