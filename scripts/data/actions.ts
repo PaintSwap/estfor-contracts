@@ -1782,7 +1782,7 @@ export const allActions: ActionInput[] = [
       meleeDefence: 200,
       magicDefence: 100,
       rangeDefence: 200,
-      health: 0,
+      health: 1000,
     },
   },
   {
@@ -1815,7 +1815,7 @@ export const allActions: ActionInput[] = [
       meleeDefence: 150,
       magicDefence: 250,
       rangeDefence: 250,
-      health: 0,
+      health: 2000,
     },
   },
   {
