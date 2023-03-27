@@ -162,7 +162,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Approve brush");
 
-  tx = await shop.buy(EstforConstants.BRONZE_HELMET, 1);
+  tx = await shop.buy(EstforConstants.MAGIC_FIRE_STARTER, 1);
   await tx.wait();
   console.log("buy from shop");
 
@@ -172,7 +172,7 @@ export const addTestData = async (
   console.log("Transfer some brush");
 
   // Sell to shop (can be anything)
-  tx = await shop.sell(EstforConstants.BRONZE_HELMET, 1, 1);
+  tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);
   await tx.wait();
   console.log("Sell");
 };

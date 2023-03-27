@@ -1,5 +1,5 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-import {ContractTransaction} from "ethers";
+import {BigNumber, ContractTransaction} from "ethers";
 import {ethers, run} from "hardhat";
 import {PlayerNFT} from "../typechain-types";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
@@ -73,7 +73,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 500,
     rewards: [
       {
-        itemTokenId: EstforConstants.BRONZE_HELMET,
+        itemTokenId: EstforConstants.EMERALD_STAFF,
         amount: 1,
       },
     ],
@@ -105,22 +105,188 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
       },
     ],
   },
-  // TODO...
+  {
+    xpThreshold: 10000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.WHITE_DEATH_SPORE,
+        amount: 10,
+      },
+    ],
+  },
+  {
+    xpThreshold: 30000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.ASH_LOG,
+        amount: 20,
+      },
+    ],
+  },
+  {
+    xpThreshold: 50000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.BONE_KEY,
+        amount: 3,
+      },
+    ],
+  },
+  {
+    xpThreshold: 100000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.AQUA_KEY,
+        amount: 3,
+      },
+    ],
+  },
+  {
+    xpThreshold: 120000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.DRAGON_BONE,
+        amount: 50,
+      },
+    ],
+  },
+  {
+    xpThreshold: 300000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.SKILL_BOOST,
+        amount: 3,
+      },
+    ],
+  },
+  {
+    xpThreshold: 350000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.XP_BOOST,
+        amount: 3,
+      },
+    ],
+  },
+  /*  {
+    xpThreshold: 500000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.TODO,
+        amount: 2,
+      },
+    ],
+  },
+*/
+  {
+    xpThreshold: 600000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.COMBAT_BOOST,
+        amount: 5,
+      },
+    ],
+  },
+  {
+    xpThreshold: 750000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.LOSSUTH_SCALE,
+        amount: 5,
+      },
+    ],
+  },
 ];
 
 type ShopItem = {
   tokenId: number;
-  price: string;
+  price: BigNumber;
 };
 
 export const allShopItems: ShopItem[] = [
   {
-    tokenId: EstforConstants.BRONZE_HELMET,
-    price: ethers.utils.parseEther("2").toString(),
+    tokenId: EstforConstants.BRONZE_PICKAXE,
+    price: ethers.utils.parseEther("10"),
   },
   {
     tokenId: EstforConstants.BRONZE_AXE,
-    price: ethers.utils.parseEther("3").toString(),
+    price: ethers.utils.parseEther("10"),
+  },
+  {
+    tokenId: EstforConstants.MAGIC_FIRE_STARTER,
+    price: ethers.utils.parseEther("1"),
+  },
+  {
+    tokenId: EstforConstants.NET_STICK,
+    price: ethers.utils.parseEther("10"),
+  },
+  {
+    tokenId: EstforConstants.LARGE_NET,
+    price: ethers.utils.parseEther("100"),
+  },
+  {
+    tokenId: EstforConstants.MAGIC_NET,
+    price: ethers.utils.parseEther("120"),
+  },
+  {
+    tokenId: EstforConstants.WOOD_FISHING_ROD,
+    price: ethers.utils.parseEther("150"),
+  },
+  {
+    tokenId: EstforConstants.TITANIUM_FISHING_ROD,
+    price: ethers.utils.parseEther("200"),
+  },
+  {
+    tokenId: EstforConstants.HARPOON,
+    price: ethers.utils.parseEther("250"),
+  },
+  {
+    tokenId: EstforConstants.CAGE,
+    price: ethers.utils.parseEther("300"),
+  },
+  {
+    tokenId: EstforConstants.SHADOW_SCROLL,
+    price: ethers.utils.parseEther("5"),
+  },
+  {
+    tokenId: EstforConstants.NATURE_SCROLL,
+    price: ethers.utils.parseEther("5"),
+  },
+  {
+    tokenId: EstforConstants.AQUA_SCROLL,
+    price: ethers.utils.parseEther("10"),
+  },
+  {
+    tokenId: EstforConstants.HELL_SCROLL,
+    price: ethers.utils.parseEther("10"),
+  },
+  {
+    tokenId: EstforConstants.AIR_SCROLL,
+    price: ethers.utils.parseEther("25"),
+  },
+  {
+    tokenId: EstforConstants.BARRAGE_SCROLL,
+    price: ethers.utils.parseEther("50"),
+  },
+  {
+    tokenId: EstforConstants.FREEZE_SCROLL,
+    price: ethers.utils.parseEther("50"),
+  },
+  {
+    tokenId: EstforConstants.COMBAT_BOOST,
+    price: ethers.utils.parseEther("200"),
+  },
+  {
+    tokenId: EstforConstants.XP_BOOST,
+    price: ethers.utils.parseEther("100"),
+  },
+  {
+    tokenId: EstforConstants.GATHERING_BOOST,
+    price: ethers.utils.parseEther("100"),
+  },
+  {
+    tokenId: EstforConstants.SKILL_BOOST,
+    price: ethers.utils.parseEther("200"),
   },
 ];
 
@@ -140,65 +306,6 @@ export const emptyActionChoice: ActionChoiceInput = {
   outputNum: 0,
   successPercent: 100,
 };
-
-export const meleeChoices: ActionChoiceInput[] = [
-  {
-    ...emptyActionChoice,
-    skill: EstforTypes.Skill.MELEE,
-  },
-];
-
-export const magicChoices: ActionChoiceInput[] = [
-  // All the different types of spells
-  // SHADOW BLAST
-  {
-    ...emptyActionChoice,
-    skill: EstforTypes.Skill.MAGIC,
-    diff: 2, // 2 extra magic damage
-    inputTokenId1: EstforConstants.SHADOW_SCROLL,
-    num1: 2,
-  },
-];
-
-export const magicChoiceIds: number[] = [4];
-
-// TODO: Add all the different types of arrows
-export const rangeChoices: ActionChoiceInput[] = [];
-
-export const smithingChoices: ActionChoiceInput[] = [
-  {
-    skill: EstforTypes.Skill.SMITHING,
-    diff: 0,
-    rate: 2440 * 10,
-    xpPerHour: 25,
-    minXP: 0,
-    inputTokenId1: EstforConstants.COPPER_ORE,
-    num1: 1,
-    inputTokenId2: EstforConstants.TIN_ORE,
-    num2: 1,
-    inputTokenId3: EstforConstants.NONE,
-    num3: 0,
-    outputTokenId: EstforConstants.BRONZE_BAR,
-    outputNum: 1,
-    successPercent: 100,
-  },
-  {
-    skill: EstforTypes.Skill.SMITHING,
-    diff: 0,
-    rate: 1220 * 10,
-    xpPerHour: 35,
-    minXP: 0,
-    inputTokenId1: EstforConstants.IRON_ORE,
-    num1: 1,
-    inputTokenId2: EstforConstants.NONE,
-    num2: 0,
-    inputTokenId3: EstforConstants.NONE,
-    num3: 0,
-    outputTokenId: EstforConstants.IRON_BAR,
-    outputNum: 1,
-    successPercent: 100,
-  },
-];
 
 export type AvatarInfo = {
   name: string;
