@@ -25,6 +25,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_HELMET.json",
+    name: "Bronze Helmet",
   },
   {
     combatStats: {
@@ -50,6 +51,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_HELMET.json",
+    name: "Iron Helmet",
   },
   {
     combatStats: {
@@ -75,6 +77,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_HELMET.json",
+    name: "Mithril Helmet",
   },
   {
     combatStats: {
@@ -100,6 +103,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_HELMET.json",
+    name: "Adamantine Helmet",
   },
   {
     combatStats: {
@@ -125,6 +129,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_HELMET.json",
+    name: "Runite Helmet",
   },
   {
     combatStats: {
@@ -150,6 +155,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_HELMET.json",
+    name: "Titanium Helmet",
   },
   {
     combatStats: {
@@ -175,6 +181,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET.json",
+    name: "Orichalcum Helmet",
   },
   {
     combatStats: {
@@ -200,6 +207,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_ARMOR.json",
+    name: "Bronze Armor",
   },
   {
     combatStats: {
@@ -225,6 +233,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_ARMOR.json",
+    name: "Iron Armor",
   },
   {
     combatStats: {
@@ -250,6 +259,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_ARMOR.json",
+    name: "Mithril Armor",
   },
   {
     combatStats: {
@@ -275,6 +285,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_ARMOR.json",
+    name: "Adamantine Armor",
   },
   {
     combatStats: {
@@ -300,6 +311,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_ARMOR.json",
+    name: "Runite Armor",
   },
   {
     combatStats: {
@@ -325,6 +337,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_ARMOR.json",
+    name: "Titanium Armor",
   },
   {
     combatStats: {
@@ -350,6 +363,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR.json",
+    name: "Orichalcum Armor",
   },
   {
     combatStats: {
@@ -375,6 +389,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_TASSETS.json",
+    name: "Bronze Tassets",
   },
   {
     combatStats: {
@@ -400,6 +415,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_TASSETS.json",
+    name: "Iron Tassets",
   },
   {
     combatStats: {
@@ -425,6 +441,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_TASSETS.json",
+    name: "Mithril Tassets",
   },
   {
     combatStats: {
@@ -450,6 +467,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_TASSETS.json",
+    name: "Adamantine Tassets",
   },
   {
     combatStats: {
@@ -475,6 +493,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_TASSETS.json",
+    name: "Runite Tassets",
   },
   {
     combatStats: {
@@ -500,6 +519,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_TASSETS.json",
+    name: "Titanium Tassets",
   },
   {
     combatStats: {
@@ -525,6 +545,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS.json",
+    name: "Orichalcum Tassets",
   },
   {
     combatStats: {
@@ -550,6 +571,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_GAUNTLETS.json",
+    name: "Bronze Gauntlets",
   },
   {
     combatStats: {
@@ -575,6 +597,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_GAUNTLETS.json",
+    name: "Iron Gauntlets",
   },
   {
     combatStats: {
@@ -600,6 +623,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_GAUNTLETS.json",
+    name: "Mithril Gauntlets",
   },
   {
     combatStats: {
@@ -625,6 +649,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_GAUNTLETS.json",
+    name: "Adamantine Gauntlets",
   },
   {
     combatStats: {
@@ -650,6 +675,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_GAUNTLETS.json",
+    name: "Runite Gauntlets",
   },
   {
     combatStats: {
@@ -675,6 +701,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_GAUNTLETS.json",
+    name: "Titanium Gauntlets",
   },
   {
     combatStats: {
@@ -700,6 +727,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS.json",
+    name: "Orichalcum Gauntlets",
   },
   {
     combatStats: {
@@ -725,6 +753,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_BOOTS.json",
+    name: "Bronze Boots",
   },
   {
     combatStats: {
@@ -750,6 +779,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_BOOTS.json",
+    name: "Iron Boots",
   },
   {
     combatStats: {
@@ -775,6 +805,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_BOOTS.json",
+    name: "Mithril Boots",
   },
   {
     combatStats: {
@@ -800,6 +831,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_BOOTS.json",
+    name: "Adamantine Boots",
   },
   {
     combatStats: {
@@ -825,6 +857,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_BOOTS.json",
+    name: "Runite Boots",
   },
   {
     combatStats: {
@@ -850,6 +883,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_BOOTS.json",
+    name: "Titanium Boots",
   },
   {
     combatStats: {
@@ -875,6 +909,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS.json",
+    name: "Orichalcum Boots",
   },
   {
     combatStats: {
@@ -900,6 +935,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_SHIELD.json",
+    name: "Bronze Shield",
   },
   {
     combatStats: {
@@ -925,6 +961,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_SHIELD.json",
+    name: "Iron Shield",
   },
   {
     combatStats: {
@@ -950,6 +987,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_SHIELD.json",
+    name: "Mithril Shield",
   },
   {
     combatStats: {
@@ -975,6 +1013,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_SHIELD.json",
+    name: "Adamantine Shield",
   },
   {
     combatStats: {
@@ -1000,6 +1039,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_SHIELD.json",
+    name: "Runite Shield",
   },
   {
     combatStats: {
@@ -1025,6 +1065,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_SHIELD.json",
+    name: "Titanium Shield",
   },
   {
     combatStats: {
@@ -1050,6 +1091,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD.json",
+    name: "Orichalcum Shield",
   },
   {
     combatStats: {
@@ -1075,6 +1117,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SAPPHIRE_AMULET.json",
+    name: "Sapphire Amulet",
   },
   {
     combatStats: {
@@ -1100,6 +1143,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EMERALD_AMULET.json",
+    name: "Emerald Amulet",
   },
   {
     combatStats: {
@@ -1125,6 +1169,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUBY_AMULET.json",
+    name: "Ruby Amulet",
   },
   {
     combatStats: {
@@ -1150,6 +1195,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AMETHYST_AMULET.json",
+    name: "Amethyst Amulet",
   },
   {
     combatStats: {
@@ -1175,6 +1221,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DIAMOND_AMULET.json",
+    name: "Diamond Amulet",
   },
   {
     combatStats: {
@@ -1200,6 +1247,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET.json",
+    name: "Dragonstone Amulet",
   },
   {
     combatStats: {
@@ -1225,6 +1273,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_HAT.json",
+    name: "Apprentice Hat",
   },
   {
     combatStats: {
@@ -1250,6 +1299,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_HOOD.json",
+    name: "Mage Hood",
   },
   {
     combatStats: {
@@ -1275,6 +1325,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_HAT.json",
+    name: "Sorcerer Hat",
   },
   {
     combatStats: {
@@ -1300,6 +1351,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_HOOD.json",
+    name: "Seer's Hood",
   },
   {
     combatStats: {
@@ -1325,6 +1377,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_HOOD.json",
+    name: "Shaman Hood",
   },
   {
     combatStats: {
@@ -1350,6 +1403,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT.json",
+    name: "Master Hat",
   },
   {
     combatStats: {
@@ -1375,6 +1429,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_BODY.json",
+    name: "Apprentice Body",
   },
   {
     combatStats: {
@@ -1400,6 +1455,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_BODY.json",
+    name: "Mage Body",
   },
   {
     combatStats: {
@@ -1425,6 +1481,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_BODY.json",
+    name: "Sorcerer Body",
   },
   {
     combatStats: {
@@ -1450,6 +1507,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_BODY.json",
+    name: "Seers Body",
   },
   {
     combatStats: {
@@ -1475,6 +1533,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_BODY.json",
+    name: "Shaman Body",
   },
   {
     combatStats: {
@@ -1500,6 +1559,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY.json",
+    name: "Master Body",
   },
   {
     combatStats: {
@@ -1525,6 +1585,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_TROUSERS.json",
+    name: "Apprentice Trousers",
   },
   {
     combatStats: {
@@ -1550,6 +1611,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_TROUSERS.json",
+    name: "Mage Trousers",
   },
   {
     combatStats: {
@@ -1575,6 +1637,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_TROUSERS.json",
+    name: "Sorcerer Trousers",
   },
   {
     combatStats: {
@@ -1600,6 +1663,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_TROUSERS.json",
+    name: "Seers Trousers",
   },
   {
     combatStats: {
@@ -1625,6 +1689,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_TROUSERS.json",
+    name: "Shaman Trousers",
   },
   {
     combatStats: {
@@ -1650,6 +1715,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS.json",
+    name: "Master Trousers",
   },
   {
     combatStats: {
@@ -1675,6 +1741,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_GAUNTLETS.json",
+    name: "Apprentice Gauntlets",
   },
   {
     combatStats: {
@@ -1700,6 +1767,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_BRACERS.json",
+    name: "Mage Bracers",
   },
   {
     combatStats: {
@@ -1725,6 +1793,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_GAUNTLETS.json",
+    name: "Sorcerer Gauntlets",
   },
   {
     combatStats: {
@@ -1750,6 +1819,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_BRACERS.json",
+    name: "Seers Bracers",
   },
   {
     combatStats: {
@@ -1775,6 +1845,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_GAUNTLETS.json",
+    name: "Shaman Gauntlets",
   },
   {
     combatStats: {
@@ -1800,6 +1871,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS.json",
+    name: "Master Bracers",
   },
   {
     combatStats: {
@@ -1825,6 +1897,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_BOOTS.json",
+    name: "Apprentice Boots",
   },
   {
     combatStats: {
@@ -1850,6 +1923,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_BOOTS.json",
+    name: "Mage Boots",
   },
   {
     combatStats: {
@@ -1875,6 +1949,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_BOOTS.json",
+    name: "Sorcerer Boots",
   },
   {
     combatStats: {
@@ -1900,6 +1975,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_BOOTS.json",
+    name: "Seers Boots",
   },
   {
     combatStats: {
@@ -1925,6 +2001,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_BOOTS.json",
+    name: "Shaman Boots",
   },
   {
     combatStats: {
@@ -1950,6 +2027,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS.json",
+    name: "Master Boots",
   },
   {
     combatStats: {
@@ -1975,6 +2053,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_SWORD.json",
+    name: "Bronze Sword",
   },
   {
     combatStats: {
@@ -2000,6 +2079,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_SWORD.json",
+    name: "Iron Sword",
   },
   {
     combatStats: {
@@ -2025,6 +2105,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_SWORD.json",
+    name: "Mithril Sword",
   },
   {
     combatStats: {
@@ -2050,6 +2131,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_SWORD.json",
+    name: "Adamantine Sword",
   },
   {
     combatStats: {
@@ -2075,6 +2157,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_SWORD.json",
+    name: "Runite Sword",
   },
   {
     combatStats: {
@@ -2100,6 +2183,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_SWORD.json",
+    name: "Titanium Sword",
   },
   {
     combatStats: {
@@ -2125,6 +2209,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD.json",
+    name: "Orichalcum Sword",
   },
   {
     combatStats: {
@@ -2150,6 +2235,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TOTEM_STAFF.json",
+    name: "Totem Staff",
   },
   {
     combatStats: {
@@ -2175,6 +2261,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SAPPHIRE_STAFF.json",
+    name: "Sapphire Staff",
   },
   {
     combatStats: {
@@ -2200,6 +2287,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EMERALD_STAFF.json",
+    name: "Emerald Staff",
   },
   {
     combatStats: {
@@ -2225,6 +2313,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUBY_STAFF.json",
+    name: "Ruby Staff",
   },
   {
     combatStats: {
@@ -2250,6 +2339,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AMETHYST_STAFF.json",
+    name: "Amethyst Staff",
   },
   {
     combatStats: {
@@ -2275,6 +2365,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DIAMOND_STAFF.json",
+    name: "Diamond Staff",
   },
   {
     combatStats: {
@@ -2300,6 +2391,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF.json",
+    name: "Dragonstone Staff",
   },
   {
     combatStats: {
@@ -2325,6 +2417,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COPPER_ORE.json",
+    name: "Copper Ore",
   },
   {
     combatStats: {
@@ -2350,6 +2443,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TIN_ORE.json",
+    name: "Tin Ore",
   },
   {
     combatStats: {
@@ -2375,6 +2469,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_ORE.json",
+    name: "Iron Ore",
   },
   {
     combatStats: {
@@ -2400,6 +2495,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SAPPHIRE.json",
+    name: "Sapphire",
   },
   {
     combatStats: {
@@ -2425,6 +2521,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COAL_ORE.json",
+    name: "Coal Ore",
   },
   {
     combatStats: {
@@ -2450,6 +2547,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EMERALD.json",
+    name: "Emerald",
   },
   {
     combatStats: {
@@ -2475,6 +2573,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_ORE.json",
+    name: "Mithril Ore",
   },
   {
     combatStats: {
@@ -2500,6 +2599,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUBY.json",
+    name: "Ruby",
   },
   {
     combatStats: {
@@ -2525,6 +2625,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_ORE.json",
+    name: "Adamantine Ore",
   },
   {
     combatStats: {
@@ -2550,6 +2651,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AMETHYST.json",
+    name: "Amethyst",
   },
   {
     combatStats: {
@@ -2575,6 +2677,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DIAMOND.json",
+    name: "Diamond",
   },
   {
     combatStats: {
@@ -2600,6 +2703,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_ORE.json",
+    name: "Runite Ore",
   },
   {
     combatStats: {
@@ -2625,6 +2729,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE.json",
+    name: "Dragonstone",
   },
   {
     combatStats: {
@@ -2650,6 +2755,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_ORE.json",
+    name: "Titanium Ore",
   },
   {
     combatStats: {
@@ -2675,6 +2781,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ORE.json",
+    name: "Orichalcum Ore",
   },
   {
     combatStats: {
@@ -2691,7 +2798,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.BRONZE_PICKAXE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.MINING,
     minXP: 0,
@@ -2700,6 +2807,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_PICKAXE.json",
+    name: "Bronze Pickaxe",
   },
   {
     combatStats: {
@@ -2716,7 +2824,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.IRON_PICKAXE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.MINING,
     minXP: 3236,
@@ -2725,6 +2833,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_PICKAXE.json",
+    name: "Iron Pickaxe",
   },
   {
     combatStats: {
@@ -2741,7 +2850,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.MITHRIL_PICKAXE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.MINING,
     minXP: 68761,
@@ -2750,6 +2859,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_PICKAXE.json",
+    name: "Mithril Pickaxe",
   },
   {
     combatStats: {
@@ -2766,7 +2876,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_PICKAXE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.MINING,
     minXP: 195864,
@@ -2775,6 +2885,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_PICKAXE.json",
+    name: "Adamantine Pickaxe",
   },
   {
     combatStats: {
@@ -2791,7 +2902,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.RUNITE_PICKAXE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.MINING,
     minXP: 554828,
@@ -2800,6 +2911,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_PICKAXE.json",
+    name: "Runite Pickaxe",
   },
   {
     combatStats: {
@@ -2816,7 +2928,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.TITANIUM_PICKAXE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.MINING,
     minXP: 784726,
@@ -2825,6 +2937,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_PICKAXE.json",
+    name: "Titanium Pickaxe",
   },
   {
     combatStats: {
@@ -2841,7 +2954,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_PICKAXE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.MINING,
     minXP: 1109796,
@@ -2850,6 +2963,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_PICKAXE.json",
+    name: "Orichalcum Pickaxe",
   },
   {
     combatStats: {
@@ -2875,6 +2989,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_BAR.json",
+    name: "Bronze Bar",
   },
   {
     combatStats: {
@@ -2900,6 +3015,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_BAR.json",
+    name: "Iron Bar",
   },
   {
     combatStats: {
@@ -2925,6 +3041,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_BAR.json",
+    name: "Mithril Bar",
   },
   {
     combatStats: {
@@ -2950,6 +3067,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_BAR.json",
+    name: "Adamantine Bar",
   },
   {
     combatStats: {
@@ -2975,6 +3093,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_BAR.json",
+    name: "Runite Bar",
   },
   {
     combatStats: {
@@ -3000,6 +3119,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_BAR.json",
+    name: "Titanium Bar",
   },
   {
     combatStats: {
@@ -3025,6 +3145,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BAR.json",
+    name: "Orichalcum Bar",
   },
   {
     combatStats: {
@@ -3050,6 +3171,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_HOOD.json",
+    name: "Natuow Hood",
   },
   {
     combatStats: {
@@ -3075,6 +3197,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_BODY.json",
+    name: "Natuow Vestments",
   },
   {
     combatStats: {
@@ -3100,6 +3223,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_TASSETS.json",
+    name: "Natuow Tassets",
   },
   {
     combatStats: {
@@ -3125,6 +3249,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_BOOTS.json",
+    name: "Natuow Boots",
   },
   {
     combatStats: {
@@ -3150,6 +3275,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_BRACERS.json",
+    name: "Natuow Bracers",
   },
   {
     combatStats: {
@@ -3175,6 +3301,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_HAT.json",
+    name: "Bat Wing Hat",
   },
   {
     combatStats: {
@@ -3200,6 +3327,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_BODY.json",
+    name: "Bat Wing Vestments",
   },
   {
     combatStats: {
@@ -3225,6 +3353,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_TROUSERS.json",
+    name: "Bat Wing Trousers",
   },
   {
     combatStats: {
@@ -3250,6 +3379,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_BOOTS.json",
+    name: "Bat Wing Boots",
   },
   {
     combatStats: {
@@ -3275,6 +3405,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_BRACERS.json",
+    name: "Bat Wing Bracers",
   },
   {
     combatStats: {
@@ -3300,6 +3431,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_MASK.json",
+    name: "Nature Mask",
   },
   {
     combatStats: {
@@ -3325,6 +3457,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_BODY.json",
+    name: "Nature Vestments",
   },
   {
     combatStats: {
@@ -3350,6 +3483,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_TROUSERS.json",
+    name: "Nature Trousers",
   },
   {
     combatStats: {
@@ -3375,6 +3509,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_BOOTS.json",
+    name: "Nature Boots",
   },
   {
     combatStats: {
@@ -3400,6 +3535,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_BRACERS.json",
+    name: "Nature Bracers",
   },
   {
     combatStats: {
@@ -3425,6 +3561,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LEAF_FRAGMENTS.json",
+    name: "Leaf Fragments",
   },
   {
     combatStats: {
@@ -3450,6 +3587,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "VENOM_POUCH.json",
+    name: "Venom Pouch",
   },
   {
     combatStats: {
@@ -3475,6 +3613,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING.json",
+    name: "Bat Wing",
   },
   {
     combatStats: {
@@ -3500,6 +3639,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_PATCH.json",
+    name: "Bat Wing Patch",
   },
   {
     combatStats: {
@@ -3516,7 +3656,7 @@ export const allItems: InputItem[] = [
       diff: 0,
     },
     tokenId: EstforConstants.THREAD_NEEDLE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     skill: Skill.CRAFTING,
     minXP: 0,
@@ -3525,6 +3665,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "THREAD_NEEDLE.json",
+    name: "Thread & Needle",
   },
   {
     combatStats: {
@@ -3550,6 +3691,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LOSSUTH_TEETH.json",
+    name: "Lossuth Teeth",
   },
   {
     combatStats: {
@@ -3575,6 +3717,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LOSSUTH_SCALE.json",
+    name: "Lossuth Scale",
   },
   {
     combatStats: {
@@ -3600,6 +3743,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "QUARTZ_INFUSED_FEATHER.json",
+    name: "Quartz Infused Feather",
   },
   {
     combatStats: {
@@ -3625,6 +3769,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FEATHER.json",
+    name: "Feather",
   },
   {
     combatStats: {
@@ -3650,6 +3795,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BARK_CHUNK.json",
+    name: "Bark Chunk",
   },
   {
     combatStats: {
@@ -3675,6 +3821,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BLUECANAR.json",
+    name: "Bluecanar",
   },
   {
     combatStats: {
@@ -3700,6 +3847,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANURGAT.json",
+    name: "Anurgat",
   },
   {
     combatStats: {
@@ -3725,6 +3873,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUFARUM.json",
+    name: "Rufarum",
   },
   {
     combatStats: {
@@ -3750,6 +3899,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WHITE_DEATH_SPORE.json",
+    name: "White Death Spore",
   },
   {
     combatStats: {
@@ -3775,6 +3925,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGIC_FIRE_STARTER.json",
+    name: "Magic Fire Starter",
   },
   {
     combatStats: {
@@ -3800,6 +3951,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NET_STICK.json",
+    name: "Net (with stick)",
   },
   {
     combatStats: {
@@ -3825,6 +3977,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MEDIUM_NET.json",
+    name: "Medium net",
   },
   {
     combatStats: {
@@ -3850,6 +4003,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LARGE_NET.json",
+    name: "Large net",
   },
   {
     combatStats: {
@@ -3875,6 +4029,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOOD_FISHING_ROD.json",
+    name: "Wood Fishing Rod",
   },
   {
     combatStats: {
@@ -3900,6 +4055,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HARPOON.json",
+    name: "Harpoon",
   },
   {
     combatStats: {
@@ -3925,6 +4081,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "CAGE.json",
+    name: "Cage",
   },
   {
     combatStats: {
@@ -3950,6 +4107,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LOG.json",
+    name: "Log",
   },
   {
     combatStats: {
@@ -3975,6 +4133,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "OAK_LOG.json",
+    name: "Oak Log",
   },
   {
     combatStats: {
@@ -4000,6 +4159,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WILLOW_LOG.json",
+    name: "Willow Log",
   },
   {
     combatStats: {
@@ -4025,6 +4185,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAPLE_LOG.json",
+    name: "Maple Log",
   },
   {
     combatStats: {
@@ -4050,6 +4211,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REDWOOD_LOG.json",
+    name: "Redwood Log",
   },
   {
     combatStats: {
@@ -4075,6 +4237,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGICAL_LOG.json",
+    name: "Magical Log",
   },
   {
     combatStats: {
@@ -4100,6 +4263,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ASH_LOG.json",
+    name: "Ash Log",
   },
   {
     combatStats: {
@@ -4125,6 +4289,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ENCHANTED_LOG.json",
+    name: "Enchanted Log",
   },
   {
     combatStats: {
@@ -4150,6 +4315,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LIVING_LOG.json",
+    name: "Living Log",
   },
   {
     combatStats: {
@@ -4175,6 +4341,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_AXE.json",
+    name: "Bronze Axe",
   },
   {
     combatStats: {
@@ -4200,6 +4367,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_AXE.json",
+    name: "Iron Axe",
   },
   {
     combatStats: {
@@ -4225,6 +4393,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_AXE.json",
+    name: "Mithril Axe",
   },
   {
     combatStats: {
@@ -4250,6 +4419,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_AXE.json",
+    name: "Adamantine Axe",
   },
   {
     combatStats: {
@@ -4275,6 +4445,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_AXE.json",
+    name: "Runite Axe",
   },
   {
     combatStats: {
@@ -4300,6 +4471,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_AXE.json",
+    name: "Titanium Axe",
   },
   {
     combatStats: {
@@ -4325,6 +4497,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_AXE.json",
+    name: "Orichalcum Axe",
   },
   {
     combatStats: {
@@ -4350,6 +4523,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_MINNUS.json",
+    name: "Raw Minnus",
   },
   {
     combatStats: {
@@ -4375,6 +4549,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_BLEKK.json",
+    name: "Raw Blekk",
   },
   {
     combatStats: {
@@ -4400,6 +4575,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_SKRIMP.json",
+    name: "Raw Skrimp",
   },
   {
     combatStats: {
@@ -4425,6 +4601,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_FEOLA.json",
+    name: "Raw Feola",
   },
   {
     combatStats: {
@@ -4450,6 +4627,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ANCHO.json",
+    name: "Raw Ancho",
   },
   {
     combatStats: {
@@ -4475,6 +4653,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_TROUT.json",
+    name: "Raw Trout",
   },
   {
     combatStats: {
@@ -4500,6 +4679,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ROJJA.json",
+    name: "Raw Rojja",
   },
   {
     combatStats: {
@@ -4525,6 +4705,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_BOWFISH.json",
+    name: "Raw Bowfish",
   },
   {
     combatStats: {
@@ -4550,6 +4731,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_GOLDFISH.json",
+    name: "Raw Goldfish",
   },
   {
     combatStats: {
@@ -4575,6 +4757,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_MYSTY_BLUE.json",
+    name: "Raw Mysty Blue",
   },
   {
     combatStats: {
@@ -4600,6 +4783,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_FLITFISH.json",
+    name: "Raw Flitfish",
   },
   {
     combatStats: {
@@ -4625,6 +4809,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_RAZORFISH.json",
+    name: "Raw Razorfish",
   },
   {
     combatStats: {
@@ -4650,6 +4835,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_QUAFFER.json",
+    name: "Raw Quaffer",
   },
   {
     combatStats: {
@@ -4675,6 +4861,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ROXA.json",
+    name: "Raw Roxa",
   },
   {
     combatStats: {
@@ -4700,6 +4887,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_AZACUDDA.json",
+    name: "Raw Azacudda",
   },
   {
     combatStats: {
@@ -4725,6 +4913,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_STONECLAW.json",
+    name: "Raw Stoneclaw",
   },
   {
     combatStats: {
@@ -4750,6 +4939,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_CRUSKAN.json",
+    name: "Raw Cruskan",
   },
   {
     combatStats: {
@@ -4775,6 +4965,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_CHODFISH.json",
+    name: "Raw Chodfish",
   },
   {
     combatStats: {
@@ -4800,6 +4991,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_DOUBTFISH.json",
+    name: "Raw Doubtfish",
   },
   {
     combatStats: {
@@ -4825,6 +5017,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ROSEFIN.json",
+    name: "Raw Rosefin",
   },
   {
     combatStats: {
@@ -4850,6 +5043,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_MINNUS.json",
+    name: "Cooked Minnus",
   },
   {
     combatStats: {
@@ -4875,6 +5069,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_BLEKK.json",
+    name: "Cooked Blekk",
   },
   {
     combatStats: {
@@ -4900,6 +5095,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_SKRIMP.json",
+    name: "Cooked Skrimp",
   },
   {
     combatStats: {
@@ -4925,6 +5121,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_FEOLA.json",
+    name: "Cooked Feola",
   },
   {
     combatStats: {
@@ -4950,6 +5147,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ANCHO.json",
+    name: "Cooked Ancho",
   },
   {
     combatStats: {
@@ -4975,6 +5173,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_TROUT.json",
+    name: "Cooked Trout",
   },
   {
     combatStats: {
@@ -5000,6 +5199,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ROJJA.json",
+    name: "Cooked Rojja",
   },
   {
     combatStats: {
@@ -5025,6 +5225,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_BOWFISH.json",
+    name: "Cooked Bowfish",
   },
   {
     combatStats: {
@@ -5050,6 +5251,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_GOLDFISH.json",
+    name: "Cooked Goldfish",
   },
   {
     combatStats: {
@@ -5075,6 +5277,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_MYSTY_BLUE.json",
+    name: "Cooked Mysty Blue",
   },
   {
     combatStats: {
@@ -5100,6 +5303,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_FLITFISH.json",
+    name: "Cooked Flitfish",
   },
   {
     combatStats: {
@@ -5125,6 +5329,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_RAZORFISH.json",
+    name: "Cooked Razorfish",
   },
   {
     combatStats: {
@@ -5150,6 +5355,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_QUAFFER.json",
+    name: "Cooked Quaffer",
   },
   {
     combatStats: {
@@ -5175,6 +5381,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ROXA.json",
+    name: "Cooked Roxa",
   },
   {
     combatStats: {
@@ -5200,6 +5407,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_AZACUDDA.json",
+    name: "Cooked Azacudda",
   },
   {
     combatStats: {
@@ -5225,6 +5433,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_STONECLAW.json",
+    name: "Cooked Stoneclaw",
   },
   {
     combatStats: {
@@ -5250,6 +5459,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_CRUSKAN.json",
+    name: "Cooked Cruskan",
   },
   {
     combatStats: {
@@ -5275,6 +5485,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_CHODFISH.json",
+    name: "Cooked Chodfish",
   },
   {
     combatStats: {
@@ -5300,6 +5511,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_DOUBTFISH.json",
+    name: "Cooked Doubtfish",
   },
   {
     combatStats: {
@@ -5325,6 +5537,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ROSEFIN.json",
+    name: "Cooked Rosefin",
   },
   {
     combatStats: {
@@ -5350,6 +5563,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_KEY.json",
+    name: "Dragon Key",
   },
   {
     combatStats: {
@@ -5375,6 +5589,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BONE_KEY.json",
+    name: "Bone Key",
   },
   {
     combatStats: {
@@ -5400,6 +5615,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_KEY.json",
+    name: "Nature Key",
   },
   {
     combatStats: {
@@ -5425,6 +5641,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AQUA_KEY.json",
+    name: "Aqua Key",
   },
   {
     combatStats: {
@@ -5450,6 +5667,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_HIDE.json",
+    name: "Natuow Hide",
   },
   {
     combatStats: {
@@ -5475,6 +5693,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_LEATHER.json",
+    name: "Natuow Leather",
   },
   {
     combatStats: {
@@ -5500,6 +5719,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SMALL_BONE.json",
+    name: "Small Bone",
   },
   {
     combatStats: {
@@ -5525,6 +5745,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MEDIUM_BONE.json",
+    name: "Medium Bone",
   },
   {
     combatStats: {
@@ -5550,6 +5771,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LARGE_BONE.json",
+    name: "Large Bone",
   },
   {
     combatStats: {
@@ -5575,6 +5797,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_BONE.json",
+    name: "Dragon Bone",
   },
   {
     combatStats: {
@@ -5600,6 +5823,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_TEETH.json",
+    name: "Dragon Teeth",
   },
   {
     combatStats: {
@@ -5625,6 +5849,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_SCALE.json",
+    name: "Dragon Scale",
   },
   {
     combatStats: {
@@ -5650,6 +5875,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "POISON.json",
+    name: "Poison",
   },
   {
     combatStats: {
@@ -5675,6 +5901,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "STRING.json",
+    name: "String",
   },
   {
     combatStats: {
@@ -5700,6 +5927,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ROPE.json",
+    name: "Rope",
   },
   {
     combatStats: {
@@ -5725,6 +5953,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHADOW_SCROLL.json",
+    name: "Shadow Scroll",
   },
   {
     combatStats: {
@@ -5750,6 +5979,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_SCROLL.json",
+    name: "Nature Scroll",
   },
   {
     combatStats: {
@@ -5775,6 +6005,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AQUA_SCROLL.json",
+    name: "Aqua Scroll",
   },
   {
     combatStats: {
@@ -5800,6 +6031,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HELL_SCROLL.json",
+    name: "Hell Scroll",
   },
   {
     combatStats: {
@@ -5825,6 +6057,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AIR_SCROLL.json",
+    name: "Air Scroll",
   },
   {
     combatStats: {
@@ -5850,6 +6083,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BARRAGE_SCROLL.json",
+    name: "Barrage Scroll",
   },
   {
     combatStats: {
@@ -5875,6 +6109,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FREEZE_SCROLL.json",
+    name: "Freeze Scroll",
   },
   {
     combatStats: {
@@ -5900,6 +6135,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BONEMEAL.json",
+    name: "Bonemeal",
   },
   {
     combatStats: {
@@ -5925,6 +6161,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ENCHANTED_ACORN.json",
+    name: "Enchanted Acorn",
   },
   {
     combatStats: {
@@ -5950,6 +6187,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ACORN_PATCH.json",
+    name: "Acorn Patch",
   },
   {
     combatStats: {
@@ -5975,6 +6213,7 @@ export const allItems: InputItem[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANCIENT_SCROLL.json",
+    name: "Ancient Scroll",
   },
   {
     combatStats: {
@@ -6000,6 +6239,7 @@ export const allItems: InputItem[] = [
     boostValue: 20,
     boostDuration: 86400,
     metadataURI: "COMBAT_BOOST.json",
+    name: "Combat Boost",
   },
   {
     combatStats: {
@@ -6025,6 +6265,7 @@ export const allItems: InputItem[] = [
     boostValue: 10,
     boostDuration: 86400,
     metadataURI: "XP_BOOST.json",
+    name: "XP Boost",
   },
   {
     combatStats: {
@@ -6050,6 +6291,7 @@ export const allItems: InputItem[] = [
     boostValue: 10,
     boostDuration: 86400,
     metadataURI: "GATHERING_BOOST.json",
+    name: "Gathering Boost",
   },
   {
     combatStats: {
@@ -6075,30 +6317,6 @@ export const allItems: InputItem[] = [
     boostValue: 20,
     boostDuration: 86400,
     metadataURI: "SKILL_BOOST.json",
-  },
-  {
-    combatStats: {
-      melee: 0,
-      magic: 0,
-      range: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangeDefence: 0,
-      health: 0,
-    },
-    nonCombatStats: {
-      skill: Skill.NONE,
-      diff: 0,
-    },
-    tokenId: EstforConstants.ABSENCE_BOOST,
-    equipPosition: EquipPosition.BOOST_VIAL,
-    isTransferable: false,
-    skill: Skill.NONE,
-    minXP: 0,
-    healthRestored: 0,
-    boostType: BoostType.ABSENCE,
-    boostValue: 100,
-    boostDuration: 6048000,
-    metadataURI: "ABSENCE_BOOST.json",
+    name: "Skill Boost",
   },
 ];
