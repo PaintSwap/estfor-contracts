@@ -26,7 +26,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   using UnsafeU256 for U256;
 
   event RequestSent(uint256 requestId, uint32 numWords);
-  event RequestFulfilled(uint256 requestId, uint256[3] randomWords);
+  event RequestFulfilled(uint256 requestId, uint256[3] randomWords, uint256 timestamp);
   event AddAction(Action action);
   event EditAction(Action action);
   event SetAvailableAction(uint16 actionId, bool available);
@@ -245,7 +245,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     randomWords[_requestId] = random;
-    emit RequestFulfilled(_requestId, random);
+    emit RequestFulfilled(_requestId, random, lastRandomWordsUpdatedTime);
 
     // Are we at the threshold for a new week
     if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {

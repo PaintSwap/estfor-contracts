@@ -52,12 +52,14 @@ export const playersFixture = async function () {
   });
   await adminAccess.deployed();
 
+  const isAlpha = true;
+
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
   const itemsUri = "ipfs://";
   const itemNFT = await upgrades.deployProxy(
     ItemNFT,
-    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
+    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
     {
       kind: "uups",
     }
@@ -66,11 +68,19 @@ export const playersFixture = async function () {
   await shop.setItemNFT(itemNFT.address);
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
+  const editNameBrushPrice = ethers.utils.parseEther("1");
   const imageBaseUri = "ipfs://";
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
-    [brush.address, shop.address, royaltyReceiver.address, adminAccess.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
+    [
+      brush.address,
+      shop.address,
+      royaltyReceiver.address,
+      adminAccess.address,
+      editNameBrushPrice,
+      imageBaseUri,
+      isAlpha,
+    ],
     {
       kind: "uups",
     }
@@ -107,6 +117,7 @@ export const playersFixture = async function () {
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
+      isAlpha,
     ],
     {
       kind: "uups",
@@ -150,7 +161,7 @@ export const playersFixture = async function () {
     world,
     alice,
     origName,
-    EDIT_NAME_BRUSH_PRICE,
+    editNameBrushPrice,
     mockOracleClient,
     avatarInfo,
   };

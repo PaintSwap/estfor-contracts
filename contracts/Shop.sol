@@ -54,8 +54,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / itemNFT.uniqueItems();
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
-    // Needs to have a minimum of an item before any can be sold.
-    return totalBrushForItem / totalOfThisItem;
+    if (totalOfThisItem < 100) {
+      // Needs to have a minimum of an item before any can be sold.
+      price = 0;
+    } else {
+      price = totalBrushForItem / totalOfThisItem;
+    }
   }
 
   function getPriceForItems(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {

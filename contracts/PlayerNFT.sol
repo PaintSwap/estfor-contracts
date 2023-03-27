@@ -31,6 +31,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   error NotOwner();
   error NotAdmin();
+  error NotAdminOrLive();
   error NotPlayers();
   error AvatarNotExists();
   error NameCannotBeEmpty();
@@ -55,6 +56,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   uint public editNameCost;
   uint public royaltyFee;
   address public royaltyReceiver;
+  bool public isAlpha;
 
   bytes32 public merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
@@ -82,6 +84,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _;
   }
 
+  modifier isAdminOrMain() {
+    if (!adminAccess.isAdmin(_msgSender()) && !isAlpha) {
+      revert NotAdminOrLive();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -93,7 +102,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     address _royaltyReceiver,
     AdminAccess _adminAccess,
     uint _editNameCost,
-    string calldata _imageBaseUri
+    string calldata _imageBaseUri,
+    bool _isAlpha
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
@@ -106,6 +116,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
+    _isAlpha = isAlpha;
   }
 
   function _mintStartingItems() private {
@@ -171,7 +182,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 
-  function mint(uint _avatarId, bytes32 _name, bool _makeActive) external isAdmin {
+  function mint(uint _avatarId, bytes32 _name, bool _makeActive) external isAdminOrMain {
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 

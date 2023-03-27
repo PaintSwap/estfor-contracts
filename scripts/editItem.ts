@@ -1,0 +1,56 @@
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
+import {BoostType, EquipPosition, Skill} from "@paintswap/estfor-definitions/types";
+import {ethers} from "hardhat";
+import {ITEM_NFT_ADDRESS} from "./constants";
+import fs from "fs";
+
+async function main() {
+  fs.writeFileSync("./file1", JSON.stringify(whitelistedAdmins));
+  /*
+  const [owner] = await ethers.getSigners();
+  console.log(`Edit item using account: ${owner.address}`);
+
+  const network = await ethers.provider.getNetwork();
+  console.log(`ChainId: ${network.chainId}`);
+
+  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
+
+  const item: EstforTypes.InputItem = {
+    combatStats: {
+      melee: 0,
+      magic: 0,
+      range: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 0,
+    },
+    nonCombatStats: {
+      skill: Skill.NONE,
+      diff: 0,
+    },
+    tokenId: EstforConstants.BRONZE_PICKAXE,
+    equipPosition: EquipPosition.RIGHT_HAND,
+    isTransferable: true,
+    skill: Skill.MINING,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BRONZE_PICKAXE.json",
+    name: "Bronze Pickaxe",
+  };
+
+  await itemNFT.editItem(item);
+  */
+}
+
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

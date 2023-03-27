@@ -1,11 +1,10 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {MerkleTreeWhitelist} from "../scripts/MerkleTreeWhitelist";
 import {AvatarInfo} from "../scripts/utils";
-import alphaSnapShotAddresses from "../whitelist/alpha_snapshot.json";
-import adminAddresses from "../whitelist/admins.json";
 
 describe("AlphaWhitelist", function () {
   async function deployContracts() {
@@ -57,12 +56,13 @@ describe("AlphaWhitelist", function () {
     });
     await adminAccess.deployed();
 
+    const isAlpha = true;
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
       {
         kind: "uups",
       }
@@ -71,11 +71,19 @@ describe("AlphaWhitelist", function () {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
+    const editNameBrushPrice = ethers.utils.parseEther("1");
     const imageBaseUri = "ipfs://";
     const playerNFT = await upgrades.deployProxy(
       PlayerNFT,
-      [brush.address, shop.address, royaltyReceiver.address, adminAccess.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
+      [
+        brush.address,
+        shop.address,
+        royaltyReceiver.address,
+        adminAccess.address,
+        editNameBrushPrice,
+        imageBaseUri,
+        isAlpha,
+      ],
       {kind: "uups"}
     );
 
@@ -110,6 +118,7 @@ describe("AlphaWhitelist", function () {
         playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,
+        isAlpha,
       ],
       {
         kind: "uups",
@@ -165,9 +174,8 @@ describe("AlphaWhitelist", function () {
     );
   });
 
-  it("Read file", async function () {
-    expect(alphaSnapShotAddresses.find((el) => el.address == "0x003c06a6168e9d2474e2c7f588d819b75f8025e5")).to.not.be
-      .undefined;
-    expect(adminAddresses.find((el) => el.address == "0x316342122a9ae36de41b231260579b92f4c8be7f")).to.not.be.undefined;
+  it("Read from library", async function () {
+    expect(whitelistedSnapshot.find((el) => el == "0x003c06a6168e9d2474e2c7f588d819b75f8025e5")).to.not.be.undefined;
+    expect(whitelistedAdmins.find((el) => el == "0x316342122a9ae36de41b231260579b92f4c8be7f")).to.not.be.undefined;
   });
 });

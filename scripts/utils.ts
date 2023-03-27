@@ -11,7 +11,7 @@ export const createPlayer = async (
   account: SignerWithAddress,
   name: string,
   makeActive: boolean
-): Promise<ethers.BigNumber> => {
+): Promise<BigNumber> => {
   const tx = await playerNFT.connect(account).mint(avatarId, name, makeActive);
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
@@ -168,16 +168,15 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
       },
     ],
   },
-  /*  {
+  {
     xpThreshold: 500000,
     rewards: [
       {
-        itemTokenId: EstforConstants.TODO,
-        amount: 2,
+        itemTokenId: EstforConstants.GATHERING_BOOST,
+        amount: 4,
       },
     ],
   },
-*/
   {
     xpThreshold: 600000,
     rewards: [

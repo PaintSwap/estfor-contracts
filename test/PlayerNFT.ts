@@ -55,11 +55,12 @@ describe("PlayerNFT", function () {
     await adminAccess.deployed();
 
     // Create NFT contract which contains all items
+    const isAlpha = true;
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
       {
         kind: "uups",
       }
@@ -68,11 +69,19 @@ describe("PlayerNFT", function () {
     await shop.setItemNFT(itemNFT.address);
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-    const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
+    const editNameBrushPrice = ethers.utils.parseEther("1");
     const imageBaseUri = "ipfs://";
     const playerNFT = (await upgrades.deployProxy(
       PlayerNFT,
-      [brush.address, shop.address, royaltyReceiver.address, adminAccess.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
+      [
+        brush.address,
+        shop.address,
+        royaltyReceiver.address,
+        adminAccess.address,
+        editNameBrushPrice,
+        imageBaseUri,
+        isAlpha,
+      ],
       {
         kind: "uups",
       }
@@ -109,6 +118,7 @@ describe("PlayerNFT", function () {
         playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,
+        isAlpha,
       ],
       {
         kind: "uups",
@@ -145,7 +155,7 @@ describe("PlayerNFT", function () {
       brush,
       alice,
       origName,
-      EDIT_NAME_BRUSH_PRICE,
+      editNameBrushPrice,
       mockOracleClient,
       avatarInfo,
     };
@@ -186,13 +196,13 @@ describe("PlayerNFT", function () {
   });
 
   it("Edit Name", async function () {
-    const {playerId, playerNFT, alice, brush, origName, EDIT_NAME_BRUSH_PRICE} = await loadFixture(deployContracts);
+    const {playerId, playerNFT, alice, brush, origName, editNameBrushPrice} = await loadFixture(deployContracts);
     const name = ethers.utils.formatBytes32String("My name is edited");
-    await brush.connect(alice).approve(playerNFT.address, EDIT_NAME_BRUSH_PRICE.mul(3));
+    await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice.mul(3));
     await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.revertedWith(
       "ERC20: transfer amount exceeds balance"
     );
-    await brush.mint(alice.address, EDIT_NAME_BRUSH_PRICE.mul(3));
+    await brush.mint(alice.address, editNameBrushPrice.mul(3));
 
     await expect(playerNFT.editName(playerId, name)).to.be.revertedWithCustomError(playerNFT, "NotOwner");
     expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to

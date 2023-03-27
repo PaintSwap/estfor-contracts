@@ -1,6 +1,6 @@
 import {ethers, upgrades} from "hardhat";
 import {PlayersLibrary} from "../typechain-types";
-import {ITEM_NFT_ADDRESS, PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS} from "./constants";
+import {ITEM_NFT_ADDRESS, PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS, PLAYER_NFT_ADDRESS} from "./constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -32,14 +32,13 @@ async function main() {
   await players.deployed();
   console.log(`Players deployed at ${players.address.toLowerCase()}`);
 
-  /*
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const playerNFT = await upgrades.upgradeProxy("PLAYER_NFT_ADDRESS", PlayerNFT, {
+  const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
   });
 
-  console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`); */
+  console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 
   // ItemNFT
   const ItemNFT = await ethers.getContractFactory("ItemNFT");

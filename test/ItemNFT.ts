@@ -53,12 +53,13 @@ describe("ItemNFT", function () {
     });
     await adminAccess.deployed();
 
+    const isAlpha = true;
     // Create NFT contract which contains all items
     const ItemNFT = await ethers.getContractFactory("ItemNFT");
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
       {
         kind: "uups",
       }

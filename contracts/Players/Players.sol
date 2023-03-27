@@ -58,7 +58,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     AdminAccess _adminAccess,
     address _implQueueActions,
     address _implProcessActions,
-    address _implRewards
+    address _implRewards,
+    bool _isAlpha
   ) public initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
@@ -75,6 +76,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     nextQueueId = 1;
     alphaCombat = 1;
     betaCombat = 1;
+    isAlpha = _isAlpha;
   }
 
   function startAction(
@@ -149,7 +151,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     itemNFT.mintBatch(_to, _ids, _amounts);
   }
 
-  function setSpeedMultiplier(uint _playerId, uint16 _multiplier) external isAdmin {
+  function setSpeedMultiplier(uint _playerId, uint16 _multiplier) external isAdminAndAlpha {
     if (_multiplier < 1) {
       revert InvalidSpeedMultiplier();
     }

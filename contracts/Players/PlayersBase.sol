@@ -123,6 +123,7 @@ abstract contract PlayersBase {
 
   uint64 internal nextQueueId; // Global queued action id
   World internal world;
+  bool internal isAlpha;
 
   mapping(uint playerId => mapping(Skill skill => uint32 xp)) public xp;
 
@@ -185,8 +186,8 @@ abstract contract PlayersBase {
     _;
   }
 
-  modifier isAdmin() {
-    if (!adminAccess.isAdmin(msg.sender)) {
+  modifier isAdminAndAlpha() {
+    if (!adminAccess.isAdmin(msg.sender) && !isAlpha) {
       revert NotAdmin();
     }
     _;

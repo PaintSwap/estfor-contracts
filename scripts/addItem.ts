@@ -6,7 +6,7 @@ import {ITEM_NFT_ADDRESS} from "./constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Deploying player implementation contracts with the account: ${owner.address}`);
+  console.log(`Add item using account: ${owner.address}`);
 
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);

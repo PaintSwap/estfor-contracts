@@ -3,7 +3,6 @@ import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {ItemNFT, MockBrushToken, MockWrappedFantom, PlayerNFT, Players, Shop} from "../typechain-types";
 import {allFullAttireBonuses, allShopItems, allXPThresholdRewards, AvatarInfo, verifyContracts} from "./utils";
-import adminAddresses from "../whitelist/admins.json";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
 
@@ -25,6 +24,7 @@ import {
 } from "./data/actionChoiceIds";
 import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./constants";
 import {addTestData} from "./addTestData";
+import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -97,7 +97,7 @@ async function main() {
   await royaltyReceiver.deployed();
   console.log(`RoyaltyReceiver deployed at ${royaltyReceiver.address.toLowerCase()}`);
 
-  const admins = adminAddresses.map((el) => ethers.utils.getAddress(el.address));
+  const admins = whitelistedAdmins.map((el) => ethers.utils.getAddress(el));
   if (!admins.includes(owner.address)) {
     admins.push(owner.address);
   }
@@ -109,14 +109,23 @@ async function main() {
   await adminAccess.deployed();
   console.log(`AdminAccess deployed at ${adminAccess.address.toLowerCase()}`);
 
-  //  const itemsUri = "ipfs:// /"; //
-  const itemsUri = "ipfs://Qmdhaz6jRnpQjvzzJB1PuN2Y33Nc1hAKg1sCMVc18ftcAL/"; // alpha
+  let itemsUri: string;
+  let imageBaseUri: string;
+  const isAlpha = process.env.IS_ALPHA == "true";
+  if (isAlpha) {
+    itemsUri = "ipfs://Qmdhaz6jRnpQjvzzJB1PuN2Y33Nc1hAKg1sCMVc18ftcAL/";
+    imageBaseUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/";
+  } else {
+    // live version
+    itemsUri = "ipfs://TODO/";
+    imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/";
+  }
 
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri],
+    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
     {
       kind: "uups",
     }
@@ -126,12 +135,18 @@ async function main() {
 
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const EDIT_NAME_BRUSH_PRICE = ethers.utils.parseEther("1");
-  //  const imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/"; // live
-  const imageBaseUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/"; // alpha
+  const editNameBrushPrice = ethers.utils.parseEther("1");
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
-    [brush.address, shop.address, royaltyReceiver.address, adminAccess.address, EDIT_NAME_BRUSH_PRICE, imageBaseUri],
+    [
+      brush.address,
+      shop.address,
+      royaltyReceiver.address,
+      adminAccess.address,
+      editNameBrushPrice,
+      imageBaseUri,
+      isAlpha,
+    ],
     {
       kind: "uups",
     }
@@ -175,6 +190,7 @@ async function main() {
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
+      isAlpha,
     ],
     {
       kind: "uups",

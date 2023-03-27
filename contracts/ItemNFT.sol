@@ -4,7 +4,6 @@ pragma solidity ^0.8.19;
 import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {UnsafeMath, UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
@@ -20,13 +19,13 @@ import "./globals/items.sol";
 /* solhint-enable no-global-import */
 
 // The NFT contract contains data related to the items and who owns them
-contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
+contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
   using UnsafeMath for uint256;
   using UnsafeU256 for U256;
 
-  event AddItem(Item item, uint16 tokenId);
-  event AddItems(Item[] items, uint16[] tokenIds);
-  event EditItem(Item item, uint16 tokenId);
+  event AddItem(Item item, uint16 tokenId, string name);
+  event AddItems(Item[] items, uint16[] tokenIds, string[] names);
+  event EditItem(Item item, uint16 tokenId, string name);
 
   error IdTooHigh();
   error ItemNotTransferable();
@@ -39,7 +38,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAllowedHardhat();
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
-  error NotAdmin();
+  error NotAdminAndAlpha();
 
   // Input only
   struct NonCombatStats {
@@ -66,9 +65,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     uint24 boostDuration; // How long the effect of the boost vial last
     // uri
     string metadataURI;
+    string name;
   }
 
   World public world;
+  bool private isAlpha;
   string private baseURI;
 
   // How many of this item exist
@@ -96,9 +97,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _;
   }
 
-  modifier isAdmin() {
-    if (!adminAccess.isAdmin(_msgSender())) {
-      revert NotAdmin();
+  modifier isAdminAndAlpha() {
+    if (!(adminAccess.isAdmin(_msgSender()) && isAlpha)) {
+      revert NotAdminAndAlpha();
     }
     _;
   }
@@ -113,7 +114,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     address _shop,
     address _royaltyReceiver,
     AdminAccess _adminAccess,
-    string calldata _baseURI
+    string calldata _baseURI,
+    bool _isAlpha
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
@@ -124,6 +126,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
+    isAlpha = _isAlpha;
   }
 
   function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
@@ -325,13 +328,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
     if (hasCombat) {
       // Combat stats
-      item.melee = int8(_item.combatStats.melee);
-      item.magic = int8(_item.combatStats.magic);
-      item.range = int8(_item.combatStats.range);
-      item.meleeDefence = int8(_item.combatStats.meleeDefence);
-      item.magicDefence = int8(_item.combatStats.magicDefence);
-      item.rangeDefence = int8(_item.combatStats.rangeDefence);
-      item.health = int8(_item.combatStats.health);
+      item.melee = _item.combatStats.melee;
+      item.magic = _item.combatStats.magic;
+      item.range = _item.combatStats.range;
+      item.meleeDefence = _item.combatStats.meleeDefence;
+      item.magicDefence = _item.combatStats.magicDefence;
+      item.rangeDefence = _item.combatStats.rangeDefence;
+      item.health = _item.combatStats.health;
     }
     item.skill1 = _item.nonCombatStats.skill;
     item.skillDiff1 = _item.nonCombatStats.diff;
@@ -377,13 +380,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       revert ItemAlreadyExists();
     }
     Item storage item = _setItem(_inputItem);
-    emit AddItem(item, _inputItem.tokenId);
+    emit AddItem(item, _inputItem.tokenId, _inputItem.name);
   }
 
   function addItems(InputItem[] calldata _inputItems) external onlyOwner {
     U256 iter = U256.wrap(_inputItems.length);
     Item[] memory _items = new Item[](iter.asUint256());
     uint16[] memory tokenIds = new uint16[](iter.asUint256());
+    string[] memory names = new string[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
@@ -392,19 +396,23 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       }
       _items[i] = _setItem(_inputItems[i]);
       tokenIds[i] = _inputItems[i].tokenId;
+      names[i] = _inputItems[i].name;
     }
-    emit AddItems(_items, tokenIds);
+    emit AddItems(_items, tokenIds, names);
   }
 
   function editItem(InputItem calldata _inputItem) external onlyOwner {
     if (!_exists(_inputItem.tokenId)) {
       revert ItemDoesNotExist(_inputItem.tokenId);
     }
-    if (items[_inputItem.tokenId].equipPosition != _inputItem.equipPosition) {
+    if (
+      items[_inputItem.tokenId].equipPosition != _inputItem.equipPosition &&
+      items[_inputItem.tokenId].equipPosition != EquipPosition.NONE
+    ) {
       revert EquipmentPositionShouldNotChange();
     }
     Item storage item = _setItem(_inputItem);
-    emit EditItem(item, _inputItem.tokenId);
+    emit EditItem(item, _inputItem.tokenId, _inputItem.name);
   }
 
   function setPlayers(address _players) external onlyOwner {
@@ -418,12 +426,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  // These are just to make tests easier to run by allowing arbitrary minting
-  function testMint(address _to, uint _tokenId, uint _amount) external isAdmin {
+  function testMint(address _to, uint _tokenId, uint _amount) external isAdminAndAlpha {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isAdmin {
+  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isAdminAndAlpha {
     _mintBatchItems(_to, _tokenIds, _amounts);
   }
 }
