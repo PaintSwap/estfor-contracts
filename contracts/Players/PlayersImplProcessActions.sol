@@ -90,7 +90,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         );
       }
 
-      uint128 _queueId = queuedAction.attire.queueId;
+      uint80 _queueId = queuedAction.attire.queueId;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
 
       if (!died) {
@@ -115,7 +115,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
         (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
           _playerId,
-          uint40(queuedAction.startTime + xpElapsedTime),
+          queuedAction.startTime,
           xpElapsedTime,
           queuedAction.actionId
         );
@@ -245,7 +245,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     ActionChoice memory _actionChoice,
     uint24 _numConsumed,
-    uint128 _queueId
+    uint80 _queueId
   ) private {
     _processConsumable(_from, _playerId, _actionChoice.inputTokenId1, _numConsumed * _actionChoice.num1, _queueId);
     _processConsumable(_from, _playerId, _actionChoice.inputTokenId2, _numConsumed * _actionChoice.num2, _queueId);
@@ -257,7 +257,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     uint16 _itemTokenId,
     uint24 _numConsumed,
-    uint128 _queueId
+    uint80 _queueId
   ) private {
     if (_itemTokenId == 0) {
       return;
@@ -328,7 +328,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function _getRewards(
     uint _playerId,
-    uint40 _skillEndTime,
+    uint40 _skillStartTime,
     uint _elapsedTime,
     uint16 _actionId
   ) private returns (uint[] memory newIds, uint[] memory newAmounts) {
@@ -337,7 +337,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       abi.encodeWithSignature(
         "getRewards(uint256,uint40,uint256,uint16)",
         _playerId,
-        _skillEndTime,
+        _skillStartTime,
         _elapsedTime,
         _actionId
       )
@@ -368,25 +368,40 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     ActionRewards memory _actionRewards,
     uint16 _actionId,
     uint16 _choiceId,
-    uint128 _queueId,
-    uint40 _skillEndTime,
+    uint80 _queueId,
+    uint40 _skillStartTime,
     uint24 _elapsedTime
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
     if (hasRandomRewards) {
-      bool hasRandomWord = world.hasRandomWord(_skillEndTime);
+      bool hasRandomWord = world.hasRandomWord(_skillStartTime + _elapsedTime);
       if (!hasRandomWord) {
+        PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+        BoostType boostType;
+        uint16 boostValue;
+        uint24 boostedTime;
+        if (activeBoost.boostType == BoostType.GATHERING) {
+          boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
+          if (boostedTime > 0) {
+            boostType = activeBoost.boostType;
+            boostValue = activeBoost.val;
+          }
+        }
+
         // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
         _pendingRandomRewards.push(
           PendingRandomReward({
             actionId: _actionId,
             choiceId: _choiceId,
             queueId: _queueId,
-            timestamp: uint40(_skillEndTime),
-            elapsedTime: uint24(_elapsedTime)
+            startTime: uint40(_skillStartTime),
+            elapsedTime: uint24(_elapsedTime),
+            boostType: boostType,
+            boostValue: boostValue,
+            boostedTime: boostedTime
           })
         );
-        emit AddPendingRandomReward(_from, _playerId, _queueId, _skillEndTime, _elapsedTime);
+        emit AddPendingRandomReward(_from, _playerId, _queueId, _skillStartTime, _elapsedTime);
       }
     }
   }

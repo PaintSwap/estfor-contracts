@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Equipment} from "./players.sol";
+import {BoostType, Equipment} from "./players.sol";
 
 // Loot
 struct GuaranteedReward {
@@ -18,9 +18,13 @@ struct RandomReward {
 struct PendingRandomReward {
   uint16 actionId;
   uint16 choiceId;
-  uint40 timestamp;
+  uint40 startTime;
   uint24 elapsedTime;
-  uint128 queueId;
+  uint80 queueId;
+  // Boosts active at the time this was generated
+  BoostType boostType;
+  uint16 boostValue; // Varies, could be the % increase
+  uint24 boostedTime; // How long the effect of the boost vial last
 }
 
 struct ActionRewards {

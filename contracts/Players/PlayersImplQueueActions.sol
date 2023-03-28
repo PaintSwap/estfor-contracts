@@ -62,10 +62,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint totalTimespan;
     QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
 
-    if (_boostItemTokenId != NONE) {
-      consumeBoost(from, _playerId, _boostItemTokenId, uint40(block.timestamp));
-    }
-
     Player storage player = players[_playerId];
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
@@ -142,11 +138,13 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     nextQueueId = queueId.asUint64();
 
     _handleDailyRewards(from, _playerId);
+
+    if (_boostItemTokenId != NONE) {
+      consumeBoost(from, _playerId, _boostItemTokenId, uint40(block.timestamp));
+    }
   }
 
   function consumeBoost(address _from, uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
-    PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
-
     Item memory item = itemNFT.getItem(_itemTokenId);
     if (item.boostType == BoostType.NONE) {
       revert NotABoostVial();
@@ -163,6 +161,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     itemNFT.burn(from, _itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
+    PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
     if (playerBoost.itemTokenId != NONE) {
       itemNFT.mint(from, playerBoost.itemTokenId, 1);
     }

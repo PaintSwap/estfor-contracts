@@ -1,7 +1,15 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
-import {ItemNFT, MockBrushToken, MockWrappedFantom, PlayerNFT, Players, Shop} from "../typechain-types";
+import {
+  ItemNFT,
+  MockBrushToken,
+  MockOracleClient,
+  MockWrappedFantom,
+  PlayerNFT,
+  Players,
+  Shop,
+} from "../typechain-types";
 import {allFullAttireBonuses, allShopItems, allXPThresholdRewards, AvatarInfo, verifyContracts} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
@@ -24,7 +32,8 @@ import {
 } from "./data/actionChoiceIds";
 import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./constants";
 import {addTestData} from "./addTestData";
-import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
+import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
+import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -35,15 +44,21 @@ async function main() {
 
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
+  let oracle: MockOracleClient;
   let tx;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
+    const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
     if (network.chainId == 31337 || network.chainId == 1337) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       wftm = await MockWrappedFantom.deploy();
       await wftm.deployed();
+      console.log("Minted brush");
+      oracle = await MockOracleClient.deploy();
+      await oracle.deployed();
+      console.log(`MockOracleClient deployed at ${oracle.address.toLowerCase()}`);
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
@@ -51,25 +66,23 @@ async function main() {
       console.log("Minted brush");
       await tx.wait();
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
+      oracle = await MockOracleClient.deploy();
+      await oracle.deployed();
+      console.log(`MockOracleClient deployed at ${oracle.address.toLowerCase()}`);
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
+      oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
     } else {
       throw Error("Not a supported network");
     }
   }
 
-  console.log(`Before calling MockOracleClient`);
-  const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-  const mockOracleClient = await MockOracleClient.deploy();
-  await mockOracleClient.deployed();
-  console.log(`MockOracleClient deployed at ${mockOracleClient.address.toLowerCase()}`);
-
   // Create the world
   const subscriptionId = 62;
   const World = await ethers.getContractFactory("World");
-  const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+  const world = await upgrades.deployProxy(World, [oracle.address, subscriptionId], {
     kind: "uups",
   });
   await world.deployed();
@@ -276,6 +289,15 @@ async function main() {
   tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
   await tx.wait();
   console.log("addAvatars");
+
+  if (isAlpha) {
+    // Calculate the merkle root
+    const treeWhitelist = new MerkleTreeWhitelist(whitelistedSnapshot);
+    const root = treeWhitelist.getRoot();
+    // Set the merkle root on the nft contract
+    await playerNFT.setMerkleRoot(root);
+    console.log("setMerkleRoot");
+  }
 
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();

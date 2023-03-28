@@ -1,6 +1,7 @@
 import {ethers} from "hardhat";
 import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
-import alphaSnapShotAddresses from "../whitelist/alpha_snapshot.json";
+import {PLAYER_NFT_ADDRESS} from "./constants";
+import {whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -11,12 +12,11 @@ async function main() {
 
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const playerNFT = await PlayerNFT.attach("TODO");
+  const playerNFT = await PlayerNFT.attach(PLAYER_NFT_ADDRESS);
   await playerNFT.deployed();
 
   // Calculate the merkle root
-  const whitelistAddresses = alphaSnapShotAddresses.map((el) => ethers.utils.getAddress(el.address));
-  const treeWhitelist = new MerkleTreeWhitelist(whitelistAddresses);
+  const treeWhitelist = new MerkleTreeWhitelist(whitelistedSnapshot);
   const root = treeWhitelist.getRoot();
   // Set the merkle root on the nft contract
   await playerNFT.setMerkleRoot(root);

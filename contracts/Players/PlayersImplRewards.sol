@@ -24,7 +24,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   // Action rewards
   function getRewards(
     uint _playerId,
-    uint40 _skillEndTime,
+    uint40 _skillStartTime,
     uint _elapsedTime,
     uint16 _actionId
   ) public view returns (uint[] memory ids, uint[] memory amounts) {
@@ -46,10 +46,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       isCombat,
       successPercent
     );
+
     bool processedAny;
     (length, processedAny) = _appendRandomRewards(
       _playerId,
-      _skillEndTime,
+      _skillStartTime,
+      _elapsedTime,
       isCombat ? monstersKilled : _elapsedTime / 3600,
       ids,
       amounts,
@@ -57,6 +59,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       actionRewards,
       successPercent
     );
+
+    // Check for any boosts
+    PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+    uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
+    if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+      for (uint i = 0; i < length; ++i) {
+        amounts[i] += uint32((boostedTime * amounts[i] * activeBoost.val) / (3600 * 100));
+      }
+    }
 
     assembly ("memory-safe") {
       mstore(ids, length)
@@ -87,28 +98,30 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
   function _claimableRandomRewards(
     uint _playerId
-  ) private view returns (uint[] memory ids, uint[] memory amounts, uint numRemoved) {
+  ) private view returns (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
     U256 pendingRandomRewardsLength = U256.wrap(_pendingRandomRewards.length);
     ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    queueIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
 
     uint length;
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-
+      PendingRandomReward storage pendingRandomReward = _pendingRandomRewards[i];
       (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
         _pendingRandomRewards[i].actionId
       );
       bool isCombat = actionSkill == Skill.COMBAT;
-      uint16 monstersKilled = uint16((numSpawnedPerHour * _pendingRandomRewards[i].elapsedTime) / 3600);
-      uint8 successPercent = _getSuccessPercent(_playerId, _pendingRandomRewards[i].actionId, actionSkill, isCombat);
+      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomReward.elapsedTime) / 3600);
+      uint8 successPercent = _getSuccessPercent(_playerId, pendingRandomReward.actionId, actionSkill, isCombat);
       uint oldLength = length;
       bool processedAny;
       (length, processedAny) = _appendRandomRewards(
         _playerId,
-        _pendingRandomRewards[i].timestamp,
-        isCombat ? monstersKilled : _pendingRandomRewards[i].elapsedTime / 3600,
+        pendingRandomReward.startTime,
+        pendingRandomReward.elapsedTime,
+        isCombat ? monstersKilled : pendingRandomReward.elapsedTime / 3600,
         ids,
         amounts,
         oldLength,
@@ -119,17 +132,38 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (processedAny) {
         numRemoved = numRemoved.inc();
       }
+
+      if (oldLength != length) {
+        // Check for any boosts
+        PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+        uint boostedTime = PlayersLibrary.getBoostedTime(
+          _pendingRandomRewards[i].startTime,
+          _pendingRandomRewards[i].elapsedTime,
+          activeBoost
+        );
+        if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+          for (uint j = oldLength; j < length; ++j) {
+            amounts[j] = uint32((boostedTime * amounts[j] * activeBoost.val) / (3600 * 100));
+          }
+        }
+        for (uint j = oldLength; j < length; ++j) {
+          queueIds[j] = pendingRandomReward.queueId;
+        }
+      }
     }
 
     assembly ("memory-safe") {
       mstore(ids, length)
       mstore(amounts, length)
+      mstore(queueIds, length)
     }
   }
 
   function claimRandomRewards(uint _playerId, bool _separateTransaction) external {
     address from = msg.sender;
-    (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
+    (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
+      _playerId
+    );
     if (numRemoved != 0) {
       // Shift the remaining rewards to the front of the array
       U256 bounds = U256.wrap(pendingRandomRewards[_playerId].length).sub(numRemoved);
@@ -142,7 +176,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       itemNFT.mintBatch(from, ids, amounts);
-      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, _separateTransaction);
+      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, queueIds, _separateTransaction);
     }
   }
 
@@ -286,7 +320,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     if (_flags.includePastRandomRewards) {
       // Loop through any pending random rewards and add them to the output
-      (uint[] memory ids, uint[] memory amounts, uint numRemoved) = _claimableRandomRewards(_playerId);
+      (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
+        _playerId
+      );
       U256 idsLength = U256.wrap(ids.length);
       for (U256 iter; iter < idsLength; iter = iter.inc()) {
         uint i = iter.asUint256();
@@ -482,7 +518,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   // hasRandomWord means there was pending reward we tried to get a reward from
   function _appendRandomRewards(
     uint _playerId,
-    uint40 skillEndTime,
+    uint40 _skillStartTime,
+    uint _elapsedTime,
     uint _numTickets,
     uint[] memory _ids, // in-out
     uint[] memory _amounts, // in-out
@@ -495,6 +532,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     RandomReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
 
     if (_randomRewards.length != 0) {
+      // Was the boost active for this?
+      uint skillEndTime = _skillStartTime + _elapsedTime;
       hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {
         uint numIterations = PlayersLibrary.min(MAX_UNIQUE_TICKETS, _numTickets);

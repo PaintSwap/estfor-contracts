@@ -96,9 +96,13 @@ contract DebugStorageSlots {
   struct PendingRandomReward {
     uint16 actionId;
     uint16 choiceId;
-    uint40 timestamp;
+    uint40 startTime;
     uint24 elapsedTime;
-    uint128 queueId;
+    uint80 queueId;
+    // Boosts active at the time this was generated
+    BoostType boostType;
+    uint16 boostValue; // Varies, could be the % increase
+    uint24 boostedTime; // How long the effect of the boost vial last
   }
   struct Equipment {
     uint16 itemTokenId;
@@ -207,7 +211,7 @@ contract DebugStorageSlots {
     uint16 feet;
     uint16 ring;
     uint16 reserved1;
-    uint128 queueId; // Just here for packing purposes
+    uint80 queueId; // Just here for packing purposes
   }
 
   struct CombatStats {

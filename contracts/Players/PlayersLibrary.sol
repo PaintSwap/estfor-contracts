@@ -403,6 +403,18 @@ library PlayersLibrary {
     return _combatStyle != CombatStyle.NONE;
   }
 
+  function getBoostedTime(
+    uint _actionStartTime,
+    uint _elapsedTime,
+    PlayerBoostInfo storage activeBoost
+  ) public view returns (uint24 boostedTime) {
+    if (_actionStartTime + _elapsedTime < activeBoost.startTime + activeBoost.duration) {
+      boostedTime = uint24(_elapsedTime);
+    } else {
+      boostedTime = activeBoost.duration;
+    }
+  }
+
   function extraXPFromBoost(
     bool _isCombatSkill,
     uint _actionStartTime,
@@ -416,14 +428,7 @@ library PlayersLibrary {
         (_isCombatSkill && activeBoost.boostType == BoostType.COMBAT_XP) ||
         (!_isCombatSkill && activeBoost.boostType == BoostType.NON_COMBAT_XP)
       ) {
-        uint boostedTime;
-        // Correct skill for the boost
-        if (_actionStartTime + _elapsedTime < activeBoost.startTime + activeBoost.duration) {
-          // Consume it all
-          boostedTime = _elapsedTime;
-        } else {
-          boostedTime = activeBoost.duration;
-        }
+        uint boostedTime = getBoostedTime(_actionStartTime, _elapsedTime, activeBoost);
         boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoost.val) / (3600 * 100));
       }
     }
