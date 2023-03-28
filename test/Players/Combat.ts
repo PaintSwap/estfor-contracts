@@ -117,6 +117,7 @@ describe("Combat Actions", function () {
         queuedAction,
         rate,
         numSpawned,
+        world,
       };
     }
 
@@ -262,6 +263,65 @@ describe("Combat Actions", function () {
 
       // Check food is consumed, update later
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 10);
+    });
+
+    it("Fight powerful boss", async function () {
+      const {playerId, players, itemNFT, alice, queuedAction, world} = await loadFixture(playersFixtureMelee);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 80,
+        magic: 80,
+        range: 80,
+        meleeDefence: 80,
+        magicDefence: 80,
+        rangeDefence: 80,
+        health: 1200,
+      };
+
+      const numSpawned = 10;
+      let tx = await world.addAction({
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const _queuedAction = {...queuedAction};
+      _queuedAction.actionId = actionId;
+      await players.connect(alice).startAction(playerId, _queuedAction, EstforTypes.ActionQueueStatus.NONE);
+
+      const time = 3600;
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await ethers.provider.send("evm_mine", []);
+
+      let pendingOutput = await players.pendingRewards(alice.address, playerId, {
+        includeLoot: true,
+        includePastRandomRewards: true,
+        includeXPRewards: true,
+      });
+      expect(pendingOutput.consumed.length).to.eq(1);
+      expect(pendingOutput.consumed[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
+      expect(pendingOutput.consumed[0].amount).to.eq(255);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
+
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
     });
   });
 

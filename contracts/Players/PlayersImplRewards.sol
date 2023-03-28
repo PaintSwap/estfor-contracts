@@ -639,7 +639,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         betaCombat
       );
 
-      if (_actionChoice.inputTokenId1 != NONE) {
+      if (_queuedAction.regenerateId != NONE) {
         consumedEquipment[consumedEquipmentLength++] = Equipment(_queuedAction.regenerateId, foodConsumed);
       }
     } else {
