@@ -306,6 +306,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bytes));
   }
 
+  function _addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) private {
+    _delegatecall(
+      implProcessActions,
+      abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonus.selector, _fullAttireBonus)
+    );
+  }
+
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(address _implQueueActions, address _implProcessActions, address _implRewards) external onlyOwner {
@@ -330,17 +337,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     dailyRewardsEnabled = _dailyRewardsEnabled;
   }
 
-  function testOnlyModifyLevel(uint _playerId, Skill _skill, uint32 _xp) external onlyOwner {
-    xp[_playerId][_skill] = _xp;
-  }
-
-  function _addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) private {
-    _delegatecall(
-      implProcessActions,
-      abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonus.selector, _fullAttireBonus)
-    );
-  }
-
   function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external onlyOwner {
     _addFullAttireBonus(_fullAttireBonus);
   }
@@ -349,6 +345,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     for (uint i = 0; i < _fullAttireBonuses.length; i++) {
       _addFullAttireBonus(_fullAttireBonuses[i]);
     }
+  }
+
+  function testModifyXP(uint _playerId, Skill _skill, uint32 _xp) external isAdminAndAlpha {
+    xp[_playerId][_skill] = _xp;
   }
 
   // For the various view functions that require delegatecall

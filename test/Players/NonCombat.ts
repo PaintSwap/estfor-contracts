@@ -851,7 +851,7 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
 
-      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.testModifyXP(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -941,7 +941,7 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
 
-      await players.testOnlyModifyLevel(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.testModifyXP(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
