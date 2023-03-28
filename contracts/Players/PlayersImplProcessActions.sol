@@ -182,7 +182,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint24 numConsumed;
 
     if (isCombat) {
-      CombatStats memory _enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
+      CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
       (xpElapsedTime, combatElapsedTime, numConsumed) = PlayersLibrary.getCombatAdjustedElapsedTimes(
         _from,
         itemNFT,
@@ -191,19 +191,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _actionChoice,
         _queuedAction,
         _combatStats,
-        _enemyCombatStats,
+        enemyCombatStats,
         alphaCombat,
         betaCombat
       );
 
-      (died) = _processFoodConsumed(
-        _from,
-        _playerId,
-        _queuedAction,
-        combatElapsedTime,
-        _combatStats,
-        _enemyCombatStats
-      );
+      (died) = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, enemyCombatStats);
     } else {
       (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,

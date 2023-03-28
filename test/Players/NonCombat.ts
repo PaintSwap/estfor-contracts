@@ -994,9 +994,13 @@ describe("Non-Combat Actions", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
 
@@ -1075,6 +1079,11 @@ describe("Non-Combat Actions", function () {
 
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
 

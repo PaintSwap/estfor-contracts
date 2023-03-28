@@ -112,7 +112,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
     startTime = uint40((block.timestamp / MIN_RANDOM_WORDS_UPDATE_TIME) * MIN_RANDOM_WORDS_UPDATE_TIME) - 5 days; // Floor to the nearest day 00:00 UTC
-    lastRandomWordsUpdatedTime = startTime + 5 days;
+    lastRandomWordsUpdatedTime = startTime + 4 days;
     weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
 
     // Issue new available daily rewards

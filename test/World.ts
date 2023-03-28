@@ -43,8 +43,6 @@ describe("World", function () {
   describe("Seed", function () {
     it("Requesting random words", async function () {
       const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
-      await expect(world.requestRandomWords()).to.be.reverted; // Too soon
-      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
       await world.requestRandomWords();
 
       const startOffset = 5;

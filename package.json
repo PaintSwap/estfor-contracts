@@ -71,6 +71,7 @@
     "createHexXPString": "npx ts-node scripts/createHexXPString.ts",
     "setMerkleRoot": "npx hardhat run scripts/setMerkleTreeWhitelist.ts",
     "mintAllItems": "npx hardhat run scripts/mintAllItems.ts",
+    "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",
     "test": "npx hardhat test --network hardhat",
     "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol",
     "precommit": "pretty-quick --staged",

@@ -187,14 +187,12 @@ library PlayersLibrary {
       foodConsumed = uint24(
         uint32(totalHealthLost) / healthRestored + (uint32(totalHealthLost) % healthRestored == 0 ? 0 : 1)
       );
-
       // Can only consume a maximum of 65535 food
       if (foodConsumed > type(uint16).max) {
         foodConsumed = type(uint16).max;
         died = true;
       } else {
         uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
-
         died = foodConsumed > balance;
         if (died) {
           foodConsumed = uint16(balance);

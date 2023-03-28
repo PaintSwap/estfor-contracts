@@ -436,6 +436,11 @@ describe("Rewards", function () {
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
 
     const timespan = 3600 * numHours;
     expect(numHours * numSpawned).to.be.greaterThan(MAX_UNIQUE_TICKETS);
@@ -570,6 +575,11 @@ describe("Rewards", function () {
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
 
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
@@ -615,6 +625,11 @@ describe("Rewards", function () {
 
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
 
@@ -700,6 +715,11 @@ describe("Rewards", function () {
 
     tx = await world.requestRandomWords();
     let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
 

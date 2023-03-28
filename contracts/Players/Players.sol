@@ -3,7 +3,6 @@ pragma solidity ^0.8.19;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
@@ -40,7 +39,7 @@ interface IPlayerDelegate {
   function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills) external;
 }
 
-contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, Multicall, IPlayers {
+contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
   using UnsafeU256 for U256;
 
   error InvalidSelector();
@@ -219,8 +218,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);
     // Can re-mint boost if it hasn't been consumed at all yet
-    if (activeBoosts[_playerId].boostType != BoostType.NONE && activeBoosts[_playerId].startTime > block.timestamp) {
-      uint itemTokenId = activeBoosts[_playerId].itemTokenId;
+    PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+    if (activeBoost.boostType != BoostType.NONE && activeBoost.startTime > block.timestamp) {
+      uint itemTokenId = activeBoost.itemTokenId;
       delete activeBoosts[_playerId];
       itemNFT.mint(_from, itemTokenId, 1);
     }

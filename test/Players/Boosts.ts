@@ -168,6 +168,14 @@ describe("Boosts", function () {
     );
   });
 
+  it("TODO, swap boost", async function () {
+    // Check that they are minted/consumed as expected
+  });
+
+  it("TODO Clear everything, check boost", async function () {
+    // Check that they are
+  });
+
   it("Gathering boost", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
