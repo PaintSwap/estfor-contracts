@@ -18,10 +18,6 @@ import "./globals/rewards.sol";
 
 /* solhint-enable no-global-import */
 
-// Fantom VRF
-// VRF 0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634
-// LINK token 0x6F43FF82CCA38001B6699a8AC47A2d0E66939407
-// PREMIUM 0.0005 LINK
 contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
   using UnsafeU256 for U256;
 
@@ -226,7 +222,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
-    //    require(_requestId == requestIds[requestIds.length - 1], "request not found");
     if (randomWords[_requestId][0] != 0) {
       revert RequestAlreadyFulfilled();
     }
@@ -317,45 +312,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       words[i] = _getFullRandomWords(_timestamp - i * 1 days);
     }
   }
-
-  // Can be called by anyone as long as over 1 day has passed since the last call
-  /*
-  function updateDynamicActions() external {
-    if ((lastDynamicUpdatedTime + MIN_DYNAMIC_ACTION_UPDATE_TIME) > block.timestamp) {
-      revert CanOnlyRequestAfter1DayHasPassed();
-    }
-
-    emit RemoveDynamicActions(lastAddedDynamicActions);
-
-    // These are no longer available as existing actions
-    U256 iter = U256.wrap(lastAddedDynamicActions.length);
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      actions[lastAddedDynamicActions[iter.asUint256()]].isAvailable = false;
-    }
-
-    delete lastAddedDynamicActions;
-    uint randomWord = getRandomWord(block.timestamp);
-
-    uint16[] memory actionIdsToAdd = new uint16[](1);
-
-    if (randomWord % 2 == 0) {
-      // If it's even do X
-      actionIdsToAdd[0] = 1; // ?
-    } else {
-      actionIdsToAdd[0] = 2; // ?
-    }
-
-    lastAddedDynamicActions = actionIdsToAdd;
-    iter = U256.wrap(actionIdsToAdd.length);
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      actions[actionIdsToAdd[iter.asUint256()]].isAvailable = true;
-    }
-
-    lastDynamicUpdatedTime = block.timestamp;
-    emit AddDynamicActions(actionIdsToAdd);
-  } */
 
   function getSkill(uint _actionId) external view returns (Skill) {
     return actions[_actionId].skill;
@@ -569,27 +525,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _addActionChoice(_actionId, _actionChoiceId, _actionChoice);
     emit AddActionChoice(_actionId, _actionChoiceId, _actionChoice);
   }
-
-  /*
-  function addActionChoices(
-    uint16 _actionId,
-    uint16[] calldata _actionChoiceIds,
-    ActionChoice[] calldata _actionChoices
-  ) external onlyOwner {
-    if (_actionChoiceIds.length != _actionChoices.length) {
-      revert LengthMismatch();
-    }
-    U256 iter = U256.wrap(_actionChoices.length);
-    if (iter.eq(0)) {
-      revert NoActionChoices();
-    }
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint16 i = iter.asUint16();
-      _addActionChoice(_actionId, _actionChoiceIds[i], _actionChoices[i]);
-    }
-    emit AddActionChoices(_actionId, _actionChoiceIds, _actionChoices);
-  } */
 
   function addBulkActionChoices(
     uint16[] calldata _actionIds,
