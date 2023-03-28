@@ -16,7 +16,7 @@ async function main() {
       tokenIds.push(item.tokenId);
       amounts.push(200);
     });
-    await itemNFT.testMints("0x946d17072eac624c3e3fb06108959b7fefbcb8ad", tokenIds, amounts);
+    await itemNFT.testMints("0xa801864d0D24686B15682261aa05D4e1e6e5BD94", tokenIds, amounts);
   }
 }
 

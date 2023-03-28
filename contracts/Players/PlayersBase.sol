@@ -31,8 +31,8 @@ abstract contract PlayersBase {
     uint numRemoved,
     uint[] itemTokenIds,
     uint[] amounts,
-    uint[] queueIds,
-    bool separateTransaction
+    uint16[] actionIds,
+    uint80[] queueIds
   );
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
   event SetSpeedMultiplier(uint playerId, uint16 multiplier);
@@ -396,11 +396,8 @@ abstract contract PlayersBase {
     return abi.decode(data, (QueuedAction[]));
   }
 
-  function _claimRandomRewards(uint _playerId, bool _separateTransaction) internal {
-    _delegatecall(
-      implRewards,
-      abi.encodeWithSignature("claimRandomRewards(uint256,bool)", _playerId, _separateTransaction)
-    );
+  function _claimRandomRewards(uint _playerId) internal {
+    _delegatecall(implRewards, abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
   }
 
   function _checkStartSlot() internal pure {

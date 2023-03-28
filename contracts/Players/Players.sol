@@ -107,8 +107,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    bool separateTransaction = true;
-    _claimRandomRewards(_playerId, separateTransaction);
+    _claimRandomRewards(_playerId);
   }
 
   function consumeBoost(

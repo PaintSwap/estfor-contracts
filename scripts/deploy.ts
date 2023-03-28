@@ -5,6 +5,7 @@ import {
   ItemNFT,
   MockBrushToken,
   MockOracleClient,
+  MockRouter,
   MockWrappedFantom,
   PlayerNFT,
   Players,
@@ -34,6 +35,7 @@ import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./constants";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
+import {BigNumber} from "ethers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -45,20 +47,21 @@ async function main() {
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
   let oracle: MockOracleClient;
+  let router: MockRouter;
   let tx;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
+    const MockRouter = await ethers.getContractFactory("MockRouter");
     if (network.chainId == 31337 || network.chainId == 1337) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       wftm = await MockWrappedFantom.deploy();
-      await wftm.deployed();
       console.log("Minted brush");
       oracle = await MockOracleClient.deploy();
-      await oracle.deployed();
       console.log(`MockOracleClient deployed at ${oracle.address.toLowerCase()}`);
+      router = await MockRouter.deploy();
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
@@ -67,13 +70,14 @@ async function main() {
       await tx.wait();
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
       oracle = await MockOracleClient.deploy();
-      await oracle.deployed();
       console.log(`MockOracleClient deployed at ${oracle.address.toLowerCase()}`);
+      router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
       oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
+      router = await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d");
     } else {
       throw Error("Not a supported network");
     }
@@ -97,8 +101,7 @@ async function main() {
   console.log(`Shop deployed at ${shop.address.toLowerCase()}`);
 
   const buyPath: [string, string] = [wftm.address, brush.address];
-  const MockRouter = await ethers.getContractFactory("MockRouter");
-  const router = await MockRouter.deploy();
+
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
@@ -124,14 +127,17 @@ async function main() {
 
   let itemsUri: string;
   let imageBaseUri: string;
+  let editNameBrushPrice: BigNumber;
   const isAlpha = process.env.IS_ALPHA == "true";
   if (isAlpha) {
     itemsUri = "ipfs://Qmdhaz6jRnpQjvzzJB1PuN2Y33Nc1hAKg1sCMVc18ftcAL/";
     imageBaseUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/";
+    editNameBrushPrice = ethers.utils.parseEther("1");
   } else {
     // live version
     itemsUri = "ipfs://TODO/";
     imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/";
+    editNameBrushPrice = ethers.utils.parseEther("2500");
   }
 
   // Create NFT contract which contains all items
@@ -148,7 +154,6 @@ async function main() {
 
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
-  const editNameBrushPrice = ethers.utils.parseEther("1");
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [
@@ -164,7 +169,7 @@ async function main() {
       kind: "uups",
     }
   )) as PlayerNFT;
-
+  await playerNFT.deployed();
   console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
 
   // This contains all the player data
@@ -175,18 +180,21 @@ async function main() {
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
+  await playersImplQueueActions.deployed();
   console.log(`PlayersImplQueueActions deployed at ${playersImplQueueActions.address.toLowerCase()}`);
 
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplProcessActions = await PlayersImplProcessActions.deploy();
+  await playersImplProcessActions.deployed();
   console.log(`PlayersImplProcessActions deployed at ${playersImplProcessActions.address.toLowerCase()}`);
 
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplRewards = await PlayersImplRewards.deploy();
+  await playersImplRewards.deployed();
   console.log(`PlayersImplRewards deployed at ${playersImplRewards.address.toLowerCase()}`);
 
   const Players = await ethers.getContractFactory("Players", {
@@ -219,7 +227,8 @@ async function main() {
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
   console.log("playerNFT setPlayers");
-  await shop.setItemNFT(itemNFT.address);
+  tx = await shop.setItemNFT(itemNFT.address);
+  await tx.wait();
   console.log("setItemNFT");
 
   tx = await players.setDailyRewardsEnabled(true);
@@ -295,7 +304,8 @@ async function main() {
     const treeWhitelist = new MerkleTreeWhitelist(whitelistedSnapshot);
     const root = treeWhitelist.getRoot();
     // Set the merkle root on the nft contract
-    await playerNFT.setMerkleRoot(root);
+    tx = await playerNFT.setMerkleRoot(root);
+    await tx.wait();
     console.log("setMerkleRoot");
   }
 

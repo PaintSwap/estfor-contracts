@@ -162,8 +162,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       player.totalXP = uint160(previousTotalXP + allPointsAccrued);
     }
 
-    bool separateTransaction = false;
-    _claimRandomRewards(_playerId, separateTransaction);
+    _claimRandomRewards(_playerId);
 
     assembly ("memory-safe") {
       mstore(remainingSkills, remainingSkillsLength)
