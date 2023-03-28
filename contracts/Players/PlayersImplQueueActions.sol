@@ -162,7 +162,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
     PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
-    if (playerBoost.itemTokenId != NONE) {
+    if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
       itemNFT.mint(from, playerBoost.itemTokenId, 1);
     }
 
