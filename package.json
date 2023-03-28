@@ -70,6 +70,7 @@
     "umlStorage": "sol2uml storage ./contracts/debug/DebugStorageSlots.sol -c DebugStorageSlots",
     "createHexXPString": "npx ts-node scripts/createHexXPString.ts",
     "setMerkleRoot": "npx hardhat run scripts/setMerkleTreeWhitelist.ts",
+    "mintAllItems": "npx hardhat run scripts/mintAllItems.ts",
     "test": "npx hardhat test --network hardhat",
     "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol",
     "precommit": "pretty-quick --staged",
