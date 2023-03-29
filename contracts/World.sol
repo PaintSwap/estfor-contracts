@@ -78,7 +78,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
   bytes32 public constant KEY_HASH = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
 
-  uint32 public constant CALLBACK_GAS_LIMIT = 100000;
+  uint32 public constant CALLBACK_GAS_LIMIT = 300000;
   // The default is 3, but you can set this higher.
   uint16 public constant REQUEST_CONFIRMATIONS = 1;
   // For this example, retrieve 3 random values in one request.

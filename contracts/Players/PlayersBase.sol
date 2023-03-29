@@ -31,7 +31,6 @@ abstract contract PlayersBase {
     uint numRemoved,
     uint[] itemTokenIds,
     uint[] amounts,
-    uint16[] actionIds,
     uint80[] queueIds
   );
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);

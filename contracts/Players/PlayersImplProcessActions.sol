@@ -127,7 +127,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           pendingRandomRewards[_playerId],
           actionRewards,
           queuedAction.actionId,
-          queuedAction.choiceId,
           _queueId,
           uint40(skillEndTime),
           uint24(xpElapsedTime)
@@ -359,7 +358,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint16 _actionId,
-    uint16 _choiceId,
     uint80 _queueId,
     uint40 _skillStartTime,
     uint24 _elapsedTime
@@ -384,7 +382,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _pendingRandomRewards.push(
           PendingRandomReward({
             actionId: _actionId,
-            choiceId: _choiceId,
             queueId: _queueId,
             startTime: uint40(_skillStartTime),
             elapsedTime: uint24(_elapsedTime),

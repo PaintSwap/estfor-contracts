@@ -95,7 +95,6 @@ contract DebugStorageSlots {
 
   struct PendingRandomReward {
     uint16 actionId;
-    uint16 choiceId;
     uint40 startTime;
     uint24 elapsedTime;
     uint80 queueId;

@@ -98,22 +98,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
   function _claimableRandomRewards(
     uint _playerId
-  )
-    private
-    view
-    returns (
-      uint[] memory ids,
-      uint[] memory amounts,
-      uint16[] memory actionIds,
-      uint80[] memory queueIds,
-      uint numRemoved
-    )
-  {
+  ) private view returns (uint[] memory ids, uint[] memory amounts, uint80[] memory queueIds, uint numRemoved) {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
     U256 pendingRandomRewardsLength = U256.wrap(_pendingRandomRewards.length);
     ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-    actionIds = new uint16[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     queueIds = new uint80[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
 
     uint length;
@@ -159,7 +148,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         }
         for (uint j = oldLength; j < length; ++j) {
           queueIds[j] = pendingRandomReward.queueId;
-          actionIds[j] = pendingRandomReward.actionId;
         }
       }
     }
@@ -168,19 +156,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       mstore(ids, length)
       mstore(amounts, length)
       mstore(queueIds, length)
-      mstore(actionIds, length)
     }
   }
 
   function claimRandomRewards(uint _playerId) external {
     address from = msg.sender;
-    (
-      uint[] memory ids,
-      uint[] memory amounts,
-      uint16[] memory actionIds,
-      uint80[] memory queueIds,
-      uint numRemoved
-    ) = _claimableRandomRewards(_playerId);
+    (uint[] memory ids, uint[] memory amounts, uint80[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
+      _playerId
+    );
     if (numRemoved != 0) {
       // Shift the remaining rewards to the front of the array
       U256 bounds = U256.wrap(pendingRandomRewards[_playerId].length).sub(numRemoved);
@@ -193,7 +176,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       itemNFT.mintBatch(from, ids, amounts);
-      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, actionIds, queueIds);
+      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, queueIds);
     }
   }
 
@@ -337,13 +320,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     if (_flags.includePastRandomRewards) {
       // Loop through any pending random rewards and add them to the output
-      (
-        uint[] memory ids,
-        uint[] memory amounts,
-        uint16[] memory actionIds,
-        uint80[] memory queueIds,
-        uint numRemoved
-      ) = _claimableRandomRewards(_playerId);
+      (uint[] memory ids, uint[] memory amounts, uint80[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
+        _playerId
+      );
       U256 idsLength = U256.wrap(ids.length);
       for (U256 iter; iter < idsLength; iter = iter.inc()) {
         uint i = iter.asUint256();
