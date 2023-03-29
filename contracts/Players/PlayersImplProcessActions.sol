@@ -489,4 +489,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       emit LevelUp(_from, _playerId, _skill, newLevel);
     }
   }
+
+  function testModifyXP(uint _playerId, Skill _skill, uint32 _xp) external {
+    // Make sure it isn't less XP
+    uint32 oldPoints = xp[_playerId][_skill];
+    if (_xp < oldPoints) {
+      revert TestInvalidXP();
+    }
+    address from = msg.sender;
+    _updateXP(msg.sender, _playerId, _skill, _xp - oldPoints);
+    _claimTotalXPThresholdRewards(from, _playerId, oldPoints, _xp);
+    players[_playerId].totalXP += uint160(_xp - oldPoints);
+  }
 }

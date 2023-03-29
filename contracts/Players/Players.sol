@@ -37,6 +37,8 @@ interface IPlayerDelegate {
   function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external;
 
   function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills) external;
+
+  function testModifyXP(uint playerId, Skill skill, uint32 xp) external;
 }
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
@@ -347,7 +349,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function testModifyXP(uint _playerId, Skill _skill, uint32 _xp) external isAdminAndAlpha {
-    xp[_playerId][_skill] = _xp;
+    _delegatecall(
+      implProcessActions,
+      abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _playerId, _skill, _xp)
+    );
   }
 
   // For the various view functions that require delegatecall

@@ -1,6 +1,6 @@
 import {ethers} from "hardhat";
 import {PlayersLibrary} from "../typechain-types";
-import {PLAYERS_ADDRESS} from "./constants";
+import {PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS} from "./constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -18,7 +18,7 @@ async function main() {
     await playerLibrary.deployed();
     console.log(`PlayersLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
   } else {
-    playerLibrary = await PlayersLibrary.attach("0xedc2f018dfe54aeadb8e21c1c86e3c803ad7f7d9");
+    playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");

@@ -886,13 +886,21 @@ describe("Players", function () {
           ...EstforTypes.defaultInputItem,
           skill: EstforTypes.Skill.DEFENCE,
           minXP,
+          tokenId: EstforConstants.BRONZE_HELMET,
+          equipPosition: EstforTypes.EquipPosition.HEAD,
+          metadataURI: "someIPFSURI.json",
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          skill: EstforTypes.Skill.MELEE,
+          minXP,
           tokenId: EstforConstants.AMETHYST_AMULET,
           equipPosition: EstforTypes.EquipPosition.NECK,
           metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
-          skill: EstforTypes.Skill.DEFENCE,
+          skill: EstforTypes.Skill.FIREMAKING,
           minXP,
           tokenId: EstforConstants.BRONZE_ARMOR,
           equipPosition: EstforTypes.EquipPosition.BODY,
@@ -900,15 +908,7 @@ describe("Players", function () {
         },
         {
           ...EstforTypes.defaultInputItem,
-          skill: EstforTypes.Skill.DEFENCE,
-          minXP,
-          tokenId: EstforConstants.BRONZE_BOOTS,
-          equipPosition: EstforTypes.EquipPosition.FEET,
-          metadataURI: "someIPFSURI.json",
-        },
-        {
-          ...EstforTypes.defaultInputItem,
-          skill: EstforTypes.Skill.DEFENCE,
+          skill: EstforTypes.Skill.MAGIC,
           minXP,
           tokenId: EstforConstants.BRONZE_GAUNTLETS,
           equipPosition: EstforTypes.EquipPosition.ARMS,
@@ -916,25 +916,25 @@ describe("Players", function () {
         },
         {
           ...EstforTypes.defaultInputItem,
-          skill: EstforTypes.Skill.DEFENCE,
+          skill: EstforTypes.Skill.COOKING,
           minXP,
-          tokenId: EstforConstants.BRONZE_HELMET,
-          equipPosition: EstforTypes.EquipPosition.HEAD,
+          tokenId: EstforConstants.BRONZE_TASSETS,
+          equipPosition: EstforTypes.EquipPosition.LEGS,
           metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
-          skill: EstforTypes.Skill.DEFENCE,
+          skill: EstforTypes.Skill.CRAFTING,
           minXP,
-          tokenId: EstforConstants.BRONZE_TASSETS,
-          equipPosition: EstforTypes.EquipPosition.LEGS,
+          tokenId: EstforConstants.BRONZE_BOOTS,
+          equipPosition: EstforTypes.EquipPosition.FEET,
           metadataURI: "someIPFSURI.json",
         },
       ];
 
       await itemNFT.addItems(attireEquipped);
 
-      const equips = ["neck", "body", "feet", "arms", "head", "legs"];
+      const equips = ["head", "neck", "body", "arms", "legs", "feet"];
       for (let i = 0; i < attireEquipped.length; ++i) {
         const attire: Attire = {...EstforTypes.noAttire};
         attire[equips[i] as keyof Attire] = attireEquipped[i].tokenId;
@@ -942,10 +942,9 @@ describe("Players", function () {
         await expect(
           players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
         ).to.be.revertedWithCustomError(players, "AttireMinimumXPNotReached");
-        await players.testModifyXP(playerId, EstforTypes.Skill.DEFENCE, minXP);
+        await players.testModifyXP(playerId, attireEquipped[i].skill, minXP);
         expect(await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to
           .not.be.reverted;
-        await players.testModifyXP(playerId, EstforTypes.Skill.DEFENCE, 1);
       }
 
       // Test case, create a player
