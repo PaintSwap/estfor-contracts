@@ -92,7 +92,6 @@ describe("Players", function () {
       timespan: 3600,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -144,7 +143,6 @@ describe("Players", function () {
       timespan: 3600,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     // start a bunch of actions 1 after each other
@@ -193,7 +191,6 @@ describe("Players", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -213,7 +210,7 @@ describe("Players", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((queuedAction.timespan * rate) / (3600 * 10))
     );
-    expect(await players.actionQueueLength(playerId)).to.eq(0);
+    expect((await players.getActionQueue(playerId)).length).to.eq(0);
   });
 
   it("Partial consume aux items", async function () {
@@ -252,7 +249,6 @@ describe("Players", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -275,83 +271,49 @@ describe("Players", function () {
       Math.floor(((queuedAction.timespan / 2) * rate) / (3600 * 10))
     );
   });
-  /*
+
   it("Skill points, max range", async function () {
-    const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(playersFixture);
-
-    const combatStats: EstforTypes.CombatStats = {
-      melee: 2,
-      magic: 0,
-      range: 0,
-      meleeDefence: -1,
-      magicDefence: 0,
-      rangeDefence: 0,
-      health: 12,
-    };
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: BRONZE_GAUNTLETS,
-      combatStats,
-      equipPosition: EstforTypes.EquipPosition.ARMS,
-      metadataURI: "someIPFSURI.json",
-    });
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_SWORD,
-      combatStats,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
-    });
+    const {playerId, players, world, alice} = await loadFixture(playersFixture);
 
     await world.addAction({
       actionId: 1,
       info: {
-        skill:EstforTypes.Skill.COMBAT,
+        skill: EstforTypes.Skill.THIEVING,
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
         numSpawned: 10,
-        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
-        successPercent: 100
+        actionChoiceRequired: false,
+        successPercent: 100,
       },
       guaranteedRewards: [],
       randomRewards: [],
       combatStats: EstforTypes.emptyCombatStats,
     });
 
-    const tx = await world.addActionChoice(EstforConstants.NONE, {
-      ...emptyActionChoice,
-      skill:EstforTypes.Skill.MELEE,
-    });
-    const choiceId = await getActionChoiceId(tx);
-
     const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: {...noAttire, arms: BRONZE_GAUNTLETS},
+      attire: EstforTypes.noAttire,
       actionId: 1,
-      combatStyle: EstforTypes.CombatStyle.ATTACK,
-      choiceId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
       choiceId1: EstforConstants.NONE,
       choiceId2: EstforConstants.NONE,
       regenerateId: EstforConstants.NONE,
       timespan: 100,
-      rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.COMBAT,
     };
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId,EstforTypes.Skill.MELEE)).to.eq(queuedAction.timespan);
+    expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(queuedAction.timespan);
   });
-*/
+
   it("Multi-skill points", async function () {
     // TODO:
   });
@@ -399,7 +361,6 @@ describe("Players", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.COMBAT,
     };
 
     await itemNFT.addItem({
@@ -450,7 +411,9 @@ describe("Players", function () {
     const actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue.length).to.eq(2);
     expect(actionQueue[0].attire.queueId).to.eq(2);
+    expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan - 1, queuedAction.timespan]);
     expect(actionQueue[1].attire.queueId).to.eq(3);
+    expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
   });
 
   describe("Queue combinations", function () {
@@ -554,8 +517,9 @@ describe("Players", function () {
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].attire.queueId).to.eq(3);
+      expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
     });
-    it("Keep in progress and pending, add another pending", async function () {
+    it("Append and pending, add another pending", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting();
       await players
@@ -572,6 +536,39 @@ describe("Players", function () {
       expect(actionQueue[0].attire.queueId).to.eq(1);
       expect(actionQueue[1].attire.queueId).to.eq(2);
       expect(actionQueue[2].attire.queueId).to.eq(3);
+    });
+    it("Keep in progress, action is finished, queue 3", async function () {
+      const {playerId, players, alice} = await loadFixture(playersFixture);
+      const {queuedAction} = await setupBasicWoodcutting();
+      let actionQueue = await players.getActionQueue(playerId);
+      expect(actionQueue.length).to.eq(0);
+      const _queuedAction = {...queuedAction};
+      _queuedAction.timespan = 14 * 3600;
+      await players
+        .connect(alice)
+        .startActions(playerId, [_queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [_queuedAction.timespan + 1]);
+
+      _queuedAction.timespan = 5 * 3600;
+
+      actionQueue = await players.getActionQueue(playerId);
+      expect(actionQueue.length).to.eq(1);
+      await players
+        .connect(alice)
+        .startActions(
+          playerId,
+          [queuedAction, _queuedAction, _queuedAction],
+          BoostType.NONE,
+          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
+        );
+      actionQueue = await players.getActionQueue(playerId);
+      expect(actionQueue.length).to.eq(3);
+      expect(actionQueue[0].attire.queueId).to.eq(2);
+      expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
+      expect(actionQueue[1].attire.queueId).to.eq(3);
+      expect(actionQueue[1].timespan).to.eq(_queuedAction.timespan);
+      expect(actionQueue[2].attire.queueId).to.eq(4);
+      expect(actionQueue[2].timespan).to.eq(_queuedAction.timespan);
     });
   });
 
@@ -611,7 +608,6 @@ describe("Players", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       await itemNFT.addItem({
@@ -690,7 +686,6 @@ describe("Players", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        skill: EstforTypes.Skill.FIREMAKING,
       };
 
       await itemNFT.addItem({
@@ -775,7 +770,6 @@ describe("Players", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        skill: EstforTypes.Skill.FIREMAKING,
       };
 
       const minXP = getXPFromLevel(70);
@@ -854,7 +848,6 @@ describe("Players", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       const minXP = getXPFromLevel(70);
@@ -988,7 +981,6 @@ describe("Players", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       const minXP = getXPFromLevel(70);
@@ -1048,7 +1040,6 @@ describe("Players", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        skill: EstforTypes.Skill.WOODCUTTING,
       };
 
       const minXP = getXPFromLevel(98);

@@ -143,10 +143,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return players[_playerId].actionQueue;
   }
 
-  function actionQueueLength(uint _playerId) external view returns (uint256) {
-    return players[_playerId].actionQueue.length;
-  }
-
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external override onlyPlayerNFT {
     itemNFT.mintBatch(_to, _ids, _amounts);
   }

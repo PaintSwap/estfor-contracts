@@ -41,7 +41,6 @@ export const addTestData = async (
     timespan: 3600,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    skill: Skill.WOODCUTTING,
   };
 
   let gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -82,7 +81,6 @@ export const addTestData = async (
     timespan: 3600,
     rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    skill: Skill.FIREMAKING,
   };
 
   gasLimit = await players.estimateGas.startAction(
@@ -98,7 +96,7 @@ export const addTestData = async (
 
   if (network.chainId == 31337 || network.chainId == 1337) {
     console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [1]);
+    await ethers.provider.send("evm_increaseTime", [3]);
   }
 
   gasLimit = await players.estimateGas.processActions(playerId);
@@ -108,7 +106,10 @@ export const addTestData = async (
   await tx.wait();
   console.log("process actions (firemaking)");
 
-  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
+  console.log(
+    "Number of logs after firemaking ",
+    (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber()
+  );
 
   // Start another action
   gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -135,7 +136,6 @@ export const addTestData = async (
     timespan: 7200,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    skill: Skill.COMBAT,
   };
 
   gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);

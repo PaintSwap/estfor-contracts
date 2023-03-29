@@ -43,15 +43,8 @@ abstract contract PlayersBase {
   event DailyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
   event WeeklyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
   event Consume(address from, uint playerId, uint80 queueId, uint16 itemTokenId, uint amount);
-  event ActionFinished(address from, uint playerId, uint16 actionId, Skill skill, uint80 queueId);
-  event ActionPartiallyFinished(
-    address from,
-    uint playerId,
-    uint16 actionId,
-    Skill skill,
-    uint80 queueId,
-    uint elapsedTime
-  );
+  event ActionFinished(address from, uint playerId, uint80 queueId);
+  event ActionPartiallyFinished(address from, uint playerId, uint80 queueId, uint elapsedTime);
   event ActionAborted(address from, uint playerId, uint80 queueId);
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 level);

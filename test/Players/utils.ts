@@ -39,7 +39,6 @@ export const setupBasicWoodcutting = async function () {
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    skill: EstforTypes.Skill.WOODCUTTING,
   };
 
   await itemNFT.addItem({

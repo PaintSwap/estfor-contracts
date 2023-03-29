@@ -133,7 +133,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     if (_tokenId >= type(uint16).max) {
       revert IdTooHigh();
     }
-    //    require(_exists(_tokenId));
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
       uniqueItems = uniqueItems.inc();
@@ -152,7 +151,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       if (tokenId >= type(uint16).max) {
         revert IdTooHigh();
       }
-      //      require(_exists(_tokenIds[i]));
       uint existingBalance = itemBalances[tokenId];
       if (existingBalance == 0) {
         // Brand new item

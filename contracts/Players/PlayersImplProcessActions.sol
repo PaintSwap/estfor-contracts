@@ -143,16 +143,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       if (fullyFinished) {
-        emit ActionFinished(_from, _playerId, queuedAction.actionId, queuedAction.skill, _queueId);
+        emit ActionFinished(_from, _playerId, _queueId);
       } else {
-        emit ActionPartiallyFinished(
-          _from,
-          _playerId,
-          queuedAction.actionId,
-          queuedAction.skill,
-          _queueId,
-          elapsedTime
-        );
+        emit ActionPartiallyFinished(_from, _playerId, _queueId, elapsedTime);
       }
     }
 
@@ -220,14 +213,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         );
       }
 
-      itemNFT.mint(_from, _actionChoice.outputTokenId, (numConsumed * successPercent) / 100);
-      emit Reward(
-        _from,
-        _playerId,
-        _queuedAction.attire.queueId,
-        _actionChoice.outputTokenId,
-        (numConsumed * successPercent) / 100
-      );
+      uint amount = (numConsumed * successPercent) / 100;
+      if (amount != 0) {
+        itemNFT.mint(_from, _actionChoice.outputTokenId, amount);
+        emit Reward(_from, _playerId, _queuedAction.attire.queueId, _actionChoice.outputTokenId, amount);
+      }
     }
   }
 

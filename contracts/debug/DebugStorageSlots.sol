@@ -163,7 +163,6 @@ contract DebugStorageSlots {
     uint16 leftHandEquipmentTokenId; // Shield, can be empty
     uint24 timespan; // How long to queue the action for
     CombatStyle combatStyle; // specific style of combat,  can also be used
-    Skill skill; // Skill from the action, so will be Skill.COMBAT for combat actions for instance
     //  bool reusePrev; // If true, then the previous queued action attire is reused?
     // 8 bytes left
   }
@@ -182,7 +181,6 @@ contract DebugStorageSlots {
     CombatStyle combatStyle; // specific style of combat,  can also be used
     uint40 startTime; // Filled in by the function
     bool isValid; // If we still have the item, TODO: Not used yet
-    Skill skill; // Skill from the action, so will be Skill.COMBAT for combat actions for instance
     //  bool reusePrev; // If true, then the previous queued action attire is reused?
     // 9 bytes left
   }

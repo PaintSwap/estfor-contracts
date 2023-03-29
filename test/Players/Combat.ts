@@ -73,7 +73,6 @@ describe("Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        skill: EstforTypes.Skill.COMBAT,
       };
 
       await itemNFT.addItem({
@@ -403,7 +402,6 @@ describe("Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
         leftHandEquipmentTokenId: EstforConstants.NONE, // 2 handed, must specify this for both?
-        skill: EstforTypes.Skill.COMBAT,
       };
 
       await itemNFT.addItems([
@@ -703,7 +701,6 @@ describe("Combat Actions", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.COMBAT,
     };
 
     await itemNFT.addItem({

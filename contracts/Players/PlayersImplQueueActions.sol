@@ -112,7 +112,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       queuedAction.leftHandEquipmentTokenId = _queuedActions[i].leftHandEquipmentTokenId;
       queuedAction.timespan = _queuedActions[i].timespan;
       queuedAction.combatStyle = _queuedActions[i].combatStyle;
-      queuedAction.skill = _queuedActions[i].skill;
       queuedAction.isValid = true;
       // startTime filled in later
 
@@ -146,7 +145,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function consumeBoost(address _from, uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
     Item memory item = itemNFT.getItem(_itemTokenId);
-    if (item.boostType == BoostType.NONE) {
+    if (item.equipPosition != EquipPosition.BOOST_VIAL) {
       revert NotABoostVial();
     }
     if (_startTime >= block.timestamp + 7 days) {
@@ -216,10 +215,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       uint32 actionMinXP,
       bool actionAvailable
     ) = world.getPermissibleItemsForAction(actionId);
-
-    if (_queuedAction.skill != skill) {
-      revert InvalidSkill();
-    }
 
     if (!actionAvailable) {
       revert ActionNotAvailable();

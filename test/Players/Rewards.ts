@@ -54,7 +54,6 @@ describe("Rewards", function () {
       timespan: 500,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
@@ -135,7 +134,6 @@ describe("Rewards", function () {
       timespan: 1600,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
@@ -207,7 +205,6 @@ describe("Rewards", function () {
       timespan: 500,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const oneDay = 24 * 3600;
@@ -346,7 +343,6 @@ describe("Rewards", function () {
       timespan: 500,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const oneDay = 24 * 3600;
@@ -456,7 +452,6 @@ describe("Rewards", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.COMBAT,
     };
 
     await itemNFT.addItem({
@@ -592,7 +587,6 @@ describe("Rewards", function () {
       timespan: 3600 * numHours,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     let numProduced = 0;
@@ -734,7 +728,6 @@ describe("Rewards", function () {
       timespan: 3600 * numHours,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: EstforTypes.Skill.WOODCUTTING,
     };
 
     const balanceMap = new Map<number, number>();

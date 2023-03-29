@@ -63,7 +63,6 @@ describe("Boosts", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -141,7 +140,6 @@ describe("Boosts", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
@@ -228,7 +226,6 @@ describe("Boosts", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      skill: Skill.WOODCUTTING,
     };
 
     await itemNFT.addItem({
