@@ -224,6 +224,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint producedPastRandomRewardsLength;
     uint producedXPRewardsLength;
     address from = _owner;
+    if (playerNFT.balanceOf(_owner, _playerId) == 0) {
+      revert NotOwner();
+    }
     uint previousTotalXP = player.totalXP;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];

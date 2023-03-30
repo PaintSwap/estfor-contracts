@@ -197,11 +197,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint[] calldata /*_itemTokenIds*/,
     uint[] calldata /*_amounts*/
   ) external view onlyItemNFT {
-    uint playerId = activePlayer[_from];
-    if (playerId == 0) {
-      return;
-    }
-
+    //    uint playerId = activePlayer[_from];
+    //    if (playerId == 0) {
+    //      return;
+    //    }
     // TODO: Check if the player is currently using any of the items, and record all which are 0 and left/right arm items
     // emit QueuedActionValid(true/false)
   }
