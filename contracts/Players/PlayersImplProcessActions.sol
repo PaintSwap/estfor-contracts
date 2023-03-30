@@ -102,7 +102,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (!fullyFinished) {
         // Add the remainder if this action is not fully consumed
         _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength++);
-        nextStartTime += elapsedTime;
+        nextStartTime = queuedAction.startTime + queuedAction.timespan;
       }
 
       if (pointsAccrued != 0) {

@@ -569,6 +569,17 @@ describe("Players", function () {
       expect(actionQueue[1].timespan).to.eq(_queuedAction.timespan);
       expect(actionQueue[2].attire.queueId).to.eq(4);
       expect(actionQueue[2].timespan).to.eq(_queuedAction.timespan);
+
+      await ethers.provider.send("evm_increaseTime", [50]);
+      await players.connect(alice).processActions(playerId);
+      actionQueue = await players.getActionQueue(playerId);
+      expect(actionQueue.length).to.eq(3);
+      expect(actionQueue[0].attire.queueId).to.eq(2);
+      expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan - 50, queuedAction.timespan - 50 - 1]);
+      expect(actionQueue[1].attire.queueId).to.eq(3);
+      expect(actionQueue[1].timespan).to.eq(_queuedAction.timespan);
+      expect(actionQueue[2].attire.queueId).to.eq(4);
+      expect(actionQueue[2].timespan).to.eq(_queuedAction.timespan);
     });
   });
 
