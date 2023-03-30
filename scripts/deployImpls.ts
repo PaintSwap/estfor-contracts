@@ -41,8 +41,7 @@ async function main() {
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
-  const playersAddress = PLAYERS_ADDRESS;
-  const players = Players.attach(playersAddress);
+  const players = Players.attach(PLAYERS_ADDRESS);
   await players.setImpls(
     playersImplQueueActions.address,
     playersImplProcessActions.address,

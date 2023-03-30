@@ -1,13 +1,9 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 import {BoostType, EquipPosition, Skill} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {ITEM_NFT_ADDRESS} from "./constants";
-import fs from "fs";
 
 async function main() {
-  fs.writeFileSync("./file1", JSON.stringify(whitelistedAdmins));
-  /*
   const [owner] = await ethers.getSigners();
   console.log(`Edit item using account: ${owner.address}`);
 
@@ -45,7 +41,6 @@ async function main() {
   };
 
   await itemNFT.editItem(item);
-  */
 }
 
 // We recommend this pattern to be able to use async/await everywhere
