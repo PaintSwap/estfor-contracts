@@ -190,6 +190,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
     _clearEverything(_from, _playerId);
+    // If it was the active player, then clear it
+    uint existingActivePlayerId = activePlayer[_from];
+    // All attire and actions can be made for this player
+    if (existingActivePlayerId != 0) {
+      delete activePlayer[_from];
+      emit SetActivePlayer(_from, existingActivePlayerId, 0);
+    }
   }
 
   function itemBeforeTokenTransfer(
@@ -259,14 +266,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _setActivePlayer(address _from, uint _playerId) private {
-    uint existingActivePlayer = activePlayer[_from];
+    uint existingActivePlayerId = activePlayer[_from];
     // All attire and actions can be made for this player
     activePlayer[_from] = _playerId;
-    if (existingActivePlayer != 0) {
-      // If there is an existing active player, unequip all items
-      _clearEverything(_from, existingActivePlayer);
+    if (existingActivePlayerId == _playerId) {
+      revert PlayerAlreadyActive();
     }
-    emit SetActivePlayer(_from, existingActivePlayer, _playerId);
+    if (existingActivePlayerId != 0) {
+      // If there is an existing active player, unequip all items
+      _clearEverything(_from, existingActivePlayerId);
+    }
+    emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
   }
 
   function setActivePlayer(uint _playerId) external isOwnerOfPlayer(_playerId) {

@@ -1075,5 +1075,21 @@ describe("Players", function () {
       }
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(Math.pow(2, 32) - 1);
     });
+
+    it("Set active player to existing", async function () {
+      const {playerId, players, alice} = await loadFixture(playersFixture);
+      await expect(players.connect(alice).setActivePlayer(playerId)).to.be.revertedWithCustomError(
+        players,
+        "PlayerAlreadyActive"
+      );
+    });
+
+    it("Transferring active player", async function () {
+      const {playerId, players, playerNFT, alice, owner} = await loadFixture(playersFixture);
+
+      expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
+      await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+      expect(await players.connect(alice).activePlayer(alice.address)).to.eq(0);
+    });
   });
 });

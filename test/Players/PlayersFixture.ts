@@ -147,7 +147,6 @@ export const playersFixture = async function () {
     ethers.utils.formatBytes32String(origName),
     makeActive
   );
-  await players.connect(alice).setActivePlayer(playerId);
   const maxTime = await players.MAX_TIME();
 
   return {

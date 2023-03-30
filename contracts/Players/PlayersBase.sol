@@ -98,6 +98,7 @@ abstract contract PlayersBase {
   error ItemDoesNotExist();
   error InvalidAmount();
   error InvalidAction();
+  error PlayerAlreadyActive();
   error TestInvalidXP();
 
   uint32 public constant MAX_TIME = 1 days;
@@ -111,7 +112,7 @@ abstract contract PlayersBase {
 
   mapping(uint playerId => uint multiplier) internal speedMultiplier; // 0 or 1 is diabled, for testing only
 
-  mapping(address user => uint playerId) internal activePlayer;
+  mapping(address user => uint playerId) public activePlayer;
 
   mapping(uint playerId => PlayerBoostInfo boostInfo) public activeBoosts;
 
