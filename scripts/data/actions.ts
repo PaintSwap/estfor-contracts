@@ -1267,7 +1267,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 1660, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 6640, amount: 1}],
     combatStats: {
       melee: 3,
       magic: 0,
@@ -1398,8 +1398,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.WILLOW_LOG, rate: 10 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.MITHRIL_AXE, chance: 830, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_BODY, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.MITHRIL_AXE, chance: 3320, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_BODY, chance: 8, amount: 1},
     ],
     combatStats: {
       melee: 10,
@@ -1426,7 +1426,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.STRING, rate: 2 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 2500, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 10000, amount: 1}],
     combatStats: {
       melee: 3,
       magic: 12,
@@ -1453,8 +1453,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.DRAGON_BONE, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.DRAGON_TEETH, chance: 166, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_BOOTS, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.DRAGON_TEETH, chance: 664, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_BOOTS, chance: 8, amount: 1},
     ],
     combatStats: {
       melee: 15,
@@ -1481,7 +1481,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.NATURE_KEY, chance: 700, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.NATURE_KEY, chance: 2800, amount: 1}],
     combatStats: {
       melee: 18,
       magic: 0,
@@ -1508,8 +1508,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.BLUECANAR, chance: 332, amount: 1},
-      {itemTokenId: EstforConstants.BARK_CHUNK, chance: 166, amount: 1},
+      {itemTokenId: EstforConstants.BLUECANAR, chance: 1328, amount: 1},
+      {itemTokenId: EstforConstants.BARK_CHUNK, chance: 664, amount: 1},
     ],
     combatStats: {
       melee: 25,
@@ -1536,7 +1536,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.AQUA_KEY, chance: 700, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.AQUA_KEY, chance: 2800, amount: 1}],
     combatStats: {
       melee: 30,
       magic: 0,
@@ -1563,8 +1563,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.LOSSUTH_TEETH, chance: 166, amount: 1},
-      {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 166, amount: 1},
+      {itemTokenId: EstforConstants.LOSSUTH_TEETH, chance: 664, amount: 1},
+      {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 664, amount: 1},
     ],
     combatStats: {
       melee: 35,
@@ -1592,8 +1592,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 1660, amount: 1},
-      {itemTokenId: EstforConstants.RUFARUM, chance: 332, amount: 1},
+      {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 6640, amount: 1},
+      {itemTokenId: EstforConstants.RUFARUM, chance: 1328, amount: 1},
     ],
     combatStats: {
       melee: 0,
@@ -1624,8 +1624,8 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.FEATHER, rate: 3 * 10},
     ],
     randomRewards: [
-      {itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 332, amount: 1},
-      {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 166, amount: 1},
+      {itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 1328, amount: 1},
+      {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 664, amount: 1},
     ],
     combatStats: {
       melee: 55,
@@ -1653,8 +1653,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.BAT_WING, chance: 332, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_BRACERS, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.BAT_WING, chance: 1328, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_BRACERS, chance: 8, amount: 1},
     ],
     combatStats: {
       melee: 65,
@@ -1682,9 +1682,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.REDWOOD_LOG, rate: 5 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 830, amount: 1},
-      {itemTokenId: EstforConstants.ADAMANTINE_AXE, chance: 750, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_HAT, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 3320, amount: 1},
+      {itemTokenId: EstforConstants.ADAMANTINE_AXE, chance: 3000, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_HAT, chance: 8, amount: 1},
     ],
     combatStats: {
       melee: 80,
@@ -1715,7 +1715,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.FEATHER, rate: 2 * 10},
       {itemTokenId: EstforConstants.IRON_ORE, rate: 1 * 10},
     ],
-    randomRewards: [{itemTokenId: EstforConstants.ANURGAT, chance: 332, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 1}],
     combatStats: {
       melee: 100,
       magic: 30,
@@ -1771,9 +1771,9 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGON_TEETH, rate: 1 * 10},
     ],
     randomRewards: [
-      {itemTokenId: EstforConstants.DRAGON_KEY, chance: 700, amount: 1},
-      {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 100, amount: 1},
-      {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2800, amount: 1},
+      {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 400, amount: 1},
+      {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 8, amount: 1},
     ],
     combatStats: {
       melee: 200,
@@ -1804,9 +1804,9 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.POISON, rate: 2 * 10},
     ],
     randomRewards: [
-      {itemTokenId: EstforConstants.NATURE_KEY, chance: 700, amount: 1},
-      {itemTokenId: EstforConstants.VENOM_POUCH, chance: 332, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_TROUSERS, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.NATURE_KEY, chance: 2800, amount: 1},
+      {itemTokenId: EstforConstants.VENOM_POUCH, chance: 1328, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_TROUSERS, chance: 8, amount: 1},
     ],
     combatStats: {
       melee: 250,
@@ -1860,8 +1860,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.LOG, chance: 12000, amount: 1},
-      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 8000, amount: 1},
+      {itemTokenId: EstforConstants.LOG, chance: 48000, amount: 80},
+      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 32000, amount: 40},
     ],
     combatStats: {
       melee: 0,
@@ -1889,8 +1889,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 10000, amount: 1},
-      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 8000, amount: 1},
+      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 40000, amount: 50},
+      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 32000, amount: 50},
     ],
     combatStats: {
       melee: 0,
@@ -1918,8 +1918,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.IRON_BAR, chance: 7000, amount: 1},
-      {itemTokenId: EstforConstants.BRONZE_SWORD, chance: 2000, amount: 1},
+      {itemTokenId: EstforConstants.IRON_BAR, chance: 28000, amount: 40},
+      {itemTokenId: EstforConstants.BRONZE_SWORD, chance: 8000, amount: 1},
     ],
     combatStats: {
       melee: 0,
@@ -1946,7 +1946,7 @@ export const allActions: ActionInput[] = [
       successPercent: 20,
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 3000, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 12000, amount: 100}],
     combatStats: {
       melee: 0,
       magic: 0,
@@ -1973,8 +1973,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 9000, amount: 1},
-      {itemTokenId: EstforConstants.IRON_BAR, chance: 9000, amount: 1},
+      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 36000, amount: 70},
+      {itemTokenId: EstforConstants.IRON_BAR, chance: 36000, amount: 50},
     ],
     combatStats: {
       melee: 0,
@@ -2028,9 +2028,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.RAW_TROUT, chance: 10000, amount: 1},
-      {itemTokenId: EstforConstants.RAW_ROJJA, chance: 5000, amount: 1},
-      {itemTokenId: EstforConstants.RAW_BOWFISH, chance: 3000, amount: 1},
+      {itemTokenId: EstforConstants.RAW_TROUT, chance: 40000, amount: 100},
+      {itemTokenId: EstforConstants.RAW_ROJJA, chance: 20000, amount: 100},
+      {itemTokenId: EstforConstants.RAW_BOWFISH, chance: 12000, amount: 100},
     ],
     combatStats: {
       melee: 0,
@@ -2058,9 +2058,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.OAK_LOG, chance: 10000, amount: 1},
-      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 5000, amount: 1},
-      {itemTokenId: EstforConstants.MAPLE_LOG, chance: 5000, amount: 1},
+      {itemTokenId: EstforConstants.OAK_LOG, chance: 40000, amount: 100},
+      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 20000, amount: 100},
+      {itemTokenId: EstforConstants.MAPLE_LOG, chance: 20000, amount: 100},
     ],
     combatStats: {
       melee: 0,
@@ -2088,9 +2088,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 3000, amount: 1},
-      {itemTokenId: EstforConstants.IRON_BAR, chance: 3000, amount: 1},
-      {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 2000, amount: 1},
+      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 12000, amount: 60},
+      {itemTokenId: EstforConstants.IRON_BAR, chance: 12000, amount: 60},
+      {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 8000, amount: 60},
     ],
     combatStats: {
       melee: 0,
@@ -2118,8 +2118,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 2000, amount: 1},
-      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 2000, amount: 1},
+      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 8000, amount: 200},
+      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 8000, amount: 200},
     ],
     combatStats: {
       melee: 0,
@@ -2147,9 +2147,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 10000, amount: 1},
-      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 5000, amount: 1},
-      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 5000, amount: 1},
+      {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 40000, amount: 200},
+      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 20000, amount: 250},
+      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 20000, amount: 250},
     ],
     combatStats: {
       melee: 0,
@@ -2203,9 +2203,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.SAPPHIRE, chance: 8000, amount: 1},
-      {itemTokenId: EstforConstants.EMERALD, chance: 7000, amount: 1},
-      {itemTokenId: EstforConstants.RUBY, chance: 6000, amount: 1},
+      {itemTokenId: EstforConstants.SAPPHIRE, chance: 32000, amount: 80},
+      {itemTokenId: EstforConstants.EMERALD, chance: 28000, amount: 80},
+      {itemTokenId: EstforConstants.RUBY, chance: 24000, amount: 80},
     ],
     combatStats: {
       melee: 0,
@@ -2233,8 +2233,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 5000, amount: 1},
-      {itemTokenId: EstforConstants.NATURE_KEY, chance: 700, amount: 1},
+      {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 20000, amount: 40},
+      {itemTokenId: EstforConstants.NATURE_KEY, chance: 2800, amount: 1},
     ],
     combatStats: {
       melee: 0,
