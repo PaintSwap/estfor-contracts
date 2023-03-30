@@ -432,7 +432,6 @@ describe("Rewards", function () {
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     tx = await world.requestRandomWords();
     requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
@@ -711,7 +710,6 @@ describe("Rewards", function () {
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     tx = await world.requestRandomWords();
     requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
@@ -804,11 +802,16 @@ describe("Rewards", function () {
     }
   });
 
-  // Could be a part of world or if there was space
+  // Could be a part of world if there was bytecode space
   it("Check random bytes", async function () {
-    const {players, playerId} = await loadFixture(playersFixture);
+    const {players, playerId, world, mockOracleClient} = await loadFixture(playersFixture);
     const {timestamp} = await ethers.provider.getBlock("latest");
     let numTickets = 16; // 240
+    await expect(players.getRandomBytes(numTickets, timestamp - 86400, playerId)).to.be.reverted;
+    const tx = await world.requestRandomWords();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
     let randomBytes = await players.getRandomBytes(numTickets, timestamp - 86400, playerId);
     expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32);
     numTickets = 48;

@@ -130,20 +130,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _storeDailyRewards(rewards);
     emit NewDailyRewards(rewards);
 
-    // Initialize 5 days worth of random words
-    for (uint i = 0; i < 5; ++i) {
+    // Initialize 4 days worth of random words
+    for (uint i = 0; i < 4; ++i) {
       uint requestId = 200 + i;
       requestIds.push(requestId);
       emit RequestSent(requestId, NUM_WORDS);
       uint[] memory _randomWords = new uint[](3);
       _randomWords[0] = uint(
-        blockhash(block.number - 5 + i) ^ 0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
+        blockhash(block.number - 4 + i) ^ 0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
       );
       _randomWords[1] = uint(
-        blockhash(block.number - 5 + i) ^ 0xca820e9e57e5e703aeebfa2dc60ae09067f931b6e888c0a7c7a15a76341ab2c2
+        blockhash(block.number - 4 + i) ^ 0xca820e9e57e5e703aeebfa2dc60ae09067f931b6e888c0a7c7a15a76341ab2c2
       );
       _randomWords[2] = uint(
-        blockhash(block.number - 5 + i) ^ 0xd1f1b7d57307aee9687ae39dbb462b1c1f07a406d34cd380670360ef02f243b6
+        blockhash(block.number - 4 + i) ^ 0xd1f1b7d57307aee9687ae39dbb462b1c1f07a406d34cd380670360ef02f243b6
       );
       fulfillRandomWords(requestId, _randomWords);
     }
@@ -298,7 +298,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function _getFullRandomWords(uint _timestamp) private view returns (uint[3] memory) {
     uint offset = _getRandomWordOffset(_timestamp);
     if (requestIds.length <= offset) {
-      return [uint256(0), uint256(0), uint256(0)];
+      revert NoValidRandomWord();
     }
     return randomWords[requestIds[offset]];
   }

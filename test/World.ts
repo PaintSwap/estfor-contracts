@@ -45,7 +45,7 @@ describe("World", function () {
       const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
       await world.requestRandomWords();
 
-      const startOffset = 5;
+      const startOffset = 4;
       let requestId = await world.requestIds(startOffset);
       expect(requestId).to.be.greaterThanOrEqual(1);
 
@@ -78,16 +78,22 @@ describe("World", function () {
       requestId = await world.requestIds(startOffset + 3);
       await mockOracleClient.fulfill(requestId, world.address);
       await expect(world.requestRandomWords()).to.be.reverted;
+      await expect(world.requestIds(startOffset + 4)).to.be.reverted;
     });
 
     it("getRandomWord", async function () {
       const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      expect(await world.hasRandomWord(currentTimestamp)).to.be.false;
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
       await world.requestRandomWords();
-      let requestId = await world.requestIds(5);
+      await expect(world.requestIds(5)).to.be.reverted;
+      let requestId = await world.requestIds(4);
       await mockOracleClient.fulfill(requestId, world.address);
-
+      expect(await world.hasRandomWord(currentTimestamp)).to.be.false;
+      await world.requestRandomWords();
+      requestId = await world.requestIds(5);
+      await mockOracleClient.fulfill(requestId, world.address);
       expect(await world.hasRandomWord(currentTimestamp)).to.be.true;
       await expect(world.getRandomWord(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
@@ -100,9 +106,28 @@ describe("World", function () {
     it("Get full/multiple words", async function () {
       const {world, mockOracleClient, minRandomWordsUpdateTime} = await loadFixture(deployContracts);
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      await expect(world.getFullRandomWords(currentTimestamp)).to.be.revertedWithCustomError(
+        world,
+        "NoValidRandomWord"
+      );
+      await expect(world.getMultipleFullRandomWords(currentTimestamp)).to.be.revertedWithCustomError(
+        world,
+        "NoValidRandomWord"
+      );
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
       await world.requestRandomWords();
-      let requestId = await world.requestIds(5);
+      let requestId = await world.requestIds(4);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await expect(world.getFullRandomWords(currentTimestamp)).to.be.revertedWithCustomError(
+        world,
+        "NoValidRandomWord"
+      );
+      await expect(world.getMultipleFullRandomWords(currentTimestamp)).to.be.revertedWithCustomError(
+        world,
+        "NoValidRandomWord"
+      );
+      await world.requestRandomWords();
+      requestId = await world.requestIds(5);
       await mockOracleClient.fulfill(requestId, world.address);
 
       const fullWords = await world.getFullRandomWords(currentTimestamp);
