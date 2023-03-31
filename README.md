@@ -52,17 +52,17 @@ TODO
 
 ### Fantom mainnet alpha deployed contract addresses:
 
-World [0x11e0911c729db0c56e9b0be24e7db6cbac50f5f0](https://ftmscan.com/address/0x11e0911c729db0c56e9b0be24e7db6cbac50f5f0)  
-Shop [0xdf093e740b85c27cb4e4e646fad7d7787d49fbe8](https://ftmscan.com/address/0xdf093e740b85c27cb4e4e646fad7d7787d49fbe8)  
-RoyaltyReceiver [0x798777fc07a816b9be92d7570cfe5f8caeee91d7](https://ftmscan.com/address/0x798777fc07a816b9be92d7570cfe5f8caeee91d7)  
-AdminAccess [0x93e669a273580d53e30ec264b236ffe5e207aee2](https://ftmscan.com/address/0x93e669a273580d53e30ec264b236ffe5e207aee2)  
-ItemNFT [0x112a8c0dfb8894fbecd625ae9f45420b1e849ef5](https://ftmscan.com/address/0x112a8c0dfb8894fbecd625ae9f45420b1e849ef5)  
-PlayerNFT [0xc658a7e78c5bf66b44cd855e6a1e9a2f19788079](https://ftmscan.com/address/0xc658a7e78c5bf66b44cd855e6a1e9a2f19788079)  
-PlayersLibrary [0x11e16ab87beab37a566f278f924e408736025e3b](https://ftmscan.com/address/0x11e16ab87beab37a566f278f924e408736025e3b)  
-PlayersImplQueueActions [0xd6df8305aea57305f3837a82d2d17784b406de64](https://ftmscan.com/address/0xd6df8305aea57305f3837a82d2d17784b406de64)  
-PlayersImplProcessActions [0x35a8cfe0e5decf3d3f9267e99467a02bc9afdf36](https://ftmscan.com/address/0x35a8cfe0e5decf3d3f9267e99467a02bc9afdf36)  
-PlayersImplRewards [0xa4c92a9de847ff454a395bcf76f1a2fdbd728cce](https://ftmscan.com/address/0xa4c92a9de847ff454a395bcf76f1a2fdbd728cce)  
-Players [0x7c2cf9ab5860c279cde1289572b4c22e2d841b07](https://ftmscan.com/address/0x7c2cf9ab5860c279cde1289572b4c22e2d841b07)
+World [0xfe93dbf15b733024f67e5a11a7c87401cd951bdc](https://ftmscan.com/address/0xfe93dbf15b733024f67e5a11a7c87401cd951bdc)  
+Shop [0x30e37152cdde1720be35a2ebc8c799809c4acda9](https://ftmscan.com/address/0x30e37152cdde1720be35a2ebc8c799809c4acda9)  
+RoyaltyReceiver [0x430fe699f1468d19176d4697c237e4e8712b1822](https://ftmscan.com/address/0x430fe699f1468d19176d4697c237e4e8712b1822)  
+AdminAccess [0xa4dbcb972927318489afc5f39a5db3d1600f8e0a](https://ftmscan.com/address/0xa4dbcb972927318489afc5f39a5db3d1600f8e0a)  
+ItemNFT [0x5220cbe203cbff2b8257ba231859dcbfdd69da53](https://ftmscan.com/address/0x5220cbe203cbff2b8257ba231859dcbfdd69da53)  
+PlayerNFT [0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9](https://ftmscan.com/address/0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9)  
+PlayersLibrary [0xcc17dc0e82072372635602c9ef7db7710ad8b382](https://ftmscan.com/address/0xcc17dc0e82072372635602c9ef7db7710ad8b382)  
+PlayersImplQueueActions [0x6663b2f134f154121c1de055e179a1ea17504c05](https://ftmscan.com/address/0x6663b2f134f154121c1de055e179a1ea17504c05)  
+PlayersImplProcessActions [0x5e646e0c703ecce052805dcfcb634b02dd422408](https://ftmscan.com/address/0x5e646e0c703ecce052805dcfcb634b02dd422408)  
+PlayersImplRewards [0xbc4e231b4cab96b2a0c1a2638930d863140807f3](https://ftmscan.com/address/0xbc4e231b4cab96b2a0c1a2638930d863140807f3)  
+Players [0xbd0d3fb6123ed252620c696c7d91caeb25c8a0f9](https://ftmscan.com/address/0xbd0d3fb6123ed252620c696c7d91caeb25c8a0f9)
 
 ### Other addresses:
 

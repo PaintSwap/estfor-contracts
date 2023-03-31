@@ -13,17 +13,17 @@ let playersImplRewards;
 let players;
 
 if (isAlpha) {
-  world = "0x0165878a594ca255338adfa4d48449f69242eb8f";
-  shop = "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6";
-  royaltyReceiver = "0x610178da211fef7d417bc0e6fed39f05609ad788";
-  adminAccess = "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0";
-  itemNFT = "0x9a676e781a523b5d0c0e43731313a708cb607508";
-  playerNFT = "0x959922be3caee4b8cd9a407cc3ac1c251c2007b1";
-  playersLibrary = "0x9a9f2ccfde556a7e9ff0848998aa4a0cfd8863ae";
-  playersImplQueueActions = "0x68b1d87f95878fe05b998f19b66f4baba5de1aed";
-  playersImplProcessActions = "0x3aa5ebb10dc797cac828524e59a333d0a371443c";
-  playersImplRewards = "0xc6e7df5e7b4f2a278906862b61205850344d4e7d";
-  players = "0x8702e0fe9d21e23d8d81710f3ed47ee8d1928966";
+  world = "0xfe93dbf15b733024f67e5a11a7c87401cd951bdc";
+  shop = "0x30e37152cdde1720be35a2ebc8c799809c4acda9";
+  royaltyReceiver = "0x430fe699f1468d19176d4697c237e4e8712b1822";
+  adminAccess = "0xa4dbcb972927318489afc5f39a5db3d1600f8e0a";
+  itemNFT = "0x5220cbe203cbff2b8257ba231859dcbfdd69da53";
+  playerNFT = "0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9";
+  playersLibrary = "0xcc17dc0e82072372635602c9ef7db7710ad8b382";
+  playersImplQueueActions = "0x6663b2f134f154121c1de055e179a1ea17504c05";
+  playersImplProcessActions = "0x5e646e0c703ecce052805dcfcb634b02dd422408";
+  playersImplRewards = "0xbc4e231b4cab96b2a0c1a2638930d863140807f3";
+  players = "0xbd0d3fb6123ed252620c696c7d91caeb25c8a0f9";
 } else {
   // TODO when live addresses are known
   world = "";
