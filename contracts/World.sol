@@ -21,8 +21,8 @@ import "./globals/rewards.sol";
 contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
   using UnsafeU256 for U256;
 
-  event RequestSent(uint256 requestId, uint32 numWords);
-  event RequestFulfilled(uint256 requestId, uint256[3] randomWords, uint256 timestamp);
+  event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
+  event RequestFulfilled(uint requestId, uint[3] randomWords);
   event AddAction(Action action);
   event EditAction(Action action);
   event SetAvailableAction(uint16 actionId, bool available);
@@ -134,7 +134,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     for (uint i = 0; i < 4; ++i) {
       uint requestId = 200 + i;
       requestIds.push(requestId);
-      emit RequestSent(requestId, NUM_WORDS);
+      emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);
       uint[] memory _randomWords = new uint[](3);
       _randomWords[0] = uint(
         blockhash(block.number - 4 + i) ^ 0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
@@ -199,11 +199,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]][0] == 0) {
       revert RandomWordsCannotBeUpdatedYet();
     }
-    if (lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME > block.timestamp) {
-      revert CanOnlyRequestAfterTheNextCheckpoint(
-        block.timestamp,
-        lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME
-      );
+    uint40 newLastRandomWordsUpdatedTime = lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME;
+    if (newLastRandomWordsUpdatedTime > block.timestamp) {
+      revert CanOnlyRequestAfterTheNextCheckpoint(block.timestamp, newLastRandomWordsUpdatedTime);
     }
 
     // Will revert if subscription is not set and funded.
@@ -216,8 +214,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     );
 
     requestIds.push(requestId);
-    lastRandomWordsUpdatedTime += MIN_RANDOM_WORDS_UPDATE_TIME;
-    emit RequestSent(requestId, NUM_WORDS);
+    lastRandomWordsUpdatedTime = newLastRandomWordsUpdatedTime;
+    emit RequestSent(requestId, NUM_WORDS, newLastRandomWordsUpdatedTime);
     return requestId;
   }
 
@@ -240,7 +238,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     randomWords[_requestId] = random;
-    emit RequestFulfilled(_requestId, random, lastRandomWordsUpdatedTime);
+    emit RequestFulfilled(_requestId, random);
 
     // Are we at the threshold for a new week
     if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
