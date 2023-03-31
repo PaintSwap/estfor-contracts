@@ -1,5 +1,4 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
 import {createPlayer} from "./utils";
@@ -30,7 +29,7 @@ export const addTestData = async (
   console.log("createPlayer");
 
   // First woodcutting
-  const queuedAction: EstforTypes.QueuedActionInput = {
+  const queuedActionWoodcutting: EstforTypes.QueuedActionInput = {
     attire: EstforTypes.noAttire,
     actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
     combatStyle: EstforTypes.CombatStyle.NONE,
@@ -43,21 +42,25 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  let gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-  let tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE, {
+  let gasLimit = await players.estimateGas.startAction(
+    playerId,
+    queuedActionWoodcutting,
+    EstforTypes.ActionQueueStatus.NONE
+  );
+  let tx = await players.startAction(playerId, queuedActionWoodcutting, EstforTypes.ActionQueueStatus.NONE, {
     gasLimit: gasLimit.add(300000),
   });
 
   await tx.wait();
-  console.log("start actions");
+  console.log("Start woodcutting action");
 
-  tx = await players.setSpeedMultiplier(playerId, 60); // Turns 1 hour into 1 second
+  tx = await players.setSpeedMultiplier(playerId, 60); // Turns 1 second into 1 minute
   await tx.wait();
   console.log("Set speed multiiplier");
 
   if (network.chainId == 31337 || network.chainId == 1337) {
     console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [1]);
+    await ethers.provider.send("evm_increaseTime", [10000]);
   }
 
   // Because of the speed multiplier, gas estimates may not be accurate as other things could be minted by the time the tx is executed,
@@ -65,7 +68,7 @@ export const addTestData = async (
   gasLimit = await players.estimateGas.processActions(playerId);
   tx = await players.processActions(playerId, {gasLimit: gasLimit.add(300000)});
   await tx.wait();
-  console.log("process actions");
+  console.log("Process woodcutting action");
 
   console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
 
@@ -92,10 +95,10 @@ export const addTestData = async (
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();
-  console.log("start firemaking action");
+  console.log("Start firemaking action");
 
   if (network.chainId == 31337 || network.chainId == 1337) {
-    console.log("Increase time");
+    console.log("Increase time 2");
     await ethers.provider.send("evm_increaseTime", [3]);
   }
 
@@ -104,7 +107,7 @@ export const addTestData = async (
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();
-  console.log("process actions (firemaking)");
+  console.log("Process actions (firemaking)");
 
   console.log(
     "Number of logs after firemaking ",
@@ -112,17 +115,24 @@ export const addTestData = async (
   );
 
   // Start another action
-  gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-  tx = await players.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE, {
+  gasLimit = await players.estimateGas.startAction(
+    playerId,
+    queuedActionWoodcutting,
+    EstforTypes.ActionQueueStatus.NONE
+  );
+  tx = await players.startAction(playerId, queuedActionWoodcutting, EstforTypes.ActionQueueStatus.NONE, {
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();
-  console.log("start an unprocessed action");
+  console.log("Start an unprocessed action");
 
-  if (network.chainId == 31337) {
-    console.log("Increase time");
+  if (network.chainId == 31337 || network.chainId == 1337) {
+    console.log("Increase time 3");
     await ethers.provider.send("evm_increaseTime", [1000000]);
   }
+
+  tx = await itemNFT.testMint(owner.address, EstforConstants.BRONZE_HELMET, 100);
+  console.log("Minted Bronze Helmet");
 
   // Start a combat action
   const queuedActionCombat: EstforTypes.QueuedActionInput = {
@@ -138,15 +148,15 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  gasLimit = await players.estimateGas.startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+  gasLimit = await players.estimateGas.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE);
   tx = await players.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE, {
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();
-  console.log("start a combat action");
+  console.log("Start a combat action");
 
   if (network.chainId == 31337) {
-    console.log("Increase time");
+    console.log("Increase time 4");
     await ethers.provider.send("evm_increaseTime", [10]);
   }
 
@@ -155,7 +165,7 @@ export const addTestData = async (
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();
-  console.log("process actions (melee combat)");
+  console.log("Process actions (melee combat)");
 
   // Buy from shop
   tx = await brush.approve(shop.address, ethers.utils.parseEther("100"));
@@ -164,12 +174,16 @@ export const addTestData = async (
 
   tx = await shop.buy(EstforConstants.MAGIC_FIRE_STARTER, 1);
   await tx.wait();
-  console.log("buy from shop");
+  console.log("Buy from shop");
 
   // Transfer some brush to the pool so we can sell something
   tx = await brush.transfer(shop.address, "100000");
   await tx.wait();
   console.log("Transfer some brush");
+
+  tx = await itemNFT.testMint(owner.address, EstforConstants.MAGIC_FIRE_STARTER, 100);
+  await tx.wait();
+  console.log("Mint enough magic fire starters that they can be sold");
 
   // Sell to shop (can be anything)
   tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);

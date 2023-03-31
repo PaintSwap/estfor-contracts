@@ -130,14 +130,14 @@ async function main() {
   let editNameBrushPrice: BigNumber;
   const isAlpha = process.env.IS_ALPHA == "true";
   if (isAlpha) {
-    itemsUri = "ipfs://Qmdhaz6jRnpQjvzzJB1PuN2Y33Nc1hAKg1sCMVc18ftcAL/";
+    itemsUri = "ipfs://QmYtVoXAGxN2pDxsx8hrgUgwUTvyj6wvoxxQt4s7QNgKf2/";
     imageBaseUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/";
     editNameBrushPrice = ethers.utils.parseEther("1");
   } else {
     // live version
     itemsUri = "ipfs://TODO/";
     imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/";
-    editNameBrushPrice = ethers.utils.parseEther("2500");
+    editNameBrushPrice = ethers.utils.parseEther("1000");
   }
 
   // Create NFT contract which contains all items
@@ -221,6 +221,28 @@ async function main() {
   await players.deployed();
   console.log(`Players deployed at ${players.address.toLowerCase()}`);
 
+  // Verify the contracts now, better to bail now before we start setting up the contract data
+  if (network.chainId == 250) {
+    try {
+      const addresses = [
+        players.address,
+        playerNFT.address,
+        itemNFT.address,
+        adminAccess.address,
+        shop.address,
+        world.address,
+        royaltyReceiver.address,
+      ];
+      console.log("Verifying contracts...");
+      await verifyContracts(addresses);
+    } catch (e) {
+      console.log("Error verifying contracts", e);
+      process.exit(99);
+    }
+  } else {
+    console.log("Skipping verifying contracts");
+  }
+
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
   console.log("itemNFT setPlayers");
@@ -297,7 +319,7 @@ async function main() {
 
   tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
   await tx.wait();
-  console.log("addAvatars");
+  console.log("Add avatars");
 
   if (isAlpha) {
     // Calculate the merkle root
@@ -306,12 +328,12 @@ async function main() {
     // Set the merkle root on the nft contract
     tx = await playerNFT.setMerkleRoot(root);
     await tx.wait();
-    console.log("setMerkleRoot");
+    console.log("Set merkle root");
   }
 
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();
-  console.log("add xp threshold rewards");
+  console.log("Add xp threshold rewards");
 
   const chunkSize = 100;
   for (let i = 0; i < allItems.length; i += chunkSize) {
@@ -324,23 +346,13 @@ async function main() {
     });
     tx = await itemNFT.addItems(chunk);
     await tx.wait();
-    console.log("add items chunk ", i);
-
-    // Batch mint all the items (testing)
-    if (network.chainId == 31337) {
-      tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
-    } else {
-      // TODO: This should fail when we go live
-      tx = await itemNFT.testMints(owner.address, tokenIds, amounts);
-    }
-    await tx.wait();
-    console.log("batch mint");
+    console.log("Add items chunk ", i);
   }
 
-  // Add full equipment bonuses (TODO: Only enable once we have all these items added)
+  // Add full equipment bonuses
   tx = await players.addFullAttireBonuses(allFullAttireBonuses);
   await tx.wait();
-  console.log("add full attire bonuses");
+  console.log("Add full attire bonuses");
 
   tx = await world.addActions(allActions);
   await tx.wait();
@@ -385,32 +397,12 @@ async function main() {
   // Add shop items
   tx = await shop.addBuyableItems(allShopItems);
   await tx.wait();
-  console.log("add shop");
+  console.log("Add shopping items");
 
-  // Try to verify the contracts now, but often you'll get an error with build-info not matching
-  // Delete cache/artifacts and call yarn verifyContracts script
-  if (network.chainId == 250) {
-    try {
-      const addresses = [
-        players.address,
-        playerNFT.address,
-        itemNFT.address,
-        adminAccess.address,
-        shop.address,
-        world.address,
-        royaltyReceiver.address,
-      ];
-      console.log("Verifying contracts...");
-      await verifyContracts(addresses);
-    } catch (e) {
-      console.log("Error verifying contracts", e);
-    }
-  } else {
-    console.log("Skipping verifying contracts");
+  // Add test data for the game
+  if (isAlpha) {
+    await addTestData(itemNFT, playerNFT, players, shop, brush);
   }
-
-  // Add test data for the game (don't use in live release)
-  await addTestData(itemNFT, playerNFT, players, shop, brush);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
