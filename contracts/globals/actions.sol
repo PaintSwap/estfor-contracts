@@ -57,7 +57,7 @@ struct QueuedAction {
   CombatStyle combatStyle; // specific style of combat,  can also be used
   uint40 startTime; // When the queued action started
   bool isValid; // If we still have the item, TODO: Not used yet
-  // 8 bytes left
+  uint64 queueId; // id of this queued action
 }
 
 struct ActionInfo {

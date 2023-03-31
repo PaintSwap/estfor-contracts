@@ -97,7 +97,7 @@ contract DebugStorageSlots {
     uint16 actionId;
     uint40 startTime;
     uint24 elapsedTime;
-    uint80 queueId;
+    uint64 queueId;
     // Boosts active at the time this was generated
     BoostType boostType;
     uint16 boostValue; // Varies, could be the % increase
@@ -182,6 +182,7 @@ contract DebugStorageSlots {
     CombatStyle combatStyle; // specific style of combat,  can also be used
     uint40 startTime; // When the queued action started
     bool isValid; // If we still have the item, TODO: Not used yet
+    uint64 queueId; // id of this queued action
   }
 
   struct ActionInfo {
@@ -206,7 +207,6 @@ contract DebugStorageSlots {
     uint16 feet;
     uint16 ring;
     uint16 reserved1;
-    uint80 queueId; // Just here for packing purposes
   }
 
   struct CombatStats {

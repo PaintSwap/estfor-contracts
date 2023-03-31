@@ -262,7 +262,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _checkActionConsumables(_from, _playerId, _queuedAction, actionChoice);
 
     _queuedAction.startTime = uint40(_startTime);
-    _queuedAction.attire.queueId = _queueId;
+    _queuedAction.queueId = _queueId;
     _queuedAction.isValid = true;
     _player.actionQueue.push(_queuedAction);
 

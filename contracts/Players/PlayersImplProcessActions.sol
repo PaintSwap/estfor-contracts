@@ -46,7 +46,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         isCombat
       );
       if (missingRequiredHandEquipment) {
-        emit ActionAborted(_from, _playerId, queuedAction.attire.queueId);
+        emit ActionAborted(_from, _playerId, queuedAction.queueId);
         continue;
       }
 
@@ -90,7 +90,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         );
       }
 
-      uint80 _queueId = queuedAction.attire.queueId;
+      uint64 _queueId = queuedAction.queueId;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
 
       if (!died) {
@@ -200,7 +200,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     if (numConsumed != 0) {
-      _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _queuedAction.attire.queueId);
+      _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _queuedAction.queueId);
     }
 
     if (_actionChoice.outputTokenId != 0) {
@@ -218,7 +218,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint amount = (numConsumed * successPercent) / 100;
       if (amount != 0) {
         itemNFT.mint(_from, _actionChoice.outputTokenId, amount);
-        emit Reward(_from, _playerId, _queuedAction.attire.queueId, _actionChoice.outputTokenId, amount);
+        emit Reward(_from, _playerId, _queuedAction.queueId, _actionChoice.outputTokenId, amount);
       }
     }
   }
@@ -228,7 +228,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     ActionChoice memory _actionChoice,
     uint24 _numConsumed,
-    uint80 _queueId
+    uint64 _queueId
   ) private {
     _processConsumable(_from, _playerId, _actionChoice.inputTokenId1, _numConsumed * _actionChoice.num1, _queueId);
     _processConsumable(_from, _playerId, _actionChoice.inputTokenId2, _numConsumed * _actionChoice.num2, _queueId);
@@ -240,7 +240,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     uint16 _itemTokenId,
     uint24 _numConsumed,
-    uint80 _queueId
+    uint64 _queueId
   ) private {
     if (_itemTokenId == 0) {
       return;
@@ -270,7 +270,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       betaCombat
     );
 
-    _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.attire.queueId);
+    _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.queueId);
   }
 
   function _cacheCombatStats(Player storage _player, uint32 _healthXP, Skill _skill, uint32 _xp) private {
@@ -334,7 +334,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint16 _actionId,
-    uint80 _queueId,
+    uint64 _queueId,
     uint40 _skillStartTime,
     uint24 _elapsedTime,
     Attire storage _attire,

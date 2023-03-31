@@ -35,7 +35,6 @@ struct Attire {
   uint16 feet;
   uint16 ring;
   uint16 reserved1;
-  uint80 queueId; // Just here for packing purposes
 }
 
 struct CombatStats {
