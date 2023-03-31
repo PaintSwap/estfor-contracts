@@ -94,7 +94,7 @@ abstract contract PlayersBase {
   error InvalidEquipPosition();
   error NoActionsToProcess();
   error InvalidSpeedMultiplier();
-  error NotAdmin();
+  error NotAdminAndAlpha();
   error XPThresholdNotFound();
   error InvalidItemTokenId();
   error ItemDoesNotExist();
@@ -184,8 +184,8 @@ abstract contract PlayersBase {
   }
 
   modifier isAdminAndAlpha() {
-    if (!adminAccess.isAdmin(msg.sender) && !isAlpha) {
-      revert NotAdmin();
+    if (!(adminAccess.isAdmin(msg.sender) && isAlpha)) {
+      revert NotAdminAndAlpha();
     }
     _;
   }

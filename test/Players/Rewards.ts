@@ -6,6 +6,7 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
+import {setupBasicWoodcutting} from "./utils";
 
 const actionIsAvailable = true;
 
@@ -822,5 +823,70 @@ describe("Rewards", function () {
     numTickets = 49;
     const randomBytes2 = await players.getRandomBytes(numTickets, timestamp - 86400, playerId);
     expect(ethers.utils.hexDataLength(randomBytes2)).to.be.eq(32 * 3 * 5);
+  });
+
+  it("Rewards without XP", async function () {
+    // Check that you can get guaranteed rewards even if you don't get XP (rewards rate >> XP rate)
+    const {playerId, players, alice, world, itemNFT} = await loadFixture(playersFixture);
+
+    const rate = 6500 * 10; // per hour
+    const tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.WOODCUTTING,
+        xpPerHour: 0,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+        isAvailable: true,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+    const actionId = getActionId(tx);
+
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      choiceId1: EstforConstants.NONE,
+      choiceId2: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan: 24 * 3600,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      metadataURI: "someIPFSURI.json",
+    });
+
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_mine", []);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
+
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
+      includeLoot: true,
+      includePastRandomRewards: true,
+      includeXPRewards: true,
+    });
+    expect(pendingOutput.produced.length).is.eq(1);
+    expect(pendingOutput.produced[0].amount).to.gt(0);
+    expect(pendingOutput.produced[0].itemTokenId).to.eq(EstforConstants.LOG);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+    await players.connect(alice).processActions(playerId);
+    // Confirm 0 XP but got wood
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.be.gt(0);
   });
 });

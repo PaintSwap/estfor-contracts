@@ -113,35 +113,35 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         }
         _updateXP(_from, _playerId, skill, pointsAccrued);
 
-        (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
-          _playerId,
-          queuedAction.startTime,
-          xpElapsedTime,
-          queuedAction.actionId
-        );
-
-        ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
-        _addPendingRandomReward(
-          _from,
-          _playerId,
-          pendingRandomRewards[_playerId],
-          actionRewards,
-          queuedAction.actionId,
-          _queueId,
-          uint40(skillEndTime),
-          uint24(xpElapsedTime),
-          queuedAction.attire,
-          skill
-        );
-
-        // This loot might be needed for a future task so mint now rather than later
-        // But this could be improved
-        if (newIds.length != 0) {
-          itemNFT.mintBatch(_from, newIds, newAmounts);
-          emit Rewards(_from, _playerId, _queueId, newIds, newAmounts);
-        }
-
         allPointsAccrued += pointsAccrued;
+      }
+
+      (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
+        _playerId,
+        queuedAction.startTime,
+        xpElapsedTime,
+        queuedAction.actionId
+      );
+
+      ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
+      _addPendingRandomReward(
+        _from,
+        _playerId,
+        pendingRandomRewards[_playerId],
+        actionRewards,
+        queuedAction.actionId,
+        _queueId,
+        uint40(skillEndTime),
+        uint24(xpElapsedTime),
+        queuedAction.attire,
+        skill
+      );
+
+      // This loot might be needed for a future task so mint now rather than later
+      // But this could be improved
+      if (newIds.length != 0) {
+        itemNFT.mintBatch(_from, newIds, newAmounts);
+        emit Rewards(_from, _playerId, _queueId, newIds, newAmounts);
       }
 
       if (fullyFinished) {

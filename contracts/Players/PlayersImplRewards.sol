@@ -291,7 +291,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         pointsAccrued = _getPointsAccrued(from, _playerId, queuedAction, skill, xpElapsedTime);
       }
 
-      if (_flags.includeLoot && pointsAccrued != 0) {
+      if (_flags.includeLoot) {
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           _playerId,
           uint40(queuedAction.startTime + xpElapsedTime),
