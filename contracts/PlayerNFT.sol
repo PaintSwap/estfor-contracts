@@ -225,7 +225,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   /**
    * @dev Returns whether `playerId` exists.
    *
-   * Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
+   * Tokens can be managed by their owner or approved accounts via {setApprovalForAll}.
    *
    */
   function _exists(uint256 _playerId) private view returns (bool) {
@@ -302,7 +302,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function symbol() external pure returns (string memory) {
-    return "EST4P_A";
+    return "EK_PA";
   }
 
   function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {

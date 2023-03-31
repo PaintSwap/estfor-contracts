@@ -369,7 +369,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function symbol() external pure returns (string memory) {
-    return "EST4I_A";
+    return "EK_IA";
   }
 
   // Or make it constants and redeploy the contracts
