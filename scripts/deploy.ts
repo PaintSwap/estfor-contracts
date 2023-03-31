@@ -60,7 +60,7 @@ async function main() {
       wftm = await MockWrappedFantom.deploy();
       console.log("Minted brush");
       oracle = await MockOracleClient.deploy();
-      console.log(`MockOracleClient deployed at ${oracle.address.toLowerCase()}`);
+      console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
     } else if (network.chainId == 4002) {
       // Fantom testnet
@@ -70,7 +70,7 @@ async function main() {
       await tx.wait();
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
       oracle = await MockOracleClient.deploy();
-      console.log(`MockOracleClient deployed at ${oracle.address.toLowerCase()}`);
+      console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
     } else if (network.chainId == 250) {
       // Fantom mainnet
@@ -90,7 +90,7 @@ async function main() {
     kind: "uups",
   });
   await world.deployed();
-  console.log(`World deployed at ${world.address.toLowerCase()}`);
+  console.log(`world = "${world.address.toLowerCase()}"`);
 
   const Shop = await ethers.getContractFactory("Shop");
   const shop = (await upgrades.deployProxy(Shop, [brush.address], {
@@ -98,7 +98,7 @@ async function main() {
   })) as Shop;
 
   await shop.deployed();
-  console.log(`Shop deployed at ${shop.address.toLowerCase()}`);
+  console.log(`shop = "${shop.address.toLowerCase()}"`);
 
   const buyPath: [string, string] = [wftm.address, brush.address];
 
@@ -111,7 +111,7 @@ async function main() {
     }
   );
   await royaltyReceiver.deployed();
-  console.log(`RoyaltyReceiver deployed at ${royaltyReceiver.address.toLowerCase()}`);
+  console.log(`royaltyReceiver = "${royaltyReceiver.address.toLowerCase()}"`);
 
   const admins = whitelistedAdmins.map((el) => ethers.utils.getAddress(el));
   if (!admins.includes(owner.address)) {
@@ -123,7 +123,7 @@ async function main() {
     kind: "uups",
   });
   await adminAccess.deployed();
-  console.log(`AdminAccess deployed at ${adminAccess.address.toLowerCase()}`);
+  console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
 
   let itemsUri: string;
   let imageBaseUri: string;
@@ -150,7 +150,7 @@ async function main() {
     }
   )) as ItemNFT;
   await itemNFT.deployed();
-  console.log(`Item NFT deployed at ${itemNFT.address.toLowerCase()}`);
+  console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
   // Create NFT contract which contains all the players
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
@@ -170,32 +170,32 @@ async function main() {
     }
   )) as PlayerNFT;
   await playerNFT.deployed();
-  console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
+  console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playerLibrary = await PlayersLibrary.deploy();
   await playerLibrary.deployed();
-  console.log(`PlayersLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
+  console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
   await playersImplQueueActions.deployed();
-  console.log(`PlayersImplQueueActions deployed at ${playersImplQueueActions.address.toLowerCase()}`);
+  console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
 
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplProcessActions = await PlayersImplProcessActions.deploy();
   await playersImplProcessActions.deployed();
-  console.log(`PlayersImplProcessActions deployed at ${playersImplProcessActions.address.toLowerCase()}`);
+  console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
 
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplRewards = await PlayersImplRewards.deploy();
   await playersImplRewards.deployed();
-  console.log(`PlayersImplRewards deployed at ${playersImplRewards.address.toLowerCase()}`);
+  console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
 
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
@@ -219,7 +219,7 @@ async function main() {
     }
   )) as Players;
   await players.deployed();
-  console.log(`Players deployed at ${players.address.toLowerCase()}`);
+  console.log(`players = "${players.address.toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {

@@ -16,7 +16,7 @@ async function main() {
   if (newPlayersLibrary) {
     playerLibrary = await PlayersLibrary.deploy();
     await playerLibrary.deployed();
-    console.log(`PlayersLibrary deployed at ${playerLibrary.address.toLowerCase()}`);
+    console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
   } else {
     playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
@@ -24,13 +24,12 @@ async function main() {
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
-  const playersAddress = PLAYERS_ADDRESS;
-  const players = await upgrades.upgradeProxy(playersAddress, Players, {
+  const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
   await players.deployed();
-  console.log(`Players deployed at ${players.address.toLowerCase()}`);
+  console.log(`players = "${players.address.toLowerCase()}"`);
 
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
@@ -38,7 +37,7 @@ async function main() {
     kind: "uups",
   });
 
-  console.log(`Player NFT deployed at ${playerNFT.address.toLowerCase()}`);
+  console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
   // ItemNFT
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
@@ -46,7 +45,7 @@ async function main() {
     kind: "uups",
   });
 
-  console.log(`ItemNFT deployed at ${itemNFT.address.toLowerCase()}`);
+  console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
