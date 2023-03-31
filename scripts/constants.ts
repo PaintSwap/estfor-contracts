@@ -20,9 +20,9 @@ if (isAlpha) {
   itemNFT = "0x5220cbe203cbff2b8257ba231859dcbfdd69da53";
   playerNFT = "0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9";
   playersLibrary = "0xcc17dc0e82072372635602c9ef7db7710ad8b382";
-  playersImplQueueActions = "0x6663b2f134f154121c1de055e179a1ea17504c05";
-  playersImplProcessActions = "0x5e646e0c703ecce052805dcfcb634b02dd422408";
-  playersImplRewards = "0xbc4e231b4cab96b2a0c1a2638930d863140807f3";
+  playersImplQueueActions = "0xee111c111368a0362b268f4e27d7e1679d232f3d";
+  playersImplProcessActions = "0xa02433b3EB5cfeb12BdcD08Ef3F4e3acb0A216Be";
+  playersImplRewards = "0x7E83C4Db27e3342afea79bDF1195248D635c9571";
   players = "0xbd0d3fb6123ed252620c696c7d91caeb25c8a0f9";
 } else {
   // TODO when live addresses are known

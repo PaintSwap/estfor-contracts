@@ -59,9 +59,9 @@ AdminAccess [0xa4dbcb972927318489afc5f39a5db3d1600f8e0a](https://ftmscan.com/add
 ItemNFT [0x5220cbe203cbff2b8257ba231859dcbfdd69da53](https://ftmscan.com/address/0x5220cbe203cbff2b8257ba231859dcbfdd69da53)  
 PlayerNFT [0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9](https://ftmscan.com/address/0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9)  
 PlayersLibrary [0xcc17dc0e82072372635602c9ef7db7710ad8b382](https://ftmscan.com/address/0xcc17dc0e82072372635602c9ef7db7710ad8b382)  
-PlayersImplQueueActions [0x6663b2f134f154121c1de055e179a1ea17504c05](https://ftmscan.com/address/0x6663b2f134f154121c1de055e179a1ea17504c05)  
-PlayersImplProcessActions [0x5e646e0c703ecce052805dcfcb634b02dd422408](https://ftmscan.com/address/0x5e646e0c703ecce052805dcfcb634b02dd422408)  
-PlayersImplRewards [0xbc4e231b4cab96b2a0c1a2638930d863140807f3](https://ftmscan.com/address/0xbc4e231b4cab96b2a0c1a2638930d863140807f3)  
+PlayersImplQueueActions [0xee111c111368a0362b268f4e27d7e1679d232f3d](https://ftmscan.com/address/0xee111c111368a0362b268f4e27d7e1679d232f3d)  
+PlayersImplProcessActions [0xa02433b3EB5cfeb12BdcD08Ef3F4e3acb0A216Be](https://ftmscan.com/address/0xa02433b3EB5cfeb12BdcD08Ef3F4e3acb0A216Be)  
+PlayersImplRewards [0x7E83C4Db27e3342afea79bDF1195248D635c9571](https://ftmscan.com/address/0x7E83C4Db27e3342afea79bDF1195248D635c9571)  
 Players [0xbd0d3fb6123ed252620c696c7d91caeb25c8a0f9](https://ftmscan.com/address/0xbd0d3fb6123ed252620c696c7d91caeb25c8a0f9)
 
 ### Other addresses:

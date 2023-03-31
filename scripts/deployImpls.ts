@@ -1,6 +1,13 @@
 import {ethers} from "hardhat";
 import {PlayersLibrary} from "../typechain-types";
-import {PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS} from "./constants";
+import {
+  PLAYERS_ADDRESS,
+  PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
+  PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
+  PLAYERS_IMPL_REWARDS_ADDRESS,
+  PLAYERS_LIBRARY_ADDRESS,
+} from "./constants";
+import {verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -24,29 +31,39 @@ async function main() {
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
   console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
+  await playersImplQueueActions.deployed();
 
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplProcessActions = await PlayersImplProcessActions.deploy();
   console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
+  await playersImplProcessActions.deployed();
 
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplRewards = await PlayersImplRewards.deploy();
   console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
+  await playersImplRewards.deployed();
 
   // Set the implementations
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const players = Players.attach(PLAYERS_ADDRESS);
-  await players.setImpls(
+  const tx = await players.setImpls(
     playersImplQueueActions.address,
     playersImplProcessActions.address,
     playersImplRewards.address
   );
+  await tx.wait();
+
+  await verifyContracts([
+    playersImplQueueActions.address,
+    playersImplProcessActions.address,
+    playersImplRewards.address,
+  ]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

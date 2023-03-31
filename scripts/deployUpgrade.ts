@@ -1,6 +1,7 @@
 import {ethers, upgrades} from "hardhat";
 import {PlayersLibrary} from "../typechain-types";
 import {ITEM_NFT_ADDRESS, PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS, PLAYER_NFT_ADDRESS} from "./constants";
+import {verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -30,22 +31,25 @@ async function main() {
   });
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
+  await verifyContracts([players.address]);
 
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
   });
-
+  await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
+  await verifyContracts([playerNFT.address]);
 
   // ItemNFT
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
   });
-
+  await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
+  await verifyContracts([itemNFT.address]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
