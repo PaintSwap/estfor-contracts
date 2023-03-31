@@ -4,7 +4,7 @@ import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
 import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, getRequestId} from "../../scripts/utils";
+import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;

@@ -4,7 +4,7 @@ import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
 import {ActionInput} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {getActionId} from "../scripts/utils";
+import {getActionId} from "./utils";
 
 describe("World", function () {
   const deployContracts = async function () {

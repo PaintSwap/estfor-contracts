@@ -3,7 +3,8 @@ import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
 import {Attire, BoostType, Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {AvatarInfo, createPlayer, emptyActionChoice, getActionChoiceId, getActionId} from "../../scripts/utils";
+import {AvatarInfo, createPlayer} from "../../scripts/utils";
+import {emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
@@ -410,9 +411,9 @@ describe("Players", function () {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND); // This should complete the first one
     const actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue.length).to.eq(2);
-    expect(actionQueue[0].attire.queueId).to.eq(2);
+    expect(actionQueue[0].queueId).to.eq(2);
     expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan - 1, queuedAction.timespan]);
-    expect(actionQueue[1].attire.queueId).to.eq(3);
+    expect(actionQueue[1].queueId).to.eq(3);
     expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
   });
 
@@ -431,7 +432,7 @@ describe("Players", function () {
         .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
-      expect(actionQueue[0].attire.queueId).to.eq(3);
+      expect(actionQueue[0].queueId).to.eq(3);
       expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
     });
     it("Remove in-progress but keep pending, add another pending", async function () {
@@ -448,9 +449,9 @@ describe("Players", function () {
         .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      expect(actionQueue[0].attire.queueId).to.eq(3);
+      expect(actionQueue[0].queueId).to.eq(3);
       expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
-      expect(actionQueue[1].attire.queueId).to.eq(4);
+      expect(actionQueue[1].queueId).to.eq(4);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
     });
     it("Keep in-progress, remove 1 pending", async function () {
@@ -467,7 +468,7 @@ describe("Players", function () {
         .startActions(playerId, [], BoostType.NONE, EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
-      expect(actionQueue[0].attire.queueId).to.eq(1);
+      expect(actionQueue[0].queueId).to.eq(1);
       expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan / 2 - 1, queuedAction.timespan / 2]);
     });
     it("Keep in-progress, remove 1 pending, and add 1 pending", async function () {
@@ -484,9 +485,9 @@ describe("Players", function () {
         .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      expect(actionQueue[0].attire.queueId).to.eq(1);
+      expect(actionQueue[0].queueId).to.eq(1);
       expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan / 2 - 1, queuedAction.timespan / 2]);
-      expect(actionQueue[1].attire.queueId).to.eq(3);
+      expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
     });
     it("Remove in-progress and any pending", async function () {
@@ -516,7 +517,7 @@ describe("Players", function () {
         .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
-      expect(actionQueue[0].attire.queueId).to.eq(3);
+      expect(actionQueue[0].queueId).to.eq(3);
       expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
     });
     it("Append and pending, add another pending", async function () {
@@ -533,9 +534,9 @@ describe("Players", function () {
         .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.APPEND);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(3);
-      expect(actionQueue[0].attire.queueId).to.eq(1);
-      expect(actionQueue[1].attire.queueId).to.eq(2);
-      expect(actionQueue[2].attire.queueId).to.eq(3);
+      expect(actionQueue[0].queueId).to.eq(1);
+      expect(actionQueue[1].queueId).to.eq(2);
+      expect(actionQueue[2].queueId).to.eq(3);
     });
     it("Keep in progress, action is finished, queue 3", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
@@ -563,22 +564,22 @@ describe("Players", function () {
         );
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(3);
-      expect(actionQueue[0].attire.queueId).to.eq(2);
+      expect(actionQueue[0].queueId).to.eq(2);
       expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
-      expect(actionQueue[1].attire.queueId).to.eq(3);
+      expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(_queuedAction.timespan);
-      expect(actionQueue[2].attire.queueId).to.eq(4);
+      expect(actionQueue[2].queueId).to.eq(4);
       expect(actionQueue[2].timespan).to.eq(_queuedAction.timespan);
 
       await ethers.provider.send("evm_increaseTime", [50]);
       await players.connect(alice).processActions(playerId);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(3);
-      expect(actionQueue[0].attire.queueId).to.eq(2);
+      expect(actionQueue[0].queueId).to.eq(2);
       expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan - 50, queuedAction.timespan - 50 - 1]);
-      expect(actionQueue[1].attire.queueId).to.eq(3);
+      expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(_queuedAction.timespan);
-      expect(actionQueue[2].attire.queueId).to.eq(4);
+      expect(actionQueue[2].queueId).to.eq(4);
       expect(actionQueue[2].timespan).to.eq(_queuedAction.timespan);
     });
   });

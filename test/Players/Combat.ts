@@ -2,13 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {
-  bronzeHelmetStats,
-  emptyActionChoice,
-  getActionChoiceId,
-  getActionChoiceIds,
-  getActionId,
-} from "../../scripts/utils";
+import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;

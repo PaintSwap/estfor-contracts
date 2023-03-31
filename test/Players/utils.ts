@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {getActionId} from "../../scripts/utils";
+import {getActionId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 
 export const setupBasicWoodcutting = async function () {

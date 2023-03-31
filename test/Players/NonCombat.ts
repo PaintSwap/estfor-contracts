@@ -1,9 +1,9 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {BoostType, Skill} from "@paintswap/estfor-definitions/types";
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionChoiceId, getActionId, getRequestId} from "../../scripts/utils";
+import {getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
@@ -132,7 +132,6 @@ describe("Non-Combat Actions", function () {
           feet: EstforConstants.NATURE_BOOTS,
           ring: EstforConstants.NONE, // Always NONE for now
           reserved1: EstforConstants.NONE, // Always NONE for now
-          queueId: 0, // Doesn't matter
         },
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
