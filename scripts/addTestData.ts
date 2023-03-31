@@ -132,6 +132,7 @@ export const addTestData = async (
   }
 
   tx = await itemNFT.testMint(owner.address, EstforConstants.BRONZE_HELMET, 100);
+  await tx.wait();
   console.log("Minted Bronze Helmet");
 
   // Start a combat action
