@@ -98,12 +98,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
   function _claimableRandomRewards(
     uint _playerId
-  ) private view returns (uint[] memory ids, uint[] memory amounts, uint64[] memory queueIds, uint numRemoved) {
+  ) private view returns (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
     U256 pendingRandomRewardsLength = U256.wrap(_pendingRandomRewards.length);
     ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-    queueIds = new uint64[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    queueIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
 
     uint length;
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
@@ -161,7 +161,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
   function claimRandomRewards(uint _playerId) external {
     address from = msg.sender;
-    (uint[] memory ids, uint[] memory amounts, uint64[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
+    (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
       _playerId
     );
     if (numRemoved != 0) {
@@ -323,7 +323,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     if (_flags.includePastRandomRewards) {
       // Loop through any pending random rewards and add them to the output
-      (uint[] memory ids, uint[] memory amounts, uint64[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
+      (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
         _playerId
       );
       U256 idsLength = U256.wrap(ids.length);

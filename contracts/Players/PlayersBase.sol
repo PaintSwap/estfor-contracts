@@ -25,28 +25,28 @@ abstract contract PlayersBase {
   event ConsumeBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
   event UnconsumeBoostVial(address from, uint playerId);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
-  event AddPendingRandomReward(address from, uint playerId, uint64 queueId, uint startTime, uint elapsed);
+  event AddPendingRandomReward(address from, uint playerId, uint queueId, uint startTime, uint elapsed);
   event PendingRandomRewardsClaimed(
     address from,
     uint playerId,
     uint numRemoved,
     uint[] itemTokenIds,
     uint[] amounts,
-    uint64[] queueIds
+    uint[] queueIds
   );
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
   event SetSpeedMultiplier(uint playerId, uint16 multiplier);
 
   // For logging
-  event Died(address from, uint playerId, uint64 queueId);
-  event Rewards(address from, uint playerId, uint64 queueId, uint[] itemTokenIds, uint[] amounts);
-  event Reward(address from, uint playerId, uint64 queueId, uint16 itemTokenId, uint amount);
+  event Died(address from, uint playerId, uint queueId);
+  event Rewards(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
+  event Reward(address from, uint playerId, uint queueId, uint16 itemTokenId, uint amount);
   event DailyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
   event WeeklyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
-  event Consume(address from, uint playerId, uint64 queueId, uint16 itemTokenId, uint amount);
-  event ActionFinished(address from, uint playerId, uint64 queueId);
-  event ActionPartiallyFinished(address from, uint playerId, uint64 queueId, uint elapsedTime);
-  event ActionAborted(address from, uint playerId, uint64 queueId);
+  event Consume(address from, uint playerId, uint queueId, uint16 itemTokenId, uint amount);
+  event ActionFinished(address from, uint playerId, uint queueId);
+  event ActionPartiallyFinished(address from, uint playerId, uint queueId, uint elapsedTime);
+  event ActionAborted(address from, uint playerId, uint queueId);
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 level);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
