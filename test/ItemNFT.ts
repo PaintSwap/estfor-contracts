@@ -72,6 +72,9 @@ describe("ItemNFT", function () {
       world,
       alice,
       mockOracleClient,
+      shop,
+      royaltyReceiver,
+      adminAccess,
     };
   }
 
@@ -146,5 +149,24 @@ describe("ItemNFT", function () {
 
     // Allow it to be burnt
     await expect(itemNFT.connect(alice).burn(EstforConstants.BRONZE_AXE, 1));
+  });
+
+  it("name & symbol", async function () {
+    const {itemNFT, world, shop, royaltyReceiver, adminAccess} = await loadFixture(deployContracts);
+    expect(await itemNFT.name()).to.be.eq("Estfor Items (Alpha)");
+    expect(await itemNFT.symbol()).to.be.eq("EK_IA");
+
+    const isAlpha = false;
+    const ItemNFT = await ethers.getContractFactory("ItemNFT");
+    const itemsUri = "ipfs://";
+    const itemNFTNotAlpha = await upgrades.deployProxy(
+      ItemNFT,
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
+      {
+        kind: "uups",
+      }
+    );
+    expect(await itemNFTNotAlpha.name()).to.be.eq("Estfor Items");
+    expect(await itemNFTNotAlpha.symbol()).to.be.eq("EK_I");
   });
 });

@@ -364,12 +364,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
   }
 
-  function name() external pure returns (string memory) {
-    return "Estfor Items (Alpha)";
+  function name() external view returns (string memory) {
+    return string(abi.encodePacked("Estfor Items", isAlpha ? " (Alpha)" : ""));
   }
 
-  function symbol() external pure returns (string memory) {
-    return "EK_IA";
+  function symbol() external view returns (string memory) {
+    return string(abi.encodePacked("EK_I", isAlpha ? "A" : ""));
   }
 
   // Or make it constants and redeploy the contracts

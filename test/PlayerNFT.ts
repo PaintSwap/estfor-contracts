@@ -158,6 +158,9 @@ describe("PlayerNFT", function () {
       editNameBrushPrice,
       mockOracleClient,
       avatarInfo,
+      adminAccess,
+      shop,
+      royaltyReceiver,
     };
   }
 
@@ -271,5 +274,35 @@ describe("PlayerNFT", function () {
       const {playerNFT} = await loadFixture(deployContracts);
       expect(await playerNFT.supportsInterface("0x2a55205a")).to.equal(true);
     });
+  });
+
+  it("name & symbol", async function () {
+    const {playerNFT, adminAccess, brush, shop, royaltyReceiver} = await loadFixture(deployContracts);
+    expect(await playerNFT.name()).to.be.eq("Estfor Players (Alpha)");
+    expect(await playerNFT.symbol()).to.be.eq("EK_PA");
+
+    const isAlpha = false;
+    // Create NFT contract which contains all the players
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+    const editNameBrushPrice = ethers.utils.parseEther("1");
+    const imageBaseUri = "ipfs://";
+    const playerNFTNotAlpha = (await upgrades.deployProxy(
+      PlayerNFT,
+      [
+        brush.address,
+        shop.address,
+        royaltyReceiver.address,
+        adminAccess.address,
+        editNameBrushPrice,
+        imageBaseUri,
+        isAlpha,
+      ],
+      {
+        kind: "uups",
+      }
+    )) as PlayerNFT;
+
+    expect(await playerNFTNotAlpha.name()).to.be.eq("Estfor Players");
+    expect(await playerNFTNotAlpha.symbol()).to.be.eq("EK_P");
   });
 });

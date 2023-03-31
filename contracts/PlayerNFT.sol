@@ -116,7 +116,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     royaltyFee = 250; // 2.5%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
-    _isAlpha = isAlpha;
+    isAlpha = _isAlpha;
   }
 
   function _mintStartingItems() private {
@@ -297,12 +297,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
   }
 
-  function name() external pure returns (string memory) {
-    return "Estfor Players (Alpha)";
+  function name() external view returns (string memory) {
+    return string(abi.encodePacked("Estfor Players", isAlpha ? " (Alpha)" : ""));
   }
 
-  function symbol() external pure returns (string memory) {
-    return "EK_PA";
+  function symbol() external view returns (string memory) {
+    return string(abi.encodePacked("EK_P", isAlpha ? "A" : ""));
   }
 
   function setAvatar(uint _avatarId, AvatarInfo calldata _avatarInfo) external onlyOwner {
