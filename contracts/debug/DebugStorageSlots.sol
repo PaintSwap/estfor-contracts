@@ -102,6 +102,8 @@ contract DebugStorageSlots {
     BoostType boostType;
     uint16 boostValue; // Varies, could be the % increase
     uint24 boostedTime; // How long the effect of the boost vial last
+    // Full equipment at the time this was generated
+    uint8 fullAttireBonusRewardsPercent;
   }
   struct Equipment {
     uint16 itemTokenId;
@@ -163,8 +165,7 @@ contract DebugStorageSlots {
     uint16 leftHandEquipmentTokenId; // Shield, can be empty
     uint24 timespan; // How long to queue the action for
     CombatStyle combatStyle; // specific style of combat,  can also be used
-    //  bool reusePrev; // If true, then the previous queued action attire is reused?
-    // 8 bytes left
+    uint80 queueId;
   }
 
   struct QueuedAction {
@@ -179,10 +180,8 @@ contract DebugStorageSlots {
     uint16 leftHandEquipmentTokenId; // Shield, can be empty
     uint24 timespan; // How long to queue the action for
     CombatStyle combatStyle; // specific style of combat,  can also be used
-    uint40 startTime; // Filled in by the function
+    uint40 startTime; // When the queued action started
     bool isValid; // If we still have the item, TODO: Not used yet
-    //  bool reusePrev; // If true, then the previous queued action attire is reused?
-    // 9 bytes left
   }
 
   struct ActionInfo {
@@ -198,10 +197,9 @@ contract DebugStorageSlots {
     uint8 successPercent; // 0-100
   }
 
-  // Equipment (leave at the bottom to allow for further ones)
   struct Attire {
-    uint16 head; // tokenId for the head (1 - 255)
-    uint16 neck; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
+    uint16 head;
+    uint16 neck;
     uint16 body;
     uint16 arms;
     uint16 legs;

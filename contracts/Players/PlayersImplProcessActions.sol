@@ -129,7 +129,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           queuedAction.actionId,
           _queueId,
           uint40(skillEndTime),
-          uint24(xpElapsedTime)
+          uint24(xpElapsedTime),
+          queuedAction.attire,
+          skill
         );
 
         // This loot might be needed for a future task so mint now rather than later
@@ -291,22 +293,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function _getSkillFromChoiceOrStyle(
-    ActionChoice memory _choice,
-    CombatStyle _combatStyle,
-    uint16 _actionId
-  ) private view returns (Skill skill) {
-    if (_combatStyle == CombatStyle.DEFENCE) {
-      return Skill.DEFENCE;
-    }
-
-    if (_choice.skill != Skill.NONE) {
-      skill = _choice.skill;
-    } else {
-      skill = world.getSkill(_actionId);
-    }
-  }
-
   function _getRewards(
     uint _playerId,
     uint40 _skillStartTime,
@@ -350,7 +336,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint16 _actionId,
     uint80 _queueId,
     uint40 _skillStartTime,
-    uint24 _elapsedTime
+    uint24 _elapsedTime,
+    Attire storage _attire,
+    Skill _skill
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
     if (hasRandomRewards) {
@@ -368,6 +356,24 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           }
         }
 
+        // Special case where thieving gives you a bonus if wearing full equipment
+        uint8 bonusRewardsPercent = fullAttireBonus[_skill].bonusRewardsPercent;
+        uint8 fullAttireBonusRewardsPercent;
+        if (bonusRewardsPercent != 0) {
+          // Check if they have the full equipment set, if so they can get some bonus
+          bool skipNeck = true;
+          (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+          bool hasFullAttire = PlayersLibrary.extraBoostFromFullAttire(
+            itemTokenIds,
+            balances,
+            fullAttireBonus[_skill].itemTokenIds
+          );
+
+          if (hasFullAttire) {
+            fullAttireBonusRewardsPercent = bonusRewardsPercent;
+          }
+        }
+
         // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
         _pendingRandomRewards.push(
           PendingRandomReward({
@@ -377,7 +383,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             elapsedTime: uint24(_elapsedTime),
             boostType: boostType,
             boostValue: boostValue,
-            boostedTime: boostedTime
+            boostedTime: boostedTime,
+            fullAttireBonusRewardsPercent: fullAttireBonusRewardsPercent
           })
         );
         emit AddPendingRandomReward(_from, _playerId, _queueId, _skillStartTime, _elapsedTime);
@@ -425,10 +432,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
-      _fullAttireBonus.bonusPercent,
+      _fullAttireBonus.bonusXPPercent,
+      _fullAttireBonus.bonusRewardsPercent,
       _fullAttireBonus.itemTokenIds
     );
-    emit AddFullAttireBonus(_fullAttireBonus.skill, _fullAttireBonus.itemTokenIds, _fullAttireBonus.bonusPercent);
+    emit AddFullAttireBonus(
+      _fullAttireBonus.skill,
+      _fullAttireBonus.itemTokenIds,
+      _fullAttireBonus.bonusXPPercent,
+      _fullAttireBonus.bonusRewardsPercent
+    );
   }
 
   function mintedPlayer(address _from, uint _playerId, Skill[2] calldata _startSkills) external {

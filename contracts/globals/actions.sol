@@ -41,8 +41,6 @@ struct QueuedActionInput {
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
   CombatStyle combatStyle; // specific style of combat,  can also be used
-  //  bool reusePrev; // If true, then the previous queued action attire is reused?
-  // 8 bytes left
 }
 
 struct QueuedAction {
@@ -57,9 +55,8 @@ struct QueuedAction {
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
   CombatStyle combatStyle; // specific style of combat,  can also be used
-  uint40 startTime; // Filled in by the function
+  uint40 startTime; // When the queued action started
   bool isValid; // If we still have the item, TODO: Not used yet
-  //  bool reusePrev; // If true, then the previous queued action attire is reused?
   // 8 bytes left
 }
 

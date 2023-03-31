@@ -9,6 +9,7 @@ import {AdminAccess} from "../AdminAccess.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
 /* solhint-disable no-global-import */
+import "../globals/actions.sol";
 import "../globals/players.sol";
 import "../globals/items.sol";
 import "../globals/rewards.sol";
@@ -48,10 +49,11 @@ abstract contract PlayersBase {
   event ActionAborted(address from, uint playerId, uint80 queueId);
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 level);
-  event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 _bonus);
+  event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
 
   struct FullAttireBonus {
-    uint8 bonusPercent; // 3 = 3%
+    uint8 bonusXPPercent; // 3 = 3%
+    uint8 bonusRewardsPercent; // 3 = 3%
     uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
   }
 
@@ -212,7 +214,7 @@ abstract contract PlayersBase {
     uint _elapsedTime,
     uint24 _xpPerHour
   ) internal view returns (uint32 extraPointsAccrued) {
-    uint8 bonusPercent = fullAttireBonus[_skill].bonusPercent;
+    uint8 bonusPercent = fullAttireBonus[_skill].bonusXPPercent;
     if (bonusPercent == 0) {
       return 0;
     }
@@ -242,6 +244,22 @@ abstract contract PlayersBase {
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
     pointsAccrued += _extraXPFromFullAttire(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);
+  }
+
+  function _getSkillFromChoiceOrStyle(
+    ActionChoice memory _choice,
+    CombatStyle _combatStyle,
+    uint16 _actionId
+  ) internal view returns (Skill skill) {
+    if (_combatStyle == CombatStyle.DEFENCE) {
+      return Skill.DEFENCE;
+    }
+
+    if (_choice.skill != Skill.NONE) {
+      skill = _choice.skill;
+    } else {
+      skill = world.getSkill(_actionId);
+    }
   }
 
   function _updateStatsFromHandEquipment(

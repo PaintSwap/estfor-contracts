@@ -26,10 +26,9 @@ enum EquipPosition {
   BOOST_VIAL
 }
 
-// Equipment (leave at the bottom to allow for further ones)
 struct Attire {
-  uint16 head; // tokenId for the head (1 - 255)
-  uint16 neck; // tokenId for the neck (256 - 511) (256 * i -> 256 * (i + 1))
+  uint16 head;
+  uint16 neck;
   uint16 body;
   uint16 arms;
   uint16 legs;
@@ -180,6 +179,7 @@ interface IPlayersDelegateView {
 
 struct FullAttireBonusInput {
   Skill skill;
-  uint8 bonusPercent; // 3 = 3%
+  uint8 bonusXPPercent;
+  uint8 bonusRewardsPercent; // 3 = 3%
   uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
 }

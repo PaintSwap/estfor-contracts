@@ -24,6 +24,8 @@ struct PendingRandomReward {
   BoostType boostType;
   uint16 boostValue; // Varies, could be the % increase
   uint24 boostedTime; // How long the effect of the boost vial last
+  // Full equipment at the time this was generated
+  uint8 fullAttireBonusRewardsPercent;
 }
 
 struct ActionRewards {

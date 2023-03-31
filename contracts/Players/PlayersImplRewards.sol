@@ -287,7 +287,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       if (!died) {
-        Skill skill = world.getSkill(queuedAction.actionId);
+        Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
         pointsAccrued = _getPointsAccrued(from, _playerId, queuedAction, skill, xpElapsedTime);
       }
 

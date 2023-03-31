@@ -316,7 +316,8 @@ export type AvatarInfo = {
 export type FullAttireBonus = {
   skill: Skill;
   itemTokenIds: [number, number, number, number, number];
-  bonusPercent: number;
+  bonusXPPercent: number;
+  bonusRewardsPercent: number;
 };
 
 export const allFullAttireBonuses: FullAttireBonus[] = [
@@ -329,7 +330,8 @@ export const allFullAttireBonuses: FullAttireBonus[] = [
       EstforConstants.NATURE_TROUSERS,
       EstforConstants.NATURE_BOOTS,
     ],
-    bonusPercent: 3,
+    bonusXPPercent: 3,
+    bonusRewardsPercent: 0,
   },
   {
     skill: Skill.THIEVING,
@@ -340,7 +342,8 @@ export const allFullAttireBonuses: FullAttireBonus[] = [
       EstforConstants.NATUOW_TASSETS,
       EstforConstants.NATUOW_BOOTS,
     ],
-    bonusPercent: 3,
+    bonusXPPercent: 3,
+    bonusRewardsPercent: 3,
   },
   {
     skill: Skill.CRAFTING,
@@ -351,7 +354,8 @@ export const allFullAttireBonuses: FullAttireBonus[] = [
       EstforConstants.BAT_WING_TROUSERS,
       EstforConstants.BAT_WING_BOOTS,
     ],
-    bonusPercent: 3,
+    bonusXPPercent: 3,
+    bonusRewardsPercent: 0,
   },
 ];
 

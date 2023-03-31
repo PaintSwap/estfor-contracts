@@ -118,7 +118,8 @@ describe("Non-Combat Actions", function () {
           EstforConstants.NATURE_TROUSERS,
           EstforConstants.NATURE_BOOTS,
         ],
-        bonusPercent: 3,
+        bonusXPPercent: 3,
+        bonusRewardsPercent: 0,
       });
 
       const queuedAction: EstforTypes.QueuedActionInput = {
