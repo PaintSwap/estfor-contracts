@@ -1092,5 +1092,21 @@ describe("Players", function () {
       await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
       expect(await players.connect(alice).activePlayer(alice.address)).to.eq(0);
     });
+
+    it("Check timespan overflow", async function () {
+      // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
+      const {playerId, players, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting();
+      const _queuedAction = {...queuedAction};
+      _queuedAction.timespan = 24 * 3600;
+      await players.connect(alice).startAction(playerId, _queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [5]);
+      await ethers.provider.send("evm_mine", []);
+
+      await players.connect(alice).processActions(playerId);
+      const actionQueue = await players.getActionQueue(playerId);
+      expect(actionQueue[0].timespan).gt(_queuedAction.timespan - 10);
+    });
   });
 });

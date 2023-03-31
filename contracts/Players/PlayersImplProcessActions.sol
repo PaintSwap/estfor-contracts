@@ -322,7 +322,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
     QueuedAction memory remainingAction = queuedAction;
     remainingAction.startTime = uint40(prevEndTime);
-    remainingAction.timespan = uint16(end - prevEndTime);
+    remainingAction.timespan = uint24(end - prevEndTime);
 
     // Build a list of the skills queued that remain
     remainingSkills[length] = remainingAction;

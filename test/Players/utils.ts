@@ -48,7 +48,7 @@ export const setupBasicWoodcutting = async function () {
     metadataURI: "someIPFSURI.json",
   });
 
-  return {queuedAction, rate, timespan};
+  return {queuedAction, rate};
 };
 
 export const getXPFromLevel = (level: number) => {

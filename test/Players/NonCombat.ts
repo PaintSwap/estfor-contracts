@@ -17,7 +17,7 @@ describe("Non-Combat Actions", function () {
     it("Cut wood", async function () {
       const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction, timespan, rate} = await setupBasicWoodcutting();
+      const {queuedAction, rate} = await setupBasicWoodcutting();
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -32,7 +32,7 @@ describe("Non-Combat Actions", function () {
       expect(pendingOutput.consumed.length).is.eq(0);
       expect(pendingOutput.produced.length).is.eq(1);
       expect(pendingOutput.produced[0].itemTokenId).is.eq(EstforConstants.LOG);
-      const balanceExpected = Math.floor((timespan * rate) / (3600 * 10));
+      const balanceExpected = Math.floor((queuedAction.timespan * rate) / (3600 * 10));
       expect(pendingOutput.produced[0].amount).is.eq(balanceExpected);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
