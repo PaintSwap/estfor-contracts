@@ -642,7 +642,7 @@ describe("Combat Actions", function () {
     });
   });
 
-  it.only("Dead", async function () {
+  it("Dead", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {

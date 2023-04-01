@@ -269,6 +269,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
         (consumedEquipment, output, xpElapsedTime, died) = _processConsumablesView(
           from,
+          _playerId,
           queuedAction,
           elapsedTime,
           combatStats,
@@ -596,6 +597,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
   function _processConsumablesView(
     address _from,
+    uint _playerId,
     QueuedAction storage _queuedAction,
     uint _elapsedTime,
     CombatStats memory _combatStats,
@@ -676,7 +678,21 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
 
     if (_actionChoice.outputTokenId != 0) {
-      output = Equipment(_actionChoice.outputTokenId, numConsumed);
+      uint8 successPercent = 100;
+      if (_actionChoice.successPercent != 100) {
+        uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
+        uint skillLevel = PlayersLibrary.getLevel(xp[_playerId][_actionChoice.skill]);
+        uint extraBoost = skillLevel - minLevel;
+
+        successPercent = uint8(
+          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, _actionChoice.successPercent + extraBoost)
+        );
+      }
+
+      uint24 amount = uint24((numConsumed * successPercent) / 100);
+      if (amount != 0) {
+        output = Equipment(_actionChoice.outputTokenId, amount);
+      }
     }
 
     assembly ("memory-safe") {

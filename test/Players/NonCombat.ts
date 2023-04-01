@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionChoiceId, getActionId, getRequestId} from "../utils";
+import {allPendingFlags, getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
@@ -846,12 +846,16 @@ describe("Non-Combat Actions", function () {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+      const foodNotBurned = Math.floor((timespan * rate) / (3600 * 10 * 2));
+      expect(pendingOutput.produced.length).is.eq(1);
+      expect(pendingOutput.produced[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
+      expect(pendingOutput.produced[0].amount).to.eq(foodNotBurned);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
 
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((timespan * rate) / (3600 * 10 * 2))
-      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(foodNotBurned);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
         1000 - Math.floor((timespan * rate) / (3600 * 10))
       );
@@ -999,32 +1003,19 @@ describe("Non-Combat Actions", function () {
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.BRONZE_HELMET,
-        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-        metadataURI: "someIPFSURI.json",
-        // Boost
-        boostType: EstforTypes.BoostType.GATHERING,
-        boostValue: 10,
-        boostDuration: 3600 * 24,
-        isTransferable: false,
+        equipPosition: EstforTypes.EquipPosition.HEAD,
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.BRONZE_ARROW,
-        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-        metadataURI: "someIPFSURI.json",
-        // Boost
-        boostType: EstforTypes.BoostType.GATHERING,
-        boostValue: 10,
-        boostDuration: 3600 * 24,
-        isTransferable: false,
+        equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.SKILL_BOOST,
         equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-        metadataURI: "someIPFSURI.json",
         // Boost
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue: 10,

@@ -1,5 +1,5 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {ActionChoiceInput} from "@paintswap/estfor-definitions/types";
+import {ActionChoiceInput, PendingFlags} from "@paintswap/estfor-definitions/types";
 import {ContractTransaction} from "ethers";
 
 export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
@@ -59,4 +59,10 @@ export const emptyActionChoice: ActionChoiceInput = {
   outputTokenId: EstforConstants.NONE,
   outputNum: 0,
   successPercent: 100,
+};
+
+export const allPendingFlags: PendingFlags = {
+  includeLoot: true,
+  includePastRandomRewards: true,
+  includeXPRewards: true,
 };

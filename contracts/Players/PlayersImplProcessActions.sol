@@ -199,9 +199,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       );
     }
 
-    if (numConsumed != 0) {
-      _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _queuedAction.queueId);
-    }
+    _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _queuedAction.queueId);
 
     if (_actionChoice.outputTokenId != 0) {
       uint8 successPercent = 100;
@@ -230,9 +228,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint24 _numConsumed,
     uint64 _queueId
   ) private {
-    _processConsumable(_from, _playerId, _actionChoice.inputTokenId1, _numConsumed * _actionChoice.num1, _queueId);
-    _processConsumable(_from, _playerId, _actionChoice.inputTokenId2, _numConsumed * _actionChoice.num2, _queueId);
-    _processConsumable(_from, _playerId, _actionChoice.inputTokenId3, _numConsumed * _actionChoice.num3, _queueId);
+    if (_numConsumed != 0) {
+      _processConsumable(_from, _playerId, _actionChoice.inputTokenId1, _numConsumed * _actionChoice.num1, _queueId);
+      _processConsumable(_from, _playerId, _actionChoice.inputTokenId2, _numConsumed * _actionChoice.num2, _queueId);
+      _processConsumable(_from, _playerId, _actionChoice.inputTokenId3, _numConsumed * _actionChoice.num3, _queueId);
+    }
   }
 
   function _processConsumable(
@@ -242,7 +242,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint24 _numConsumed,
     uint64 _queueId
   ) private {
-    if (_itemTokenId == 0) {
+    if (_itemTokenId == NONE) {
       return;
     }
     emit Consume(_from, _playerId, _queueId, _itemTokenId, _numConsumed);
@@ -269,8 +269,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       alphaCombat,
       betaCombat
     );
-
-    _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.queueId);
+    if (foodConsumed != 0) {
+      _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.queueId);
+    }
   }
 
   function _cacheCombatStats(Player storage _player, uint32 _healthXP, Skill _skill, uint32 _xp) private {
