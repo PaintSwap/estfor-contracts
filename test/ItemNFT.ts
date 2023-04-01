@@ -122,7 +122,6 @@ describe("ItemNFT", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
@@ -139,7 +138,6 @@ describe("ItemNFT", function () {
       tokenId: EstforConstants.BRONZE_AXE,
       isTransferable: false, // Cannot be transferred
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);

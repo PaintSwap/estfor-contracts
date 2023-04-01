@@ -19,7 +19,6 @@ describe("Boosts", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.XP_BOOST,
       equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      metadataURI: "someIPFSURI.json",
       // Boost
       boostType: EstforTypes.BoostType.NON_COMBAT_XP,
       boostValue,
@@ -68,7 +67,6 @@ describe("Boosts", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
@@ -96,7 +94,6 @@ describe("Boosts", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.XP_BOOST,
       equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      metadataURI: "someIPFSURI.json",
       // Boost
       boostType: EstforTypes.BoostType.NON_COMBAT_XP,
       boostValue,
@@ -145,7 +142,6 @@ describe("Boosts", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
@@ -182,7 +178,6 @@ describe("Boosts", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.GATHERING_BOOST,
       equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      metadataURI: "someIPFSURI.json",
       // Boost
       boostType: EstforTypes.BoostType.GATHERING,
       boostValue,
@@ -231,7 +226,6 @@ describe("Boosts", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);

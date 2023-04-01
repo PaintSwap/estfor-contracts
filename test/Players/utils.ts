@@ -45,7 +45,6 @@ export const setupBasicWoodcutting = async function () {
     ...EstforTypes.defaultInputItem,
     tokenId: EstforConstants.BRONZE_AXE,
     equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    metadataURI: "someIPFSURI.json",
   });
 
   return {queuedAction, rate};

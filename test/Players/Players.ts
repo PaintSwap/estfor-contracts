@@ -58,7 +58,6 @@ describe("Players", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     const rate = 100 * 10; // per hour
@@ -109,7 +108,6 @@ describe("Players", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     const rate = 100 * 10; // per hour
@@ -198,7 +196,6 @@ describe("Players", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -256,7 +253,6 @@ describe("Players", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -369,7 +365,6 @@ describe("Players", function () {
       tokenId: EstforConstants.BRONZE_GAUNTLETS,
       combatStats: EstforTypes.emptyCombatStats,
       equipPosition: EstforTypes.EquipPosition.ARMS,
-      metadataURI: "someIPFSURI.json",
     });
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
 
@@ -627,7 +622,6 @@ describe("Players", function () {
         minXP: 0,
         tokenId: EstforConstants.ORICHALCUM_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
@@ -704,14 +698,12 @@ describe("Players", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.LOG,
         equipPosition: EstforTypes.EquipPosition.AUX,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMint(alice.address, EstforConstants.LOG, 5);
@@ -790,13 +782,11 @@ describe("Players", function () {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.MAGIC_FIRE_STARTER,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.LOG,
           equipPosition: EstforTypes.EquipPosition.AUX,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
@@ -805,7 +795,6 @@ describe("Players", function () {
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
           equipPosition: EstforTypes.EquipPosition.FOOD,
-          metadataURI: "someIPFSURI.json",
         },
       ]);
 
@@ -869,7 +858,6 @@ describe("Players", function () {
         minXP: 0,
         tokenId: EstforConstants.BRONZE_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMints(
@@ -893,7 +881,6 @@ describe("Players", function () {
           minXP,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
@@ -901,7 +888,6 @@ describe("Players", function () {
           minXP,
           tokenId: EstforConstants.AMETHYST_AMULET,
           equipPosition: EstforTypes.EquipPosition.NECK,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
@@ -909,7 +895,6 @@ describe("Players", function () {
           minXP,
           tokenId: EstforConstants.BRONZE_ARMOR,
           equipPosition: EstforTypes.EquipPosition.BODY,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
@@ -917,7 +902,6 @@ describe("Players", function () {
           minXP,
           tokenId: EstforConstants.BRONZE_GAUNTLETS,
           equipPosition: EstforTypes.EquipPosition.ARMS,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
@@ -925,7 +909,6 @@ describe("Players", function () {
           minXP,
           tokenId: EstforConstants.BRONZE_TASSETS,
           equipPosition: EstforTypes.EquipPosition.LEGS,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
@@ -933,7 +916,6 @@ describe("Players", function () {
           minXP,
           tokenId: EstforConstants.BRONZE_BOOTS,
           equipPosition: EstforTypes.EquipPosition.FEET,
-          metadataURI: "someIPFSURI.json",
         },
       ];
 
@@ -1002,7 +984,6 @@ describe("Players", function () {
         minXP,
         tokenId: EstforConstants.ORICHALCUM_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
@@ -1063,7 +1044,6 @@ describe("Players", function () {
         minXP,
         tokenId: EstforConstants.ORICHALCUM_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);

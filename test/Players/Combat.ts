@@ -78,21 +78,18 @@ describe("Combat Actions", function () {
         },
         tokenId: EstforConstants.BRONZE_SWORD,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         combatStats: bronzeHelmetStats,
         tokenId: EstforConstants.BRONZE_HELMET,
         equipPosition: EstforTypes.EquipPosition.HEAD,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.BRONZE_ARROW,
         equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
@@ -100,7 +97,6 @@ describe("Combat Actions", function () {
         healthRestored: 12,
         tokenId: EstforConstants.COOKED_MINNUS,
         equipPosition: EstforTypes.EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
       });
 
       return {
@@ -231,7 +227,6 @@ describe("Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.BRONZE_SHIELD,
         equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
 
       await expect(
@@ -404,38 +399,32 @@ describe("Combat Actions", function () {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.AIR_SCROLL,
           equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.SHADOW_SCROLL,
           equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.TOTEM_STAFF,
           equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.BRONZE_SHIELD,
           equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-          metadataURI: "someIPFSURI.json",
         },
         {
           ...EstforTypes.defaultInputItem,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
           equipPosition: EstforTypes.EquipPosition.FOOD,
-          metadataURI: "someIPFSURI.json",
         },
       ]);
 
@@ -712,14 +701,12 @@ describe("Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_SWORD,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_ARROW,
       equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
@@ -727,7 +714,6 @@ describe("Combat Actions", function () {
       healthRestored: 1,
       tokenId: EstforConstants.COOKED_MINNUS,
       equipPosition: EstforTypes.EquipPosition.FOOD,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);

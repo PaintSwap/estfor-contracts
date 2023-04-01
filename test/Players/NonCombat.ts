@@ -71,42 +71,36 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.BRONZE_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.NATURE_MASK,
         equipPosition: EstforTypes.EquipPosition.HEAD,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.NATURE_BODY,
         equipPosition: EstforTypes.EquipPosition.BODY,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.NATURE_BRACERS,
         equipPosition: EstforTypes.EquipPosition.ARMS,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.NATURE_TROUSERS,
         equipPosition: EstforTypes.EquipPosition.LEGS,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.NATURE_BOOTS,
         equipPosition: EstforTypes.EquipPosition.FEET,
-        metadataURI: "someIPFSURI.json",
       });
 
       await players.addFullAttireBonus({
@@ -229,14 +223,12 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.MAGIC_FIRE_STARTER,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.LOG,
       equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.testMint(alice.address, EstforConstants.LOG, 5); // Mint less than will be used
@@ -279,7 +271,6 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.BRONZE_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
       const timespan = 7200 + 10;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -342,7 +333,6 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
       const timespan = 3600;
 
@@ -366,7 +356,6 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.LOG,
       equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedActions[0], EstforTypes.ActionQueueStatus.NONE);
@@ -420,7 +409,6 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.BRONZE_AXE,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
       const timespan = 7200;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -483,7 +471,6 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
       });
       const timespan = 3600;
 
@@ -507,7 +494,6 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.LOG,
       equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
     });
 
     // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
@@ -577,7 +563,6 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_PICKAXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -649,14 +634,12 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.COAL_ORE,
       equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.MITHRIL_ORE,
       equipPosition: EstforTypes.EquipPosition.AUX,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.testMint(alice.address, EstforConstants.COAL_ORE, 255);
@@ -741,14 +724,12 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.RAW_MINNUS,
         equipPosition: EstforTypes.EquipPosition.AUX,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.COOKED_MINNUS,
         equipPosition: EstforTypes.EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
@@ -829,14 +810,12 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.RAW_MINNUS,
         equipPosition: EstforTypes.EquipPosition.AUX,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.COOKED_MINNUS,
         equipPosition: EstforTypes.EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
@@ -922,14 +901,12 @@ describe("Non-Combat Actions", function () {
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.RAW_MINNUS,
         equipPosition: EstforTypes.EquipPosition.AUX,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
         tokenId: EstforConstants.COOKED_MINNUS,
         equipPosition: EstforTypes.EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
       });
 
       await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
@@ -1253,7 +1230,6 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -1275,7 +1251,6 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     const rate = 0.1 * 10; // 0.1 per hour
@@ -1362,14 +1337,12 @@ describe("Non-Combat Actions", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_PICKAXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await expect(

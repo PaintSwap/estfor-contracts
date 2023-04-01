@@ -20,7 +20,6 @@ describe("Rewards", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     const rate = 100 * 10; // per hour
@@ -99,7 +98,6 @@ describe("Rewards", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     const rate = 100 * 10; // per hour
@@ -171,7 +169,6 @@ describe("Rewards", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     const rate = 100 * 10; // per hour
@@ -309,7 +306,6 @@ describe("Rewards", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     const rate = 100 * 10; // per hour
@@ -462,21 +458,18 @@ describe("Rewards", function () {
       },
       tokenId: EstforConstants.BRONZE_SWORD,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       combatStats: bronzeHelmetStats,
       tokenId: EstforConstants.BRONZE_HELMET,
       equipPosition: EstforTypes.EquipPosition.HEAD,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_ARROW,
       equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
@@ -484,7 +477,6 @@ describe("Rewards", function () {
       healthRestored: 12,
       tokenId: EstforConstants.COOKED_MINNUS,
       equipPosition: EstforTypes.EquipPosition.FOOD,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -525,14 +517,12 @@ describe("Rewards", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_ARROW,
       equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-      metadataURI: "someIPFSURI.json",
     });
 
     const randomChanceFraction = 50.0 / 100; // 50% chance
@@ -658,14 +648,12 @@ describe("Rewards", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_ARROW,
       equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-      metadataURI: "someIPFSURI.json",
     });
 
     const randomChanceFractions = [80.0 / 100, 50.0 / 100, 50.0 / 100, 20.0 / 100]; // 80%, 50%, 50%, 20%
@@ -867,7 +855,6 @@ describe("Rewards", function () {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_AXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
     });
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
