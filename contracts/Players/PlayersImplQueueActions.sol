@@ -18,40 +18,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _checkStartSlot();
   }
 
-  function _handleDailyRewards(address _from, uint _playerId) private {
-    uint streakStart = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
-    uint streakStartIndex = streakStart / 1 weeks;
-    bytes32 mask = dailyRewardMasks[_playerId];
-    uint16 lastRewardStartIndex = uint16(uint256(mask));
-    if (lastRewardStartIndex < streakStartIndex) {
-      mask = bytes32(streakStartIndex); // Reset the mask
-    }
-
-    uint maskIndex = ((block.timestamp / 1 days) * 1 days - streakStart) / 1 days;
-
-    // Claim daily reward as long as it's been set
-    if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
-      Equipment memory dailyReward = world.getDailyReward();
-      if (dailyReward.itemTokenId != NONE) {
-        mask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
-        dailyRewardMasks[_playerId] = mask;
-
-        itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
-        emit DailyReward(_from, _playerId, dailyReward.itemTokenId, dailyReward.amount);
-
-        // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
-        bool canClaimWeeklyRewards = uint(mask >> (25 * 8)) == 2 ** (7 * 8) - 1;
-        if (canClaimWeeklyRewards) {
-          Equipment memory weeklyReward = world.getWeeklyReward();
-          if (weeklyReward.itemTokenId != NONE) {
-            itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
-            emit WeeklyReward(_from, _playerId, weeklyReward.itemTokenId, weeklyReward.amount);
-          }
-        }
-      }
-    }
-  }
-
   function startActions(
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
@@ -135,8 +101,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     assert(totalTimespan <= MAX_TIME); // Should never happen
     nextQueueId = queueId.asUint64();
-
-    _handleDailyRewards(from, _playerId);
 
     if (_boostItemTokenId != NONE) {
       consumeBoost(from, _playerId, _boostItemTokenId, uint40(block.timestamp));

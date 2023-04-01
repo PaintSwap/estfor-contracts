@@ -21,6 +21,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     Player storage player = players[_playerId];
     if (player.actionQueue.length == 0) {
       // No actions remaining
+      _handleDailyRewards(_from, _playerId);
       return remainingSkills;
     }
 
@@ -157,6 +158,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     _claimRandomRewards(_playerId);
+    _handleDailyRewards(_from, _playerId);
 
     assembly ("memory-safe") {
       mstore(remainingSkills, remainingSkillsLength)
@@ -501,5 +503,39 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     _updateXP(msg.sender, _playerId, _skill, _xp - oldPoints);
     _claimTotalXPThresholdRewards(from, _playerId, oldPoints, _xp);
     players[_playerId].totalXP += uint160(_xp - oldPoints);
+  }
+
+  function _handleDailyRewards(address _from, uint _playerId) private {
+    uint streakStart = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
+    uint streakStartIndex = streakStart / 1 weeks;
+    bytes32 mask = dailyRewardMasks[_playerId];
+    uint16 lastRewardStartIndex = uint16(uint256(mask));
+    if (lastRewardStartIndex < streakStartIndex) {
+      mask = bytes32(streakStartIndex); // Reset the mask
+    }
+
+    uint maskIndex = ((block.timestamp / 1 days) * 1 days - streakStart) / 1 days;
+
+    // Claim daily reward as long as it's been set
+    if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
+      Equipment memory dailyReward = world.getDailyReward();
+      if (dailyReward.itemTokenId != NONE) {
+        mask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
+        dailyRewardMasks[_playerId] = mask;
+
+        itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
+        emit DailyReward(_from, _playerId, dailyReward.itemTokenId, dailyReward.amount);
+
+        // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
+        bool canClaimWeeklyRewards = uint(mask >> (25 * 8)) == 2 ** (7 * 8) - 1;
+        if (canClaimWeeklyRewards) {
+          Equipment memory weeklyReward = world.getWeeklyReward();
+          if (weeklyReward.itemTokenId != NONE) {
+            itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
+            emit WeeklyReward(_from, _playerId, weeklyReward.itemTokenId, weeklyReward.amount);
+          }
+        }
+      }
+    }
   }
 }

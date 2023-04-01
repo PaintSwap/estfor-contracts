@@ -131,7 +131,7 @@ export const addTestData = async (
     await ethers.provider.send("evm_increaseTime", [1000000]);
   }
 
-  tx = await itemNFT.testMint(owner.address, EstforConstants.BRONZE_HELMET, 100);
+  tx = await itemNFT.testMint(owner.address, EstforConstants.BRONZE_HELMET, 1);
   await tx.wait();
   console.log("Minted Bronze Helmet");
 
