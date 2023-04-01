@@ -284,7 +284,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         itemTokenIds[itemLength++] = _queuedAction.regenerateId;
         (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(itemTokenIds[itemLength - 1]);
         if (xp[_playerId][skill] < minXP) {
-          revert ConsumeableMinimumXPNotReached();
+          revert ConsumableMinimumXPNotReached();
         }
       }
       if (actionChoice.inputTokenId1 != NONE) {

@@ -728,7 +728,7 @@ describe("Players", function () {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     });
 
-    it("Consumeables (food)", async function () {
+    it("Consumables (food)", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * 10; // per hour
       let tx = await world.addAction({
@@ -814,7 +814,7 @@ describe("Players", function () {
 
       await expect(
         players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
-      ).to.be.revertedWithCustomError(players, "ConsumeableMinimumXPNotReached");
+      ).to.be.revertedWithCustomError(players, "ConsumableMinimumXPNotReached");
 
       await players.testModifyXP(playerId, EstforTypes.Skill.HEALTH, minXP);
 

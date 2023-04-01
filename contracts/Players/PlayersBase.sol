@@ -78,7 +78,7 @@ abstract contract PlayersBase {
   error ActionChoiceMinimumXPNotReached();
   error ItemMinimumXPNotReached();
   error AttireMinimumXPNotReached();
-  error ConsumeableMinimumXPNotReached();
+  error ConsumableMinimumXPNotReached();
   error InvalidStartSlot();
   error NoItemBalance(uint16 itemTokenId);
   error CannotEquipTwoHandedAndOtherEquipment();
