@@ -27,6 +27,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error LengthMismatch();
   error LengthEmpty();
   error ItemCannotBeBought();
+  error ItemDoesNotExist();
   error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
   error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
 
@@ -186,6 +187,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function removeItem(uint16 _tokenId) external onlyOwner {
+    if (shopItems[_tokenId] == 0) {
+      revert ItemDoesNotExist();
+    }
     delete shopItems[_tokenId];
     emit RemoveShopItem(_tokenId);
   }

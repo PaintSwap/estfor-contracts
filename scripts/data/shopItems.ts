@@ -36,10 +36,6 @@ export const allShopItems: ShopItem[] = [
     price: ethers.utils.parseEther("150"),
   },
   {
-    tokenId: EstforConstants.TITANIUM_FISHING_ROD,
-    price: ethers.utils.parseEther("200"),
-  },
-  {
     tokenId: EstforConstants.HARPOON,
     price: ethers.utils.parseEther("250"),
   },
