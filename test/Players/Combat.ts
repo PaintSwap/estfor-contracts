@@ -1,5 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {COOKED_MINNUS} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId} from "../utils";
@@ -641,8 +642,7 @@ describe("Combat Actions", function () {
     });
   });
 
-  it("Dead", async function () {
-    // Lose all the XP that would have been gained
+  it.only("Dead", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {
@@ -655,7 +655,7 @@ describe("Combat Actions", function () {
       health: 0,
     };
 
-    const rate = 1 * 10; // per hour
+    const rate = 6000 * 10; // per hour
     let tx = await world.addAction({
       actionId: 1,
       info: {
@@ -663,7 +663,7 @@ describe("Combat Actions", function () {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawned: 1,
+        numSpawned: 100,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionIsAvailable,
@@ -676,8 +676,19 @@ describe("Combat Actions", function () {
     });
     const actionId = await getActionId(tx);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
-    await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 2);
+    const foodNum = 100;
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.BRONZE_SWORD, EstforConstants.COOKED_MINNUS, EstforConstants.BRONZE_HELMET],
+      [1, foodNum, 1]
+    );
+
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_HELMET,
+      equipPosition: EstforTypes.EquipPosition.HEAD,
+    });
+
     const timespan = 3600 * 3; // 3 hours
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
       ...emptyActionChoice,
@@ -685,7 +696,7 @@ describe("Combat Actions", function () {
     });
     const choiceId = await getActionChoiceId(tx);
     const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: EstforTypes.noAttire,
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
       actionId,
       combatStyle: EstforTypes.CombatStyle.ATTACK,
       choiceId,
@@ -721,11 +732,38 @@ describe("Combat Actions", function () {
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_mine", []);
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
+      includeLoot: true,
+      includePastRandomRewards: true,
+      includeXPRewards: true,
+    });
+    expect(pendingOutput.died).to.eq(true);
+    expect(pendingOutput.produced.length).to.eq(0);
+    expect(pendingOutput.producedPastRandomRewards.length).to.eq(0);
+    expect(pendingOutput.consumed.length).to.eq(1);
+    expect(pendingOutput.consumed[0].amount).to.eq(foodNum);
+    expect(pendingOutput.consumed[0].itemTokenId).to.eq(COOKED_MINNUS);
+
     await players.connect(alice).processActions(playerId);
-    // Should die so doesn't get any attack skill points, and food should be consumed
+    // Should die so doesn't get any attack skill points, loot, and food should be consumed
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
+
+    // Have no food, should not show any in consumed
+    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_mine", []);
+    pendingOutput = await players.pendingRewards(alice.address, playerId, {
+      includeLoot: true,
+      includePastRandomRewards: true,
+      includeXPRewards: true,
+    });
+    expect(pendingOutput.died).to.eq(true);
+    expect(pendingOutput.produced.length).to.eq(0);
+    expect(pendingOutput.producedPastRandomRewards.length).to.eq(0);
+    expect(pendingOutput.consumed.length).to.eq(0);
   });
 });
