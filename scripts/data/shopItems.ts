@@ -28,10 +28,6 @@ export const allShopItems: ShopItem[] = [
     price: ethers.utils.parseEther("100"),
   },
   {
-    tokenId: EstforConstants.MAGIC_NET,
-    price: ethers.utils.parseEther("120"),
-  },
-  {
     tokenId: EstforConstants.WOOD_FISHING_ROD,
     price: ethers.utils.parseEther("150"),
   },

@@ -1,5 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {EstforConstants} from "@paintswap/estfor-definitions";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 
@@ -68,6 +69,29 @@ describe("Shop", function () {
 
     await shop.setItemNFT(itemNFT.address);
 
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_SHIELD,
+        equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_SWORD,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.RAW_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.SAPPHIRE_AMULET,
+        equipPosition: EstforTypes.EquipPosition.NECK,
+      },
+    ]);
+
     return {
       itemNFT,
       shop,
@@ -114,6 +138,16 @@ describe("Shop", function () {
     expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(200);
     expect(await shop.shopItems(EstforConstants.RAW_MINNUS)).to.eq(400);
     expect(await shop.shopItems(EstforConstants.BRONZE_SWORD)).to.eq(10);
+  });
+
+  it("Set up shop with items which don't exist", async function () {
+    const {shop} = await loadFixture(deployContracts);
+    await expect(
+      shop.addBuyableItem({tokenId: EstforConstants.TITANIUM_ARMOR, price: 500})
+    ).to.be.revertedWithCustomError(shop, "ItemDoesNotExist");
+    await expect(
+      shop.addBuyableItems([{tokenId: EstforConstants.TITANIUM_ARMOR, price: 500}])
+    ).to.be.revertedWithCustomError(shop, "ItemDoesNotExist");
   });
 
   it("Buy", async function () {
@@ -228,5 +262,14 @@ describe("Shop", function () {
       .sellBatch([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2], minExpected);
 
     expect(await brush.balanceOf(alice.address)).to.greaterThan(minExpected);
+  });
+
+  it("Remove shop item", async function () {
+    const {shop} = await loadFixture(deployContracts);
+    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
+    expect(await shop.shopItems(BRONZE_SHIELD)).gt(0);
+    await shop.removeItem(BRONZE_SHIELD);
+    expect(await shop.shopItems(BRONZE_SHIELD)).eq(0);
+    await expect(shop.removeItem(BRONZE_SHIELD)).to.be.revertedWithCustomError(shop, "ShopItemDoesNotExist");
   });
 });

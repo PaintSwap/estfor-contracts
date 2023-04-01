@@ -175,18 +175,18 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    if (!_exists(_tokenId)) {
+    if (!exists(_tokenId)) {
       revert ItemDoesNotExist(uint16(_tokenId));
     }
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
 
-  function _exists(uint _tokenId) private view returns (bool) {
+  function exists(uint _tokenId) public view returns (bool) {
     return items[_tokenId].exists;
   }
 
   function _getItem(uint16 _tokenId) private view returns (Item memory) {
-    if (!_exists(_tokenId)) {
+    if (!exists(_tokenId)) {
       revert ItemDoesNotExist(_tokenId);
     }
     return items[_tokenId];
@@ -201,7 +201,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
-    if (!_exists(_tokenId)) {
+    if (!exists(_tokenId)) {
       revert ItemDoesNotExist(_tokenId);
     }
     return items[_tokenId].equipPosition;
@@ -254,7 +254,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      if (_exists(_ids[i]) && !items[_ids[i]].isTransferable) {
+      if (exists(_ids[i]) && !items[_ids[i]].isTransferable) {
         revert ItemNotTransferable();
       }
     }
@@ -374,7 +374,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   // Or make it constants and redeploy the contracts
   function addItem(InputItem calldata _inputItem) external onlyOwner {
-    if (_exists(_inputItem.tokenId)) {
+    if (exists(_inputItem.tokenId)) {
       revert ItemAlreadyExists();
     }
     Item storage item = _setItem(_inputItem);
@@ -389,7 +389,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      if (_exists(_inputItems[i].tokenId)) {
+      if (exists(_inputItems[i].tokenId)) {
         revert ItemAlreadyExists();
       }
       _items[i] = _setItem(_inputItems[i]);
@@ -400,7 +400,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function editItem(InputItem calldata _inputItem) external onlyOwner {
-    if (!_exists(_inputItem.tokenId)) {
+    if (!exists(_inputItem.tokenId)) {
       revert ItemDoesNotExist(_inputItem.tokenId);
     }
     if (
