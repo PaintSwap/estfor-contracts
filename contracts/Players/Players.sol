@@ -90,7 +90,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _startActions(_playerId, queuedActions, NONE, _queueStatus);
   }
 
-  // Queue them up (Skill X for some amount of time, Skill Y for some amount of time, SKill Z for some amount of time)
+  /// @notice Start actions for a player
+  /// @param _playerId Id for the player
+  /// @param _queuedActions Actions to queue
+  /// @param _boostItemTokenId Which boost to consume, can be NONE
+  /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
+  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
   function startActions(
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
@@ -100,6 +105,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _startActions(_playerId, _queuedActions, _boostItemTokenId, _queueStatus);
   }
 
+  /// @notice Process actions for a player up to the current block timestamp
   function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     if (players[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
@@ -110,17 +116,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     _claimRandomRewards(_playerId);
-  }
-
-  function consumeBoost(
-    uint _playerId,
-    uint16 _itemTokenId,
-    uint40 _startTime
-  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    _delegatecall(
-      implQueueActions,
-      abi.encodeWithSignature("consumeBoost(uint256,uint16,uint40)", _playerId, _itemTokenId, _startTime)
-    );
   }
 
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
@@ -188,17 +183,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _clearEverything(msg.sender, _playerId);
   }
 
+  /// @notice Called by the PlayerNFT contract before a player is transferred
+  /// @param _from The owner of the player being transferred
+  /// @param _playerId The id of the player being transferred
   function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
     _clearEverything(_from, _playerId);
     // If it was the active player, then clear it
     uint existingActivePlayerId = activePlayer[_from];
-    // All attire and actions can be made for this player
-    if (existingActivePlayerId != 0) {
+    if (existingActivePlayerId == _playerId) {
       delete activePlayer[_from];
       emit SetActivePlayer(_from, existingActivePlayerId, 0);
     }
   }
 
+  /// @notice Called by the ItemNFT contract before an item is transferred. Currently unused
   function itemBeforeTokenTransfer(
     address _from,
     uint[] calldata /*_itemTokenIds*/,

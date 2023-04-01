@@ -1093,6 +1093,15 @@ describe("Players", function () {
       expect(await players.connect(alice).activePlayer(alice.address)).to.eq(0);
     });
 
+    it("Transferring non-active player", async function () {
+      const {playerId, players, playerNFT, alice, owner} = await loadFixture(playersFixture);
+
+      const newPlayerId = await createPlayer(playerNFT, 1, alice, ethers.utils.formatBytes32String("New name"), false);
+      expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
+      await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, newPlayerId, 1, "0x");
+      expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
+    });
+
     it("Check timespan overflow", async function () {
       // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
       const {playerId, players, alice} = await loadFixture(playersFixture);
