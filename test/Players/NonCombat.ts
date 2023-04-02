@@ -24,11 +24,7 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
 
-      const pendingOutput = await players.pendingRewards(alice.address, playerId, {
-        includeLoot: true,
-        includePastRandomRewards: true,
-        includeXPRewards: true,
-      });
+      const pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
       expect(pendingOutput.consumed.length).is.eq(0);
       expect(pendingOutput.produced.length).is.eq(1);
       expect(pendingOutput.produced[0].itemTokenId).is.eq(EstforConstants.LOG);

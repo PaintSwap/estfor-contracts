@@ -4,7 +4,14 @@ import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
 import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, getRequestId} from "../utils";
+import {
+  allPendingFlags,
+  bronzeHelmetStats,
+  emptyActionChoice,
+  getActionChoiceId,
+  getActionId,
+  getRequestId,
+} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
 
@@ -67,21 +74,13 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [50]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
-    });
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
     expect(pendingOutput.produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [450]);
     await ethers.provider.send("evm_mine", []);
-    pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
-    });
+    pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
     expect(pendingOutput.produced.length).is.eq(1);
     expect(pendingOutput.producedXPRewards.length).is.eq(1);
     expect(pendingOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
@@ -434,11 +433,7 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [3600 * 24]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
-    });
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
     expect(pendingOutput.produced.length).to.eq(0);
 
     tx = await world.requestRandomWords();
@@ -446,11 +441,7 @@ describe("Rewards", function () {
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
 
-    pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
-    });
+    pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
     expect(pendingOutput.produced.length).to.eq(1);
 
     await players.connect(alice).processActions(playerId);
@@ -550,11 +541,7 @@ describe("Rewards", function () {
 
       expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
-      const pendingOutput = await players.pendingRewards(alice.address, playerId, {
-        includeLoot: true,
-        includePastRandomRewards: true,
-        includeXPRewards: true,
-      });
+      const pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
       expect(pendingOutput.produced.length).to.eq(0);
 
       tx = await world.requestRandomWords();
@@ -812,11 +799,7 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_mine", []);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
 
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
-    });
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
     expect(pendingOutput.produced.length).is.eq(1);
     expect(pendingOutput.produced[0].amount).to.gt(0);
     expect(pendingOutput.produced[0].itemTokenId).to.eq(EstforConstants.LOG);

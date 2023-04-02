@@ -3,7 +3,14 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {COOKED_MINNUS} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId} from "../utils";
+import {
+  allPendingFlags,
+  bronzeHelmetStats,
+  emptyActionChoice,
+  getActionChoiceId,
+  getActionChoiceIds,
+  getActionId,
+} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 
 const actionIsAvailable = true;
@@ -321,11 +328,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingOutput = await players.pendingRewards(alice.address, playerId, {
-        includeLoot: true,
-        includePastRandomRewards: true,
-        includeXPRewards: true,
-      });
+      let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
       expect(pendingOutput.consumed.length).to.eq(1);
       expect(pendingOutput.consumed[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
       expect(pendingOutput.consumed[0].amount).to.eq(255);
@@ -758,11 +761,7 @@ describe("Combat Actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
-    });
+    let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
     expect(pendingOutput.died).to.eq(true);
     expect(pendingOutput.produced.length).to.eq(0);
     expect(pendingOutput.producedPastRandomRewards.length).to.eq(0);
@@ -780,11 +779,7 @@ describe("Combat Actions", function () {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
-    pendingOutput = await players.pendingRewards(alice.address, playerId, {
-      includeLoot: true,
-      includePastRandomRewards: true,
-      includeXPRewards: true,
-    });
+    pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
     expect(pendingOutput.died).to.eq(true);
     expect(pendingOutput.produced.length).to.eq(0);
     expect(pendingOutput.producedPastRandomRewards.length).to.eq(0);
