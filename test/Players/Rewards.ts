@@ -162,11 +162,11 @@ describe("Rewards", function () {
 
   describe("Daily Rewards", function () {
     it("Daily & weekly reward on starting actions", async function () {
-      const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting();
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -265,11 +265,11 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim", async function () {
-      const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting();
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -292,11 +292,11 @@ describe("Rewards", function () {
     });
 
     it("Update on process actions", async function () {
-      const {playerId, players, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting();
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;

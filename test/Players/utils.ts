@@ -1,11 +1,8 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {ItemNFT, World} from "../../typechain-types";
 import {getActionId} from "../utils";
-import {playersFixture} from "./PlayersFixture";
 
-export const setupBasicWoodcutting = async function () {
-  const {itemNFT, world} = await loadFixture(playersFixture);
-
+export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: World) {
   const rate = 100 * 10; // per hour
   const tx = await world.addAction({
     actionId: 1,

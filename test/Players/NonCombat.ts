@@ -15,9 +15,9 @@ describe("Non-Combat Actions", function () {
   // Test isDynamic
   describe("Woodcutting", function () {
     it("Cut wood", async function () {
-      const {playerId, players, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction, rate} = await setupBasicWoodcutting();
+      const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -1191,46 +1191,11 @@ describe("Non-Combat Actions", function () {
   it("Set past max timespan ", async function () {
     const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(playersFixture);
 
-    const rate = 100 * 10; // per hour
-    const tx = await world.addAction({
-      actionId: 1,
-      info: {
-        skill: EstforTypes.Skill.WOODCUTTING,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
-        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: false,
-        successPercent: 100,
-      },
-      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
-    const actionId = await getActionId(tx);
+    const {queuedAction: basicWoodcuttingQueuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
     const timespan = maxTime + 1; // Exceed maximum
-    const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: EstforTypes.noAttire,
-      actionId,
-      combatStyle: EstforTypes.CombatStyle.NONE,
-      choiceId: EstforConstants.NONE,
-      choiceId1: EstforConstants.NONE,
-      choiceId2: EstforConstants.NONE,
-      regenerateId: EstforConstants.NONE,
-      timespan,
-      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
-    };
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
+    const queuedAction = {...basicWoodcuttingQueuedAction};
+    queuedAction.timespan = timespan;
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -1298,52 +1263,14 @@ describe("Non-Combat Actions", function () {
   it("Incorrect left/right hand equipment", async function () {
     const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
 
-    const rate = 100 * 10; // per hour
-    const tx = await world.addAction({
-      actionId: 1,
-      info: {
-        skill: EstforTypes.Skill.WOODCUTTING,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
-        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: false,
-        successPercent: 100,
-      },
-      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
-    const actionId = await getActionId(tx);
-
-    const timespan = 3600;
-    const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: EstforTypes.noAttire,
-      actionId,
-      combatStyle: EstforTypes.CombatStyle.NONE,
-      choiceId: EstforConstants.NONE,
-      choiceId1: EstforConstants.NONE,
-      choiceId2: EstforConstants.NONE,
-      regenerateId: EstforConstants.NONE,
-      timespan,
-      rightHandEquipmentTokenId: EstforConstants.BRONZE_PICKAXE, // Incorrect
-      leftHandEquipmentTokenId: EstforConstants.NONE,
-    };
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_PICKAXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
+    const {queuedAction: basicWoodcuttingAction} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...basicWoodcuttingAction};
+    (queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_PICKAXE), // Incorrect
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_PICKAXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      });
 
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)

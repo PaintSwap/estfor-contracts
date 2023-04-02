@@ -112,7 +112,7 @@ contract DebugStorageSlots {
 
   struct ActionRewards {
     uint16 guaranteedRewardTokenId1;
-    uint16 guaranteedRewardRate1; // Num per hour, base 10 (1 decimal). Max 6533.5 per hour
+    uint16 guaranteedRewardRate1; // Num per hour, base 10 (1 decimal). Max 6553.5 per hour
     uint16 guaranteedRewardTokenId2;
     uint16 guaranteedRewardRate2;
     uint16 guaranteedRewardTokenId3;

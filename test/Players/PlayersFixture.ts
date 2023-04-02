@@ -1,7 +1,7 @@
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {PlayerNFT} from "../../typechain-types";
+import {ItemNFT, PlayerNFT, Shop, World} from "../../typechain-types";
 
 export const playersFixture = async function () {
   const [owner, alice] = await ethers.getSigners();
@@ -23,14 +23,14 @@ export const playersFixture = async function () {
   // Create the world
   const subscriptionId = 2;
   const World = await ethers.getContractFactory("World");
-  const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+  const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
     kind: "uups",
-  });
+  })) as World;
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = await upgrades.deployProxy(Shop, [brush.address], {
+  const shop = (await upgrades.deployProxy(Shop, [brush.address], {
     kind: "uups",
-  });
+  })) as Shop;
 
   const buyPath: [string, string] = [alice.address, brush.address];
   const MockRouter = await ethers.getContractFactory("MockRouter");
@@ -57,13 +57,13 @@ export const playersFixture = async function () {
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT");
   const itemsUri = "ipfs://";
-  const itemNFT = await upgrades.deployProxy(
+  const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
     [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
     {
       kind: "uups",
     }
-  );
+  )) as ItemNFT;
 
   await shop.setItemNFT(itemNFT.address);
   // Create NFT contract which contains all the players

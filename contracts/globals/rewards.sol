@@ -3,10 +3,9 @@ pragma solidity ^0.8.19;
 
 import {BoostType, Equipment} from "./players.sol";
 
-// Loot
 struct GuaranteedReward {
   uint16 itemTokenId;
-  uint16 rate; // num per hour, base 10 (1 decimals) or percentage chance (out of 65535)
+  uint16 rate; // num per hour, base 10 (1 decimal)
 }
 
 struct RandomReward {
@@ -30,7 +29,7 @@ struct PendingRandomReward {
 
 struct ActionRewards {
   uint16 guaranteedRewardTokenId1;
-  uint16 guaranteedRewardRate1; // Num per hour, base 10 (1 decimal). Max 6533.5 per hour
+  uint16 guaranteedRewardRate1; // Num per hour, base 10 (1 decimal). Max 6553.5 per hour
   uint16 guaranteedRewardTokenId2;
   uint16 guaranteedRewardRate2;
   uint16 guaranteedRewardTokenId3;
