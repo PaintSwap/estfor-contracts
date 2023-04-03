@@ -153,16 +153,24 @@ describe("PlayerNFT", function () {
     return {
       playerId,
       playerNFT,
+      players,
+      Players,
       itemNFT,
+      world,
       brush,
+      owner,
       alice,
       origName,
       editNameBrushPrice,
       mockOracleClient,
       avatarInfo,
+      avatarId,
       adminAccess,
       shop,
       royaltyReceiver,
+      playersImplRewards,
+      playersImplProcessActions,
+      playersImplQueueActions,
     };
   }
 
@@ -241,7 +249,8 @@ describe("PlayerNFT", function () {
     expect(uri.startsWith("data:application/json;base64")).to.be.true;
     const metadata = JSON.parse(Buffer.from(uri.split(";base64,")[1], "base64").toString());
     expect(metadata).to.have.property("name");
-    expect(metadata.name).to.equal(origName);
+    expect(metadata.name.startsWith(origName));
+    expect(metadata.name.endsWith(` (5)`));
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");
@@ -254,6 +263,84 @@ describe("PlayerNFT", function () {
     expect(metadata.attributes[1].trait_type).to.equal("Melee level");
     expect(metadata.attributes[1]).to.have.property("value");
     expect(metadata.attributes[1].value).to.equal(1);
+    expect(metadata).to.have.property("external_url");
+    expect(metadata.external_url).to.eq(`https://alpha.estfor.com/game/journal/${playerId}`);
+  });
+
+  it("external_url when not in alpha", async function () {
+    const {
+      adminAccess,
+      brush,
+      shop,
+      royaltyReceiver,
+      itemNFT,
+      world,
+      alice,
+      playersImplProcessActions,
+      playersImplQueueActions,
+      playersImplRewards,
+      Players,
+      avatarInfo,
+      avatarId,
+    } = await loadFixture(deployContracts);
+
+    // Confirm that external_url points to main estfor site
+    const isAlpha = false;
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+    const editNameBrushPrice = ethers.utils.parseEther("1");
+    const imageBaseUri = "ipfs://";
+    const playerNFTNotAlpha = (await upgrades.deployProxy(
+      PlayerNFT,
+      [
+        brush.address,
+        shop.address,
+        royaltyReceiver.address,
+        adminAccess.address,
+        editNameBrushPrice,
+        imageBaseUri,
+        isAlpha,
+      ],
+      {
+        kind: "uups",
+      }
+    )) as PlayerNFT;
+
+    const players = await upgrades.deployProxy(
+      Players,
+      [
+        itemNFT.address,
+        playerNFTNotAlpha.address,
+        world.address,
+        adminAccess.address,
+        playersImplQueueActions.address,
+        playersImplProcessActions.address,
+        playersImplRewards.address,
+        isAlpha,
+      ],
+      {
+        kind: "uups",
+        unsafeAllow: ["delegatecall", "external-library-linking"],
+      }
+    );
+
+    await itemNFT.setPlayers(players.address);
+    await playerNFTNotAlpha.setPlayers(players.address);
+    await playerNFTNotAlpha.setAvatar(avatarId, avatarInfo);
+
+    const origName = "0xSamWitch";
+    const makeActive = true;
+    const playerId = await createPlayer(
+      playerNFTNotAlpha,
+      avatarId,
+      alice,
+      ethers.utils.formatBytes32String(origName),
+      makeActive
+    );
+
+    const uriNotAlpha = await playerNFTNotAlpha.uri(playerId);
+    console.log(uriNotAlpha);
+    const metadataNotAlpha = JSON.parse(Buffer.from(uriNotAlpha.split(";base64,")[1], "base64").toString());
+    expect(metadataNotAlpha.external_url).to.eq(`https://estfor.com/game/journal/${playerId}`);
   });
 
   describe("supportsInterface", async function () {

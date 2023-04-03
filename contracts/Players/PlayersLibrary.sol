@@ -18,6 +18,7 @@ import "../globals/items.sol";
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayersLibrary {
   using Strings for uint32;
+  using Strings for uint256;
   using Strings for bytes32;
   using UnsafeU256 for U256;
 
@@ -28,8 +29,11 @@ library PlayersLibrary {
     uint overallXP,
     bytes32 avatarName,
     string calldata avatarDescription,
-    string calldata imageURI
+    string calldata imageURI,
+    bool isAlpha,
+    uint playerId
   ) external view returns (string memory) {
+    uint overallLevel = getLevel(overallXP);
     string memory attributes = string(
       abi.encodePacked(
         _getTraitStringJSON("Avatar", avatarName),
@@ -58,20 +62,30 @@ library PlayersLibrary {
         ",",
         _getTraitNumberJSON("Firemaking level", getLevel(xp[Skill.FIREMAKING])),
         ",",
-        _getTraitNumberJSON("Total level", getLevel(overallXP))
+        _getTraitNumberJSON("Total level", uint16(overallLevel))
       )
+    );
+
+    bytes memory fullName = abi.encodePacked(_trimBytes32(name), " (", overallLevel.toString(), ")");
+    bytes memory externalURL = abi.encodePacked(
+      "https://",
+      isAlpha ? "alpha." : "",
+      "estfor.com/game/journal/",
+      playerId.toString()
     );
 
     string memory json = Base64.encode(
       abi.encodePacked(
         '{"name":"',
-        _trimBytes32(name),
+        fullName,
         '","description":"',
         avatarDescription,
         '","attributes":[',
         attributes,
         '],"image":"',
         imageURI,
+        '", "external_url":"',
+        externalURL,
         '"}'
       )
     );
