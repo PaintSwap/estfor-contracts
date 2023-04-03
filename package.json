@@ -75,6 +75,7 @@
     "addAdmin": "npx hardhat run scripts/addAdmin.ts",
     "setMerkleRoot": "npx hardhat run scripts/setMerkleTreeWhitelist.ts",
     "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",
+    "pendingRewards": "npx hardhat run scripts/pendingRewards.ts",
     "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol",
     "precommit": "pretty-quick --staged",
     "prepare": "husky install .husky"

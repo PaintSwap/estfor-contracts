@@ -14,7 +14,7 @@ async function main() {
     const chunk = allItems.slice(i, i + chunkSize);
     chunk.forEach((item) => {
       tokenIds.push(item.tokenId);
-      amounts.push(20);
+      amounts.push(1);
     });
     await itemNFT.testMints("0xa801864d0D24686B15682261aa05D4e1e6e5BD94", tokenIds, amounts);
   }
