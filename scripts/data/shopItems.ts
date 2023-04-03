@@ -24,20 +24,20 @@ export const allShopItems: ShopItem[] = [
     price: ethers.utils.parseEther("10"),
   },
   {
+    tokenId: EstforConstants.MEDIUM_NET,
+    price: ethers.utils.parseEther("50"),
+  },
+  {
     tokenId: EstforConstants.LARGE_NET,
-    price: ethers.utils.parseEther("100"),
+    price: ethers.utils.parseEther("300"),
   },
   {
     tokenId: EstforConstants.WOOD_FISHING_ROD,
-    price: ethers.utils.parseEther("150"),
-  },
-  {
-    tokenId: EstforConstants.HARPOON,
-    price: ethers.utils.parseEther("250"),
+    price: ethers.utils.parseEther("100"),
   },
   {
     tokenId: EstforConstants.CAGE,
-    price: ethers.utils.parseEther("300"),
+    price: ethers.utils.parseEther("150"),
   },
   {
     tokenId: EstforConstants.SHADOW_SCROLL,
