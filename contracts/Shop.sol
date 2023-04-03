@@ -18,6 +18,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);
+  event EditShopItems(ShopItem[] shopItems);
   event RemoveShopItem(uint16 tokenId);
   event Buy(address buyer, uint tokenId, uint quantity, uint price);
   event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
@@ -29,6 +30,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error ItemCannotBeBought();
   error ItemDoesNotExist();
   error ShopItemDoesNotExist();
+  error ShopItemAlreadyExists();
+  error PriceCannotBeZero();
   error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
   error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
 
@@ -173,6 +176,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (!itemNFT.exists(_shopItem.tokenId)) {
       revert ItemDoesNotExist();
     }
+    if (shopItems[_shopItem.tokenId] != 0) {
+      revert ShopItemAlreadyExists();
+    }
+    if (_shopItem.price == 0) {
+      revert PriceCannotBeZero();
+    }
     shopItems[_shopItem.tokenId] = _shopItem.price;
   }
 
@@ -193,6 +202,16 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       _addBuyableItem(_shopItems[i]);
     }
     emit AddShopItems(_shopItems);
+  }
+
+  function editItems(ShopItem[] calldata _shopItems) external onlyOwner {
+    for (uint i = 0; i < _shopItems.length; i++) {
+      if (shopItems[_shopItems[i].tokenId] == 0) {
+        revert ShopItemDoesNotExist();
+      }
+      shopItems[_shopItems[i].tokenId] = _shopItems[i].price;
+    }
+    emit EditShopItems(_shopItems);
   }
 
   function removeItem(uint16 _tokenId) external onlyOwner {

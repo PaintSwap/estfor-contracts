@@ -109,8 +109,19 @@ describe("Shop", function () {
     expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(500);
 
     // Update price
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 400});
+    await expect(
+      shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 400})
+    ).to.be.revertedWithCustomError(shop, "ShopItemAlreadyExists");
+    await shop.editItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 400}]);
     expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(400);
+
+    await expect(
+      shop.addBuyableItems([
+        {tokenId: EstforConstants.BRONZE_SHIELD, price: 200},
+        {tokenId: EstforConstants.RAW_MINNUS, price: 400},
+        {tokenId: EstforConstants.BRONZE_SWORD, price: 10},
+      ])
+    ).to.be.revertedWithCustomError(shop, "ShopItemAlreadyExists");
 
     // Doesn't exist
     expect(await shop.shopItems(9999)).to.eq(0);
@@ -127,15 +138,30 @@ describe("Shop", function () {
     expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(500);
     expect(await shop.shopItems(EstforConstants.RAW_MINNUS)).to.eq(300);
 
+    await expect(
+      shop.addBuyableItems([
+        {tokenId: EstforConstants.BRONZE_SHIELD, price: 200},
+        {tokenId: EstforConstants.RAW_MINNUS, price: 400},
+      ])
+    ).to.be.revertedWithCustomError(shop, "ShopItemAlreadyExists");
+
     // Replacing should work
-    await shop.addBuyableItems([
-      {tokenId: EstforConstants.BRONZE_SHIELD, price: 200},
+    await expect(
+      shop.editItems([
+        {tokenId: EstforConstants.BRONZE_SHIELD, price: 200},
+        {tokenId: EstforConstants.RAW_MINNUS, price: 400},
+        {tokenId: EstforConstants.BRONZE_SWORD, price: 10},
+      ])
+    ).to.be.revertedWithCustomError(shop, "ShopItemDoesNotExist");
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SWORD, price: 20}]);
+    await shop.editItems([
+      {tokenId: EstforConstants.BRONZE_SHIELD, price: 300},
       {tokenId: EstforConstants.RAW_MINNUS, price: 400},
       {tokenId: EstforConstants.BRONZE_SWORD, price: 10},
     ]);
 
     // Check that it's in the shop
-    expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(200);
+    expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(300);
     expect(await shop.shopItems(EstforConstants.RAW_MINNUS)).to.eq(400);
     expect(await shop.shopItems(EstforConstants.BRONZE_SWORD)).to.eq(10);
   });
@@ -148,6 +174,17 @@ describe("Shop", function () {
     await expect(
       shop.addBuyableItems([{tokenId: EstforConstants.TITANIUM_ARMOR, price: 500}])
     ).to.be.revertedWithCustomError(shop, "ItemDoesNotExist");
+  });
+
+  it("Set up shop with 0 prices is not allowed", async function () {
+    const {shop} = await loadFixture(deployContracts);
+    await expect(shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 0})).to.be.revertedWithCustomError(
+      shop,
+      "PriceCannotBeZero"
+    );
+    await expect(
+      shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 0}])
+    ).to.be.revertedWithCustomError(shop, "PriceCannotBeZero");
   });
 
   it("Buy", async function () {
