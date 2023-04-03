@@ -1,7 +1,8 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers} from "hardhat";
+import {allPendingFlags} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
 
@@ -72,11 +73,119 @@ describe("Boosts", function () {
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
-    ); //
+    );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((queuedAction.timespan * rate) / (3600 * 10))
     );
+  });
+
+  describe("Boost overlaps", function () {
+    it("Expired boost", async function () {
+      // Expired boost should not affect XP
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const boostValue = 50;
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+        boostValue,
+        boostDuration: 86400,
+        isTransferable: false,
+      });
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+      await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction], EstforConstants.XP_BOOST, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [86400]);
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction], EstforConstants.NONE, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [86400]); // boost has expired
+      await ethers.provider.send("evm_mine", []);
+
+      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+      expect(pendingRewards.xpGained).to.eq(queuedAction.timespan);
+
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+        queuedAction.timespan + (queuedAction.timespan * boostValue) / 100 + queuedAction.timespan
+      );
+    });
+
+    it("Boost end finish inbetween action start and end", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const boostValue = 50;
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+        boostValue,
+        boostDuration: 86400,
+        isTransferable: false,
+      });
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const queuedActionFinishAfterBoost = {...queuedAction};
+      queuedActionFinishAfterBoost.timespan = 86400 - queuedAction.timespan;
+
+      await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction], EstforConstants.XP_BOOST, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players
+        .connect(alice)
+        .startActions(
+          playerId,
+          [queuedActionFinishAfterBoost],
+          EstforConstants.NONE,
+          EstforTypes.ActionQueueStatus.NONE
+        );
+      await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired in action end
+      await ethers.provider.send("evm_mine", []);
+      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+      expect(pendingRewards.xpGained).to.eq(
+        queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100
+      );
+    });
+
+    it("Check boost is removed from being active when processing", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const boostValue = 50;
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+        boostValue,
+        boostDuration: 100,
+        isTransferable: false,
+      });
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+      await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction], EstforConstants.XP_BOOST, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [120]);
+      await ethers.provider.send("evm_mine", []);
+      expect((await players.activeBoosts(playerId)).itemTokenId).to.not.eq(NONE);
+      await players.connect(alice).processActions(playerId);
+      expect((await players.activeBoosts(playerId)).itemTokenId).to.eq(NONE);
+    });
   });
 
   it("TODO, swap boost", async function () {

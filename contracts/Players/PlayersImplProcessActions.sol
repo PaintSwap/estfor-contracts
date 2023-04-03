@@ -21,7 +21,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     Player storage player = players[_playerId];
     if (player.actionQueue.length == 0) {
       // No actions remaining
-      _handleDailyRewards(_from, _playerId);
+      _processActionsFinished(_from, _playerId);
       return remainingSkills;
     }
 
@@ -157,11 +157,22 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       player.totalXP = uint160(previousTotalXP + allPointsAccrued);
     }
 
-    _claimRandomRewards(_playerId);
-    _handleDailyRewards(_from, _playerId);
+    _processActionsFinished(_from, _playerId);
 
     assembly ("memory-safe") {
       mstore(remainingSkills, remainingSkillsLength)
+    }
+  }
+
+  function _processActionsFinished(address _from, uint _playerId) private {
+    _claimRandomRewards(_playerId);
+    _handleDailyRewards(_from, _playerId);
+
+    // Clear boost if it has expired
+    PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
+    if (playerBoost.itemTokenId != NONE && playerBoost.startTime + playerBoost.duration <= block.timestamp) {
+      delete activeBoosts[_playerId];
+      emit BoostFinished(_playerId);
     }
   }
 

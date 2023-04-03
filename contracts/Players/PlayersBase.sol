@@ -37,6 +37,8 @@ abstract contract PlayersBase {
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
   event SetSpeedMultiplier(uint playerId, uint16 multiplier);
 
+  event BoostFinished(uint playerId);
+
   // For logging
   event Died(address from, uint playerId, uint queueId);
   event Rewards(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);

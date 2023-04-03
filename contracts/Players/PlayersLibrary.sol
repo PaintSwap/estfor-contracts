@@ -404,12 +404,23 @@ library PlayersLibrary {
   function getBoostedTime(
     uint _actionStartTime,
     uint _elapsedTime,
-    PlayerBoostInfo storage activeBoost
+    PlayerBoostInfo storage _activeBoost
   ) public view returns (uint24 boostedTime) {
-    if (_actionStartTime + _elapsedTime < activeBoost.startTime + activeBoost.duration) {
-      boostedTime = uint24(_elapsedTime);
+    uint actionEndTime = _actionStartTime + _elapsedTime;
+    uint boostEndTime = _activeBoost.startTime + _activeBoost.duration;
+    bool boostFinishedBeforeActionStarted = _actionStartTime > boostEndTime;
+    bool boostStartedAfterActionFinished = actionEndTime < _activeBoost.startTime;
+    if (boostFinishedBeforeActionStarted || boostStartedAfterActionFinished) {
+      // Boost was not active at all during this queued action
+      boostedTime = 0;
+    } else if (_actionStartTime >= _activeBoost.startTime && actionEndTime >= boostEndTime) {
+      boostedTime = uint24(boostEndTime - _actionStartTime);
+    } else if (actionEndTime > _activeBoost.startTime && boostEndTime >= actionEndTime) {
+      boostedTime = uint24(actionEndTime - _activeBoost.startTime);
+    } else if (_activeBoost.startTime > _actionStartTime && boostEndTime < actionEndTime) {
+      boostedTime = _activeBoost.duration;
     } else {
-      boostedTime = activeBoost.duration;
+      assert(false); // Should never happen
     }
   }
 

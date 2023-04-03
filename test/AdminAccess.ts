@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 
-describe.only("AdminAccess", function () {
+describe("AdminAccess", function () {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
