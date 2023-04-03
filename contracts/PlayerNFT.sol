@@ -121,19 +121,21 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function _mintStartingItems() private {
     // Give the player some starting items
-    uint[] memory itemNFTs = new uint[](5);
+    uint[] memory itemNFTs = new uint[](6);
     itemNFTs[0] = BRONZE_SWORD;
     itemNFTs[1] = BRONZE_AXE;
     itemNFTs[2] = MAGIC_FIRE_STARTER;
     itemNFTs[3] = NET_STICK;
     itemNFTs[4] = BRONZE_PICKAXE;
+    itemNFTs[5] = TOTEM_STAFF;
 
-    uint[] memory quantities = new uint[](5);
+    uint[] memory quantities = new uint[](6);
     quantities[0] = 1;
     quantities[1] = 1;
     quantities[2] = 1;
     quantities[3] = 1;
     quantities[4] = 1;
+    quantities[5] = 1;
     players.mintBatch(msg.sender, itemNFTs, quantities);
   }
 

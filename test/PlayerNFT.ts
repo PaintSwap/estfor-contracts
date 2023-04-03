@@ -1,4 +1,5 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {EstforConstants} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
@@ -152,6 +153,7 @@ describe("PlayerNFT", function () {
     return {
       playerId,
       playerNFT,
+      itemNFT,
       brush,
       alice,
       origName,
@@ -304,5 +306,19 @@ describe("PlayerNFT", function () {
 
     expect(await playerNFTNotAlpha.name()).to.be.eq("Estfor Players");
     expect(await playerNFTNotAlpha.symbol()).to.be.eq("EK_P");
+  });
+
+  it("Check starting items", async function () {
+    const {itemNFT, alice} = await loadFixture(deployContracts);
+
+    const balances = await itemNFT.balanceOfs(alice.address, [
+      EstforConstants.BRONZE_SWORD,
+      EstforConstants.BRONZE_AXE,
+      EstforConstants.MAGIC_FIRE_STARTER,
+      EstforConstants.NET_STICK,
+      EstforConstants.BRONZE_PICKAXE,
+      EstforConstants.TOTEM_STAFF,
+    ]);
+    expect(balances).to.eql(balances.map(() => ethers.BigNumber.from("1")));
   });
 });
