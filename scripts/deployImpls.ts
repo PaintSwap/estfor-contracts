@@ -51,19 +51,27 @@ async function main() {
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
+
+  /* Use these when keeping old implementations
+    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
+    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
+    PLAYERS_IMPL_REWARDS_ADDRESS,
+  */
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
+    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
+    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
     playersImplRewards.address
   );
   await tx.wait();
 
-  await verifyContracts([
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
-    playersImplRewards.address,
-  ]);
+  if (network.chainId == 250) {
+    await verifyContracts([
+      playersImplQueueActions.address,
+      playersImplProcessActions.address,
+      playersImplRewards.address,
+    ]);
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
