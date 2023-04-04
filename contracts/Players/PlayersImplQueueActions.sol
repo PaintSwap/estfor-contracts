@@ -368,7 +368,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
           _handItemTokenIdRangeMin != NONE &&
           (equippedItemTokenId < _handItemTokenIdRangeMin || equippedItemTokenId > _handItemTokenIdRangeMax)
         ) {
-          revert InvalidArmEquipment(equippedItemTokenId);
+          revert InvalidHandEquipment(equippedItemTokenId);
         }
 
         uint256 balance = itemNFT.balanceOf(_from, equippedItemTokenId);

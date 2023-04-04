@@ -68,7 +68,7 @@ abstract contract PlayersBase {
   error NotItemNFT();
   error ActionNotAvailable();
   error UnsupportedAttire();
-  error InvalidArmEquipment(uint16 itemTokenId);
+  error InvalidHandEquipment(uint16 itemTokenId);
   error DoNotHaveEnoughQuantityToEquipToAction();
   error NoActiveBoost();
   error BoostTimeAlreadyStarted();

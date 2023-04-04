@@ -1270,7 +1270,7 @@ describe("Non-Combat Actions", function () {
 
     await expect(
       players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(players, "InvalidArmEquipment");
+    ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
 
     queuedAction.rightHandEquipmentTokenId = EstforConstants.NONE;
     await expect(
