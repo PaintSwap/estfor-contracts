@@ -152,7 +152,7 @@ struct PendingFlags {
 }
 
 // This is only for viewing so doesn't need to be optimized
-struct PendingOutput {
+struct PendingInputOutput {
   Equipment[] consumed;
   Equipment[] produced;
   Equipment[] producedPastRandomRewards;
@@ -163,11 +163,11 @@ struct PendingOutput {
 
 // External view functions that are in other implementation files
 interface IPlayersDelegateView {
-  function pendingRewardsImpl(
+  function pendingInputOutputImpl(
     address _owner,
     uint _playerId,
     PendingFlags memory _flags
-  ) external view returns (PendingOutput memory pendingOutput);
+  ) external view returns (PendingInputOutput memory pendingInputOutput);
 
   function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
 

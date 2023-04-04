@@ -290,17 +290,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActivePlayer(msg.sender, _playerId);
   }
 
-  // Staticcall into ourselves and hit the fallback. This is done so that pendingRewards/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
-  function pendingRewards(
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingInputOutput/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
+  function pendingInputOutput(
     address _owner,
     uint _playerId,
     PendingFlags memory _flags
-  ) external view returns (PendingOutput memory pendingOutput) {
+  ) external view returns (PendingInputOutput memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersDelegateView.pendingRewardsImpl.selector, _owner, _playerId, _flags)
+      abi.encodeWithSelector(IPlayersDelegateView.pendingInputOutputImpl.selector, _owner, _playerId, _flags)
     );
-    return abi.decode(data, (PendingOutput));
+    return abi.decode(data, (PendingInputOutput));
   }
 
   function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
@@ -373,7 +373,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
     address implementation;
     if (
-      selector == IPlayersDelegateView.pendingRewardsImpl.selector ||
+      selector == IPlayersDelegateView.pendingInputOutputImpl.selector ||
       selector == IPlayersDelegateView.dailyClaimedRewardsImpl.selector ||
       selector == IPlayersDelegateView.getRandomBytesImpl.selector
     ) {

@@ -202,22 +202,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   }
 
   // Get any changes that are pending and not on the blockchain yet.
-  function pendingRewardsImpl(
+  function pendingInputOutputImpl(
     address _owner,
     uint _playerId,
     PendingFlags calldata _flags
-  ) external view returns (PendingOutput memory pendingOutput) {
+  ) external view returns (PendingInputOutput memory pendingInputOutput) {
     Player storage player = players[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     uint _speedMultiplier = speedMultiplier[_playerId];
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
 
-    pendingOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
-    pendingOutput.produced = new Equipment[](
+    pendingInputOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
+    pendingInputOutput.produced = new Equipment[](
       actionQueue.length * MAX_REWARDS_PER_ACTION + (_pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION)
     );
-    pendingOutput.producedPastRandomRewards = new Equipment[](20);
-    pendingOutput.producedXPRewards = new Equipment[](20);
+    pendingInputOutput.producedPastRandomRewards = new Equipment[](20);
+    pendingInputOutput.producedXPRewards = new Equipment[](20);
 
     uint consumedLength;
     uint producedLength;
@@ -277,14 +277,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         );
 
         if (output.itemTokenId != NONE) {
-          pendingOutput.produced[producedLength++] = output;
+          pendingInputOutput.produced[producedLength++] = output;
         }
         U256 consumedEquipmentLength = U256.wrap(consumedEquipment.length);
         for (U256 iter; iter < consumedEquipmentLength; iter = iter.inc()) {
-          pendingOutput.consumed[consumedLength++] = consumedEquipment[iter.asUint256()];
+          pendingInputOutput.consumed[consumedLength++] = consumedEquipment[iter.asUint256()];
         }
 
-        pendingOutput.died = died;
+        pendingInputOutput.died = died;
       }
 
       uint pointsAccruedExclBaseBoost;
@@ -314,22 +314,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         U256 newIdsLength = U256.wrap(newIds.length);
         for (U256 iter; iter < newIdsLength; iter = iter.inc()) {
           uint j = iter.asUint256();
-          pendingOutput.produced[producedLength++] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
+          pendingInputOutput.produced[producedLength++] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
         }
       }
       // But this could be improved
-      pendingOutput.xpGained += xpGained;
+      pendingInputOutput.xpGained += xpGained;
     } // end of loop
 
-    if (_flags.includeXPRewards && pendingOutput.xpGained != 0) {
+    if (_flags.includeXPRewards && pendingInputOutput.xpGained != 0) {
       (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
         previousTotalXP,
-        previousTotalXP + pendingOutput.xpGained
+        previousTotalXP + pendingInputOutput.xpGained
       );
       U256 idsLength = U256.wrap(ids.length);
       for (U256 iter; iter < idsLength; iter = iter.inc()) {
         uint i = iter.asUint256();
-        pendingOutput.producedXPRewards[producedXPRewardsLength++] = Equipment(uint16(ids[i]), uint24(amounts[i]));
+        pendingInputOutput.producedXPRewards[producedXPRewardsLength++] = Equipment(uint16(ids[i]), uint24(amounts[i]));
       }
     }
 
@@ -341,7 +341,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       U256 idsLength = U256.wrap(ids.length);
       for (U256 iter; iter < idsLength; iter = iter.inc()) {
         uint i = iter.asUint256();
-        pendingOutput.producedPastRandomRewards[producedPastRandomRewardsLength++] = Equipment(
+        pendingInputOutput.producedPastRandomRewards[producedPastRandomRewardsLength++] = Equipment(
           uint16(ids[i]),
           uint24(amounts[i])
         );
@@ -350,10 +350,10 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     // Compact to fit the arrays
     assembly ("memory-safe") {
-      mstore(mload(pendingOutput), consumedLength)
-      mstore(mload(add(pendingOutput, 32)), producedLength)
-      mstore(mload(add(pendingOutput, 64)), producedPastRandomRewardsLength)
-      mstore(mload(add(pendingOutput, 96)), producedXPRewardsLength)
+      mstore(mload(pendingInputOutput), consumedLength)
+      mstore(mload(add(pendingInputOutput, 32)), producedLength)
+      mstore(mload(add(pendingInputOutput, 64)), producedPastRandomRewardsLength)
+      mstore(mload(add(pendingInputOutput, 96)), producedXPRewardsLength)
     }
   }
 

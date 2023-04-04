@@ -74,17 +74,17 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [50]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-    expect(pendingOutput.produced.length).is.eq(1);
+    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+    expect(pendingInputOutput.produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [450]);
     await ethers.provider.send("evm_mine", []);
-    pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-    expect(pendingOutput.produced.length).is.eq(1);
-    expect(pendingOutput.producedXPRewards.length).is.eq(1);
-    expect(pendingOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
-    expect(pendingOutput.producedXPRewards[0].amount).is.eq(3);
+    pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+    expect(pendingInputOutput.produced.length).is.eq(1);
+    expect(pendingInputOutput.producedXPRewards.length).is.eq(1);
+    expect(pendingInputOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
+    expect(pendingInputOutput.producedXPRewards[0].amount).is.eq(3);
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
@@ -143,16 +143,16 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [1600]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, {
+    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
       includeLoot: false,
       includePastRandomRewards: false,
       includeXPRewards: true,
     });
-    expect(pendingOutput.producedXPRewards.length).is.eq(2);
-    expect(pendingOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
-    expect(pendingOutput.producedXPRewards[0].amount).is.eq(3);
-    expect(pendingOutput.producedXPRewards[1].itemTokenId).is.eq(EstforConstants.BRONZE_HELMET);
-    expect(pendingOutput.producedXPRewards[1].amount).is.eq(4);
+    expect(pendingInputOutput.producedXPRewards.length).is.eq(2);
+    expect(pendingInputOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
+    expect(pendingInputOutput.producedXPRewards[0].amount).is.eq(3);
+    expect(pendingInputOutput.producedXPRewards[1].itemTokenId).is.eq(EstforConstants.BRONZE_HELMET);
+    expect(pendingInputOutput.producedXPRewards[1].amount).is.eq(4);
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
@@ -433,16 +433,16 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [3600 * 24]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-    expect(pendingOutput.produced.length).to.eq(0);
+    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+    expect(pendingInputOutput.produced.length).to.eq(0);
 
     tx = await world.requestRandomWords();
     requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
 
-    pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-    expect(pendingOutput.produced.length).to.eq(1);
+    pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+    expect(pendingInputOutput.produced.length).to.eq(1);
 
     await players.connect(alice).processActions(playerId);
 
@@ -541,8 +541,8 @@ describe("Rewards", function () {
 
       expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
-      const pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-      expect(pendingOutput.produced.length).to.eq(0);
+      let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+      expect(pendingInputOutput.produced.length).to.eq(0);
 
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
@@ -556,18 +556,18 @@ describe("Rewards", function () {
 
       expect(await world.hasRandomWord(endTime)).to.be.true;
 
-      const pendingRewards = await players.pendingRewards(alice.address, playerId, {
+      pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
         includeLoot: false,
         includePastRandomRewards: true,
         includeXPRewards: false,
       });
 
-      if (pendingRewards.producedPastRandomRewards.length != 0) {
-        expect(pendingRewards.producedPastRandomRewards.length).to.eq(1);
+      if (pendingInputOutput.producedPastRandomRewards.length != 0) {
+        expect(pendingInputOutput.producedPastRandomRewards.length).to.eq(1);
 
-        const produced = pendingRewards.producedPastRandomRewards[0].amount;
+        const produced = pendingInputOutput.producedPastRandomRewards[0].amount;
         numProduced += produced;
-        expect(pendingRewards.producedPastRandomRewards[0].itemTokenId).to.be.eq(EstforConstants.BRONZE_ARROW);
+        expect(pendingInputOutput.producedPastRandomRewards[0].itemTokenId).to.be.eq(EstforConstants.BRONZE_ARROW);
       }
     }
     const expectedTotal = numRepeats * randomChanceFraction * numHours;
@@ -688,12 +688,12 @@ describe("Rewards", function () {
 
       expect((await players.getPendingRandomRewards(playerId)).length).to.eq(2);
 
-      const pendingOutput = await players.pendingRewards(alice.address, playerId, {
+      let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
         includeLoot: false,
         includePastRandomRewards: true,
         includeXPRewards: false,
       });
-      expect(pendingOutput.producedPastRandomRewards.length).to.eq(0);
+      expect(pendingInputOutput.producedPastRandomRewards.length).to.eq(0);
 
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
@@ -702,15 +702,15 @@ describe("Rewards", function () {
 
       expect(await world.hasRandomWord(endTime)).to.be.true;
 
-      const pendingRewards = await players.pendingRewards(alice.address, playerId, {
+      pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
         includeLoot: false,
         includePastRandomRewards: true,
         includeXPRewards: false,
       });
-      if (pendingRewards.producedPastRandomRewards.length != 0) {
-        expect(pendingRewards.producedPastRandomRewards.length).to.be.oneOf([1, 2, 3, 4, 5, 6, 7, 8]);
+      if (pendingInputOutput.producedPastRandomRewards.length != 0) {
+        expect(pendingInputOutput.producedPastRandomRewards.length).to.be.oneOf([1, 2, 3, 4, 5, 6, 7, 8]);
 
-        for (const reward of pendingRewards.producedPastRandomRewards) {
+        for (const reward of pendingInputOutput.producedPastRandomRewards) {
           balanceMap.set(reward.itemTokenId, balanceMap.get(reward.itemTokenId)! + reward.amount);
         }
       }
@@ -799,10 +799,10 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_mine", []);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
 
-    let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-    expect(pendingOutput.produced.length).is.eq(1);
-    expect(pendingOutput.produced[0].amount).to.gt(0);
-    expect(pendingOutput.produced[0].itemTokenId).to.eq(EstforConstants.LOG);
+    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+    expect(pendingInputOutput.produced.length).is.eq(1);
+    expect(pendingInputOutput.produced[0].amount).to.gt(0);
+    expect(pendingInputOutput.produced[0].itemTokenId).to.eq(EstforConstants.LOG);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     await players.connect(alice).processActions(playerId);
     // Confirm 0 XP but got wood

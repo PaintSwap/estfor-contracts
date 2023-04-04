@@ -111,8 +111,8 @@ describe("Boosts", function () {
       await ethers.provider.send("evm_increaseTime", [86400]); // boost has expired
       await ethers.provider.send("evm_mine", []);
 
-      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-      expect(pendingRewards.xpGained).to.eq(queuedAction.timespan);
+      const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+      expect(pendingInputOutput.xpGained).to.eq(queuedAction.timespan);
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
@@ -154,8 +154,8 @@ describe("Boosts", function () {
         );
       await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired in action end
       await ethers.provider.send("evm_mine", []);
-      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-      expect(pendingRewards.xpGained).to.eq(
+      const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+      expect(pendingInputOutput.xpGained).to.eq(
         queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100
       );
     });
@@ -213,10 +213,10 @@ describe("Boosts", function () {
       .startActions(playerId, [queuedAction], EstforConstants.XP_BOOST, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+    const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
-    expect(pendingRewards.xpGained).to.be.oneOf([meleeXP + healthXP, meleeXP + healthXP - 1]);
+    expect(pendingInputOutput.xpGained).to.be.oneOf([meleeXP + healthXP, meleeXP + healthXP - 1]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
@@ -249,8 +249,8 @@ describe("Boosts", function () {
       .startActions(playerId, [queuedAction], EstforConstants.XP_BOOST, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-    expect(pendingRewards.xpGained).to.eq(queuedAction.timespan + (boostDuration * boostValue) / 100);
+    const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+    expect(pendingInputOutput.xpGained).to.eq(queuedAction.timespan + (boostDuration * boostValue) / 100);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (boostDuration * boostValue) / 100
@@ -329,11 +329,11 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
-    const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+    const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
     const foodCooked =
       (successPercent / 100) *
       ((queuedAction.timespan * rate) / (3600 * 10) + (boostDuration * boostValue * rate) / (100 * 10 * 3600));
-    expect(pendingRewards.produced[0].amount).to.eq(foodCooked);
+    expect(pendingInputOutput.produced[0].amount).to.eq(foodCooked);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);

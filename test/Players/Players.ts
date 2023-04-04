@@ -889,8 +889,8 @@ describe("Players", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
 
-      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-      expect(pendingRewards.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
+      const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+      expect(pendingInputOutput.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
       await players.connect(alice).processActions(playerId);
       const startXP = 374;
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
@@ -917,8 +917,8 @@ describe("Players", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
 
-      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-      expect(pendingRewards.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.05));
+      const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
+      expect(pendingInputOutput.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.05));
       await players.connect(alice).processActions(playerId);
       const startXP = 374 / 2;
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(

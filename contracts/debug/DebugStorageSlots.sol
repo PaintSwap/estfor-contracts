@@ -237,7 +237,7 @@ contract DebugStorageSlots {
   }
 
   // This is only for viewing so doesn't need to be optimized
-  struct PendingOutput {
+  struct PendingInputOutput {
     Equipment[] consumed;
     Equipment[] produced;
     Equipment[] producedPastRandomRewards;
@@ -277,7 +277,7 @@ contract DebugStorageSlots {
   Attire attire;
   CombatStats combatStats;
   Player player;
-  PendingOutput pendingOutput;
+  PendingInputOutput pendingInputOutput;
   PlayerBoostInfo playerBoostInfo;
   XPThresholdReward xpThresholdReward;
   PendingFlags pendingFlags;
