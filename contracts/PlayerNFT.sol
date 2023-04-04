@@ -64,14 +64,14 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   AdminAccess private adminAccess;
 
   modifier isOwnerOfPlayer(uint playerId) {
-    if (balanceOf(msg.sender, playerId) != 1) {
+    if (balanceOf(_msgSender(), playerId) != 1) {
       revert NotOwner();
     }
     _;
   }
 
   modifier onlyPlayers() {
-    if (msg.sender != address(players)) {
+    if (_msgSender() != address(players)) {
       revert NotPlayers();
     }
     _;
@@ -136,7 +136,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     quantities[3] = 1;
     quantities[4] = 1;
     quantities[5] = 1;
-    players.mintBatch(msg.sender, itemNFTs, quantities);
+    players.mintBatch(_msgSender(), itemNFTs, quantities);
   }
 
   function _setName(uint _playerId, bytes20 _name) private {
@@ -157,12 +157,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function checkInWhitelist(bytes32[] calldata _proof) public view returns (bool whitelisted) {
-    bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
+    bytes32 leaf = keccak256(abi.encodePacked(_msgSender()));
     return MerkleProof.verify(_proof, merkleRoot, leaf);
   }
 
   function _mintPlayer(uint _avatarId, bytes32 _name, bool _makeActive) private {
-    address from = msg.sender;
+    address from = _msgSender();
     uint playerId = nextPlayerId++;
     emit NewPlayer(playerId, _avatarId, bytes20(_name));
     _mint(from, playerId, 1, "");
@@ -177,10 +177,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (!checkInWhitelist(_proof)) {
       revert NotInWhitelist();
     }
-    ++numMintedFromWhitelist[msg.sender];
-    if (numMintedFromWhitelist[msg.sender] > MAX_ALPHA_WHITELIST) {
+    uint _numMintedFromWhitelist = numMintedFromWhitelist[_msgSender()];
+    if (_numMintedFromWhitelist + 1 > MAX_ALPHA_WHITELIST) {
       revert MintedMoreThanAllowed();
     }
+    numMintedFromWhitelist[_msgSender()] = _numMintedFromWhitelist + 1;
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 
@@ -237,7 +238,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function editName(uint _playerId, bytes32 _newName) external isOwnerOfPlayer(_playerId) {
     uint brushCost = editNameCost;
     // Pay
-    brush.transferFrom(msg.sender, address(this), brushCost);
+    brush.transferFrom(_msgSender(), address(this), brushCost);
     // Send half to the pool (currently shop)
     brush.transfer(pool, brushCost - (brushCost / 2));
     // Burn the other half

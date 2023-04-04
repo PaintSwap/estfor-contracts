@@ -91,7 +91,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   AdminAccess private adminAccess;
 
   modifier onlyPlayersOrShop() {
-    if (msg.sender != players && msg.sender != shop) {
+    if (_msgSender() != players && _msgSender() != shop) {
       revert NotPlayersOrShop();
     }
     _;
