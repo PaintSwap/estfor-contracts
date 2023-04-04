@@ -60,7 +60,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   bytes32 public merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
-  uint public constant MAX_ALPHA_WHITELIST = 2;
+  uint public constant MAX_ALPHA_WHITELIST = 3;
   AdminAccess private adminAccess;
 
   modifier isOwnerOfPlayer(uint playerId) {
