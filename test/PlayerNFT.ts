@@ -338,7 +338,6 @@ describe("PlayerNFT", function () {
     );
 
     const uriNotAlpha = await playerNFTNotAlpha.uri(playerId);
-    console.log(uriNotAlpha);
     const metadataNotAlpha = JSON.parse(Buffer.from(uriNotAlpha.split(";base64,")[1], "base64").toString());
     expect(metadataNotAlpha.external_url).to.eq(`https://estfor.com/game/journal/${playerId}`);
   });

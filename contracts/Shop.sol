@@ -97,9 +97,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert ItemCannotBeBought();
     }
     // Pay
-    brush.transferFrom(msg.sender, address(this), price);
+    uint totalBrush = price * _quantity;
+    brush.transferFrom(msg.sender, address(this), totalBrush);
     // Burn half, the rest goes into the pool for sellable items
-    brush.burn(price / 2);
+    brush.burn(totalBrush / 2);
 
     itemNFT.mint(msg.sender, _tokenId, _quantity);
     emit Buy(msg.sender, _tokenId, _quantity, price);
@@ -136,14 +137,14 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
-    uint brushPerToken = getPriceForItem(_tokenId);
-    uint totalBrush = brushPerToken * _quantity;
+    uint price = getPriceForItem(_tokenId);
+    uint totalBrush = price * _quantity;
     if (totalBrush < _minExpectedBrush) {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     itemNFT.burn(msg.sender, uint(_tokenId), _quantity);
     brush.transfer(msg.sender, totalBrush);
-    emit Sell(msg.sender, _tokenId, _quantity, totalBrush);
+    emit Sell(msg.sender, _tokenId, _quantity, price);
   }
 
   function sellBatch(uint[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
@@ -159,10 +160,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     do {
       iter = iter.dec();
       uint i = iter.asUint256();
-      U256 brushPerToken = U256.wrap(getPriceForItem(uint16(_tokenIds[i])));
-      totalBrush = totalBrush + (brushPerToken * U256.wrap(_quantities[i]));
+      U256 price = U256.wrap(getPriceForItem(uint16(_tokenIds[i])));
+      totalBrush = totalBrush + (price * U256.wrap(_quantities[i]));
       itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
-      prices[i] = brushPerToken.asUint256();
+      prices[i] = price.asUint256();
     } while (iter.neq(0));
     if (totalBrush.lt(_minExpectedBrush)) {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
