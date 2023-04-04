@@ -6,7 +6,7 @@ import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {allPendingFlags, getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
+import {getXPFromLevel, setupBasicWoodcutting, setupCooking} from "./utils";
 
 const actionIsAvailable = true;
 
@@ -663,76 +663,12 @@ describe("Non-Combat Actions", function () {
   });
 
   describe("Cooking", function () {
-    it("Cook", async function () {
+    it("Let's Cook!", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 10; // per hour
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COOKING,
-          xpPerHour: 0,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.NONE,
-          handItemTokenIdRangeMax: EstforConstants.NONE,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
-      const actionId = await getActionId(tx);
-
-      tx = await world.addActionChoice(actionId, 1, {
-        skill: EstforTypes.Skill.COOKING,
-        diff: 0,
-        xpPerHour: 3600,
-        minXP: 0,
-        rate,
-        inputTokenId1: EstforConstants.RAW_MINNUS,
-        num1: 1,
-        inputTokenId2: EstforConstants.NONE,
-        num2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        num3: 0,
-        outputTokenId: EstforConstants.COOKED_MINNUS,
-        outputNum: 1,
-        successPercent: 100,
-      });
-      const choiceId = await getActionChoiceId(tx);
-
-      const timespan = 3600;
-
-      const queuedAction: EstforTypes.QueuedActionInput = {
-        attire: EstforTypes.noAttire,
-        actionId,
-        combatStyle: EstforTypes.CombatStyle.NONE,
-        choiceId,
-        choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
-        regenerateId: EstforConstants.NONE,
-        timespan,
-        rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
-      };
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.RAW_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.AUX,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.COOKED_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.FOOD,
-      });
-
-      await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+      const successPercent = 100;
+      const minLevel = 1;
+      const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -741,84 +677,20 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((timespan * rate) / (3600 * 10))
+        Math.floor((queuedAction.timespan * rate) / (3600 * 10))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((timespan * rate) / (3600 * 10))
+        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
       );
     });
 
     // Changes based on level
     it("Burn some food", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 10; // per hour
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COOKING,
-          xpPerHour: 0,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.NONE,
-          handItemTokenIdRangeMax: EstforConstants.NONE,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
-      const actionId = await getActionId(tx);
-
-      // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
-      tx = await world.addActionChoice(actionId, 1, {
-        skill: EstforTypes.Skill.COOKING,
-        diff: 0,
-        xpPerHour: 3600,
-        minXP: getXPFromLevel(65),
-        rate,
-        inputTokenId1: EstforConstants.RAW_MINNUS,
-        num1: 1,
-        inputTokenId2: EstforConstants.NONE,
-        num2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        num3: 0,
-        outputTokenId: EstforConstants.COOKED_MINNUS,
-        outputNum: 1,
-        successPercent: 25,
-      });
-      const choiceId = await getActionChoiceId(tx);
-      const timespan = 3600;
-
-      const queuedAction: EstforTypes.QueuedActionInput = {
-        attire: EstforTypes.noAttire,
-        actionId,
-        combatStyle: EstforTypes.CombatStyle.NONE,
-        choiceId,
-        choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
-        regenerateId: EstforConstants.NONE,
-        timespan,
-        rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
-      };
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.RAW_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.AUX,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.COOKED_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.FOOD,
-      });
-
-      await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+      const successPercent = 25;
+      const minLevel = 65;
+      const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
 
       await players.testModifyXP(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
@@ -827,7 +699,7 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       let pendingOutput = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-      const foodNotBurned = Math.floor((timespan * rate) / (3600 * 10 * 2));
+      const foodNotBurned = Math.floor((queuedAction.timespan * rate) / (3600 * 10 * 2));
       expect(pendingOutput.produced.length).is.eq(1);
       expect(pendingOutput.produced[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
       expect(pendingOutput.produced[0].amount).to.eq(foodNotBurned);
@@ -836,80 +708,16 @@ describe("Non-Combat Actions", function () {
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(foodNotBurned);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((timespan * rate) / (3600 * 10))
+        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
       );
     });
 
     it("Burn food, check max 90% success upper bound", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 10; // per hour
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COOKING,
-          xpPerHour: 0,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.NONE,
-          handItemTokenIdRangeMax: EstforConstants.NONE,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
-      const actionId = await getActionId(tx);
-
-      // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
-      tx = await world.addActionChoice(actionId, 1, {
-        skill: EstforTypes.Skill.COOKING,
-        diff: 0,
-        xpPerHour: 3600,
-        minXP: getXPFromLevel(65),
-        rate,
-        inputTokenId1: EstforConstants.RAW_MINNUS,
-        num1: 1,
-        inputTokenId2: EstforConstants.NONE,
-        num2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        num3: 0,
-        outputTokenId: EstforConstants.COOKED_MINNUS,
-        outputNum: 1,
-        successPercent: 85,
-      });
-      const choiceId = await getActionChoiceId(tx);
-      const timespan = 3600;
-
-      const queuedAction: EstforTypes.QueuedActionInput = {
-        attire: EstforTypes.noAttire,
-        actionId,
-        combatStyle: EstforTypes.CombatStyle.NONE,
-        choiceId,
-        choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
-        regenerateId: EstforConstants.NONE,
-        timespan,
-        rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
-      };
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.RAW_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.AUX,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.COOKED_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.FOOD,
-      });
-
-      await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+      const successPercent = 85;
+      const minLevel = 65;
+      const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
 
       await players.testModifyXP(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
@@ -920,10 +728,10 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((timespan * rate * 0.9) / (3600 * 10)) // Max 90% success
+        Math.floor((queuedAction.timespan * rate * 0.9) / (3600 * 10)) // Max 90% success
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((timespan * rate) / (3600 * 10))
+        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
       );
     });
   });

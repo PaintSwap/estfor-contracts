@@ -5,7 +5,7 @@ import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {allPendingFlags} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {setupBasicMeleeCombat, setupBasicWoodcutting} from "./utils";
+import {setupBasicMeleeCombat, setupBasicWoodcutting, setupCooking} from "./utils";
 
 describe("Boosts", function () {
   this.retries(3);
@@ -300,6 +300,45 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((queuedAction.timespan * rate) / (3600 * 10) + (boostDuration * boostValue * rate) / (100 * 10 * 3600))
     );
+  });
+
+  it("Gathering boost, cooking with successPercent", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const boostValue = 10;
+    const boostDuration = 3600;
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.GATHERING_BOOST,
+      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+      // Boost
+      boostType: EstforTypes.BoostType.GATHERING,
+      boostValue,
+      boostDuration,
+      isTransferable: false,
+    });
+
+    const successPercent = 50;
+    const minLevel = 1;
+    const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
+    await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction], EstforConstants.GATHERING_BOOST, EstforTypes.ActionQueueStatus.NONE);
+
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+
+    const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+    const foodCooked =
+      (successPercent / 100) *
+      ((queuedAction.timespan * rate) / (3600 * 10) + (boostDuration * boostValue * rate) / (100 * 10 * 3600));
+    expect(pendingRewards.produced[0].amount).to.eq(foodCooked);
+
+    await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
+    // Check the drops are as expected
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(foodCooked);
   });
 
   it("Gathering boost, random rewards (100%) same day", async function () {});

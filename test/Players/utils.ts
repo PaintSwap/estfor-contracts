@@ -139,6 +139,81 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   return {queuedAction, rate, numSpawned};
 };
 
+export const setupCooking = async function (itemNFT: ItemNFT, world: World, successPercent: number, minLevel: number) {
+  const [owner, alice] = await ethers.getSigners();
+
+  const rate = 100 * 10; // per hour
+
+  let tx = await world.addAction({
+    actionId: 1,
+    info: {
+      skill: EstforTypes.Skill.COOKING,
+      xpPerHour: 0,
+      minXP: 0,
+      isDynamic: false,
+      numSpawned: 0,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      isAvailable: true,
+      actionChoiceRequired: true,
+      successPercent: 100,
+    },
+    guaranteedRewards: [],
+    randomRewards: [],
+    combatStats: EstforTypes.emptyCombatStats,
+  });
+  const actionId = await getActionId(tx);
+
+  // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
+  tx = await world.addActionChoice(actionId, 1, {
+    skill: EstforTypes.Skill.COOKING,
+    diff: 0,
+    xpPerHour: 3600,
+    minXP: getXPFromLevel(minLevel),
+    rate,
+    inputTokenId1: EstforConstants.RAW_MINNUS,
+    num1: 1,
+    inputTokenId2: EstforConstants.NONE,
+    num2: 0,
+    inputTokenId3: EstforConstants.NONE,
+    num3: 0,
+    outputTokenId: EstforConstants.COOKED_MINNUS,
+    outputNum: 1,
+    successPercent,
+  });
+  const choiceId = await getActionChoiceId(tx);
+  const timespan = 3600;
+
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId,
+    choiceId1: EstforConstants.NONE,
+    choiceId2: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+  };
+
+  await itemNFT.addItem({
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.RAW_MINNUS,
+    equipPosition: EstforTypes.EquipPosition.AUX,
+  });
+
+  await itemNFT.addItem({
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.COOKED_MINNUS,
+    equipPosition: EstforTypes.EquipPosition.FOOD,
+  });
+
+  await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
+
+  return {queuedAction, rate};
+};
+
 export const getXPFromLevel = (level: number) => {
   return EstforConstants.levelXp[level - 1];
 };

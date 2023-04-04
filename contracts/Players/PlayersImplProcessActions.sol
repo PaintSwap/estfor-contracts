@@ -237,6 +237,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       uint amount = (numConsumed * successPercent) / 100;
+
+      // Check for any gathering boosts
+      PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+      uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
+      if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+        amount += uint24((boostedTime * amount * activeBoost.val) / (3600 * 100));
+      }
       if (amount != 0) {
         itemNFT.mint(_from, _actionChoice.outputTokenId, amount);
         emit Reward(_from, _playerId, _queuedAction.queueId, _actionChoice.outputTokenId, amount);

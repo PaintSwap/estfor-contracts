@@ -306,7 +306,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (_flags.includeLoot) {
         (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
           _playerId,
-          uint40(queuedAction.startTime + xpElapsedTime),
+          queuedAction.startTime,
           xpElapsedTime,
           queuedAction.actionId
         );
@@ -701,6 +701,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       uint24 amount = uint24((numConsumed * successPercent) / 100);
+
+      // Check for any gathering boosts
+      PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+      uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
+      if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+        amount += uint24((boostedTime * amount * activeBoost.val) / (3600 * 100));
+      }
+
       if (amount != 0) {
         output = Equipment(_actionChoice.outputTokenId, amount);
       }
