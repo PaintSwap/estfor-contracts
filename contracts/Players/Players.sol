@@ -38,7 +38,7 @@ interface IPlayerDelegate {
 
   function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills) external;
 
-  function testModifyXP(uint playerId, Skill skill, uint32 xp) external;
+  function testModifyXP(uint playerId, Skill skill, uint128 xp) external;
 }
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
@@ -360,7 +360,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
   }
 
-  function testModifyXP(uint _playerId, Skill _skill, uint32 _xp) external isAdminAndAlpha {
+  function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external isAdminAndAlpha {
     _delegatecall(
       implProcessActions,
       abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _playerId, _skill, _xp)

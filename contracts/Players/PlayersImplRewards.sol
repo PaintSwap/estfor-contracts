@@ -287,9 +287,20 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         pendingOutput.died = died;
       }
 
+      uint pointsAccruedExclBaseBoost;
       if (!died) {
         Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
-        pointsAccrued = _getPointsAccrued(from, _playerId, queuedAction, skill, xpElapsedTime);
+        (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
+          from,
+          _playerId,
+          queuedAction,
+          skill,
+          xpElapsedTime
+        );
+      }
+      uint32 xpGained = pointsAccrued;
+      if (pointsAccruedExclBaseBoost != 0 && _isCombatStyle(queuedAction.combatStyle)) {
+        xpGained += _getHealthPointsFromCombat(_playerId, pointsAccruedExclBaseBoost);
       }
 
       if (_flags.includeLoot) {
@@ -307,7 +318,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         }
       }
       // But this could be improved
-      pendingOutput.xpGained += pointsAccrued;
+      pendingOutput.xpGained += xpGained;
     } // end of loop
 
     if (_flags.includeXPRewards && pendingOutput.xpGained != 0) {

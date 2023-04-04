@@ -124,7 +124,7 @@ abstract contract PlayersBase {
   World internal world;
   bool internal isAlpha;
 
-  mapping(uint playerId => mapping(Skill skill => uint32 xp)) public xp;
+  mapping(uint playerId => mapping(Skill skill => uint128 xp)) public xp;
 
   mapping(uint playerId => Player player) public players;
   ItemNFT internal itemNFT;
@@ -234,18 +234,50 @@ abstract contract PlayersBase {
     }
   }
 
+  function _getHealthPointsFromCombat(
+    uint _playerId,
+    uint _combatPoints
+  ) internal view returns (uint32 healthPointsAccured) {
+    // Get 1/3 of the combat points as health
+    healthPointsAccured = uint32((_combatPoints * 333333) / 1000000);
+    // Get bonus health points from avatar starting skills
+    uint bonusPercent = _getBonusAvatarXPPercent(_playerId, Skill.HEALTH);
+    healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
+  }
+
+  function _getBonusAvatarXPPercent(uint _playerId, Skill _skill) internal view returns (uint8 bonusPercent) {
+    bool hasBonusSkill = players[_playerId].skillBoosted1 == _skill || players[_playerId].skillBoosted2 == _skill;
+    if (!hasBonusSkill) {
+      return 0;
+    }
+    bool bothSet = players[_playerId].skillBoosted1 != Skill.NONE && players[_playerId].skillBoosted2 != Skill.NONE;
+    bonusPercent = bothSet ? 5 : 10;
+  }
+
+  function _extraFromAvatar(
+    uint _playerId,
+    Skill _skill,
+    uint _elapsedTime,
+    uint24 _xpPerHour
+  ) internal view returns (uint32 extraPointsAccrued) {
+    uint8 bonusPercent = _getBonusAvatarXPPercent(_playerId, _skill);
+    extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * bonusPercent) / (3600 * 100));
+  }
+
   function _getPointsAccrued(
     address _from,
     uint _playerId,
     QueuedAction storage _queuedAction,
     Skill _skill,
     uint _xpElapsedTime
-  ) internal view returns (uint32 pointsAccrued) {
+  ) internal view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     bool _isCombatSkill = _isCombatStyle(_queuedAction.combatStyle);
     uint24 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
     pointsAccrued += _extraXPFromFullAttire(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);
+    pointsAccruedExclBaseBoost = pointsAccrued;
+    pointsAccrued += _extraFromAvatar(_playerId, _skill, _xpElapsedTime, xpPerHour);
   }
 
   function _getSkillFromChoiceOrStyle(

@@ -1,6 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
+import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {allPendingFlags} from "../utils";
 import {playersFixture} from "./PlayersFixture";
@@ -213,11 +214,15 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
-    expect(pendingRewards.xpGained).to.eq(queuedAction.timespan + (boostDuration * boostValue) / 100);
+    const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
+    const healthXP = Math.floor(meleeXP / 3);
+    expect(pendingRewards.xpGained).to.be.oneOf([meleeXP + healthXP, meleeXP + healthXP - 1]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(
-      queuedAction.timespan + (boostDuration * boostValue) / 100
-    );
+    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      BigNumber.from(healthXP),
+      BigNumber.from(healthXP - 1),
+    ]);
   });
 
   it("Any XP Boost", async function () {

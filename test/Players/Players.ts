@@ -2,9 +2,10 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
 import {Attire, BoostType, Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
+import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
+import {allPendingFlags, emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
@@ -57,7 +58,10 @@ describe("Players", function () {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [361]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([361, 362]);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.deep.oneOf([
+      BigNumber.from(361),
+      BigNumber.from(362),
+    ]);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(10); // Should be rounded down
   });
 
@@ -65,7 +69,7 @@ describe("Players", function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
     // start a bunch of actions 1 after each other
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 50; ++i) {
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND);
       await ethers.provider.send("evm_increaseTime", [7200]);
       await players.connect(alice).processActions(playerId);
@@ -97,9 +101,9 @@ describe("Players", function () {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([
-      queuedAction.timespan / 2,
-      queuedAction.timespan / 2 + 1,
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.deep.oneOf([
+      BigNumber.from(queuedAction.timespan / 2),
+      BigNumber.from(queuedAction.timespan / 2 + 1),
     ]);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
@@ -864,6 +868,62 @@ describe("Players", function () {
       await players.connect(alice).processActions(playerId);
       const actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue[0].timespan).gt(queuedAction.timespan - 10);
+    });
+
+    it("Base XP boost", async function () {
+      // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
+      const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const avatarId = 2;
+      const avatarInfo: AvatarInfo = {
+        name: ethers.utils.formatBytes32String("Name goes here"),
+        description: "Hi I'm a description",
+        imageURI: "1234.png",
+        startSkills: [Skill.WOODCUTTING, Skill.NONE],
+      };
+      await playerNFT.setAvatar(avatarId, avatarInfo);
+      const playerId = createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("New name"), true);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+
+      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+      expect(pendingRewards.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
+      await players.connect(alice).processActions(playerId);
+      const startXP = 374;
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+        Math.floor(startXP + queuedAction.timespan * 1.1)
+      );
+    });
+
+    it("Base XP boost, 2 skills", async function () {
+      // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
+      const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const avatarId = 2;
+      const avatarInfo: AvatarInfo = {
+        name: ethers.utils.formatBytes32String("Name goes here"),
+        description: "Hi I'm a description",
+        imageURI: "1234.png",
+        startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
+      };
+      await playerNFT.setAvatar(avatarId, avatarInfo);
+      const playerId = createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("New name"), true);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+
+      const pendingRewards = await players.pendingRewards(alice.address, playerId, allPendingFlags);
+      expect(pendingRewards.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.05));
+      await players.connect(alice).processActions(playerId);
+      const startXP = 374 / 2;
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+        Math.floor(startXP + queuedAction.timespan * 1.05)
+      );
     });
   });
 });

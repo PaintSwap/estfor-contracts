@@ -206,7 +206,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function editItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    for (uint i = 0; i < _shopItems.length; i++) {
+    for (uint i = 0; i < _shopItems.length; ++i) {
       if (shopItems[_shopItems[i].tokenId] == 0) {
         revert ShopItemDoesNotExist();
       }

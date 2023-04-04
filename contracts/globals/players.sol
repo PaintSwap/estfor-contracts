@@ -57,7 +57,9 @@ struct Player {
   int16 defence;
   int16 health;
   uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
-  uint160 totalXP;
+  uint128 totalXP;
+  Skill skillBoosted1;
+  Skill skillBoosted2;
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
 }

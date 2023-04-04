@@ -25,7 +25,7 @@ library PlayersLibrary {
   // Show all the player stats, return metadata json
   function uri(
     bytes32 name,
-    mapping(Skill skill => uint32 xp) storage xp,
+    mapping(Skill skill => uint128 xp) storage xp,
     uint overallXP,
     bytes32 avatarName,
     string calldata avatarDescription,
@@ -120,7 +120,7 @@ library PlayersLibrary {
   }
 
   // Index not level, add one after (check for > max)
-  function getLevel(uint256 _xp) public pure returns (uint16) {
+  function getLevel(uint _xp) public pure returns (uint16) {
     U256 low;
     U256 high = U256.wrap(XP_BYTES.length).div(4);
 

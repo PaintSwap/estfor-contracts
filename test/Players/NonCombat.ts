@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
+import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {allPendingFlags, getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
@@ -359,7 +360,10 @@ describe("Non-Combat Actions", function () {
     await players
       .connect(alice)
       .startAction(playerId, queuedActions[1], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.oneOf([10, 11]); // Should be partially completed
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.deep.oneOf([
+      BigNumber.from(10),
+      BigNumber.from(11),
+    ]); // Should be partially completed
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(3);
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan]);
     expect((await players.getActionQueue(playerId)).length).to.eq(2);

@@ -133,7 +133,7 @@ export const playersFixture = async function () {
     name: ethers.utils.formatBytes32String("Name goes here"),
     description: "Hi I'm a description",
     imageURI: "1234.png",
-    startSkills: [Skill.NONE, Skill.NONE],
+    startSkills: [Skill.MAGIC, Skill.NONE],
   };
   await playerNFT.setAvatar(avatarId, avatarInfo);
 

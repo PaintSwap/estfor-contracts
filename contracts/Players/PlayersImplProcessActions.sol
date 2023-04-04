@@ -17,6 +17,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     _checkStartSlot();
   }
 
+  error err(uint);
+
   function processActions(address _from, uint _playerId) external returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players[_playerId];
     if (player.actionQueue.length == 0) {
@@ -94,8 +96,15 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint64 _queueId = queuedAction.queueId;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
 
+      uint pointsAccruedExclBaseBoost;
       if (!died) {
-        pointsAccrued = _getPointsAccrued(_from, _playerId, queuedAction, skill, xpElapsedTime);
+        (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
+          _from,
+          _playerId,
+          queuedAction,
+          skill,
+          xpElapsedTime
+        );
       } else {
         emit Died(_from, _playerId, _queueId);
       }
@@ -107,14 +116,15 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       if (pointsAccrued != 0) {
+        uint32 healthPointsAccrued;
+        _updateXP(_from, _playerId, skill, pointsAccrued);
         if (_isCombatStyle(queuedAction.combatStyle)) {
-          // Update health too with 33% of the points gained from combat
-          _updateXP(_from, _playerId, Skill.HEALTH, uint32((uint(pointsAccrued) * 333333) / 1000000));
+          healthPointsAccrued = _getHealthPointsFromCombat(_playerId, pointsAccruedExclBaseBoost);
+          _updateXP(_from, _playerId, Skill.HEALTH, healthPointsAccrued);
           _cacheCombatStats(players[_playerId], xp[_playerId][Skill.HEALTH], skill, xp[_playerId][skill]);
         }
-        _updateXP(_from, _playerId, skill, pointsAccrued);
 
-        allPointsAccrued += pointsAccrued;
+        allPointsAccrued += pointsAccrued + healthPointsAccrued;
       }
 
       (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
@@ -154,7 +164,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
     if (allPointsAccrued != 0) {
       _claimTotalXPThresholdRewards(_from, _playerId, previousTotalXP, previousTotalXP + allPointsAccrued);
-      player.totalXP = uint160(previousTotalXP + allPointsAccrued);
+      player.totalXP = uint128(previousTotalXP + allPointsAccrued);
     }
 
     _processActionsFinished(_from, _playerId);
@@ -287,7 +297,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function _cacheCombatStats(Player storage _player, uint32 _healthXP, Skill _skill, uint32 _xp) private {
+  function _cacheCombatStats(Player storage _player, uint128 _healthXP, Skill _skill, uint128 _xp) private {
     {
       int16 _health = int16(PlayersLibrary.getLevel(_healthXP));
       _player.health = _health;
@@ -465,11 +475,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     player.magic = 1;
     player.range = 1;
     player.defence = 1;
-    player.totalXP = uint160(START_XP);
+    player.totalXP = uint128(START_XP);
 
     uint length = _startSkills[1] != Skill.NONE ? 2 : 1;
     uint32 xpEach = uint32(START_XP / length);
-    for (uint i = 0; i < length; i++) {
+    for (uint i = 0; i < length; ++i) {
       Skill skill = _startSkills[i];
       int16 level = int16(PlayersLibrary.getLevel(xpEach));
       if (skill == Skill.HEALTH) {
@@ -485,16 +495,19 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
       _updateXP(_from, _playerId, skill, xpEach);
     }
+
+    player.skillBoosted1 = _startSkills[0];
+    player.skillBoosted2 = _startSkills[1]; // Can be NONE
   }
 
-  function _updateXP(address _from, uint _playerId, Skill _skill, uint32 _pointsAccrued) private {
+  function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) private {
     uint oldPoints = xp[_playerId][_skill];
     uint newPoints = oldPoints + _pointsAccrued;
     if (newPoints > type(uint32).max) {
       newPoints = type(uint32).max;
     }
     xp[_playerId][_skill] = uint32(newPoints);
-    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
+    emit AddXP(_from, _playerId, _skill, uint32(newPoints));
 
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
     uint16 newLevel = PlayersLibrary.getLevel(newPoints);
@@ -504,16 +517,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function testModifyXP(uint _playerId, Skill _skill, uint32 _xp) external {
+  function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external {
     // Make sure it isn't less XP
-    uint32 oldPoints = xp[_playerId][_skill];
+    uint128 oldPoints = xp[_playerId][_skill];
     if (_xp < oldPoints) {
       revert TestInvalidXP();
     }
     address from = msg.sender;
     _updateXP(msg.sender, _playerId, _skill, _xp - oldPoints);
     _claimTotalXPThresholdRewards(from, _playerId, oldPoints, _xp);
-    players[_playerId].totalXP += uint160(_xp - oldPoints);
+    players[_playerId].totalXP += uint128(_xp - oldPoints);
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {
