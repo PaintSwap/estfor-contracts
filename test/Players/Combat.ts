@@ -3,15 +3,9 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {COOKED_MINNUS} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {
-  allPendingFlags,
-  bronzeHelmetStats,
-  emptyActionChoice,
-  getActionChoiceId,
-  getActionChoiceIds,
-  getActionId,
-} from "../utils";
+import {allPendingFlags, emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
+import {setupBasicMeleeCombat} from "./utils";
 
 const actionIsAvailable = true;
 
@@ -22,89 +16,7 @@ describe("Combat Actions", function () {
     async function playersFixtureMelee() {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-      const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
-        magic: 0,
-        range: 0,
-        meleeDefence: 0,
-        magicDefence: 0,
-        rangeDefence: 0,
-        health: 20,
-      };
-
-      const rate = 1 * 10; // per hour
-      const numSpawned = 10;
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
-      const actionId = await getActionId(tx);
-
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...emptyActionChoice,
-        skill: EstforTypes.Skill.MELEE,
-      });
-      const choiceId = await getActionChoiceId(tx);
-      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
-      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
-
-      await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 255);
-      const timespan = 3600;
-      const queuedAction: EstforTypes.QueuedActionInput = {
-        attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
-        actionId,
-        combatStyle: EstforTypes.CombatStyle.ATTACK,
-        choiceId,
-        choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
-        regenerateId: EstforConstants.COOKED_MINNUS,
-        timespan,
-        rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
-      };
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        combatStats: {
-          ...EstforTypes.emptyCombatStats,
-          melee: 5,
-        },
-        tokenId: EstforConstants.BRONZE_SWORD,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        combatStats: bronzeHelmetStats,
-        tokenId: EstforConstants.BRONZE_HELMET,
-        equipPosition: EstforTypes.EquipPosition.HEAD,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_ARROW,
-        equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        healthRestored: 12,
-        tokenId: EstforConstants.COOKED_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.FOOD,
-      });
+      const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, world);
 
       return {
         playerId,

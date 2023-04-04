@@ -355,7 +355,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
-    for (uint i = 0; i < _fullAttireBonuses.length; i++) {
+    for (uint i = 0; i < _fullAttireBonuses.length; ++i) {
       _addFullAttireBonus(_fullAttireBonuses[i]);
     }
   }

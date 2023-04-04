@@ -447,7 +447,9 @@ library PlayersLibrary {
   ) public view returns (uint32 boostPointsAccrued) {
     if (activeBoost.itemTokenId != NONE && activeBoost.startTime < block.timestamp) {
       // A boost is active
+      BoostType boostType = activeBoost.boostType;
       if (
+        boostType == BoostType.ANY_XP ||
         (_isCombatSkill && activeBoost.boostType == BoostType.COMBAT_XP) ||
         (!_isCombatSkill && activeBoost.boostType == BoostType.NON_COMBAT_XP)
       ) {
