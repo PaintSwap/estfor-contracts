@@ -34,6 +34,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error PriceCannotBeZero();
   error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
   error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
+  error SellingPriceIsHigherThanShop(uint tokenId);
 
   struct ShopItem {
     uint16 tokenId;
@@ -55,7 +56,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     brush = _brush;
   }
 
-  function getPriceForItem(uint16 _tokenId) public view returns (uint price) {
+  function sellingPrice(uint16 _tokenId) public view returns (uint price) {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / itemNFT.uniqueItems();
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
@@ -67,7 +68,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
   }
 
-  function getPriceForItems(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
+  function sellingPrices(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
     U256 iter = U256.wrap(_tokenIds.length);
     if (iter.eq(0)) {
       return prices;
@@ -136,13 +137,21 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
+  function _checkSell(uint _tokenId, uint _sellPrice) private view {
+    uint price = shopItems[_tokenId];
+    if (price != 0 && price < _sellPrice) {
+      revert SellingPriceIsHigherThanShop(_tokenId);
+    }
+  }
+
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
-    uint price = getPriceForItem(_tokenId);
+    uint price = sellingPrice(_tokenId);
     uint totalBrush = price * _quantity;
     if (totalBrush < _minExpectedBrush) {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
-    itemNFT.burn(msg.sender, uint(_tokenId), _quantity);
+    _checkSell(_tokenId, price);
+    itemNFT.burn(msg.sender, _tokenId, _quantity);
     brush.transfer(msg.sender, totalBrush);
     emit Sell(msg.sender, _tokenId, _quantity, price);
   }
@@ -160,10 +169,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     do {
       iter = iter.dec();
       uint i = iter.asUint256();
-      U256 price = U256.wrap(getPriceForItem(uint16(_tokenIds[i])));
-      totalBrush = totalBrush + (price * U256.wrap(_quantities[i]));
-      itemNFT.burn(msg.sender, uint(_tokenIds[i]), _quantities[i]);
-      prices[i] = price.asUint256();
+      U256 sellPrice = U256.wrap(sellingPrice(uint16(_tokenIds[i])));
+      totalBrush = totalBrush + (sellPrice * U256.wrap(_quantities[i]));
+      prices[i] = sellPrice.asUint256();
+      _checkSell(_tokenIds[i], prices[i]);
+      itemNFT.burn(msg.sender, _tokenIds[i], _quantities[i]);
     } while (iter.neq(0));
     if (totalBrush.lt(_minExpectedBrush)) {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
