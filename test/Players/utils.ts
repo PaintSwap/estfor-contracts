@@ -139,7 +139,12 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   return {queuedAction, rate, numSpawned};
 };
 
-export const setupCooking = async function (itemNFT: ItemNFT, world: World, successPercent: number, minLevel: number) {
+export const setupBasicCooking = async function (
+  itemNFT: ItemNFT,
+  world: World,
+  successPercent: number,
+  minLevel: number
+) {
   const [owner, alice] = await ethers.getSigners();
 
   const rate = 100 * 10; // per hour

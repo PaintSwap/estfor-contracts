@@ -6,7 +6,7 @@ import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {allPendingFlags, getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {getXPFromLevel, setupBasicWoodcutting, setupCooking} from "./utils";
+import {getXPFromLevel, setupBasicWoodcutting, setupBasicCooking} from "./utils";
 
 const actionIsAvailable = true;
 
@@ -668,7 +668,7 @@ describe("Non-Combat Actions", function () {
 
       const successPercent = 100;
       const minLevel = 1;
-      const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
@@ -690,7 +690,7 @@ describe("Non-Combat Actions", function () {
 
       const successPercent = 25;
       const minLevel = 65;
-      const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
       await players.testModifyXP(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
@@ -717,7 +717,7 @@ describe("Non-Combat Actions", function () {
 
       const successPercent = 85;
       const minLevel = 65;
-      const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
       await players.testModifyXP(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 

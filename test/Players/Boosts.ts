@@ -5,7 +5,7 @@ import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {allPendingFlags} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {setupBasicMeleeCombat, setupBasicWoodcutting, setupCooking} from "./utils";
+import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking} from "./utils";
 
 describe("Boosts", function () {
   this.retries(3);
@@ -320,7 +320,7 @@ describe("Boosts", function () {
 
     const successPercent = 50;
     const minLevel = 1;
-    const {queuedAction, rate} = await setupCooking(itemNFT, world, successPercent, minLevel);
+    const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
     await players
       .connect(alice)
