@@ -29,6 +29,7 @@ interface IPlayerDelegate {
     uint playerId,
     QueuedActionInput[] calldata queuedActions,
     uint16 boostItemTokenId,
+    uint40 boostStartTime,
     ActionQueueStatus queueStatus
   ) external;
 
@@ -93,22 +94,37 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     QueuedActionInput[] memory queuedActions = new QueuedActionInput[](1);
     queuedActions[0] = _queuedAction;
-    _startActions(_playerId, queuedActions, NONE, _queueStatus);
+    _startActions(_playerId, queuedActions, NONE, uint40(block.timestamp), _queueStatus);
+  }
+
+  /// @notice Start actions for a player
+  /// @param _playerId Id for the player
+  /// @param _queuedActions Actions to queue
+  /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
+  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
+  function startActions(
+    uint _playerId,
+    QueuedActionInput[] calldata _queuedActions,
+    ActionQueueStatus _queueStatus
+  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+    _startActions(_playerId, _queuedActions, NONE, uint40(block.timestamp), _queueStatus);
   }
 
   /// @notice Start actions for a player
   /// @param _playerId Id for the player
   /// @param _queuedActions Actions to queue
   /// @param _boostItemTokenId Which boost to consume, can be NONE
+  /// @param _boostStartTime (Not used yet)
   /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
-  function startActions(
+  function startActionsWithBoost(
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
+    uint40 _boostStartTime, // Not used yet (always currenty time)
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    _startActions(_playerId, _queuedActions, _boostItemTokenId, _queueStatus);
+    _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _queueStatus);
   }
 
   /// @notice Process actions for a player up to the current block timestamp
@@ -211,6 +227,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint _playerId,
     QueuedActionInput[] memory _queuedActions,
     uint16 _boostItemTokenId,
+    uint40 _boostStartTime,
     ActionQueueStatus _queueStatus
   ) private {
     _delegatecall(
@@ -220,6 +237,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _playerId,
         _queuedActions,
         _boostItemTokenId,
+        _boostStartTime,
         _queueStatus
       )
     );

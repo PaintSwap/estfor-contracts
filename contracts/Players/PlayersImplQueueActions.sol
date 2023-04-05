@@ -22,6 +22,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
+    uint40 _boostStartTime,
     ActionQueueStatus _queueStatus
   ) external {
     address from = msg.sender;
@@ -103,7 +104,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     nextQueueId = queueId.asUint64();
 
     if (_boostItemTokenId != NONE) {
-      consumeBoost(from, _playerId, _boostItemTokenId, uint40(block.timestamp));
+      consumeBoost(from, _playerId, _boostItemTokenId, _boostStartTime);
     }
   }
 

@@ -503,9 +503,7 @@ describe("Non-Combat Actions", function () {
         .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStatus.NONE)
     ).to.be.reverted;
 */
-    await players
-      .connect(alice)
-      .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, queuedActions, EstforTypes.ActionQueueStatus.NONE);
 
     await itemNFT.testMint(alice.address, EstforConstants.LOG, 1);
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
@@ -813,7 +811,13 @@ describe("Non-Combat Actions", function () {
       await itemNFT.testMint(alice.address, EstforConstants.SKILL_BOOST, 1);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction], EstforConstants.SKILL_BOOST, EstforTypes.ActionQueueStatus.NONE);
+        .startActionsWithBoost(
+          playerId,
+          [queuedAction],
+          EstforConstants.SKILL_BOOST,
+          0,
+          EstforTypes.ActionQueueStatus.NONE
+        );
       await ethers.provider.send("evm_increaseTime", [3 * 3600]);
 
       tx = await world.requestRandomWords();

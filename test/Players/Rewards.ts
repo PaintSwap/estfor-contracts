@@ -652,12 +652,7 @@ describe("Rewards", function () {
     for (let i = 0; i < numRepeats; ++i) {
       await players
         .connect(alice)
-        .startActions(
-          playerId,
-          [queuedAction, queuedAction],
-          BoostType.NONE,
-          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
-        );
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
       let endTime;
       {
         const actionQueue = await players.getActionQueue(playerId);

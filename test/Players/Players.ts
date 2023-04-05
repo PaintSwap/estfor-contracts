@@ -228,13 +228,11 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players
-        .connect(alice)
-        .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].queueId).to.eq(3);
@@ -245,13 +243,13 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
       expect(actionQueue[0].queueId).to.eq(3);
@@ -264,13 +262,11 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players
-        .connect(alice)
-        .startActions(playerId, [], BoostType.NONE, EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+      await players.connect(alice).startActions(playerId, [], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].queueId).to.eq(1);
@@ -281,13 +277,13 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+        .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
       expect(actionQueue[0].queueId).to.eq(1);
@@ -300,11 +296,11 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players.connect(alice).startActions(playerId, [], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [], EstforTypes.ActionQueueStatus.NONE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
     });
@@ -313,13 +309,11 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players
-        .connect(alice)
-        .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].queueId).to.eq(3);
@@ -330,13 +324,11 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players
-        .connect(alice)
-        .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.APPEND);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.APPEND);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(3);
       expect(actionQueue[0].queueId).to.eq(1);
@@ -350,9 +342,7 @@ describe("Players", function () {
       expect(actionQueue.length).to.eq(0);
       const queuedAction = {...basicWoodcuttingQueuedAction};
       queuedAction.timespan = 14 * 3600;
-      await players
-        .connect(alice)
-        .startActions(playerId, [queuedAction], BoostType.NONE, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 1]);
 
       queuedAction.timespan = 5 * 3600;
@@ -364,7 +354,6 @@ describe("Players", function () {
         .startActions(
           playerId,
           [basicWoodcuttingQueuedAction, queuedAction, queuedAction],
-          BoostType.NONE,
           EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
         );
       actionQueue = await players.getActionQueue(playerId);

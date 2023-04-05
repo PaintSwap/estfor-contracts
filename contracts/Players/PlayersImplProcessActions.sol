@@ -17,8 +17,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     _checkStartSlot();
   }
 
-  error err(uint);
-
   function processActions(address _from, uint _playerId) external returns (QueuedAction[] memory remainingSkills) {
     Player storage player = players_[_playerId];
     if (player.actionQueue.length == 0) {
