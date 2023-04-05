@@ -68,15 +68,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     string name;
   }
 
-  World public world;
+  World private world;
   bool private isAlpha;
   string private baseURI;
 
   // How many of this item exist
   mapping(uint itemId => uint amount) public itemBalances;
 
-  address public players;
-  address public shop;
+  address private players;
+  address private shop;
 
   // Royalties
   uint public royaltyFee;
@@ -279,9 +279,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     } else {
       _checkIsTransferable(_ids);
     }
-    if (players != address(0)) {
-      IPlayers(players).itemBeforeTokenTransfer(_from, _ids, _amounts);
-    } else {
+    if (players == address(0)) {
       if (block.chainid != 31337) {
         revert InvalidChainId();
       }

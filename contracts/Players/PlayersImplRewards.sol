@@ -61,7 +61,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     );
 
     // Check for any boosts
-    PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+    PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
     uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
     if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
       for (uint i = 0; i < length; ++i) {
@@ -89,20 +89,25 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       uint minLevel = PlayersLibrary.getLevel(minXP);
-      uint skillLevel = PlayersLibrary.getLevel(xp[_playerId][_actionSkill]);
+      uint skillLevel = PlayersLibrary.getLevel(xp_[_playerId][_actionSkill]);
       uint extraBoost = skillLevel - minLevel;
 
-      successPercent = uint8(PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, actionSuccessPercent + extraBoost));
+      successPercent = uint8(PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, actionSuccessPercent + extraBoost));
     }
   }
 
   function _claimableRandomRewards(
     uint _playerId
-  ) private view returns (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) {
+  )
+    private
+    view
+    returns (uint[] memory ids, uint[] memory amounts, uint[] memory actionIds, uint[] memory queueIds, uint numRemoved)
+  {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
     U256 pendingRandomRewardsLength = U256.wrap(_pendingRandomRewards.length);
     ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    actionIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     queueIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
 
     uint length;
@@ -135,7 +140,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       if (oldLength != length) {
         // Check for any boosts
-        PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+        PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
         uint boostedTime = PlayersLibrary.getBoostedTime(
           _pendingRandomRewards[i].startTime,
           _pendingRandomRewards[i].elapsedTime,
@@ -148,6 +153,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         }
         for (uint j = oldLength; j < length; ++j) {
           queueIds[j] = pendingRandomReward.queueId;
+          actionIds[j] = pendingRandomReward.actionId;
         }
       }
     }
@@ -155,15 +161,20 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     assembly ("memory-safe") {
       mstore(ids, length)
       mstore(amounts, length)
+      mstore(actionIds, length)
       mstore(queueIds, length)
     }
   }
 
   function claimRandomRewards(uint _playerId) external {
     address from = msg.sender;
-    (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
-      _playerId
-    );
+    (
+      uint[] memory ids,
+      uint[] memory amounts,
+      uint[] memory actionIds,
+      uint[] memory queueIds,
+      uint numRemoved
+    ) = _claimableRandomRewards(_playerId);
     if (numRemoved != 0) {
       // Shift the remaining rewards to the front of the array
       U256 bounds = U256.wrap(pendingRandomRewards[_playerId].length).sub(numRemoved);
@@ -201,33 +212,43 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
-  // Get any changes that are pending and not on the blockchain yet.
-  function pendingInputOutputImpl(
+  // Get any changes that are pending and not commited to the blockchain yet.
+  // Such as items consumed/produced, xp gained, whether the player died and pending random reward rolls.
+  function pendingQueuedActionStateImpl(
     address _owner,
-    uint _playerId,
-    PendingFlags calldata _flags
-  ) external view returns (PendingInputOutput memory pendingInputOutput) {
-    Player storage player = players[_playerId];
+    uint _playerId
+  ) external view returns (PendingQueuedActionState memory pendingQueuedActionState) {
+    Player storage player = players_[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     uint _speedMultiplier = speedMultiplier[_playerId];
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
 
-    pendingInputOutput.consumed = new Equipment[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
-    pendingInputOutput.produced = new Equipment[](
-      actionQueue.length * MAX_REWARDS_PER_ACTION + (_pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION)
+    pendingQueuedActionState.consumed = new EquipmentInfo[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
+    pendingQueuedActionState.produced = new EquipmentInfo[](
+      actionQueue.length * MAX_REWARDS_PER_ACTION + (actionQueue.length * MAX_RANDOM_REWARDS_PER_ACTION)
     );
-    pendingInputOutput.producedPastRandomRewards = new Equipment[](20);
-    pendingInputOutput.producedXPRewards = new Equipment[](20);
+    pendingQueuedActionState.producedPastRandomRewards = new PastRandomRewardInfo[](
+      _pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION
+    );
+    pendingQueuedActionState.producedXPRewards = new Equipment[](10);
+
+    pendingQueuedActionState.died = new DiedInfo[](actionQueue.length);
+    pendingQueuedActionState.rolls = new RollInfo[](actionQueue.length);
+    pendingQueuedActionState.xpGained = new XPInfo[](actionQueue.length);
 
     uint consumedLength;
     uint producedLength;
     uint producedPastRandomRewardsLength;
     uint producedXPRewardsLength;
+    uint diedLength;
+    uint rollsLength;
+    uint xpGainedLength;
     address from = _owner;
     if (playerNFT.balanceOf(_owner, _playerId) == 0) {
       revert NotOwner();
     }
     uint previousTotalXP = player.totalXP;
+    uint totalXPGained;
     for (uint i; i < actionQueue.length; ++i) {
       QueuedAction storage queuedAction = actionQueue[i];
       CombatStats memory combatStats;
@@ -265,9 +286,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
         Equipment[] memory consumedEquipment;
-        Equipment memory output;
+        Equipment memory outputEquipment;
 
-        (consumedEquipment, output, xpElapsedTime, died) = _processConsumablesView(
+        (consumedEquipment, outputEquipment, xpElapsedTime, died) = _processConsumablesView(
           from,
           _playerId,
           queuedAction,
@@ -276,15 +297,31 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           actionChoice
         );
 
-        if (output.itemTokenId != NONE) {
-          pendingInputOutput.produced[producedLength++] = output;
+        if (outputEquipment.itemTokenId != NONE) {
+          pendingQueuedActionState.produced[producedLength++] = EquipmentInfo(
+            queuedAction.actionId,
+            queuedAction.queueId,
+            uint24(elapsedTime),
+            outputEquipment.itemTokenId,
+            outputEquipment.amount
+          );
         }
         U256 consumedEquipmentLength = U256.wrap(consumedEquipment.length);
         for (U256 iter; iter < consumedEquipmentLength; iter = iter.inc()) {
-          pendingInputOutput.consumed[consumedLength++] = consumedEquipment[iter.asUint256()];
+          pendingQueuedActionState.consumed[consumedLength++] = EquipmentInfo(
+            queuedAction.actionId,
+            queuedAction.queueId,
+            uint24(elapsedTime),
+            consumedEquipment[iter.asUint256()].itemTokenId,
+            consumedEquipment[iter.asUint256()].amount
+          );
         }
 
-        pendingInputOutput.died = died;
+        if (died) {
+          pendingQueuedActionState.died[diedLength++] = (
+            DiedInfo(queuedAction.actionId, queuedAction.queueId, uint24(elapsedTime))
+          );
+        }
       }
 
       uint pointsAccruedExclBaseBoost;
@@ -303,57 +340,98 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         xpGained += _getHealthPointsFromCombat(_playerId, pointsAccruedExclBaseBoost);
       }
 
-      if (_flags.includeLoot) {
-        (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
-          _playerId,
-          queuedAction.startTime,
-          xpElapsedTime,
-          queuedAction.actionId
-        );
+      // Include loot
+      (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
+        _playerId,
+        queuedAction.startTime,
+        xpElapsedTime,
+        queuedAction.actionId
+      );
 
-        U256 newIdsLength = U256.wrap(newIds.length);
-        for (U256 iter; iter < newIdsLength; iter = iter.inc()) {
-          uint j = iter.asUint256();
-          pendingInputOutput.produced[producedLength++] = Equipment(uint16(newIds[j]), uint24(newAmounts[j]));
+      U256 newIdsLength = U256.wrap(newIds.length);
+      for (U256 iter; iter < newIdsLength; iter = iter.inc()) {
+        uint j = iter.asUint256();
+        pendingQueuedActionState.produced[producedLength++] = EquipmentInfo(
+          queuedAction.actionId,
+          queuedAction.queueId,
+          uint24(elapsedTime),
+          uint16(newIds[j]),
+          uint24(newAmounts[j])
+        );
+      }
+      // Total XP gained
+      pendingQueuedActionState.xpGained[xpGainedLength++] = XPInfo(
+        queuedAction.actionId,
+        queuedAction.queueId,
+        uint24(elapsedTime),
+        xpGained
+      );
+
+      totalXPGained += xpGained;
+
+      // Number of pending reward rolls
+      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
+        queuedAction.actionId
+      );
+      bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
+      if (hasRandomRewards) {
+        bool hasRandomWord = world.hasRandomWord(queuedAction.startTime + xpElapsedTime);
+        if (!hasRandomWord) {
+          uint16 monstersKilled = uint16((numSpawnedPerHour * xpElapsedTime) / 3600);
+          pendingQueuedActionState.rolls[rollsLength++] = RollInfo(
+            queuedAction.actionId,
+            queuedAction.queueId,
+            uint24(elapsedTime),
+            uint32(isCombat ? monstersKilled : xpElapsedTime / 3600)
+          );
         }
       }
-      // But this could be improved
-      pendingInputOutput.xpGained += xpGained;
     } // end of loop
 
-    if (_flags.includeXPRewards && pendingInputOutput.xpGained != 0) {
+    // XPRewards
+    if (totalXPGained != 0) {
       (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
         previousTotalXP,
-        previousTotalXP + pendingInputOutput.xpGained
+        previousTotalXP + totalXPGained
       );
       U256 idsLength = U256.wrap(ids.length);
       for (U256 iter; iter < idsLength; iter = iter.inc()) {
         uint i = iter.asUint256();
-        pendingInputOutput.producedXPRewards[producedXPRewardsLength++] = Equipment(uint16(ids[i]), uint24(amounts[i]));
-      }
-    }
-
-    if (_flags.includePastRandomRewards) {
-      // Loop through any pending random rewards and add them to the output
-      (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
-        _playerId
-      );
-      U256 idsLength = U256.wrap(ids.length);
-      for (U256 iter; iter < idsLength; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        pendingInputOutput.producedPastRandomRewards[producedPastRandomRewardsLength++] = Equipment(
+        pendingQueuedActionState.producedXPRewards[producedXPRewardsLength++] = Equipment(
           uint16(ids[i]),
           uint24(amounts[i])
         );
       }
     }
 
+    // Past Random Rewards
+    (
+      uint[] memory ids,
+      uint[] memory amounts,
+      uint[] memory actionIds,
+      uint[] memory queueIds,
+      uint numRemoved
+    ) = _claimableRandomRewards(_playerId);
+    U256 idsLength = U256.wrap(ids.length);
+    for (U256 iter; iter < idsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      pendingQueuedActionState.producedPastRandomRewards[producedPastRandomRewardsLength++] = PastRandomRewardInfo(
+        uint16(actionIds[i]),
+        uint64(queueIds[i]),
+        uint16(ids[i]),
+        uint24(amounts[i])
+      );
+    }
+
     // Compact to fit the arrays
     assembly ("memory-safe") {
-      mstore(mload(pendingInputOutput), consumedLength)
-      mstore(mload(add(pendingInputOutput, 32)), producedLength)
-      mstore(mload(add(pendingInputOutput, 64)), producedPastRandomRewardsLength)
-      mstore(mload(add(pendingInputOutput, 96)), producedXPRewardsLength)
+      mstore(mload(pendingQueuedActionState), consumedLength)
+      mstore(mload(add(pendingQueuedActionState, 32)), producedLength)
+      mstore(mload(add(pendingQueuedActionState, 64)), producedPastRandomRewardsLength)
+      mstore(mload(add(pendingQueuedActionState, 96)), producedXPRewardsLength)
+      mstore(mload(add(pendingQueuedActionState, 128)), diedLength)
+      mstore(mload(add(pendingQueuedActionState, 160)), rollsLength)
+      mstore(mload(add(pendingQueuedActionState, 192)), xpGainedLength)
     }
   }
 
@@ -481,53 +559,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
-  // Move to world?
-  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
-  }
-
   function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
     uint256 index = _index * 2;
     return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
-  }
-
-  function _getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) private view returns (bytes memory b) {
-    if (_numTickets <= 16) {
-      // 32 bytes
-      bytes32 word = bytes32(world.getRandomWord(_skillEndTime));
-      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime, _playerId));
-    } else if (_numTickets <= 48) {
-      uint[3] memory fullWords = world.getFullRandomWords(_skillEndTime);
-      // 3 * 32 bytes
-      for (uint i = 0; i < 3; ++i) {
-        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime, _playerId));
-      }
-      b = abi.encodePacked(fullWords);
-    } else {
-      // 5 * 3 * 32 bytes
-      uint[3][5] memory multipleFullWords = world.getMultipleFullRandomWords(_skillEndTime);
-      for (uint i = 0; i < 5; ++i) {
-        for (uint j = 0; j < 3; ++j) {
-          multipleFullWords[i][j] = uint(
-            _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
-          );
-          // XOR all the full words with the first fresh random number to give more randomness to the existing random words
-          if (i > 0) {
-            multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
-          }
-        }
-      }
-
-      b = abi.encodePacked(multipleFullWords);
-    }
-  }
-
-  function getRandomBytesImpl(
-    uint _numTickets,
-    uint _skillEndTime,
-    uint _playerId
-  ) external view override returns (bytes memory b) {
-    return _getRandomBytes(_numTickets, _skillEndTime, _playerId);
   }
 
   // hasRandomWord means there was pending reward we tried to get a reward from
@@ -551,17 +585,17 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint skillEndTime = _skillStartTime + _elapsedTime;
       hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {
-        uint numIterations = PlayersLibrary.min(MAX_UNIQUE_TICKETS, _numTickets);
+        uint numIterations = PlayersLibrary.min(MAX_UNIQUE_TICKETS_, _numTickets);
 
-        bytes memory b = _getRandomBytes(numIterations, skillEndTime, _playerId);
+        bytes memory b = PlayersLibrary.getRandomBytes(numIterations, skillEndTime, _playerId, world);
         uint startLootLength = length;
         for (U256 iter; iter.lt(numIterations); iter = iter.inc()) {
           uint i = iter.asUint256();
           uint mintMultiplier = 1;
           // If there is above 240 tickets we need to mint more if a ticket is hit
-          if (_numTickets > MAX_UNIQUE_TICKETS) {
-            mintMultiplier = _numTickets / MAX_UNIQUE_TICKETS;
-            uint remainder = _numTickets % MAX_UNIQUE_TICKETS;
+          if (_numTickets > MAX_UNIQUE_TICKETS_) {
+            mintMultiplier = _numTickets / MAX_UNIQUE_TICKETS_;
+            uint remainder = _numTickets % MAX_UNIQUE_TICKETS_;
             if (i < remainder) {
               ++mintMultiplier;
             }
@@ -616,7 +650,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   )
     private
     view
-    returns (Equipment[] memory consumedEquipment, Equipment memory output, uint xpElapsedTime, bool died)
+    returns (Equipment[] memory consumedEquipment, Equipment memory outputEquipment, uint xpElapsedTime, bool died)
   {
     consumedEquipment = new Equipment[](4);
     uint consumedEquipmentLength;
@@ -692,25 +726,25 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint8 successPercent = 100;
       if (_actionChoice.successPercent != 100) {
         uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
-        uint skillLevel = PlayersLibrary.getLevel(xp[_playerId][_actionChoice.skill]);
+        uint skillLevel = PlayersLibrary.getLevel(xp_[_playerId][_actionChoice.skill]);
         uint extraBoost = skillLevel - minLevel;
 
         successPercent = uint8(
-          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, _actionChoice.successPercent + extraBoost)
+          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost)
         );
       }
 
       uint24 amount = uint24((numConsumed * successPercent) / 100);
 
       // Check for any gathering boosts
-      PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+      PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
       if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
         amount += uint24((boostedTime * amount * activeBoost.val) / (3600 * 100));
       }
 
       if (amount != 0) {
-        output = Equipment(_actionChoice.outputTokenId, amount);
+        outputEquipment = Equipment(_actionChoice.outputTokenId, amount);
       }
     }
 

@@ -28,7 +28,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint totalTimespan;
     QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
 
-    Player storage player = players[_playerId];
+    Player storage player = players_[_playerId];
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
@@ -81,13 +81,13 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       queuedAction.isValid = true;
       // startTime filled in later
 
-      if (totalTimespan + queuedAction.timespan > MAX_TIME) {
+      if (totalTimespan + queuedAction.timespan > MAX_TIME_) {
         // Must be the last one which will exceed the max time
         if (iter != queuedActionsLength.dec()) {
           revert ActionTimespanExceedsMaxTime();
         }
         // Shorten it so that it does not extend beyond the max time
-        queuedAction.timespan = uint24(MAX_TIME - totalTimespan);
+        queuedAction.timespan = uint24(MAX_TIME_ - totalTimespan);
       }
 
       _addToQueue(from, _playerId, queuedAction, queueId.asUint64(), prevEndTime);
@@ -99,7 +99,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     emit SetActionQueue(from, _playerId, player.actionQueue);
 
-    assert(totalTimespan <= MAX_TIME); // Should never happen
+    assert(totalTimespan <= MAX_TIME_); // Should never happen
     nextQueueId = queueId.asUint64();
 
     if (_boostItemTokenId != NONE) {
@@ -124,7 +124,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     itemNFT.burn(from, _itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
-    PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
+    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
       itemNFT.mint(from, playerBoost.itemTokenId, 1);
     }
@@ -167,7 +167,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint _startTime
   ) private {
     _checkAddToQueue(_queuedAction);
-    Player storage _player = players[_playerId];
+    Player storage _player = players_[_playerId];
 
     uint16 actionId = _queuedAction.actionId;
 
@@ -185,7 +185,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
 
     bool isCombat = skill == Skill.COMBAT;
-    if (!isCombat && xp[_playerId][skill] < actionMinXP) {
+    if (!isCombat && xp_[_playerId][skill] < actionMinXP) {
       revert ActionMinimumXPNotReached();
     }
 
@@ -197,7 +197,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
 
-      if (xp[_playerId][actionChoice.skill] < actionChoice.minXP) {
+      if (xp_[_playerId][actionChoice.skill] < actionChoice.minXP) {
         revert ActionChoiceMinimumXPNotReached();
       }
 
@@ -247,7 +247,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       if (_queuedAction.regenerateId != NONE) {
         itemTokenIds[itemLength++] = _queuedAction.regenerateId;
         (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(itemTokenIds[itemLength - 1]);
-        if (xp[_playerId][skill] < minXP) {
+        if (xp_[_playerId][skill] < minXP) {
           revert ConsumableMinimumXPNotReached();
         }
       }
@@ -338,7 +338,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
-        if (xp[_playerId][skills[i]] < minXPs[i]) {
+        if (xp_[_playerId][skills[i]] < minXPs[i]) {
           revert AttireMinimumXPNotReached();
         }
         if (balances[i] == 0) {
@@ -376,7 +376,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
           revert DoNotHaveEnoughQuantityToEquipToAction();
         }
         (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(equippedItemTokenId);
-        if (xp[_playerId][skill] < minXP) {
+        if (xp_[_playerId][skill] < minXP) {
           revert ItemMinimumXPNotReached();
         }
         EquipPosition equipPosition = itemNFT.getEquipPosition(equippedItemTokenId);
@@ -402,5 +402,53 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         }
       }
     }
+  }
+
+  function _clearActionQueue(address _from, uint _playerId) private {
+    QueuedAction[] memory queuedActions;
+    _setActionQueue(_from, _playerId, queuedActions);
+  }
+
+  // Consumes all the actions in the queue up to this time.
+  // Unequips everything which is just emitting an event
+  // Mints the boost vial if it hasn't been consumed at all yet
+  // Removes all the actions from the queue
+  function clearEverything(address _from, uint _playerId) public {
+    _processActions(_from, _playerId);
+    emit ClearAll(_from, _playerId);
+    _clearActionQueue(_from, _playerId);
+    // Can re-mint boost if it hasn't been consumed at all yet
+    PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
+    if (activeBoost.boostType != BoostType.NONE && activeBoost.startTime > block.timestamp) {
+      uint itemTokenId = activeBoost.itemTokenId;
+      delete activeBoosts_[_playerId];
+      itemNFT.mint(_from, itemTokenId, 1);
+    }
+  }
+
+  function setActivePlayer(address _from, uint _playerId) external {
+    uint existingActivePlayerId = activePlayer_[_from];
+    // All attire and actions can be made for this player
+    activePlayer_[_from] = _playerId;
+    if (existingActivePlayerId == _playerId) {
+      revert PlayerAlreadyActive();
+    }
+    if (existingActivePlayerId != 0) {
+      // If there is an existing active player, unequip all items
+      clearEverything(_from, existingActivePlayerId);
+    }
+    emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
+  }
+
+  function unequipBoostVial(uint _playerId) external {
+    if (activeBoosts_[_playerId].boostType == BoostType.NONE) {
+      revert NoActiveBoost();
+    }
+    if (activeBoosts_[_playerId].startTime > block.timestamp) {
+      revert BoostTimeAlreadyStarted();
+    }
+    address from = msg.sender;
+    itemNFT.mint(from, activeBoosts_[_playerId].itemTokenId, 1);
+    emit UnconsumeBoostVial(from, _playerId);
   }
 }

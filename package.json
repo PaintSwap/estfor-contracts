@@ -78,7 +78,7 @@
     "setMerkleRoot": "npx hardhat run scripts/setMerkleTreeWhitelist.ts",
     "impersonate": "npx hardhat run scripts/impersonate.ts",
     "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",
-    "pendingInputOutput": "npx hardhat run scripts/pendingInputOutput.ts",
+    "pendingQueuedActionState": "npx hardhat run scripts/pendingQueuedActionState.ts",
     "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol",
     "precommit": "pretty-quick --staged",
     "prepare": "husky install .husky"

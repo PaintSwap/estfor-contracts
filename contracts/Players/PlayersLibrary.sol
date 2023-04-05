@@ -474,4 +474,45 @@ library PlayersLibrary {
       return true;
     }
   }
+
+  // Move to world?
+  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
+  }
+
+  function getRandomBytes(
+    uint _numTickets,
+    uint _skillEndTime,
+    uint _playerId,
+    World _world
+  ) external view returns (bytes memory b) {
+    if (_numTickets <= 16) {
+      // 32 bytes
+      bytes32 word = bytes32(_world.getRandomWord(_skillEndTime));
+      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime, _playerId));
+    } else if (_numTickets <= 48) {
+      uint[3] memory fullWords = _world.getFullRandomWords(_skillEndTime);
+      // 3 * 32 bytes
+      for (uint i = 0; i < 3; ++i) {
+        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime, _playerId));
+      }
+      b = abi.encodePacked(fullWords);
+    } else {
+      // 5 * 3 * 32 bytes
+      uint[3][5] memory multipleFullWords = _world.getMultipleFullRandomWords(_skillEndTime);
+      for (uint i = 0; i < 5; ++i) {
+        for (uint j = 0; j < 3; ++j) {
+          multipleFullWords[i][j] = uint(
+            _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
+          );
+          // XOR all the full words with the first fresh random number to give more randomness to the existing random words
+          if (i > 0) {
+            multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
+          }
+        }
+      }
+
+      b = abi.encodePacked(multipleFullWords);
+    }
+  }
 }

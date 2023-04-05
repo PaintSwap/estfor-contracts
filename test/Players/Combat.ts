@@ -6,7 +6,7 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {allPendingFlags, emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId} from "../utils";
+import {emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
 
@@ -254,10 +254,10 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-      expect(pendingInputOutput.consumed.length).to.eq(1);
-      expect(pendingInputOutput.consumed[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
-      expect(pendingInputOutput.consumed[0].amount).to.eq(255);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.consumed.length).to.eq(1);
+      expect(pendingQueuedActionState.consumed[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
+      expect(pendingQueuedActionState.consumed[0].amount).to.eq(255);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255);
       await players.connect(alice).processActions(playerId);
@@ -382,7 +382,7 @@ describe("Combat Actions", function () {
         },
       ]);
 
-      const startXP = 374;
+      const startXP = (await players.START_XP()).toNumber();
       return {playerId, players, playerNFT, itemNFT, world, alice, timespan, actionId, dropRate, queuedAction, startXP};
     }
 
@@ -744,13 +744,17 @@ describe("Combat Actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
-    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-    expect(pendingInputOutput.died).to.eq(true);
-    expect(pendingInputOutput.produced.length).to.eq(0);
-    expect(pendingInputOutput.producedPastRandomRewards.length).to.eq(0);
-    expect(pendingInputOutput.consumed.length).to.eq(1);
-    expect(pendingInputOutput.consumed[0].amount).to.eq(foodNum);
-    expect(pendingInputOutput.consumed[0].itemTokenId).to.eq(COOKED_MINNUS);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.died.length).to.eq(1);
+    expect(pendingQueuedActionState.died[0].actionId).to.eq(queuedAction.actionId);
+    expect(pendingQueuedActionState.died[0].queueId).to.eq(1);
+    expect(pendingQueuedActionState.produced.length).to.eq(0);
+    expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
+    expect(pendingQueuedActionState.consumed.length).to.eq(1);
+    expect(pendingQueuedActionState.consumed[0].actionId).to.eq(queuedAction.actionId);
+    expect(pendingQueuedActionState.consumed[0].queueId).to.eq(1);
+    expect(pendingQueuedActionState.consumed[0].amount).to.eq(foodNum);
+    expect(pendingQueuedActionState.consumed[0].itemTokenId).to.eq(COOKED_MINNUS);
 
     await players.connect(alice).processActions(playerId);
     // Should die so doesn't get any attack skill points, loot, and food should be consumed
@@ -762,10 +766,10 @@ describe("Combat Actions", function () {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
-    pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-    expect(pendingInputOutput.died).to.eq(true);
-    expect(pendingInputOutput.produced.length).to.eq(0);
-    expect(pendingInputOutput.producedPastRandomRewards.length).to.eq(0);
-    expect(pendingInputOutput.consumed.length).to.eq(0);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.died.length).to.eq(1);
+    expect(pendingQueuedActionState.produced.length).to.eq(0);
+    expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
+    expect(pendingQueuedActionState.consumed.length).to.eq(0);
   });
 });

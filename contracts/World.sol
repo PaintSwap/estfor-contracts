@@ -5,7 +5,6 @@ import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interface
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 
 import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
@@ -18,7 +17,7 @@ import "./globals/rewards.sol";
 
 /* solhint-enable no-global-import */
 
-contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, Multicall {
+contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeU256 for U256;
 
   event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);

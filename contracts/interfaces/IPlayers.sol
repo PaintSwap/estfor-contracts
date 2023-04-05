@@ -16,7 +16,5 @@ interface IPlayers {
 
   function mintBatch(address to, uint[] calldata ids, uint256[] calldata amounts) external;
 
-  function itemBeforeTokenTransfer(address from, uint[] calldata tokenIds, uint256[] calldata amounts) external;
-
   function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills, bool makeActive) external;
 }

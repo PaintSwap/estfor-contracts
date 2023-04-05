@@ -165,7 +165,7 @@ contract DebugStorageSlots {
     uint16 leftHandEquipmentTokenId; // Shield, can be empty
     uint24 timespan; // How long to queue the action for
     CombatStyle combatStyle; // specific style of combat,  can also be used
-    uint80 queueId;
+    uint64 queueId;
   }
 
   struct QueuedAction {
@@ -236,16 +236,6 @@ contract DebugStorageSlots {
     QueuedAction[] actionQueue;
   }
 
-  // This is only for viewing so doesn't need to be optimized
-  struct PendingInputOutput {
-    Equipment[] consumed;
-    Equipment[] produced;
-    Equipment[] producedPastRandomRewards;
-    Equipment[] producedXPRewards;
-    uint32 xpGained;
-    bool died;
-  }
-
   struct PlayerBoostInfo {
     uint40 startTime;
     uint24 duration;
@@ -257,12 +247,6 @@ contract DebugStorageSlots {
   struct XPThresholdReward {
     uint32 xpThreshold;
     Equipment[] equipments;
-  }
-
-  struct PendingFlags {
-    bool includeLoot; // Guaranteed loot from actions, and random loot if claiming quite late
-    bool includePastRandomRewards; // This is random loot from previous actions
-    bool includeXPRewards; // Passing any xp thresholds gives you extra rewards
   }
 
   Item item;
@@ -277,8 +261,6 @@ contract DebugStorageSlots {
   Attire attire;
   CombatStats combatStats;
   Player player;
-  PendingInputOutput pendingInputOutput;
   PlayerBoostInfo playerBoostInfo;
   XPThresholdReward xpThresholdReward;
-  PendingFlags pendingFlags;
 }

@@ -145,37 +145,60 @@ struct AvatarInfo {
   Skill[2] startSkills; // Can be NONE
 }
 
-struct PendingFlags {
-  bool includeLoot; // Guaranteed loot from actions, and random loot if claiming quite late
-  bool includePastRandomRewards; // This is random loot from previous actions
-  bool includeXPRewards; // Passing any xp thresholds gives you extra rewards
+struct EquipmentInfo {
+  uint16 actionId;
+  uint64 queueId;
+  uint24 elapsedTime;
+  uint16 itemTokenId;
+  uint24 amount;
+}
+
+struct XPInfo {
+  uint16 actionId;
+  uint64 queueId;
+  uint24 elapsedTime;
+  uint32 xp;
+}
+
+struct DiedInfo {
+  uint16 actionId;
+  uint64 queueId;
+  uint24 elapsedTime;
+}
+
+struct RollInfo {
+  uint16 actionId;
+  uint64 queueId;
+  uint24 elapsedTime;
+  uint32 numRolls;
+}
+
+struct PastRandomRewardInfo {
+  uint16 actionId;
+  uint64 queueId;
+  uint16 itemTokenId;
+  uint24 amount;
 }
 
 // This is only for viewing so doesn't need to be optimized
-struct PendingInputOutput {
-  Equipment[] consumed;
-  Equipment[] produced;
-  Equipment[] producedPastRandomRewards;
+struct PendingQueuedActionState {
+  EquipmentInfo[] consumed;
+  EquipmentInfo[] produced;
+  PastRandomRewardInfo[] producedPastRandomRewards;
   Equipment[] producedXPRewards;
-  uint32 xpGained;
-  bool died;
+  DiedInfo[] died;
+  RollInfo[] rolls;
+  XPInfo[] xpGained;
 }
 
 // External view functions that are in other implementation files
 interface IPlayersDelegateView {
-  function pendingInputOutputImpl(
+  function pendingQueuedActionStateImpl(
     address _owner,
-    uint _playerId,
-    PendingFlags memory _flags
-  ) external view returns (PendingInputOutput memory pendingInputOutput);
+    uint _playerId
+  ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
 
   function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
-
-  function getRandomBytesImpl(
-    uint _numTickets,
-    uint _skillEndTime,
-    uint _playerId
-  ) external view returns (bytes memory b);
 }
 
 struct FullAttireBonusInput {

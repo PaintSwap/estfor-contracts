@@ -105,28 +105,28 @@ abstract contract PlayersBase {
   error PlayerAlreadyActive();
   error TestInvalidXP();
 
-  uint32 public constant MAX_TIME = 1 days;
-  uint public constant START_XP = 374;
+  uint32 internal constant MAX_TIME_ = 1 days;
+  uint internal constant START_XP_ = 374;
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
-  uint public constant MAX_SUCCESS_PERCENT_CHANCE = 90;
-  uint public constant MAX_UNIQUE_TICKETS = 240;
+  uint internal constant MAX_SUCCESS_PERCENT_CHANCE_ = 90;
+  uint internal constant MAX_UNIQUE_TICKETS_ = 240;
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;
 
   mapping(uint playerId => uint multiplier) internal speedMultiplier; // 0 or 1 is diabled, for testing only
 
-  mapping(address user => uint playerId) public activePlayer;
+  mapping(address user => uint playerId) internal activePlayer_;
 
-  mapping(uint playerId => PlayerBoostInfo boostInfo) public activeBoosts;
+  mapping(uint playerId => PlayerBoostInfo boostInfo) internal activeBoosts_;
 
   uint64 internal nextQueueId; // Global queued action id
   World internal world;
   bool internal isAlpha;
 
-  mapping(uint playerId => mapping(Skill skill => uint128 xp)) public xp;
+  mapping(uint playerId => mapping(Skill skill => uint128 xp)) internal xp_;
 
-  mapping(uint playerId => Player player) public players;
+  mapping(uint playerId => Player player) internal players_;
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
   mapping(uint playerId => PendingRandomReward[] pendingRandomRewards) internal pendingRandomRewards; // queue, will be sorted by timestamp
@@ -152,7 +152,7 @@ abstract contract PlayersBase {
 
   AdminAccess internal adminAccess;
 
-  mapping(Skill skill => FullAttireBonus) public fullAttireBonus;
+  mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
@@ -165,7 +165,7 @@ abstract contract PlayersBase {
     if (playerNFT.balanceOf(msg.sender, _playerId) != 1) {
       revert NotOwner();
     }
-    if (activePlayer[msg.sender] != _playerId) {
+    if (activePlayer_[msg.sender] != _playerId) {
       revert NotActive();
     }
     _;
@@ -205,7 +205,7 @@ abstract contract PlayersBase {
         _actionStartTime,
         _elapsedTime,
         _xpPerHour,
-        activeBoosts[_playerId]
+        activeBoosts_[_playerId]
       );
   }
 
@@ -246,11 +246,11 @@ abstract contract PlayersBase {
   }
 
   function _getBonusAvatarXPPercent(uint _playerId, Skill _skill) internal view returns (uint8 bonusPercent) {
-    bool hasBonusSkill = players[_playerId].skillBoosted1 == _skill || players[_playerId].skillBoosted2 == _skill;
+    bool hasBonusSkill = players_[_playerId].skillBoosted1 == _skill || players_[_playerId].skillBoosted2 == _skill;
     if (!hasBonusSkill) {
       return 0;
     }
-    bool bothSet = players[_playerId].skillBoosted1 != Skill.NONE && players[_playerId].skillBoosted2 != Skill.NONE;
+    bool bothSet = players_[_playerId].skillBoosted1 != Skill.NONE && players_[_playerId].skillBoosted2 != Skill.NONE;
     bonusPercent = bothSet ? 5 : 10;
   }
 
@@ -444,6 +444,12 @@ abstract contract PlayersBase {
 
   function _claimRandomRewards(uint _playerId) internal {
     _delegatecall(implRewards, abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
+  }
+
+  function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) internal {
+    Player storage player = players_[_playerId];
+    player.actionQueue = _queuedActions;
+    emit SetActionQueue(_from, _playerId, player.actionQueue);
   }
 
   function _checkStartSlot() internal pure {

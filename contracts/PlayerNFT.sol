@@ -5,7 +5,6 @@ import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
@@ -20,7 +19,7 @@ import "./globals/players.sol";
 /* solhint-enable no-global-import */
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, Multicall {
+contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
   using UnsafeU256 for U256;
 
   event NewPlayer(uint playerId, uint avatarId, bytes20 name);
@@ -49,8 +48,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   mapping(uint playerId => bytes32 name) public names;
   mapping(bytes name => bool exists) public lowercaseNames;
 
-  IBrushToken public brush;
-  IPlayers public players;
+  IBrushToken private brush;
+  IPlayers private players;
   address public pool;
 
   uint public editNameCost;
@@ -58,7 +57,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   address public royaltyReceiver;
   bool public isAlpha;
 
-  bytes32 public merkleRoot; // For airdrop
+  bytes32 private merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
   uint public constant MAX_ALPHA_WHITELIST = 3;
   AdminAccess private adminAccess;

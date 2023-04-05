@@ -60,9 +60,3 @@ export const emptyActionChoice: ActionChoiceInput = {
   outputNum: 0,
   successPercent: 100,
 };
-
-export const allPendingFlags: PendingFlags = {
-  includeLoot: true,
-  includePastRandomRewards: true,
-  includeXPRewards: true,
-};

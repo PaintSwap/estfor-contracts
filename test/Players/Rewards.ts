@@ -4,14 +4,7 @@ import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
 import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {
-  allPendingFlags,
-  bronzeHelmetStats,
-  emptyActionChoice,
-  getActionChoiceId,
-  getActionId,
-  getRequestId,
-} from "../utils";
+import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
 
@@ -74,17 +67,17 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [50]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-    expect(pendingInputOutput.produced.length).is.eq(1);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [450]);
     await ethers.provider.send("evm_mine", []);
-    pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-    expect(pendingInputOutput.produced.length).is.eq(1);
-    expect(pendingInputOutput.producedXPRewards.length).is.eq(1);
-    expect(pendingInputOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
-    expect(pendingInputOutput.producedXPRewards[0].amount).is.eq(3);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.produced.length).is.eq(1);
+    expect(pendingQueuedActionState.producedXPRewards.length).is.eq(1);
+    expect(pendingQueuedActionState.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
+    expect(pendingQueuedActionState.producedXPRewards[0].amount).is.eq(3);
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
@@ -143,16 +136,12 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [1600]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
-      includeLoot: false,
-      includePastRandomRewards: false,
-      includeXPRewards: true,
-    });
-    expect(pendingInputOutput.producedXPRewards.length).is.eq(2);
-    expect(pendingInputOutput.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
-    expect(pendingInputOutput.producedXPRewards[0].amount).is.eq(3);
-    expect(pendingInputOutput.producedXPRewards[1].itemTokenId).is.eq(EstforConstants.BRONZE_HELMET);
-    expect(pendingInputOutput.producedXPRewards[1].amount).is.eq(4);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.producedXPRewards.length).is.eq(2);
+    expect(pendingQueuedActionState.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
+    expect(pendingQueuedActionState.producedXPRewards[0].amount).is.eq(3);
+    expect(pendingQueuedActionState.producedXPRewards[1].itemTokenId).is.eq(EstforConstants.BRONZE_HELMET);
+    expect(pendingQueuedActionState.producedXPRewards[1].amount).is.eq(4);
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
@@ -433,16 +422,16 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_increaseTime", [3600 * 24]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-    expect(pendingInputOutput.produced.length).to.eq(0);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.produced.length).to.eq(0);
 
     tx = await world.requestRandomWords();
     requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
 
-    pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-    expect(pendingInputOutput.produced.length).to.eq(1);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.produced.length).to.eq(1);
 
     await players.connect(alice).processActions(playerId);
 
@@ -541,8 +530,8 @@ describe("Rewards", function () {
 
       expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
-      let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-      expect(pendingInputOutput.produced.length).to.eq(0);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.produced.length).to.eq(0);
 
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
@@ -556,18 +545,16 @@ describe("Rewards", function () {
 
       expect(await world.hasRandomWord(endTime)).to.be.true;
 
-      pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
-        includeLoot: false,
-        includePastRandomRewards: true,
-        includeXPRewards: false,
-      });
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
 
-      if (pendingInputOutput.producedPastRandomRewards.length != 0) {
-        expect(pendingInputOutput.producedPastRandomRewards.length).to.eq(1);
+      if (pendingQueuedActionState.producedPastRandomRewards.length != 0) {
+        expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
 
-        const produced = pendingInputOutput.producedPastRandomRewards[0].amount;
+        const produced = pendingQueuedActionState.producedPastRandomRewards[0].amount;
         numProduced += produced;
-        expect(pendingInputOutput.producedPastRandomRewards[0].itemTokenId).to.be.eq(EstforConstants.BRONZE_ARROW);
+        expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.be.eq(
+          EstforConstants.BRONZE_ARROW
+        );
       }
     }
     const expectedTotal = numRepeats * randomChanceFraction * numHours;
@@ -688,12 +675,8 @@ describe("Rewards", function () {
 
       expect((await players.getPendingRandomRewards(playerId)).length).to.eq(2);
 
-      let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
-        includeLoot: false,
-        includePastRandomRewards: true,
-        includeXPRewards: false,
-      });
-      expect(pendingInputOutput.producedPastRandomRewards.length).to.eq(0);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
@@ -702,15 +685,11 @@ describe("Rewards", function () {
 
       expect(await world.hasRandomWord(endTime)).to.be.true;
 
-      pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, {
-        includeLoot: false,
-        includePastRandomRewards: true,
-        includeXPRewards: false,
-      });
-      if (pendingInputOutput.producedPastRandomRewards.length != 0) {
-        expect(pendingInputOutput.producedPastRandomRewards.length).to.be.oneOf([1, 2, 3, 4, 5, 6, 7, 8]);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      if (pendingQueuedActionState.producedPastRandomRewards.length != 0) {
+        expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.oneOf([1, 2, 3, 4, 5, 6, 7, 8]);
 
-        for (const reward of pendingInputOutput.producedPastRandomRewards) {
+        for (const reward of pendingQueuedActionState.producedPastRandomRewards) {
           balanceMap.set(reward.itemTokenId, balanceMap.get(reward.itemTokenId)! + reward.amount);
         }
       }
@@ -799,10 +778,10 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_mine", []);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
 
-    let pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-    expect(pendingInputOutput.produced.length).is.eq(1);
-    expect(pendingInputOutput.produced[0].amount).to.gt(0);
-    expect(pendingInputOutput.produced[0].itemTokenId).to.eq(EstforConstants.LOG);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.produced.length).is.eq(1);
+    expect(pendingQueuedActionState.produced[0].amount).to.gt(0);
+    expect(pendingQueuedActionState.produced[0].itemTokenId).to.eq(EstforConstants.LOG);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     await players.connect(alice).processActions(playerId);
     // Confirm 0 XP but got wood

@@ -1,5 +1,4 @@
 import {ethers} from "hardhat";
-import {allPendingFlags} from "../test/utils";
 import {PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS} from "./constants";
 
 // When you need to fork a chain and debug
@@ -13,7 +12,7 @@ async function main() {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const players = Players.attach(PLAYERS_ADDRESS);
-  console.log(await players.pendingInputOutput("0x6fe413b3c9093dd7c9585e81a7420acc14343cc1", 92, allPendingFlags));
+  console.log(await players.pendingQueuedActionState("0x6fe413b3c9093dd7c9585e81a7420acc14343cc1", 92));
   console.log(await players.getActionQueue(92));
 }
 

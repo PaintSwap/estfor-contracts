@@ -38,6 +38,12 @@ interface IPlayerDelegate {
 
   function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills) external;
 
+  function clearEverything(address from, uint playerId) external;
+
+  function setActivePlayer(address from, uint playerId) external;
+
+  function unequipBoostVial(uint playerId) external;
+
   function testModifyXP(uint playerId, Skill skill, uint128 xp) external;
 }
 
@@ -107,7 +113,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   /// @notice Process actions for a player up to the current block timestamp
   function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    if (players[_playerId].actionQueue.length == 0) {
+    if (players_[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
     }
     QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
@@ -119,15 +125,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    if (activeBoosts[_playerId].boostType == BoostType.NONE) {
-      revert NoActiveBoost();
-    }
-    if (activeBoosts[_playerId].startTime > block.timestamp) {
-      revert BoostTimeAlreadyStarted();
-    }
-    address from = msg.sender;
-    itemNFT.mint(from, activeBoosts[_playerId].itemTokenId, 1);
-    emit UnconsumeBoostVial(from, _playerId);
+    _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.unequipBoostVial.selector, _playerId));
   }
 
   function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
@@ -135,7 +133,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
-    return players[_playerId].actionQueue;
+    return players_[_playerId].actionQueue;
   }
 
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external override onlyPlayerNFT {
@@ -161,8 +159,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return
       PlayersLibrary.uri(
         _name,
-        xp[_playerId],
-        players[_playerId].totalXP,
+        xp_[_playerId],
+        players_[_playerId].totalXP,
         _avatarName,
         _avatarDescription,
         imageURI,
@@ -198,53 +196,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
     _clearEverything(_from, _playerId);
     // If it was the active player, then clear it
-    uint existingActivePlayerId = activePlayer[_from];
+    uint existingActivePlayerId = activePlayer_[_from];
     if (existingActivePlayerId == _playerId) {
-      delete activePlayer[_from];
+      delete activePlayer_[_from];
       emit SetActivePlayer(_from, existingActivePlayerId, 0);
     }
   }
 
-  /// @notice Called by the ItemNFT contract before an item is transferred. Currently unused
-  function itemBeforeTokenTransfer(
-    address _from,
-    uint[] calldata /*_itemTokenIds*/,
-    uint[] calldata /*_amounts*/
-  ) external view onlyItemNFT {
-    //    uint playerId = activePlayer[_from];
-    //    if (playerId == 0) {
-    //      return;
-    //    }
-    // TODO: Check if the player is currently using any of the items, and record all which are 0 and left/right arm items
-    // emit QueuedActionValid(true/false)
-  }
-
-  // Consumes all the actions in the queue up to this time.
-  // Unequips everything which is just emitting an event
-  // Mints the boost vial if it hasn't been consumed at all yet
-  // Removes all the actions from the queue
   function _clearEverything(address _from, uint _playerId) private {
-    _processActions(_from, _playerId);
-    emit ClearAll(_from, _playerId);
-    _clearActionQueue(_from, _playerId);
-    // Can re-mint boost if it hasn't been consumed at all yet
-    PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
-    if (activeBoost.boostType != BoostType.NONE && activeBoost.startTime > block.timestamp) {
-      uint itemTokenId = activeBoost.itemTokenId;
-      delete activeBoosts[_playerId];
-      itemNFT.mint(_from, itemTokenId, 1);
-    }
-  }
-
-  function _clearActionQueue(address _from, uint _playerId) private {
-    QueuedAction[] memory queuedActions;
-    _setActionQueue(_from, _playerId, queuedActions);
-  }
-
-  function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) private {
-    Player storage player = players[_playerId];
-    player.actionQueue = _queuedActions;
-    emit SetActionQueue(_from, _playerId, player.actionQueue);
+    _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.clearEverything.selector, _from, _playerId));
   }
 
   function _startActions(
@@ -273,34 +233,23 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _setActivePlayer(address _from, uint _playerId) private {
-    uint existingActivePlayerId = activePlayer[_from];
-    // All attire and actions can be made for this player
-    activePlayer[_from] = _playerId;
-    if (existingActivePlayerId == _playerId) {
-      revert PlayerAlreadyActive();
-    }
-    if (existingActivePlayerId != 0) {
-      // If there is an existing active player, unequip all items
-      _clearEverything(_from, existingActivePlayerId);
-    }
-    emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
+    _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.setActivePlayer.selector, _from, _playerId));
   }
 
   function setActivePlayer(uint _playerId) external isOwnerOfPlayer(_playerId) {
     _setActivePlayer(msg.sender, _playerId);
   }
 
-  // Staticcall into ourselves and hit the fallback. This is done so that pendingInputOutput/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
-  function pendingInputOutput(
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
+  function pendingQueuedActionState(
     address _owner,
-    uint _playerId,
-    PendingFlags memory _flags
-  ) external view returns (PendingInputOutput memory) {
+    uint _playerId
+  ) external view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersDelegateView.pendingInputOutputImpl.selector, _owner, _playerId, _flags)
+      abi.encodeWithSelector(IPlayersDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
     );
-    return abi.decode(data, (PendingInputOutput));
+    return abi.decode(data, (PendingQueuedActionState));
   }
 
   function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
@@ -312,11 +261,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
-    bytes memory data = _staticcall(
-      address(this),
-      abi.encodeWithSelector(IPlayersDelegateView.getRandomBytesImpl.selector, _numTickets, _skillEndTime, _playerId)
-    );
-    return abi.decode(data, (bytes));
+    return PlayersLibrary.getRandomBytes(_numTickets, _skillEndTime, _playerId, world);
   }
 
   function _addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) private {
@@ -324,6 +269,38 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       implProcessActions,
       abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonus.selector, _fullAttireBonus)
     );
+  }
+
+  function MAX_TIME() external pure returns (uint32) {
+    return MAX_TIME_;
+  }
+
+  function START_XP() external pure returns (uint) {
+    return START_XP_;
+  }
+
+  function MAX_SUCCESS_PERCENT_CHANCE() external pure returns (uint) {
+    return MAX_SUCCESS_PERCENT_CHANCE_;
+  }
+
+  function MAX_UNIQUE_TICKETS() external pure returns (uint) {
+    return MAX_UNIQUE_TICKETS_;
+  }
+
+  function activePlayer(address _owner) external view returns (uint playerId) {
+    return activePlayer_[_owner];
+  }
+
+  function xp(uint _playerId, Skill _skill) external view returns (uint) {
+    return xp_[_playerId][_skill];
+  }
+
+  function players(uint _playerId) external view returns (Player memory) {
+    return players_[_playerId];
+  }
+
+  function activeBoosts(uint _playerId) external view returns (PlayerBoostInfo memory) {
+    return activeBoosts_[_playerId];
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -373,9 +350,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
     address implementation;
     if (
-      selector == IPlayersDelegateView.pendingInputOutputImpl.selector ||
-      selector == IPlayersDelegateView.dailyClaimedRewardsImpl.selector ||
-      selector == IPlayersDelegateView.getRandomBytesImpl.selector
+      selector == IPlayersDelegateView.pendingQueuedActionStateImpl.selector ||
+      selector == IPlayersDelegateView.dailyClaimedRewardsImpl.selector
     ) {
       implementation = implRewards;
     } else {

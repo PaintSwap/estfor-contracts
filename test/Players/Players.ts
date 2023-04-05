@@ -5,7 +5,7 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {allPendingFlags, emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
+import {emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicWoodcutting} from "./utils";
 
@@ -889,10 +889,10 @@ describe("Players", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
 
-      const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-      expect(pendingInputOutput.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.xpGained[0].xp).to.eq(Math.floor(queuedAction.timespan * 1.1));
       await players.connect(alice).processActions(playerId);
-      const startXP = 374;
+      const startXP = (await players.START_XP()).toNumber();
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
         Math.floor(startXP + queuedAction.timespan * 1.1)
       );
@@ -917,10 +917,10 @@ describe("Players", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
 
-      const pendingInputOutput = await players.pendingInputOutput(alice.address, playerId, allPendingFlags);
-      expect(pendingInputOutput.xpGained).to.eq(Math.floor(queuedAction.timespan * 1.05));
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.xpGained[0].xp).to.eq(Math.floor(queuedAction.timespan * 1.05));
       await players.connect(alice).processActions(playerId);
-      const startXP = 374 / 2;
+      const startXP = (await players.START_XP()).toNumber() / 2;
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
         Math.floor(startXP + queuedAction.timespan * 1.05)
       );

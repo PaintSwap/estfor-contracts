@@ -20,7 +20,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   error err(uint);
 
   function processActions(address _from, uint _playerId) external returns (QueuedAction[] memory remainingSkills) {
-    Player storage player = players[_playerId];
+    Player storage player = players_[_playerId];
     if (player.actionQueue.length == 0) {
       // No actions remaining
       _processActionsFinished(_from, _playerId);
@@ -121,7 +121,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         if (_isCombatStyle(queuedAction.combatStyle)) {
           healthPointsAccrued = _getHealthPointsFromCombat(_playerId, pointsAccruedExclBaseBoost);
           _updateXP(_from, _playerId, Skill.HEALTH, healthPointsAccrued);
-          _cacheCombatStats(players[_playerId], xp[_playerId][Skill.HEALTH], skill, xp[_playerId][skill]);
+          _cacheCombatStats(players_[_playerId], xp_[_playerId][Skill.HEALTH], skill, xp_[_playerId][skill]);
         }
 
         allPointsAccrued += pointsAccrued + healthPointsAccrued;
@@ -179,9 +179,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     _handleDailyRewards(_from, _playerId);
 
     // Clear boost if it has expired
-    PlayerBoostInfo storage playerBoost = activeBoosts[_playerId];
+    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime + playerBoost.duration <= block.timestamp) {
-      delete activeBoosts[_playerId];
+      delete activeBoosts_[_playerId];
       emit BoostFinished(_playerId);
     }
   }
@@ -228,18 +228,18 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint8 successPercent = 100;
       if (_actionChoice.successPercent != 100) {
         uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
-        uint skillLevel = PlayersLibrary.getLevel(xp[_playerId][_actionChoice.skill]);
+        uint skillLevel = PlayersLibrary.getLevel(xp_[_playerId][_actionChoice.skill]);
         uint extraBoost = skillLevel - minLevel;
 
         successPercent = uint8(
-          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE, _actionChoice.successPercent + extraBoost)
+          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost)
         );
       }
 
       uint amount = (numConsumed * successPercent) / 100;
 
       // Check for any gathering boosts
-      PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+      PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
       if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
         amount += uint24((boostedTime * amount * activeBoost.val) / (3600 * 100));
@@ -375,7 +375,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     if (hasRandomRewards) {
       bool hasRandomWord = world.hasRandomWord(_skillStartTime + _elapsedTime);
       if (!hasRandomWord) {
-        PlayerBoostInfo storage activeBoost = activeBoosts[_playerId];
+        PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
         BoostType boostType;
         uint16 boostValue;
         uint24 boostedTime;
@@ -476,16 +476,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function mintedPlayer(address _from, uint _playerId, Skill[2] calldata _startSkills) external {
-    Player storage player = players[_playerId];
+    Player storage player = players_[_playerId];
     player.health = 1;
     player.melee = 1;
     player.magic = 1;
     player.range = 1;
     player.defence = 1;
-    player.totalXP = uint128(START_XP);
+    player.totalXP = uint128(START_XP_);
 
     uint length = _startSkills[1] != Skill.NONE ? 2 : 1;
-    uint32 xpEach = uint32(START_XP / length);
+    uint32 xpEach = uint32(START_XP_ / length);
     for (uint i = 0; i < length; ++i) {
       Skill skill = _startSkills[i];
       int16 level = int16(PlayersLibrary.getLevel(xpEach));
@@ -508,12 +508,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) private {
-    uint oldPoints = xp[_playerId][_skill];
+    uint oldPoints = xp_[_playerId][_skill];
     uint newPoints = oldPoints + _pointsAccrued;
     if (newPoints > type(uint32).max) {
       newPoints = type(uint32).max;
     }
-    xp[_playerId][_skill] = uint32(newPoints);
+    xp_[_playerId][_skill] = uint32(newPoints);
     emit AddXP(_from, _playerId, _skill, uint32(newPoints));
 
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
@@ -526,14 +526,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external {
     // Make sure it isn't less XP
-    uint128 oldPoints = xp[_playerId][_skill];
+    uint128 oldPoints = xp_[_playerId][_skill];
     if (_xp < oldPoints) {
       revert TestInvalidXP();
     }
     address from = msg.sender;
     _updateXP(msg.sender, _playerId, _skill, _xp - oldPoints);
     _claimTotalXPThresholdRewards(from, _playerId, oldPoints, _xp);
-    players[_playerId].totalXP += uint128(_xp - oldPoints);
+    players_[_playerId].totalXP += uint128(_xp - oldPoints);
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {
