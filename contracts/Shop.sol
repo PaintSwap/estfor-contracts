@@ -35,11 +35,14 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
   error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
   error SellingPriceIsHigherThanShop(uint tokenId);
+  error SellingTooQuicklyAfterItemIntroduction();
 
   struct ShopItem {
     uint16 tokenId;
     uint128 price;
   }
+
+  uint public constant SELLING_CUTOFF_DURATION = 2 days;
 
   IBrushToken public brush;
   ItemNFT public itemNFT;
@@ -141,6 +144,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     uint price = shopItems[_tokenId];
     if (price != 0 && price < _sellPrice) {
       revert SellingPriceIsHigherThanShop(_tokenId);
+    }
+
+    // 48 hour period of no selling for an item
+    if (itemNFT.timestampFirstMint(_tokenId) + SELLING_CUTOFF_DURATION > block.timestamp) {
+      revert SellingTooQuicklyAfterItemIntroduction();
     }
   }
 

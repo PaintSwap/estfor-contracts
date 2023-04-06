@@ -92,12 +92,15 @@ describe("Shop", function () {
       },
     ]);
 
+    const sellingCutoffDuration = (await shop.SELLING_CUTOFF_DURATION()).toNumber();
+
     return {
       itemNFT,
       shop,
       brush,
       owner,
       alice,
+      sellingCutoffDuration,
     };
   };
 
@@ -218,7 +221,7 @@ describe("Shop", function () {
   });
 
   it("Sell", async function () {
-    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+    const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
     await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
@@ -239,7 +242,7 @@ describe("Shop", function () {
       ethers.BigNumber.from(priceShield),
       ethers.BigNumber.from(priceBronzeNecklace),
     ]);
-
+    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, priceShield))
       .to.emit(shop, "Sell")
       .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, 1, priceShield);
@@ -250,7 +253,7 @@ describe("Shop", function () {
   });
 
   it("SellBatch", async function () {
-    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+    const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
     await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
@@ -264,6 +267,7 @@ describe("Shop", function () {
     const priceBronzeNecklace = splitBrush / 100;
 
     const expectedTotal = priceShield + 2 * priceBronzeNecklace;
+    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
     await expect(
       shop
         .connect(alice)
@@ -283,7 +287,7 @@ describe("Shop", function () {
   });
 
   it("Sell Slippage", async function () {
-    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+    const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
     await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
@@ -297,6 +301,7 @@ describe("Shop", function () {
     const priceBronzeNecklace = splitBrush / 100;
 
     const expectedTotal = priceShield + 2 * priceBronzeNecklace;
+    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
 
     // Asking for too much
     await expect(
@@ -317,7 +322,7 @@ describe("Shop", function () {
   });
 
   it("Can't sell for more than you can buy in shop", async function () {
-    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+    const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
     expect(await itemNFT.uniqueItems()).to.eq(1);
@@ -328,6 +333,7 @@ describe("Shop", function () {
     const totalBrush = ethers.utils.parseEther("1");
     await brush.mint(shop.address, totalBrush);
     expect(await shop.sellingPrice(EstforConstants.BRONZE_SHIELD)).to.be.gt(1);
+    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
 
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0)).to.be.revertedWithCustomError(
       shop,
@@ -337,6 +343,20 @@ describe("Shop", function () {
     await expect(shop.connect(alice).sellBatch([EstforConstants.BRONZE_SHIELD], [1], 0)).to.be.revertedWithCustomError(
       shop,
       "SellingPriceIsHigherThanShop"
+    );
+  });
+
+  it("Cannot sell within the cutoff time period", async function () {
+    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
+
+    // Give the contract some brush to assign to the items
+    const totalBrush = ethers.utils.parseEther("1");
+    await brush.mint(shop.address, totalBrush);
+    await expect(shop.connect(alice).sellBatch([EstforConstants.BRONZE_SHIELD], [1], 0)).to.be.revertedWithCustomError(
+      shop,
+      "SellingTooQuicklyAfterItemIntroduction"
     );
   });
 

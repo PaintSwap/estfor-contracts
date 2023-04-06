@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-// This file just contains various definitions to be run with sol2uml to test that storage slots are packed as expected
 contract DebugStorageSlots {
   struct Item {
     EquipPosition equipPosition;
+    bool exists;
     // Can it be transferred?
     bool isTransferable;
     // Food
@@ -25,8 +25,8 @@ contract DebugStorageSlots {
     Skill skill;
     uint32 minXP;
     // Noncombat skill
-    Skill skill1;
-    int16 skillDiff1;
+    Skill skill1; // This is related to skillDiff1 (here to keep packing constant as this replaces an old field)
+    uint8 skillDiff1;
   }
 
   enum BoostType {

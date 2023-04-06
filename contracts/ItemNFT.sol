@@ -43,7 +43,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // Input only
   struct NonCombatStats {
     Skill skill;
-    int16 diff;
+    uint8 diff;
   }
 
   // Contains everything you need to create an item
@@ -74,6 +74,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   // How many of this item exist
   mapping(uint itemId => uint amount) public itemBalances;
+  mapping(uint itemId => uint timestamp) public timestampFirstMint;
 
   address private players;
   address private shop;
@@ -135,6 +136,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
     uint existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
+      // First mint
+      timestampFirstMint[_tokenId] = block.timestamp;
       uniqueItems = uniqueItems.inc();
     }
 
@@ -245,7 +248,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      itemBalances[_ids[i]] -= _amounts[i];
+      uint newBalance = itemBalances[_ids[i]] - _amounts[i];
+      if (newBalance == 0) {
+        uniqueItems = uniqueItems.dec();
+      }
+      itemBalances[_ids[i]] = newBalance;
     }
   }
 

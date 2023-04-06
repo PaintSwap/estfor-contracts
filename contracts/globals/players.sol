@@ -84,7 +84,6 @@ struct Equipment {
   uint24 amount;
 }
 
-// For optimization purposes this contains a few data items, and everything except combat stats (although it could fit?)
 struct Item {
   EquipPosition equipPosition;
   bool exists;
@@ -108,8 +107,8 @@ struct Item {
   Skill skill;
   uint32 minXP;
   // Noncombat skill
-  Skill skill1;
-  int16 skillDiff1;
+  Skill skill1; // This is related to skillDiff1 (here to keep packing constant as this replaces an old field)
+  uint8 skillDiff1;
 }
 
 struct PlayerBoostInfo {
