@@ -225,7 +225,7 @@ describe("Shop", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
     await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
-    expect(await itemNFT.uniqueItems()).to.eq(2);
+    expect(await itemNFT.numUniqueItems()).to.eq(2);
 
     expect(await shop.sellingPrice(EstforConstants.BRONZE_SHIELD)).to.eq(0);
 
@@ -255,8 +255,11 @@ describe("Shop", function () {
   it("SellBatch", async function () {
     const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
-    await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
+      [200, 100]
+    );
 
     // Give the contract some brush to assign to the items
     const totalBrush = 1200;
@@ -289,8 +292,11 @@ describe("Shop", function () {
   it("Sell Slippage", async function () {
     const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
-    await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
+      [200, 100]
+    );
 
     // Give the contract some brush to assign to the items
     const totalBrush = 1200;
@@ -325,7 +331,7 @@ describe("Shop", function () {
     const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
-    expect(await itemNFT.uniqueItems()).to.eq(1);
+    expect(await itemNFT.numUniqueItems()).to.eq(1);
 
     await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 1});
 
@@ -358,6 +364,41 @@ describe("Shop", function () {
       shop,
       "SellingTooQuicklyAfterItemIntroduction"
     );
+  });
+
+  it("Exceed selling allocation", async function () {
+    const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
+    await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 1000);
+    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
+
+    // Give the contract some brush to assign to the items
+    const totalBrush = ethers.utils.parseEther("1");
+    await brush.mint(shop.address, totalBrush);
+
+    let tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    expect(tokenAllocation.allocationRemaining).to.eq(0);
+    await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0))
+      .to.emit(shop, "NewAllocation")
+      .withArgs(EstforConstants.BRONZE_SHIELD, totalBrush.div(2));
+    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
+    expect(tokenAllocation.allocationRemaining).to.eq(
+      ethers.utils.parseEther("0.5").sub(ethers.utils.parseEther("0.5").div(1000))
+    );
+    expect((await shop.tokenAllocations(EstforConstants.BARRAGE_SCROLL)).allocationRemaining).to.eq(0); // shouldn't have changed
+
+    // Sell all, should be no allocation left
+    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 998, 0);
+    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
+    const allocationRemaining = 250250250250500;
+    expect((await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD)).allocationRemaining).to.eq(allocationRemaining);
+    // Mint some, should fail to sell any as allocation is used up
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 999);
+    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
+    await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 2, 0))
+      .to.be.revertedWithCustomError(shop, "NotEnoughAllocationRemaining")
+      .withArgs(EstforConstants.BRONZE_SHIELD, 500250250250250, allocationRemaining);
   });
 
   it("Remove shop item", async function () {

@@ -24,6 +24,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
   event Sell(address seller, uint tokenId, uint quantity, uint price);
   event SellBatch(address seller, uint[] tokenIds, uint[] quantities, uint[] prices);
+  event NewAllocation(uint16 tokenId, uint allocation);
 
   error LengthMismatch();
   error LengthEmpty();
@@ -36,6 +37,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
   error SellingPriceIsHigherThanShop(uint tokenId);
   error SellingTooQuicklyAfterItemIntroduction();
+  error NotEnoughAllocationRemaining(uint tokenId, uint totalSold, uint allocationRemaining);
 
   struct ShopItem {
     uint16 tokenId;
@@ -43,6 +45,13 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   uint public constant SELLING_CUTOFF_DURATION = 2 days;
+
+  struct TokenAllocation {
+    uint128 allocationRemaining;
+    uint checkpointTimestamp; // 00:00 UTC
+  }
+
+  mapping(uint tokenId => TokenAllocation) public tokenAllocations;
 
   IBrushToken public brush;
   ItemNFT public itemNFT;
@@ -61,7 +70,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function sellingPrice(uint16 _tokenId) public view returns (uint price) {
     uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / itemNFT.uniqueItems();
+    uint totalBrushForItem = totalBrush / itemNFT.numUniqueItems();
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
     if (totalOfThisItem < 100) {
       // Needs to have a minimum of an item before any can be sold.
@@ -78,7 +87,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
 
     uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / itemNFT.uniqueItems();
+    uint totalBrushForItem = totalBrush / itemNFT.numUniqueItems();
 
     prices = new uint[](iter.asUint256());
     while (iter.neq(0)) {
@@ -140,7 +149,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
-  function _checkSell(uint _tokenId, uint _sellPrice) private view {
+  function _sell(uint _tokenId, uint _quantity, uint _sellPrice) private {
     uint price = shopItems[_tokenId];
     if (price != 0 && price < _sellPrice) {
       revert SellingPriceIsHigherThanShop(_tokenId);
@@ -150,6 +159,26 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (itemNFT.timestampFirstMint(_tokenId) + SELLING_CUTOFF_DURATION > block.timestamp) {
       revert SellingTooQuicklyAfterItemIntroduction();
     }
+
+    // Check if tokenAllocation checkpoint is older than 24 hours
+    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
+    uint allocationRemaining;
+    if ((block.timestamp / 1 days) * 1 days > tokenAllocation.checkpointTimestamp + 1 days) {
+      // New day, reset max allocation that can be sold
+      allocationRemaining = uint128(brush.balanceOf(address(this)) / itemNFT.numUniqueItems());
+      tokenAllocation.allocationRemaining = uint128(allocationRemaining);
+      tokenAllocation.checkpointTimestamp = (block.timestamp / 1 days) * 1 days;
+      emit NewAllocation(uint16(_tokenId), allocationRemaining);
+    } else {
+      allocationRemaining = tokenAllocation.allocationRemaining;
+    }
+
+    uint totalSold = _quantity * _sellPrice;
+    if (allocationRemaining < totalSold) {
+      revert NotEnoughAllocationRemaining(_tokenId, totalSold, allocationRemaining);
+    }
+    tokenAllocation.allocationRemaining = uint128(allocationRemaining - totalSold);
+    itemNFT.burn(msg.sender, _tokenId, _quantity);
   }
 
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
@@ -158,8 +187,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (totalBrush < _minExpectedBrush) {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
-    _checkSell(_tokenId, price);
-    itemNFT.burn(msg.sender, _tokenId, _quantity);
+    _sell(_tokenId, _quantity, price);
     brush.transfer(msg.sender, totalBrush);
     emit Sell(msg.sender, _tokenId, _quantity, price);
   }
@@ -180,8 +208,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       U256 sellPrice = U256.wrap(sellingPrice(uint16(_tokenIds[i])));
       totalBrush = totalBrush + (sellPrice * U256.wrap(_quantities[i]));
       prices[i] = sellPrice.asUint256();
-      _checkSell(_tokenIds[i], prices[i]);
-      itemNFT.burn(msg.sender, _tokenIds[i], _quantities[i]);
+      _sell(_tokenIds[i], _quantities[i], prices[i]);
     } while (iter.neq(0));
     if (totalBrush.lt(_minExpectedBrush)) {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);

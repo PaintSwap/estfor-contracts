@@ -149,6 +149,29 @@ describe("ItemNFT", function () {
     await expect(itemNFT.connect(alice).burn(EstforConstants.BRONZE_AXE, 1));
   });
 
+  it("numUniqueItems", async function () {
+    const {itemNFT, alice, owner} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_ARMOR, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(2);
+    await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(2);
+    await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(2);
+    await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_ARMOR, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(0);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_ARMOR, 1);
+    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+  });
+
   it("name & symbol", async function () {
     const {itemNFT, world, shop, royaltyReceiver, adminAccess} = await loadFixture(deployContracts);
     expect(await itemNFT.name()).to.be.eq("Estfor Items (Alpha)");

@@ -14,8 +14,8 @@ enum ActionQueueStatus {
 struct ActionChoice {
   Skill skill;
   uint32 minXP;
-  uint32 diff;
-  uint32 rate; // rate of output produced per hour (base 10) 1 decimal
+  uint32 diff; // This can be uint16.
+  uint32 rate; // This can be uint16. Rate of output produced per hour (base 10) 1 decimal
   uint24 xpPerHour;
   uint16 inputTokenId1;
   uint8 num1;

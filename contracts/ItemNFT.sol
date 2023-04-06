@@ -83,7 +83,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   uint public royaltyFee;
   address public royaltyReceiver;
 
-  uint public uniqueItems; // unique number of items
+  uint public numUniqueItems; // unique number of items
 
   mapping(uint itemId => string tokenURI) private tokenURIs;
   mapping(uint itemId => CombatStats combatStats) public combatStats;
@@ -138,7 +138,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     if (existingBalance == 0) {
       // First mint
       timestampFirstMint[_tokenId] = block.timestamp;
-      uniqueItems = uniqueItems.inc();
+      numUniqueItems = numUniqueItems.inc();
     }
 
     itemBalances[_tokenId] = existingBalance + _amount;
@@ -163,7 +163,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       itemBalances[tokenId] = existingBalance + _amounts[i];
     }
     if (numNewItems.neq(0)) {
-      uniqueItems += numNewItems.asUint256();
+      numUniqueItems += numNewItems.asUint256();
     }
     _mintBatch(_to, _tokenIds, _amounts, "");
   }
@@ -250,7 +250,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       uint i = iter.asUint256();
       uint newBalance = itemBalances[_ids[i]] - _amounts[i];
       if (newBalance == 0) {
-        uniqueItems = uniqueItems.dec();
+        numUniqueItems = numUniqueItems.dec();
       }
       itemBalances[_ids[i]] = newBalance;
     }
