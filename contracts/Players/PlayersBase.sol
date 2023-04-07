@@ -6,6 +6,7 @@ import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
+import {Quests} from "../Quests.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
 /* solhint-disable no-global-import */
@@ -59,7 +60,7 @@ abstract contract PlayersBase {
     uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
   }
 
-  error NotOwner();
+  error NotOwnerOfPlayer();
   error NotActive();
   error EquipSameItem();
   error NotEquipped();
@@ -151,19 +152,20 @@ abstract contract PlayersBase {
   address internal reserved1;
 
   AdminAccess internal adminAccess;
+  Quests internal quests;
 
   mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
-      revert NotOwner();
+      revert NotOwnerOfPlayer();
     }
     _;
   }
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (playerNFT.balanceOf(msg.sender, _playerId) != 1) {
-      revert NotOwner();
+      revert NotOwnerOfPlayer();
     }
     if (activePlayer_[msg.sender] != _playerId) {
       revert NotActive();
@@ -450,6 +452,23 @@ abstract contract PlayersBase {
     Player storage player = players_[_playerId];
     player.actionQueue = _queuedActions;
     emit SetActionQueue(_from, _playerId, player.actionQueue);
+  }
+
+  function _processQuests(
+    address _from,
+    uint _playerId,
+    uint[] memory _choiceIds,
+    uint[] memory _choiceIdAmounts
+  ) internal {
+    (uint[] memory itemTokenIds, uint[] memory amounts, uint[] memory _questsCompleted) = quests.processQuestsView(
+      _playerId,
+      _choiceIds,
+      _choiceIdAmounts
+    );
+
+    if (itemTokenIds.length > 0) {
+      itemNFT.mintBatch(_from, itemTokenIds, amounts);
+    }
   }
 
   function _checkStartSlot() internal pure {

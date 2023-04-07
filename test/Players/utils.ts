@@ -119,7 +119,7 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
 
   await itemNFT.testMint(alice.address, EstforConstants.LOG, 5000);
 
-  return {queuedAction, rate, actionId};
+  return {queuedAction, rate, actionId, choiceId};
 };
 
 export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: World) {

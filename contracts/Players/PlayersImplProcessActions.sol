@@ -28,6 +28,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint previousTotalXP = player.totalXP;
     uint32 allPointsAccrued;
 
+    uint[] memory choiceIds = new uint[](player.actionQueue.length);
+    uint[] memory choiceIdAmounts = new uint[](player.actionQueue.length);
+    uint choiceIdsLength;
+    uint choiceIdAmountsLength;
+
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint remainingSkillsLength;
     uint nextStartTime = block.timestamp;
@@ -80,8 +85,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         // Includes combat
         uint combatElapsedTime;
         actionChoice = world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
-
-        (xpElapsedTime, combatElapsedTime, died) = _processConsumables(
+        uint24 baseNumConsumed;
+        (xpElapsedTime, combatElapsedTime, died, baseNumConsumed) = _processConsumables(
           _from,
           _playerId,
           queuedAction,
@@ -89,6 +94,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           combatStats,
           actionChoice
         );
+
+        choiceIds[choiceIdsLength++] = queuedAction.choiceId;
+        choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
       }
 
       uint64 _queueId = queuedAction.queueId;
@@ -165,6 +173,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       player.totalXP = uint128(previousTotalXP + allPointsAccrued);
     }
 
+    // Quest Rewards
+    assembly ("memory-safe") {
+      mstore(choiceIds, choiceIdsLength)
+      mstore(choiceIdAmounts, choiceIdAmountsLength)
+    }
+    _processQuests(_from, _playerId, choiceIds, choiceIdAmounts);
+
     _processActionsFinished(_from, _playerId);
 
     assembly ("memory-safe") {
@@ -191,9 +206,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice
-  ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died) {
+  ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died, uint24 numConsumed) {
     bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
-    uint24 numConsumed;
 
     if (isCombat) {
       CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);

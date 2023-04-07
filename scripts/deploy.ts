@@ -39,7 +39,7 @@ import {allShopItems} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarInfos} from "./data/avatars";
-import {allQuests, allQuestsRandomFlags} from "./data/quests";
+import {allQuestsMinimumRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -219,6 +219,7 @@ async function main() {
       playerNFT.address,
       world.address,
       adminAccess.address,
+      quests.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -262,6 +263,10 @@ async function main() {
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
   console.log("playerNFT setPlayers");
+  await quests.setPlayers(players.address);
+  await tx.wait();
+  console.log("quests setPlayers");
+
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
   console.log("setItemNFT");
@@ -354,7 +359,7 @@ async function main() {
   console.log("Add shopping items");
 
   // Add quests
-  tx = await quests.addQuests(allQuests, allQuestsRandomFlags);
+  tx = await quests.addQuests(allQuests, allQuestsRandomFlags, allQuestsMinimumRequirements);
   await tx.wait();
   console.log("Add quests");
 

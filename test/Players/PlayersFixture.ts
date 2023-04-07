@@ -86,6 +86,13 @@ export const playersFixture = async function () {
     }
   )) as PlayerNFT;
 
+  const Quests = await ethers.getContractFactory("Quests");
+  const quests = await upgrades.deployProxy(Quests, [playerNFT.address, world.address], {
+    kind: "uups",
+  });
+
+  await world.setQuests(quests.address);
+
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playerLibrary = await PlayersLibrary.deploy();
@@ -114,6 +121,7 @@ export const playersFixture = async function () {
       playerNFT.address,
       world.address,
       adminAccess.address,
+      quests.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -127,6 +135,7 @@ export const playersFixture = async function () {
 
   await itemNFT.setPlayers(players.address);
   await playerNFT.setPlayers(players.address);
+  await quests.setPlayers(players.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -171,5 +180,6 @@ export const playersFixture = async function () {
     playersImplRewards,
     Players,
     avatarId,
+    quests,
   };
 };

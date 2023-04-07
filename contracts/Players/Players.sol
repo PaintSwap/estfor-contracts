@@ -10,6 +10,7 @@ import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
+import {Quests} from "../Quests.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
@@ -64,6 +65,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     PlayerNFT _playerNFT,
     World _world,
     AdminAccess _adminAccess,
+    Quests _quests,
     address _implQueueActions,
     address _implProcessActions,
     address _implRewards,
@@ -77,6 +79,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     playerNFT = _playerNFT;
     world = _world;
     adminAccess = _adminAccess;
+    quests = _quests;
     implQueueActions = _implQueueActions;
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;
@@ -121,7 +124,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
-    uint40 _boostStartTime, // Not used yet (always currenty time)
+    uint40 _boostStartTime, // Not used yet (always current time)
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _queueStatus);
@@ -134,6 +137,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
     QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue);
+  }
+
+  function activateQuest(uint _playerId, uint _questId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+    quests.activateQuest(_playerId, _questId);
   }
 
   function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {

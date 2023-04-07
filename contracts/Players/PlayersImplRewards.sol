@@ -201,19 +201,25 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint diff = nextIndex - prevIndex;
     itemTokenIds = new uint[](diff);
     amounts = new uint[](diff);
+    uint length;
     for (uint i = 0; i < diff; ++i) {
       uint32 xpThreshold = _getXPReward(prevIndex + 1 + i);
       Equipment[] memory items = xpRewardThresholds[xpThreshold];
       if (items.length > 0) {
         // TODO: Currently assumes there is only 1 item per threshold
-        itemTokenIds[i] = items[0].itemTokenId;
-        amounts[i] = items[0].amount;
+        itemTokenIds[length] = items[0].itemTokenId;
+        amounts[length++] = items[0].amount;
       }
+    }
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, length)
+      mstore(amounts, length)
     }
   }
 
   // Get any changes that are pending and not commited to the blockchain yet.
-  // Such as items consumed/produced, xp gained, whether the player died and pending random reward rolls.
+  // Such as items consumed/produced, xp gained, whether the player died, pending random reward rolls & quest rewards.
   function pendingQueuedActionStateImpl(
     address _owner,
     uint _playerId
@@ -221,31 +227,28 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     Player storage player = players_[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     uint _speedMultiplier = speedMultiplier[_playerId];
-    PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
-
     pendingQueuedActionState.consumed = new EquipmentInfo[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
     pendingQueuedActionState.produced = new EquipmentInfo[](
       actionQueue.length * MAX_REWARDS_PER_ACTION + (actionQueue.length * MAX_RANDOM_REWARDS_PER_ACTION)
     );
-    pendingQueuedActionState.producedPastRandomRewards = new PastRandomRewardInfo[](
-      _pendingRandomRewards.length * MAX_RANDOM_REWARDS_PER_ACTION
-    );
-    pendingQueuedActionState.producedXPRewards = new Equipment[](10);
-
     pendingQueuedActionState.died = new DiedInfo[](actionQueue.length);
     pendingQueuedActionState.rolls = new RollInfo[](actionQueue.length);
     pendingQueuedActionState.xpGained = new XPInfo[](actionQueue.length);
 
     uint consumedLength;
     uint producedLength;
-    uint producedPastRandomRewardsLength;
-    uint producedXPRewardsLength;
     uint diedLength;
     uint rollsLength;
     uint xpGainedLength;
+
+    uint[] memory choiceIds = new uint[](actionQueue.length);
+    uint[] memory choiceIdAmounts = new uint[](actionQueue.length);
+    uint choiceIdsLength;
+    uint choiceIdAmountsLength;
+
     address from = _owner;
     if (playerNFT.balanceOf(_owner, _playerId) == 0) {
-      revert NotOwner();
+      revert NotOwnerOfPlayer();
     }
     uint previousTotalXP = player.totalXP;
     uint totalXPGained;
@@ -287,8 +290,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
         Equipment[] memory consumedEquipment;
         Equipment memory outputEquipment;
+        uint baseNumConsumed;
 
-        (consumedEquipment, outputEquipment, xpElapsedTime, died) = _processConsumablesView(
+        (consumedEquipment, outputEquipment, xpElapsedTime, died, baseNumConsumed) = _processConsumablesView(
           from,
           _playerId,
           queuedAction,
@@ -296,6 +300,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           combatStats,
           actionChoice
         );
+
+        choiceIds[choiceIdsLength++] = queuedAction.choiceId;
+        choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
 
         if (outputEquipment.itemTokenId != NONE) {
           pendingQueuedActionState.produced[producedLength++] = EquipmentInfo(
@@ -395,12 +402,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         previousTotalXP + totalXPGained
       );
       U256 idsLength = U256.wrap(ids.length);
-      for (U256 iter; iter < idsLength; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        pendingQueuedActionState.producedXPRewards[producedXPRewardsLength++] = Equipment(
-          uint16(ids[i]),
-          uint24(amounts[i])
-        );
+      if (ids.length != 0) {
+        pendingQueuedActionState.producedXPRewards = new Equipment[](ids.length);
+        for (U256 iter; iter < idsLength; iter = iter.inc()) {
+          uint i = iter.asUint256();
+          pendingQueuedActionState.producedXPRewards[i] = Equipment(uint16(ids[i]), uint24(amounts[i]));
+        }
       }
     }
 
@@ -413,9 +420,10 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint numRemoved
     ) = _claimableRandomRewards(_playerId);
     U256 idsLength = U256.wrap(ids.length);
+    pendingQueuedActionState.producedPastRandomRewards = new PastRandomRewardInfo[](ids.length);
     for (U256 iter; iter < idsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      pendingQueuedActionState.producedPastRandomRewards[producedPastRandomRewardsLength++] = PastRandomRewardInfo(
+      pendingQueuedActionState.producedPastRandomRewards[i] = PastRandomRewardInfo(
         uint16(actionIds[i]),
         uint64(queueIds[i]),
         uint16(ids[i]),
@@ -423,15 +431,28 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       );
     }
 
+    assembly ("memory-safe") {
+      mstore(choiceIds, choiceIdsLength)
+      mstore(choiceIdAmounts, choiceIdAmountsLength)
+    }
+
+    // Quest Rewards
+    (uint[] memory questRewards, uint[] memory questRewardAmounts, uint[] memory _questsCompleted) = quests
+      .processQuestsView(_playerId, choiceIds, choiceIdAmounts);
+    if (questRewards.length > 0) {
+      pendingQueuedActionState.questRewards = new Equipment[](questRewards.length);
+      for (uint j = 0; j < questRewards.length; ++j) {
+        pendingQueuedActionState.questRewards[j] = Equipment(uint16(questRewards[j]), uint24(questRewardAmounts[j]));
+      }
+    }
+
     // Compact to fit the arrays
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), consumedLength)
       mstore(mload(add(pendingQueuedActionState, 32)), producedLength)
-      mstore(mload(add(pendingQueuedActionState, 64)), producedPastRandomRewardsLength)
-      mstore(mload(add(pendingQueuedActionState, 96)), producedXPRewardsLength)
-      mstore(mload(add(pendingQueuedActionState, 128)), diedLength)
-      mstore(mload(add(pendingQueuedActionState, 160)), rollsLength)
-      mstore(mload(add(pendingQueuedActionState, 192)), xpGainedLength)
+      mstore(mload(add(pendingQueuedActionState, 160)), diedLength)
+      mstore(mload(add(pendingQueuedActionState, 192)), rollsLength)
+      mstore(mload(add(pendingQueuedActionState, 224)), xpGainedLength)
     }
   }
 
@@ -650,14 +671,19 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   )
     private
     view
-    returns (Equipment[] memory consumedEquipment, Equipment memory outputEquipment, uint xpElapsedTime, bool died)
+    returns (
+      Equipment[] memory consumedEquipment,
+      Equipment memory outputEquipment,
+      uint xpElapsedTime,
+      bool died,
+      uint24 numConsumed
+    )
   {
     consumedEquipment = new Equipment[](4);
     uint consumedEquipmentLength;
 
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    uint24 numConsumed;
     bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
     if (isCombat) {
       // Fetch the requirements for it

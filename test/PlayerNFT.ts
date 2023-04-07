@@ -120,6 +120,7 @@ describe("PlayerNFT", function () {
       Players,
       avatarInfo,
       avatarId,
+      quests,
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
@@ -150,6 +151,7 @@ describe("PlayerNFT", function () {
         playerNFTNotAlpha.address,
         world.address,
         adminAccess.address,
+        quests.address,
         playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,
@@ -164,6 +166,7 @@ describe("PlayerNFT", function () {
     await itemNFT.setPlayers(players.address);
     await playerNFTNotAlpha.setPlayers(players.address);
     await playerNFTNotAlpha.setAvatar(avatarId, avatarInfo);
+    await quests.setPlayers(players.address);
 
     const origName = "0xSamWitch";
     const makeActive = true;
