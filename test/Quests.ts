@@ -14,6 +14,7 @@ export async function questsFixture() {
 
   const firemakingQuest: Quest = {
     questId: 1,
+    dependentQuestId: 0,
     actionId: NONE,
     actionNum: 0,
     actionId1: NONE,
@@ -30,6 +31,7 @@ export async function questsFixture() {
 
   const firemakingQuestLog: Quest = {
     questId: 2,
+    dependentQuestId: 0,
     actionId: NONE,
     actionNum: 0,
     actionId1: NONE,

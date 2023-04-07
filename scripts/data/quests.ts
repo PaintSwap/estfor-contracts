@@ -4,6 +4,7 @@ import {Skill} from "@paintswap/estfor-definitions/types";
 
 export type Quest = {
   questId: number;
+  dependentQuestId: number;
   actionId: number;
   actionNum: number;
   actionId1: number;
@@ -19,6 +20,8 @@ export type Quest = {
 };
 export const allQuests: Quest[] = [
   {
+    questId: QUEST_STARTER_FIREMAKING,
+    dependentQuestId: 0,
     actionId: NONE,
     actionNum: 0,
     actionId1: NONE,
@@ -27,7 +30,6 @@ export const allQuests: Quest[] = [
     actionChoiceNum: 100,
     skillReward: Skill.NONE,
     skillXPGained: 0,
-    questId: QUEST_STARTER_FIREMAKING,
     rewardItemTokenId: EstforConstants.LOG,
     rewardAmount: 200,
     rewardItemTokenId1: NONE,

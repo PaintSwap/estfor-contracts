@@ -14,6 +14,11 @@ import "./globals/rewards.sol";
 /* solhint-enable no-global-import */
 
 contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
+  event AddQuest(Quest quest);
+  event RemoveQuest(uint questId);
+  event NewRandomQuest(Quest randomQuest, uint pointerQuestId);
+  event QuestCompleted(uint playerId, uint questId);
+
   error NotWorld();
   error NotOwnerOfPlayer();
   error NotPlayers();
@@ -45,13 +50,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   Quest[] public randomQuests;
   Quest public previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
   Quest public randomQuest; // Same for everyone
-  uint64 public randomQuestId;
-
-  event AddQuest(Quest quest);
-  event RemoveQuest(uint questId);
-  event NewRandomQuest(Quest randomQuest, uint pointerQuestId);
-  event RemoveRandomQuest(uint questId);
-  event QuestCompleted(uint playerId, uint questId);
+  uint56 public randomQuestId;
 
   modifier onlyWorld() {
     if (msg.sender != world) {
@@ -95,10 +94,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   function newOracleRandomWords(uint[3] calldata _randomWords) external override onlyWorld {
-    // Remove the old one
-    if (randomQuest.questId != 0) {
-      emit RemoveRandomQuest(randomQuest.questId);
-    }
     // Pick a random quest which is assigned to everyone (could be random later)
     uint length = randomQuests.length;
     if (length == 0) {

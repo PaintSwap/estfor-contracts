@@ -74,7 +74,7 @@ struct ActionInfo {
 }
 
 struct Quest {
-  uint64 questId; // Unique id for this quest
+  uint16 dependentQuestId; // The quest that must be completed before this one can be started
   uint16 actionId; // action to do
   uint16 actionNum; // how many (up to 65535)
   uint16 actionId1; // another action to do
@@ -87,6 +87,7 @@ struct Quest {
   uint16 rewardAmount; // amount of the reward (up to 65535)
   uint16 rewardItemTokenId1; // Reward another item
   uint16 rewardAmount1; // amount of the reward (up to 65535)
+  uint56 questId; // Unique id for this quest
 }
 
 struct QuestWithCompletionInfo {
@@ -94,5 +95,5 @@ struct QuestWithCompletionInfo {
   uint24 actionNum;
   uint24 actionNum1;
   uint24 actionChoiceNum;
-  uint64 realQuestId; // If daily this is incremented to differentiate the same quest
+  uint56 realQuestId; // If daily this is incremented to differentiate the same quest
 }

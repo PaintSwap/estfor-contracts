@@ -1,4 +1,5 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {QUEST_STARTER_FIREMAKING} from "@paintswap/estfor-definitions/constants";
 import {ethers} from "hardhat";
 import {ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
 import {createPlayer} from "./utils";
@@ -190,4 +191,9 @@ export const addTestData = async (
   tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);
   await tx.wait();
   console.log("Sell");
+
+  // Activate a quest
+  tx = await players.activateQuest(playerId, QUEST_STARTER_FIREMAKING);
+  await tx.wait();
+  console.log("Activate quest");
 };
