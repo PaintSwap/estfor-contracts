@@ -8,8 +8,8 @@ import {getActionChoiceId, getActionId} from "./utils";
 
 describe("Quests", function () {
   async function questsFixture() {
-    const playersFixure = await loadFixture(playersFixture);
-    const {playerNFT, world, itemNFT, alice} = playersFixure;
+    const fixture = await loadFixture(playersFixture);
+    const {playerNFT, world, itemNFT, alice} = fixture;
 
     const Quests = await ethers.getContractFactory("Quests");
     const quests = await upgrades.deployProxy(Quests, [playerNFT.address, world.address], {
@@ -93,7 +93,7 @@ describe("Quests", function () {
     await itemNFT.testMint(alice.address, EstforConstants.LOG, 100);
 
     return {
-      ...playersFixure,
+      ...fixture,
       quests,
       firemakingQuest,
       firemakingQuestLog,

@@ -163,5 +163,13 @@ export const playersFixture = async function () {
     editNameBrushPrice,
     mockOracleClient,
     avatarInfo,
+    adminAccess,
+    shop,
+    royaltyReceiver,
+    playersImplProcessActions,
+    playersImplQueueActions,
+    playersImplRewards,
+    Players,
+    avatarId,
   };
 };

@@ -17,15 +17,14 @@ describe("Combat Actions", function () {
 
   describe("Melee", async function () {
     async function playersFixtureMelee() {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const fixture = await loadFixture(playersFixture);
+      const {itemNFT, world} = fixture;
 
       const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, world);
 
       return {
-        playerId,
-        players,
+        ...fixture,
         itemNFT,
-        alice,
         queuedAction,
         rate,
         numSpawned,

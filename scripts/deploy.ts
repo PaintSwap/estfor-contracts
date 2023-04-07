@@ -39,7 +39,7 @@ import {allShopItems} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarInfos} from "./data/avatars";
-import {allQuests, allQuestsRandomFlag} from "./data/quests";
+import {allQuests, allQuestsRandomFlags} from "./data/quests";
 
 async function main() {
   const [owner] = await ethers.getSigners();
