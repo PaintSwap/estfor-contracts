@@ -83,7 +83,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   uint public royaltyFee;
   address public royaltyReceiver;
 
-  uint public numUniqueItems; // unique number of items
+  uint public numUniqueItems;
 
   mapping(uint itemId => string tokenURI) private tokenURIs;
   mapping(uint itemId => CombatStats combatStats) public combatStats;

@@ -217,7 +217,7 @@ describe("PlayerNFT", function () {
     );
     await brush.mint(alice.address, editNameBrushPrice.mul(3));
 
-    await expect(playerNFT.editName(playerId, name)).to.be.revertedWithCustomError(playerNFT, "NotOwner");
+    await expect(playerNFT.editName(playerId, name)).to.be.revertedWithCustomError(playerNFT, "NotOwnerOfPlayer");
     expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
       .be.true;
 

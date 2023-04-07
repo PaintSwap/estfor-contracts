@@ -39,6 +39,7 @@ import {allShopItems} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarInfos} from "./data/avatars";
+import {allQuests, allQuestsRandomFlag} from "./data/quests";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -175,6 +176,13 @@ async function main() {
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
+  const Quests = await ethers.getContractFactory("Quests");
+  const quests = await upgrades.deployProxy(Quests, [playerNFT.address, world.address], {
+    kind: "uups",
+  });
+  await quests.deployed();
+  console.log(`quests = "${quests.address.toLowerCase()}"`);
+
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playerLibrary = await PlayersLibrary.deploy();
@@ -246,6 +254,8 @@ async function main() {
     console.log("Skipping verifying contracts");
   }
 
+  await world.setQuests(quests.address);
+  console.log("world setQueusts");
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
   console.log("itemNFT setPlayers");
@@ -342,6 +352,11 @@ async function main() {
   tx = await shop.addBuyableItems(allShopItems);
   await tx.wait();
   console.log("Add shopping items");
+
+  // Add quests
+  tx = await quests.addQuests(allQuests, allQuestsRandomFlags);
+  await tx.wait();
+  console.log("Add quests");
 
   // Add test data for the game
   if (isAlpha) {

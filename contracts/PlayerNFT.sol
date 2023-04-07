@@ -28,7 +28,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   event SetAvatar(uint avatarId, AvatarInfo avatarInfo);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
-  error NotOwner();
+  error NotOwnerOfPlayer();
   error NotAdmin();
   error NotAdminOrLive();
   error NotPlayers();
@@ -64,7 +64,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(_msgSender(), playerId) != 1) {
-      revert NotOwner();
+      revert NotOwnerOfPlayer();
     }
     _;
   }

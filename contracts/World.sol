@@ -9,6 +9,8 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
+import {IQuests} from "./interfaces/IQuests.sol";
+
 /* solhint-disable no-global-import */
 import "./globals/players.sol";
 import "./globals/actions.sol";
@@ -97,6 +99,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   mapping(uint actionId => CombatStats combatStats) private actionCombatStats;
 
   mapping(uint actionId => ActionRewards actionRewards) private actionRewards;
+
+  IQuests private quests;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -237,6 +241,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     randomWords[_requestId] = random;
+    if (address(quests) != address(0)) {
+      quests.newOracleRandomWords(random);
+    }
     emit RequestFulfilled(_requestId, random);
 
     // Are we at the threshold for a new week
@@ -563,6 +570,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
     actions[_actionId].isAvailable = _isAvailable;
     emit SetAvailableAction(_actionId, _isAvailable);
+  }
+
+  function setQuests(IQuests _quests) external onlyOwner {
+    quests = _quests;
   }
 
   // solhint-disable-next-line no-empty-blocks
