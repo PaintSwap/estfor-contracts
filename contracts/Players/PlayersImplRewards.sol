@@ -734,7 +734,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         );
       }
 
-      uint24 amount = uint24((numConsumed * successPercent) / 100);
+      uint24 amount = uint24((numConsumed * _actionChoice.outputNum * successPercent) / 100);
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];

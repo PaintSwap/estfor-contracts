@@ -23,8 +23,8 @@ struct ActionChoice {
   uint8 num2;
   uint16 inputTokenId3;
   uint8 num3;
-  uint16 outputTokenId; // Always num of 1
-  uint8 outputNum; // Not used yet
+  uint16 outputTokenId;
+  uint8 outputNum;
   uint8 successPercent; // 0-100
 }
 

@@ -48,6 +48,80 @@ export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: Wo
   return {queuedAction, rate};
 };
 
+export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: World, minXP: number) {
+  const [owner, alice] = await ethers.getSigners();
+
+  const rate = 100 * 10; // per hour
+  let tx = await world.addAction({
+    actionId: 1,
+    info: {
+      skill: EstforTypes.Skill.FIREMAKING,
+      xpPerHour: 0,
+      minXP: 0,
+      isDynamic: false,
+      numSpawned: 0,
+      handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
+      handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
+      isAvailable: true,
+      actionChoiceRequired: true,
+      successPercent: 100,
+    },
+    guaranteedRewards: [],
+    randomRewards: [],
+    combatStats: EstforTypes.emptyCombatStats,
+  });
+  const actionId = await getActionId(tx);
+
+  // Logs go in, nothing comes out
+  tx = await world.addActionChoice(actionId, 1, {
+    skill: EstforTypes.Skill.FIREMAKING,
+    diff: 0,
+    xpPerHour: 3600,
+    minXP,
+    rate,
+    inputTokenId1: EstforConstants.LOG,
+    num1: 1,
+    inputTokenId2: EstforConstants.NONE,
+    num2: 0,
+    inputTokenId3: EstforConstants.NONE,
+    num3: 0,
+    outputTokenId: EstforConstants.NONE,
+    outputNum: 0,
+    successPercent: 100,
+  });
+  const choiceId = await getActionChoiceId(tx);
+
+  const timespan = 3600;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId,
+    choiceId1: EstforConstants.NONE,
+    choiceId2: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+  };
+
+  await itemNFT.addItem({
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.MAGIC_FIRE_STARTER,
+    equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+  });
+
+  await itemNFT.addItem({
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.LOG,
+    equipPosition: EstforTypes.EquipPosition.AUX,
+  });
+
+  await itemNFT.testMint(alice.address, EstforConstants.LOG, 5000);
+
+  return {queuedAction, rate, actionId};
+};
+
 export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: World) {
   const [owner, alice] = await ethers.getSigners();
 

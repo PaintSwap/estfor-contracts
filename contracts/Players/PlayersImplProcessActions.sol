@@ -234,7 +234,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         );
       }
 
-      uint amount = (numConsumed * successPercent) / 100;
+      uint amount = (numConsumed * _actionChoice.outputNum * successPercent) / 100;
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];

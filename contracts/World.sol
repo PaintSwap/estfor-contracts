@@ -43,7 +43,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error ActionAlreadyExists();
   error ActionDoesNotExist();
   error ActionChoiceIdZeroNotAllowed();
-  error OnlySupportingMax1Output();
+  error OutputSpecifiedWithoutAmount();
   error DynamicActionsCannotBeSet();
   error LengthMismatch();
   error NoActionChoices();
@@ -511,8 +511,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (_actionChoiceId == 0) {
       revert ActionChoiceIdZeroNotAllowed();
     }
-    if (_actionChoice.outputTokenId != 0 && _actionChoice.outputNum != 1) {
-      revert OnlySupportingMax1Output();
+    if (_actionChoice.outputTokenId != 0 && _actionChoice.outputNum == 0) {
+      revert OutputSpecifiedWithoutAmount();
     }
     if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
       revert ActionChoiceAlreadyExists();
