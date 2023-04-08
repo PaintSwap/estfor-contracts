@@ -23,14 +23,16 @@ describe("RoyaltyReceiver", function () {
         kind: "uups",
       }
     );
-    await royaltyReceiver.deployed();
 
     return {
+      RoyaltyReceiver,
       royaltyReceiver,
       owner,
       alice,
       pool,
       brush,
+      buyPath,
+      router,
     };
   }
 
@@ -43,5 +45,16 @@ describe("RoyaltyReceiver", function () {
     });
 
     expect(await brush.balanceOf(pool.address)).to.equal(10);
+  });
+
+  it("Incorrect brush path", async function () {
+    const {pool, router, buyPath, RoyaltyReceiver} = await loadFixture(deployContracts);
+
+    const incorrectBrushAddress = pool.address;
+    await expect(
+      upgrades.deployProxy(RoyaltyReceiver, [router.address, pool.address, incorrectBrushAddress, buyPath], {
+        kind: "uups",
+      })
+    ).to.be.revertedWithCustomError(RoyaltyReceiver, "IncorrectBrushPath");
   });
 });

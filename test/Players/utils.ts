@@ -290,7 +290,7 @@ export const setupBasicCooking = async function (
 
   await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
 
-  return {queuedAction, rate};
+  return {queuedAction, rate, choiceId};
 };
 
 export const getXPFromLevel = (level: number) => {

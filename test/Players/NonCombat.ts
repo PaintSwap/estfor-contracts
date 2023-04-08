@@ -100,18 +100,20 @@ describe("Non-Combat Actions", function () {
         equipPosition: EstforTypes.EquipPosition.FEET,
       });
 
-      await players.addFullAttireBonus({
-        skill: Skill.WOODCUTTING,
-        itemTokenIds: [
-          EstforConstants.NATURE_MASK,
-          EstforConstants.NATURE_BODY,
-          EstforConstants.NATURE_BRACERS,
-          EstforConstants.NATURE_TROUSERS,
-          EstforConstants.NATURE_BOOTS,
-        ],
-        bonusXPPercent: 3,
-        bonusRewardsPercent: 0,
-      });
+      await players.addFullAttireBonuses([
+        {
+          skill: Skill.WOODCUTTING,
+          itemTokenIds: [
+            EstforConstants.NATURE_MASK,
+            EstforConstants.NATURE_BODY,
+            EstforConstants.NATURE_BRACERS,
+            EstforConstants.NATURE_TROUSERS,
+            EstforConstants.NATURE_BOOTS,
+          ],
+          bonusXPPercent: 3,
+          bonusRewardsPercent: 0,
+        },
+      ]);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: {

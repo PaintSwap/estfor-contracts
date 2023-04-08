@@ -105,7 +105,6 @@ async function main() {
   console.log(`shop = "${shop.address.toLowerCase()}"`);
 
   const buyPath: [string, string] = [wftm.address, brush.address];
-
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
@@ -177,7 +176,7 @@ async function main() {
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
   const Quests = await ethers.getContractFactory("Quests");
-  const quests = await upgrades.deployProxy(Quests, [playerNFT.address, world.address], {
+  const quests = await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
   });
   await quests.deployed();
@@ -255,15 +254,16 @@ async function main() {
     console.log("Skipping verifying contracts");
   }
 
-  await world.setQuests(quests.address);
-  console.log("world setQueusts");
+  tx = await world.setQuests(quests.address);
+  await tx.wait();
+  console.log("world setQuests");
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
   console.log("itemNFT setPlayers");
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
   console.log("playerNFT setPlayers");
-  await quests.setPlayers(players.address);
+  tx = await quests.setPlayers(players.address);
   await tx.wait();
   console.log("quests setPlayers");
 

@@ -8,6 +8,7 @@ import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.so
 import "../globals/players.sol";
 import "../globals/items.sol";
 import "../globals/actions.sol";
+import "../globals/rewards.sol";
 
 /* solhint-enable no-global-import */
 
@@ -451,5 +452,95 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     address from = msg.sender;
     itemNFT.mint(from, activeBoosts_[_playerId].itemTokenId, 1);
     emit UnconsumeBoostVial(from, _playerId);
+  }
+
+  // === XP Threshold rewards ===
+  function claimableXPThresholdRewardsImpl(
+    uint _oldTotalXP,
+    uint _newTotalXP
+  ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts) {
+    uint16 prevIndex = _findBaseXPThreshold(_oldTotalXP);
+    uint16 nextIndex = _findBaseXPThreshold(_newTotalXP);
+
+    uint diff = nextIndex - prevIndex;
+    itemTokenIds = new uint[](diff);
+    amounts = new uint[](diff);
+    uint length;
+    for (uint i = 0; i < diff; ++i) {
+      uint32 xpThreshold = _getXPReward(prevIndex + 1 + i);
+      Equipment[] memory items = xpRewardThresholds[xpThreshold];
+      if (items.length > 0) {
+        // TODO: Currently assumes there is only 1 item per threshold
+        itemTokenIds[length] = items[0].itemTokenId;
+        amounts[length++] = items[0].amount;
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, length)
+      mstore(amounts, length)
+    }
+  }
+
+  function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external {
+    U256 iter = U256.wrap(_xpThresholdRewards.length);
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
+
+      // Check that it is part of the hexBytes
+      uint16 index = _findBaseXPThreshold(xpThresholdReward.xpThreshold);
+      uint32 xpThreshold = _getXPReward(index);
+      if (xpThresholdReward.xpThreshold != xpThreshold) {
+        revert XPThresholdNotFound();
+      }
+
+      for (uint i = 0; i < xpThresholdReward.rewards.length; ++i) {
+        if (xpThresholdReward.rewards[i].itemTokenId == NONE) {
+          revert InvalidItemTokenId();
+        }
+        if (xpThresholdReward.rewards[i].amount == 0) {
+          revert InvalidAmount();
+        }
+      }
+
+      xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
+      emit AdminAddThresholdReward(xpThresholdReward);
+    }
+  }
+
+  // Index not level, add one after (check for > max)
+  function _findBaseXPThreshold(uint256 _xp) private pure returns (uint16) {
+    U256 low;
+    U256 high = U256.wrap(xpRewardBytes.length).div(4);
+
+    while (low < high) {
+      U256 mid = (low + high).div(2);
+
+      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+      // Math.average rounds down (it does integer division with truncation).
+      if (_getXPReward(mid.asUint256()) > _xp) {
+        high = mid;
+      } else {
+        low = mid.inc();
+      }
+    }
+
+    if (low.neq(0)) {
+      return low.dec().asUint16();
+    } else {
+      return 0;
+    }
+  }
+
+  function _getXPReward(uint256 _index) private pure returns (uint32) {
+    U256 index = U256.wrap(_index).mul(4);
+    return
+      uint32(
+        xpRewardBytes[index.asUint256()] |
+          (bytes4(xpRewardBytes[index.add(1).asUint256()]) >> 8) |
+          (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
+          (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
+      );
   }
 }

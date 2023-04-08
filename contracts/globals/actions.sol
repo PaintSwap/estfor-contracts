@@ -87,7 +87,9 @@ struct Quest {
   uint16 rewardAmount; // amount of the reward (up to 65535)
   uint16 rewardItemTokenId1; // Reward another item
   uint16 rewardAmount1; // amount of the reward (up to 65535)
-  uint40 questId; // Unique id for this quest
+  uint16 burnItemTokenId; // Burn an item
+  uint16 burnAmount; // amount of the burn (up to 65535)
+  uint24 questId; // Unique id for this quest
 }
 
 struct QuestWithCompletionInfo {
@@ -95,5 +97,4 @@ struct QuestWithCompletionInfo {
   uint24 actionNum;
   uint24 actionNum1;
   uint24 actionChoiceNum;
-  uint40 realQuestId; // If daily this is incremented to differentiate the same quest
 }

@@ -34,9 +34,9 @@ interface IPlayerDelegate {
     ActionQueueStatus queueStatus
   ) external;
 
-  function addXPThresholdReward(XPThresholdReward calldata xpThresholdReward) external;
+  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdReward) external;
 
-  function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external;
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
 
   function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills) external;
 
@@ -141,6 +141,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function activateQuest(uint _playerId, uint _questId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
     quests.activateQuest(_playerId, _questId);
+  }
+
+  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+    quests.deactivateQuest(_playerId);
   }
 
   function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
@@ -250,13 +254,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function _addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) private {
-    _delegatecall(
-      implRewards,
-      abi.encodeWithSelector(IPlayerDelegate.addXPThresholdReward.selector, _xpThresholdReward)
-    );
-  }
-
   function _setActivePlayer(address _from, uint _playerId) private {
     _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.setActivePlayer.selector, _from, _playerId));
   }
@@ -272,7 +269,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   ) external view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
   }
@@ -280,20 +277,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
     );
     return abi.decode(data, (bool[7]));
   }
 
   function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
     return PlayersLibrary.getRandomBytes(_numTickets, _skillEndTime, _playerId, world);
-  }
-
-  function _addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) private {
-    _delegatecall(
-      implProcessActions,
-      abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonus.selector, _fullAttireBonus)
-    );
   }
 
   function MAX_TIME() external pure returns (uint32) {
@@ -336,30 +326,22 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     implRewards = _implRewards;
   }
 
-  function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external onlyOwner {
-    _addXPThresholdReward(_xpThresholdReward);
-  }
-
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
-    U256 iter = U256.wrap(_xpThresholdRewards.length);
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      _addXPThresholdReward(_xpThresholdRewards[iter.asUint256()]);
-    }
+    _delegatecall(
+      implQueueActions,
+      abi.encodeWithSelector(IPlayerDelegate.addXPThresholdRewards.selector, _xpThresholdRewards)
+    );
   }
 
   function setDailyRewardsEnabled(bool _dailyRewardsEnabled) external onlyOwner {
     dailyRewardsEnabled = _dailyRewardsEnabled;
   }
 
-  function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external onlyOwner {
-    _addFullAttireBonus(_fullAttireBonus);
-  }
-
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
-    for (uint i = 0; i < _fullAttireBonuses.length; ++i) {
-      _addFullAttireBonus(_fullAttireBonuses[i]);
-    }
+    _delegatecall(
+      implProcessActions,
+      abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses)
+    );
   }
 
   function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external isAdminAndAlpha {
@@ -375,10 +357,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
     address implementation;
     if (
-      selector == IPlayersDelegateView.pendingQueuedActionStateImpl.selector ||
-      selector == IPlayersDelegateView.dailyClaimedRewardsImpl.selector
+      selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector ||
+      selector == IPlayersRewardsDelegateView.dailyClaimedRewardsImpl.selector
     ) {
       implementation = implRewards;
+    } else if (selector == IPlayersQueueActionsDelegateView.claimableXPThresholdRewardsImpl.selector) {
+      implementation = implQueueActions;
     } else {
       revert InvalidSelector();
     }

@@ -139,9 +139,6 @@ abstract contract PlayersBase {
   // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
   mapping(uint playerId => bytes32) internal dailyRewardMasks;
 
-  // 4 bytes for each threshold, starts at 500 xp in decimal
-  bytes constant xpRewardBytes =
-    hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";
   mapping(uint xp => Equipment[] equipments) internal xpRewardThresholds; // Thresholds and all items rewarded for it
 
   bool internal dailyRewardsEnabled;
@@ -448,27 +445,26 @@ abstract contract PlayersBase {
     _delegatecall(implRewards, abi.encodeWithSignature("claimRandomRewards(uint256)", _playerId));
   }
 
+  function _claimableXPThresholdRewards(
+    uint _oldTotalXP,
+    uint _newTotalXP
+  ) internal view returns (uint[] memory ids, uint[] memory amounts) {
+    // Call self
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersQueueActionsDelegateView.claimableXPThresholdRewardsImpl.selector,
+        _oldTotalXP,
+        _newTotalXP
+      )
+    );
+    return abi.decode(data, (uint[], uint[]));
+  }
+
   function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) internal {
     Player storage player = players_[_playerId];
     player.actionQueue = _queuedActions;
     emit SetActionQueue(_from, _playerId, player.actionQueue);
-  }
-
-  function _processQuests(
-    address _from,
-    uint _playerId,
-    uint[] memory _choiceIds,
-    uint[] memory _choiceIdAmounts
-  ) internal {
-    (uint[] memory itemTokenIds, uint[] memory amounts, uint[] memory _questsCompleted) = quests.processQuests(
-      _playerId,
-      _choiceIds,
-      _choiceIdAmounts
-    );
-
-    if (itemTokenIds.length > 0) {
-      itemNFT.mintBatch(_from, itemTokenIds, amounts);
-    }
   }
 
   function _checkStartSlot() internal pure {

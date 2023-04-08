@@ -13,7 +13,7 @@ import "../globals/rewards.sol";
 
 /* solhint-enable no-global-import */
 
-contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPlayersDelegateView {
+contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPlayersRewardsDelegateView {
   using UnsafeU256 for U256;
   using UnsafeMath for uint256;
 
@@ -191,33 +191,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
-  function claimableXPThresholdRewards(
-    uint _oldTotalXP,
-    uint _newTotalXP
-  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts) {
-    uint16 prevIndex = _findBaseXPThreshold(_oldTotalXP);
-    uint16 nextIndex = _findBaseXPThreshold(_newTotalXP);
-
-    uint diff = nextIndex - prevIndex;
-    itemTokenIds = new uint[](diff);
-    amounts = new uint[](diff);
-    uint length;
-    for (uint i = 0; i < diff; ++i) {
-      uint32 xpThreshold = _getXPReward(prevIndex + 1 + i);
-      Equipment[] memory items = xpRewardThresholds[xpThreshold];
-      if (items.length > 0) {
-        // TODO: Currently assumes there is only 1 item per threshold
-        itemTokenIds[length] = items[0].itemTokenId;
-        amounts[length++] = items[0].amount;
-      }
-    }
-
-    assembly ("memory-safe") {
-      mstore(itemTokenIds, length)
-      mstore(amounts, length)
-    }
-  }
-
   // Get any changes that are pending and not commited to the blockchain yet.
   // Such as items consumed/produced, xp gained, whether the player died, pending random reward rolls & quest rewards.
   function pendingQueuedActionStateImpl(
@@ -290,19 +263,24 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
         Equipment[] memory consumedEquipment;
         Equipment memory outputEquipment;
-        uint baseNumConsumed;
-
-        (consumedEquipment, outputEquipment, xpElapsedTime, died, baseNumConsumed) = _processConsumablesView(
-          from,
-          _playerId,
-          queuedAction,
-          elapsedTime,
-          combatStats,
-          actionChoice
-        );
+        uint24 baseNumConsumed;
+        uint24 numProduced;
+        (
+          consumedEquipment,
+          outputEquipment,
+          xpElapsedTime,
+          died,
+          baseNumConsumed,
+          numProduced
+        ) = _processConsumablesView(from, _playerId, queuedAction, elapsedTime, combatStats, actionChoice);
 
         choiceIds[choiceIdsLength++] = queuedAction.choiceId;
-        choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
+        Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
+        if (skill == Skill.COOKING) {
+          choiceIdAmounts[choiceIdAmountsLength++] = numProduced; // Assume we want amount cooked
+        } else {
+          choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
+        }
 
         if (outputEquipment.itemTokenId != NONE) {
           pendingQueuedActionState.produced[producedLength++] = EquipmentInfo(
@@ -397,7 +375,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     // XPRewards
     if (totalXPGained != 0) {
-      (uint[] memory ids, uint[] memory amounts) = claimableXPThresholdRewards(
+      (uint[] memory ids, uint[] memory amounts) = _claimableXPThresholdRewards(
         previousTotalXP,
         previousTotalXP + totalXPGained
       );
@@ -437,21 +415,33 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
 
     // Quest Rewards
-    (uint[] memory questRewards, uint[] memory questRewardAmounts, uint[] memory _questsCompleted) = quests
-      .processQuestsView(_playerId, choiceIds, choiceIdAmounts);
+    (
+      uint[] memory questRewards,
+      uint[] memory questRewardAmounts,
+      uint[] memory itemTokenIdsBurned,
+      uint[] memory amountsBurned,
+      Skill[] memory skillsGained,
+      uint32[] memory xp,
+      uint[] memory _questsCompleted
+    ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts);
     if (questRewards.length > 0) {
       pendingQueuedActionState.questRewards = new Equipment[](questRewards.length);
       for (uint j = 0; j < questRewards.length; ++j) {
         pendingQueuedActionState.questRewards[j] = Equipment(uint16(questRewards[j]), uint24(questRewardAmounts[j]));
       }
+      pendingQueuedActionState.questConsumed = new Equipment[](itemTokenIdsBurned.length);
+      for (uint j = 0; j < itemTokenIdsBurned.length; ++j) {
+        pendingQueuedActionState.questConsumed[j] = Equipment(uint16(itemTokenIdsBurned[j]), uint24(amountsBurned[j]));
+      }
     }
+
     // Compact to fit the arrays
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), consumedLength)
       mstore(mload(add(pendingQueuedActionState, 32)), producedLength)
-      mstore(mload(add(pendingQueuedActionState, 160)), diedLength)
-      mstore(mload(add(pendingQueuedActionState, 192)), rollsLength)
-      mstore(mload(add(pendingQueuedActionState, 224)), xpGainedLength)
+      mstore(mload(add(pendingQueuedActionState, 192)), diedLength)
+      mstore(mload(add(pendingQueuedActionState, 224)), rollsLength)
+      mstore(mload(add(pendingQueuedActionState, 256)), xpGainedLength)
     }
   }
 
@@ -675,7 +665,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       Equipment memory outputEquipment,
       uint xpElapsedTime,
       bool died,
-      uint24 numConsumed
+      uint24 numConsumed,
+      uint24 numProduced
     )
   {
     consumedEquipment = new Equipment[](4);
@@ -759,78 +750,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         );
       }
 
-      uint24 amount = uint24((numConsumed * _actionChoice.outputNum * successPercent) / 100);
+      numProduced = uint24((numConsumed * _actionChoice.outputNum * successPercent) / 100);
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
       if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
-        amount += uint24((boostedTime * amount * activeBoost.val) / (3600 * 100));
+        numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
 
-      if (amount != 0) {
-        outputEquipment = Equipment(_actionChoice.outputTokenId, amount);
+      if (numProduced != 0) {
+        outputEquipment = Equipment(_actionChoice.outputTokenId, numProduced);
       }
     }
 
     assembly ("memory-safe") {
       mstore(consumedEquipment, consumedEquipmentLength)
     }
-  }
-
-  function addXPThresholdReward(XPThresholdReward calldata _xpThresholdReward) external {
-    // Check that it is part of the hexBytes
-    uint16 index = _findBaseXPThreshold(_xpThresholdReward.xpThreshold);
-    uint32 xpThreshold = _getXPReward(index);
-    if (_xpThresholdReward.xpThreshold != xpThreshold) {
-      revert XPThresholdNotFound();
-    }
-
-    for (uint i = 0; i < _xpThresholdReward.rewards.length; ++i) {
-      if (_xpThresholdReward.rewards[i].itemTokenId == NONE) {
-        revert InvalidItemTokenId();
-      }
-      if (_xpThresholdReward.rewards[i].amount == 0) {
-        revert InvalidAmount();
-      }
-    }
-
-    xpRewardThresholds[_xpThresholdReward.xpThreshold] = _xpThresholdReward.rewards;
-    emit AdminAddThresholdReward(_xpThresholdReward);
-  }
-
-  // Index not level, add one after (check for > max)
-  function _findBaseXPThreshold(uint256 _xp) private pure returns (uint16) {
-    U256 low;
-    U256 high = U256.wrap(xpRewardBytes.length).div(4);
-
-    while (low < high) {
-      U256 mid = (low + high).div(2);
-
-      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
-      // Math.average rounds down (it does integer division with truncation).
-      if (_getXPReward(mid.asUint256()) > _xp) {
-        high = mid;
-      } else {
-        low = mid.inc();
-      }
-    }
-
-    if (low.neq(0)) {
-      return low.dec().asUint16();
-    } else {
-      return 0;
-    }
-  }
-
-  function _getXPReward(uint256 _index) private pure returns (uint32) {
-    U256 index = U256.wrap(_index).mul(4);
-    return
-      uint32(
-        xpRewardBytes[index.asUint256()] |
-          (bytes4(xpRewardBytes[index.add(1).asUint256()]) >> 8) |
-          (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
-          (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
-      );
   }
 }

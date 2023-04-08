@@ -21,12 +21,13 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   error AddressZero();
+  error IncorrectBrushPath();
 
   Router public router;
   address public pool;
   IBrushToken public brush;
   address private buyPath1;
-  address private buyPath2;
+  address private dummy;
 
   uint public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
@@ -42,9 +43,10 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     pool = _pool;
     router = _router;
     brush = _brush;
-    // store the path in the bytecode
     buyPath1 = _buyPath[0];
-    buyPath2 = _buyPath[1];
+    if (_buyPath[1] != address(_brush)) {
+      revert IncorrectBrushPath();
+    }
     if (address(_router) == address(0)) {
       revert AddressZero();
     }
@@ -56,10 +58,10 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function buyPath() public view returns (address[] memory _buyPath) {
+  function buyPath() private view returns (address[] memory _buyPath) {
     _buyPath = new address[](2);
     _buyPath[0] = buyPath1;
-    _buyPath[1] = buyPath2;
+    _buyPath[1] = address(brush);
   }
 
   receive() external payable {

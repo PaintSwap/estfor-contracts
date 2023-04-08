@@ -87,7 +87,7 @@ export const playersFixture = async function () {
   )) as PlayerNFT;
 
   const Quests = await ethers.getContractFactory("Quests");
-  const quests = await upgrades.deployProxy(Quests, [playerNFT.address, world.address], {
+  const quests = await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
   });
 

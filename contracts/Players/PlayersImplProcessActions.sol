@@ -80,13 +80,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       ActionChoice memory actionChoice;
 
       uint xpElapsedTime = elapsedTime;
-
       if (queuedAction.choiceId != 0) {
         // Includes combat
         uint combatElapsedTime;
         actionChoice = world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
         uint24 baseNumConsumed;
-        (xpElapsedTime, combatElapsedTime, died, baseNumConsumed) = _processConsumables(
+        uint24 numProduced;
+        (xpElapsedTime, combatElapsedTime, died, baseNumConsumed, numProduced) = _processConsumables(
           _from,
           _playerId,
           queuedAction,
@@ -95,8 +95,18 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           actionChoice
         );
 
-        choiceIds[choiceIdsLength++] = queuedAction.choiceId;
-        choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
+        Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
+        if (skill == Skill.COOKING) {
+          if (numProduced > 0) {
+            choiceIdAmounts[choiceIdAmountsLength++] = numProduced; // Assume we want amount cooked
+            choiceIds[choiceIdsLength++] = queuedAction.choiceId;
+          }
+        } else {
+          if (baseNumConsumed > 0) {
+            choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
+            choiceIds[choiceIdsLength++] = queuedAction.choiceId;
+          }
+        }
       }
 
       uint64 _queueId = queuedAction.queueId;
@@ -187,6 +197,33 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
+  function _processQuests(
+    address _from,
+    uint _playerId,
+    uint[] memory _choiceIds,
+    uint[] memory _choiceIdAmounts
+  ) private {
+    (
+      uint[] memory itemTokenIds,
+      uint[] memory amounts,
+      uint[] memory itemTokenIdsBurned,
+      uint[] memory amountsBurned,
+      Skill[] memory skillsGained,
+      uint32[] memory xpGained,
+      uint[] memory _questsCompleted
+    ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
+    // Mint the rewards
+
+    if (itemTokenIds.length > 0) {
+      itemNFT.mintBatch(_from, itemTokenIds, amounts);
+    }
+
+    // Burn the rewards
+    for (uint i; i < itemTokenIdsBurned.length; ++i) {
+      itemNFT.burn(_from, itemTokenIdsBurned[i], amountsBurned[i]);
+    }
+  }
+
   function _processActionsFinished(address _from, uint _playerId) private {
     _claimRandomRewards(_playerId);
     _handleDailyRewards(_from, _playerId);
@@ -206,7 +243,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice
-  ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died, uint24 numConsumed) {
+  ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died, uint24 numConsumed, uint24 numProduced) {
     bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
 
     if (isCombat) {
@@ -248,17 +285,17 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         );
       }
 
-      uint amount = (numConsumed * _actionChoice.outputNum * successPercent) / 100;
+      numProduced = (numConsumed * _actionChoice.outputNum * successPercent) / 100;
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
       if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
-        amount += uint24((boostedTime * amount * activeBoost.val) / (3600 * 100));
+        numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
-      if (amount != 0) {
-        itemNFT.mint(_from, _actionChoice.outputTokenId, amount);
-        emit Reward(_from, _playerId, _queuedAction.queueId, _actionChoice.outputTokenId, amount);
+      if (numProduced != 0) {
+        itemNFT.mint(_from, _actionChoice.outputTokenId, numProduced);
+        emit Reward(_from, _playerId, _queuedAction.queueId, _actionChoice.outputTokenId, numProduced);
       }
     }
   }
@@ -435,17 +472,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function _claimableXPThresholdRewards(
-    uint _oldTotalXP,
-    uint _newTotalXP
-  ) private returns (uint[] memory ids, uint[] memory amounts) {
-    bytes memory data = _delegatecall(
-      implRewards,
-      abi.encodeWithSignature("claimableXPThresholdRewards(uint256,uint256)", _oldTotalXP, _newTotalXP)
-    );
-    return abi.decode(data, (uint[], uint[]));
-  }
-
   function _claimTotalXPThresholdRewards(address _from, uint _playerId, uint _oldTotalXP, uint _newTotalXP) private {
     (uint[] memory itemTokenIds, uint[] memory amounts) = _claimableXPThresholdRewards(_oldTotalXP, _newTotalXP);
     if (itemTokenIds.length != 0) {
@@ -454,37 +480,41 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function addFullAttireBonus(FullAttireBonusInput calldata _fullAttireBonus) external {
-    if (_fullAttireBonus.skill == Skill.NONE) {
-      revert InvalidSkill();
-    }
-    EquipPosition[5] memory expectedEquipPositions = [
-      EquipPosition.HEAD,
-      EquipPosition.BODY,
-      EquipPosition.ARMS,
-      EquipPosition.LEGS,
-      EquipPosition.FEET
-    ];
-    for (uint i = 0; i < expectedEquipPositions.length; ++i) {
-      if (_fullAttireBonus.itemTokenIds[i] == NONE) {
-        revert InvalidItemTokenId();
-      }
-      if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[i]).equipPosition != expectedEquipPositions[i]) {
-        revert InvalidEquipPosition();
-      }
-    }
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
+    for (uint i = 0; i < _fullAttireBonuses.length; ++i) {
+      FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
 
-    fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
-      _fullAttireBonus.bonusXPPercent,
-      _fullAttireBonus.bonusRewardsPercent,
-      _fullAttireBonus.itemTokenIds
-    );
-    emit AddFullAttireBonus(
-      _fullAttireBonus.skill,
-      _fullAttireBonus.itemTokenIds,
-      _fullAttireBonus.bonusXPPercent,
-      _fullAttireBonus.bonusRewardsPercent
-    );
+      if (_fullAttireBonus.skill == Skill.NONE) {
+        revert InvalidSkill();
+      }
+      EquipPosition[5] memory expectedEquipPositions = [
+        EquipPosition.HEAD,
+        EquipPosition.BODY,
+        EquipPosition.ARMS,
+        EquipPosition.LEGS,
+        EquipPosition.FEET
+      ];
+      for (uint i = 0; i < expectedEquipPositions.length; ++i) {
+        if (_fullAttireBonus.itemTokenIds[i] == NONE) {
+          revert InvalidItemTokenId();
+        }
+        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[i]).equipPosition != expectedEquipPositions[i]) {
+          revert InvalidEquipPosition();
+        }
+      }
+
+      fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
+        _fullAttireBonus.bonusXPPercent,
+        _fullAttireBonus.bonusRewardsPercent,
+        _fullAttireBonus.itemTokenIds
+      );
+      emit AddFullAttireBonus(
+        _fullAttireBonus.skill,
+        _fullAttireBonus.itemTokenIds,
+        _fullAttireBonus.bonusXPPercent,
+        _fullAttireBonus.bonusRewardsPercent
+      );
+    }
   }
 
   function mintedPlayer(address _from, uint _playerId, Skill[2] calldata _startSkills) external {

@@ -249,6 +249,25 @@ contract DebugStorageSlots {
     Equipment[] equipments;
   }
 
+  struct Quest {
+    uint16 dependentQuestId; // The quest that must be completed before this one can be started
+    uint16 actionId; // action to do
+    uint16 actionNum; // how many (up to 65535)
+    uint16 actionId1; // another action to do
+    uint16 actionNum1; // how many (up to 65535)
+    uint16 actionChoiceId; // actionChoice to perform
+    uint16 actionChoiceNum; // how many to do (base number), (up to 65535)
+    Skill skillReward; // The skill to reward XP to
+    uint16 skillXPGained; // The amount of XP to give (up to 65535)
+    uint16 rewardItemTokenId; // Reward an item
+    uint16 rewardAmount; // amount of the reward (up to 65535)
+    uint16 rewardItemTokenId1; // Reward another item
+    uint16 rewardAmount1; // amount of the reward (up to 65535)
+    uint16 burnItemTokenId; // Burn an item
+    uint16 burnAmount; // amount of the burn (up to 65535)
+    uint24 questId; // Unique id for this quest
+  }
+
   Item item;
   GuaranteedReward guaranteeedReward;
   RandomReward randomReward;
@@ -263,4 +282,5 @@ contract DebugStorageSlots {
   Player player;
   PlayerBoostInfo playerBoostInfo;
   XPThresholdReward xpThresholdReward;
+  Quest quest;
 }

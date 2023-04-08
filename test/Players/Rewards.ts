@@ -57,11 +57,11 @@ describe("Rewards", function () {
     };
 
     const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
-    await expect(players.addXPThresholdReward({xpThreshold: 499, rewards})).to.be.revertedWithCustomError(
+    await expect(players.addXPThresholdRewards([{xpThreshold: 499, rewards}])).to.be.revertedWithCustomError(
       players,
       "XPThresholdNotFound"
     );
-    await players.addXPThresholdReward({xpThreshold: 500, rewards});
+    await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [50]);
@@ -128,9 +128,9 @@ describe("Rewards", function () {
     };
 
     const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
-    await players.addXPThresholdReward({xpThreshold: 500, rewards});
+    await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
     const rewards1: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_HELMET, amount: 4}];
-    await players.addXPThresholdReward({xpThreshold: 1000, rewards: rewards1});
+    await players.addXPThresholdRewards([{xpThreshold: 1000, rewards: rewards1}]);
 
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [1600]);
