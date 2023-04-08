@@ -213,12 +213,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint[] memory _questsCompleted
     ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
     // Mint the rewards
-
     if (itemTokenIds.length > 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
     }
 
-    // Burn the rewards
+    // Burn some items if quest requires it.
     for (uint i; i < itemTokenIdsBurned.length; ++i) {
       itemNFT.burn(_from, itemTokenIdsBurned[i], amountsBurned[i]);
     }

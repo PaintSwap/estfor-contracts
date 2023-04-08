@@ -222,7 +222,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     QuestWithCompletionInfo memory questCompletionInfo
   )
     private
-    view
+    pure
     returns (
       uint[] memory itemTokenIds,
       uint[] memory amounts,
