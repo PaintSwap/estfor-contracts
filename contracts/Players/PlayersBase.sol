@@ -460,7 +460,7 @@ abstract contract PlayersBase {
     uint[] memory _choiceIds,
     uint[] memory _choiceIdAmounts
   ) internal {
-    (uint[] memory itemTokenIds, uint[] memory amounts, uint[] memory _questsCompleted) = quests.processQuestsView(
+    (uint[] memory itemTokenIds, uint[] memory amounts, uint[] memory _questsCompleted) = quests.processQuests(
       _playerId,
       _choiceIds,
       _choiceIdAmounts

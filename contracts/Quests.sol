@@ -18,6 +18,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   event RemoveQuest(uint questId);
   event NewRandomQuest(Quest randomQuest, uint pointerQuestId);
   event QuestCompleted(uint playerId, uint questId);
+  event UpdateQuestProgress(uint playerId, QuestWithCompletionInfo quest);
 
   error NotWorld();
   error NotOwnerOfPlayer();
@@ -41,6 +42,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   IERC1155 private playerNFT;
   address private world;
   address private players;
+  uint40 public randomQuestId;
   mapping(uint questId => Quest quest) public allQuests;
   mapping(uint playerId => mapping(uint questId => bool done)) public questsCompleted; // TODO: Could use bit mask
   mapping(uint playerId => QuestWithCompletionInfo quest) public activeQuests;
@@ -50,7 +52,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   Quest[] public randomQuests;
   Quest public previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
   Quest public randomQuest; // Same for everyone
-  uint56 public randomQuestId;
 
   modifier onlyWorld() {
     if (msg.sender != world) {
@@ -114,12 +115,36 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   ) external onlyPlayers returns (uint[] memory itemTokenIds, uint[] memory amounts, uint[] memory _questsCompleted) {
     // The items will get minted by the caller
     (itemTokenIds, amounts, _questsCompleted) = processQuestsView(_playerId, _choiceIds, _choiceIdAmounts);
-    for (uint i = 0; i < _questsCompleted.length; ++i) {
-      emit QuestCompleted(_playerId, _questsCompleted[i]);
-      questsCompleted[_playerId][_questsCompleted[i]] = true;
+    if (_questsCompleted.length > 0) {
+      for (uint i = 0; i < _questsCompleted.length; ++i) {
+        emit QuestCompleted(_playerId, _questsCompleted[i]);
+        questsCompleted[_playerId][_questsCompleted[i]] = true;
 
-      if (isRandomQuest[_questsCompleted[i]]) {
-        delete inProgressRandomQuests[_playerId];
+        if (isRandomQuest[_questsCompleted[i]]) {
+          delete inProgressRandomQuests[_playerId];
+        }
+      }
+    } else {
+      // Update the quest progress
+      bool foundActive;
+      bool foundRandomQuest;
+      for (uint i; i < _choiceIds.length; ++i) {
+        uint choiceId = _choiceIds[i];
+        uint amount = _choiceIdAmounts[i];
+        if (activeQuests[_playerId].quest.actionChoiceId == choiceId) {
+          activeQuests[_playerId].actionChoiceNum += uint24(amount);
+          foundActive = true;
+        }
+        if (inProgressRandomQuests[_playerId].quest.actionChoiceId == choiceId) {
+          inProgressRandomQuests[_playerId].actionChoiceNum += uint24(amount);
+          foundRandomQuest = true;
+        }
+      }
+      if (foundActive) {
+        emit UpdateQuestProgress(_playerId, activeQuests[_playerId]);
+      }
+      if (foundRandomQuest) {
+        emit UpdateQuestProgress(_playerId, inProgressRandomQuests[_playerId]);
       }
     }
   }
@@ -155,58 +180,56 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     uint[] calldata _choiceIds,
     uint[] calldata _choiceIdAmounts
   ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, uint[] memory _questsCompleted) {
-    if (_choiceIds.length == 0) {
-      return (new uint[](0), new uint[](0), new uint[](0));
-    }
+    if (_choiceIds.length != 0) {
+      // Handle active rquest
+      QuestWithCompletionInfo memory questCompletionInfo = activeQuests[_playerId];
+      itemTokenIds = new uint[](2 * MAX_QUEST_REWARDS);
+      amounts = new uint[](2 * MAX_QUEST_REWARDS);
+      _questsCompleted = new uint[](2);
+      uint itemTokenIdsLength;
+      uint amountsLength;
+      uint questsCompletedLength;
+      if (questCompletionInfo.quest.questId != 0) {
+        (uint[] memory _itemTokenIds, uint[] memory _amounts) = _processQuestView(
+          _choiceIds,
+          _choiceIdAmounts,
+          questCompletionInfo
+        );
 
-    // Handle active rquest
-    QuestWithCompletionInfo memory questCompletionInfo = activeQuests[_playerId];
-    itemTokenIds = new uint[](2 * MAX_QUEST_REWARDS);
-    amounts = new uint[](2 * MAX_QUEST_REWARDS);
-    _questsCompleted = new uint[](2);
-    uint itemTokenIdsLength;
-    uint amountsLength;
-    uint questsCompletedLength;
-    if (questCompletionInfo.quest.questId != 0) {
-      (uint[] memory _itemTokenIds, uint[] memory _amounts) = _processQuestView(
-        _choiceIds,
-        _choiceIdAmounts,
-        questCompletionInfo
-      );
-
-      if (_itemTokenIds.length > 0) {
-        for (uint i = 0; i < _itemTokenIds.length; ++i) {
-          itemTokenIds[itemTokenIdsLength++] = _itemTokenIds[i];
-          amounts[amountsLength++] = _amounts[i];
+        if (_itemTokenIds.length > 0) {
+          for (uint i = 0; i < _itemTokenIds.length; ++i) {
+            itemTokenIds[itemTokenIdsLength++] = _itemTokenIds[i];
+            amounts[amountsLength++] = _amounts[i];
+          }
+          _questsCompleted[questsCompletedLength++] = questCompletionInfo.quest.questId;
         }
-        _questsCompleted[questsCompletedLength++] = questCompletionInfo.quest.questId;
       }
-    }
-    // Handle random request
-    if (randomQuest.questId != 0) {
-      QuestWithCompletionInfo memory randomQuestCompletionInfo;
-      if (randomQuest.questId == inProgressRandomQuests[_playerId].quest.questId) {
-        randomQuestCompletionInfo = inProgressRandomQuests[_playerId];
-      }
-      (uint[] memory _itemTokenIds, uint[] memory _amounts) = _processQuestView(
-        _choiceIds,
-        _choiceIdAmounts,
-        randomQuestCompletionInfo
-      );
-
-      if (_itemTokenIds.length > 0) {
-        for (uint i = 0; i < _itemTokenIds.length; ++i) {
-          itemTokenIds[itemTokenIdsLength++] = _itemTokenIds[i];
-          amounts[amountsLength++] = _amounts[i];
+      // Handle random request
+      if (randomQuest.questId != 0) {
+        QuestWithCompletionInfo memory randomQuestCompletionInfo;
+        if (randomQuest.questId == inProgressRandomQuests[_playerId].quest.questId) {
+          randomQuestCompletionInfo = inProgressRandomQuests[_playerId];
         }
-        _questsCompleted[questsCompletedLength++] = randomQuestCompletionInfo.quest.questId;
-      }
-    }
+        (uint[] memory _itemTokenIds, uint[] memory _amounts) = _processQuestView(
+          _choiceIds,
+          _choiceIdAmounts,
+          randomQuestCompletionInfo
+        );
 
-    assembly ("memory-safe") {
-      mstore(itemTokenIds, itemTokenIdsLength)
-      mstore(amounts, amountsLength)
-      mstore(_questsCompleted, questsCompletedLength)
+        if (_itemTokenIds.length > 0) {
+          for (uint i = 0; i < _itemTokenIds.length; ++i) {
+            itemTokenIds[itemTokenIdsLength++] = _itemTokenIds[i];
+            amounts[amountsLength++] = _amounts[i];
+          }
+          _questsCompleted[questsCompletedLength++] = randomQuestCompletionInfo.quest.questId;
+        }
+      }
+
+      assembly ("memory-safe") {
+        mstore(itemTokenIds, itemTokenIdsLength)
+        mstore(amounts, amountsLength)
+        mstore(_questsCompleted, questsCompletedLength)
+      }
     }
   }
 

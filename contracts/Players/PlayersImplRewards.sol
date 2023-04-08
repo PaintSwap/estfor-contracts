@@ -445,7 +445,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         pendingQueuedActionState.questRewards[j] = Equipment(uint16(questRewards[j]), uint24(questRewardAmounts[j]));
       }
     }
-
     // Compact to fit the arrays
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), consumedLength)
