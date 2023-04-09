@@ -1,14 +1,14 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {createPlayer} from "../scripts/utils";
-import {playersFixture} from "./Players/PlayersFixture";
+import {createPlayer} from "../../scripts/utils";
+import {playersFixture} from "../Players/PlayersFixture";
 
 describe("Clans", function () {
   async function deployContracts() {
     const fixture = await loadFixture(playersFixture);
 
-    const {brush, players, shop} = fixture;
+    const {brush, players, shop, itemNFT, playerNFT} = fixture;
 
     const Clans = await ethers.getContractFactory("Clans");
     const clans = await upgrades.deployProxy(Clans, [brush.address, players.address, shop.address]);
@@ -24,8 +24,22 @@ describe("Clans", function () {
       },
     ]);
 
+    const Bank = await ethers.getContractFactory("Bank");
+    const bank = await upgrades.deployProxy(Bank, [0, ethers.constants.AddressZero]);
+
+    const BankRegistry = await ethers.getContractFactory("BankRegistry");
+    const bankRegistry = await upgrades.deployProxy(BankRegistry, [itemNFT.address, playerNFT.address, clans.address]);
+
+    const BankProxy = await ethers.getContractFactory("BankProxy");
+    const bankProxy = await BankProxy.deploy(bank.address);
+
+    const BankFactory = await ethers.getContractFactory("BankFactory");
+    const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address]);
+
+    await clans.setBankFactory(bankFactory.address);
+
     const clanName = "Clan 1";
-    return {...fixture, clans, clanName};
+    return {...fixture, clans, clanName, bankFactory};
   }
 
   describe("Create a clan", () => {
@@ -39,7 +53,7 @@ describe("Clans", function () {
 
       await expect(clans.connect(alice).createClan(playerId, clanName, imageId, tierId))
         .to.emit(clans, "ClanCreated")
-        .withArgs(clanId, playerId, clanName, imageId, tierId, tier.maxCapacity, tier.maxImageId);
+        .withArgs(clanId, playerId, clanName, imageId, tierId);
 
       // Check that the clan is created with the correct values
       const clan = await clans.clans(clanId);
@@ -47,8 +61,7 @@ describe("Clans", function () {
       expect(clan.memberCount).to.eq(1);
       expect(clan.imageId).to.eq(imageId);
       expect(clan.tierId).to.eq(tierId);
-      expect(clan.maxCapacity).to.eq(tier.maxCapacity);
-      expect(clan.maxImageId).to.eq(tier.maxImageId);
+      expect(tier.maxCapacity).to.eq(3);
       expect(await clans.isClanAdmin(clanId, playerId)).to.eq(true);
       expect(await clans.isClanMember(clanId, playerId)).to.eq(true);
       expect(await clans.hasInviteRequest(clanId, playerId)).to.eq(false);

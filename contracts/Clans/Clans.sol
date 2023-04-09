@@ -6,17 +6,11 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
+import {IClans, Clan} from "../interfaces/IClans.sol";
+import {IBankFactory} from "../interfaces/IBankFactory.sol";
 
-contract Clans is UUPSUpgradeable, OwnableUpgradeable {
-  event ClanCreated(
-    uint clanId,
-    uint playerId,
-    string name,
-    uint imageId,
-    uint tier,
-    uint maxCapacity,
-    uint maxImageId
-  );
+contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
+  event ClanCreated(uint clanId, uint playerId, string name, uint imageId, uint tier);
   event AdminAdded(uint clanId, uint admin);
   event AdminRemoved(uint clanId, uint admin);
   event MemberInvited(uint clanId, uint member);
@@ -57,19 +51,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
   error OnlyOwnerCanKickAdmin();
   error OnlyOwnerOrSelf();
   error OnlyAdminsOrOwnerCanKickMember();
-
-  struct Clan {
-    uint80 owner; // player id
-    uint16 maxCapacity;
-    uint24 maxImageId;
-    uint24 imageId;
-    uint16 memberCount;
-    uint40 createdTimestamp;
-    uint8 tierId;
-    mapping(uint playerId => bool onlyClanAdmin) admins;
-    mapping(uint playerId => bool isMember) members;
-    mapping(uint playerId => bool invited) inviteRequests;
-  }
 
   struct PlayerInfo {
     uint32 clanId; // What clan they are in
@@ -114,6 +95,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
 
   IBrushToken private brushToken;
   IPlayers private players;
+  IBankFactory public bankFactory;
   address private pool;
   uint public lastClanId;
   mapping(uint clanId => Clan clan) public clans;
@@ -123,7 +105,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint clanId => string name) public clanNames;
 
   // TODO Permissions
-  // TODO Bank
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -171,8 +152,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
     uint clanId = lastClanId++;
     Clan storage clan = clans[clanId];
     clan.owner = uint80(_playerId);
-    clan.maxCapacity = 3;
-    clan.maxImageId = tier.maxImageId;
     clan.tierId = _tierId;
     clan.memberCount = 1;
     clan.imageId = _imageId;
@@ -186,10 +165,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     _setName(clanId, _name);
-    emit ClanCreated(clanId, _playerId, _name, _imageId, _tierId, clan.maxCapacity, clan.maxImageId);
+    emit ClanCreated(clanId, _playerId, _name, _imageId, _tierId);
     if (_tierId != 1) {
       _upgradeClan(clanId, _playerId, _tierId);
     }
+
+    bankFactory.createBank(msg.sender, clanId);
   }
 
   function _checkClanSettings(uint _imageId, uint _maxImageId) private pure {
@@ -222,7 +203,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
     uint _imageId
   ) external isOwnerOfPlayer(_playerId) onlyClanAdmin(_clanId, _playerId) {
     Clan storage clan = clans[_clanId];
-    _checkClanSettings(_imageId, clan.maxImageId);
+    Tier storage tier = tiers[clan.tierId];
+    _checkClanSettings(_imageId, tier.maxImageId);
     _setName(_clanId, _name);
     emit ClanEdited(_clanId, _playerId, _name, _imageId);
   }
@@ -273,7 +255,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
   ) external isOwnerOfPlayer(_playerId) onlyClanAdmin(_clanId, _playerId) {
     Clan storage clan = clans[_clanId];
 
-    if (clan.memberCount >= clan.maxCapacity) {
+    Tier storage tier = tiers[clan.tierId];
+
+    if (clan.memberCount >= tier.maxCapacity) {
       revert ClanIsFull();
     }
 
@@ -392,7 +376,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
     _removeFromClan(_clanId, _member);
   }
 
-  function isClanAdmin(uint _clanId, uint _playerId) external view returns (bool) {
+  function isClanAdmin(uint _clanId, uint _playerId) external view override returns (bool) {
     return clans[_clanId].admins[_playerId];
   }
 
@@ -402,6 +386,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
 
   function hasInviteRequest(uint _clanId, uint _playerId) external view returns (bool) {
     return clans[_clanId].inviteRequests[_playerId];
+  }
+
+  function maxCapacity(uint _clanId) external view override returns (uint16) {
+    Tier storage tier = tiers[clans[_clanId].tierId];
+    return tier.maxCapacity;
   }
 
   function claimOwnership(
@@ -441,8 +430,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
     brushToken.burn(half);
     brushToken.transfer(pool, priceDifference - half);
     clans[_clanId].tierId = _newTierId; // Increase the tier
-    clans[_clanId].maxCapacity = newTier.maxCapacity; // Increase the maxCapacity
-    clans[_clanId].maxImageId = newTier.maxImageId; // Increase the maxImageId
     emit ClanUpgraded(_clanId, _playerId, _newTierId);
   }
 
@@ -459,6 +446,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable {
       }
     }
     return string(lowercaseName);
+  }
+
+  function setBankFactory(IBankFactory _bankFactory) external onlyOwner {
+    bankFactory = _bankFactory;
   }
 
   function _authorizeUpgrade(address) internal override onlyOwner {}
