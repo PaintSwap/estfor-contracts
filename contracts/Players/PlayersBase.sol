@@ -61,7 +61,7 @@ abstract contract PlayersBase {
   }
 
   error NotOwnerOfPlayer();
-  error NotActive();
+  error NotOwnerOfPlayerAndActive();
   error EquipSameItem();
   error NotEquipped();
   error ArgumentLengthMismatch();
@@ -152,23 +152,6 @@ abstract contract PlayersBase {
   Quests internal quests;
 
   mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
-
-  modifier isOwnerOfPlayer(uint playerId) {
-    if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
-      revert NotOwnerOfPlayer();
-    }
-    _;
-  }
-
-  modifier isOwnerOfPlayerAndActive(uint _playerId) {
-    if (playerNFT.balanceOf(msg.sender, _playerId) != 1) {
-      revert NotOwnerOfPlayer();
-    }
-    if (activePlayer_[msg.sender] != _playerId) {
-      revert NotActive();
-    }
-    _;
-  }
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {

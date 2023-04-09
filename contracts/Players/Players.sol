@@ -54,6 +54,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   error InvalidSelector();
 
+  modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
+    if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+      revert NotOwnerOfPlayerAndActive();
+    }
+    _;
+  }
+
+  modifier isOwnerOfPlayerMod(uint playerId) {
+    if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
+      revert NotOwnerOfPlayer();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -94,7 +108,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint _playerId,
     QueuedActionInput calldata _queuedAction,
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     QueuedActionInput[] memory queuedActions = new QueuedActionInput[](1);
     queuedActions[0] = _queuedAction;
     _startActions(_playerId, queuedActions, NONE, uint40(block.timestamp), _queueStatus);
@@ -109,7 +123,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _startActions(_playerId, _queuedActions, NONE, uint40(block.timestamp), _queueStatus);
   }
 
@@ -126,12 +140,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint16 _boostItemTokenId,
     uint40 _boostStartTime, // Not used yet (always current time)
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _queueStatus);
   }
 
   /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     if (players_[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
     }
@@ -139,19 +153,19 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue);
   }
 
-  function activateQuest(uint _playerId, uint _questId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  function activateQuest(uint _playerId, uint _questId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     quests.activateQuest(_playerId, _questId);
   }
 
-  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     quests.deactivateQuest(_playerId);
   }
 
-  function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _claimRandomRewards(_playerId);
   }
 
-  function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.unequipBoostVial.selector, _playerId));
   }
 
@@ -213,7 +227,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _clearEverything(msg.sender, _playerId);
   }
 
@@ -258,7 +272,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.setActivePlayer.selector, _from, _playerId));
   }
 
-  function setActivePlayer(uint _playerId) external isOwnerOfPlayer(_playerId) {
+  function setActivePlayer(uint _playerId) external isOwnerOfPlayerMod(_playerId) {
     _setActivePlayer(msg.sender, _playerId);
   }
 
@@ -284,6 +298,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
     return PlayersLibrary.getRandomBytes(_numTickets, _skillEndTime, _playerId, world);
+  }
+
+  function isOwnerOfPlayerAndActive(address _from, uint _playerId) public view override returns (bool) {
+    return isOwnerOfPlayer(_from, _playerId) && activePlayer_[_from] == _playerId;
+  }
+
+  function isOwnerOfPlayer(address _from, uint _playerId) public view override returns (bool) {
+    return playerNFT.balanceOf(_from, _playerId) == 1;
   }
 
   function MAX_TIME() external pure returns (uint32) {

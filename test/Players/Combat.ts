@@ -744,7 +744,7 @@ describe("Combat Actions", function () {
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    /*    expect(pendingQueuedActionState.died.length).to.eq(1);
+    expect(pendingQueuedActionState.died.length).to.eq(1);
     expect(pendingQueuedActionState.died[0].actionId).to.eq(queuedAction.actionId);
     expect(pendingQueuedActionState.died[0].queueId).to.eq(1);
     expect(pendingQueuedActionState.produced.length).to.eq(0);
@@ -769,6 +769,6 @@ describe("Combat Actions", function () {
     expect(pendingQueuedActionState.died.length).to.eq(1);
     expect(pendingQueuedActionState.produced.length).to.eq(0);
     expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
-    expect(pendingQueuedActionState.consumed.length).to.eq(0); */
+    expect(pendingQueuedActionState.consumed.length).to.eq(0);
   });
 });

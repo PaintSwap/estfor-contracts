@@ -305,7 +305,10 @@ describe("Quests", function () {
       const {players, playerId, quests, firemakingQuestLog} = await loadFixture(questsFixture);
       await quests.addQuest(firemakingQuestLog, false, defaultMinRequirements);
       const questId = 2;
-      await expect(players.activateQuest(playerId, questId)).to.be.revertedWithCustomError(players, "NotOwnerOfPlayer");
+      await expect(players.activateQuest(playerId, questId)).to.be.revertedWithCustomError(
+        players,
+        "NotOwnerOfPlayerAndActive"
+      );
     });
 
     it("Should fail to activate a non-existing quest", async function () {

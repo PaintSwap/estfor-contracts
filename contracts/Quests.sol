@@ -116,7 +116,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
     QuestWithCompletionInfo memory questCompletionInfo;
     questCompletionInfo.quest = quest;
-    activeQuests[_playerId] = questCompletionInfo; // This overwrites an existing active
+    activeQuests[_playerId] = questCompletionInfo; // This overwrites an existing active quest
     randomQuestId = 65336;
     emit ActivateNewQuest(_playerId, _questId);
   }
