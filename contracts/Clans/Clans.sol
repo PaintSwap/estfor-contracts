@@ -59,7 +59,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   struct Tier {
     uint8 id;
-    uint16 maxCapacity;
+    uint16 maxMemberCapacity;
+    uint16 maxBankCapacity;
     uint24 maxImageId;
     uint16 price;
     uint40 minimumAge; // How old the clan must be before it can be upgraded to this tier
@@ -255,7 +256,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     Tier storage tier = tiers[clan.tierId];
 
-    if (clan.memberCount >= tier.maxCapacity) {
+    if (clan.memberCount >= tier.maxMemberCapacity) {
       revert ClanIsFull();
     }
 
@@ -386,9 +387,14 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     return clans[_clanId].inviteRequests[_playerId];
   }
 
-  function maxCapacity(uint _clanId) external view override returns (uint16) {
+  function maxBankCapacity(uint _clanId) external view override returns (uint16) {
     Tier storage tier = tiers[clans[_clanId].tierId];
-    return tier.maxCapacity;
+    return tier.maxBankCapacity;
+  }
+
+  function maxMemberCapacity(uint _clanId) external view override returns (uint16) {
+    Tier storage tier = tiers[clans[_clanId].tierId];
+    return tier.maxMemberCapacity;
   }
 
   function claimOwnership(

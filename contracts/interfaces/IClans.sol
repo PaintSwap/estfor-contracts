@@ -3,7 +3,8 @@ pragma solidity ^0.8.19;
 
 struct Clan {
   uint80 owner; // player id
-  uint16 maxCapacity;
+  uint16 maxMemberCapacity;
+  uint16 maxBankCapacity;
   uint24 maxImageId;
   uint24 imageId;
   uint16 memberCount;
@@ -18,5 +19,7 @@ struct Clan {
 interface IClans {
   function isClanAdmin(uint clanId, uint playerId) external view returns (bool);
 
-  function maxCapacity(uint clanId) external view returns (uint16);
+  function maxBankCapacity(uint clanId) external view returns (uint16);
+
+  function maxMemberCapacity(uint clanId) external view returns (uint16);
 }

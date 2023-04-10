@@ -22,7 +22,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   event DepositTokenNoPlayer(address from, address token, uint amount);
   event WithdrawToken(address to, uint playerId, address token, uint amount);
 
-  error MaxCapacityReached();
+  error MaxBankCapacityReached();
   error NotClanAdmin();
   error NotOwnerOfPlayer();
   error DepositFailed();
@@ -58,7 +58,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   }
 
   function depositItems(uint _playerId, uint[] memory ids, uint[] memory values) external isOwnerOfPlayer(_playerId) {
-    uint maxCapacity = bankRegistry.clans().maxCapacity(clanId);
+    uint maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
     for (uint i = 0; i < ids.length; ++i) {
       _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
     }
@@ -69,7 +69,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   function _receivedItemUpdateUniqueItems(uint id, uint maxCapacity) private {
     if (!uniqueItems[id]) {
       if (uniqueItemCount >= maxCapacity) {
-        revert MaxCapacityReached();
+        revert MaxBankCapacityReached();
       }
       ++uniqueItemCount;
       uniqueItems[id] = true;
@@ -85,7 +85,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
     if (msg.sender == address(bankRegistry.itemNFT()) && operator != address(this)) {
-      uint maxCapacity = bankRegistry.clans().maxCapacity(clanId);
+      uint maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
       _receivedItemUpdateUniqueItems(id, maxCapacity);
       emit DepositItemNoPlayer(from, id, value);
     }
@@ -101,7 +101,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
     if (msg.sender == address(bankRegistry.itemNFT()) && operator != address(this)) {
-      uint maxCapacity = bankRegistry.clans().maxCapacity(clanId);
+      uint maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
       for (uint i = 0; i < ids.length; ++i) {
         _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
       }

@@ -15,7 +15,8 @@ describe("Bank", function () {
     await clans.addTiers([
       {
         id: 1,
-        maxCapacity: 3,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
         minimumAge: 0,
@@ -85,7 +86,7 @@ describe("Bank", function () {
     // Have now reached the max
     await expect(
       bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_HELMET], [1])
-    ).to.be.revertedWithCustomError(bank, "MaxCapacityReached");
+    ).to.be.revertedWithCustomError(bank, "MaxBankCapacityReached");
 
     // Reverting inside the on received function can't catch that revert message so check for the generic one
     await expect(
@@ -105,7 +106,8 @@ describe("Bank", function () {
     await clans.addTiers([
       {
         id: 2,
-        maxCapacity: 5,
+        maxMemberCapacity: 5,
+        maxBankCapacity: 5,
         maxImageId: 16,
         price: 0,
         minimumAge: 0,

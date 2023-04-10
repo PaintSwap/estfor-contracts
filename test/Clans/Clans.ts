@@ -14,7 +14,8 @@ describe("Clans", function () {
     await clans.addTiers([
       {
         id: 1,
-        maxCapacity: 3,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
         minimumAge: 0,
@@ -51,7 +52,8 @@ describe("Clans", function () {
       expect(clan.memberCount).to.eq(1);
       expect(clan.imageId).to.eq(imageId);
       expect(clan.tierId).to.eq(tierId);
-      expect(tier.maxCapacity).to.eq(3);
+      expect(tier.maxMemberCapacity).to.eq(3);
+      expect(tier.maxBankCapacity).to.eq(3);
       expect(await clans.isClanAdmin(clanId, playerId)).to.eq(true);
       expect(await clans.isClanMember(clanId, playerId)).to.eq(true);
       expect(await clans.hasInviteRequest(clanId, playerId)).to.eq(false);
@@ -323,7 +325,8 @@ describe("Clans", function () {
       await clans.addTiers([
         {
           id: 2,
-          maxCapacity: 10,
+          maxMemberCapacity: 10,
+          maxBankCapacity: 10,
           maxImageId: 16,
           price: 10,
           minimumAge: 0,
