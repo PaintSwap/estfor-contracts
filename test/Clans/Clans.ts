@@ -151,12 +151,12 @@ describe("Clans", function () {
       );
       await clans.requestToJoin(clanId, newPlayerId);
 
-      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId, playerId)).to.be.revertedWithCustomError(
+      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
         clans,
         "NotMemberOfClan"
       );
       await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId, playerId);
+      await clans.connect(alice).addAdmin(clanId, newPlayerId);
 
       expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.true;
       expect(await clans.isClanMember(clanId, newPlayerId)).to.be.true;
@@ -182,13 +182,13 @@ describe("Clans", function () {
       );
       await clans.requestToJoin(clanId, newPlayerId);
 
-      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId, playerId)).to.be.revertedWithCustomError(
+      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
         clans,
         "NotMemberOfClan"
       );
       await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId, playerId);
-      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId, playerId)).to.be.revertedWithCustomError(
+      await clans.connect(alice).addAdmin(clanId, newPlayerId);
+      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
         clans,
         "PlayerAlreadyAdmin"
       );
@@ -210,7 +210,7 @@ describe("Clans", function () {
 
       await clans.connect(bob).requestToJoin(clanId, newPlayerId1);
       await clans.acceptJoinRequest(clanId, newPlayerId1, newPlayerId);
-      await expect(clans.addAdmin(clanId, newPlayerId1, newPlayerId)).to.be.revertedWithCustomError(clans, "OnlyOwner");
+      await expect(clans.addAdmin(clanId, newPlayerId1)).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayer");
     });
 
     it("Only owner can remove admins", async () => {
@@ -229,7 +229,7 @@ describe("Clans", function () {
       );
       await clans.requestToJoin(clanId, newPlayerId);
       await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId, playerId);
+      await clans.connect(alice).addAdmin(clanId, newPlayerId);
 
       await expect(clans.connect(alice).removeAdmin(clanId, playerId)).to.be.revertedWithCustomError(
         clans,
@@ -263,7 +263,7 @@ describe("Clans", function () {
       );
       await clans.requestToJoin(clanId, newPlayerId);
       await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId, playerId);
+      await clans.connect(alice).addAdmin(clanId, newPlayerId);
 
       const bobPlayerId = createPlayer(
         playerNFT,
@@ -276,8 +276,8 @@ describe("Clans", function () {
       await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
       await clans.acceptJoinRequest(clanId, bobPlayerId, newPlayerId);
       expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
-      await expect(clans.addAdmin(clanId, bobPlayerId, newPlayerId)).to.be.revertedWithCustomError(clans, "OnlyOwner");
-      await clans.connect(alice).addAdmin(clanId, bobPlayerId, playerId);
+      await expect(clans.addAdmin(clanId, bobPlayerId)).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayer");
+      await clans.connect(alice).addAdmin(clanId, bobPlayerId);
 
       // Admin cannot remove admin
       await expect(clans.removeAdmin(clanId, bobPlayerId)).to.be.revertedWithCustomError(clans, "OnlyOwnerOrSelf");

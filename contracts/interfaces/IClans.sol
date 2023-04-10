@@ -8,6 +8,7 @@ struct Clan {
   uint24 maxImageId;
   uint24 imageId;
   uint16 memberCount;
+  uint16 adminCount;
   uint40 createdTimestamp;
   uint8 tierId;
   string name;

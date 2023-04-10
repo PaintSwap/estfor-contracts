@@ -199,7 +199,9 @@ export const addTestData = async (
   console.log("Activate quest");
 
   // Create a clan
-  tx = await clans.createClan(playerId, "Sam test clan", 2, 1);
+  const imageId = 2;
+  const tierId = 1;
+  tx = await clans.createClan(playerId, "Sam test clan", imageId, tierId);
   await tx.wait();
-  console.log("Activate quest");
+  console.log("Create clan");
 };
