@@ -315,6 +315,34 @@ describe("Clans", function () {
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
+
+    it("Invite a player to a clan", async () => {
+      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
+
+      const tierId = 1;
+      const imageId = 2;
+      const clanId = 1;
+      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
+      const newPlayerId = createPlayer(
+        playerNFT,
+        avatarId,
+        owner,
+        ethers.utils.formatBytes32String("my name ser"),
+        true
+      );
+
+      await clans.connect(alice).inviteMember(clanId, newPlayerId, playerId);
+      expect(await clans.hasInviteRequest(clanId, newPlayerId)).to.be.true;
+      expect(await clans.hasInviteRequest(clanId, playerId)).to.be.false; // sanity check
+      await clans.acceptInvite(clanId, newPlayerId);
+
+      expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.false;
+      expect(await clans.isClanMember(clanId, newPlayerId)).to.be.true;
+
+      const newPlayer = await clans.playerInfo(newPlayerId);
+      expect(newPlayer.clanId).to.eq(clanId);
+      expect(newPlayer.requestedClanId).to.eq(0);
+    });
   });
 
   describe("Clan upgrades", () => {
@@ -352,5 +380,3 @@ describe("Clans", function () {
 // kick owner, admin and member
 
 // Claim ownership of a clan where the owner has been removed
-
-// Invite and accept invite

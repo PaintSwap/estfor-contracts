@@ -11,6 +11,9 @@ let playersImplQueueActions;
 let playersImplProcessActions;
 let playersImplRewards;
 let players;
+let quests;
+let clans;
+let bankFactory;
 
 if (isAlpha) {
   world = "0xfe93dbf15b733024f67e5a11a7c87401cd951bdc";
@@ -19,6 +22,9 @@ if (isAlpha) {
   adminAccess = "0xa4dbcb972927318489afc5f39a5db3d1600f8e0a";
   itemNFT = "0x5220cbe203cbff2b8257ba231859dcbfdd69da53";
   playerNFT = "0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9";
+  quests = "";
+  clans = "";
+  bankFactory = "";
   playersLibrary = "0xcc17dc0e82072372635602c9ef7db7710ad8b382";
   playersImplQueueActions = "0xee111c111368a0362b268f4e27d7e1679d232f3d";
   playersImplProcessActions = "0xa02433b3EB5cfeb12BdcD08Ef3F4e3acb0A216Be";
@@ -32,6 +38,9 @@ if (isAlpha) {
   adminAccess = "";
   itemNFT = "";
   playerNFT = "";
+  quests = "";
+  clans = "";
+  bankFactory = "";
   playersLibrary = "";
   playersImplQueueActions = "";
   playersImplProcessActions = "";
@@ -44,6 +53,11 @@ export const SHOP_ADDRESS = shop;
 export const ROYALTY_RECEIVER_ADDRESS = royaltyReceiver;
 export const ADMIN_ACCESS_ADDRESS = adminAccess;
 export const ITEM_NFT_ADDRESS = itemNFT;
+
+export const QUESTS_ADDRESS = quests;
+export const CLANS_ADDRESS = clans;
+export const BANK_FACTORY_ADDRESS = bankFactory;
+
 export const PLAYER_NFT_ADDRESS = playerNFT;
 export const PLAYERS_LIBRARY_ADDRESS = playersLibrary;
 export const PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS = playersImplQueueActions;

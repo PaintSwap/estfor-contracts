@@ -6,6 +6,8 @@ import {
   PLAYERS_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
   SHOP_ADDRESS,
+  CLANS_ADDRESS,
+  BANK_FACTORY_ADDRESS,
 } from "./constants";
 import {addTestData} from "./addTestData";
 
@@ -29,7 +31,13 @@ async function main() {
   const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
   const brush = await MockBrushToken.attach(BRUSH_ADDRESS);
 
-  await addTestData(itemNFT, playerNFT, players, shop, brush);
+  const Clans = await ethers.getContractFactory("Clans");
+  const clans = await Clans.attach(CLANS_ADDRESS);
+
+  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const bankFactory = await BankFactory.attach(BANK_FACTORY_ADDRESS);
+
+  await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

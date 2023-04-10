@@ -10,17 +10,18 @@ import {IClans, Clan} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
-  event ClanCreated(uint clanId, uint playerId, string name, uint imageId, uint tier);
-  event AdminAdded(uint clanId, uint admin);
-  event AdminRemoved(uint clanId, uint admin);
-  event MemberInvited(uint clanId, uint member);
-  event MemberJoined(uint clanId, uint member);
-  event MemberLeft(uint clanId, uint member);
-  event JoinRequestSent(uint clanId, uint member);
-  event JoinRequestAccepted(uint clanId, uint member);
-  event RemoveJoinRequest(uint clanId, uint playerId);
-  event ClanOwnershipTransferred(uint clanId, uint newOwner);
-  event TiersAdded(Tier[] tiers);
+  event ClanCreated(uint clanId, uint playerId, string name, uint imageId, uint tierId);
+  event AdminAdded(uint clanId, uint playerId);
+  event AdminRemoved(uint clanId, uint playerId);
+  event InviteSent(uint clanId, uint playerId, uint fromPlayerId);
+  event InviteAccepted(uint clanId, uint playerId);
+  event MemberLeft(uint clanId, uint playerId);
+  event JoinRequestSent(uint clanId, uint playerId);
+  event JoinRequestAccepted(uint clanId, uint playerId, uint acceptedByPlayerId);
+  event JoinRequestRemoved(uint clanId, uint playerId);
+  event ClanOwnershipTransferred(uint clanId, uint playerId);
+  event AddTiers(Tier[] tiers);
+  event EditTier(Tier tier);
   event ClanOwnerLeft(uint clanId, uint playerId);
   event ClanEdited(uint clanId, uint playerId, string name, uint imageId);
   event ClanUpgraded(uint clanId, uint playerId, uint tierId);
@@ -53,6 +54,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error OnlyOwnerOrSelf();
   error OnlyAdminsOrOwnerCanKickMember();
   error ClanDestroyFailedHasMembers();
+  error PriceTooLow();
+  error MemberCapacityTooLow();
+  error BankCapacityTooLow();
+  error ImageIdTooLow();
+  error AlreadySentInvite();
+  error AlreadySentJoinRequest();
 
   struct PlayerInfo {
     uint32 clanId; // What clan they are in
@@ -64,8 +71,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint16 maxMemberCapacity;
     uint16 maxBankCapacity;
     uint24 maxImageId;
-    uint16 price;
     uint40 minimumAge; // How old the clan must be before it can be upgraded to this tier
+    uint80 price;
   }
 
   modifier isOwnerOfPlayer(uint _playerId) {
@@ -120,17 +127,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     brushToken = _brushToken;
     pool = _pool;
     nextClanId = 1;
-  }
-
-  function addTiers(Tier[] calldata _tiers) external onlyOwner {
-    for (uint i = 0; i < _tiers.length; ++i) {
-      if (tiers[_tiers[i].id].id != 0 || _tiers[i].id == 0) {
-        revert TierAlreadyExists();
-      }
-
-      tiers[_tiers[i].id] = _tiers[i];
-    }
-    emit TiersAdded(_tiers);
   }
 
   function createClan(
@@ -281,14 +277,15 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert ClanIsFull();
     }
 
+    if (clan.inviteRequests[_member]) {
+      revert AlreadySentInvite();
+    }
+
     clan.inviteRequests[_member] = true;
-    emit MemberInvited(_clanId, _member);
+    emit InviteSent(_clanId, _member, _playerId);
   }
 
-  function acceptInvite(
-    uint _clanId,
-    uint _playerId
-  ) external isOwnerOfPlayerAndActive(_playerId) onlyClanAdmin(_clanId, _playerId) {
+  function acceptInvite(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     Clan storage clan = clans[_clanId];
     PlayerInfo storage player = playerInfo[_playerId];
 
@@ -297,13 +294,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     clan.inviteRequests[_playerId] = false;
-    clan.memberCount++;
+    ++clan.memberCount;
     clan.members[_playerId] = true;
 
     player.clanId = uint32(_clanId);
     player.requestedClanId = 0;
 
-    emit MemberJoined(_clanId, _playerId);
+    emit InviteAccepted(_clanId, _playerId);
   }
 
   function _destroyClan(uint _clanId) private {
@@ -360,7 +357,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     if (player.requestedClanId != 0) {
-      emit RemoveJoinRequest(_clanId, _playerId);
+      if (player.requestedClanId == _clanId) {
+        revert AlreadySentJoinRequest();
+      }
+      emit JoinRequestRemoved(player.requestedClanId, _playerId);
     }
 
     player.requestedClanId = uint32(_clanId);
@@ -370,7 +370,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function removeJoinRequest(uint _clanId, uint _playerId) public isOwnerOfPlayer(_playerId) {
     playerInfo[_playerId].requestedClanId = 0;
-    emit RemoveJoinRequest(_clanId, _playerId);
+    emit JoinRequestRemoved(_clanId, _playerId);
   }
 
   function acceptJoinRequest(
@@ -392,7 +392,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     player.clanId = uint32(_clanId);
     player.requestedClanId = 0;
 
-    emit JoinRequestAccepted(_clanId, _member);
+    emit JoinRequestAccepted(_clanId, _member, _playerId);
   }
 
   function kickMember(uint _clanId, uint _member, uint playerId) external isOwnerOfPlayerAndActive(playerId) {
@@ -525,6 +525,47 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function getClanName(uint _playerId) external view returns (string memory) {
     uint clanId = playerInfo[_playerId].clanId;
     return clans[clanId].name;
+  }
+
+  function _setTier(Tier calldata _tier) private {
+    uint tierId = _tier.id;
+    // TODO: Some other checks
+
+    // Price should be higher than the one prior
+    if (tierId > 1) {
+      if (_tier.price < tiers[tierId - 1].price) {
+        revert PriceTooLow();
+      }
+      if (_tier.maxMemberCapacity < tiers[tierId - 1].maxMemberCapacity) {
+        revert MemberCapacityTooLow();
+      }
+      if (_tier.maxBankCapacity < tiers[tierId - 1].maxBankCapacity) {
+        revert BankCapacityTooLow();
+      }
+      if (_tier.maxImageId < tiers[tierId - 1].maxImageId) {
+        revert ImageIdTooLow();
+      }
+    }
+    tiers[tierId] = _tier;
+  }
+
+  function addTiers(Tier[] calldata _tiers) external onlyOwner {
+    for (uint i = 0; i < _tiers.length; ++i) {
+      if (tiers[_tiers[i].id].id != 0 || _tiers[i].id == 0) {
+        revert TierAlreadyExists();
+      }
+      _setTier(_tiers[i]);
+    }
+    emit AddTiers(_tiers);
+  }
+
+  function editTier(Tier calldata _tier) external onlyOwner {
+    uint tierId = _tier.id;
+    if (tiers[tierId].id == 0) {
+      revert TierDoesNotExist();
+    }
+    _setTier(_tier);
+    emit EditTier(_tier);
   }
 
   function setBankFactory(IBankFactory _bankFactory) external onlyOwner {

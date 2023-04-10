@@ -1,7 +1,7 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {QUEST_STARTER_FIREMAKING} from "@paintswap/estfor-definitions/constants";
 import {ethers} from "hardhat";
-import {Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
+import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
 import {createPlayer} from "./utils";
 
 export const addTestData = async (
@@ -10,9 +10,10 @@ export const addTestData = async (
   players: Players,
   shop: Shop,
   brush: MockBrushToken,
-  clans: Clans
+  clans: Clans,
+  bankFactory: BankFactory
 ) => {
-  const [owner] = await ethers.getSigners();
+  const [owner, alice] = await ethers.getSigners();
 
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
@@ -204,4 +205,30 @@ export const addTestData = async (
   tx = await clans.createClan(playerId, "Sam test clan", imageId, tierId);
   await tx.wait();
   console.log("Create clan");
+
+  const clanId = 1;
+  const clanBankAddress = ethers.utils.getContractAddress({
+    from: bankFactory.address,
+    nonce: clanId,
+  });
+  // Send some to the bank
+  tx = await itemNFT.safeTransferFrom(owner.address, clanBankAddress, EstforConstants.BRONZE_HELMET, 1, "0x");
+  await tx.wait();
+  console.log("Send an item to the bank");
+
+  // Invite new member
+  const newPlayerId = await createPlayer(
+    playerNFT,
+    startAvatarId,
+    alice,
+    ethers.utils.formatBytes32String("Alice"),
+    makeActive
+  );
+  console.log("create Alice");
+  tx = await clans.inviteMember(clanId, newPlayerId, playerId);
+  await tx.wait();
+  console.log("Invite Alice");
+  tx = await clans.connect(alice).acceptInvite(clanId, newPlayerId);
+  await tx.wait();
+  console.log("Accept invite");
 };
