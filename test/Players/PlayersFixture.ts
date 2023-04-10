@@ -91,7 +91,30 @@ export const playersFixture = async function () {
     kind: "uups",
   });
 
-  await world.setQuests(quests.address);
+  const Clans = await ethers.getContractFactory("Clans");
+  const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address], {
+    kind: "uups",
+  });
+
+  const Bank = await ethers.getContractFactory("Bank");
+  const bank = await Bank.deploy();
+
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = await upgrades.deployProxy(
+    BankRegistry,
+    [bank.address, itemNFT.address, playerNFT.address, clans.address],
+    {
+      kind: "uups",
+    }
+  );
+
+  const BankProxy = await ethers.getContractFactory("BankProxy");
+  const bankProxy = await BankProxy.deploy(bankRegistry.address);
+
+  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
+    kind: "uups",
+  });
 
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
@@ -122,6 +145,7 @@ export const playersFixture = async function () {
       world.address,
       adminAccess.address,
       quests.address,
+      clans.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -133,9 +157,14 @@ export const playersFixture = async function () {
     }
   );
 
+  await world.setQuests(quests.address);
+
   await itemNFT.setPlayers(players.address);
   await playerNFT.setPlayers(players.address);
   await quests.setPlayers(players.address);
+  await clans.setPlayers(players.address);
+
+  await clans.setBankFactory(bankFactory.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -183,5 +212,10 @@ export const playersFixture = async function () {
     Players,
     avatarId,
     quests,
+    clans,
+    bank,
+    Bank,
+    bankRegistry,
+    bankFactory,
   };
 };

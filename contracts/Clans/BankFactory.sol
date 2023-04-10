@@ -11,12 +11,12 @@ import "../interfaces/IClans.sol";
 import "./BankRegistry.sol";
 
 contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
-  event ContractCreated(address creator, uint clanId, address newContract);
+  event BankContractCreated(address creator, uint clanId, address newContract);
 
   error OnlyClans();
   error BankAlreadyCreated();
 
-  mapping(uint clanId => address bank) public bankAddress; // clanId => bank address
+  mapping(uint clanId => address bank) public bankAddress;
   // Keeps track of which vault addresses have been created here
   mapping(address => bool) public createdHere;
   address public bankUpgradeableProxy;
@@ -47,11 +47,11 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     }
 
     // Create new Bank contract with EIP 1167
-    address payable bankContractClone = payable(Clones.clone(bankUpgradeableProxy));
+    address bankContractClone = Clones.clone(bankUpgradeableProxy);
     IBank(bankContractClone).initialize(_clanId, bankRegistry);
     createdHere[bankContractClone] = true;
     bankAddress[_clanId] = bankContractClone;
-    emit ContractCreated(_from, _clanId, bankContractClone);
+    emit BankContractCreated(_from, _clanId, bankContractClone);
     return bankContractClone;
   }
 

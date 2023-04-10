@@ -4,16 +4,14 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 import {IClans} from "../interfaces/IClans.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 
-contract Bank is UUPSUpgradeable, ERC1155Holder, OwnableUpgradeable, IBank {
-  event DepositItems(address from, uint[] id, uint[] value);
+contract Bank is ERC1155Holder, IBank, Initializable {
+  event DepositItems(address from, uint playerId, uint[] id, uint[] value);
   event DepositItemNoPlayer(address from, uint id, uint value);
   event DepositItemsNoPlayer(address from, uint[] id, uint[] value);
   event WithdrawItems(address to, uint playerId, uint[] id, uint[] value);
@@ -25,7 +23,7 @@ contract Bank is UUPSUpgradeable, ERC1155Holder, OwnableUpgradeable, IBank {
   event WithdrawToken(address to, uint playerId, address token, uint amount);
 
   error MaxCapacityReached();
-  error OnlyClanAdmin();
+  error NotClanAdmin();
   error NotOwnerOfPlayer();
   error DepositFailed();
   error WithdrawFailed();
@@ -44,7 +42,7 @@ contract Bank is UUPSUpgradeable, ERC1155Holder, OwnableUpgradeable, IBank {
 
   modifier isClanAdmin(uint _playerId) {
     if (!bankRegistry.clans().isClanAdmin(clanId, _playerId)) {
-      revert OnlyClanAdmin();
+      revert NotClanAdmin();
     }
     _;
   }
@@ -55,9 +53,6 @@ contract Bank is UUPSUpgradeable, ERC1155Holder, OwnableUpgradeable, IBank {
   }
 
   function initialize(uint _clanId, address _bankRegistry) external override initializer {
-    __UUPSUpgradeable_init();
-    __Ownable_init();
-
     clanId = uint32(_clanId);
     bankRegistry = BankRegistry(_bankRegistry);
   }
@@ -68,7 +63,7 @@ contract Bank is UUPSUpgradeable, ERC1155Holder, OwnableUpgradeable, IBank {
       _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
     }
     bankRegistry.itemNFT().safeBatchTransferFrom(msg.sender, address(this), ids, values, "");
-    emit DepositItems(msg.sender, ids, values);
+    emit DepositItems(msg.sender, _playerId, ids, values);
   }
 
   function _receivedItemUpdateUniqueItems(uint id, uint maxCapacity) private {
@@ -186,7 +181,4 @@ contract Bank is UUPSUpgradeable, ERC1155Holder, OwnableUpgradeable, IBank {
   receive() external payable {
     // Accept FTM
   }
-
-  // solhint-disable-next-line no-empty-blocks
-  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

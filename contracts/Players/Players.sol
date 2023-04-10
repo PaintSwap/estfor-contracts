@@ -11,6 +11,7 @@ import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
+import {Clans} from "../Clans/Clans.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
@@ -80,6 +81,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     World _world,
     AdminAccess _adminAccess,
     Quests _quests,
+    Clans _clans,
     address _implQueueActions,
     address _implProcessActions,
     address _implRewards,
@@ -94,6 +96,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     world = _world;
     adminAccess = _adminAccess;
     quests = _quests;
+    clans = _clans;
     implQueueActions = _implQueueActions;
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;
@@ -206,7 +209,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _avatarDescription,
         imageURI,
         isAlpha,
-        _playerId
+        _playerId,
+        clans.getClanName(_playerId)
       );
   }
 

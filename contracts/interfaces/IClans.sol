@@ -9,6 +9,7 @@ struct Clan {
   uint16 memberCount;
   uint40 createdTimestamp;
   uint8 tierId;
+  string name;
   mapping(uint playerId => bool onlyClanAdmin) admins;
   mapping(uint playerId => bool isMember) members;
   mapping(uint playerId => bool invited) inviteRequests;

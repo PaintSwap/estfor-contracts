@@ -182,6 +182,41 @@ async function main() {
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
 
+  const Clans = await ethers.getContractFactory("Clans");
+  const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address], {
+    kind: "uups",
+  });
+  await clans.deployed();
+  console.log(`clans = "${clans.address.toLowerCase()}"`);
+
+  const Bank = await ethers.getContractFactory("Bank");
+  const bank = await Bank.deploy();
+  await bank.deployed();
+  console.log(`bank = "${bank.address.toLowerCase()}"`);
+
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = await upgrades.deployProxy(
+    BankRegistry,
+    [bank.address, itemNFT.address, playerNFT.address, clans.address],
+    {
+      kind: "uups",
+    }
+  );
+  await bankRegistry.deployed();
+  console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
+
+  const BankProxy = await ethers.getContractFactory("BankProxy");
+  const bankProxy = await BankProxy.deploy(bankRegistry.address);
+  await bankProxy.deployed();
+  console.log(`bankProxy = "${bankProxy.address.toLowerCase()}"`);
+
+  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
+    kind: "uups",
+  });
+  await bankFactory.deployed();
+  console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
+
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playerLibrary = await PlayersLibrary.deploy();
@@ -219,6 +254,7 @@ async function main() {
       world.address,
       adminAccess.address,
       quests.address,
+      clans.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -243,6 +279,12 @@ async function main() {
         shop.address,
         world.address,
         royaltyReceiver.address,
+        quests.address,
+        clans.address,
+        bank.address,
+        bankRegistry.address,
+        bankProxy.address,
+        bankFactory.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -266,6 +308,13 @@ async function main() {
   tx = await quests.setPlayers(players.address);
   await tx.wait();
   console.log("quests setPlayers");
+  tx = await clans.setPlayers(players.address);
+  await tx.wait();
+  console.log("clans setPlayers");
+
+  tx = await clans.setBankFactory(bankFactory.address);
+  await tx.wait();
+  console.log("clans setBankFactory");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();

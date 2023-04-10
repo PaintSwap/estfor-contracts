@@ -7,6 +7,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
+import {Clans} from "../Clans/Clans.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
 /* solhint-disable no-global-import */
@@ -149,9 +150,10 @@ abstract contract PlayersBase {
   address internal reserved1;
 
   AdminAccess internal adminAccess;
-  Quests internal quests;
 
   mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
+  Quests internal quests;
+  Clans internal clans;
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {

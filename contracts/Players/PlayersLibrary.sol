@@ -31,12 +31,15 @@ library PlayersLibrary {
     string calldata avatarDescription,
     string calldata imageURI,
     bool isAlpha,
-    uint playerId
+    uint playerId,
+    string calldata clanName
   ) external view returns (string memory) {
     uint overallLevel = getLevel(overallXP);
     string memory attributes = string(
       abi.encodePacked(
         _getTraitStringJSON("Avatar", avatarName),
+        ",",
+        _getTraitStringJSON("Clan", clanName),
         ",",
         _getTraitNumberJSON("Melee level", getLevel(xp[Skill.MELEE])),
         ",",
@@ -109,6 +112,10 @@ library PlayersLibrary {
 
   function _getTraitStringJSON(string memory traitType, bytes32 value) private pure returns (bytes memory) {
     return abi.encodePacked(_getTraitTypeJSON(traitType), '"', _trimBytes32(value), '"}');
+  }
+
+  function _getTraitStringJSON(string memory traitType, string memory value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(traitType), '"', value, '"}');
   }
 
   function _getTraitNumberJSON(string memory traitType, uint32 value) private pure returns (bytes memory) {

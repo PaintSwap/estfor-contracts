@@ -1,17 +1,19 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import "./BankRegistry.sol";
+
 contract BankProxy {
   // We use this so that we can update the implementation for all that uses the minimal proxy
-  address immutable bankProxyImpl;
+  BankRegistry immutable bankRegistry;
 
-  constructor(address _bankProxyImpl) {
-    bankProxyImpl = _bankProxyImpl;
+  constructor(BankRegistry _bankRegistry) {
+    bankRegistry = _bankRegistry;
   }
 
   fallback() external payable {
-    address addr = bankProxyImpl;
-    assembly {
+    address addr = bankRegistry.bankImpl();
+    assembly ("memory-safe") {
       calldatacopy(0x0, 0x0, calldatasize())
       let result := delegatecall(gas(), addr, 0x0, calldatasize(), 0x0, 0)
       returndatacopy(0x0, 0x0, returndatasize())

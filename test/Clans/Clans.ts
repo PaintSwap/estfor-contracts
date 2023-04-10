@@ -1,17 +1,14 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
-import {ethers, upgrades} from "hardhat";
+import {ethers} from "hardhat";
 import {createPlayer} from "../../scripts/utils";
 import {playersFixture} from "../Players/PlayersFixture";
 
 describe("Clans", function () {
-  async function deployContracts() {
+  async function clanFixture() {
     const fixture = await loadFixture(playersFixture);
 
-    const {brush, players, shop, itemNFT, playerNFT} = fixture;
-
-    const Clans = await ethers.getContractFactory("Clans");
-    const clans = await upgrades.deployProxy(Clans, [brush.address, players.address, shop.address]);
+    const {clans} = fixture;
 
     // Add basic tier
     await clans.addTiers([
@@ -24,36 +21,29 @@ describe("Clans", function () {
       },
     ]);
 
-    const Bank = await ethers.getContractFactory("Bank");
-    const bank = await upgrades.deployProxy(Bank, [0, ethers.constants.AddressZero]);
-
-    const BankRegistry = await ethers.getContractFactory("BankRegistry");
-    const bankRegistry = await upgrades.deployProxy(BankRegistry, [itemNFT.address, playerNFT.address, clans.address]);
-
-    const BankProxy = await ethers.getContractFactory("BankProxy");
-    const bankProxy = await BankProxy.deploy(bank.address);
-
-    const BankFactory = await ethers.getContractFactory("BankFactory");
-    const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address]);
-
-    await clans.setBankFactory(bankFactory.address);
-
     const clanName = "Clan 1";
-    return {...fixture, clans, clanName, bankFactory};
+    return {...fixture, clans, clanName};
   }
-
   describe("Create a clan", () => {
     it("New clan", async () => {
-      const {clans, playerId, alice, clanName} = await loadFixture(deployContracts);
+      const {clans, playerId, alice, clanName, bankFactory} = await loadFixture(clanFixture);
 
       const tierId = 1;
       const imageId = 2;
       const clanId = 1;
       const tier = await clans.tiers(tierId);
 
+      // Figure out what the address with would
+      const newContactAddr = ethers.utils.getContractAddress({
+        from: bankFactory.address,
+        nonce: clanId,
+      });
+
       await expect(clans.connect(alice).createClan(playerId, clanName, imageId, tierId))
         .to.emit(clans, "ClanCreated")
-        .withArgs(clanId, playerId, clanName, imageId, tierId);
+        .withArgs(clanId, playerId, clanName, imageId, tierId)
+        .and.to.emit(bankFactory, "BankContractCreated")
+        .withArgs(alice.address, clanId, newContactAddr);
 
       // Check that the clan is created with the correct values
       const clan = await clans.clans(clanId);
@@ -76,7 +66,7 @@ describe("Clans", function () {
     });
 
     it("Cannot create a clan if already in another", async () => {
-      const {clans, playerId, alice, clanName} = await loadFixture(deployContracts);
+      const {clans, playerId, alice, clanName} = await loadFixture(clanFixture);
 
       const tierId = 1;
       const imageId = 2;
@@ -89,7 +79,7 @@ describe("Clans", function () {
     });
 
     it("Cannot create a clan with the same name", async () => {
-      const {clans, playerId, alice, clanName, playerNFT, avatarId} = await loadFixture(deployContracts);
+      const {clans, playerId, alice, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
 
       const tierId = 1;
       const imageId = 2;
@@ -107,7 +97,7 @@ describe("Clans", function () {
     });
 
     it("Allowed to create a clan if there is a pending request elsewhere", async () => {
-      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(deployContracts);
+      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
 
       const tierId = 1;
       const imageId = 2;
@@ -144,7 +134,7 @@ describe("Clans", function () {
 
   describe("Admins", () => {
     it("Must be a member to be promoted to admin", async () => {
-      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(deployContracts);
+      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
 
       const tierId = 1;
       const imageId = 2;
@@ -175,7 +165,7 @@ describe("Clans", function () {
     });
 
     it("Only owner can add new admins", async () => {
-      const {clans, playerId, alice, owner, bob, clanName, playerNFT, avatarId} = await loadFixture(deployContracts);
+      const {clans, playerId, alice, owner, bob, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
 
       const tierId = 1;
       const imageId = 2;
@@ -222,7 +212,7 @@ describe("Clans", function () {
     });
 
     it("Only owner can remove admins", async () => {
-      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(deployContracts);
+      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
 
       const tierId = 1;
       const imageId = 2;
@@ -255,7 +245,7 @@ describe("Clans", function () {
 
     it("Only owner or admins can remove a member", async () => {
       const {clans, playerId, alice, owner, bob, charlie, clanName, playerNFT, avatarId} = await loadFixture(
-        deployContracts
+        clanFixture
       );
 
       const tierId = 1;
@@ -327,7 +317,7 @@ describe("Clans", function () {
 
   describe("Clan upgrades", () => {
     async function upgradedClansFixture() {
-      const fixture = await loadFixture(deployContracts);
+      const fixture = await loadFixture(clanFixture);
       const {clans} = fixture;
 
       await clans.addTiers([

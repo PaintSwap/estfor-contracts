@@ -92,15 +92,19 @@ describe("PlayerNFT", function () {
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");
-    expect(metadata.attributes).to.have.length(14);
+    expect(metadata.attributes).to.have.length(15);
     expect(metadata.attributes[0]).to.have.property("trait_type");
     expect(metadata.attributes[0].trait_type).to.equal("Avatar");
     expect(metadata.attributes[0]).to.have.property("value");
     expect(metadata.attributes[0].value).to.equal("Name goes here");
     expect(metadata.attributes[1]).to.have.property("trait_type");
-    expect(metadata.attributes[1].trait_type).to.equal("Melee level");
+    expect(metadata.attributes[1].trait_type).to.equal("Clan");
     expect(metadata.attributes[1]).to.have.property("value");
-    expect(metadata.attributes[1].value).to.equal(1);
+    expect(metadata.attributes[1].value).to.equal("");
+    expect(metadata.attributes[2]).to.have.property("trait_type");
+    expect(metadata.attributes[2].trait_type).to.equal("Melee level");
+    expect(metadata.attributes[2]).to.have.property("value");
+    expect(metadata.attributes[2].value).to.equal(1);
     expect(metadata).to.have.property("external_url");
     expect(metadata.external_url).to.eq(`https://alpha.estfor.com/game/journal/${playerId}`);
   });
@@ -121,6 +125,7 @@ describe("PlayerNFT", function () {
       avatarInfo,
       avatarId,
       quests,
+      clans,
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
@@ -152,6 +157,7 @@ describe("PlayerNFT", function () {
         world.address,
         adminAccess.address,
         quests.address,
+        clans.address,
         playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,
@@ -166,7 +172,6 @@ describe("PlayerNFT", function () {
     await itemNFT.setPlayers(players.address);
     await playerNFTNotAlpha.setPlayers(players.address);
     await playerNFTNotAlpha.setAvatar(avatarId, avatarInfo);
-    await quests.setPlayers(players.address);
 
     const origName = "0xSamWitch";
     const makeActive = true;

@@ -102,7 +102,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(uint playerId => PlayerInfo) public playerInfo;
   mapping(uint id => Tier tier) public tiers;
   mapping(string name => bool exists) public lowercaseNames;
-  mapping(uint clanId => string name) public clanNames;
 
   // TODO Permissions
 
@@ -111,11 +110,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brushToken, IPlayers _players, address _pool) external initializer {
+  function initialize(IBrushToken _brushToken, address _pool) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
     brushToken = _brushToken;
-    players = _players;
     pool = _pool;
     lastClanId = 1;
   }
@@ -189,11 +187,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert NameAlreadyExists();
     }
     lowercaseNames[lowercaseName] = true;
-    string storage oldName = clanNames[_clanId];
+    string storage oldName = clans[_clanId].name;
     if (bytes(oldName).length > 0) {
       delete lowercaseNames[oldName];
     }
-    clanNames[_clanId] = lowercaseName;
+    clans[_clanId].name = _name;
   }
 
   function editClan(
@@ -448,8 +446,17 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     return string(lowercaseName);
   }
 
+  function getClanName(uint _playerId) external view returns (string memory) {
+    uint clanId = playerInfo[_playerId].clanId;
+    return clans[clanId].name;
+  }
+
   function setBankFactory(IBankFactory _bankFactory) external onlyOwner {
     bankFactory = _bankFactory;
+  }
+
+  function setPlayers(IPlayers _players) external onlyOwner {
+    players = _players;
   }
 
   function _authorizeUpgrade(address) internal override onlyOwner {}
