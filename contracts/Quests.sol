@@ -210,11 +210,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         uint choiceId = _choiceIds[i];
         uint amount = _choiceIdAmounts[i];
         if (activeQuests[_playerId].quest.actionChoiceId == choiceId) {
-          activeQuests[_playerId].actionChoiceNum += uint24(amount);
+          activeQuests[_playerId].actionChoiceCompletedNum += uint24(amount);
           foundActive = true;
         }
         if (inProgressRandomQuests[_playerId].quest.actionChoiceId == choiceId) {
-          inProgressRandomQuests[_playerId].actionChoiceNum += uint24(amount);
+          inProgressRandomQuests[_playerId].actionChoiceCompletedNum += uint24(amount);
           foundRandomQuest = true;
         }
       }
@@ -248,11 +248,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint choiceId = _choiceIds[i];
       uint amount = _choiceIdAmounts[i];
       if (questCompletionInfo.quest.actionChoiceId == choiceId) {
-        questCompletionInfo.actionChoiceNum += uint24(amount);
+        questCompletionInfo.actionChoiceCompletedNum += uint24(amount);
       }
     }
 
-    questCompleted = questCompletionInfo.actionChoiceNum >= questCompletionInfo.quest.actionChoiceNum;
+    questCompleted = questCompletionInfo.actionChoiceCompletedNum >= questCompletionInfo.quest.actionChoiceNum;
     if (questCompleted) {
       // length can be 0, 1 or 2
       uint mintLength = questCompletionInfo.quest.rewardItemTokenId == NONE ? 0 : 1;

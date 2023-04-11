@@ -238,9 +238,9 @@ struct Quest {
 
 struct QuestWithCompletionInfo {
   Quest quest;
-  uint24 actionNum;
-  uint24 actionNum1;
-  uint24 actionChoiceNum;
+  uint24 actionCompletedNum;
+  uint24 actionCompletedNum1;
+  uint24 actionChoiceCompletedNum;
 }
 
 // 4 bytes for each threshold, starts at 500 xp in decimal
