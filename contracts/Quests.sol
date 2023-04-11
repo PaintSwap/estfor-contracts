@@ -7,7 +7,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IQuests} from "./interfaces/IQuests.sol";
 
 /* solhint-disable no-global-import */
-import "./globals/actions.sol";
+import "./globals/players.sol";
 import "./globals/items.sol";
 import "./globals/rewards.sol";
 
@@ -30,7 +30,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   event ActivateNewQuest(uint playerId, uint questId);
   event DeactivateQuest(uint playerId, uint questId);
   event QuestCompleted(uint playerId, uint questId);
-  event UpdateQuestProgress(uint playerId, QuestWithCompletionInfo quest);
+  event UpdateQuestProgress(uint playerId, QuestWithCompletionInfo questWithCompletionInfo);
 
   error NotWorld();
   error NotOwnerOfPlayer();
@@ -57,6 +57,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
   uint constant QUEST_ID_STARTER_TRADER = 2; // MAKE SURE THIS MATCHES definitions
 
+  struct PlayerQuestInfo {
+    uint32 numFixedQuestsCompleted;
+    uint32 numRandomQuestsCompleted;
+  }
+
   address private world;
   address private players;
   uint40 public randomQuestId;
@@ -65,7 +70,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   mapping(uint playerId => QuestWithCompletionInfo quest) public activeQuests;
   mapping(uint playerId => QuestWithCompletionInfo quest) public inProgressRandomQuests;
   mapping(uint questId => MinimumRequirement[3]) minimumRequirements; // Not checked yet
-  mapping(uint questId => bool) public isRandomQuest;
+  mapping(uint questId => bool isRandom) public isRandomQuest;
+  mapping(uint playerId => PlayerQuestInfo) public playerInfo;
   Quest[] private randomQuests;
   Quest private previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
   Quest private randomQuest; // Same for everyone
@@ -155,7 +161,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     delete activeQuests[_playerId];
 
     if (isRandomQuest[_questId]) {
+      ++playerInfo[_playerId].numRandomQuestsCompleted;
       delete inProgressRandomQuests[_playerId];
+    } else {
+      ++playerInfo[_playerId].numFixedQuestsCompleted;
     }
   }
 
@@ -173,7 +182,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint[] memory amountsBurned,
       Skill[] memory skillsGained,
       uint32[] memory xpGained,
-      uint[] memory _questsCompleted
+      uint[] memory _questsCompleted,
+      QuestWithCompletionInfo[] memory activeQuestsCompletionInfo
     )
   {
     // The items will get minted by the caller
@@ -184,7 +194,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       amountsBurned,
       skillsGained,
       xpGained,
-      _questsCompleted
+      _questsCompleted,
+      activeQuestsCompletionInfo
     ) = processQuestsView(_playerId, _choiceIds, _choiceIdAmounts);
     if (_questsCompleted.length > 0) {
       for (uint i = 0; i < _questsCompleted.length; ++i) {
@@ -278,12 +289,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint[] memory amountsBurned,
       Skill[] memory skillsGained,
       uint32[] memory xpGained,
-      uint[] memory _questsCompleted
+      uint[] memory _questsCompleted,
+      QuestWithCompletionInfo[] memory activeQuestsCompletionInfo
     )
   {
+    activeQuestsCompletionInfo = new QuestWithCompletionInfo[](2);
     if (_choiceIds.length != 0) {
       // Handle active rquest
       QuestWithCompletionInfo memory questCompletionInfo = activeQuests[_playerId];
+      activeQuestsCompletionInfo[0] = questCompletionInfo;
       itemTokenIds = new uint[](2 * MAX_QUEST_REWARDS);
       amounts = new uint[](2 * MAX_QUEST_REWARDS);
       itemTokenIdsBurned = new uint[](2);
@@ -329,6 +343,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         if (randomQuest.questId == inProgressRandomQuests[_playerId].quest.questId) {
           randomQuestCompletionInfo = inProgressRandomQuests[_playerId];
         }
+        activeQuestsCompletionInfo[1] = randomQuestCompletionInfo;
         (
           uint[] memory _itemTokenIds,
           uint[] memory _amounts,

@@ -48,6 +48,19 @@ interface IPlayerDelegate {
   function unequipBoostVial(uint playerId) external;
 
   function testModifyXP(uint playerId, Skill skill, uint128 xp) external;
+
+  function initialize(
+    ItemNFT itemNFT,
+    PlayerNFT playerNFT,
+    World world,
+    AdminAccess adminAccess,
+    Quests quests,
+    Clans clans,
+    address implQueueActions,
+    address implProcessActions,
+    address implRewards,
+    bool isAlpha
+  ) external;
 }
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
@@ -91,20 +104,22 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     __UUPSUpgradeable_init();
     __ReentrancyGuard_init();
 
-    itemNFT = _itemNFT;
-    playerNFT = _playerNFT;
-    world = _world;
-    adminAccess = _adminAccess;
-    quests = _quests;
-    clans = _clans;
-    implQueueActions = _implQueueActions;
-    implProcessActions = _implProcessActions;
-    implRewards = _implRewards;
-
-    nextQueueId = 1;
-    alphaCombat = 1;
-    betaCombat = 1;
-    isAlpha = _isAlpha;
+    _delegatecall(
+      _implQueueActions,
+      abi.encodeWithSelector(
+        IPlayerDelegate.initialize.selector,
+        _itemNFT,
+        _playerNFT,
+        _world,
+        _adminAccess,
+        _quests,
+        _clans,
+        _implQueueActions,
+        _implProcessActions,
+        _implRewards,
+        _isAlpha
+      )
+    );
   }
 
   function startAction(

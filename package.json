@@ -64,6 +64,7 @@
     "clean": "npx hardhat clean",
     "verifyContracts": "npx hardhat run scripts/verifyContracts.ts",
     "umlStorage": "sol2uml storage ./contracts/debug/DebugStorageSlots.sol -c DebugStorageSlots",
+    "outputStorage": "npx hardhat check",
     "createHexXPString": "npx ts-node scripts/createHexXPString.ts",
     "deploy": "npx hardhat run scripts/deploy.ts",
     "deployUpgrade": "npx hardhat run scripts/deployUpgrade.ts",

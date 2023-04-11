@@ -4,6 +4,13 @@ pragma solidity ^0.8.19;
 import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 
+import {World} from "../World.sol";
+import {ItemNFT} from "../ItemNFT.sol";
+import {AdminAccess} from "../AdminAccess.sol";
+import {Quests} from "../Quests.sol";
+import {Clans} from "../Clans/Clans.sol";
+import {PlayerNFT} from "../PlayerNFT.sol";
+
 /* solhint-disable no-global-import */
 import "../globals/players.sol";
 import "../globals/items.sol";
@@ -15,8 +22,16 @@ import "../globals/rewards.sol";
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using UnsafeU256 for U256;
 
+  error CannotCallInitializerOnImplementation();
+
   constructor() {
     _checkStartSlot();
+    // Effectively the same as __disableInitializer
+    uint max = type(uint8).max;
+    assembly ("memory-safe") {
+      // Set initialized
+      sstore(0, max)
+    }
   }
 
   function startActions(
@@ -542,5 +557,44 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
           (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
           (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
       );
+  }
+
+  function initialize(
+    ItemNFT _itemNFT,
+    PlayerNFT _playerNFT,
+    World _world,
+    AdminAccess _adminAccess,
+    Quests _quests,
+    Clans _clans,
+    address _implQueueActions,
+    address _implProcessActions,
+    address _implRewards,
+    bool _isAlpha
+  ) external {
+    // Check that this isn't called on this contract (implementation) directly.
+    // Slot 0 on the Players contract is initializable
+    uint val;
+    assembly ("memory-safe") {
+      val := sload(0)
+    }
+
+    if (val == type(uint8).max) {
+      revert CannotCallInitializerOnImplementation();
+    }
+
+    itemNFT = _itemNFT;
+    playerNFT = _playerNFT;
+    world = _world;
+    adminAccess = _adminAccess;
+    quests = _quests;
+    clans = _clans;
+    implQueueActions = _implQueueActions;
+    implProcessActions = _implProcessActions;
+    implRewards = _implRewards;
+
+    nextQueueId = 1;
+    alphaCombat = 1;
+    betaCombat = 1;
+    isAlpha = _isAlpha;
   }
 }

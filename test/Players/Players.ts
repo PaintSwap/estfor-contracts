@@ -890,5 +890,25 @@ describe("Players", function () {
         Math.floor(startXP + queuedAction.timespan * 1.05)
       );
     });
+
+    it("Revert if trying to initialize QueueActionImpl", async function () {
+      // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
+      const {playersImplQueueActions} = await loadFixture(playersFixture);
+
+      await expect(
+        playersImplQueueActions.initialize(
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
+          false
+        )
+      ).to.be.revertedWithCustomError(playersImplQueueActions, "CannotCallInitializerOnImplementation");
+    });
   });
 });

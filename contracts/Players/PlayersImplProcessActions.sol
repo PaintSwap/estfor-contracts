@@ -210,7 +210,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint[] memory amountsBurned,
       Skill[] memory skillsGained,
       uint32[] memory xpGained,
-      uint[] memory _questsCompleted
+      uint[] memory _questsCompleted,
+      QuestWithCompletionInfo[] memory questsCompletedInfo
     ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
     // Mint the rewards
     if (itemTokenIds.length > 0) {
