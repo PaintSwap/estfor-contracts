@@ -187,7 +187,7 @@ struct PendingQueuedActionState {
   Equipment[] producedXPRewards;
   Equipment[] questRewards;
   Equipment[] questConsumed;
-  QuestWithCompletionInfo[] activeQuestInfo;
+  PlayerQuest[] activeQuestInfo;
   DiedInfo[] died;
   RollInfo[] rolls;
   XPInfo[] xpGained;
@@ -236,11 +236,12 @@ struct Quest {
   uint24 questId; // Unique id for this quest
 }
 
-struct QuestWithCompletionInfo {
-  Quest quest;
+struct PlayerQuest {
+  uint32 questId;
   uint24 actionCompletedNum;
   uint24 actionCompletedNum1;
   uint24 actionChoiceCompletedNum;
+  bool isFixed;
 }
 
 // 4 bytes for each threshold, starts at 500 xp in decimal

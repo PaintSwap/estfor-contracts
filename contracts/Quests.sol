@@ -30,7 +30,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   event ActivateNewQuest(uint playerId, uint questId);
   event DeactivateQuest(uint playerId, uint questId);
   event QuestCompleted(uint playerId, uint questId);
-  event UpdateQuestProgress(uint playerId, QuestWithCompletionInfo questWithCompletionInfo);
+  event UpdateQuestProgress(uint playerId, PlayerQuest playerQuest);
 
   error NotWorld();
   error NotOwnerOfPlayer();
@@ -49,6 +49,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   error InvalidFTMAmount();
   error InvalidActiveQuest();
   error NoActiveQuest();
+  error ActivatingQuestAlreadyActivated();
 
   struct MinimumRequirement {
     Skill skill;
@@ -67,8 +68,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   uint40 public randomQuestId;
   mapping(uint questId => Quest quest) public allFixedQuests;
   mapping(uint playerId => mapping(uint questId => bool done)) public questsCompleted; // TODO: Could use bit mask
-  mapping(uint playerId => QuestWithCompletionInfo quest) public activeQuests;
-  mapping(uint playerId => QuestWithCompletionInfo quest) public inProgressRandomQuests;
+  mapping(uint playerId => PlayerQuest playerQuest) public activeQuests;
+  mapping(uint playerId => PlayerQuest playerQuest) public inProgressRandomQuests;
+  mapping(uint playerId => mapping(uint queueId => PlayerQuest quest)) public inProgressFixedQuests; // Only puts it here if changing active quest for something else
   mapping(uint questId => MinimumRequirement[3]) minimumRequirements; // Not checked yet
   mapping(uint questId => bool isRandom) public isRandomQuest;
   mapping(uint playerId => PlayerQuestInfo) public playerInfo;
@@ -120,21 +122,39 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       revert QuestCompletedAlready();
     }
 
-    QuestWithCompletionInfo memory questCompletionInfo;
-    questCompletionInfo.quest = quest;
-    activeQuests[_playerId] = questCompletionInfo; // This overwrites an existing active quest
-    randomQuestId = 65336;
+    uint existingActiveQuestId = activeQuests[_playerId].questId;
+    if (existingActiveQuestId == _questId) {
+      revert ActivatingQuestAlreadyActivated();
+    }
+
+    if (existingActiveQuestId != 0) {
+      // Another quest was activated
+      emit DeactivateQuest(_playerId, existingActiveQuestId);
+      inProgressFixedQuests[_playerId][existingActiveQuestId] = activeQuests[_playerId];
+    }
+
+    if (inProgressFixedQuests[_playerId][_questId].questId != 0) {
+      // If the quest is already in progress, just activate it
+      activeQuests[_playerId] = inProgressFixedQuests[_playerId][_questId];
+    } else {
+      // Start fresh quest
+      PlayerQuest memory playerQuest;
+      playerQuest.questId = uint32(_questId);
+      playerQuest.isFixed = true;
+      activeQuests[_playerId] = playerQuest;
+    }
     emit ActivateNewQuest(_playerId, _questId);
   }
 
   function deactivateQuest(uint _playerId) external onlyPlayers {
-    QuestWithCompletionInfo storage questInfo = activeQuests[_playerId];
-    uint questId = questInfo.quest.questId;
+    PlayerQuest storage playerQuest = activeQuests[_playerId];
+    uint questId = playerQuest.questId;
     if (questId == 0) {
       revert NoActiveQuest();
     }
 
-    questsCompleted[_playerId][questId] = true;
+    // Move it to in progress
+    inProgressFixedQuests[_playerId][activeQuests[_playerId].questId] = activeQuests[_playerId];
     delete activeQuests[_playerId];
 
     emit DeactivateQuest(_playerId, questId);
@@ -183,7 +203,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       Skill[] memory skillsGained,
       uint32[] memory xpGained,
       uint[] memory _questsCompleted,
-      QuestWithCompletionInfo[] memory activeQuestsCompletionInfo
+      PlayerQuest[] memory activeQuestInfo
     )
   {
     // The items will get minted by the caller
@@ -195,7 +215,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       skillsGained,
       xpGained,
       _questsCompleted,
-      activeQuestsCompletionInfo
+      activeQuestInfo
     ) = processQuestsView(_playerId, _choiceIds, _choiceIdAmounts);
     if (_questsCompleted.length > 0) {
       for (uint i = 0; i < _questsCompleted.length; ++i) {
@@ -209,11 +229,19 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       for (uint i; i < _choiceIds.length; ++i) {
         uint choiceId = _choiceIds[i];
         uint amount = _choiceIdAmounts[i];
-        if (activeQuests[_playerId].quest.actionChoiceId == choiceId) {
+        uint activeQuestId = activeQuests[_playerId].questId;
+        if (allFixedQuests[activeQuestId].actionChoiceId == choiceId) {
           activeQuests[_playerId].actionChoiceCompletedNum += uint24(amount);
           foundActive = true;
         }
-        if (inProgressRandomQuests[_playerId].quest.actionChoiceId == choiceId) {
+
+        uint randomQuestId = randomQuest.questId;
+        if (randomQuest.actionChoiceId == choiceId) {
+          if (inProgressRandomQuests[_playerId].questId != randomQuestId) {
+            // If this is a new one clear it
+            PlayerQuest memory playerQuest;
+            inProgressRandomQuests[_playerId] = playerQuest;
+          }
           inProgressRandomQuests[_playerId].actionChoiceCompletedNum += uint24(amount);
           foundRandomQuest = true;
         }
@@ -230,10 +258,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   function _processQuestView(
     uint[] calldata _choiceIds,
     uint[] calldata _choiceIdAmounts,
-    QuestWithCompletionInfo memory questCompletionInfo
+    PlayerQuest memory playerQuest
   )
     private
-    pure
+    view
     returns (
       uint[] memory itemTokenIds,
       uint[] memory amounts,
@@ -244,34 +272,35 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       bool questCompleted
     )
   {
+    Quest memory quest = playerQuest.isFixed ? allFixedQuests[playerQuest.questId] : randomQuest;
     for (uint i; i < _choiceIds.length; ++i) {
       uint choiceId = _choiceIds[i];
       uint amount = _choiceIdAmounts[i];
-      if (questCompletionInfo.quest.actionChoiceId == choiceId) {
-        questCompletionInfo.actionChoiceCompletedNum += uint24(amount);
+      if (quest.actionChoiceId == choiceId) {
+        playerQuest.actionChoiceCompletedNum += uint24(amount);
       }
     }
 
-    questCompleted = questCompletionInfo.actionChoiceCompletedNum >= questCompletionInfo.quest.actionChoiceNum;
+    questCompleted = playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum;
     if (questCompleted) {
       // length can be 0, 1 or 2
-      uint mintLength = questCompletionInfo.quest.rewardItemTokenId == NONE ? 0 : 1;
-      mintLength += (questCompletionInfo.quest.rewardItemTokenId1 == NONE ? 0 : 1);
+      uint mintLength = quest.rewardItemTokenId == NONE ? 0 : 1;
+      mintLength += (quest.rewardItemTokenId1 == NONE ? 0 : 1);
 
       itemTokenIds = new uint[](mintLength);
       amounts = new uint[](mintLength);
-      if (questCompletionInfo.quest.rewardItemTokenId != NONE) {
-        itemTokenIds[0] = questCompletionInfo.quest.rewardItemTokenId;
-        amounts[0] = questCompletionInfo.quest.rewardAmount;
+      if (quest.rewardItemTokenId != NONE) {
+        itemTokenIds[0] = quest.rewardItemTokenId;
+        amounts[0] = quest.rewardAmount;
       }
-      if (questCompletionInfo.quest.rewardItemTokenId1 != NONE) {
-        itemTokenIds[1] = questCompletionInfo.quest.rewardItemTokenId1;
-        amounts[1] = questCompletionInfo.quest.rewardAmount1;
+      if (quest.rewardItemTokenId1 != NONE) {
+        itemTokenIds[1] = quest.rewardItemTokenId1;
+        amounts[1] = quest.rewardAmount1;
       }
-      itemTokenIdBurned = questCompletionInfo.quest.burnItemTokenId;
-      amountBurned = questCompletionInfo.quest.burnAmount;
-      skillGained = questCompletionInfo.quest.skillReward;
-      xpGained = questCompletionInfo.quest.skillXPGained;
+      itemTokenIdBurned = quest.burnItemTokenId;
+      amountBurned = quest.burnAmount;
+      skillGained = quest.skillReward;
+      xpGained = quest.skillXPGained;
     }
   }
 
@@ -290,14 +319,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       Skill[] memory skillsGained,
       uint32[] memory xpGained,
       uint[] memory _questsCompleted,
-      QuestWithCompletionInfo[] memory activeQuestsCompletionInfo
+      PlayerQuest[] memory activeQuestsCompletionInfo
     )
   {
-    activeQuestsCompletionInfo = new QuestWithCompletionInfo[](2);
     if (_choiceIds.length != 0) {
       // Handle active rquest
-      QuestWithCompletionInfo memory questCompletionInfo = activeQuests[_playerId];
-      activeQuestsCompletionInfo[0] = questCompletionInfo;
+      activeQuestsCompletionInfo = new PlayerQuest[](2);
       itemTokenIds = new uint[](2 * MAX_QUEST_REWARDS);
       amounts = new uint[](2 * MAX_QUEST_REWARDS);
       itemTokenIdsBurned = new uint[](2);
@@ -309,7 +336,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint itemTokenIdsBurnedLength;
       uint skillsGainedLength;
       uint questsCompletedLength;
-      if (questCompletionInfo.quest.questId != 0) {
+      uint activeQuestsLength;
+      PlayerQuest memory questCompletionInfo = activeQuests[_playerId];
+      if (questCompletionInfo.questId != 0) {
         (
           uint[] memory _itemTokenIds,
           uint[] memory _amounts,
@@ -326,7 +355,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         }
 
         if (questCompleted) {
-          _questsCompleted[questsCompletedLength++] = questCompletionInfo.quest.questId;
+          _questsCompleted[questsCompletedLength++] = questCompletionInfo.questId;
+        } else {
+          activeQuestsCompletionInfo[activeQuestsLength++] = questCompletionInfo;
         }
         if (itemTokenIdBurned != NONE) {
           itemTokenIdsBurned[itemTokenIdsBurnedLength] = itemTokenIdBurned;
@@ -339,11 +370,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       }
       // Handle random request
       if (randomQuest.questId != 0) {
-        QuestWithCompletionInfo memory randomQuestCompletionInfo;
-        if (randomQuest.questId == inProgressRandomQuests[_playerId].quest.questId) {
+        PlayerQuest memory randomQuestCompletionInfo;
+        // TODO: This assumes that inProgressRandomQuests is set, which is not always the case.
+        if (randomQuest.questId == inProgressRandomQuests[_playerId].questId) {
           randomQuestCompletionInfo = inProgressRandomQuests[_playerId];
         }
-        activeQuestsCompletionInfo[1] = randomQuestCompletionInfo;
+        activeQuestsCompletionInfo[activeQuestsLength++] = randomQuestCompletionInfo;
         (
           uint[] memory _itemTokenIds,
           uint[] memory _amounts,
@@ -360,7 +392,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         }
 
         if (questCompleted) {
-          _questsCompleted[questsCompletedLength++] = randomQuestCompletionInfo.quest.questId;
+          _questsCompleted[questsCompletedLength++] = randomQuestCompletionInfo.questId;
         }
 
         if (itemTokenIdBurned != NONE) {
@@ -381,6 +413,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         mstore(skillsGained, skillsGainedLength)
         mstore(xpGained, skillsGainedLength)
         mstore(_questsCompleted, questsCompletedLength)
+        mstore(activeQuestsCompletionInfo, activeQuestsLength)
       }
     }
   }
@@ -439,13 +472,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   function buyBrushQuest(address _from, uint _playerId, uint _minimumBrushBack) external payable {
-    QuestWithCompletionInfo storage questWithCompletionInfo = activeQuests[_playerId];
+    PlayerQuest storage playerQuest = activeQuests[_playerId];
     buyBrush(_from, _minimumBrushBack);
-    if (questWithCompletionInfo.quest.questId != QUEST_ID_STARTER_TRADER) {
+    if (playerQuest.questId != QUEST_ID_STARTER_TRADER) {
       revert InvalidActiveQuest();
     }
 
-    _questCompleted(_playerId, questWithCompletionInfo.quest.questId);
+    _questCompleted(_playerId, playerQuest.questId);
   }
 
   function buyBrush(address _to, uint minimumBrushBack) public payable {

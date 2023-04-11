@@ -203,7 +203,7 @@ describe("Quests", function () {
       const questId = quest?.questId;
       expect(questId).to.not.eq(0);
       await players.connect(alice).activateQuest(playerId, questId);
-      expect((await quests.activeQuests(playerId)).quest.questId).to.be.eq(questId);
+      expect((await quests.activeQuests(playerId)).questId).to.be.eq(questId);
       const balanceBefore = await brush.balanceOf(alice.address);
       await quests.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10});
       const balanceAfter = await brush.balanceOf(alice.address);
@@ -211,7 +211,7 @@ describe("Quests", function () {
 
       // Check it's completed and no longer considered active
       expect(await quests.questsCompleted(playerId, questId)).to.eq(true);
-      expect((await quests.activeQuests(playerId)).quest.questId).to.be.eq(0);
+      expect((await quests.activeQuests(playerId)).questId).to.be.eq(0);
     });
   });
 
@@ -298,7 +298,7 @@ describe("Quests", function () {
       const questId = 2;
       await players.connect(alice).activateQuest(playerId, questId);
       const activeQuest = await quests.activeQuests(playerId);
-      expect(activeQuest.quest.questId).to.equal(questId);
+      expect(activeQuest.questId).to.equal(questId);
     });
 
     it("Should fail to activate a quest for non-owner of player", async function () {
@@ -343,12 +343,14 @@ describe("Quests", function () {
 
       // Check it's completed
       expect(await quests.questsCompleted(playerId, questId)).to.be.true;
-      expect((await quests.activeQuests(playerId)).questId).to.not.eq(0);
+      expect((await quests.activeQuests(playerId)).questId).to.eq(0);
       // Check it can't be activated again
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
         "QuestCompletedAlready"
       );
     });
+
+    // TODO: Deactivate a quest, start a new one do some progress then reactivate the old one and check that it continues
   });
 });

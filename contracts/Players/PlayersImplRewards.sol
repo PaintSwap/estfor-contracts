@@ -423,7 +423,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       Skill[] memory skillsGained,
       uint32[] memory xp,
       uint[] memory _questsCompleted,
-      QuestWithCompletionInfo[] memory activeQuestsCompletionInfo
+      PlayerQuest[] memory activeQuestsCompletionInfo
     ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts);
     if (questRewards.length > 0) {
       pendingQueuedActionState.questRewards = new Equipment[](questRewards.length);
