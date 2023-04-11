@@ -231,4 +231,17 @@ export const addTestData = async (
   tx = await clans.connect(alice).acceptInvite(clanId, newPlayerId);
   await tx.wait();
   console.log("Accept invite");
+
+  // Leave clan
+  tx = await clans.connect(alice).leaveClan(clanId, newPlayerId);
+  await tx.wait();
+  console.log("Leave clan");
+
+  tx = await clans.inviteMember(clanId, newPlayerId, playerId);
+  await tx.wait();
+  console.log("Re-invite Alice");
+
+  tx = await clans.connect(alice).requestToJoin(clanId, newPlayerId);
+  await tx.wait();
+  console.log("Request to join as well");
 };
