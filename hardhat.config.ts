@@ -43,12 +43,12 @@ const config: HardhatUserConfig = {
     },
     ftm: {
       url: process.env.FTM_RPC,
-      accounts: [process.env.PRIVATE_KEY as string],
-      gasPrice: 75000000000,
+      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
+      gasPrice: 150000000000,
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,
-      accounts: [process.env.PRIVATE_KEY as string],
+      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: 150000000000,
     },
   },

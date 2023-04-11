@@ -292,7 +292,7 @@ async function main() {
       await verifyContracts(addresses);
     } catch (e) {
       console.log("Error verifying contracts", e);
-      process.exit(99);
+      //      process.exit(99);
     }
   } else {
     console.log("Skipping verifying contracts");

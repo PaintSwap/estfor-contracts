@@ -66,6 +66,25 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     emit DepositItems(msg.sender, _playerId, ids, values);
   }
 
+  function withdrawItems(
+    address _to,
+    uint _playerId,
+    uint[] memory ids,
+    uint[] memory amounts
+  ) external isOwnerOfPlayer(_playerId) isClanAdmin(_playerId) {
+    bankRegistry.itemNFT().safeBatchTransferFrom(address(this), _to, ids, amounts, "");
+
+    // Update uniqueItemCount after withdrawing items
+    for (uint i = 0; i < ids.length; ++i) {
+      uint id = ids[i];
+      if (uniqueItems[id] && bankRegistry.itemNFT().balanceOf(address(this), id) == 0) {
+        --uniqueItemCount;
+        uniqueItems[id] = false;
+      }
+    }
+    emit WithdrawItems(_to, _playerId, ids, amounts);
+  }
+
   function _receivedItemUpdateUniqueItems(uint id, uint maxCapacity) private {
     if (!uniqueItems[id]) {
       if (uniqueItemCount >= maxCapacity) {
@@ -157,25 +176,6 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       revert WithdrawFailed();
     }
     emit WithdrawToken(msg.sender, _playerId, token, amount);
-  }
-
-  function withdrawItems(
-    address _to,
-    uint _playerId,
-    uint[] memory ids,
-    uint[] memory amounts
-  ) external isOwnerOfPlayer(_playerId) isClanAdmin(_playerId) {
-    bankRegistry.itemNFT().safeBatchTransferFrom(address(this), _to, ids, amounts, "");
-
-    // Update uniqueItemCount after withdrawing items
-    for (uint i = 0; i < ids.length; ++i) {
-      uint id = ids[i];
-      if (uniqueItems[id] && bankRegistry.itemNFT().balanceOf(address(this), id) == 0) {
-        --uniqueItemCount;
-        uniqueItems[id] = false;
-      }
-    }
-    emit WithdrawItems(_to, _playerId, ids, amounts);
   }
 
   receive() external payable {

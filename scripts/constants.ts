@@ -6,30 +6,36 @@ let royaltyReceiver;
 let adminAccess;
 let itemNFT;
 let playerNFT;
+let quests;
+let clans;
+let bank;
+let bankRegistry;
+let bankProxy;
+let bankFactory;
 let playersLibrary;
 let playersImplQueueActions;
 let playersImplProcessActions;
 let playersImplRewards;
 let players;
-let quests;
-let clans;
-let bankFactory;
 
 if (isAlpha) {
-  world = "0xfe93dbf15b733024f67e5a11a7c87401cd951bdc";
-  shop = "0x30e37152cdde1720be35a2ebc8c799809c4acda9";
-  royaltyReceiver = "0x430fe699f1468d19176d4697c237e4e8712b1822";
-  adminAccess = "0xa4dbcb972927318489afc5f39a5db3d1600f8e0a";
-  itemNFT = "0x5220cbe203cbff2b8257ba231859dcbfdd69da53";
-  playerNFT = "0x6a92745fbb3c1bad2c6074b53396ab0e7abb8ba9";
-  quests = "";
-  clans = "";
-  bankFactory = "";
-  playersLibrary = "0xcc17dc0e82072372635602c9ef7db7710ad8b382";
-  playersImplQueueActions = "0xee111c111368a0362b268f4e27d7e1679d232f3d";
-  playersImplProcessActions = "0xa02433b3EB5cfeb12BdcD08Ef3F4e3acb0A216Be";
-  playersImplRewards = "0x7E83C4Db27e3342afea79bDF1195248D635c9571";
-  players = "0xbd0d3fb6123ed252620c696c7d91caeb25c8a0f9";
+  world = "0xf2ff8c647beaef34322e9dc32d33c4e92ebfc69f";
+  shop = "0x822abb8a33a1d3dd5a76dd51f4387f5496874b61";
+  royaltyReceiver = "0x9ee50ca7bdc2d503f300c82839f714ab3173a26b";
+  adminAccess = "0x5e73216abda4b7ce684c34ee8756decc4c9106bb";
+  itemNFT = "0x37c84e51639469f077b87fbd264a7d5c56412f8a";
+  playerNFT = "0xce882318286aa504f35cab79731a94c0ff3f70f9";
+  quests = "0xf6274581031db3b0bb1c2e57339ddcaefeba6598";
+  clans = "0x24e2805fc9463fbb074c5dbadca6b527788b46fb";
+  bank = "0xd5de5be27ee1ad3db285d119e6bf5419b9e2f4c9";
+  bankRegistry = "0xe807c0eb40ad606643e5f063a6c6e5e6d564f703";
+  bankProxy = "0xc0a084a2f346bd1ad294e1d47c5ba80203642354";
+  bankFactory = "0x9d0ebb5e7d57c37da7800d62dc6b3f941a3128cc";
+  playersLibrary = "0xffcdd0cbed1347120895c52d520a9a902b21c196";
+  playersImplQueueActions = "0xd62752d03b15a16747d2dc76c9652299b4b7a8ab";
+  playersImplProcessActions = "0x4af82ef5b4bf9b7cbd541f9a3887a4e66e3d07a7";
+  playersImplRewards = "0xdce6895f924fb3dfff65642dbef4b9ea37c02e39";
+  players = "0xd7616b97d07b11c371ba16a8808bd981628fdfd2";
 } else {
   // TODO when live addresses are known
   world = "";
@@ -40,6 +46,9 @@ if (isAlpha) {
   playerNFT = "";
   quests = "";
   clans = "";
+  bank = "";
+  bankRegistry = "";
+  bankProxy = "";
   bankFactory = "";
   playersLibrary = "";
   playersImplQueueActions = "";
@@ -56,6 +65,9 @@ export const ITEM_NFT_ADDRESS = itemNFT;
 
 export const QUESTS_ADDRESS = quests;
 export const CLANS_ADDRESS = clans;
+export const BANK_ADDRESS = bank;
+export const BANK_REGISTRY_ADDRESS = bankRegistry;
+export const BANK_PROXY_ADDRESS = bankProxy;
 export const BANK_FACTORY_ADDRESS = bankFactory;
 
 export const PLAYER_NFT_ADDRESS = playerNFT;
