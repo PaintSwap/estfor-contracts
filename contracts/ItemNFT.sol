@@ -6,7 +6,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import {UnsafeMath, UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
@@ -21,7 +21,7 @@ import "./globals/items.sol";
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
   using UnsafeMath for uint256;
-  using UnsafeU256 for U256;
+  using UnsafeMath for U256;
 
   event AddItem(Item item, uint16 tokenId, string name);
   event AddItems(Item[] items, uint16[] tokenIds, string[] names);
