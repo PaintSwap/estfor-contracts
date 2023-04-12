@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 
 import {World} from "../World.sol";
@@ -20,7 +20,7 @@ import "../globals/rewards.sol";
 /* solhint-enable no-global-import */
 
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
-  using UnsafeU256 for U256;
+  using UnsafeMath for U256;
 
   error CannotCallInitializerOnImplementation();
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {UnsafeU256, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeU256.sol";
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
@@ -19,7 +19,7 @@ import "../globals/rewards.sol";
 /* solhint-enable no-global-import */
 
 abstract contract PlayersBase {
-  using UnsafeU256 for U256;
+  using UnsafeMath for U256;
 
   event ClearAll(address from, uint playerId);
   event AddXP(address from, uint playerId, Skill skill, uint32 points);
