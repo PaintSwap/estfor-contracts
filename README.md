@@ -67,7 +67,7 @@ BankFactory [0x9d0ebb5e7d57c37da7800d62dc6b3f941a3128cc](https://ftmscan.com/add
 
 PlayersLibrary [0xffcdd0cbed1347120895c52d520a9a902b21c196](https://ftmscan.com/address/0xffcdd0cbed1347120895c52d520a9a902b21c196)  
 PlayersImplQueueActions [0xd62752d03b15a16747d2dc76c9652299b4b7a8ab](https://ftmscan.com/address/0xd62752d03b15a16747d2dc76c9652299b4b7a8ab)  
-PlayersImplProcessActions [0x4af82ef5b4bf9b7cbd541f9a3887a4e66e3d07a7](https://ftmscan.com/address/0x4af82ef5b4bf9b7cbd541f9a3887a4e66e3d07a7)  
+PlayersImplProcessActions [0xe0e9dd410104ed6c1535956ea4098267e7d73ea0](https://ftmscan.com/address/0xe0e9dd410104ed6c1535956ea4098267e7d73ea0)  
 PlayersImplRewards [0xdce6895f924fb3dfff65642dbef4b9ea37c02e39](https://ftmscan.com/address/0xdce6895f924fb3dfff65642dbef4b9ea37c02e39)  
 Players [0xd7616b97d07b11c371ba16a8808bd981628fdfd2](https://ftmscan.com/address/0xd7616b97d07b11c371ba16a8808bd981628fdfd2)
 

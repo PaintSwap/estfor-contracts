@@ -14,7 +14,7 @@ export const allTiers: Tier[] = [
     id: 1,
     maxMemberCapacity: 3,
     maxBankCapacity: 5,
-    maxImageId: 8,
+    maxImageId: 4,
     price: BigNumber.from(0),
     minimumAge: 0,
   },
@@ -22,16 +22,23 @@ export const allTiers: Tier[] = [
     id: 2,
     maxMemberCapacity: 10,
     maxBankCapacity: 20,
-    maxImageId: 32,
-    price: ethers.utils.parseEther("5000"),
+    maxImageId: 8,
+    price: ethers.utils.parseEther("1000"),
     minimumAge: 0,
   },
   {
     id: 3,
     maxMemberCapacity: 50,
     maxBankCapacity: 75,
-    maxImageId: 128,
-    price: ethers.utils.parseEther("10000"),
+    maxImageId: 25,
+    price: ethers.utils.parseEther("5000"),
     minimumAge: 0,
   },
 ];
+
+export const allTiersAlpha: Tier[] = allTiers.map((tier) => {
+  return {
+    ...tier,
+    price: tier.price.div(10),
+  };
+});

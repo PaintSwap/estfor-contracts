@@ -60,8 +60,8 @@ async function main() {
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
-    playersImplRewards.address
+    playersImplProcessActions.address,
+    PLAYERS_IMPL_REWARDS_ADDRESS
   );
   await tx.wait();
 

@@ -562,7 +562,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint16 newLevel = PlayersLibrary.getLevel(newPoints);
     // Update the player's level
     if (newLevel > oldLevel) {
-      emit LevelUp(_from, _playerId, _skill, newLevel);
+      emit LevelUp(_from, _playerId, _skill, oldLevel, newLevel);
     }
   }
 

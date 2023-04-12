@@ -152,7 +152,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _boostStartTime (Not used yet)
   /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
-  function startActionsWithBoost(
+  function startActionsExtra(
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,

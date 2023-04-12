@@ -5,6 +5,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IQuests} from "./interfaces/IQuests.sol";
+import {IPlayers} from "./interfaces/IPlayers.sol";
 
 /* solhint-disable no-global-import */
 import "./globals/players.sol";
@@ -64,7 +65,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   address private world;
-  address private players;
+  IPlayers private players;
   uint40 public randomQuestId;
   mapping(uint questId => Quest quest) public allFixedQuests;
   mapping(uint playerId => mapping(uint questId => bool done)) public questsCompleted; // TODO: Could use bit mask
@@ -89,7 +90,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   modifier onlyPlayers() {
-    if (msg.sender != players) {
+    if (msg.sender != address(players)) {
       revert NotPlayers();
     }
     _;
@@ -175,19 +176,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     emit NewRandomQuest(randomQuest, oldQuestId);
   }
 
-  function _questCompleted(uint _playerId, uint _questId) private {
-    emit QuestCompleted(_playerId, _questId);
-    questsCompleted[_playerId][_questId] = true;
-    delete activeQuests[_playerId];
-
-    if (isRandomQuest[_questId]) {
-      ++playerInfo[_playerId].numRandomQuestsCompleted;
-      delete inProgressRandomQuests[_playerId];
-    } else {
-      ++playerInfo[_playerId].numFixedQuestsCompleted;
-    }
-  }
-
   function processQuests(
     uint _playerId,
     uint[] calldata _choiceIds,
@@ -255,53 +243,32 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
   }
 
-  function _processQuestView(
-    uint[] calldata _choiceIds,
-    uint[] calldata _choiceIdAmounts,
-    PlayerQuest memory playerQuest
-  )
-    private
-    view
-    returns (
-      uint[] memory itemTokenIds,
-      uint[] memory amounts,
-      uint itemTokenIdBurned,
-      uint amountBurned,
-      Skill skillGained,
-      uint32 xpGained,
-      bool questCompleted
-    )
-  {
-    Quest memory quest = playerQuest.isFixed ? allFixedQuests[playerQuest.questId] : randomQuest;
-    for (uint i; i < _choiceIds.length; ++i) {
-      uint choiceId = _choiceIds[i];
-      uint amount = _choiceIdAmounts[i];
-      if (quest.actionChoiceId == choiceId) {
-        playerQuest.actionChoiceCompletedNum += uint24(amount);
-      }
+  function buyBrushQuest(address _to, uint _playerId, uint _minimumBrushBack) external payable {
+    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+      revert NotOwnerOfPlayer();
     }
 
-    questCompleted = playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum;
-    if (questCompleted) {
-      // length can be 0, 1 or 2
-      uint mintLength = quest.rewardItemTokenId == NONE ? 0 : 1;
-      mintLength += (quest.rewardItemTokenId1 == NONE ? 0 : 1);
-
-      itemTokenIds = new uint[](mintLength);
-      amounts = new uint[](mintLength);
-      if (quest.rewardItemTokenId != NONE) {
-        itemTokenIds[0] = quest.rewardItemTokenId;
-        amounts[0] = quest.rewardAmount;
-      }
-      if (quest.rewardItemTokenId1 != NONE) {
-        itemTokenIds[1] = quest.rewardItemTokenId1;
-        amounts[1] = quest.rewardAmount1;
-      }
-      itemTokenIdBurned = quest.burnItemTokenId;
-      amountBurned = quest.burnAmount;
-      skillGained = quest.skillReward;
-      xpGained = quest.skillXPGained;
+    PlayerQuest storage playerQuest = activeQuests[_playerId];
+    buyBrush(_to, _minimumBrushBack);
+    if (playerQuest.questId != QUEST_ID_STARTER_TRADER) {
+      revert InvalidActiveQuest();
     }
+
+    _questCompleted(_playerId, playerQuest.questId);
+  }
+
+  function buyBrush(address _to, uint minimumBrushBack) public payable {
+    if (msg.value == 0) {
+      revert InvalidFTMAmount();
+    }
+
+    uint deadline = block.timestamp + 10 minutes;
+    // Buy brush and send it back to the user
+    address[] memory buyPath = new address[](2);
+    buyPath[0] = buyPath1;
+    buyPath[1] = buyPath2;
+
+    router.swapExactETHForTokens{value: msg.value}(minimumBrushBack, buyPath, _to, deadline);
   }
 
   function processQuestsView(
@@ -418,6 +385,68 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
   }
 
+  function _questCompleted(uint _playerId, uint _questId) private {
+    emit QuestCompleted(_playerId, _questId);
+    questsCompleted[_playerId][_questId] = true;
+    delete activeQuests[_playerId];
+
+    if (isRandomQuest[_questId]) {
+      ++playerInfo[_playerId].numRandomQuestsCompleted;
+      delete inProgressRandomQuests[_playerId];
+    } else {
+      ++playerInfo[_playerId].numFixedQuestsCompleted;
+    }
+  }
+
+  function _processQuestView(
+    uint[] calldata _choiceIds,
+    uint[] calldata _choiceIdAmounts,
+    PlayerQuest memory playerQuest
+  )
+    private
+    view
+    returns (
+      uint[] memory itemTokenIds,
+      uint[] memory amounts,
+      uint itemTokenIdBurned,
+      uint amountBurned,
+      Skill skillGained,
+      uint32 xpGained,
+      bool questCompleted
+    )
+  {
+    Quest memory quest = playerQuest.isFixed ? allFixedQuests[playerQuest.questId] : randomQuest;
+    for (uint i; i < _choiceIds.length; ++i) {
+      uint choiceId = _choiceIds[i];
+      uint amount = _choiceIdAmounts[i];
+      if (quest.actionChoiceId == choiceId) {
+        playerQuest.actionChoiceCompletedNum += uint24(amount);
+      }
+    }
+
+    questCompleted = playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum;
+    if (questCompleted) {
+      // length can be 0, 1 or 2
+      uint mintLength = quest.rewardItemTokenId == NONE ? 0 : 1;
+      mintLength += (quest.rewardItemTokenId1 == NONE ? 0 : 1);
+
+      itemTokenIds = new uint[](mintLength);
+      amounts = new uint[](mintLength);
+      if (quest.rewardItemTokenId != NONE) {
+        itemTokenIds[0] = quest.rewardItemTokenId;
+        amounts[0] = quest.rewardAmount;
+      }
+      if (quest.rewardItemTokenId1 != NONE) {
+        itemTokenIds[1] = quest.rewardItemTokenId1;
+        amounts[1] = quest.rewardAmount1;
+      }
+      itemTokenIdBurned = quest.burnItemTokenId;
+      amountBurned = quest.burnAmount;
+      skillGained = quest.skillReward;
+      xpGained = quest.skillXPGained;
+    }
+  }
+
   function _addQuest(
     Quest calldata _quest,
     bool _isRandom,
@@ -471,31 +500,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
   }
 
-  function buyBrushQuest(address _from, uint _playerId, uint _minimumBrushBack) external payable {
-    PlayerQuest storage playerQuest = activeQuests[_playerId];
-    buyBrush(_from, _minimumBrushBack);
-    if (playerQuest.questId != QUEST_ID_STARTER_TRADER) {
-      revert InvalidActiveQuest();
-    }
-
-    _questCompleted(_playerId, playerQuest.questId);
-  }
-
-  function buyBrush(address _to, uint minimumBrushBack) public payable {
-    if (msg.value == 0) {
-      revert InvalidFTMAmount();
-    }
-
-    uint deadline = block.timestamp + 10 minutes;
-    // Buy brush and send it back to the user
-    address[] memory buyPath = new address[](2);
-    buyPath[0] = buyPath1;
-    buyPath[1] = buyPath2;
-
-    router.swapExactETHForTokens{value: msg.value}(minimumBrushBack, buyPath, _to, deadline);
-  }
-
-  function setPlayers(address _players) external onlyOwner {
+  function setPlayers(IPlayers _players) external onlyOwner {
     players = _players;
   }
 

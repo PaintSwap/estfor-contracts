@@ -33,13 +33,7 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
     await players
       .connect(alice)
-      .startActionsWithBoost(
-        playerId,
-        [queuedAction],
-        EstforConstants.XP_BOOST,
-        NOW,
-        EstforTypes.ActionQueueStatus.NONE
-      );
+      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -74,13 +68,7 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
     await players
       .connect(alice)
-      .startActionsWithBoost(
-        playerId,
-        [queuedAction],
-        EstforConstants.XP_BOOST,
-        NOW,
-        EstforTypes.ActionQueueStatus.NONE
-      );
+      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -116,13 +104,7 @@ describe("Boosts", function () {
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
       await players
         .connect(alice)
-        .startActionsWithBoost(
-          playerId,
-          [queuedAction],
-          EstforConstants.XP_BOOST,
-          NOW,
-          EstforTypes.ActionQueueStatus.NONE
-        );
+        .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [86400]);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [86400]); // boost has expired
@@ -159,13 +141,7 @@ describe("Boosts", function () {
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
       await players
         .connect(alice)
-        .startActionsWithBoost(
-          playerId,
-          [queuedAction],
-          EstforConstants.XP_BOOST,
-          NOW,
-          EstforTypes.ActionQueueStatus.NONE
-        );
+        .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players
         .connect(alice)
@@ -198,13 +174,7 @@ describe("Boosts", function () {
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
       await players
         .connect(alice)
-        .startActionsWithBoost(
-          playerId,
-          [queuedAction],
-          EstforConstants.XP_BOOST,
-          NOW,
-          EstforTypes.ActionQueueStatus.NONE
-        );
+        .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
       expect((await players.activeBoosts(playerId)).itemTokenId).to.not.eq(NONE);
@@ -234,13 +204,7 @@ describe("Boosts", function () {
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
     await players
       .connect(alice)
-      .startActionsWithBoost(
-        playerId,
-        [queuedAction],
-        EstforConstants.XP_BOOST,
-        NOW,
-        EstforTypes.ActionQueueStatus.NONE
-      );
+      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -276,13 +240,7 @@ describe("Boosts", function () {
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
     await players
       .connect(alice)
-      .startActionsWithBoost(
-        playerId,
-        [queuedAction],
-        EstforConstants.XP_BOOST,
-        NOW,
-        EstforTypes.ActionQueueStatus.NONE
-      );
+      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -326,7 +284,7 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
     await players
       .connect(alice)
-      .startActionsWithBoost(
+      .startActionsExtra(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -366,7 +324,7 @@ describe("Boosts", function () {
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
     await players
       .connect(alice)
-      .startActionsWithBoost(
+      .startActionsExtra(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,

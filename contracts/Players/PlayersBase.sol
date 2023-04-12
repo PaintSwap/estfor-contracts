@@ -52,7 +52,7 @@ abstract contract PlayersBase {
   event ActionPartiallyFinished(address from, uint playerId, uint queueId, uint elapsedTime);
   event ActionAborted(address from, uint playerId, uint queueId);
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
-  event LevelUp(address from, uint playerId, Skill skill, uint32 level);
+  event LevelUp(address from, uint playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
 
   struct FullAttireBonus {
