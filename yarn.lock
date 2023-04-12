@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@0xdoublesharp/unsafe-math@0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@0xdoublesharp/unsafe-math/-/unsafe-math-0.0.13.tgz#62a689934e99341ab29f2d4a6d238d9c1e25c1b1"
-  integrity sha512-Vaa83ZpfXzA/4HdL9a8Xy1IJHJIsadexu94sU2MMJafL3Nr5bJGfXO2QAW+6IUJYGCy87v01eY75ah/md+1G+Q==
+"@0xdoublesharp/unsafe-math@0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@0xdoublesharp/unsafe-math/-/unsafe-math-0.0.14.tgz#45c9302063dd4df3d1032ca73abb644e828993c8"
+  integrity sha512-v1oioKIOrDDCgyq3OdAG7PSdjxuOuFDZBrIecC6DFA75hwn4gZDjyEW3lD34pGgv56kfCfIso3mwCISIZ5xZ6A==
 
 "@aduh95/viz.js@^3.7.0":
   version "3.7.0"
