@@ -6,6 +6,7 @@ import {
   PLAYERS_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
   QUESTS_ADDRESS,
+  SHOP_ADDRESS,
 } from "./constants";
 import {verifyContracts} from "./utils";
 
@@ -56,6 +57,15 @@ async function main() {
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
   await verifyContracts([itemNFT.address]);
+
+  // Shop
+  const Shop = await ethers.getContractFactory("Shop");
+  const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
+    kind: "uups",
+  });
+  await shop.deployed();
+  console.log(`shop = "${shop.address.toLowerCase()}"`);
+  await verifyContracts([shop.address]);
 
   // Quests
   const Quests = await ethers.getContractFactory("Quests");

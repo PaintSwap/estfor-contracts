@@ -227,7 +227,7 @@ describe("Shop", function () {
     await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
     expect(await itemNFT.numUniqueItems()).to.eq(2);
 
-    expect(await shop.sellingPrice(EstforConstants.BRONZE_SHIELD)).to.eq(0);
+    expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.eq(0);
 
     // Give the contract some brush to assign to the items
     const totalBrush = 1200;
@@ -235,10 +235,10 @@ describe("Shop", function () {
 
     const splitBrush = 600;
     const priceShield = splitBrush / 200;
-    expect((await shop.sellingPrice(EstforConstants.BRONZE_SHIELD)).toNumber()).to.eq(priceShield);
+    expect((await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).toNumber()).to.eq(priceShield);
 
     const priceBronzeNecklace = splitBrush / 100;
-    expect(await shop.sellingPrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
+    expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
       ethers.BigNumber.from(priceShield),
       ethers.BigNumber.from(priceBronzeNecklace),
     ]);
@@ -338,17 +338,17 @@ describe("Shop", function () {
     // Give the contract some brush to assign to the items
     const totalBrush = ethers.utils.parseEther("1");
     await brush.mint(shop.address, totalBrush);
-    expect(await shop.sellingPrice(EstforConstants.BRONZE_SHIELD)).to.be.gt(1);
+    expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.be.gt(1);
     await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
 
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0)).to.be.revertedWithCustomError(
       shop,
-      "SellingPriceIsHigherThanShop"
+      "LiquidatePriceIsHigherThanShop"
     );
 
     await expect(shop.connect(alice).sellBatch([EstforConstants.BRONZE_SHIELD], [1], 0)).to.be.revertedWithCustomError(
       shop,
-      "SellingPriceIsHigherThanShop"
+      "LiquidatePriceIsHigherThanShop"
     );
   });
 

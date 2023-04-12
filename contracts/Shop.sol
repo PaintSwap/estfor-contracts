@@ -35,7 +35,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error PriceCannotBeZero();
   error NotEnoughBrush(uint brushNeeded, uint brushAvailable);
   error MinExpectedBrushNotReached(uint totalBrush, uint minExpectedBrush);
-  error SellingPriceIsHigherThanShop(uint tokenId);
+  error LiquidatePriceIsHigherThanShop(uint tokenId);
   error SellingTooQuicklyAfterItemIntroduction();
   error NotEnoughAllocationRemaining(uint tokenId, uint totalSold, uint allocationRemaining);
 
@@ -68,7 +68,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     brush = _brush;
   }
 
-  function sellingPrice(uint16 _tokenId) public view returns (uint price) {
+  function liquidatePrice(uint16 _tokenId) public view returns (uint price) {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / itemNFT.numUniqueItems();
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
@@ -80,7 +80,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
   }
 
-  function sellingPrices(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
+  function liquidatePrices(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
     U256 iter = U256.wrap(_tokenIds.length);
     if (iter.eq(0)) {
       return prices;
@@ -152,7 +152,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   function _sell(uint _tokenId, uint _quantity, uint _sellPrice) private {
     uint price = shopItems[_tokenId];
     if (price != 0 && price < _sellPrice) {
-      revert SellingPriceIsHigherThanShop(_tokenId);
+      revert LiquidatePriceIsHigherThanShop(_tokenId);
     }
 
     // 48 hour period of no selling for an item
@@ -182,7 +182,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
-    uint price = sellingPrice(_tokenId);
+    uint price = liquidatePrice(_tokenId);
     uint totalBrush = price * _quantity;
     if (totalBrush < _minExpectedBrush) {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
@@ -205,7 +205,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     do {
       iter = iter.dec();
       uint i = iter.asUint256();
-      U256 sellPrice = U256.wrap(sellingPrice(uint16(_tokenIds[i])));
+      U256 sellPrice = U256.wrap(liquidatePrice(uint16(_tokenIds[i])));
       totalBrush = totalBrush + (sellPrice * U256.wrap(_quantities[i]));
       prices[i] = sellPrice.asUint256();
       _sell(_tokenIds[i], _quantities[i], prices[i]);
