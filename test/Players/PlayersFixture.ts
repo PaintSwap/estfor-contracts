@@ -120,7 +120,9 @@ export const playersFixture = async function () {
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playerLibrary = await PlayersLibrary.deploy();
 
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
+  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
+    libraries: {PlayersLibrary: playerLibrary.address},
+  });
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
 
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {

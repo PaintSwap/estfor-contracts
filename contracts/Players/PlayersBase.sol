@@ -198,7 +198,8 @@ abstract contract PlayersBase {
     Attire storage _attire,
     Skill _skill,
     uint _elapsedTime,
-    uint24 _xpPerHour
+    uint24 _xpPerHour,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) internal view returns (uint32 extraPointsAccrued) {
     uint8 bonusPercent = fullAttireBonus[_skill].bonusXPPercent;
     if (bonusPercent == 0) {
@@ -207,7 +208,12 @@ abstract contract PlayersBase {
 
     // Check if they have the full equipment set, if so they can get some bonus
     bool skipNeck = true;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(
+      _from,
+      _attire,
+      skipNeck,
+      _pendingQueuedActionState
+    );
     bool hasFullAttire = PlayersLibrary.extraBoostFromFullAttire(
       itemTokenIds,
       balances,
@@ -253,13 +259,21 @@ abstract contract PlayersBase {
     uint _playerId,
     QueuedAction storage _queuedAction,
     Skill _skill,
-    uint _xpElapsedTime
+    uint _xpElapsedTime,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) internal view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     bool _isCombatSkill = _isCombatStyle(_queuedAction.combatStyle);
     uint24 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
-    pointsAccrued += _extraXPFromFullAttire(_from, _queuedAction.attire, _skill, _xpElapsedTime, xpPerHour);
+    pointsAccrued += _extraXPFromFullAttire(
+      _from,
+      _queuedAction.attire,
+      _skill,
+      _xpElapsedTime,
+      xpPerHour,
+      _pendingQueuedActionState
+    );
     pointsAccruedExclBaseBoost = pointsAccrued;
     pointsAccrued += _extraFromAvatar(_playerId, _skill, _xpElapsedTime, xpPerHour);
   }
@@ -284,7 +298,8 @@ abstract contract PlayersBase {
     address _from,
     uint16[2] memory _handEquipmentTokenIds,
     CombatStats memory _combatStats,
-    bool _isCombat
+    bool _isCombat,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) internal view returns (bool missingRequiredHandEquipment) {
     U256 iter = U256.wrap(_handEquipmentTokenIds.length);
     while (iter.neq(0)) {
@@ -292,7 +307,12 @@ abstract contract PlayersBase {
       uint16 i = iter.asUint16();
       uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
       if (handEquipmentTokenId != NONE) {
-        uint256 balance = itemNFT.balanceOf(_from, handEquipmentTokenId);
+        uint256 balance = PlayersLibrary.getRealBalance(
+          _from,
+          handEquipmentTokenId,
+          itemNFT,
+          _pendingQueuedActionState
+        );
         if (balance == 0) {
           // Assume that if the player doesn't have the non-combat item that this action cannot be done
           if (!_isCombat) {
@@ -336,7 +356,8 @@ abstract contract PlayersBase {
   function _getAttireWithBalance(
     address _from,
     Attire storage _attire,
-    bool _skipNeck
+    bool _skipNeck,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) internal view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
     uint attireLength;
     itemTokenIds = new uint16[](8);
@@ -364,13 +385,23 @@ abstract contract PlayersBase {
     }
 
     if (attireLength != 0) {
-      balances = itemNFT.balanceOfs(_from, itemTokenIds);
+      balances = PlayersLibrary.getRealBalances(_from, itemTokenIds, itemNFT, _pendingQueuedActionState);
     }
   }
 
-  function _updateCombatStats(address _from, CombatStats memory _stats, Attire storage _attire) internal view {
+  function _updateCombatStats(
+    address _from,
+    CombatStats memory _stats,
+    Attire storage _attire,
+    PendingQueuedActionState memory _pendingQueuedActionState
+  ) internal view {
     bool skipNeck;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(
+      _from,
+      _attire,
+      skipNeck,
+      _pendingQueuedActionState
+    );
     if (itemTokenIds.length != 0) {
       Item[] memory items = itemNFT.getItems(itemTokenIds);
       U256 iter = U256.wrap(items.length);

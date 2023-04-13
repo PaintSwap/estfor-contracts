@@ -28,7 +28,9 @@ async function main() {
     playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
 
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
+  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
+    libraries: {PlayersLibrary: playerLibrary.address},
+  });
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
   console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
   await playersImplQueueActions.deployed();

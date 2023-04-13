@@ -225,7 +225,9 @@ async function main() {
   await playerLibrary.deployed();
   console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
 
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions");
+  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
+    libraries: {PlayersLibrary: playerLibrary.address},
+  });
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
   await playersImplQueueActions.deployed();
   console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);

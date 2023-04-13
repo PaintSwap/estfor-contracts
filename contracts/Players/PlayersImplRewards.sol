@@ -240,13 +240,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (isCombat) {
         // This will only ones that they have a balance for at this time. This will check balances
         combatStats = _getCachedCombatStats(player);
-        _updateCombatStats(from, combatStats, queuedAction.attire);
+        _updateCombatStats(from, combatStats, queuedAction.attire, pendingQueuedActionState);
       }
       bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
         from,
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
-        isCombat
+        isCombat,
+        pendingQueuedActionState
       );
       if (missingRequiredHandEquipment) {
         continue;
@@ -280,7 +281,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           died,
           baseNumConsumed,
           numProduced
-        ) = _processConsumablesView(from, _playerId, queuedAction, elapsedTime, combatStats, actionChoice);
+        ) = _processConsumablesView(
+          from,
+          _playerId,
+          queuedAction,
+          elapsedTime,
+          combatStats,
+          actionChoice,
+          pendingQueuedActionState
+        );
 
         choiceIds[choiceIdsLength] = queuedAction.choiceId;
         choiceIdsLength = choiceIdsLength.inc();
@@ -331,7 +340,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           _playerId,
           queuedAction,
           skill,
-          xpElapsedTime
+          xpElapsedTime,
+          pendingQueuedActionState
         );
       }
       uint32 xpGained = pointsAccrued;
@@ -687,7 +697,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     QueuedAction storage _queuedAction,
     uint _elapsedTime,
     CombatStats memory _combatStats,
-    ActionChoice memory _actionChoice
+    ActionChoice memory _actionChoice,
+    PendingQueuedActionState memory _pendingQueuedActionState
   )
     private
     view
@@ -700,7 +711,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint24 numProduced
     )
   {
-    consumedEquipment = new Equipment[](4);
+    consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
     uint consumedEquipmentLength;
 
     // Figure out how much food should be consumed.
@@ -721,7 +732,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _combatStats,
         enemyCombatStats,
         alphaCombat,
-        betaCombat
+        betaCombat,
+        _pendingQueuedActionState
       );
 
       uint24 foodConsumed;
@@ -733,8 +745,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _combatStats,
         enemyCombatStats,
         alphaCombat,
-        betaCombat
+        betaCombat,
+        _pendingQueuedActionState
       );
+
+      if (died) {
+        xpElapsedTime = 0;
+      }
 
       if (_queuedAction.regenerateId != NONE && foodConsumed != 0) {
         consumedEquipment[consumedEquipmentLength] = Equipment(_queuedAction.regenerateId, foodConsumed);
@@ -745,7 +762,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _from,
         itemNFT,
         _elapsedTime,
-        _actionChoice
+        _actionChoice,
+        _pendingQueuedActionState
       );
     }
 

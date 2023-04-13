@@ -160,6 +160,60 @@ library PlayersLibrary {
       );
   }
 
+  function _getRealBalance(
+    uint _originalBalance,
+    uint _itemId,
+    PendingQueuedActionState memory _pendingQueuedActionState
+  ) private pure returns (uint balance) {
+    balance = _originalBalance;
+    // Check all changes to the player's inventory that haven't been commited yet
+    for (uint i; i < _pendingQueuedActionState.consumed.length; ++i) {
+      if (_pendingQueuedActionState.consumed[i].itemTokenId == _itemId) {
+        balance -= _pendingQueuedActionState.consumed[i].amount;
+      }
+    }
+    for (uint i; i < _pendingQueuedActionState.produced.length; ++i) {
+      if (_pendingQueuedActionState.produced[i].itemTokenId == _itemId) {
+        balance += _pendingQueuedActionState.produced[i].amount;
+      }
+    }
+    for (uint i; i < _pendingQueuedActionState.producedPastRandomRewards.length; ++i) {
+      if (_pendingQueuedActionState.producedPastRandomRewards[i].itemTokenId == _itemId) {
+        balance += _pendingQueuedActionState.producedPastRandomRewards[i].amount;
+      }
+    }
+    for (uint i; i < _pendingQueuedActionState.producedXPRewards.length; ++i) {
+      if (_pendingQueuedActionState.producedXPRewards[i].itemTokenId == _itemId) {
+        balance += _pendingQueuedActionState.producedXPRewards[i].amount;
+      }
+    }
+    // TODO daily reward
+  }
+
+  // This takes into account any intermediate changes from previous actions from view functions
+  // They cannot affect balanceOf
+  function getRealBalance(
+    address _from,
+    uint _itemId,
+    ItemNFT _itemNFT,
+    PendingQueuedActionState memory pendingQueuedActionState
+  ) public view returns (uint balance) {
+    balance = _getRealBalance(_itemNFT.balanceOf(_from, _itemId), _itemId, pendingQueuedActionState);
+  }
+
+  function getRealBalances(
+    address _from,
+    uint16[] memory _itemIds,
+    ItemNFT _itemNFT,
+    PendingQueuedActionState memory _pendingQueuedActionState
+  ) external view returns (uint[] memory balances) {
+    balances = _itemNFT.balanceOfs(_from, _itemIds);
+
+    for (uint i; i < balances.length; ++i) {
+      balances[i] = _getRealBalance(balances[i], _itemIds[i], _pendingQueuedActionState);
+    }
+  }
+
   function foodConsumedView(
     address _from,
     QueuedAction storage queuedAction,
@@ -168,7 +222,8 @@ library PlayersLibrary {
     CombatStats memory _combatStats,
     CombatStats memory _enemyCombatStats,
     uint128 _alphaCombat,
-    uint128 _betaCombat
+    uint128 _betaCombat,
+    PendingQueuedActionState memory pendingQueuedActionState
   ) external view returns (uint24 foodConsumed, bool died) {
     uint32 totalHealthLost = _dmg(
       _enemyCombatStats.melee,
@@ -213,7 +268,7 @@ library PlayersLibrary {
         foodConsumed = type(uint16).max;
         died = true;
       } else {
-        uint balance = _itemNFT.balanceOf(_from, queuedAction.regenerateId);
+        uint balance = getRealBalance(_from, queuedAction.regenerateId, _itemNFT, pendingQueuedActionState);
         died = foodConsumed > balance;
         if (died) {
           foodConsumed = uint16(balance);
@@ -226,7 +281,8 @@ library PlayersLibrary {
     address _from,
     ActionChoice memory _actionChoice,
     uint24 _numConsumed,
-    ItemNFT _itemNFT
+    ItemNFT _itemNFT,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _numConsumed;
     if (_numConsumed != 0) {
@@ -237,7 +293,8 @@ library PlayersLibrary {
           _actionChoice.num1,
           _numConsumed,
           maxRequiredRatio,
-          _itemNFT
+          _itemNFT,
+          _pendingQueuedActionState
         );
       }
       if (_actionChoice.inputTokenId2 != 0) {
@@ -247,7 +304,8 @@ library PlayersLibrary {
           _actionChoice.num2,
           _numConsumed,
           maxRequiredRatio,
-          _itemNFT
+          _itemNFT,
+          _pendingQueuedActionState
         );
       }
       if (_actionChoice.inputTokenId3 != 0) {
@@ -257,7 +315,8 @@ library PlayersLibrary {
           _actionChoice.num3,
           _numConsumed,
           maxRequiredRatio,
-          _itemNFT
+          _itemNFT,
+          _pendingQueuedActionState
         );
       }
     }
@@ -269,9 +328,10 @@ library PlayersLibrary {
     uint16 _num,
     uint24 _numConsumed,
     uint _maxRequiredRatio,
-    ItemNFT _itemNFT
+    ItemNFT _itemNFT,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) private view returns (uint maxRequiredRatio) {
-    uint balance = _itemNFT.balanceOf(_from, _inputTokenId);
+    uint balance = getRealBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionState);
     if (_numConsumed > type(uint16).max && _numConsumed < balance / _num) {
       // Have enough balance but numConsumed exceeds 65535, too much so limit it.
       balance = type(uint16).max * _num;
@@ -324,7 +384,8 @@ library PlayersLibrary {
     CombatStats memory _combatStats,
     CombatStats memory _enemyCombatStats,
     uint128 _alphaCombat,
-    uint128 _betaCombat
+    uint128 _betaCombat,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) external view returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed) {
     // Update these as necessary
     xpElapsedTime = _elapsedTime;
@@ -376,7 +437,13 @@ library PlayersLibrary {
       numConsumed = uint16((combatElapsedTime * _actionChoice.rate) / (3600 * 10));
       if (numConsumed != 0) {
         // This checks the balances
-        uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
+        uint maxRequiredRatio = _getMaxRequiredRatio(
+          _from,
+          _actionChoice,
+          numConsumed,
+          _itemNFT,
+          _pendingQueuedActionState
+        );
 
         if (numConsumed > maxRequiredRatio) {
           numConsumed = uint16(maxRequiredRatio);
@@ -398,7 +465,8 @@ library PlayersLibrary {
     address _from,
     ItemNFT _itemNFT,
     uint _elapsedTime,
-    ActionChoice memory _actionChoice
+    ActionChoice memory _actionChoice,
+    PendingQueuedActionState memory _pendingQueuedActionState
   ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
     // Update these as necessary
     xpElapsedTime = _elapsedTime;
@@ -406,7 +474,13 @@ library PlayersLibrary {
     // Check the max that can be used
     numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 10));
     // This checks the balances
-    uint maxRequiredRatio = _getMaxRequiredRatio(_from, _actionChoice, numConsumed, _itemNFT);
+    uint maxRequiredRatio = _getMaxRequiredRatio(
+      _from,
+      _actionChoice,
+      numConsumed,
+      _itemNFT,
+      _pendingQueuedActionState
+    );
     if (numConsumed > maxRequiredRatio) {
       numConsumed = uint24(maxRequiredRatio);
       if (numConsumed > 0) {

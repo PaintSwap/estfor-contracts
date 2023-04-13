@@ -363,7 +363,13 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _checkEquipPosition(_attire);
 
     bool skipNeck;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(_from, _attire, skipNeck);
+    PendingQueuedActionState memory pendingQueuedActionState;
+    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(
+      _from,
+      _attire,
+      skipNeck,
+      pendingQueuedActionState
+    );
     if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minXPs) = itemNFT.getMinRequirements(itemTokenIds);
       U256 iter = U256.wrap(balances.length);

@@ -179,10 +179,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     quests.deactivateQuest(_playerId);
   }
 
-  function claimRandomRewards(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
-    _claimRandomRewards(_playerId);
-  }
-
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.unequipBoostVial.selector, _playerId));
   }
