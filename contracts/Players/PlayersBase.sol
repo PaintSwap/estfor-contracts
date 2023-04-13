@@ -20,6 +20,7 @@ import "../globals/rewards.sol";
 
 abstract contract PlayersBase {
   using UnsafeMath for U256;
+  using UnsafeMath for uint256;
 
   event ClearAll(address from, uint playerId);
   event AddXP(address from, uint playerId, Skill skill, uint32 points);
@@ -321,7 +322,7 @@ abstract contract PlayersBase {
     bool _isCombat,
     PendingQueuedActionState memory _pendingQueuedActionState
   ) internal view returns (bool missingRequiredHandEquipment) {
-    U256 iter = U256.wrap(_handEquipmentTokenIds.length);
+    U256 iter = _handEquipmentTokenIds.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
@@ -424,7 +425,7 @@ abstract contract PlayersBase {
     );
     if (itemTokenIds.length != 0) {
       Item[] memory items = itemNFT.getItems(itemTokenIds);
-      U256 iter = U256.wrap(items.length);
+      U256 iter = items.length.asU256();
       while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();

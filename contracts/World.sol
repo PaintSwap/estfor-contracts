@@ -499,7 +499,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function addActions(Action[] calldata _actions) external onlyOwner {
-    U256 iter = U256.wrap(_actions.length);
+    U256 iter = _actions.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();

@@ -23,6 +23,7 @@ import "../globals/rewards.sol";
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint16;
+  using UnsafeMath for uint64;
   using UnsafeMath for uint256;
 
   error CannotCallInitializerOnImplementation();
@@ -71,7 +72,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         revert TooManyActionsQueuedSomeAlreadyExist();
       }
       player.actionQueue = remainingSkills;
-      U256 j = U256.wrap(remainingSkills.length);
+      U256 j = remainingSkills.length.asU256();
       while (j.neq(0)) {
         j = j.dec();
         totalTimespan += remainingSkills[j.asUint256()].timespan;
@@ -81,8 +82,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint prevEndTime = block.timestamp + totalTimespan;
 
     U256 iter;
-    U256 queueId = U256.wrap(nextQueueId);
-    U256 queuedActionsLength = U256.wrap(_queuedActions.length);
+    U256 queueId = nextQueueId.asU256();
+    U256 queuedActionsLength = _queuedActions.length.asU256();
 
     while (iter.neq(_queuedActions.length)) {
       uint i = iter.asUint256();
@@ -292,7 +293,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       if (itemLength != 0) {
         uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
 
-        U256 iter = U256.wrap(balances.length);
+        U256 iter = balances.length.asU256();
         while (iter.neq(0)) {
           iter = iter.dec();
           uint i = iter.asUint256();
@@ -372,7 +373,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     );
     if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minXPs) = itemNFT.getMinRequirements(itemTokenIds);
-      U256 iter = U256.wrap(balances.length);
+      U256 iter = balances.length.asU256();
       while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
@@ -394,7 +395,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint16 _handItemTokenIdRangeMax,
     bool _isCombat
   ) private view {
-    U256 iter = U256.wrap(_equippedItemTokenIds.length);
+    U256 iter = _equippedItemTokenIds.length.asU256();
     bool twoHanded;
     while (iter.neq(0)) {
       iter = iter.dec();
@@ -506,7 +507,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       uint i = iter.asUint256();
       uint32 xpThreshold = _getXPReward(prevIndex.inc().add(i));
       Equipment[] memory items = xpRewardThresholds[xpThreshold];
-      if (items.length > 0) {
+      if (items.length != 0) {
         // TODO: Currently assumes there is only 1 item per threshold
         uint l = length.asUint256();
         itemTokenIds[l] = items[0].itemTokenId;
@@ -553,7 +554,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   // Index not level, add one after (check for > max)
   function _findBaseXPThreshold(uint256 _xp) private pure returns (uint16) {
     U256 low;
-    U256 high = U256.wrap(xpRewardBytes.length).div(4);
+    U256 high = xpRewardBytes.length.asU256().div(4);
 
     while (low < high) {
       U256 mid = (low + high).div(2);
@@ -575,7 +576,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   }
 
   function _getXPReward(uint256 _index) private pure returns (uint32) {
-    U256 index = U256.wrap(_index).mul(4);
+    U256 index = _index.asU256().mul(4);
     return
       uint32(
         xpRewardBytes[index.asUint256()] |

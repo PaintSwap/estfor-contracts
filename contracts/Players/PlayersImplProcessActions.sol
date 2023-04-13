@@ -234,7 +234,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       PlayerQuest[] memory questsCompletedInfo
     ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
     // Mint the rewards
-    if (itemTokenIds.length > 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
     }
 
@@ -462,7 +461,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         uint24 boostedTime;
         if (activeBoost.boostType == BoostType.GATHERING) {
           boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
-          if (boostedTime > 0) {
             boostType = activeBoost.boostType;
             boostValue = activeBoost.val;
           }

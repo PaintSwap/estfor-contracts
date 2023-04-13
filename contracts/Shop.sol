@@ -82,7 +82,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function liquidatePrices(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
-    U256 iter = U256.wrap(_tokenIds.length);
+    U256 iter = _tokenIds.length.asU256();
     if (iter.eq(0)) {
       return prices;
     }
@@ -121,7 +121,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
-    U256 iter = U256.wrap(_tokenIds.length);
+    U256 iter = _tokenIds.length.asU256();
     if (iter.eq(0)) {
       revert LengthEmpty();
     }
@@ -157,18 +157,18 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
 
     // 48 hour period of no selling for an item
-    if (itemNFT.timestampFirstMint(_tokenId) + SELLING_CUTOFF_DURATION > block.timestamp) {
+    if (itemNFT.timestampFirstMint(_tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
       revert SellingTooQuicklyAfterItemIntroduction();
     }
 
     // Check if tokenAllocation checkpoint is older than 24 hours
     TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
     uint allocationRemaining;
-    if ((block.timestamp / 1 days) * 1 days > tokenAllocation.checkpointTimestamp + 1 days) {
+    if ((block.timestamp / 1 days) * 1 days > tokenAllocation.checkpointTimestamp.add(1 days)) {
       // New day, reset max allocation that can be sold
       allocationRemaining = uint128(brush.balanceOf(address(this)) / itemNFT.numUniqueItems());
       tokenAllocation.allocationRemaining = uint128(allocationRemaining);
-      tokenAllocation.checkpointTimestamp = (block.timestamp / 1 days) * 1 days;
+      tokenAllocation.checkpointTimestamp = block.timestamp.div(1 days).mul(1 days);
       emit NewAllocation(uint16(_tokenId), allocationRemaining);
     } else {
       allocationRemaining = tokenAllocation.allocationRemaining;
@@ -194,7 +194,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function sellBatch(uint[] calldata _tokenIds, uint[] calldata _quantities, uint _minExpectedBrush) external {
-    U256 iter = U256.wrap(_tokenIds.length);
+    U256 iter = _tokenIds.length.asU256();
     if (iter.eq(0)) {
       revert LengthEmpty();
     }
@@ -206,8 +206,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     do {
       iter = iter.dec();
       uint i = iter.asUint256();
-      U256 sellPrice = U256.wrap(liquidatePrice(uint16(_tokenIds[i])));
-      totalBrush = totalBrush + (sellPrice * U256.wrap(_quantities[i]));
+      U256 sellPrice = liquidatePrice(uint16(_tokenIds[i])).asU256();
+      totalBrush = totalBrush + (sellPrice * _quantities[i].asU256());
       prices[i] = sellPrice.asUint256();
       _sell(_tokenIds[i], _quantities[i], prices[i]);
     } while (iter.neq(0));
@@ -239,7 +239,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function addBuyableItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    U256 iter = U256.wrap(_shopItems.length);
+    U256 iter = _shopItems.length.asU256();
     if (iter.eq(0)) {
       revert LengthEmpty();
     }

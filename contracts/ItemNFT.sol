@@ -20,8 +20,8 @@ import "./globals/items.sol";
 
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
-  using UnsafeMath for uint256;
   using UnsafeMath for U256;
+  using UnsafeMath for uint256;
 
   event AddItem(Item item, uint16 tokenId, string name);
   event AddItems(Item[] items, uint16[] tokenIds, string[] names);
@@ -141,13 +141,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       numUniqueItems = numUniqueItems.inc();
     }
 
-    itemBalances[_tokenId] = existingBalance + _amount;
+    itemBalances[_tokenId] = existingBalance.add(_amount);
     _mint(_to, uint(_tokenId), _amount, "");
   }
 
   function _mintBatchItems(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) internal {
     U256 numNewItems;
-    U256 tokenIdsLength = U256.wrap(_tokenIds.length);
+    U256 tokenIdsLength = _tokenIds.length.asU256();
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       uint tokenId = _tokenIds[i];
@@ -215,7 +215,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   ) external view returns (Skill[] memory skills, uint32[] memory minXPs) {
     skills = new Skill[](_tokenIds.length);
     minXPs = new uint32[](_tokenIds.length);
-    U256 tokenIdsLength = U256.wrap(_tokenIds.length);
+    U256 tokenIdsLength = _tokenIds.length.asU256();
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       (skills[i], minXPs[i]) = getMinRequirement(_tokenIds[i]);
@@ -223,7 +223,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function getItems(uint16[] calldata _tokenIds) external view returns (Item[] memory _items) {
-    U256 tokenIdsLength = U256.wrap(_tokenIds.length);
+    U256 tokenIdsLength = _tokenIds.length.asU256();
     _items = new Item[](tokenIdsLength.asUint256());
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -234,7 +234,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function getEquipPositions(
     uint16[] calldata _tokenIds
   ) external view returns (EquipPosition[] memory equipPositions) {
-    U256 tokenIdsLength = U256.wrap(_tokenIds.length);
+    U256 tokenIdsLength = _tokenIds.length.asU256();
     equipPositions = new EquipPosition[](tokenIdsLength.asUint256());
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -244,7 +244,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   // If an item is burnt, remove it from the total
   function _removeAnyBurntFromTotal(uint[] memory _ids, uint[] memory _amounts) private {
-    U256 iter = U256.wrap(_ids.length);
+    U256 iter = _ids.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
@@ -257,7 +257,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _checkIsTransferable(uint[] memory _ids) private view {
-    U256 iter = U256.wrap(_ids.length);
+    U256 iter = _ids.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
@@ -297,7 +297,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
   function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
-    U256 iter = U256.wrap(_ids.length);
+    U256 iter = _ids.length.asU256();
     batchBalances = new uint256[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
@@ -387,7 +387,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function addItems(InputItem[] calldata _inputItems) external onlyOwner {
-    U256 iter = U256.wrap(_inputItems.length);
+    U256 iter = _inputItems.length.asU256();
     Item[] memory _items = new Item[](iter.asUint256());
     uint16[] memory tokenIds = new uint16[](iter.asUint256());
     string[] memory names = new string[](iter.asUint256());
