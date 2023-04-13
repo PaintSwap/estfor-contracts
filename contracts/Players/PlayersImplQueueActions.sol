@@ -585,6 +585,37 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       );
   }
 
+  function dailyRewardsViewImpl(
+    uint _playerId
+  ) external view returns (Equipment[] memory rewards, bytes32 dailyRewardMask) {
+    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
+    uint streakStartIndex = streakStart.div(1 weeks);
+    bytes32 mask = dailyRewardMasks[_playerId];
+    uint16 lastRewardStartIndex = uint16(uint256(mask));
+    if (lastRewardStartIndex < streakStartIndex) {
+      mask = bytes32(streakStartIndex); // Reset the mask
+    }
+
+    uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
+
+    // Claim daily reward as long as it's been set
+    if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
+      Equipment memory dailyReward = world.getDailyReward();
+      if (dailyReward.itemTokenId != NONE) {
+        dailyRewardMask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
+        bool canClaimWeeklyRewards = uint(dailyRewardMask >> (25 * 8)) == 2 ** (7 * 8) - 1;
+        uint length = canClaimWeeklyRewards ? 2 : 1;
+        rewards = new Equipment[](length);
+        rewards[0] = dailyReward;
+
+        // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
+        if (canClaimWeeklyRewards) {
+          rewards[1] = world.getWeeklyReward();
+        }
+      }
+    }
+  }
+
   function initialize(
     ItemNFT _itemNFT,
     PlayerNFT _playerNFT,

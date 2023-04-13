@@ -183,14 +183,15 @@ struct PastRandomRewardInfo {
 struct PendingQueuedActionState {
   EquipmentInfo[] consumed;
   EquipmentInfo[] produced;
+  DiedInfo[] died;
+  RollInfo[] rolls;
+  XPInfo[] xpGained;
   PastRandomRewardInfo[] producedPastRandomRewards;
   Equipment[] producedXPRewards;
   Equipment[] questRewards;
   Equipment[] questConsumed;
   PlayerQuest[] activeQuestInfo;
-  DiedInfo[] died;
-  RollInfo[] rolls;
-  XPInfo[] xpGained;
+  Equipment[] dailyRewards;
 }
 
 // External view functions that are in other implementation files
@@ -208,6 +209,10 @@ interface IPlayersQueueActionsDelegateView {
     uint oldTotalXP,
     uint newTotalXP
   ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts);
+
+  function dailyRewardsViewImpl(
+    uint _playerId
+  ) external view returns (Equipment[] memory rewards, bytes32 dailyRewardMask);
 }
 
 struct FullAttireBonusInput {

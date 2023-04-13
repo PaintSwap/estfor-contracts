@@ -283,18 +283,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActivePlayer(msg.sender, _playerId);
   }
 
-  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
-  function pendingQueuedActionState(
-    address _owner,
-    uint _playerId
-  ) external view returns (PendingQueuedActionState memory) {
-    bytes memory data = _staticcall(
-      address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
-    );
-    return abi.decode(data, (PendingQueuedActionState));
-  }
-
   function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
     bytes memory data = _staticcall(
       address(this),
@@ -390,7 +378,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       selector == IPlayersRewardsDelegateView.dailyClaimedRewardsImpl.selector
     ) {
       implementation = implRewards;
-    } else if (selector == IPlayersQueueActionsDelegateView.claimableXPThresholdRewardsImpl.selector) {
+    } else if (
+      selector == IPlayersQueueActionsDelegateView.claimableXPThresholdRewardsImpl.selector ||
+      selector == IPlayersQueueActionsDelegateView.dailyRewardsViewImpl.selector
+    ) {
       implementation = implQueueActions;
     } else {
       revert InvalidSelector();

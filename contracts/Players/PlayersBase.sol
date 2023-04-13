@@ -176,6 +176,26 @@ abstract contract PlayersBase {
     _;
   }
 
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
+  function pendingQueuedActionState(
+    address _owner,
+    uint _playerId
+  ) public view returns (PendingQueuedActionState memory) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
+    );
+    return abi.decode(data, (PendingQueuedActionState));
+  }
+
+  function dailyRewardsView(uint _playerId) public view returns (Equipment[] memory, bytes32) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(IPlayersQueueActionsDelegateView.dailyRewardsViewImpl.selector, _playerId)
+    );
+    return abi.decode(data, (Equipment[], bytes32));
+  }
+
   function _extraXPFromBoost(
     uint _playerId,
     bool _isCombatSkill,

@@ -467,15 +467,19 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
     }
 
+    // Daily rewards
+    bytes32 dailyRewardMask;
+    (pendingQueuedActionState.dailyRewards, dailyRewardMask) = dailyRewardsView(_playerId);
+
     pendingQueuedActionState.activeQuestInfo = activeQuestsCompletionInfo;
 
     // Compact to fit the arrays
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), consumedLength)
       mstore(mload(add(pendingQueuedActionState, 32)), producedLength)
-      mstore(mload(add(pendingQueuedActionState, 224)), diedLength)
-      mstore(mload(add(pendingQueuedActionState, 256)), rollsLength)
-      mstore(mload(add(pendingQueuedActionState, 288)), xpGainedLength)
+      mstore(mload(add(pendingQueuedActionState, 64)), diedLength)
+      mstore(mload(add(pendingQueuedActionState, 96)), rollsLength)
+      mstore(mload(add(pendingQueuedActionState, 128)), xpGainedLength)
     }
   }
 

@@ -623,36 +623,20 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {
-    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
-    uint streakStartIndex = streakStart.div(1 weeks);
-    bytes32 mask = dailyRewardMasks[_playerId];
-    uint16 lastRewardStartIndex = uint16(uint256(mask));
-    if (lastRewardStartIndex < streakStartIndex) {
-      mask = bytes32(streakStartIndex); // Reset the mask
+    (Equipment[] memory rewards, bytes32 dailyRewardMask) = dailyRewardsView(_playerId);
+    if (uint(dailyRewardMask) != 0) {
+      dailyRewardMasks[_playerId] = dailyRewardMask;
+    }
+    if (rewards.length >= 1) {
+      Equipment memory dailyReward = rewards[0];
+      itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
+      emit DailyReward(_from, _playerId, dailyReward.itemTokenId, dailyReward.amount);
     }
 
-    uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
-
-    // Claim daily reward as long as it's been set
-    if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
-      Equipment memory dailyReward = world.getDailyReward();
-      if (dailyReward.itemTokenId != NONE) {
-        mask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
-        dailyRewardMasks[_playerId] = mask;
-
-        itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
-        emit DailyReward(_from, _playerId, dailyReward.itemTokenId, dailyReward.amount);
-
-        // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
-        bool canClaimWeeklyRewards = uint(mask >> (25 * 8)) == 2 ** (7 * 8) - 1;
-        if (canClaimWeeklyRewards) {
-          Equipment memory weeklyReward = world.getWeeklyReward();
-          if (weeklyReward.itemTokenId != NONE) {
-            itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
-            emit WeeklyReward(_from, _playerId, weeklyReward.itemTokenId, weeklyReward.amount);
-          }
-        }
-      }
+    if (rewards.length == 2) {
+      Equipment memory weeklyReward = rewards[1];
+      itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
+      emit WeeklyReward(_from, _playerId, weeklyReward.itemTokenId, weeklyReward.amount);
     }
   }
 }
