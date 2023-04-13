@@ -1,14 +1,14 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "../interfaces/IBankFactory.sol";
-import "../interfaces/IBank.sol";
-import "../interfaces/IClans.sol";
-import "./BankRegistry.sol";
+import {IBankFactory} from "../interfaces/IBankFactory.sol";
+import {IBank} from "../interfaces/IBank.sol";
+import {IClans} from "../interfaces/IClans.sol";
+import {BankRegistry} from "./BankRegistry.sol";
 
 contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   event BankContractCreated(address creator, uint clanId, address newContract);

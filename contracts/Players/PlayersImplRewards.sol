@@ -16,6 +16,7 @@ import "../globals/rewards.sol";
 contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPlayersRewardsDelegateView {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
+  using UnsafeMath for uint40;
 
   constructor() {
     _checkStartSlot();
@@ -64,7 +65,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
     uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
     if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
-      for (uint i = 0; i < length; ++i) {
+      U256 bounds = length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         amounts[i] += uint32((boostedTime * amounts[i] * activeBoost.val) / (3600 * 100));
       }
     }
@@ -146,14 +149,17 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           _pendingRandomRewards[i].elapsedTime,
           activeBoost
         );
+        U256 bounds = length.asU256();
         if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
-          for (uint j = oldLength; j < length; ++j) {
+          for (U256 jter; jter < bounds; jter = jter.inc()) {
+            uint j = jter.asUint256();
             amounts[j] = uint32((boostedTime * amounts[j] * activeBoost.val) / (3600 * 100));
           }
         }
-        for (uint j = oldLength; j < length; ++j) {
-          queueIds[j] = pendingRandomReward.queueId;
-          actionIds[j] = pendingRandomReward.actionId;
+        for (U256 kter; kter < bounds; kter = kter.inc()) {
+          uint k = kter.asUint256();
+          queueIds[k] = pendingRandomReward.queueId;
+          actionIds[k] = pendingRandomReward.actionId;
         }
       }
     }
@@ -225,7 +231,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
     uint previousTotalXP = player.totalXP;
     uint totalXPGained;
-    for (uint i; i < actionQueue.length; ++i) {
+    U256 bounds = actionQueue.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       QueuedAction storage queuedAction = actionQueue[i];
       CombatStats memory combatStats;
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
@@ -274,38 +282,44 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           numProduced
         ) = _processConsumablesView(from, _playerId, queuedAction, elapsedTime, combatStats, actionChoice);
 
-        choiceIds[choiceIdsLength++] = queuedAction.choiceId;
+        choiceIds[choiceIdsLength] = queuedAction.choiceId;
+        choiceIdsLength = choiceIdsLength.inc();
         Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
         if (skill == Skill.COOKING) {
-          choiceIdAmounts[choiceIdAmountsLength++] = numProduced; // Assume we want amount cooked
+          choiceIdAmounts[choiceIdAmountsLength] = numProduced; // Assume we want amount cooked
         } else {
-          choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
+          choiceIdAmounts[choiceIdAmountsLength] = baseNumConsumed;
         }
+        choiceIdAmountsLength = choiceIdAmountsLength.inc();
 
         if (outputEquipment.itemTokenId != NONE) {
-          pendingQueuedActionState.produced[producedLength++] = EquipmentInfo(
+          pendingQueuedActionState.produced[producedLength] = EquipmentInfo(
             queuedAction.actionId,
             queuedAction.queueId,
             uint24(elapsedTime),
             outputEquipment.itemTokenId,
             outputEquipment.amount
           );
+          producedLength = producedLength.inc();
         }
-        U256 consumedEquipmentLength = U256.wrap(consumedEquipment.length);
-        for (U256 iter; iter < consumedEquipmentLength; iter = iter.inc()) {
-          pendingQueuedActionState.consumed[consumedLength++] = EquipmentInfo(
+        U256 consumedEquipmentLength = consumedEquipment.length.asU256();
+        for (U256 jter; jter < consumedEquipmentLength; jter = jter.inc()) {
+          uint j = jter.asUint256();
+          pendingQueuedActionState.consumed[consumedLength] = EquipmentInfo(
             queuedAction.actionId,
             queuedAction.queueId,
             uint24(elapsedTime),
-            consumedEquipment[iter.asUint256()].itemTokenId,
-            consumedEquipment[iter.asUint256()].amount
+            consumedEquipment[j].itemTokenId,
+            consumedEquipment[j].amount
           );
+          consumedLength = consumedLength.inc();
         }
 
         if (died) {
-          pendingQueuedActionState.died[diedLength++] = (
+          pendingQueuedActionState.died[diedLength] = (
             DiedInfo(queuedAction.actionId, queuedAction.queueId, uint24(elapsedTime))
           );
+          diedLength = diedLength.inc();
         }
       }
 
@@ -333,24 +347,26 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         queuedAction.actionId
       );
 
-      U256 newIdsLength = U256.wrap(newIds.length);
-      for (U256 iter; iter < newIdsLength; iter = iter.inc()) {
-        uint j = iter.asUint256();
-        pendingQueuedActionState.produced[producedLength++] = EquipmentInfo(
+      U256 newIdsLength = newIds.length.asU256();
+      for (U256 jter; jter < newIdsLength; jter = jter.inc()) {
+        uint j = jter.asUint256();
+        pendingQueuedActionState.produced[producedLength] = EquipmentInfo(
           queuedAction.actionId,
           queuedAction.queueId,
           uint24(elapsedTime),
           uint16(newIds[j]),
           uint24(newAmounts[j])
         );
+        producedLength = producedLength.inc();
       }
       // Total XP gained
-      pendingQueuedActionState.xpGained[xpGainedLength++] = XPInfo(
+      pendingQueuedActionState.xpGained[xpGainedLength] = XPInfo(
         queuedAction.actionId,
         queuedAction.queueId,
         uint24(elapsedTime),
         xpGained
       );
+      xpGainedLength = xpGainedLength.inc();
 
       totalXPGained += xpGained;
 
@@ -363,12 +379,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         bool hasRandomWord = world.hasRandomWord(queuedAction.startTime + xpElapsedTime);
         if (!hasRandomWord) {
           uint16 monstersKilled = uint16((numSpawnedPerHour * xpElapsedTime) / 3600);
-          pendingQueuedActionState.rolls[rollsLength++] = RollInfo(
+          pendingQueuedActionState.rolls[rollsLength] = RollInfo(
             queuedAction.actionId,
             queuedAction.queueId,
             uint24(elapsedTime),
             uint32(isCombat ? monstersKilled : xpElapsedTime / 3600)
           );
+          rollsLength = rollsLength.inc();
         }
       }
     } // end of loop
@@ -379,7 +396,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         previousTotalXP,
         previousTotalXP + totalXPGained
       );
-      U256 idsLength = U256.wrap(ids.length);
+      U256 idsLength = ids.length.asU256();
       if (ids.length != 0) {
         pendingQueuedActionState.producedXPRewards = new Equipment[](ids.length);
         for (U256 iter; iter < idsLength; iter = iter.inc()) {
@@ -427,11 +444,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts);
     if (questRewards.length > 0) {
       pendingQueuedActionState.questRewards = new Equipment[](questRewards.length);
-      for (uint j = 0; j < questRewards.length; ++j) {
+      U256 jbounds = questRewards.length.asU256();
+      for (U256 jter; jter < jbounds; jter = jter.inc()) {
+        uint j = jter.asUint256();
         pendingQueuedActionState.questRewards[j] = Equipment(uint16(questRewards[j]), uint24(questRewardAmounts[j]));
       }
-      pendingQueuedActionState.questConsumed = new Equipment[](itemTokenIdsBurned.length);
-      for (uint j = 0; j < itemTokenIdsBurned.length; ++j) {
+      jbounds = itemTokenIdsBurned.length.asU256();
+      pendingQueuedActionState.questConsumed = new Equipment[](bounds.asUint256());
+      for (U256 jter; jter < jbounds; jter = jter.inc()) {
+        uint j = jter.asUint256();
         pendingQueuedActionState.questConsumed[j] = Equipment(uint16(itemTokenIdsBurned[j]), uint24(amountsBurned[j]));
       }
     }
@@ -449,15 +470,16 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   }
 
   function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed) {
-    uint streakStart = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
-    uint streakStartIndex = streakStart / 1 weeks;
+    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
+    uint streakStartIndex = streakStart.div(1 weeks);
     bytes32 mask = dailyRewardMasks[_playerId];
     uint16 lastRewardStartIndex = uint16(uint256(mask));
     if (lastRewardStartIndex < streakStartIndex) {
       mask = bytes32(streakStartIndex);
     }
 
-    for (uint i = 0; i < 7; ++i) {
+    for (U256 iter; iter.lt(7); iter = iter.inc()) {
+      uint i = iter.asUint256();
       claimed[i] = mask[i] != 0;
     }
   }
@@ -479,12 +501,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (_isCombat) {
         numRewards = _monstersKilled;
       } else {
-        numRewards = (_elapsedTime * _rewardRate * _successPercent) / (3600 * 10 * 100);
+        numRewards = (_elapsedTime.mul(_rewardRate).mul(_successPercent)).div(3600 * 10 * 100);
       }
 
       if (numRewards != 0) {
         _ids[length] = _rewardTokenId;
-        _amounts[length++] = numRewards;
+        _amounts[length] = numRewards;
+        length = length.inc();
       }
     }
   }
@@ -539,32 +562,36 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     randomRewards = new RandomReward[](4);
     uint randomRewardLength;
     if (_rewards.randomRewardTokenId1 != 0) {
-      randomRewards[randomRewardLength++] = RandomReward(
+      randomRewards[randomRewardLength] = RandomReward(
         _rewards.randomRewardTokenId1,
         _rewards.randomRewardChance1,
         _rewards.randomRewardAmount1
       );
+      randomRewardLength = randomRewardLength.inc();
     }
     if (_rewards.randomRewardTokenId2 != 0) {
-      randomRewards[randomRewardLength++] = RandomReward(
+      randomRewards[randomRewardLength] = RandomReward(
         _rewards.randomRewardTokenId2,
         _rewards.randomRewardChance2,
         _rewards.randomRewardAmount2
       );
+      randomRewardLength = randomRewardLength.inc();
     }
     if (_rewards.randomRewardTokenId3 != 0) {
-      randomRewards[randomRewardLength++] = RandomReward(
+      randomRewards[randomRewardLength] = RandomReward(
         _rewards.randomRewardTokenId3,
         _rewards.randomRewardChance3,
         _rewards.randomRewardAmount3
       );
+      randomRewardLength = randomRewardLength.inc();
     }
     if (_rewards.randomRewardTokenId4 != 0) {
-      randomRewards[randomRewardLength++] = RandomReward(
+      randomRewards[randomRewardLength] = RandomReward(
         _rewards.randomRewardTokenId4,
         _rewards.randomRewardChance4,
         _rewards.randomRewardAmount4
       );
+      randomRewardLength = randomRewardLength.inc();
     }
 
     assembly ("memory-safe") {
@@ -573,8 +600,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   }
 
   function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
-    uint256 index = _index * 2;
-    return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
+    uint256 index = _index.mul(2);
+    return uint16(_b[index] | (bytes2(_b[index.inc()]) >> 8));
   }
 
   // hasRandomWord means there was pending reward we tried to get a reward from
@@ -595,7 +622,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     if (_randomRewards.length != 0) {
       // Was the boost active for this?
-      uint skillEndTime = _skillStartTime + _elapsedTime;
+      uint skillEndTime = _skillStartTime.add(_elapsedTime);
       hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {
         uint numIterations = PlayersLibrary.min(MAX_UNIQUE_TICKETS_, _numTickets);
@@ -610,7 +637,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             mintMultiplier = _numTickets / MAX_UNIQUE_TICKETS_;
             uint remainder = _numTickets % MAX_UNIQUE_TICKETS_;
             if (i < remainder) {
-              ++mintMultiplier;
+              mintMultiplier = mintMultiplier.inc();
             }
           }
 
@@ -626,13 +653,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             if (rand <= potentialReward.chance) {
               // This random reward's chance was hit, so add it
               bool found;
-              U256 idsLength = U256.wrap(_ids.length);
+              U256 idsLength = _ids.length.asU256();
               // Add this random item
-              for (U256 iterK = U256.wrap(startLootLength); iterK < idsLength; iterK = iterK.inc()) {
+              for (U256 iterK = startLootLength.asU256(); iterK < idsLength; iterK = iterK.inc()) {
                 uint k = iterK.asUint256();
-                if (k > 0 && potentialReward.itemTokenId == _ids[k - 1]) {
+                if (k > 0 && potentialReward.itemTokenId == _ids[k.dec()]) {
                   // This item exists so accumulate it with the existing value
-                  _amounts[k - 1] += potentialReward.amount * mintMultiplier;
+                  _amounts[k.dec()] += potentialReward.amount * mintMultiplier;
                   found = true;
                   break;
                 }
@@ -641,7 +668,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
               if (!found) {
                 // New item
                 _ids[length] = potentialReward.itemTokenId;
-                _amounts[length++] = potentialReward.amount * mintMultiplier;
+                _amounts[length] = potentialReward.amount * mintMultiplier;
+                length = length.inc();
               }
             } else {
               // A common one isn't found so a rarer one won't be.
@@ -709,7 +737,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       );
 
       if (_queuedAction.regenerateId != NONE && foodConsumed != 0) {
-        consumedEquipment[consumedEquipmentLength++] = Equipment(_queuedAction.regenerateId, foodConsumed);
+        consumedEquipment[consumedEquipmentLength] = Equipment(_queuedAction.regenerateId, foodConsumed);
+        consumedEquipmentLength = consumedEquipmentLength.inc();
       }
     } else {
       (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
@@ -722,22 +751,25 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     if (numConsumed != 0) {
       if (_actionChoice.inputTokenId1 != NONE) {
-        consumedEquipment[consumedEquipmentLength++] = Equipment(
+        consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId1,
           numConsumed * _actionChoice.num1
         );
+        consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId2 != NONE) {
-        consumedEquipment[consumedEquipmentLength++] = Equipment(
+        consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId2,
           numConsumed * _actionChoice.num2
         );
+        consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId3 != NONE) {
-        consumedEquipment[consumedEquipmentLength++] = Equipment(
+        consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId3,
           numConsumed * _actionChoice.num3
         );
+        consumedEquipmentLength = consumedEquipmentLength.inc();
       }
     }
 

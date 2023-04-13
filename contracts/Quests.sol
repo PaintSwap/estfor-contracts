@@ -7,6 +7,8 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IQuests} from "./interfaces/IQuests.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+
 /* solhint-disable no-global-import */
 import "./globals/players.sol";
 import "./globals/items.sol";
@@ -24,6 +26,9 @@ interface Router {
 }
 
 contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
+  using UnsafeMath for uint256;
+  using UnsafeMath for U256;
+
   event AddFixedQuest(Quest quest);
   event AddBaseRandomQuest(Quest quest);
   event RemoveQuest(uint questId);
@@ -206,7 +211,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       activeQuestInfo
     ) = processQuestsView(_playerId, _choiceIds, _choiceIdAmounts);
     if (_questsCompleted.length > 0) {
-      for (uint i = 0; i < _questsCompleted.length; ++i) {
+      U256 bounds = _questsCompleted.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         uint questId = _questsCompleted[i];
         _questCompleted(_playerId, questId);
       }
@@ -214,7 +221,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       // Update the quest progress
       bool foundActive;
       bool foundRandomQuest;
-      for (uint i; i < _choiceIds.length; ++i) {
+      U256 bounds = _choiceIds.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         uint choiceId = _choiceIds[i];
         uint amount = _choiceIdAmounts[i];
         uint activeQuestId = activeQuests[_playerId].questId;
@@ -316,9 +325,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
           bool questCompleted
         ) = _processQuestView(_choiceIds, _choiceIdAmounts, questCompletionInfo);
 
-        for (uint i = 0; i < _itemTokenIds.length; ++i) {
+        U256 bounds = _itemTokenIds.length.asU256();
+        for (U256 iter; iter < bounds; iter = iter.inc()) {
+          uint i = iter.asUint256();
           itemTokenIds[itemTokenIdsLength] = _itemTokenIds[i];
-          amounts[itemTokenIdsLength++] = _amounts[i];
+          amounts[itemTokenIdsLength] = _amounts[i];
+          itemTokenIdsLength = itemTokenIdsLength.inc();
         }
 
         if (questCompleted) {
@@ -353,7 +365,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
           bool questCompleted
         ) = _processQuestView(_choiceIds, _choiceIdAmounts, randomQuestCompletionInfo);
 
-        for (uint i = 0; i < _itemTokenIds.length; ++i) {
+        U256 bounds = _itemTokenIds.length.asU256();
+        for (U256 iter; iter < bounds; iter = iter.inc()) {
+          uint i = iter.asUint256();
           itemTokenIds[itemTokenIdsLength] = _itemTokenIds[i];
           amounts[itemTokenIdsLength++] = _amounts[i];
         }
@@ -416,10 +430,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     )
   {
     Quest memory quest = playerQuest.isFixed ? allFixedQuests[playerQuest.questId] : randomQuest;
-    for (uint i; i < _choiceIds.length; ++i) {
-      uint choiceId = _choiceIds[i];
-      uint amount = _choiceIdAmounts[i];
-      if (quest.actionChoiceId == choiceId) {
+    U256 bounds = _choiceIds.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      if (quest.actionChoiceId == _choiceIds[i]) {
+        uint amount = _choiceIdAmounts[i];
         playerQuest.actionChoiceCompletedNum += uint24(amount);
       }
     }
@@ -475,7 +490,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
 
     bool anyMinimumRequirement;
-    for (uint i = 0; i < _minimumRequirements.length; ++i) {
+    U256 bounds = _minimumRequirements.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if (_minimumRequirements[i].skill != Skill.NONE) {
         anyMinimumRequirement = true;
         break;
@@ -520,7 +537,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (_quests.length != _isRandom.length) {
       revert LengthMismatch();
     }
-    for (uint i = 0; i < _quests.length; ++i) {
+    U256 bounds = _quests.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       _addQuest(_quests[i], _isRandom[i], _minimumRequirements[i]);
     }
   }
@@ -537,7 +556,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       delete isRandomQuest[_questId];
 
       // Remove from array
-      for (uint i = 0; i < randomQuests.length; ++i) {
+      U256 bounds = randomQuests.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         if (randomQuests[i].questId == _questId) {
           randomQuests[i] = randomQuests[randomQuests.length - 1];
           randomQuests.pop();

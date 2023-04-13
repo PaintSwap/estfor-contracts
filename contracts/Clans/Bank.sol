@@ -1,16 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
 import {IClans} from "../interfaces/IClans.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 
 contract Bank is ERC1155Holder, IBank, Initializable {
+  using UnsafeMath for U256;
+  using UnsafeMath for uint16;
+  using UnsafeMath for uint256;
+
   event DepositItems(address from, uint playerId, uint[] id, uint[] value);
   event DepositItemNoPlayer(address from, uint id, uint value);
   event DepositItemsNoPlayer(address from, uint[] id, uint[] value);
@@ -59,8 +65,9 @@ contract Bank is ERC1155Holder, IBank, Initializable {
 
   function depositItems(uint _playerId, uint[] memory ids, uint[] memory values) external isOwnerOfPlayer(_playerId) {
     uint maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
-    for (uint i = 0; i < ids.length; ++i) {
-      _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
+    U256 bounds = ids.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      _receivedItemUpdateUniqueItems(ids[iter.asUint256()], maxCapacity);
     }
     bankRegistry.itemNFT().safeBatchTransferFrom(msg.sender, address(this), ids, values, "");
     emit DepositItems(msg.sender, _playerId, ids, values);
@@ -75,10 +82,11 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     bankRegistry.itemNFT().safeBatchTransferFrom(address(this), _to, ids, amounts, "");
 
     // Update uniqueItemCount after withdrawing items
-    for (uint i = 0; i < ids.length; ++i) {
-      uint id = ids[i];
+    U256 bounds = ids.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint id = ids[iter.asUint256()];
       if (uniqueItems[id] && bankRegistry.itemNFT().balanceOf(address(this), id) == 0) {
-        --uniqueItemCount;
+        uniqueItemCount = uint16(uniqueItemCount.dec());
         uniqueItems[id] = false;
       }
     }
@@ -90,7 +98,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       if (uniqueItemCount >= maxCapacity) {
         revert MaxBankCapacityReached();
       }
-      ++uniqueItemCount;
+      uniqueItemCount = uint16(uniqueItemCount.inc());
       uniqueItems[id] = true;
     }
   }
@@ -121,8 +129,9 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     // Only care about itemNFTs sent from outside the bank here
     if (msg.sender == address(bankRegistry.itemNFT()) && operator != address(this)) {
       uint maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
-      for (uint i = 0; i < ids.length; ++i) {
-        _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
+      U256 bounds = ids.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        _receivedItemUpdateUniqueItems(ids[iter.asUint256()], maxCapacity);
       }
       emit DepositItemsNoPlayer(from, ids, values);
     }

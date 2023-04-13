@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
@@ -13,6 +15,13 @@ import "../globals/rewards.sol";
 /* solhint-enable no-global-import */
 
 contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
+  using UnsafeMath for U256;
+  using UnsafeMath for uint8;
+  using UnsafeMath for uint32;
+  using UnsafeMath for uint40;
+  using UnsafeMath for uint128;
+  using UnsafeMath for uint256;
+
   constructor() {
     _checkStartSlot();
   }
@@ -36,7 +45,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint remainingSkillsLength;
     uint nextStartTime = block.timestamp;
-    for (uint i = 0; i < player.actionQueue.length; ++i) {
+    U256 bounds = player.actionQueue.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       QueuedAction storage queuedAction = player.actionQueue[i];
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       CombatStats memory combatStats;
@@ -67,7 +78,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
       if (elapsedTime == 0) {
         // Haven't touched this action yet so add it all
-        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength++);
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength);
+        remainingSkillsLength = remainingSkillsLength.inc();
         nextStartTime += queuedAction.timespan;
         continue;
       }
@@ -98,13 +110,19 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
         if (skill == Skill.COOKING) {
           if (numProduced > 0) {
-            choiceIdAmounts[choiceIdAmountsLength++] = numProduced; // Assume we want amount cooked
-            choiceIds[choiceIdsLength++] = queuedAction.choiceId;
+            choiceIdAmounts[choiceIdAmountsLength] = numProduced; // Assume we want amount cooked
+            choiceIds[choiceIdsLength] = queuedAction.choiceId;
+
+            choiceIdAmountsLength = choiceIdAmountsLength.inc();
+            choiceIdsLength = choiceIdsLength.inc();
           }
         } else {
           if (baseNumConsumed > 0) {
-            choiceIdAmounts[choiceIdAmountsLength++] = baseNumConsumed;
-            choiceIds[choiceIdsLength++] = queuedAction.choiceId;
+            choiceIdAmounts[choiceIdAmountsLength] = baseNumConsumed;
+            choiceIds[choiceIdsLength] = queuedAction.choiceId;
+
+            choiceIdAmountsLength = choiceIdAmountsLength.inc();
+            choiceIdsLength = choiceIdsLength.inc();
           }
         }
       }
@@ -127,8 +145,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
       if (!fullyFinished) {
         // Add the remainder if this action is not fully consumed
-        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength++);
-        nextStartTime = queuedAction.startTime + queuedAction.timespan;
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength);
+        remainingSkillsLength = remainingSkillsLength.inc();
+        nextStartTime = queuedAction.startTime.add(queuedAction.timespan);
       }
 
       if (pointsAccrued != 0) {
@@ -140,7 +159,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           _cacheCombatStats(players_[_playerId], xp_[_playerId][Skill.HEALTH], skill, xp_[_playerId][skill]);
         }
 
-        allPointsAccrued += pointsAccrued + healthPointsAccrued;
+        allPointsAccrued = uint32(allPointsAccrued.add(pointsAccrued).add(healthPointsAccrued));
       }
 
       (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
@@ -179,8 +198,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     if (allPointsAccrued != 0) {
-      _claimTotalXPThresholdRewards(_from, _playerId, previousTotalXP, previousTotalXP + allPointsAccrued);
-      player.totalXP = uint128(previousTotalXP + allPointsAccrued);
+      uint newTotalXP = previousTotalXP.add(allPointsAccrued);
+      _claimTotalXPThresholdRewards(_from, _playerId, previousTotalXP, newTotalXP);
+      player.totalXP = uint128(newTotalXP);
     }
 
     // Quest Rewards
@@ -219,7 +239,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
 
     // Burn some items if quest requires it.
-    for (uint i; i < itemTokenIdsBurned.length; ++i) {
+    U256 bounds = itemTokenIdsBurned.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       itemNFT.burn(_from, itemTokenIdsBurned[i], amountsBurned[i]);
     }
   }
@@ -230,7 +252,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
     // Clear boost if it has expired
     PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
-    if (playerBoost.itemTokenId != NONE && playerBoost.startTime + playerBoost.duration <= block.timestamp) {
+    if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
       delete activeBoosts_[_playerId];
       emit BoostFinished(_playerId);
     }
@@ -281,7 +303,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         uint extraBoost = skillLevel - minLevel;
 
         successPercent = uint8(
-          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost)
+          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent.add(extraBoost))
         );
       }
 
@@ -398,11 +420,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint prevEndTime,
     uint length
   ) private view {
-    uint40 end = queuedAction.startTime + queuedAction.timespan;
+    uint40 end = uint40(queuedAction.startTime.add(queuedAction.timespan));
 
     QueuedAction memory remainingAction = queuedAction;
     remainingAction.startTime = uint40(prevEndTime);
-    remainingAction.timespan = uint24(end - prevEndTime);
+    remainingAction.timespan = uint24(end.sub(prevEndTime));
 
     // Build a list of the skills queued that remain
     remainingSkills[length] = remainingAction;
@@ -422,7 +444,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
     if (hasRandomRewards) {
-      bool hasRandomWord = world.hasRandomWord(_skillStartTime + _elapsedTime);
+      bool hasRandomWord = world.hasRandomWord(_skillStartTime.add(_elapsedTime));
       if (!hasRandomWord) {
         PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
         BoostType boostType;
@@ -481,7 +503,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
-    for (uint i = 0; i < _fullAttireBonuses.length; ++i) {
+    U256 bounds = _fullAttireBonuses.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
 
       if (_fullAttireBonus.skill == Skill.NONE) {
@@ -494,11 +518,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         EquipPosition.LEGS,
         EquipPosition.FEET
       ];
-      for (uint i = 0; i < expectedEquipPositions.length; ++i) {
-        if (_fullAttireBonus.itemTokenIds[i] == NONE) {
+      U256 jbounds = expectedEquipPositions.length.asU256();
+      for (U256 jter; jter < jbounds; jter = jter.inc()) {
+        uint j = jter.asUint256();
+        if (_fullAttireBonus.itemTokenIds[j] == NONE) {
           revert InvalidItemTokenId();
         }
-        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[i]).equipPosition != expectedEquipPositions[i]) {
+        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[j]).equipPosition != expectedEquipPositions[j]) {
           revert InvalidEquipPosition();
         }
       }
@@ -526,9 +552,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     player.defence = 1;
     player.totalXP = uint128(START_XP_);
 
-    uint length = _startSkills[1] != Skill.NONE ? 2 : 1;
-    uint32 xpEach = uint32(START_XP_ / length);
-    for (uint i = 0; i < length; ++i) {
+    U256 length = uint256(_startSkills[1] != Skill.NONE ? 2 : 1).asU256();
+    uint32 xpEach = uint32(START_XP_ / length.asUint256());
+
+    for (U256 iter; iter < length; iter = iter.inc()) {
+      uint i = iter.asUint256();
       Skill skill = _startSkills[i];
       int16 level = int16(PlayersLibrary.getLevel(xpEach));
       if (skill == Skill.HEALTH) {
@@ -551,7 +579,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) private {
     uint oldPoints = xp_[_playerId][_skill];
-    uint newPoints = oldPoints + _pointsAccrued;
+    uint newPoints = oldPoints.add(_pointsAccrued);
     if (newPoints > type(uint32).max) {
       newPoints = type(uint32).max;
     }
@@ -573,21 +601,22 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       revert TestInvalidXP();
     }
     address from = msg.sender;
-    _updateXP(msg.sender, _playerId, _skill, _xp - oldPoints);
+    uint128 updatedPoints = uint128(_xp.sub(oldPoints));
+    _updateXP(msg.sender, _playerId, _skill, updatedPoints);
     _claimTotalXPThresholdRewards(from, _playerId, oldPoints, _xp);
-    players_[_playerId].totalXP += uint128(_xp - oldPoints);
+    players_[_playerId].totalXP = uint128(players_[_playerId].totalXP.add(updatedPoints));
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {
-    uint streakStart = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
-    uint streakStartIndex = streakStart / 1 weeks;
+    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
+    uint streakStartIndex = streakStart.div(1 weeks);
     bytes32 mask = dailyRewardMasks[_playerId];
     uint16 lastRewardStartIndex = uint16(uint256(mask));
     if (lastRewardStartIndex < streakStartIndex) {
       mask = bytes32(streakStartIndex); // Reset the mask
     }
 
-    uint maskIndex = ((block.timestamp / 1 days) * 1 days - streakStart) / 1 days;
+    uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
 
     // Claim daily reward as long as it's been set
     if (mask[maskIndex] == 0 && dailyRewardsEnabled) {

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "./BankRegistry.sol";
+import {BankRegistry} from "./BankRegistry.sol";
 
 contract BankProxy {
   // We use this so that we can update the implementation for all that uses the minimal proxy
