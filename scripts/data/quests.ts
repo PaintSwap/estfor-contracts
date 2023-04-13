@@ -91,13 +91,15 @@ type MinRequirement = {
   xp: number;
 };
 
-export const defaultMinRequirements: MinRequirement[] = [
+type MinRequirementArray = [MinRequirement, MinRequirement, MinRequirement];
+
+export const defaultMinRequirements: [MinRequirement, MinRequirement, MinRequirement] = [
   {skill: Skill.NONE, xp: 0},
   {skill: Skill.NONE, xp: 0},
   {skill: Skill.NONE, xp: 0},
 ];
 
-export const allQuestsMinimumRequirements: MinRequirement[][] = [
+export const allQuestsMinimumRequirements: MinRequirementArray[] = [
   defaultMinRequirements,
   defaultMinRequirements,
   defaultMinRequirements,

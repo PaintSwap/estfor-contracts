@@ -39,7 +39,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   event UpdateQuestProgress(uint playerId, PlayerQuest playerQuest);
 
   error NotWorld();
-  error NotOwnerOfPlayer();
+  error NotOwnerOfPlayerAndActive();
   error NotPlayers();
   error QuestDoesntExist();
   error InvalidQuestId();
@@ -101,6 +101,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     _;
   }
 
+  modifier isOwnerOfPlayerAndActive(uint _playerId) {
+    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+      revert NotOwnerOfPlayerAndActive();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -116,7 +123,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     buyPath2 = _buyPath[1];
   }
 
-  function activateQuest(uint _playerId, uint _questId) external onlyPlayers {
+  function activateQuest(uint _playerId, uint _questId) external isOwnerOfPlayerAndActive(_playerId) {
     Quest storage quest = allFixedQuests[_questId];
     if (_questId == 0) {
       revert InvalidQuestId();
@@ -152,7 +159,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     emit ActivateNewQuest(_playerId, _questId);
   }
 
-  function deactivateQuest(uint _playerId) external onlyPlayers {
+  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
     uint questId = playerQuest.questId;
     if (questId == 0) {
@@ -252,11 +259,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
   }
 
-  function buyBrushQuest(address _to, uint _playerId, uint _minimumBrushBack) external payable {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
-      revert NotOwnerOfPlayer();
-    }
-
+  function buyBrushQuest(
+    address _to,
+    uint _playerId,
+    uint _minimumBrushBack
+  ) external payable isOwnerOfPlayerAndActive(_playerId) {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
     buyBrush(_to, _minimumBrushBack);
     if (playerQuest.questId != QUEST_ID_STARTER_TRADER) {

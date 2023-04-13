@@ -171,14 +171,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue);
   }
 
-  function activateQuest(uint _playerId, uint _questId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
-    quests.activateQuest(_playerId, _questId);
-  }
-
-  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
-    quests.deactivateQuest(_playerId);
-  }
-
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.unequipBoostVial.selector, _playerId));
   }

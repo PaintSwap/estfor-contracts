@@ -2,6 +2,7 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ethers, upgrades} from "hardhat";
 import {
   BankFactory,
+  Clans,
   ItemNFT,
   MockBrushToken,
   MockOracleClient,
@@ -9,6 +10,7 @@ import {
   MockWrappedFantom,
   PlayerNFT,
   Players,
+  Quests,
   Shop,
 } from "../typechain-types";
 import {verifyContracts} from "./utils";
@@ -178,16 +180,16 @@ async function main() {
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
   const Quests = await ethers.getContractFactory("Quests");
-  const quests = await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
+  const quests = (await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
-  });
+  })) as Quests;
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
 
   const Clans = await ethers.getContractFactory("Clans");
   const clans = (await upgrades.deployProxy(Clans, [brush.address, shop.address], {
     kind: "uups",
-  })) as Clans7;
+  })) as Clans;
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
 
@@ -423,7 +425,7 @@ async function main() {
 
   // Add test data for the game
   if (isAlpha) {
-    await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory);
+    await addTestData(itemNFT, playerNFT, players, shop, brush, quests, clans, bankFactory);
   }
 }
 

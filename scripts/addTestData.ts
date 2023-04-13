@@ -1,7 +1,7 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {QUEST_STARTER_FIREMAKING} from "@paintswap/estfor-definitions/constants";
 import {ethers} from "hardhat";
-import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
+import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Quests, Shop} from "../typechain-types";
 import {createPlayer} from "./utils";
 
 export const addTestData = async (
@@ -10,6 +10,7 @@ export const addTestData = async (
   players: Players,
   shop: Shop,
   brush: MockBrushToken,
+  quests: Quests,
   clans: Clans,
   bankFactory: BankFactory
 ) => {
@@ -195,7 +196,7 @@ export const addTestData = async (
   console.log("Sell");
 
   // Activate a quest
-  tx = await players.activateQuest(playerId, QUEST_STARTER_FIREMAKING);
+  tx = await quests.activateQuest(playerId, QUEST_STARTER_FIREMAKING);
   await tx.wait();
   console.log("Activate quest");
 
