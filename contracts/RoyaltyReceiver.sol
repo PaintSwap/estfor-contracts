@@ -3,6 +3,9 @@ pragma solidity ^0.8.19;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 
 interface Router {
@@ -15,6 +18,8 @@ interface Router {
 }
 
 contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
+  using UnsafeMath for uint256;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -65,7 +70,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   receive() external payable {
-    uint deadline = block.timestamp + DEADLINE_DURATION;
+    uint deadline = block.timestamp.add(DEADLINE_DURATION);
     // Buy brush and send it to the pool
     uint[] memory amounts = router.swapExactETHForTokens{value: msg.value}(0, buyPath(), address(this), deadline);
     brush.transfer(pool, amounts[amounts.length - 1]);

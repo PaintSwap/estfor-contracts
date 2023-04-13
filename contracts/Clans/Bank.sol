@@ -139,13 +139,13 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   }
 
   function depositFTM(uint _playerId) external payable isOwnerOfPlayer(_playerId) {
-    if (msg.value > 0) {
+    if (msg.value != 0) {
       emit DepositFTM(_playerId, msg.value);
     }
   }
 
   function depositFTMNoPlayer() external payable {
-    if (msg.value > 0) {
+    if (msg.value != 0) {
       emit DepositFTMNoPlayer(msg.sender, msg.value);
     }
   }

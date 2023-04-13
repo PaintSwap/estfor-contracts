@@ -8,6 +8,7 @@ import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProo
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {AdminAccess} from "./AdminAccess.sol";
@@ -21,6 +22,7 @@ import "./globals/players.sol";
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
   using UnsafeMath for U256;
+  using UnsafeMath for uint256;
 
   event NewPlayer(uint playerId, uint avatarId, bytes20 name);
   event EditPlayer(uint playerId, bytes20 newName);
@@ -162,7 +164,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function _mintPlayer(uint _avatarId, bytes32 _name, bool _makeActive) private {
     address from = _msgSender();
-    uint playerId = nextPlayerId++;
+    uint playerId = nextPlayerId;
+    nextPlayerId = nextPlayerId.inc();
     emit NewPlayer(playerId, _avatarId, bytes20(_name));
     _mint(from, playerId, 1, "");
     _setName(playerId, bytes20(_name));
@@ -177,10 +180,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       revert NotInWhitelist();
     }
     uint _numMintedFromWhitelist = numMintedFromWhitelist[_msgSender()];
-    if (_numMintedFromWhitelist + 1 > MAX_ALPHA_WHITELIST) {
+    if (_numMintedFromWhitelist.inc() > MAX_ALPHA_WHITELIST) {
       revert MintedMoreThanAllowed();
     }
-    numMintedFromWhitelist[_msgSender()] = _numMintedFromWhitelist + 1;
+    numMintedFromWhitelist[_msgSender()] = _numMintedFromWhitelist.inc();
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 
@@ -215,7 +218,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (from == address(0) || amounts.length == 0 || from == to) {
       return;
     }
-    U256 iter = U256.wrap(ids.length);
+    U256 iter = ids.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
@@ -258,7 +261,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
   function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
-    U256 iter = U256.wrap(_ids.length);
+    U256 iter = _ids.length.asU256();
     batchBalances = new uint256[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
@@ -269,7 +272,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function _toLower(bytes32 _name) private pure returns (bytes memory lowerName) {
     lowerName = abi.encodePacked(_name);
-    U256 iter = U256.wrap(lowerName.length);
+    U256 iter = lowerName.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
@@ -313,11 +316,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
-    U256 iter = U256.wrap(_avatarInfos.length);
+    U256 iter = _avatarInfos.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      avatars[_startAvatarId + i] = _avatarInfos[i];
+      avatars[_startAvatarId.add(i)] = _avatarInfos[i];
     }
     emit SetAvatars(_startAvatarId, _avatarInfos);
   }

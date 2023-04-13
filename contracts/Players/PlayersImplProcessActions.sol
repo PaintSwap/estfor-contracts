@@ -111,13 +111,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
         Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
         if (skill == Skill.COOKING) {
-          if (numProduced > 0) {
+          if (numProduced != 0) {
             choiceIdAmounts[choiceIdsLength] = numProduced; // Assume we want amount cooked
             choiceIds[choiceIdsLength] = queuedAction.choiceId;
             choiceIdsLength = choiceIdsLength.inc();
           }
         } else {
-          if (baseNumConsumed > 0) {
+          if (baseNumConsumed != 0) {
             choiceIdAmounts[choiceIdsLength] = baseNumConsumed;
             choiceIds[choiceIdsLength] = queuedAction.choiceId;
             choiceIdsLength = choiceIdsLength.inc();
@@ -234,7 +234,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       PlayerQuest[] memory questsCompletedInfo
     ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
     // Mint the rewards
-    if (itemTokenIds.length > 0) {
+    if (itemTokenIds.length != 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
     }
 
@@ -319,7 +319,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
-      if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+      if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
         numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
       if (numProduced != 0) {
@@ -462,7 +462,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         uint24 boostedTime;
         if (activeBoost.boostType == BoostType.GATHERING) {
           boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
-          if (boostedTime > 0) {
+          if (boostedTime != 0) {
             boostType = activeBoost.boostType;
             boostValue = activeBoost.val;
           }

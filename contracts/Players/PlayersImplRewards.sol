@@ -64,7 +64,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     // Check for any boosts
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
     uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
-    if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+    if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
       U256 bounds = length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
@@ -107,7 +107,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     returns (uint[] memory ids, uint[] memory amounts, uint[] memory actionIds, uint[] memory queueIds, uint numRemoved)
   {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
-    U256 pendingRandomRewardsLength = U256.wrap(_pendingRandomRewards.length);
+    U256 pendingRandomRewardsLength = _pendingRandomRewards.length.asU256();
     ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     actionIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
@@ -150,7 +150,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           activeBoost
         );
         U256 bounds = length.asU256();
-        if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+        if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
           for (U256 jter; jter < bounds; jter = jter.inc()) {
             uint j = jter.asUint256();
             amounts[j] = uint32((boostedTime * amounts[j] * activeBoost.val) / (3600 * 100));
@@ -183,12 +183,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     ) = _claimableRandomRewards(_playerId);
     if (numRemoved != 0) {
       // Shift the remaining rewards to the front of the array
-      U256 bounds = U256.wrap(pendingRandomRewards[_playerId].length).sub(numRemoved);
+      U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(numRemoved);
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
         pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
       }
-      for (U256 iter = U256.wrap(numRemoved); iter.neq(0); iter = iter.dec()) {
+      for (U256 iter = numRemoved.asU256(); iter.neq(0); iter = iter.dec()) {
         pendingRandomRewards[_playerId].pop();
       }
 
@@ -424,7 +424,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint[] memory queueIds,
       uint numRemoved
     ) = _claimableRandomRewards(_playerId);
-    U256 idsLength = U256.wrap(ids.length);
+    U256 idsLength = ids.length.asU256();
     pendingQueuedActionState.producedPastRandomRewards = new PastRandomRewardInfo[](ids.length);
     for (U256 iter; iter < idsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -452,7 +452,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint[] memory _questsCompleted,
       PlayerQuest[] memory activeQuestsCompletionInfo
     ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts);
-    if (questRewards.length > 0) {
+    if (questRewards.length != 0) {
       pendingQueuedActionState.questRewards = new Equipment[](questRewards.length);
       U256 jbounds = questRewards.length.asU256();
       for (U256 jter; jter < jbounds; jter = jter.inc()) {
@@ -659,7 +659,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           uint operation = (uint(_getSlice(b, i)) * 100) / _successPercent;
           uint16 rand = uint16(PlayersLibrary.min(type(uint16).max, operation));
 
-          U256 randomRewardsLength = U256.wrap(_randomRewards.length);
+          U256 randomRewardsLength = _randomRewards.length.asU256();
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
             uint j = iterJ.asUint256();
 
@@ -671,7 +671,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
               // Add this random item
               for (U256 iterK = startLootLength.asU256(); iterK < idsLength; iterK = iterK.inc()) {
                 uint k = iterK.asUint256();
-                if (k > 0 && potentialReward.itemTokenId == _ids[k.dec()]) {
+                if (k != 0 && potentialReward.itemTokenId == _ids[k.dec()]) {
                   // This item exists so accumulate it with the existing value
                   _amounts[k.dec()] += potentialReward.amount * mintMultiplier;
                   found = true;
@@ -812,7 +812,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
-      if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+      if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
         numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
 

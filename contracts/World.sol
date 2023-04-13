@@ -402,27 +402,28 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _setActionGuaranteedRewards(Action calldata _action, ActionRewards storage _actionRewards) private {
-    if (_action.guaranteedRewards.length != 0) {
+    uint guaranteedRewardsLength = _action.guaranteedRewards.length;
+    if (guaranteedRewardsLength != 0) {
       _actionRewards.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
       _actionRewards.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
     }
-    if (_action.guaranteedRewards.length > 1) {
+    if (guaranteedRewardsLength > 1) {
       _actionRewards.guaranteedRewardTokenId2 = _action.guaranteedRewards[1].itemTokenId;
       _actionRewards.guaranteedRewardRate2 = _action.guaranteedRewards[1].rate;
       if (_actionRewards.guaranteedRewardTokenId1 == _actionRewards.guaranteedRewardTokenId2) {
         revert GuaranteedRewardsNoDuplicates();
       }
     }
-    if (_action.guaranteedRewards.length > 2) {
+    if (guaranteedRewardsLength > 2) {
       _actionRewards.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
       _actionRewards.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
 
-      U256 bounds = _action.guaranteedRewards.length.dec().asU256();
+      U256 bounds = guaranteedRewardsLength.dec().asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
         if (
           _action.guaranteedRewards[i].itemTokenId ==
-          _action.guaranteedRewards[_action.guaranteedRewards.length - 1].itemTokenId
+          _action.guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId
         ) {
           revert GuaranteedRewardsNoDuplicates();
         }
@@ -432,12 +433,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   // Random rewards but have most common one first
   function _setActionRandomRewards(Action calldata _action, ActionRewards storage actionReward) private {
-    if (_action.randomRewards.length != 0) {
+    uint randomRewardsLength = _action.randomRewards.length;
+    if (randomRewardsLength != 0) {
       actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
       actionReward.randomRewardChance1 = _action.randomRewards[0].chance;
       actionReward.randomRewardAmount1 = _action.randomRewards[0].amount;
     }
-    if (_action.randomRewards.length > 1) {
+    if (randomRewardsLength > 1) {
       actionReward.randomRewardTokenId2 = _action.randomRewards[1].itemTokenId;
       actionReward.randomRewardChance2 = _action.randomRewards[1].chance;
       actionReward.randomRewardAmount2 = _action.randomRewards[1].amount;
@@ -449,7 +451,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
         revert RandomRewardNoDuplicates();
       }
     }
-    if (_action.randomRewards.length > 2) {
+    if (randomRewardsLength > 2) {
       actionReward.randomRewardTokenId3 = _action.randomRewards[2].itemTokenId;
       actionReward.randomRewardChance3 = _action.randomRewards[2].chance;
       actionReward.randomRewardAmount3 = _action.randomRewards[2].amount;
@@ -458,12 +460,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
         revert RandomRewardsMustBeInOrder();
       }
 
-      U256 bounds = _action.randomRewards.length.dec().asU256();
+      U256 bounds = randomRewardsLength.dec().asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
-        if (
-          _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
-        ) {
+        if (_action.randomRewards[i].itemTokenId == _action.randomRewards[randomRewardsLength.dec()].itemTokenId) {
           revert RandomRewardNoDuplicates();
         }
       }
@@ -499,7 +499,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function addActions(Action[] calldata _actions) external onlyOwner {
-    U256 iter = U256.wrap(_actions.length);
+    U256 iter = _actions.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint16 i = iter.asUint16();
@@ -547,7 +547,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     uint16[][] calldata _actionChoiceIds,
     ActionChoice[][] calldata _actionChoices
   ) external onlyOwner {
-    U256 iter = U256.wrap(0);
     if (_actionIds.length != _actionChoices.length) {
       revert LengthMismatch();
     }
@@ -555,21 +554,22 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       revert NoActionChoices();
     }
 
-    while (iter.lt(_actionIds.length)) {
+    U256 actionIdsLength = _actionIds.length.asU256();
+    for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
       emit AddActionChoices(actionId, _actionChoiceIds[i], _actionChoices[i]);
-      U256 iter2 = U256.wrap(0);
-      if (_actionChoiceIds[i].length != _actionChoices[i].length) {
+
+      U256 actionChoiceLength = _actionChoices[i].length.asU256();
+
+      if (actionChoiceLength.neq(_actionChoiceIds[i].length)) {
         revert LengthMismatch();
       }
 
-      while (iter2.lt(_actionChoices[i].length)) {
-        uint16 j = iter2.asUint16();
+      for (U256 jter; jter < actionChoiceLength; jter = jter.inc()) {
+        uint16 j = jter.asUint16();
         _addActionChoice(actionId, _actionChoiceIds[i][j], _actionChoices[i][j]);
-        iter2 = iter2.inc();
       }
-      iter = iter.inc();
     }
   }
 

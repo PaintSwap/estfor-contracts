@@ -217,7 +217,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       _questsCompleted,
       activeQuestInfo
     ) = processQuestsView(_playerId, _choiceIds, _choiceIdAmounts);
-    if (_questsCompleted.length > 0) {
+    if (_questsCompleted.length != 0) {
       U256 bounds = _questsCompleted.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
@@ -278,7 +278,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       revert InvalidFTMAmount();
     }
 
-    uint deadline = block.timestamp + 10 minutes;
+    uint deadline = block.timestamp.add(10 minutes);
     // Buy brush and send it back to the user
     address[] memory buyPath = new address[](2);
     buyPath[0] = buyPath1;

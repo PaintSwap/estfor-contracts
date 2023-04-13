@@ -4,12 +4,18 @@ pragma solidity ^0.8.19;
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
+import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans, Clan} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
+  using UnsafeMath for U256;
+  using UnsafeMath for uint16;
+  using UnsafeMath for uint256;
+
   event ClanCreated(uint clanId, uint playerId, string name, uint imageId, uint tierId);
   event AdminAdded(uint clanId, uint playerId);
   event AdminRemoved(uint clanId, uint playerId);
@@ -147,7 +153,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     _checkClanSettings(_imageId, tier.maxImageId);
 
-    uint clanId = nextClanId++;
+    uint clanId = nextClanId;
+    nextClanId = nextClanId.inc();
     Clan storage clan = clans[clanId];
     clan.owner = uint80(_playerId);
     clan.tierId = _tierId;
@@ -242,7 +249,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     clan.inviteRequests[_playerId] = false;
-    ++clan.memberCount;
+    clan.memberCount = uint16(clan.memberCount.inc());
     clan.members[_playerId] = true;
 
     player.clanId = uint32(_clanId);
@@ -297,7 +304,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     clan.inviteRequests[_member] = false;
-    clan.memberCount++;
+    clan.memberCount = uint16(clan.memberCount.inc());
     clan.members[_member] = true;
 
     player.clanId = uint32(_clanId);
@@ -332,7 +339,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _removeFromClan(_clanId, clan.owner);
     if (!_leaveClan) {
       // Add as a member
-      ++clan.memberCount;
+      clan.memberCount = uint16(clan.memberCount.inc());
       clan.members[oldOwnerPlayerId] = true;
       playerInfo[oldOwnerPlayerId].clanId = uint32(_clanId);
       // Add as an admin
@@ -426,7 +433,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
     lowercaseNames[lowercaseName] = true;
     string storage oldName = clans[_clanId].name;
-    if (bytes(oldName).length > 0) {
+    if (bytes(oldName).length != 0) {
       delete lowercaseNames[oldName];
     }
     clans[_clanId].name = _name;
@@ -435,7 +442,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function _addAdmin(uint _clanId, uint _admin) private {
     Clan storage clan = clans[_clanId];
     clan.admins[_admin] = true;
-    ++clan.adminCount;
+    clan.adminCount = uint16(clan.adminCount.inc());
     emit AdminAdded(_clanId, _admin);
   }
 
@@ -513,7 +520,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _toLower(string memory _name) private pure returns (string memory) {
     bytes memory lowercaseName = abi.encodePacked(_name);
-    for (uint i; i < lowercaseName.length; ++i) {
+    U256 bounds = lowercaseName.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if ((uint8(lowercaseName[i]) >= 65) && (uint8(lowercaseName[i]) <= 90)) {
         // So we add 32 to make it lowercase
         lowercaseName[i] = bytes1(uint8(lowercaseName[i]) + 32);
@@ -545,7 +554,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function addTiers(Tier[] calldata _tiers) external onlyOwner {
-    for (uint i = 0; i < _tiers.length; ++i) {
+    U256 bounds = _tiers.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if (tiers[_tiers[i].id].id != 0 || _tiers[i].id == 0) {
         revert TierAlreadyExists();
       }

@@ -21,6 +21,7 @@ library PlayersLibrary {
   using Strings for uint256;
   using Strings for bytes32;
   using UnsafeMath for U256;
+  using UnsafeMath for uint256;
 
   // Show all the player stats, return metadata json
   function uri(
@@ -129,7 +130,7 @@ library PlayersLibrary {
   // Index not level, add one after (check for > max)
   function getLevel(uint _xp) public pure returns (uint16) {
     U256 low;
-    U256 high = U256.wrap(XP_BYTES.length).div(4);
+    U256 high = XP_BYTES.length.asU256().div(4);
 
     while (low < high) {
       U256 mid = (low + high).div(2);
@@ -167,22 +168,30 @@ library PlayersLibrary {
   ) private pure returns (uint balance) {
     balance = _originalBalance;
     // Check all changes to the player's inventory that haven't been commited yet
-    for (uint i; i < _pendingQueuedActionState.consumed.length; ++i) {
+    U256 bounds = _pendingQueuedActionState.consumed.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if (_pendingQueuedActionState.consumed[i].itemTokenId == _itemId) {
         balance -= _pendingQueuedActionState.consumed[i].amount;
       }
     }
-    for (uint i; i < _pendingQueuedActionState.produced.length; ++i) {
+    bounds = _pendingQueuedActionState.produced.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if (_pendingQueuedActionState.produced[i].itemTokenId == _itemId) {
         balance += _pendingQueuedActionState.produced[i].amount;
       }
     }
-    for (uint i; i < _pendingQueuedActionState.producedPastRandomRewards.length; ++i) {
+    bounds = _pendingQueuedActionState.producedPastRandomRewards.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if (_pendingQueuedActionState.producedPastRandomRewards[i].itemTokenId == _itemId) {
         balance += _pendingQueuedActionState.producedPastRandomRewards[i].amount;
       }
     }
-    for (uint i; i < _pendingQueuedActionState.producedXPRewards.length; ++i) {
+    bounds = _pendingQueuedActionState.producedXPRewards.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if (_pendingQueuedActionState.producedXPRewards[i].itemTokenId == _itemId) {
         balance += _pendingQueuedActionState.producedXPRewards[i].amount;
       }
@@ -209,7 +218,9 @@ library PlayersLibrary {
   ) external view returns (uint[] memory balances) {
     balances = _itemNFT.balanceOfs(_from, _itemIds);
 
-    for (uint i; i < balances.length; ++i) {
+    U256 bounds = balances.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       balances[i] = _getRealBalance(balances[i], _itemIds[i], _pendingQueuedActionState);
     }
   }
@@ -448,7 +459,7 @@ library PlayersLibrary {
         if (numConsumed > maxRequiredRatio) {
           numConsumed = uint16(maxRequiredRatio);
 
-          if (numConsumed > 0) {
+          if (numConsumed != 0) {
             // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
             xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
           } else {
@@ -483,7 +494,7 @@ library PlayersLibrary {
     );
     if (numConsumed > maxRequiredRatio) {
       numConsumed = uint24(maxRequiredRatio);
-      if (numConsumed > 0) {
+      if (numConsumed != 0) {
         // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
         xpElapsedTime = (_elapsedTime * maxRequiredRatio) / numConsumed;
       } else {
@@ -591,7 +602,7 @@ library PlayersLibrary {
             _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
           );
           // XOR all the full words with the first fresh random number to give more randomness to the existing random words
-          if (i > 0) {
+          if (i != 0) {
             multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
           }
         }
