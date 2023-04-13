@@ -40,7 +40,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint[] memory choiceIds = new uint[](player.actionQueue.length);
     uint[] memory choiceIdAmounts = new uint[](player.actionQueue.length);
     uint choiceIdsLength;
-    uint choiceIdAmountsLength;
 
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint remainingSkillsLength;
@@ -113,18 +112,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
         if (skill == Skill.COOKING) {
           if (numProduced > 0) {
-            choiceIdAmounts[choiceIdAmountsLength] = numProduced; // Assume we want amount cooked
+            choiceIdAmounts[choiceIdsLength] = numProduced; // Assume we want amount cooked
             choiceIds[choiceIdsLength] = queuedAction.choiceId;
-
-            choiceIdAmountsLength = choiceIdAmountsLength.inc();
             choiceIdsLength = choiceIdsLength.inc();
           }
         } else {
           if (baseNumConsumed > 0) {
-            choiceIdAmounts[choiceIdAmountsLength] = baseNumConsumed;
+            choiceIdAmounts[choiceIdsLength] = baseNumConsumed;
             choiceIds[choiceIdsLength] = queuedAction.choiceId;
-
-            choiceIdAmountsLength = choiceIdAmountsLength.inc();
             choiceIdsLength = choiceIdsLength.inc();
           }
         }
@@ -211,7 +206,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     // Quest Rewards
     assembly ("memory-safe") {
       mstore(choiceIds, choiceIdsLength)
-      mstore(choiceIdAmounts, choiceIdAmountsLength)
+      mstore(choiceIdAmounts, choiceIdsLength)
     }
     _processQuests(_from, _playerId, choiceIds, choiceIdAmounts);
 
