@@ -23,6 +23,7 @@ import "../globals/rewards.sol";
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint16;
+  using UnsafeMath for uint32;
   using UnsafeMath for uint64;
   using UnsafeMath for uint256;
 
@@ -79,13 +80,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
     }
 
-    uint prevEndTime = block.timestamp + totalTimespan;
+    uint prevEndTime = block.timestamp.add(totalTimespan);
 
-    U256 iter;
     U256 queueId = nextQueueId.asU256();
     U256 queuedActionsLength = _queuedActions.length.asU256();
 
-    while (iter.neq(_queuedActions.length)) {
+    for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
 
       QueuedAction memory queuedAction;
@@ -102,17 +102,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       queuedAction.isValid = true;
       // startTime filled in later
 
-      if (totalTimespan + queuedAction.timespan > MAX_TIME_) {
+      if (totalTimespan.add(queuedAction.timespan) > MAX_TIME_) {
         // Must be the last one which will exceed the max time
         if (iter != queuedActionsLength.dec()) {
           revert ActionTimespanExceedsMaxTime();
         }
         // Shorten it so that it does not extend beyond the max time
-        queuedAction.timespan = uint24(MAX_TIME_ - totalTimespan);
+        queuedAction.timespan = uint24(MAX_TIME_.sub(totalTimespan));
       }
 
       _addToQueue(from, _playerId, queuedAction, queueId.asUint64(), prevEndTime);
-      iter = iter.inc();
+
       queueId = queueId.inc();
       totalTimespan += queuedAction.timespan;
       prevEndTime += queuedAction.timespan;
