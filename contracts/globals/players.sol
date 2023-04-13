@@ -144,34 +144,6 @@ struct AvatarInfo {
   Skill[2] startSkills; // Can be NONE
 }
 
-struct EquipmentInfo {
-  uint16 actionId;
-  uint64 queueId;
-  uint24 elapsedTime;
-  uint16 itemTokenId;
-  uint24 amount;
-}
-
-struct XPInfo {
-  uint16 actionId;
-  uint64 queueId;
-  uint24 elapsedTime;
-  uint32 xp;
-}
-
-struct DiedInfo {
-  uint16 actionId;
-  uint64 queueId;
-  uint24 elapsedTime;
-}
-
-struct RollInfo {
-  uint16 actionId;
-  uint64 queueId;
-  uint24 elapsedTime;
-  uint32 numRolls;
-}
-
 struct PastRandomRewardInfo {
   uint16 actionId;
   uint64 queueId;
@@ -179,13 +151,24 @@ struct PastRandomRewardInfo {
   uint24 amount;
 }
 
-// This is only for viewing so doesn't need to be optimized
+struct PendingQueuedActionEquipmentState {
+  Equipment[] consumed;
+  Equipment[] produced;
+}
+
+struct PendingQueuedActionMetadata {
+  uint32 xpGained;
+  uint32 rolls;
+  bool died;
+  uint16 actionId;
+  uint64 queueId;
+  uint24 elapsedTime;
+}
+
 struct PendingQueuedActionState {
-  EquipmentInfo[] consumed;
-  EquipmentInfo[] produced;
-  DiedInfo[] died;
-  RollInfo[] rolls;
-  XPInfo[] xpGained;
+  // These 2 are in sync. Separated to reduce gas/deployment costs as these are passed down many layers.
+  PendingQueuedActionEquipmentState[] equipmentStates;
+  PendingQueuedActionMetadata[] actionMetadatas;
   PastRandomRewardInfo[] producedPastRandomRewards;
   Equipment[] producedXPRewards;
   Equipment[] questRewards;
@@ -200,8 +183,6 @@ interface IPlayersRewardsDelegateView {
     address _owner,
     uint _playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
-
-  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
 }
 
 interface IPlayersQueueActionsDelegateView {
@@ -213,6 +194,8 @@ interface IPlayersQueueActionsDelegateView {
   function dailyRewardsViewImpl(
     uint _playerId
   ) external view returns (Equipment[] memory rewards, bytes32 dailyRewardMask);
+
+  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
 }
 
 struct FullAttireBonusInput {

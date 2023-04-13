@@ -206,19 +206,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     Player storage player = players_[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     uint _speedMultiplier = speedMultiplier[_playerId];
-    pendingQueuedActionState.consumed = new EquipmentInfo[](actionQueue.length * MAX_CONSUMED_PER_ACTION);
-    pendingQueuedActionState.produced = new EquipmentInfo[](
-      actionQueue.length * MAX_REWARDS_PER_ACTION + (actionQueue.length * MAX_RANDOM_REWARDS_PER_ACTION)
-    );
-    pendingQueuedActionState.died = new DiedInfo[](actionQueue.length);
-    pendingQueuedActionState.rolls = new RollInfo[](actionQueue.length);
-    pendingQueuedActionState.xpGained = new XPInfo[](actionQueue.length);
 
-    uint consumedLength;
-    uint producedLength;
-    uint diedLength;
-    uint rollsLength;
-    uint xpGainedLength;
+    pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length);
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates = pendingQueuedActionState
+      .equipmentStates;
+    pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueue.length);
+    PendingQueuedActionMetadata[] memory pendingQueuedActionMetadatas = pendingQueuedActionState.actionMetadatas;
 
     uint[] memory choiceIds = new uint[](actionQueue.length);
     uint[] memory choiceIdAmounts = new uint[](actionQueue.length);
@@ -232,22 +225,36 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint previousTotalXP = player.totalXP;
     uint totalXPGained;
     U256 bounds = actionQueue.length.asU256();
+    uint pendingQueuedActionStateLength;
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
+
+      PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
+        .equipmentStates[i];
+      PendingQueuedActionMetadata memory pendingQueuedActionMetadata = pendingQueuedActionState.actionMetadatas[i];
+
+      pendingQueuedActionEquipmentState.produced = new Equipment[](
+        MAX_REWARDS_PER_ACTION + MAX_RANDOM_REWARDS_PER_ACTION
+      );
+      uint producedLength;
+      pendingQueuedActionEquipmentState.consumed = new Equipment[](MAX_CONSUMED_PER_ACTION);
+      uint consumedLength;
+
       QueuedAction storage queuedAction = actionQueue[i];
       CombatStats memory combatStats;
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       if (isCombat) {
         // This will only ones that they have a balance for at this time. This will check balances
         combatStats = _getCachedCombatStats(player);
-        _updateCombatStats(from, combatStats, queuedAction.attire, pendingQueuedActionState);
+        _updateCombatStats(from, combatStats, queuedAction.attire, pendingQueuedActionEquipmentStates);
       }
+
       bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
         from,
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
-        pendingQueuedActionState
+        pendingQueuedActionEquipmentStates
       );
       if (missingRequiredHandEquipment) {
         continue;
@@ -261,6 +268,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (elapsedTime == 0) {
         break;
       }
+      ++pendingQueuedActionStateLength;
+
+      pendingQueuedActionMetadata.elapsedTime = uint24(elapsedTime);
+      pendingQueuedActionMetadata.actionId = queuedAction.actionId;
+      pendingQueuedActionMetadata.queueId = queuedAction.queueId;
 
       // Create some items if necessary (smithing ores to bars for instance)
       bool died;
@@ -288,7 +300,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           elapsedTime,
           combatStats,
           actionChoice,
-          pendingQueuedActionState
+          pendingQueuedActionEquipmentStates
         );
 
         choiceIds[choiceIdsLength] = queuedAction.choiceId;
@@ -302,33 +314,18 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         choiceIdAmountsLength = choiceIdAmountsLength.inc();
 
         if (outputEquipment.itemTokenId != NONE) {
-          pendingQueuedActionState.produced[producedLength] = EquipmentInfo(
-            queuedAction.actionId,
-            queuedAction.queueId,
-            uint24(elapsedTime),
-            outputEquipment.itemTokenId,
-            outputEquipment.amount
-          );
+          pendingQueuedActionEquipmentState.produced[producedLength] = outputEquipment;
           producedLength = producedLength.inc();
         }
         U256 consumedEquipmentLength = consumedEquipment.length.asU256();
         for (U256 jter; jter < consumedEquipmentLength; jter = jter.inc()) {
           uint j = jter.asUint256();
-          pendingQueuedActionState.consumed[consumedLength] = EquipmentInfo(
-            queuedAction.actionId,
-            queuedAction.queueId,
-            uint24(elapsedTime),
-            consumedEquipment[j].itemTokenId,
-            consumedEquipment[j].amount
-          );
+          pendingQueuedActionEquipmentState.consumed[consumedLength] = consumedEquipment[j];
           consumedLength = consumedLength.inc();
         }
 
         if (died) {
-          pendingQueuedActionState.died[diedLength] = (
-            DiedInfo(queuedAction.actionId, queuedAction.queueId, uint24(elapsedTime))
-          );
-          diedLength = diedLength.inc();
+          pendingQueuedActionMetadata.died = true;
         }
       }
 
@@ -341,7 +338,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           queuedAction,
           skill,
           xpElapsedTime,
-          pendingQueuedActionState
+          pendingQueuedActionEquipmentStates
         );
       }
       uint32 xpGained = pointsAccrued;
@@ -360,24 +357,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       U256 newIdsLength = newIds.length.asU256();
       for (U256 jter; jter < newIdsLength; jter = jter.inc()) {
         uint j = jter.asUint256();
-        pendingQueuedActionState.produced[producedLength] = EquipmentInfo(
-          queuedAction.actionId,
-          queuedAction.queueId,
-          uint24(elapsedTime),
+        pendingQueuedActionEquipmentState.produced[producedLength] = Equipment(
           uint16(newIds[j]),
           uint24(newAmounts[j])
         );
         producedLength = producedLength.inc();
       }
       // Total XP gained
-      pendingQueuedActionState.xpGained[xpGainedLength] = XPInfo(
-        queuedAction.actionId,
-        queuedAction.queueId,
-        uint24(elapsedTime),
-        xpGained
-      );
-      xpGainedLength = xpGainedLength.inc();
-
+      pendingQueuedActionMetadata.xpGained = xpGained;
       totalXPGained += xpGained;
 
       // Number of pending reward rolls
@@ -389,14 +376,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         bool hasRandomWord = world.hasRandomWord(queuedAction.startTime + xpElapsedTime);
         if (!hasRandomWord) {
           uint16 monstersKilled = uint16((numSpawnedPerHour * xpElapsedTime) / 3600);
-          pendingQueuedActionState.rolls[rollsLength] = RollInfo(
-            queuedAction.actionId,
-            queuedAction.queueId,
-            uint24(elapsedTime),
-            uint32(isCombat ? monstersKilled : xpElapsedTime / 3600)
-          );
-          rollsLength = rollsLength.inc();
+          pendingQueuedActionMetadata.rolls = uint32(isCombat ? monstersKilled : xpElapsedTime / 3600);
         }
+      }
+
+      // Compact to fit the arrays
+      assembly ("memory-safe") {
+        mstore(mload(pendingQueuedActionEquipmentState), consumedLength)
+        mstore(mload(add(pendingQueuedActionEquipmentState, 32)), producedLength)
       }
     } // end of loop
 
@@ -473,28 +460,10 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     pendingQueuedActionState.activeQuestInfo = activeQuestsCompletionInfo;
 
-    // Compact to fit the arrays
+    // Compact to fit the array
     assembly ("memory-safe") {
-      mstore(mload(pendingQueuedActionState), consumedLength)
-      mstore(mload(add(pendingQueuedActionState, 32)), producedLength)
-      mstore(mload(add(pendingQueuedActionState, 64)), diedLength)
-      mstore(mload(add(pendingQueuedActionState, 96)), rollsLength)
-      mstore(mload(add(pendingQueuedActionState, 128)), xpGainedLength)
-    }
-  }
-
-  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed) {
-    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
-    uint streakStartIndex = streakStart.div(1 weeks);
-    bytes32 mask = dailyRewardMasks[_playerId];
-    uint16 lastRewardStartIndex = uint16(uint256(mask));
-    if (lastRewardStartIndex < streakStartIndex) {
-      mask = bytes32(streakStartIndex);
-    }
-
-    for (U256 iter; iter.lt(7); iter = iter.inc()) {
-      uint i = iter.asUint256();
-      claimed[i] = mask[i] != 0;
+      mstore(mload(pendingQueuedActionEquipmentStates), pendingQueuedActionStateLength)
+      mstore(mload(pendingQueuedActionMetadatas), pendingQueuedActionStateLength)
     }
   }
 
@@ -702,7 +671,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
-    PendingQueuedActionState memory _pendingQueuedActionState
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   )
     private
     view
@@ -737,7 +706,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         enemyCombatStats,
         alphaCombat,
         betaCombat,
-        _pendingQueuedActionState
+        _pendingQueuedActionEquipmentStates
       );
 
       uint24 foodConsumed;
@@ -750,7 +719,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         enemyCombatStats,
         alphaCombat,
         betaCombat,
-        _pendingQueuedActionState
+        _pendingQueuedActionEquipmentStates
       );
 
       if (died) {
@@ -767,7 +736,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         itemNFT,
         _elapsedTime,
         _actionChoice,
-        _pendingQueuedActionState
+        _pendingQueuedActionEquipmentStates
       );
     }
 

@@ -68,13 +68,13 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_mine", []);
 
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.produced.length).is.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [450]);
     await ethers.provider.send("evm_mine", []);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.produced.length).is.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
     expect(pendingQueuedActionState.producedXPRewards.length).is.eq(1);
     expect(pendingQueuedActionState.producedXPRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_BAR);
     expect(pendingQueuedActionState.producedXPRewards[0].amount).is.eq(3);
@@ -208,7 +208,6 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_mine", []);
 
       const pendingQueuedActionState = await players.connect(alice).pendingQueuedActionState(alice.address, playerId);
-      console.log(equipments[equipments.length - 1].itemTokenId);
       expect(pendingQueuedActionState.dailyRewards.length).to.eq(1);
       expect(pendingQueuedActionState.dailyRewards[0].itemTokenId).to.eq(equipments[equipments.length - 1].itemTokenId);
       expect(pendingQueuedActionState.dailyRewards[0].amount).to.eq(
@@ -224,7 +223,7 @@ describe("Rewards", function () {
       expect(balanceAfterDailyReward).to.eq(
         prevBalanceDailyReward.toNumber() + equipments[equipments.length - 1].amount
       );
-      /*
+
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, true, true, true, true, true, true]);
 
       // Next one should start the next round
@@ -259,7 +258,7 @@ describe("Rewards", function () {
       // Also check extra week streak reward
       expect(balanceAfterWeeklyReward.toNumber() + 1).to.eq(
         await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)
-      ); */
+      );
     });
 
     it("Only 1 claim", async function () {
@@ -433,7 +432,7 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_mine", []);
 
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.produced.length).to.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(0);
 
     tx = await world.requestRandomWords();
     requestId = getRequestId(tx);
@@ -441,7 +440,7 @@ describe("Rewards", function () {
     await mockOracleClient.fulfill(requestId, world.address);
 
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.produced.length).to.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(1);
 
     await players.connect(alice).processActions(playerId);
 
@@ -541,7 +540,7 @@ describe("Rewards", function () {
       expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.produced.length).to.eq(0);
+      expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
       tx = await world.requestRandomWords();
       let requestId = getRequestId(tx);
@@ -784,9 +783,9 @@ describe("Rewards", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
 
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.produced.length).is.eq(1);
-    expect(pendingQueuedActionState.produced[0].amount).to.gt(0);
-    expect(pendingQueuedActionState.produced[0].itemTokenId).to.eq(EstforConstants.LOG);
+    expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.gt(0);
+    expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(EstforConstants.LOG);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     await players.connect(alice).processActions(playerId);
     // Confirm 0 XP but got wood

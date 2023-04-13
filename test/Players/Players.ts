@@ -490,7 +490,7 @@ describe("Players", function () {
 
         const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
         const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputNum) / (3600 * 10));
-        expect(pendingQueuedActionState.produced[0].amount).to.eq(expectedOutputNum);
+        expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(expectedOutputNum);
 
         await players.connect(alice).processActions(playerId);
         // Check the drops are as expected
@@ -855,7 +855,7 @@ describe("Players", function () {
       await ethers.provider.send("evm_mine", []);
 
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.xpGained[0].xp).to.eq(Math.floor(queuedAction.timespan * 1.1));
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
       await players.connect(alice).processActions(playerId);
       const startXP = (await players.START_XP()).toNumber();
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
@@ -883,7 +883,7 @@ describe("Players", function () {
       await ethers.provider.send("evm_mine", []);
 
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.xpGained[0].xp).to.eq(Math.floor(queuedAction.timespan * 1.05));
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.05));
       await players.connect(alice).processActions(playerId);
       const startXP = (await players.START_XP()).toNumber() / 2;
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(

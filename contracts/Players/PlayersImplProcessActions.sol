@@ -44,7 +44,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     remainingSkills = new QueuedAction[](player.actionQueue.length); // Max
     uint remainingSkillsLength;
     uint nextStartTime = block.timestamp;
-    PendingQueuedActionState memory pendingQueuedActionState;
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
     U256 bounds = player.actionQueue.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -54,14 +54,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (isCombat) {
         // This will only ones that they have a balance for at this time. This will check balances
         combatStats = _getCachedCombatStats(player);
-        _updateCombatStats(_from, combatStats, queuedAction.attire, pendingQueuedActionState);
+        _updateCombatStats(_from, combatStats, queuedAction.attire, pendingQueuedActionEquipmentStates);
       }
       bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
         _from,
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
-        pendingQueuedActionState
+        pendingQueuedActionEquipmentStates
       );
       if (missingRequiredHandEquipment) {
         emit ActionAborted(_from, _playerId, queuedAction.queueId);
@@ -106,7 +106,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           elapsedTime,
           combatStats,
           actionChoice,
-          pendingQueuedActionState
+          pendingQueuedActionEquipmentStates
         );
 
         Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
@@ -136,7 +136,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           queuedAction,
           skill,
           xpElapsedTime,
-          pendingQueuedActionState
+          pendingQueuedActionEquipmentStates
         );
       } else {
         emit Died(_from, _playerId, _queueId);
@@ -180,7 +180,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         uint24(xpElapsedTime),
         queuedAction.attire,
         skill,
-        pendingQueuedActionState
+        pendingQueuedActionEquipmentStates
       );
 
       // This loot might be needed for a future task so mint now rather than later
@@ -265,7 +265,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
-    PendingQueuedActionState memory _pendingQueuedActionState
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died, uint24 numConsumed, uint24 numProduced) {
     bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
 
@@ -282,7 +282,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         enemyCombatStats,
         alphaCombat,
         betaCombat,
-        _pendingQueuedActionState
+        _pendingQueuedActionEquipmentStates
       );
 
       died = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, enemyCombatStats);
@@ -296,7 +296,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         itemNFT,
         _elapsedTime,
         _actionChoice,
-        _pendingQueuedActionState
+        _pendingQueuedActionEquipmentStates
       );
     }
 
@@ -367,7 +367,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   ) private returns (bool died) {
     uint24 foodConsumed;
     // Figure out how much food should be used
-    PendingQueuedActionState memory pendingQueuedActionState;
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
     (foodConsumed, died) = PlayersLibrary.foodConsumedView(
       _from,
       _queuedAction,
@@ -377,7 +377,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       _enemyCombatStats,
       alphaCombat,
       betaCombat,
-      pendingQueuedActionState
+      pendingQueuedActionEquipmentStates
     );
     if (foodConsumed != 0) {
       _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.queueId);
@@ -450,7 +450,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint24 _elapsedTime,
     Attire storage _attire,
     Skill _skill,
-    PendingQueuedActionState memory _pendingQueuedActionState
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
     if (hasRandomRewards) {
@@ -478,7 +478,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             _from,
             _attire,
             skipNeck,
-            _pendingQueuedActionState
+            _pendingQueuedActionEquipmentStates
           );
           bool hasFullAttire = PlayersLibrary.extraBoostFromFullAttire(
             itemTokenIds,

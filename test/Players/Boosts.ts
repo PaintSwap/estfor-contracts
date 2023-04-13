@@ -111,7 +111,7 @@ describe("Boosts", function () {
       await ethers.provider.send("evm_mine", []);
 
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.xpGained[0].xp).to.eq(queuedAction.timespan);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(queuedAction.timespan);
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
@@ -149,7 +149,7 @@ describe("Boosts", function () {
       await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired in action end
       await ethers.provider.send("evm_mine", []);
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.xpGained[0].xp).to.eq(
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(
         queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100
       );
     });
@@ -210,7 +210,12 @@ describe("Boosts", function () {
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
-    expect(pendingQueuedActionState.xpGained[0].xp).to.be.oneOf([meleeXP + healthXP, meleeXP + healthXP - 1]);
+    expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
+    expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
+      meleeXP + healthXP,
+      meleeXP + healthXP - 1,
+    ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
@@ -244,7 +249,9 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.xpGained[0].xp).to.eq(queuedAction.timespan + (boostDuration * boostValue) / 100);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(
+      queuedAction.timespan + (boostDuration * boostValue) / 100
+    );
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (boostDuration * boostValue) / 100
@@ -339,7 +346,7 @@ describe("Boosts", function () {
     const foodCooked =
       (successPercent / 100) *
       ((queuedAction.timespan * rate) / (3600 * 10) + (boostDuration * boostValue * rate) / (100 * 10 * 3600));
-    expect(pendingQueuedActionState.produced[0].amount).to.eq(foodCooked);
+    expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(foodCooked);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);

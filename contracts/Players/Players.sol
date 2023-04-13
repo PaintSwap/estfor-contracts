@@ -286,7 +286,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
+      abi.encodeWithSelector(IPlayersQueueActionsDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
     );
     return abi.decode(data, (bool[7]));
   }
@@ -373,14 +373,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     bytes4 selector = bytes4(msg.data);
 
     address implementation;
-    if (
-      selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector ||
-      selector == IPlayersRewardsDelegateView.dailyClaimedRewardsImpl.selector
-    ) {
+    if (selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector) {
       implementation = implRewards;
     } else if (
       selector == IPlayersQueueActionsDelegateView.claimableXPThresholdRewardsImpl.selector ||
-      selector == IPlayersQueueActionsDelegateView.dailyRewardsViewImpl.selector
+      selector == IPlayersQueueActionsDelegateView.dailyRewardsViewImpl.selector ||
+      selector == IPlayersQueueActionsDelegateView.dailyClaimedRewardsImpl.selector
     ) {
       implementation = implQueueActions;
     } else {

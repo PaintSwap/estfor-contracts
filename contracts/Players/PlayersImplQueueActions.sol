@@ -364,12 +364,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _checkEquipPosition(_attire);
 
     bool skipNeck;
-    PendingQueuedActionState memory pendingQueuedActionState;
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
     (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(
       _from,
       _attire,
       skipNeck,
-      pendingQueuedActionState
+      pendingQueuedActionEquipmentStates
     );
     if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minXPs) = itemNFT.getMinRequirements(itemTokenIds);
@@ -614,6 +614,21 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
           rewards[1] = world.getWeeklyReward();
         }
       }
+    }
+  }
+
+  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed) {
+    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
+    uint streakStartIndex = streakStart.div(1 weeks);
+    bytes32 mask = dailyRewardMasks[_playerId];
+    uint16 lastRewardStartIndex = uint16(uint256(mask));
+    if (lastRewardStartIndex < streakStartIndex) {
+      mask = bytes32(streakStartIndex);
+    }
+
+    for (U256 iter; iter.lt(7); iter = iter.inc()) {
+      uint i = iter.asUint256();
+      claimed[i] = mask[i] != 0;
     }
   }
 

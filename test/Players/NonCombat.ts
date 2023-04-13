@@ -26,14 +26,14 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
 
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.consumed.length).is.eq(0);
-      expect(pendingQueuedActionState.produced.length).is.eq(1);
-      expect(pendingQueuedActionState.produced[0].itemTokenId).is.eq(EstforConstants.LOG);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed.length).is.eq(0);
+      expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).is.eq(EstforConstants.LOG);
       const balanceExpected = Math.floor((queuedAction.timespan * rate) / (3600 * 10));
-      expect(pendingQueuedActionState.produced[0].amount).is.eq(balanceExpected);
+      expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).is.eq(balanceExpected);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
-      expect(pendingQueuedActionState.xpGained[0].xp).to.eq(queuedAction.timespan);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(queuedAction.timespan);
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
     });
@@ -700,9 +700,9 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       const foodNotBurned = Math.floor((queuedAction.timespan * rate) / (3600 * 10 * 2));
-      expect(pendingQueuedActionState.produced.length).is.eq(1);
-      expect(pendingQueuedActionState.produced[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
-      expect(pendingQueuedActionState.produced[0].amount).to.eq(foodNotBurned);
+      expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
+      expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(foodNotBurned);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
 
