@@ -59,6 +59,7 @@ interface IPlayerDelegate {
     address implQueueActions,
     address implProcessActions,
     address implRewards,
+    address implMisc,
     bool isAlpha
   ) external;
 }
@@ -98,6 +99,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address _implQueueActions,
     address _implProcessActions,
     address _implRewards,
+    address _implMisc,
     bool _isAlpha
   ) public initializer {
     __Ownable_init();
@@ -105,7 +107,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     __ReentrancyGuard_init();
 
     _delegatecall(
-      _implQueueActions,
+      _implMisc,
       abi.encodeWithSelector(
         IPlayerDelegate.initialize.selector,
         _itemNFT,
@@ -117,6 +119,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _implQueueActions,
         _implProcessActions,
         _implRewards,
+        _implMisc,
         _isAlpha
       )
     );
@@ -229,7 +232,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
 
     _delegatecall(
-      implProcessActions,
+      implMisc,
       abi.encodeWithSelector(IPlayerDelegate.mintedPlayer.selector, _from, _playerId, _startSkills)
     );
   }
@@ -286,7 +289,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersQueueActionsDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
+      abi.encodeWithSelector(IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
     );
     return abi.decode(data, (bool[7]));
   }
@@ -337,15 +340,21 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  function setImpls(address _implQueueActions, address _implProcessActions, address _implRewards) external onlyOwner {
+  function setImpls(
+    address _implQueueActions,
+    address _implProcessActions,
+    address _implRewards,
+    address _implMisc
+  ) external onlyOwner {
     implQueueActions = _implQueueActions;
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;
+    implMisc = _implMisc;
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
     _delegatecall(
-      implQueueActions,
+      implMisc,
       abi.encodeWithSelector(IPlayerDelegate.addXPThresholdRewards.selector, _xpThresholdRewards)
     );
   }
@@ -355,10 +364,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
-    _delegatecall(
-      implProcessActions,
-      abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses)
-    );
+    _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses));
   }
 
   function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external isAdminAndAlpha {
@@ -373,14 +379,18 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     bytes4 selector = bytes4(msg.data);
 
     address implementation;
-    if (selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector) {
+    if (
+      selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector ||
+      selector == IPlayersRewardsDelegateView.getRewards.selector
+    ) {
       implementation = implRewards;
     } else if (
-      selector == IPlayersQueueActionsDelegateView.claimableXPThresholdRewardsImpl.selector ||
-      selector == IPlayersQueueActionsDelegateView.dailyRewardsViewImpl.selector ||
-      selector == IPlayersQueueActionsDelegateView.dailyClaimedRewardsImpl.selector
+      selector == IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector ||
+      selector == IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector ||
+      selector == IPlayersMiscDelegateView.dailyRewardsViewImpl.selector ||
+      selector == IPlayersMiscDelegateView.processConsumablesViewImpl.selector
     ) {
-      implementation = implQueueActions;
+      implementation = implMisc;
     } else {
       revert InvalidSelector();
     }

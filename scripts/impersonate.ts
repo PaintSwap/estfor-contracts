@@ -2,6 +2,7 @@ import {PendingFlags} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {
   PLAYERS_ADDRESS,
+  PLAYERS_IMPL_MISC_ADDRESS,
   PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
   PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
   PLAYERS_IMPL_REWARDS_ADDRESS,
@@ -47,9 +48,21 @@ async function main() {
   console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
   await playersImplRewards.deployed();
 
+  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
+    libraries: {PlayersLibrary: playerLibrary.address},
+  });
+  const playersImplMisc = await PlayersImplMisc.deploy();
+  console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
+  await playersImplMisc.deployed();
+
   const tx = await players
     .connect(owner)
-    .setImpls(playersImplQueueActions.address, playersImplProcessActions.address, playersImplRewards.address);
+    .setImpls(
+      playersImplQueueActions.address,
+      playersImplProcessActions.address,
+      playersImplRewards.address,
+      playersImplMisc.address
+    );
   await tx.wait();
 
   const playerId = 4;

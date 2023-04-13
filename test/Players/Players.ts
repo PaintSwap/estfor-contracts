@@ -893,10 +893,11 @@ describe("Players", function () {
 
     it("Revert if trying to initialize QueueActionImpl", async function () {
       // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
-      const {playersImplQueueActions} = await loadFixture(playersFixture);
+      const {playersImplMisc} = await loadFixture(playersFixture);
 
       await expect(
-        playersImplQueueActions.initialize(
+        playersImplMisc.initialize(
+          ethers.constants.AddressZero,
           ethers.constants.AddressZero,
           ethers.constants.AddressZero,
           ethers.constants.AddressZero,
@@ -908,7 +909,7 @@ describe("Players", function () {
           ethers.constants.AddressZero,
           false
         )
-      ).to.be.revertedWithCustomError(playersImplQueueActions, "CannotCallInitializerOnImplementation");
+      ).to.be.revertedWithCustomError(playersImplMisc, "CannotCallInitializerOnImplementation");
     });
   });
 });

@@ -9,25 +9,6 @@ enum ActionQueueStatus {
   KEEP_LAST_IN_PROGRESS
 }
 
-// This is effectively a ratio to produce 1 of outputTokenId.
-// Fixed based available actions that can be undertaken for an action
-struct ActionChoice {
-  Skill skill;
-  uint32 minXP;
-  uint32 diff; // This can be uint16.
-  uint32 rate; // This can be uint16. Rate of output produced per hour (base 10) 1 decimal
-  uint24 xpPerHour;
-  uint16 inputTokenId1;
-  uint8 num1;
-  uint16 inputTokenId2;
-  uint8 num2;
-  uint16 inputTokenId3;
-  uint8 num3;
-  uint16 outputTokenId;
-  uint8 outputNum;
-  uint8 successPercent; // 0-100
-}
-
 // The user chooses these
 struct QueuedActionInput {
   // Keep this first

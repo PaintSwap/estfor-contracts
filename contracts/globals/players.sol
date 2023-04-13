@@ -119,6 +119,25 @@ struct PlayerBoostInfo {
   BoostType boostType;
 }
 
+// This is effectively a ratio to produce 1 of outputTokenId.
+// Fixed based available actions that can be undertaken for an action
+struct ActionChoice {
+  Skill skill;
+  uint32 minXP;
+  uint32 diff; // This can be uint16.
+  uint32 rate; // This can be uint16. Rate of output produced per hour (base 10) 1 decimal
+  uint24 xpPerHour;
+  uint16 inputTokenId1;
+  uint8 num1;
+  uint16 inputTokenId2;
+  uint8 num2;
+  uint16 inputTokenId3;
+  uint8 num3;
+  uint16 outputTokenId;
+  uint8 outputNum;
+  uint8 successPercent; // 0-100
+}
+
 enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates all combat skills, attack <-> magic, defence, health etc
@@ -183,19 +202,52 @@ interface IPlayersRewardsDelegateView {
     address _owner,
     uint _playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
+
+  function getRewards(
+    uint playerId,
+    uint40 skillStartTime,
+    uint elapsedTime,
+    uint16 _actionId
+  ) external view returns (uint[] memory newIds, uint[] memory newAmounts);
 }
 
-interface IPlayersQueueActionsDelegateView {
+interface IPlayersMiscDelegateView {
   function claimableXPThresholdRewardsImpl(
     uint oldTotalXP,
     uint newTotalXP
   ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts);
 
+  function dailyClaimedRewardsImpl(uint playerId) external view returns (bool[7] memory claimed);
+
   function dailyRewardsViewImpl(
     uint _playerId
   ) external view returns (Equipment[] memory rewards, bytes32 dailyRewardMask);
 
-  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed);
+  function processConsumablesViewImpl(
+    address from,
+    uint playerId,
+    QueuedAction memory queuedAction,
+    uint elapsedTime,
+    CombatStats memory combatStats,
+    ActionChoice memory actionChoice,
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+  )
+    external
+    view
+    returns (
+      Equipment[] memory consumedEquipment,
+      Equipment memory outputEquipment,
+      uint xpElapsedTime,
+      bool died,
+      uint24 numConsumed,
+      uint24 numProduced
+    );
+}
+
+interface IPlayersMiscDelegate {
+  function handleDailyRewards(address from, uint playerId) external;
+
+  function processQuests(address from, uint playerId, uint[] memory choiceIds, uint[] memory choiceIdAmounts) external;
 }
 
 struct FullAttireBonusInput {

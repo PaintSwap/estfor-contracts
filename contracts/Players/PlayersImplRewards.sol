@@ -684,114 +684,19 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint24 numProduced
     )
   {
-    consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
-    uint consumedEquipmentLength;
-
-    // Figure out how much food should be consumed.
-    // This is based on the damage done from battling
-    bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
-    if (isCombat) {
-      // Fetch the requirements for it
-      CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
-
-      uint combatElapsedTime;
-      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayersLibrary.getCombatAdjustedElapsedTimes(
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersMiscDelegateView.processConsumablesViewImpl.selector,
         _from,
-        itemNFT,
-        world,
-        _elapsedTime,
-        _actionChoice,
+        _playerId,
         _queuedAction,
-        _combatStats,
-        enemyCombatStats,
-        alphaCombat,
-        betaCombat,
-        _pendingQueuedActionEquipmentStates
-      );
-
-      uint24 foodConsumed;
-      (foodConsumed, died) = PlayersLibrary.foodConsumedView(
-        _from,
-        _queuedAction,
-        combatElapsedTime,
-        itemNFT,
-        _combatStats,
-        enemyCombatStats,
-        alphaCombat,
-        betaCombat,
-        _pendingQueuedActionEquipmentStates
-      );
-
-      if (died) {
-        xpElapsedTime = 0;
-      }
-
-      if (_queuedAction.regenerateId != NONE && foodConsumed != 0) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(_queuedAction.regenerateId, foodConsumed);
-        consumedEquipmentLength = consumedEquipmentLength.inc();
-      }
-    } else {
-      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
-        _from,
-        itemNFT,
         _elapsedTime,
+        _combatStats,
         _actionChoice,
         _pendingQueuedActionEquipmentStates
-      );
-    }
-
-    if (numConsumed != 0) {
-      if (_actionChoice.inputTokenId1 != NONE) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(
-          _actionChoice.inputTokenId1,
-          numConsumed * _actionChoice.num1
-        );
-        consumedEquipmentLength = consumedEquipmentLength.inc();
-      }
-      if (_actionChoice.inputTokenId2 != NONE) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(
-          _actionChoice.inputTokenId2,
-          numConsumed * _actionChoice.num2
-        );
-        consumedEquipmentLength = consumedEquipmentLength.inc();
-      }
-      if (_actionChoice.inputTokenId3 != NONE) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(
-          _actionChoice.inputTokenId3,
-          numConsumed * _actionChoice.num3
-        );
-        consumedEquipmentLength = consumedEquipmentLength.inc();
-      }
-    }
-
-    if (_actionChoice.outputTokenId != 0) {
-      uint8 successPercent = 100;
-      if (_actionChoice.successPercent != 100) {
-        uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
-        uint skillLevel = PlayersLibrary.getLevel(xp_[_playerId][_actionChoice.skill]);
-        uint extraBoost = skillLevel - minLevel;
-
-        successPercent = uint8(
-          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost)
-        );
-      }
-
-      numProduced = uint24((numConsumed * _actionChoice.outputNum * successPercent) / 100);
-
-      // Check for any gathering boosts
-      PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-      uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
-      if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-        numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
-      }
-
-      if (numProduced != 0) {
-        outputEquipment = Equipment(_actionChoice.outputTokenId, numProduced);
-      }
-    }
-
-    assembly ("memory-safe") {
-      mstore(consumedEquipment, consumedEquipmentLength)
-    }
+      )
+    );
+    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint24, uint24));
   }
 }

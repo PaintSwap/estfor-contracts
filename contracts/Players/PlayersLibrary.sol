@@ -218,7 +218,7 @@ library PlayersLibrary {
 
   function foodConsumedView(
     address _from,
-    QueuedAction storage queuedAction,
+    uint16 _regenerateId,
     uint _combatElapsedTime,
     ItemNFT _itemNFT,
     CombatStats memory _combatStats,
@@ -252,8 +252,8 @@ library PlayersLibrary {
     //    totalHealthLost +=  _dmg(_enemyCombatStats.range, _combatStats.rangeDefence, _alphaCombat, _betaCombat, _combatElapsedTime);
 
     uint healthRestored;
-    if (queuedAction.regenerateId != NONE) {
-      Item memory item = _itemNFT.getItem(queuedAction.regenerateId);
+    if (_regenerateId != NONE) {
+      Item memory item = _itemNFT.getItem(_regenerateId);
       healthRestored = item.healthRestored;
     }
 
@@ -270,7 +270,7 @@ library PlayersLibrary {
         foodConsumed = type(uint16).max;
         died = true;
       } else {
-        uint balance = getRealBalance(_from, queuedAction.regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
+        uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
         died = foodConsumed > balance;
         if (died) {
           foodConsumed = uint16(balance);

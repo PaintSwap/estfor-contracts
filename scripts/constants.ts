@@ -16,6 +16,7 @@ let playersLibrary;
 let playersImplQueueActions;
 let playersImplProcessActions;
 let playersImplRewards;
+let playersImplMisc;
 let players;
 
 if (isAlpha) {
@@ -35,6 +36,7 @@ if (isAlpha) {
   playersImplQueueActions = "0xd62752d03b15a16747d2dc76c9652299b4b7a8ab";
   playersImplProcessActions = "0xe0e9dd410104ed6c1535956ea4098267e7d73ea0";
   playersImplRewards = "0xdce6895f924fb3dfff65642dbef4b9ea37c02e39";
+  playersImplMisc = "0xdce6895f924fb3dfff65642dbef4b9ea37c02e39";
   players = "0xd7616b97d07b11c371ba16a8808bd981628fdfd2";
 } else {
   // TODO when live addresses are known
@@ -54,6 +56,7 @@ if (isAlpha) {
   playersImplQueueActions = "";
   playersImplProcessActions = "";
   playersImplRewards = "";
+  playersImplMisc = "";
   players = "";
 }
 
@@ -75,6 +78,7 @@ export const PLAYERS_LIBRARY_ADDRESS = playersLibrary;
 export const PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS = playersImplQueueActions;
 export const PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS = playersImplProcessActions;
 export const PLAYERS_IMPL_REWARDS_ADDRESS = playersImplRewards;
+export const PLAYERS_IMPL_MISC_ADDRESS = playersImplMisc;
 export const PLAYERS_ADDRESS = players;
 
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

@@ -148,6 +148,7 @@ abstract contract PlayersBase {
   address internal implQueueActions;
   address internal implProcessActions;
   address internal implRewards;
+  address internal implMisc;
   address internal reserved1;
 
   AdminAccess internal adminAccess;
@@ -192,7 +193,7 @@ abstract contract PlayersBase {
   function dailyRewardsView(uint _playerId) public view returns (Equipment[] memory, bytes32) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersQueueActionsDelegateView.dailyRewardsViewImpl.selector, _playerId)
+      abi.encodeWithSelector(IPlayersMiscDelegateView.dailyRewardsViewImpl.selector, _playerId)
     );
     return abi.decode(data, (Equipment[], bytes32));
   }
@@ -470,6 +471,29 @@ abstract contract PlayersBase {
     //    combatStats.rangeDefence = _player.defence;
   }
 
+  function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) internal {
+    Player storage player = players_[_playerId];
+    player.actionQueue = _queuedActions;
+    emit SetActionQueue(_from, _playerId, player.actionQueue);
+  }
+
+  function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) internal {
+    uint oldPoints = xp_[_playerId][_skill];
+    uint newPoints = oldPoints.add(_pointsAccrued);
+    if (newPoints > type(uint32).max) {
+      newPoints = type(uint32).max;
+    }
+    xp_[_playerId][_skill] = uint32(newPoints);
+    emit AddXP(_from, _playerId, _skill, uint32(newPoints));
+
+    uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
+    uint16 newLevel = PlayersLibrary.getLevel(newPoints);
+    // Update the player's level
+    if (newLevel > oldLevel) {
+      emit LevelUp(_from, _playerId, _skill, oldLevel, newLevel);
+    }
+  }
+
   function _processActions(address _from, uint _playerId) internal returns (QueuedAction[] memory remainingSkills) {
     bytes memory data = _delegatecall(
       implProcessActions,
@@ -490,18 +514,12 @@ abstract contract PlayersBase {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(
-        IPlayersQueueActionsDelegateView.claimableXPThresholdRewardsImpl.selector,
+        IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector,
         _oldTotalXP,
         _newTotalXP
       )
     );
     return abi.decode(data, (uint[], uint[]));
-  }
-
-  function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) internal {
-    Player storage player = players_[_playerId];
-    player.actionQueue = _queuedActions;
-    emit SetActionQueue(_from, _playerId, player.actionQueue);
   }
 
   function _checkStartSlot() internal pure {

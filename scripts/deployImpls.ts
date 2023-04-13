@@ -2,6 +2,7 @@ import {ethers} from "hardhat";
 import {PlayersLibrary} from "../typechain-types";
 import {
   PLAYERS_ADDRESS,
+  PLAYERS_IMPL_MISC_ADDRESS,
   PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
   PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
   PLAYERS_IMPL_REWARDS_ADDRESS,
@@ -49,6 +50,13 @@ async function main() {
   console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
   await playersImplRewards.deployed();
 
+  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
+    libraries: {PlayersLibrary: playerLibrary.address},
+  });
+  const playersImplMisc = await PlayersImplMisc.deploy();
+  console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
+  await playersImplMisc.deployed();
+
   // Set the implementations
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
@@ -58,12 +66,14 @@ async function main() {
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
     PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
     PLAYERS_IMPL_REWARDS_ADDRESS,
+    PLAYERS_IMPL_MISC_ADDRESS
   */
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
-    playersImplProcessActions.address,
-    PLAYERS_IMPL_REWARDS_ADDRESS
+    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
+    PLAYERS_IMPL_REWARDS_ADDRESS,
+    PLAYERS_IMPL_MISC_ADDRESS
   );
   await tx.wait();
 
@@ -72,6 +82,7 @@ async function main() {
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
+      playersImplMisc.address,
     ]);
   }
 }

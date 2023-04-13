@@ -248,6 +248,13 @@ async function main() {
   await playersImplRewards.deployed();
   console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
 
+  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
+    libraries: {PlayersLibrary: playerLibrary.address},
+  });
+  const playersImplMisc = await PlayersImplMisc.deploy();
+  console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
+  await playersImplMisc.deployed();
+
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
@@ -264,6 +271,7 @@ async function main() {
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
+      playersImplMisc.address,
       isAlpha,
     ],
     {

@@ -8,9 +8,6 @@ import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.so
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
-import {Quests} from "../Quests.sol";
-import {Clans} from "../Clans/Clans.sol";
-import {PlayerNFT} from "../PlayerNFT.sol";
 
 /* solhint-disable no-global-import */
 import "../globals/players.sol";
@@ -27,16 +24,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   using UnsafeMath for uint64;
   using UnsafeMath for uint256;
 
-  error CannotCallInitializerOnImplementation();
-
   constructor() {
     _checkStartSlot();
-    // Effectively the same as __disableInitializer
-    uint max = type(uint8).max;
-    assembly ("memory-safe") {
-      // Set initialized
-      sstore(0, max)
-    }
   }
 
   function startActions(
@@ -489,185 +478,5 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     address from = msg.sender;
     itemNFT.mint(from, activeBoosts_[_playerId].itemTokenId, 1);
     emit UnconsumeBoostVial(from, _playerId);
-  }
-
-  // === XP Threshold rewards ===
-  function claimableXPThresholdRewardsImpl(
-    uint _oldTotalXP,
-    uint _newTotalXP
-  ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts) {
-    uint16 prevIndex = _findBaseXPThreshold(_oldTotalXP);
-    uint16 nextIndex = _findBaseXPThreshold(_newTotalXP);
-
-    uint diff = nextIndex - prevIndex;
-    itemTokenIds = new uint[](diff);
-    amounts = new uint[](diff);
-    U256 length;
-    for (U256 iter; iter.lt(diff); iter = iter.inc()) {
-      uint i = iter.asUint256();
-      uint32 xpThreshold = _getXPReward(prevIndex.inc().add(i));
-      Equipment[] memory items = xpRewardThresholds[xpThreshold];
-      if (items.length != 0) {
-        // TODO: Currently assumes there is only 1 item per threshold
-        uint l = length.asUint256();
-        itemTokenIds[l] = items[0].itemTokenId;
-        amounts[l] = items[0].amount;
-        length = length.inc();
-      }
-    }
-
-    assembly ("memory-safe") {
-      mstore(itemTokenIds, length)
-      mstore(amounts, length)
-    }
-  }
-
-  function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external {
-    U256 iter = _xpThresholdRewards.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
-
-      // Check that it is part of the hexBytes
-      uint16 index = _findBaseXPThreshold(xpThresholdReward.xpThreshold);
-      uint32 xpThreshold = _getXPReward(index);
-      if (xpThresholdReward.xpThreshold != xpThreshold) {
-        revert XPThresholdNotFound();
-      }
-
-      U256 bounds = xpThresholdReward.rewards.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        if (xpThresholdReward.rewards[i].itemTokenId == NONE) {
-          revert InvalidItemTokenId();
-        }
-        if (xpThresholdReward.rewards[i].amount == 0) {
-          revert InvalidAmount();
-        }
-      }
-
-      xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
-      emit AdminAddThresholdReward(xpThresholdReward);
-    }
-  }
-
-  // Index not level, add one after (check for > max)
-  function _findBaseXPThreshold(uint256 _xp) private pure returns (uint16) {
-    U256 low;
-    U256 high = xpRewardBytes.length.asU256().div(4);
-
-    while (low < high) {
-      U256 mid = (low + high).div(2);
-
-      // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
-      // Math.average rounds down (it does integer division with truncation).
-      if (_getXPReward(mid.asUint256()) > _xp) {
-        high = mid;
-      } else {
-        low = mid.inc();
-      }
-    }
-
-    if (low.neq(0)) {
-      return low.dec().asUint16();
-    } else {
-      return 0;
-    }
-  }
-
-  function _getXPReward(uint256 _index) private pure returns (uint32) {
-    U256 index = _index.asU256().mul(4);
-    return
-      uint32(
-        xpRewardBytes[index.asUint256()] |
-          (bytes4(xpRewardBytes[index.add(1).asUint256()]) >> 8) |
-          (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
-          (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
-      );
-  }
-
-  function dailyRewardsViewImpl(
-    uint _playerId
-  ) external view returns (Equipment[] memory rewards, bytes32 dailyRewardMask) {
-    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
-    uint streakStartIndex = streakStart.div(1 weeks);
-    bytes32 mask = dailyRewardMasks[_playerId];
-    uint16 lastRewardStartIndex = uint16(uint256(mask));
-    if (lastRewardStartIndex < streakStartIndex) {
-      mask = bytes32(streakStartIndex); // Reset the mask
-    }
-
-    uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
-
-    // Claim daily reward as long as it's been set
-    if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
-      Equipment memory dailyReward = world.getDailyReward();
-      if (dailyReward.itemTokenId != NONE) {
-        dailyRewardMask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
-        bool canClaimWeeklyRewards = uint(dailyRewardMask >> (25 * 8)) == 2 ** (7 * 8) - 1;
-        uint length = canClaimWeeklyRewards ? 2 : 1;
-        rewards = new Equipment[](length);
-        rewards[0] = dailyReward;
-
-        // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
-        if (canClaimWeeklyRewards) {
-          rewards[1] = world.getWeeklyReward();
-        }
-      }
-    }
-  }
-
-  function dailyClaimedRewardsImpl(uint _playerId) external view returns (bool[7] memory claimed) {
-    uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
-    uint streakStartIndex = streakStart.div(1 weeks);
-    bytes32 mask = dailyRewardMasks[_playerId];
-    uint16 lastRewardStartIndex = uint16(uint256(mask));
-    if (lastRewardStartIndex < streakStartIndex) {
-      mask = bytes32(streakStartIndex);
-    }
-
-    for (U256 iter; iter.lt(7); iter = iter.inc()) {
-      uint i = iter.asUint256();
-      claimed[i] = mask[i] != 0;
-    }
-  }
-
-  function initialize(
-    ItemNFT _itemNFT,
-    PlayerNFT _playerNFT,
-    World _world,
-    AdminAccess _adminAccess,
-    Quests _quests,
-    Clans _clans,
-    address _implQueueActions,
-    address _implProcessActions,
-    address _implRewards,
-    bool _isAlpha
-  ) external {
-    // Check that this isn't called on this contract (implementation) directly.
-    // Slot 0 on the Players contract is initializable
-    uint val;
-    assembly ("memory-safe") {
-      val := sload(0)
-    }
-
-    if (val == type(uint8).max) {
-      revert CannotCallInitializerOnImplementation();
-    }
-
-    itemNFT = _itemNFT;
-    playerNFT = _playerNFT;
-    world = _world;
-    adminAccess = _adminAccess;
-    quests = _quests;
-    clans = _clans;
-    implQueueActions = _implQueueActions;
-    implProcessActions = _implProcessActions;
-    implRewards = _implRewards;
-
-    nextQueueId = 1;
-    alphaCombat = 1;
-    betaCombat = 1;
-    isAlpha = _isAlpha;
   }
 }

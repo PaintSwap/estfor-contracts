@@ -223,27 +223,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint[] memory _choiceIds,
     uint[] memory _choiceIdAmounts
   ) private {
-    (
-      uint[] memory itemTokenIds,
-      uint[] memory amounts,
-      uint[] memory itemTokenIdsBurned,
-      uint[] memory amountsBurned,
-      Skill[] memory skillsGained,
-      uint32[] memory xpGained,
-      uint[] memory _questsCompleted,
-      PlayerQuest[] memory questsCompletedInfo
-    ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
-    // Mint the rewards
-    if (itemTokenIds.length != 0) {
-      itemNFT.mintBatch(_from, itemTokenIds, amounts);
-    }
-
-    // Burn some items if quest requires it.
-    U256 bounds = itemTokenIdsBurned.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      itemNFT.burn(_from, itemTokenIdsBurned[i], amountsBurned[i]);
-    }
+    _delegatecall(
+      implMisc,
+      abi.encodeWithSelector(
+        IPlayersMiscDelegate.processQuests.selector,
+        _from,
+        _playerId,
+        _choiceIds,
+        _choiceIdAmounts
+      )
+    );
   }
 
   function _processActionsFinished(address _from, uint _playerId) private {
@@ -370,7 +359,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
     (foodConsumed, died) = PlayersLibrary.foodConsumedView(
       _from,
-      _queuedAction,
+      _queuedAction.regenerateId,
       _combatElapsedTime,
       itemNFT,
       _combatStats,
@@ -409,11 +398,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint40 _skillStartTime,
     uint _elapsedTime,
     uint16 _actionId
-  ) private returns (uint[] memory newIds, uint[] memory newAmounts) {
-    bytes memory data = _delegatecall(
-      implRewards,
-      abi.encodeWithSignature(
-        "getRewards(uint256,uint40,uint256,uint16)",
+  ) private view returns (uint[] memory newIds, uint[] memory newAmounts) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersRewardsDelegateView.getRewards.selector,
         _playerId,
         _skillStartTime,
         _elapsedTime,
@@ -517,98 +506,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
-    U256 bounds = _fullAttireBonuses.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
-
-      if (_fullAttireBonus.skill == Skill.NONE) {
-        revert InvalidSkill();
-      }
-      EquipPosition[5] memory expectedEquipPositions = [
-        EquipPosition.HEAD,
-        EquipPosition.BODY,
-        EquipPosition.ARMS,
-        EquipPosition.LEGS,
-        EquipPosition.FEET
-      ];
-      U256 jbounds = expectedEquipPositions.length.asU256();
-      for (U256 jter; jter < jbounds; jter = jter.inc()) {
-        uint j = jter.asUint256();
-        if (_fullAttireBonus.itemTokenIds[j] == NONE) {
-          revert InvalidItemTokenId();
-        }
-        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[j]).equipPosition != expectedEquipPositions[j]) {
-          revert InvalidEquipPosition();
-        }
-      }
-
-      fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent,
-        _fullAttireBonus.itemTokenIds
-      );
-      emit AddFullAttireBonus(
-        _fullAttireBonus.skill,
-        _fullAttireBonus.itemTokenIds,
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent
-      );
-    }
-  }
-
-  function mintedPlayer(address _from, uint _playerId, Skill[2] calldata _startSkills) external {
-    Player storage player = players_[_playerId];
-    player.health = 1;
-    player.melee = 1;
-    player.magic = 1;
-    player.range = 1;
-    player.defence = 1;
-    player.totalXP = uint128(START_XP_);
-
-    U256 length = uint256(_startSkills[1] != Skill.NONE ? 2 : 1).asU256();
-    uint32 xpEach = uint32(START_XP_ / length.asUint256());
-
-    for (U256 iter; iter < length; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      Skill skill = _startSkills[i];
-      int16 level = int16(PlayersLibrary.getLevel(xpEach));
-      if (skill == Skill.HEALTH) {
-        player.health = level;
-      } else if (skill == Skill.MELEE) {
-        player.melee = level;
-      } else if (skill == Skill.MAGIC) {
-        player.magic = level;
-      } else if (skill == Skill.RANGE) {
-        player.range = level;
-      } else if (skill == Skill.DEFENCE) {
-        player.defence = level;
-      }
-      _updateXP(_from, _playerId, skill, xpEach);
-    }
-
-    player.skillBoosted1 = _startSkills[0];
-    player.skillBoosted2 = _startSkills[1]; // Can be NONE
-  }
-
-  function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) private {
-    uint oldPoints = xp_[_playerId][_skill];
-    uint newPoints = oldPoints.add(_pointsAccrued);
-    if (newPoints > type(uint32).max) {
-      newPoints = type(uint32).max;
-    }
-    xp_[_playerId][_skill] = uint32(newPoints);
-    emit AddXP(_from, _playerId, _skill, uint32(newPoints));
-
-    uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
-    uint16 newLevel = PlayersLibrary.getLevel(newPoints);
-    // Update the player's level
-    if (newLevel > oldLevel) {
-      emit LevelUp(_from, _playerId, _skill, oldLevel, newLevel);
-    }
-  }
-
   function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external {
     // Make sure it isn't less XP
     uint128 oldPoints = xp_[_playerId][_skill];
@@ -623,20 +520,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {
-    (Equipment[] memory rewards, bytes32 dailyRewardMask) = dailyRewardsView(_playerId);
-    if (uint(dailyRewardMask) != 0) {
-      dailyRewardMasks[_playerId] = dailyRewardMask;
-    }
-    if (rewards.length >= 1) {
-      Equipment memory dailyReward = rewards[0];
-      itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
-      emit DailyReward(_from, _playerId, dailyReward.itemTokenId, dailyReward.amount);
-    }
-
-    if (rewards.length == 2) {
-      Equipment memory weeklyReward = rewards[1];
-      itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
-      emit WeeklyReward(_from, _playerId, weeklyReward.itemTokenId, weeklyReward.amount);
-    }
+    _delegatecall(implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.handleDailyRewards.selector, _from, _playerId));
   }
 }
