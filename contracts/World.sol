@@ -21,6 +21,7 @@ import "./globals/rewards.sol";
 
 contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;
+  using UnsafeMath for uint256;
 
   event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
   event RequestFulfilled(uint requestId, uint[3] randomWords);
@@ -134,7 +135,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit NewDailyRewards(rewards);
 
     // Initialize 4 days worth of random words
-    for (uint i = 0; i < 4; ++i) {
+    for (U256 iter; iter.lt(4); iter = iter.inc()) {
+      uint i = iter.asUint256();
       uint requestId = 200 + i;
       requestIds.push(requestId);
       emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);
@@ -180,7 +182,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function _storeDailyRewards(Equipment[8] memory equipments) private {
     bytes32 rewards;
-    for (uint i = 0; i < equipments.length; ++i) {
+    U256 bounds = equipments.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       rewards = _getUpdatedDailyReward(i, equipments[i], rewards);
     }
     dailyRewards = rewards;
@@ -312,7 +316,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function getMultipleFullRandomWords(uint _timestamp) external view returns (uint[3][5] memory words) {
-    for (uint i = 0; i < 5; ++i) {
+    for (U256 iter; iter.lt(5); iter = iter.inc()) {
+      uint i = iter.asUint256();
       words[i] = _getFullRandomWords(_timestamp - i * 1 days);
     }
   }
@@ -412,7 +417,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       _actionRewards.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
       _actionRewards.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
 
-      for (uint i; i < _action.guaranteedRewards.length - 1; ++i) {
+      U256 bounds = _action.guaranteedRewards.length.dec().asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         if (
           _action.guaranteedRewards[i].itemTokenId ==
           _action.guaranteedRewards[_action.guaranteedRewards.length - 1].itemTokenId
@@ -450,7 +457,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
         revert RandomRewardsMustBeInOrder();
       }
-      for (uint i; i < _action.randomRewards.length - 1; ++i) {
+
+      U256 bounds = _action.randomRewards.length.dec().asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         if (
           _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
         ) {
@@ -465,7 +475,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       if (actionReward.randomRewardChance4 > actionReward.randomRewardChance3) {
         revert RandomRewardsMustBeInOrder();
       }
-      for (uint i; i < _action.randomRewards.length - 1; ++i) {
+      U256 bounds = _action.randomRewards.length.dec().asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         if (
           _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
         ) {

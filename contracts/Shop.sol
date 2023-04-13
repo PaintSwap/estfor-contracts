@@ -15,6 +15,7 @@ import "./globals/items.sol";
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   using UnsafeMath for U256;
+  using UnsafeMath for uint256;
 
   event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);
@@ -251,7 +252,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   function editItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    for (uint i = 0; i < _shopItems.length; ++i) {
+    U256 bounds = _shopItems.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
       if (shopItems[_shopItems[i].tokenId] == 0) {
         revert ShopItemDoesNotExist();
       }

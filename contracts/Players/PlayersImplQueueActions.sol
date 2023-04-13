@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 
 import {World} from "../World.sol";
@@ -21,6 +22,8 @@ import "../globals/rewards.sol";
 
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using UnsafeMath for U256;
+  using UnsafeMath for uint16;
+  using UnsafeMath for uint256;
 
   error CannotCallInitializerOnImplementation();
 
@@ -247,7 +250,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _queuedAction.isValid = true;
     _player.actionQueue.push(_queuedAction);
 
-    _checkAttire(_from, _playerId, _player.actionQueue[_player.actionQueue.length - 1].attire);
+    _checkAttire(_from, _playerId, _player.actionQueue[_player.actionQueue.length.dec()].attire);
   }
 
   function _checkActionConsumables(
@@ -262,20 +265,24 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       uint itemLength;
 
       if (_queuedAction.regenerateId != NONE) {
-        itemTokenIds[itemLength++] = _queuedAction.regenerateId;
-        (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(itemTokenIds[itemLength - 1]);
+        itemTokenIds[itemLength] = _queuedAction.regenerateId;
+        itemLength = itemLength.inc();
+        (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(itemTokenIds[itemLength.dec()]);
         if (xp_[_playerId][skill] < minXP) {
           revert ConsumableMinimumXPNotReached();
         }
       }
       if (actionChoice.inputTokenId1 != NONE) {
-        itemTokenIds[itemLength++] = actionChoice.inputTokenId1;
+        itemTokenIds[itemLength] = actionChoice.inputTokenId1;
+        itemLength = itemLength.inc();
       }
       if (actionChoice.inputTokenId2 != NONE) {
-        itemTokenIds[itemLength++] = actionChoice.inputTokenId2;
+        itemTokenIds[itemLength] = actionChoice.inputTokenId2;
+        itemLength = itemLength.inc();
       }
       if (actionChoice.inputTokenId3 != NONE) {
-        itemTokenIds[itemLength++] = actionChoice.inputTokenId3;
+        itemTokenIds[itemLength] = actionChoice.inputTokenId3;
+        itemLength = itemLength.inc();
       }
       assembly ("memory-safe") {
         mstore(itemTokenIds, itemLength)
@@ -305,27 +312,33 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     EquipPosition[] memory expectedEquipPositions = new EquipPosition[](6);
     if (_attire.head != NONE) {
       itemTokenIds[attireLength] = _attire.head;
-      expectedEquipPositions[attireLength++] = EquipPosition.HEAD;
+      expectedEquipPositions[attireLength] = EquipPosition.HEAD;
+      attireLength = attireLength.inc();
     }
     if (_attire.neck != NONE) {
       itemTokenIds[attireLength] = _attire.neck;
-      expectedEquipPositions[attireLength++] = EquipPosition.NECK;
+      expectedEquipPositions[attireLength] = EquipPosition.NECK;
+      attireLength = attireLength.inc();
     }
     if (_attire.body != NONE) {
       itemTokenIds[attireLength] = _attire.body;
-      expectedEquipPositions[attireLength++] = EquipPosition.BODY;
+      expectedEquipPositions[attireLength] = EquipPosition.BODY;
+      attireLength = attireLength.inc();
     }
     if (_attire.arms != NONE) {
       itemTokenIds[attireLength] = _attire.arms;
-      expectedEquipPositions[attireLength++] = EquipPosition.ARMS;
+      expectedEquipPositions[attireLength] = EquipPosition.ARMS;
+      attireLength = attireLength.inc();
     }
     if (_attire.legs != NONE) {
       itemTokenIds[attireLength] = _attire.legs;
-      expectedEquipPositions[attireLength++] = EquipPosition.LEGS;
+      expectedEquipPositions[attireLength] = EquipPosition.LEGS;
+      attireLength = attireLength.inc();
     }
     if (_attire.feet != NONE) {
       itemTokenIds[attireLength] = _attire.feet;
-      expectedEquipPositions[attireLength++] = EquipPosition.FEET;
+      expectedEquipPositions[attireLength] = EquipPosition.FEET;
+      attireLength = attireLength.inc();
     }
 
     assembly ("memory-safe") {
@@ -334,7 +347,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     if (attireLength != 0) {
       EquipPosition[] memory equipPositions = itemNFT.getEquipPositions(itemTokenIds);
-      for (uint i = 0; i < attireLength; ++i) {
+      U256 bounds = attireLength.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         if (expectedEquipPositions[i] != equipPositions[i]) {
           revert InvalidEquipPosition();
         }
@@ -480,14 +495,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint diff = nextIndex - prevIndex;
     itemTokenIds = new uint[](diff);
     amounts = new uint[](diff);
-    uint length;
-    for (uint i = 0; i < diff; ++i) {
-      uint32 xpThreshold = _getXPReward(prevIndex + 1 + i);
+    U256 length;
+    for (U256 iter; iter.lt(diff); iter = iter.inc()) {
+      uint i = iter.asUint256();
+      uint32 xpThreshold = _getXPReward(prevIndex.inc().add(i));
       Equipment[] memory items = xpRewardThresholds[xpThreshold];
       if (items.length > 0) {
         // TODO: Currently assumes there is only 1 item per threshold
-        itemTokenIds[length] = items[0].itemTokenId;
-        amounts[length++] = items[0].amount;
+        uint l = length.asUint256();
+        itemTokenIds[l] = items[0].itemTokenId;
+        amounts[l] = items[0].amount;
+        length = length.inc();
       }
     }
 
@@ -498,7 +516,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external {
-    U256 iter = U256.wrap(_xpThresholdRewards.length);
+    U256 iter = _xpThresholdRewards.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
@@ -510,7 +528,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         revert XPThresholdNotFound();
       }
 
-      for (uint i = 0; i < xpThresholdReward.rewards.length; ++i) {
+      U256 bounds = xpThresholdReward.rewards.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
         if (xpThresholdReward.rewards[i].itemTokenId == NONE) {
           revert InvalidItemTokenId();
         }

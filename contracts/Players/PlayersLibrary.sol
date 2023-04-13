@@ -473,7 +473,8 @@ library PlayersLibrary {
   ) external pure returns (bool matches) {
     // Check if they have the full equipment required
     if (itemTokenIds.length == 5) {
-      for (uint i = 0; i < 5; ++i) {
+      for (U256 iter; iter.lt(5); iter = iter.inc()) {
+        uint i = iter.asUint256();
         if (itemTokenIds[i] != expectedItemTokenIds[i] || balances[i] == 0) {
           return false;
         }
@@ -500,15 +501,18 @@ library PlayersLibrary {
     } else if (_numTickets <= 48) {
       uint[3] memory fullWords = _world.getFullRandomWords(_skillEndTime);
       // 3 * 32 bytes
-      for (uint i = 0; i < 3; ++i) {
+      for (U256 iter; iter.lt(3); iter = iter.inc()) {
+        uint i = iter.asUint256();
         fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime, _playerId));
       }
       b = abi.encodePacked(fullWords);
     } else {
-      // 5 * 3 * 32 bytes
+      // 3 * 5 * 32 bytes
       uint[3][5] memory multipleFullWords = _world.getMultipleFullRandomWords(_skillEndTime);
-      for (uint i = 0; i < 5; ++i) {
-        for (uint j = 0; j < 3; ++j) {
+      for (U256 iter; iter.lt(5); iter = iter.inc()) {
+        uint i = iter.asUint256();
+        for (U256 jter; jter.lt(3); jter = jter.inc()) {
+          uint j = jter.asUint256();
           multipleFullWords[i][j] = uint(
             _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
           );
