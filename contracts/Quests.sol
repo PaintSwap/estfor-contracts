@@ -217,7 +217,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       _questsCompleted,
       activeQuestInfo
     ) = processQuestsView(_playerId, _choiceIds, _choiceIdAmounts);
-    if (_questsCompleted.length > 0) {
+    if (_questsCompleted.length != 0) {
       U256 bounds = _questsCompleted.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();

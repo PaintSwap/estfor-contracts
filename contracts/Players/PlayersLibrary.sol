@@ -459,7 +459,7 @@ library PlayersLibrary {
         if (numConsumed > maxRequiredRatio) {
           numConsumed = uint16(maxRequiredRatio);
 
-          if (numConsumed > 0) {
+          if (numConsumed != 0) {
             // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
             xpElapsedTime = (combatElapsedTime * maxRequiredRatio) / numConsumed;
           } else {
@@ -494,7 +494,7 @@ library PlayersLibrary {
     );
     if (numConsumed > maxRequiredRatio) {
       numConsumed = uint24(maxRequiredRatio);
-      if (numConsumed > 0) {
+      if (numConsumed != 0) {
         // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
         xpElapsedTime = (_elapsedTime * maxRequiredRatio) / numConsumed;
       } else {
@@ -602,7 +602,7 @@ library PlayersLibrary {
             _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
           );
           // XOR all the full words with the first fresh random number to give more randomness to the existing random words
-          if (i > 0) {
+          if (i != 0) {
             multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
           }
         }

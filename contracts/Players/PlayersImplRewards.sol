@@ -64,7 +64,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     // Check for any boosts
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
     uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
-    if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+    if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
       U256 bounds = length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
@@ -150,7 +150,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           activeBoost
         );
         U256 bounds = length.asU256();
-        if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+        if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
           for (U256 jter; jter < bounds; jter = jter.inc()) {
             uint j = jter.asUint256();
             amounts[j] = uint32((boostedTime * amounts[j] * activeBoost.val) / (3600 * 100));
@@ -452,7 +452,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint[] memory _questsCompleted,
       PlayerQuest[] memory activeQuestsCompletionInfo
     ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts);
-    if (questRewards.length > 0) {
+    if (questRewards.length != 0) {
       pendingQueuedActionState.questRewards = new Equipment[](questRewards.length);
       U256 jbounds = questRewards.length.asU256();
       for (U256 jter; jter < jbounds; jter = jter.inc()) {
@@ -671,7 +671,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
               // Add this random item
               for (U256 iterK = startLootLength.asU256(); iterK < idsLength; iterK = iterK.inc()) {
                 uint k = iterK.asUint256();
-                if (k > 0 && potentialReward.itemTokenId == _ids[k.dec()]) {
+                if (k != 0 && potentialReward.itemTokenId == _ids[k.dec()]) {
                   // This item exists so accumulate it with the existing value
                   _amounts[k.dec()] += potentialReward.amount * mintMultiplier;
                   found = true;
@@ -812,7 +812,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
-      if (boostedTime > 0 && activeBoost.boostType == BoostType.GATHERING) {
+      if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
         numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
 

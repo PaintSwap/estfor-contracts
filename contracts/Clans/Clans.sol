@@ -433,7 +433,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
     lowercaseNames[lowercaseName] = true;
     string storage oldName = clans[_clanId].name;
-    if (bytes(oldName).length > 0) {
+    if (bytes(oldName).length != 0) {
       delete lowercaseNames[oldName];
     }
     clans[_clanId].name = _name;
