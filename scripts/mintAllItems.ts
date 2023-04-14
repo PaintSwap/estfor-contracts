@@ -1,10 +1,10 @@
 import {ethers} from "hardhat";
-import {ITEM_NFT_ADDRESS} from "./constants";
+import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./constants";
 
 import {allItems} from "./data/items";
 
 async function main() {
-  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = await ItemNFT.attach(ITEM_NFT_ADDRESS);
 
   const chunkSize = 100;

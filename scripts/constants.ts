@@ -4,6 +4,7 @@ let world;
 let shop;
 let royaltyReceiver;
 let adminAccess;
+let itemNFTLibrary;
 let itemNFT;
 let playerNFT;
 let quests;
@@ -24,6 +25,7 @@ if (isAlpha) {
   shop = "0x822abb8a33a1d3dd5a76dd51f4387f5496874b61";
   royaltyReceiver = "0x9ee50ca7bdc2d503f300c82839f714ab3173a26b";
   adminAccess = "0x5e73216abda4b7ce684c34ee8756decc4c9106bb";
+  itemNFTLibrary = "0x5e73216abda4b7ce684c34ee8756decc4c9106bb";
   itemNFT = "0x37c84e51639469f077b87fbd264a7d5c56412f8a";
   playerNFT = "0xce882318286aa504f35cab79731a94c0ff3f70f9";
   quests = "0xf6274581031db3b0bb1c2e57339ddcaefeba6598";
@@ -44,6 +46,7 @@ if (isAlpha) {
   shop = "";
   royaltyReceiver = "";
   adminAccess = "";
+  itemNFTLibrary = "";
   itemNFT = "";
   playerNFT = "";
   quests = "";
@@ -64,6 +67,7 @@ export const WORLD_ADDRESS = world;
 export const SHOP_ADDRESS = shop;
 export const ROYALTY_RECEIVER_ADDRESS = royaltyReceiver;
 export const ADMIN_ACCESS_ADDRESS = adminAccess;
+export const ITEM_NFT_LIBRARY_ADDRESS = itemNFTLibrary;
 export const ITEM_NFT_ADDRESS = itemNFT;
 
 export const QUESTS_ADDRESS = quests;

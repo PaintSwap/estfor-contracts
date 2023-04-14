@@ -186,14 +186,31 @@ export const addTestData = async (
   await tx.wait();
   console.log("Transfer some brush");
 
-  tx = await itemNFT.testMint(owner.address, EstforConstants.MAGIC_FIRE_STARTER, 100);
+  tx = await itemNFT.testMint(owner.address, EstforConstants.TITANIUM_SWORD, 100);
   await tx.wait();
   console.log("Mint enough magic fire starters that they can be sold");
 
   // Sell to shop (can be anything)
-  tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);
-  await tx.wait();
-  console.log("Sell");
+  if (network.chainId == 31337 || network.chainId == 1337) {
+    try {
+      tx = await shop.sell(EstforConstants.TITANIUM_SWORD, 1, 1);
+      process.exit(100); // This shouldn't happen
+    } catch {
+      if (network.chainId == 31337 || network.chainId == 1337) {
+        console.log("Increase time");
+        await ethers.provider.send("evm_increaseTime", [86400 * 2]);
+        tx = await shop.sell(EstforConstants.TITANIUM_SWORD, 1, 1);
+        await tx.wait();
+        console.log("Sell");
+      }
+    }
+  } else {
+    // Sell should revert
+    try {
+      tx = await shop.sell(EstforConstants.TITANIUM_SWORD, 1, 1);
+      process.exit(101); // This shouldn't happen
+    } catch {}
+  }
 
   // Activate a quest
   tx = await quests.activateQuest(playerId, QUEST_STARTER_FIREMAKING);

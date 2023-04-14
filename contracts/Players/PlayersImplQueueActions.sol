@@ -257,7 +257,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       if (_queuedAction.regenerateId != NONE) {
         itemTokenIds[itemLength] = _queuedAction.regenerateId;
         itemLength = itemLength.inc();
-        (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(itemTokenIds[itemLength.dec()]);
+        (EquipPosition equipPosition, Skill skill, uint32 minXP) = itemNFT.getEquipPositionAndMinRequirement(
+          itemTokenIds[itemLength.dec()]
+        );
         if (xp_[_playerId][skill] < minXP) {
           revert ConsumableMinimumXPNotReached();
         }
@@ -403,11 +405,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         if (balance == 0) {
           revert DoNotHaveEnoughQuantityToEquipToAction();
         }
-        (Skill skill, uint32 minXP) = itemNFT.getMinRequirement(equippedItemTokenId);
+        (EquipPosition equipPosition, Skill skill, uint32 minXP) = itemNFT.getEquipPositionAndMinRequirement(
+          equippedItemTokenId
+        );
         if (xp_[_playerId][skill] < minXP) {
           revert ItemMinimumXPNotReached();
         }
-        EquipPosition equipPosition = itemNFT.getEquipPosition(equippedItemTokenId);
         if (isRightHand) {
           if (equipPosition != EquipPosition.RIGHT_HAND && equipPosition != EquipPosition.BOTH_HANDS) {
             revert IncorrectRightHandEquipment(equippedItemTokenId);

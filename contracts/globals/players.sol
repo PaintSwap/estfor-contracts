@@ -284,5 +284,33 @@ struct PlayerQuest {
   bool isFixed;
 }
 
+// Input only
+struct NonCombatStats {
+  Skill skill;
+  uint8 diff;
+}
+
+// Contains everything you need to create an item
+struct InputItem {
+  CombatStats combatStats;
+  NonCombatStats nonCombatStats;
+  uint16 tokenId;
+  EquipPosition equipPosition;
+  // Can it be transferred?
+  bool isTransferable;
+  // Minimum requirements in this skill
+  Skill skill;
+  uint32 minXP;
+  // Food
+  uint16 healthRestored;
+  // Boost
+  BoostType boostType;
+  uint16 boostValue; // Varies, could be the % increase
+  uint24 boostDuration; // How long the effect of the boost vial last
+  // uri
+  string metadataURI;
+  string name;
+}
+
 // 4 bytes for each threshold, starts at 500 xp in decimal
 bytes constant xpRewardBytes = hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";

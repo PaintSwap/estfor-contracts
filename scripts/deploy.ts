@@ -148,12 +148,17 @@ async function main() {
   }
 
   // Create NFT contract which contains all items
-  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
+  const itemNFTLibrary = await ItemNFTLibrary.deploy();
+  await itemNFTLibrary.deployed();
+  console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
     [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
     {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
     }
   )) as ItemNFT;
   await itemNFT.deployed();

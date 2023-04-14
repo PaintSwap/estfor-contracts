@@ -1,6 +1,7 @@
 import {ethers, upgrades} from "hardhat";
-import {PlayersLibrary} from "../typechain-types";
+import {PlayersLibrary, ItemNFTLibrary} from "../typechain-types";
 import {
+  ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
@@ -50,9 +51,21 @@ async function main() {
   await verifyContracts([playerNFT.address]);
 
   // ItemNFT
-  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const newItemNFTLibrary = false;
+  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
+  let itemNFTLibrary: ItemNFTLibrary;
+  if (newItemNFTLibrary) {
+    itemNFTLibrary = await PlayersLibrary.deploy();
+    await itemNFTLibrary.deployed();
+    console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
+  } else {
+    itemNFTLibrary = await ItemNFTLibrary.attach(ITEM_NFT_LIBRARY_ADDRESS);
+  }
+
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
   });
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);

@@ -55,13 +55,16 @@ describe("ItemNFT", function () {
 
     const isAlpha = true;
     // Create NFT contract which contains all items
-    const ItemNFT = await ethers.getContractFactory("ItemNFT");
+    const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
+    const itemNFTLibrary = await ItemNFTLibrary.deploy();
+    const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
       [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
       {
         kind: "uups",
+        unsafeAllow: ["external-library-linking"],
       }
     );
 
@@ -178,13 +181,16 @@ describe("ItemNFT", function () {
     expect(await itemNFT.symbol()).to.be.eq("EK_IA");
 
     const isAlpha = false;
-    const ItemNFT = await ethers.getContractFactory("ItemNFT");
+    const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
+    const itemNFTLibrary = await ItemNFTLibrary.deploy();
+    const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
     const itemNFTNotAlpha = await upgrades.deployProxy(
       ItemNFT,
       [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
       {
         kind: "uups",
+        unsafeAllow: ["external-library-linking"],
       }
     );
     expect(await itemNFTNotAlpha.name()).to.be.eq("Estfor Items");

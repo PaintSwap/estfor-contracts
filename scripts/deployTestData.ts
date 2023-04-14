@@ -1,6 +1,7 @@
 import {ethers} from "hardhat";
 import {
   BRUSH_ADDRESS,
+  ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
@@ -13,7 +14,7 @@ import {
 import {addTestData} from "./addTestData";
 
 async function main() {
-  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = await ItemNFT.attach(ITEM_NFT_ADDRESS);
 
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT");

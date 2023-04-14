@@ -7,6 +7,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
@@ -39,34 +40,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
   error NotAdminAndAlpha();
-
-  // Input only
-  struct NonCombatStats {
-    Skill skill;
-    uint8 diff;
-  }
-
-  // Contains everything you need to create an item
-  struct InputItem {
-    CombatStats combatStats;
-    NonCombatStats nonCombatStats;
-    uint16 tokenId;
-    EquipPosition equipPosition;
-    // Can it be transferred?
-    bool isTransferable;
-    // Minimum requirements in this skill
-    Skill skill;
-    uint32 minXP;
-    // Food
-    uint16 healthRestored;
-    // Boost
-    BoostType boostType;
-    uint16 boostValue; // Varies, could be the % increase
-    uint24 boostDuration; // How long the effect of the boost vial last
-    // uri
-    string metadataURI;
-    string name;
-  }
+  // Migration only
+  error NotOwner();
+  error TooMuchForMigration();
+  // End migration only
 
   World private world;
   bool private isAlpha;
@@ -80,16 +57,19 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   address private shop;
 
   // Royalties
-  uint public royaltyFee;
-  address public royaltyReceiver;
+  uint private royaltyFee;
+  address private royaltyReceiver;
 
   uint public numUniqueItems;
 
   mapping(uint itemId => string tokenURI) private tokenURIs;
-  mapping(uint itemId => CombatStats combatStats) public combatStats;
-  mapping(uint itemId => Item item) public items;
+  mapping(uint itemId => CombatStats combatStats) private combatStats;
+  mapping(uint itemId => Item item) private items;
 
   AdminAccess private adminAccess;
+  // Migration (stub out later)
+  address oldItemNFT;
+  address oldPlayerNFT;
 
   modifier onlyPlayersOrShop() {
     if (_msgSender() != players && _msgSender() != shop) {
@@ -130,51 +110,34 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     isAlpha = _isAlpha;
   }
 
-  function _mintItem(address _to, uint _tokenId, uint256 _amount) internal {
-    if (_tokenId >= type(uint16).max) {
-      revert IdTooHigh();
-    }
-    uint existingBalance = itemBalances[_tokenId];
-    if (existingBalance == 0) {
-      // First mint
-      timestampFirstMint[_tokenId] = block.timestamp;
-      numUniqueItems = numUniqueItems.inc();
-    }
-
-    itemBalances[_tokenId] = existingBalance.add(_amount);
-    _mint(_to, uint(_tokenId), _amount, "");
-  }
-
-  function _mintBatchItems(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) internal {
-    U256 numNewItems;
-    U256 tokenIdsLength = _tokenIds.length.asU256();
-    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      uint tokenId = _tokenIds[i];
-      if (tokenId >= type(uint16).max) {
-        revert IdTooHigh();
-      }
-      uint existingBalance = itemBalances[tokenId];
-      if (existingBalance == 0) {
-        // Brand new item
-        numNewItems = numNewItems.inc();
-      }
-
-      itemBalances[tokenId] = existingBalance + _amounts[i];
-    }
-    if (numNewItems.neq(0)) {
-      numUniqueItems += numNewItems.asUint256();
-    }
-    _mintBatch(_to, _tokenIds, _amounts, "");
-  }
-
-  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayersOrShop {
-    _mintItem(_to, _tokenId, _amount);
-  }
-
   // Can't use Item[] array unfortunately as they don't support array casts
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayersOrShop {
     _mintBatchItems(_to, _ids, _amounts);
+  }
+
+  // Migration (remove later)
+  function setMigrationContracts(address _oldItemNFT, address _oldPlayerNFT) external onlyOwner {
+    oldItemNFT = _oldItemNFT;
+    oldPlayerNFT = _oldPlayerNFT;
+  }
+
+  function migrateTokens(uint playerId, uint[] calldata _ids, uint[] calldata _amounts) external {
+    if (ItemNFT(oldPlayerNFT).balanceOf(msg.sender, playerId) != 1) {
+      revert NotOwner();
+    }
+
+    // Burn existing
+    for (uint i; i < _ids.length; ++i) {
+      ItemNFT(oldItemNFT).burn(msg.sender, _ids[i], _amounts[i]);
+    }
+
+    // Mint new
+    for (uint i; i < _ids.length; ++i) {
+      if (_amounts[i] > 20) {
+        revert TooMuchForMigration();
+      }
+    }
+    _mintBatchItems(msg.sender, _ids, _amounts);
   }
 
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
@@ -188,26 +151,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return items[_tokenId].exists;
   }
 
-  function _getItem(uint16 _tokenId) private view returns (Item memory) {
-    if (!exists(_tokenId)) {
-      revert ItemDoesNotExist(_tokenId);
-    }
-    return items[_tokenId];
-  }
-
   function getItem(uint16 _tokenId) external view returns (Item memory) {
     return _getItem(_tokenId);
   }
 
-  function getMinRequirement(uint16 _tokenId) public view returns (Skill, uint32) {
-    return (items[_tokenId].skill, items[_tokenId].minXP);
-  }
-
-  function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
-    if (!exists(_tokenId)) {
-      revert ItemDoesNotExist(_tokenId);
-    }
-    return items[_tokenId].equipPosition;
+  function getEquipPositionAndMinRequirement(
+    uint16 _item
+  ) external view returns (EquipPosition equipPosition, Skill skill, uint32 minXP) {
+    equipPosition = _getEquipPosition(_item);
+    (skill, minXP) = _getMinRequirement(_item);
   }
 
   function getMinRequirements(
@@ -218,7 +170,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     U256 tokenIdsLength = _tokenIds.length.asU256();
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      (skills[i], minXPs[i]) = getMinRequirement(_tokenIds[i]);
+      (skills[i], minXPs[i]) = _getMinRequirement(_tokenIds[i]);
     }
   }
 
@@ -238,8 +190,94 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     equipPositions = new EquipPosition[](tokenIdsLength.asUint256());
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      equipPositions[i] = getEquipPosition(_tokenIds[i]);
+      equipPositions[i] = _getEquipPosition(_tokenIds[i]);
     }
+  }
+
+  function _getMinRequirement(uint16 _tokenId) private view returns (Skill, uint32) {
+    return (items[_tokenId].skill, items[_tokenId].minXP);
+  }
+
+  function _getEquipPosition(uint16 _tokenId) private view returns (EquipPosition) {
+    if (!exists(_tokenId)) {
+      revert ItemDoesNotExist(_tokenId);
+    }
+    return items[_tokenId].equipPosition;
+  }
+
+  function _premint(uint _tokenId, uint _amount) private returns (uint numNewUniqueItems) {
+    if (_tokenId >= type(uint16).max) {
+      revert IdTooHigh();
+    }
+    uint existingBalance = itemBalances[_tokenId];
+    if (existingBalance == 0) {
+      // Brand new item
+      timestampFirstMint[_tokenId] = block.timestamp;
+      numNewUniqueItems = numNewUniqueItems.inc();
+    }
+    itemBalances[_tokenId] = existingBalance + _amount;
+  }
+
+  function _mintItem(address _to, uint _tokenId, uint _amount) internal {
+    uint newlyMintedItems = _premint(_tokenId, _amount);
+    if (newlyMintedItems > 0) {
+      numUniqueItems = numUniqueItems.inc();
+    }
+    _mint(_to, uint(_tokenId), _amount, "");
+  }
+
+  function _mintBatchItems(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) internal {
+    U256 numNewItems;
+    U256 tokenIdsLength = _tokenIds.length.asU256();
+    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      numNewItems = numNewItems.add(_premint(_tokenIds[i], _amounts[i]));
+    }
+    if (numNewItems.neq(0)) {
+      numUniqueItems = numUniqueItems.add(numNewItems.asUint256());
+    }
+    _mintBatch(_to, _tokenIds, _amounts, "");
+  }
+
+  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayersOrShop {
+    _mintItem(_to, _tokenId, _amount);
+  }
+
+  /**
+   * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
+   */
+  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
+    U256 iter = _ids.length.asU256();
+    batchBalances = new uint256[](iter.asUint256());
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      batchBalances[i] = balanceOf(_account, _ids[i]);
+    }
+  }
+
+  function burn(address _from, uint _tokenId, uint _quantity) external {
+    if (
+      _from != _msgSender() && !isApprovedForAll(_from, _msgSender()) && players != _msgSender() && shop != _msgSender()
+    ) {
+      revert ERC1155ReceiverNotApproved();
+    }
+    _burn(_from, _tokenId, _quantity);
+  }
+
+  function royaltyInfo(
+    uint256 /*_tokenId*/,
+    uint256 _salePrice
+  ) external view override returns (address receiver, uint256 royaltyAmount) {
+    uint256 amount = (_salePrice * royaltyFee) / 10000;
+    return (royaltyReceiver, amount);
+  }
+
+  function _getItem(uint16 _tokenId) private view returns (Item memory) {
+    if (!exists(_tokenId)) {
+      revert ItemDoesNotExist(_tokenId);
+    }
+    return items[_tokenId];
   }
 
   // If an item is burnt, remove it from the total
@@ -293,76 +331,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
-  /**
-   * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
-   */
-  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
-    U256 iter = _ids.length.asU256();
-    batchBalances = new uint256[](iter.asUint256());
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint i = iter.asUint256();
-      batchBalances[i] = balanceOf(_account, _ids[i]);
-    }
-  }
-
-  function burn(address _from, uint _tokenId, uint _quantity) external {
-    if (
-      _from != _msgSender() && !isApprovedForAll(_from, _msgSender()) && players != _msgSender() && shop != _msgSender()
-    ) {
-      revert ERC1155ReceiverNotApproved();
-    }
-    _burn(_from, _tokenId, _quantity);
-  }
-
   function _setItem(InputItem calldata _item) private returns (Item storage item) {
     if (_item.tokenId == 0) {
       revert InvalidTokenId();
     }
-    bool hasCombat;
-    CombatStats calldata _combatStats = _item.combatStats;
-    assembly ("memory-safe") {
-      hasCombat := not(iszero(_combatStats))
-    }
+    ItemNFTLibrary.setItem(_item, items[_item.tokenId]);
     item = items[_item.tokenId];
-    item.equipPosition = _item.equipPosition;
-    item.isTransferable = _item.isTransferable;
-    item.exists = true;
-
-    if (hasCombat) {
-      // Combat stats
-      item.melee = _item.combatStats.melee;
-      item.magic = _item.combatStats.magic;
-      item.range = _item.combatStats.range;
-      item.meleeDefence = _item.combatStats.meleeDefence;
-      item.magicDefence = _item.combatStats.magicDefence;
-      item.rangeDefence = _item.combatStats.rangeDefence;
-      item.health = _item.combatStats.health;
-    }
-    item.skill1 = _item.nonCombatStats.skill;
-    item.skillDiff1 = _item.nonCombatStats.diff;
-
-    if (_item.healthRestored != 0) {
-      item.healthRestored = _item.healthRestored;
-    }
-
-    if (_item.boostType != BoostType.NONE) {
-      item.boostType = _item.boostType;
-      item.boostValue = _item.boostValue;
-      item.boostDuration = _item.boostDuration;
-    }
-
-    item.minXP = _item.minXP;
-    item.skill = _item.skill;
     tokenURIs[_item.tokenId] = _item.metadataURI;
-  }
-
-  function royaltyInfo(
-    uint256 /*_tokenId*/,
-    uint256 _salePrice
-  ) external view override returns (address receiver, uint256 royaltyAmount) {
-    uint256 amount = (_salePrice * royaltyFee) / 10000;
-    return (royaltyReceiver, amount);
   }
 
   function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
