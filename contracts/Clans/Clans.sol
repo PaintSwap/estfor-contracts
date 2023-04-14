@@ -10,6 +10,7 @@ import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans, Clan} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
+import {EstforLibrary} from "../EstforLibrary.sol";
 
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   using UnsafeMath for U256;
@@ -50,7 +51,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error CannotBeCalledOnOwner();
   error CannotBeCalledOnSelf();
   error InvalidImageId();
-  error InvalidName();
+  error NameTooShort();
+  error NameTooLong(uint length);
+  error NameInvalidCharacters();
   error ClanDoesNotExist();
   error TierDoesNotExist();
   error CannotDowngradeTier();
@@ -138,7 +141,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function createClan(
     uint _playerId,
     string calldata _name,
-    uint24 _imageId,
+    uint16 _imageId,
     uint8 _tierId
   ) external isOwnerOfPlayerAndActive(_playerId) {
     PlayerInfo storage player = playerInfo[_playerId];
@@ -151,7 +154,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert InvalidTier();
     }
 
-    _checkClanSettings(_imageId, tier.maxImageId);
+    _checkClanImage(_imageId, tier.maxImageId);
 
     uint clanId = nextClanId;
     nextClanId = nextClanId.inc();
@@ -170,8 +173,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       removeJoinRequest(clanId, _playerId);
     }
 
-    _setName(clanId, _name);
-    emit ClanCreated(clanId, _playerId, _name, _imageId, _tierId);
+    string memory trimmedName = _setName(clanId, _name);
+    emit ClanCreated(clanId, _playerId, trimmedName, _imageId, _tierId);
     if (_tierId != 1) {
       _upgradeClan(clanId, _playerId, _tierId);
     }
@@ -182,9 +185,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function editClan(uint _clanId, string calldata _name, uint _imageId) external isOwnerOfPlayer(clans[_clanId].owner) {
     Clan storage clan = clans[_clanId];
     Tier storage tier = tiers[clan.tierId];
-    _checkClanSettings(_imageId, tier.maxImageId);
-    _setName(_clanId, _name);
-    emit ClanEdited(_clanId, clans[_clanId].owner, _name, _imageId);
+    _checkClanImage(_imageId, tier.maxImageId);
+    string memory trimmedName = _setName(_clanId, _name);
+    emit ClanEdited(_clanId, clans[_clanId].owner, trimmedName, _imageId);
   }
 
   function editClanAsAdmin(
@@ -194,7 +197,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   ) external isOwnerOfPlayer(_playerId) onlyClanAdmin(_clanId, _playerId) {
     Clan storage clan = clans[_clanId];
     Tier storage tier = tiers[clan.tierId];
-    _checkClanSettings(_imageId, tier.maxImageId);
+    _checkClanImage(_imageId, tier.maxImageId);
     emit ClanEdited(_clanId, _playerId, clan.name, _imageId);
   }
 
@@ -416,27 +419,39 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit AdminRemoved(_clanId, _admin);
   }
 
-  function _checkClanSettings(uint _imageId, uint _maxImageId) private pure {
+  function _checkClanImage(uint _imageId, uint _maxImageId) private pure {
     if (_imageId == 0 || _imageId > _maxImageId) {
       revert InvalidImageId();
     }
   }
 
-  function _setName(uint _clanId, string calldata _name) private {
-    if (bytes(_name).length == 0 || bytes(_name).length > 20) {
-      revert InvalidName();
+  function _setName(uint _clanId, string calldata _name) private returns (string memory trimmedName) {
+    // Trimmed name cannot be empty
+    trimmedName = EstforLibrary.trim(_name);
+    if (bytes(trimmedName).length < 3) {
+      revert NameTooShort();
+    }
+    if (bytes(trimmedName).length > 20) {
+      revert NameTooLong(bytes(trimmedName).length);
     }
 
-    string memory lowercaseName = _toLower(_name);
-    if (lowercaseNames[lowercaseName]) {
-      revert NameAlreadyExists();
+    if (!EstforLibrary.containsValidCharacters(trimmedName)) {
+      revert NameInvalidCharacters();
     }
-    lowercaseNames[lowercaseName] = true;
-    string storage oldName = clans[_clanId].name;
-    if (bytes(oldName).length != 0) {
-      delete lowercaseNames[oldName];
+
+    string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
+    string memory oldName = EstforLibrary.toLower(clans[_clanId].name);
+    bool nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
+    if (nameChanged) {
+      if (lowercaseNames[trimmedAndLowercaseName]) {
+        revert NameAlreadyExists();
+      }
+      if (bytes(oldName).length != 0) {
+        delete lowercaseNames[oldName];
+      }
+      lowercaseNames[trimmedAndLowercaseName] = true;
+      clans[_clanId].name = trimmedName;
     }
-    clans[_clanId].name = _name;
   }
 
   function _addAdmin(uint _clanId, uint _admin) private {
@@ -451,7 +466,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       // Defensive check
       revert ClanDestroyFailedHasMembers();
     }
-    lowercaseNames[_toLower(clans[_clanId].name)] = false; // Name can be used again
+    lowercaseNames[EstforLibrary.toLower(clans[_clanId].name)] = false; // Name can be used again
     delete clans[_clanId]; // Delete the clan
     emit ClanDestroyed(_clanId);
   }
@@ -516,19 +531,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     brushToken.transfer(pool, priceDifference - half);
     clans[_clanId].tierId = _newTierId; // Increase the tier
     emit ClanUpgraded(_clanId, _playerId, _newTierId);
-  }
-
-  function _toLower(string memory _name) private pure returns (string memory) {
-    bytes memory lowercaseName = abi.encodePacked(_name);
-    U256 bounds = lowercaseName.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      if ((uint8(lowercaseName[i]) >= 65) && (uint8(lowercaseName[i]) <= 90)) {
-        // So we add 32 to make it lowercase
-        lowercaseName[i] = bytes1(uint8(lowercaseName[i]) + 32);
-      }
-    }
-    return string(lowercaseName);
   }
 
   function _setTier(Tier calldata _tier) private {

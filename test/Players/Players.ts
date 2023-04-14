@@ -19,13 +19,13 @@ describe("Players", function () {
 
     const avatarId = 2;
     const avatarInfo: AvatarInfo = {
-      name: ethers.utils.formatBytes32String("Name goes here"),
+      name: "Name goes here",
       description: "Hi I'm a description",
       imageURI: "1234.png",
       startSkills: [Skill.FIREMAKING, Skill.NONE],
     };
-    await playerNFT.setAvatar(avatarId, avatarInfo);
-    const playerId = await createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("Name"), true);
+    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    const playerId = await createPlayer(playerNFT, avatarId, alice, "Name", true);
 
     const START_XP = await players.START_XP();
     expect(START_XP).to.be.gt(0);
@@ -33,14 +33,8 @@ describe("Players", function () {
 
     avatarInfo.startSkills = [Skill.FIREMAKING, Skill.HEALTH];
 
-    await playerNFT.setAvatar(avatarId, avatarInfo);
-    const newPlayerId = await createPlayer(
-      playerNFT,
-      avatarId,
-      alice,
-      ethers.utils.formatBytes32String("New name"),
-      true
-    );
+    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
     expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP.div(2));
     expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(START_XP.div(2));
 
@@ -673,8 +667,7 @@ describe("Players", function () {
 
       // Test case, create a player
       const makeActive = true;
-      await expect(playerNFT.connect(alice).mint(1, ethers.utils.formatBytes32String("0xSamWitch123"), makeActive)).to
-        .not.be.reverted;
+      await expect(playerNFT.connect(alice).mint(1, "0xSamWitch123", makeActive)).to.not.be.reverted;
     });
 
     it("Left/Right equipment", async function () {
@@ -813,7 +806,7 @@ describe("Players", function () {
     it("Transferring non-active player", async function () {
       const {playerId, players, playerNFT, alice, owner} = await loadFixture(playersFixture);
 
-      const newPlayerId = await createPlayer(playerNFT, 1, alice, ethers.utils.formatBytes32String("New name"), false);
+      const newPlayerId = await createPlayer(playerNFT, 1, alice, "New name", false);
       expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
       await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, newPlayerId, 1, "0x");
       expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
@@ -841,13 +834,13 @@ describe("Players", function () {
 
       const avatarId = 2;
       const avatarInfo: AvatarInfo = {
-        name: ethers.utils.formatBytes32String("Name goes here"),
+        name: "Name goes here",
         description: "Hi I'm a description",
         imageURI: "1234.png",
         startSkills: [Skill.WOODCUTTING, Skill.NONE],
       };
-      await playerNFT.setAvatar(avatarId, avatarInfo);
-      const playerId = createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("New name"), true);
+      await playerNFT.setAvatars(avatarId, [avatarInfo]);
+      const playerId = createPlayer(playerNFT, avatarId, alice, "New name", true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -869,13 +862,13 @@ describe("Players", function () {
 
       const avatarId = 2;
       const avatarInfo: AvatarInfo = {
-        name: ethers.utils.formatBytes32String("Name goes here"),
+        name: "Name goes here",
         description: "Hi I'm a description",
         imageURI: "1234.png",
         startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
       };
-      await playerNFT.setAvatar(avatarId, avatarInfo);
-      const playerId = createPlayer(playerNFT, avatarId, alice, ethers.utils.formatBytes32String("New name"), true);
+      await playerNFT.setAvatars(avatarId, [avatarInfo]);
+      const playerId = createPlayer(playerNFT, avatarId, alice, "New name", true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);

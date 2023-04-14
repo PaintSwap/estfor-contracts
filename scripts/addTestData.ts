@@ -23,13 +23,7 @@ export const addTestData = async (
 
   // Create player
   const makeActive = true;
-  const playerId = await createPlayer(
-    playerNFT,
-    startAvatarId,
-    owner,
-    ethers.utils.formatBytes32String("0xSamWitch"),
-    makeActive
-  );
+  const playerId = await createPlayer(playerNFT, startAvatarId, owner, "0xSamWitch", makeActive);
   console.log("createPlayer");
 
   // First woodcutting
@@ -235,13 +229,7 @@ export const addTestData = async (
   console.log("Send an item to the bank");
 
   // Invite new member
-  const newPlayerId = await createPlayer(
-    playerNFT,
-    startAvatarId,
-    alice,
-    ethers.utils.formatBytes32String("Alice"),
-    makeActive
-  );
+  const newPlayerId = await createPlayer(playerNFT, startAvatarId, alice, "Alice", makeActive);
   console.log("create Alice");
   tx = await clans.inviteMember(clanId, newPlayerId, playerId);
   await tx.wait();

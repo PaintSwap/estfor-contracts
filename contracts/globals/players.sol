@@ -62,6 +62,7 @@ struct Player {
   Skill skillBoosted2;
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
+  string name;
 }
 
 enum BoostType {
@@ -157,7 +158,7 @@ enum Skill {
 }
 
 struct AvatarInfo {
-  bytes32 name;
+  string name;
   string description;
   string imageURI;
   Skill[2] startSkills; // Can be NONE

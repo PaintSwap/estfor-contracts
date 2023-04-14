@@ -125,7 +125,7 @@ describe("Bank", function () {
       .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
     expect(balanceBefore.add(1)).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD));
 
-    const newPlayerId = createPlayer(playerNFT, avatarId, owner, ethers.utils.formatBytes32String("my name ser"), true);
+    const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
     await clans.requestToJoin(clanId, newPlayerId);
     await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
 

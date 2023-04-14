@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 struct Clan {
   uint80 owner; // player id
-  uint24 imageId;
+  uint16 imageId;
   uint16 memberCount;
   uint16 adminCount;
   uint40 createdTimestamp;

@@ -5,6 +5,7 @@ import {
   ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
+  ESTFOR_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
   SHOP_ADDRESS,
   CLANS_ADDRESS,
@@ -17,7 +18,9 @@ async function main() {
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = await ItemNFT.attach(ITEM_NFT_ADDRESS);
 
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
+  });
   const playerNFT = await PlayerNFT.attach(PLAYER_NFT_ADDRESS);
 
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
@@ -36,7 +39,7 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await Quests.attach(QUESTS_ADDRESS);
 
-  const Clans = await ethers.getContractFactory("Clans");
+  const Clans = await ethers.getContractFactory("Clans", {libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS}});
   const clans = await Clans.attach(CLANS_ADDRESS);
 
   const BankFactory = await ethers.getContractFactory("BankFactory");

@@ -42,9 +42,16 @@ async function main() {
   await verifyContracts([players.address]);
 
   // PlayerNFT
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
+  const estforLibrary = await EstforLibrary.deploy();
+  await estforLibrary.deployed();
+  console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
   });
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);

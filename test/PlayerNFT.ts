@@ -14,29 +14,29 @@ describe("PlayerNFT", function () {
 
   it("Empty name", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
-    const emptyName = ethers.utils.formatBytes32String("");
+    const emptyName = "";
     const avatarId = 1;
     await expect(createPlayer(playerNFT, avatarId, alice, emptyName, true)).to.be.revertedWithCustomError(
       playerNFT,
-      "NameCannotBeEmpty"
+      "NameTooShort"
     );
   });
 
   it("Name too long", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
-    const nameTooLong = ethers.utils.formatBytes32String("F12345678901234567890");
+    const nameTooLong = "F12345678901234567890";
     const avatarId = 1;
     const makeActive = true;
-    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, nameTooLong, makeActive);
-
-    expect(await playerNFT.names(newPlayerId)).to.eq(ethers.utils.formatBytes32String("F1234567890123456789"));
-    expect(await playerNFT.lowercaseNames(ethers.utils.formatBytes32String("f1234567890123456789"))).to.be.true;
+    await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong, makeActive)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NameTooLong"
+    );
   });
 
   it("Duplicate names not allowed", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
 
-    const name = ethers.utils.formatBytes32String("123");
+    const name = "A123";
     const avatarId = 1;
     const makeActive = true;
     await createPlayer(playerNFT, avatarId, alice, name, makeActive);
@@ -44,11 +44,20 @@ describe("PlayerNFT", function () {
       playerNFT,
       "NameAlreadyExists"
     );
+    // Add a space at the end check it's also detected as being the same
+    await expect(createPlayer(playerNFT, avatarId, alice, name + " ", true)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NameAlreadyExists"
+    );
+    await expect(createPlayer(playerNFT, avatarId, alice, name.toLowerCase(), true)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NameAlreadyExists"
+    );
   });
 
   it("Edit Name", async function () {
     const {playerId, playerNFT, alice, brush, origName, editNameBrushPrice} = await loadFixture(deployContracts);
-    const name = ethers.utils.formatBytes32String("My name is edited");
+    const name = "My name is edited";
     await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice.mul(3));
     await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.revertedWith(
       "ERC20: transfer amount exceeds balance"
@@ -56,24 +65,16 @@ describe("PlayerNFT", function () {
     await brush.mint(alice.address, editNameBrushPrice.mul(3));
 
     await expect(playerNFT.editName(playerId, name)).to.be.revertedWithCustomError(playerNFT, "NotOwnerOfPlayer");
-    expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
-      .be.true;
+    expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.true;
 
     await playerNFT.connect(alice).editName(playerId, name);
-    expect(await playerNFT.connect(alice).lowercaseNames(ethers.utils.formatBytes32String(origName.toLowerCase()))).to
-      .be.false; // Should be deleted now
-    expect(await playerNFT.connect(alice).names(playerId)).to.eq(name);
+    expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.false; // Should be deleted now
+    expect(await playerNFT.names(playerId)).to.eq(name);
 
     const avatarId = 1;
     const makeActive = true;
     // Duplicate
-    const newPlayerId = await createPlayer(
-      playerNFT,
-      avatarId,
-      alice,
-      ethers.utils.formatBytes32String("name"),
-      makeActive
-    );
+    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "name", makeActive);
     await expect(playerNFT.connect(alice).editName(newPlayerId, name)).to.be.revertedWithCustomError(
       playerNFT,
       "NameAlreadyExists"
@@ -131,7 +132,11 @@ describe("PlayerNFT", function () {
 
     // Confirm that external_url points to main estfor site
     const isAlpha = false;
-    const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+    const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
+    const estforLibrary = await EstforLibrary.deploy();
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+      libraries: {EstforLibrary: estforLibrary.address},
+    });
     const editNameBrushPrice = ethers.utils.parseEther("1");
     const imageBaseUri = "ipfs://";
     const playerNFTNotAlpha = (await upgrades.deployProxy(
@@ -147,6 +152,7 @@ describe("PlayerNFT", function () {
       ],
       {
         kind: "uups",
+        unsafeAllow: ["external-library-linking"],
       }
     )) as PlayerNFT;
 
@@ -173,17 +179,11 @@ describe("PlayerNFT", function () {
 
     await itemNFT.setPlayers(players.address);
     await playerNFTNotAlpha.setPlayers(players.address);
-    await playerNFTNotAlpha.setAvatar(avatarId, avatarInfo);
+    await playerNFTNotAlpha.setAvatars(avatarId, [avatarInfo]);
 
     const origName = "0xSamWitch";
     const makeActive = true;
-    const playerId = await createPlayer(
-      playerNFTNotAlpha,
-      avatarId,
-      alice,
-      ethers.utils.formatBytes32String(origName),
-      makeActive
-    );
+    const playerId = await createPlayer(playerNFTNotAlpha, avatarId, alice, origName, makeActive);
 
     const uriNotAlpha = await playerNFTNotAlpha.uri(playerId);
     const metadataNotAlpha = JSON.parse(Buffer.from(uriNotAlpha.split(";base64,")[1], "base64").toString());
@@ -219,7 +219,11 @@ describe("PlayerNFT", function () {
 
     const isAlpha = false;
     // Create NFT contract which contains all the players
-    const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+    const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
+    const estforLibrary = await EstforLibrary.deploy();
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+      libraries: {EstforLibrary: estforLibrary.address},
+    });
     const editNameBrushPrice = ethers.utils.parseEther("1");
     const imageBaseUri = "ipfs://";
     const playerNFTNotAlpha = (await upgrades.deployProxy(
@@ -235,6 +239,7 @@ describe("PlayerNFT", function () {
       ],
       {
         kind: "uups",
+        unsafeAllow: ["external-library-linking"],
       }
     )) as PlayerNFT;
 

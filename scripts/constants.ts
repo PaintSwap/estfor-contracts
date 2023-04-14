@@ -6,6 +6,7 @@ let royaltyReceiver;
 let adminAccess;
 let itemNFTLibrary;
 let itemNFT;
+let estforLibrary;
 let playerNFT;
 let quests;
 let clans;
@@ -27,6 +28,7 @@ if (isAlpha) {
   adminAccess = "0x5e73216abda4b7ce684c34ee8756decc4c9106bb";
   itemNFTLibrary = "0x5e73216abda4b7ce684c34ee8756decc4c9106bb";
   itemNFT = "0x37c84e51639469f077b87fbd264a7d5c56412f8a";
+  estforLibrary = "0x37c84e51639469f077b87fbd264a7d5c56412f8a";
   playerNFT = "0xce882318286aa504f35cab79731a94c0ff3f70f9";
   quests = "0xf6274581031db3b0bb1c2e57339ddcaefeba6598";
   clans = "0x24e2805fc9463fbb074c5dbadca6b527788b46fb";
@@ -48,6 +50,7 @@ if (isAlpha) {
   adminAccess = "";
   itemNFTLibrary = "";
   itemNFT = "";
+  estforLibrary = "";
   playerNFT = "";
   quests = "";
   clans = "";
@@ -77,6 +80,7 @@ export const BANK_REGISTRY_ADDRESS = bankRegistry;
 export const BANK_PROXY_ADDRESS = bankProxy;
 export const BANK_FACTORY_ADDRESS = bankFactory;
 
+export const ESTFOR_LIBRARY_ADDRESS = estforLibrary;
 export const PLAYER_NFT_ADDRESS = playerNFT;
 export const PLAYERS_LIBRARY_ADDRESS = playersLibrary;
 export const PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS = playersImplQueueActions;

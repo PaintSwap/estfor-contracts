@@ -52,6 +52,7 @@ describe("Clans", function () {
       expect(clan.memberCount).to.eq(1);
       expect(clan.imageId).to.eq(imageId);
       expect(clan.tierId).to.eq(tierId);
+      expect(clan.name).to.eq(clanName);
       expect(tier.maxMemberCapacity).to.eq(3);
       expect(tier.maxBankCapacity).to.eq(3);
       expect(await clans.isClanAdmin(clanId, playerId)).to.eq(true);
@@ -86,16 +87,14 @@ describe("Clans", function () {
       const tierId = 1;
       const imageId = 2;
       await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        alice,
-        ethers.utils.formatBytes32String("my name ser"),
-        true
-      );
+      const newPlayerId = createPlayer(playerNFT, avatarId, alice, "my name ser", true);
       await expect(
         clans.connect(alice).createClan(newPlayerId, clanName, imageId, tierId)
       ).to.be.revertedWithCustomError(clans, "NameAlreadyExists");
+    });
+
+    it("Cannot create a clan, with invalid name (empty or > 20 chars)", async () => {
+      // Also check that whitespace is trimmed
     });
 
     it("Allowed to create a clan if there is a pending request elsewhere", async () => {
@@ -105,13 +104,7 @@ describe("Clans", function () {
       const imageId = 2;
       const clanId = 1;
       await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        owner,
-        ethers.utils.formatBytes32String("my name ser"),
-        true
-      );
+      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
       await expect(clans.connect(alice).requestToJoin(clanId, playerId)).to.be.revertedWithCustomError(
         clans,
         "AlreadyInClan"
@@ -134,6 +127,43 @@ describe("Clans", function () {
     });
   });
 
+  describe("Edit clans", () => {
+    it("Edit clan name", async () => {
+      // Only owner
+    });
+
+    it("Edited clan name should be freed and available", async () => {
+      const {clans, playerId, alice, clanName, estforLibrary} = await loadFixture(clanFixture);
+      const tierId = 1;
+      const imageId = 2;
+      const clanId = 1;
+      const anotherName = "Another name";
+      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
+      await clans.connect(alice).editClan(clanId, anotherName, imageId);
+      expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.false;
+      expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
+
+      await clans.connect(alice).editClan(clanId, anotherName, imageId); // Use same name, should not fail unless both the same
+      await clans.connect(alice).editClan(clanId, clanName, imageId);
+      expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.true;
+      expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.false;
+      await clans.connect(alice).editClan(clanId, anotherName, imageId);
+      await clans.connect(alice).editClanAsAdmin(clanId, playerId, imageId + 1);
+      expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
+    });
+
+    it("Edit clan image", async () => {
+      // Owner or admin
+      const {clans, playerId, alice, clanName} = await loadFixture(clanFixture);
+
+      const tierId = 1;
+      const imageId = 2;
+      const clanId = 1;
+      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
+      await clans.connect(alice).editClanAsAdmin(clanId, playerId, imageId + 1);
+    });
+  });
+
   describe("Admins", () => {
     it("Must be a member to be promoted to admin", async () => {
       const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
@@ -142,13 +172,7 @@ describe("Clans", function () {
       const imageId = 2;
       const clanId = 1;
       await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        owner,
-        ethers.utils.formatBytes32String("my name ser"),
-        true
-      );
+      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
       await clans.requestToJoin(clanId, newPlayerId);
 
       await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
@@ -173,13 +197,7 @@ describe("Clans", function () {
       const imageId = 2;
       const clanId = 1;
       await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        owner,
-        ethers.utils.formatBytes32String("my name ser"),
-        true
-      );
+      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
       await clans.requestToJoin(clanId, newPlayerId);
 
       await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
@@ -200,13 +218,7 @@ describe("Clans", function () {
       expect(newPlayer.clanId).to.eq(clanId);
       expect(newPlayer.requestedClanId).to.eq(0);
 
-      const newPlayerId1 = createPlayer(
-        playerNFT,
-        avatarId,
-        bob,
-        ethers.utils.formatBytes32String("my name ser123"),
-        true
-      );
+      const newPlayerId1 = createPlayer(playerNFT, avatarId, bob, "my name ser123", true);
 
       await clans.connect(bob).requestToJoin(clanId, newPlayerId1);
       await clans.acceptJoinRequest(clanId, newPlayerId1, newPlayerId);
@@ -220,13 +232,7 @@ describe("Clans", function () {
       const imageId = 2;
       const clanId = 1;
       await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        owner,
-        ethers.utils.formatBytes32String("my name ser"),
-        true
-      );
+      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
       await clans.requestToJoin(clanId, newPlayerId);
       await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
       await clans.connect(alice).addAdmin(clanId, newPlayerId);
@@ -254,24 +260,12 @@ describe("Clans", function () {
       const imageId = 2;
       const clanId = 1;
       await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        owner,
-        ethers.utils.formatBytes32String("my name ser"),
-        true
-      );
+      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
       await clans.requestToJoin(clanId, newPlayerId);
       await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
       await clans.connect(alice).addAdmin(clanId, newPlayerId);
 
-      const bobPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        bob,
-        ethers.utils.formatBytes32String("my name ser123"),
-        true
-      );
+      const bobPlayerId = createPlayer(playerNFT, avatarId, bob, "my name ser123", true);
 
       await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
       await clans.acceptJoinRequest(clanId, bobPlayerId, newPlayerId);
@@ -290,13 +284,7 @@ describe("Clans", function () {
       // No longer an admin so can be kicked
       await clans.connect(bob).kickMember(clanId, newPlayerId, bobPlayerId);
 
-      const newPlayerMemberId = createPlayer(
-        playerNFT,
-        avatarId,
-        charlie,
-        ethers.utils.formatBytes32String("my name ser1234"),
-        true
-      );
+      const newPlayerMemberId = createPlayer(playerNFT, avatarId, charlie, "my name ser1234", true);
 
       await clans.connect(charlie).requestToJoin(clanId, newPlayerMemberId);
       await clans.connect(bob).acceptJoinRequest(clanId, newPlayerMemberId, bobPlayerId);
@@ -323,13 +311,7 @@ describe("Clans", function () {
       const imageId = 2;
       const clanId = 1;
       await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        owner,
-        ethers.utils.formatBytes32String("my name ser"),
-        true
-      );
+      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
 
       await clans.connect(alice).inviteMember(clanId, newPlayerId, playerId);
       expect(await clans.hasInviteRequest(clanId, newPlayerId)).to.be.true;

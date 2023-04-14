@@ -25,10 +25,10 @@ library PlayersLibrary {
 
   // Show all the player stats, return metadata json
   function uri(
-    bytes32 name,
+    string calldata playerName,
     mapping(Skill skill => uint128 xp) storage xp,
     uint overallXP,
-    bytes32 avatarName,
+    string calldata avatarName,
     string calldata avatarDescription,
     string calldata imageURI,
     bool isAlpha,
@@ -70,7 +70,7 @@ library PlayersLibrary {
       )
     );
 
-    bytes memory fullName = abi.encodePacked(_trimBytes32(name), " (", overallLevel.toString(), ")");
+    bytes memory fullName = abi.encodePacked(playerName, " (", overallLevel.toString(), ")");
     bytes memory externalURL = abi.encodePacked(
       "https://",
       isAlpha ? "alpha." : "",
@@ -95,24 +95,6 @@ library PlayersLibrary {
     );
 
     return string(abi.encodePacked("data:application/json;base64,", json));
-  }
-
-  function _trimBytes32(bytes32 _bytes32) private pure returns (bytes memory _bytes) {
-    U256 _len;
-    while (_len.lt(32)) {
-      if (_bytes32[_len.asUint256()] == 0) {
-        break;
-      }
-      _len = _len.inc();
-    }
-    _bytes = abi.encodePacked(_bytes32);
-    assembly ("memory-safe") {
-      mstore(_bytes, _len)
-    }
-  }
-
-  function _getTraitStringJSON(string memory traitType, bytes32 value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(traitType), '"', _trimBytes32(value), '"}');
   }
 
   function _getTraitStringJSON(string memory traitType, string memory value) private pure returns (bytes memory) {

@@ -31,20 +31,20 @@ describe("AlphaWhitelist", function () {
 
     const avatarId = 1;
     const avatarInfo: AvatarInfo = {
-      name: ethers.utils.formatBytes32String("Name goes here"),
+      name: "Name goes here",
       description: "Hi I'm a description",
       imageURI: "1234.png",
       startSkills: [Skill.NONE, Skill.NONE],
     };
-    await playerNFT.setAvatar(avatarId, avatarInfo);
+    await playerNFT.setAvatars(avatarId, [avatarInfo]);
 
     const maxMints = await playerNFT.MAX_ALPHA_WHITELIST();
     for (let i = 0; i < maxMints.toNumber(); ++i) {
-      const name = ethers.utils.formatBytes32String(`name${i}`);
+      const name = `name${i}`;
       await playerNFT.mintWhitelist(1, name, true, proof);
     }
 
-    const newName = ethers.utils.formatBytes32String("Cheesy poofs");
+    const newName = "Cheesy poofs";
     await expect(playerNFT.mintWhitelist(1, newName, true, proof)).to.be.revertedWithCustomError(
       playerNFT,
       "MintedMoreThanAllowed"

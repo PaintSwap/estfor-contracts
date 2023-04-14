@@ -70,7 +70,11 @@ export const playersFixture = async function () {
 
   await shop.setItemNFT(itemNFT.address);
   // Create NFT contract which contains all the players
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
+  const estforLibrary = await EstforLibrary.deploy();
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
   const editNameBrushPrice = ethers.utils.parseEther("1");
   const imageBaseUri = "ipfs://";
   const playerNFT = (await upgrades.deployProxy(
@@ -86,6 +90,7 @@ export const playersFixture = async function () {
     ],
     {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
     }
   )) as PlayerNFT;
 
@@ -94,9 +99,12 @@ export const playersFixture = async function () {
     kind: "uups",
   });
 
-  const Clans = await ethers.getContractFactory("Clans");
+  const Clans = await ethers.getContractFactory("Clans", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
   const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address], {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
   });
 
   const Bank = await ethers.getContractFactory("Bank");
@@ -179,23 +187,17 @@ export const playersFixture = async function () {
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
-    name: ethers.utils.formatBytes32String("Name goes here"),
+    name: "Name goes here",
     description: "Hi I'm a description",
     imageURI: "1234.png",
     startSkills: [Skill.MAGIC, Skill.NONE],
   };
-  await playerNFT.setAvatar(avatarId, avatarInfo);
+  await playerNFT.setAvatars(avatarId, [avatarInfo]);
 
   // Create player
   const origName = "0xSamWitch";
   const makeActive = true;
-  const playerId = await createPlayer(
-    playerNFT,
-    avatarId,
-    alice,
-    ethers.utils.formatBytes32String(origName),
-    makeActive
-  );
+  const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
   const maxTime = await players.MAX_TIME();
 
   return {
@@ -229,5 +231,6 @@ export const playersFixture = async function () {
     Bank,
     bankRegistry,
     bankFactory,
+    estforLibrary,
   };
 };

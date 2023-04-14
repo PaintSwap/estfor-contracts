@@ -424,20 +424,14 @@ describe("Combat Actions", function () {
 
       const avatarId = 2;
       const avatarInfo: AvatarInfo = {
-        name: ethers.utils.formatBytes32String("Name goes here"),
+        name: "Name goes here",
         description: "Hi I'm a description",
         imageURI: "1234.png",
         startSkills: [Skill.NONE, Skill.NONE],
       };
-      await playerNFT.setAvatar(avatarId, avatarInfo);
+      await playerNFT.setAvatars(avatarId, [avatarInfo]);
 
-      const noSkillPlayerId = createPlayer(
-        playerNFT,
-        avatarId,
-        alice,
-        ethers.utils.formatBytes32String("fakename123"),
-        true
-      );
+      const noSkillPlayerId = createPlayer(playerNFT, avatarId, alice, "fakename123", true);
       await players.connect(alice).startAction(noSkillPlayerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);

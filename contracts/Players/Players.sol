@@ -201,8 +201,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function getURI(
     uint _playerId,
-    bytes32 _name,
-    bytes32 _avatarName,
+    string calldata _name,
+    string calldata _avatarName,
     string calldata _avatarDescription,
     string calldata imageURI
   ) external view override returns (string memory) {

@@ -8,8 +8,8 @@ interface IPlayers {
 
   function getURI(
     uint playerId,
-    bytes32 name,
-    bytes32 avatarName,
+    string calldata name,
+    string calldata avatarName,
     string calldata avatarDescription,
     string calldata imageURI
   ) external view returns (string memory);

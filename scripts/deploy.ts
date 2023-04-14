@@ -165,7 +165,13 @@ async function main() {
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
   // Create NFT contract which contains all the players
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
+  const estforLibrary = await EstforLibrary.deploy();
+  await estforLibrary.deployed();
+  console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [
@@ -179,6 +185,7 @@ async function main() {
     ],
     {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
     }
   )) as PlayerNFT;
   await playerNFT.deployed();
@@ -191,9 +198,12 @@ async function main() {
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
 
-  const Clans = await ethers.getContractFactory("Clans");
+  const Clans = await ethers.getContractFactory("Clans", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
   const clans = (await upgrades.deployProxy(Clans, [brush.address, shop.address], {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
   })) as Clans;
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);

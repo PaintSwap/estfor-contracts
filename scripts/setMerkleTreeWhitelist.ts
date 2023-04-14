@@ -1,6 +1,6 @@
 import {ethers} from "hardhat";
 import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
-import {PLAYER_NFT_ADDRESS} from "./constants";
+import {PLAYER_NFT_ADDRESS, ESTFOR_LIBRARY_ADDRESS} from "./constants";
 import {whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 
 async function main() {
@@ -11,7 +11,9 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   // PlayerNFT
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT");
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
+  });
   const playerNFT = await PlayerNFT.attach(PLAYER_NFT_ADDRESS);
   await playerNFT.deployed();
 
