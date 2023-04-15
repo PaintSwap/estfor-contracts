@@ -3,6 +3,7 @@ pragma solidity ^0.8.19;
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IQuests} from "./interfaces/IQuests.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
@@ -28,6 +29,7 @@ interface Router {
 contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   using UnsafeMath for uint256;
   using UnsafeMath for U256;
+  using BitMaps for BitMaps.BitMap;
 
   event AddFixedQuest(Quest quest);
   event AddBaseRandomQuest(Quest quest);
@@ -47,7 +49,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   error QuestWithIdAlreadyExists();
   error QuestCompletedAlready();
   error InvalidRewardAmount();
-  error InvalidReward();
   error InvalidActionNum();
   error InvalidActionChoiceNum();
   error LengthMismatch();
@@ -73,12 +74,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   IPlayers private players;
   uint40 public randomQuestId;
   mapping(uint questId => Quest quest) public allFixedQuests;
-  mapping(uint playerId => mapping(uint questId => bool done)) public questsCompleted; // TODO: Could use bit mask
+  mapping(uint playerId => BitMaps.BitMap) private questsCompleted;
   mapping(uint playerId => PlayerQuest playerQuest) public activeQuests;
   mapping(uint playerId => PlayerQuest playerQuest) public inProgressRandomQuests;
   mapping(uint playerId => mapping(uint queueId => PlayerQuest quest)) public inProgressFixedQuests; // Only puts it here if changing active quest for something else
   mapping(uint questId => MinimumRequirement[3]) minimumRequirements; // Not checked yet
-  mapping(uint questId => bool isRandom) public isRandomQuest;
+  BitMaps.BitMap private questIsRandom;
   mapping(uint playerId => PlayerQuestInfo) public playerInfo;
   Quest[] private randomQuests;
   Quest private previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
@@ -131,7 +132,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (quest.questId != _questId) {
       revert QuestDoesntExist();
     }
-    if (questsCompleted[_playerId][_questId]) {
+    if (questsCompleted[_playerId].get(_questId)) {
       revert QuestCompletedAlready();
     }
 
@@ -406,12 +407,20 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
   }
 
+  function isQuestCompleted(uint _playerId, uint _questId) external view returns (bool) {
+    return questsCompleted[_playerId].get(_questId);
+  }
+
+  function isRandomQuest(uint _questId) external view returns (bool) {
+    return questIsRandom.get(_questId);
+  }
+
   function _questCompleted(uint _playerId, uint _questId) private {
     emit QuestCompleted(_playerId, _questId);
-    questsCompleted[_playerId][_questId] = true;
+    questsCompleted[_playerId].set(_questId);
     delete activeQuests[_playerId];
 
-    if (isRandomQuest[_questId]) {
+    if (questIsRandom.get(_questId)) {
       ++playerInfo[_playerId].numRandomQuestsCompleted;
       delete inProgressRandomQuests[_playerId];
     } else {
@@ -512,7 +521,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
     if (_isRandom) {
       randomQuests.push(_quest);
-      isRandomQuest[_quest.questId] = true;
+      questIsRandom.set(_quest.questId);
       emit AddBaseRandomQuest(_quest);
     } else {
       if (allFixedQuests[_quest.questId].questId != 0) {
@@ -555,12 +564,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (_questId == 0) {
       revert InvalidQuestId();
     }
-    if (isRandomQuest[_questId]) {
+    if (questIsRandom.get(_questId)) {
       // Check it's not the active one
       if (randomQuest.questId == _questId) {
         revert CannotRemoveActiveRandomQuest();
       }
-      delete isRandomQuest[_questId];
+      questIsRandom.unset(_questId);
 
       // Remove from array
       U256 bounds = randomQuests.length.asU256();

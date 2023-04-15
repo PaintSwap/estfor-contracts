@@ -1,11 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions";
-import {
-  ACTIONCHOICE_COOKING_MINNUS,
-  COOKED_MINNUS,
-  QUEST_STARTER_FEEDER,
-  QUEST_STARTER_TRADER,
-} from "@paintswap/estfor-definitions/constants";
+import {COOKED_MINNUS, QUEST_STARTER_FEEDER, QUEST_STARTER_TRADER} from "@paintswap/estfor-definitions/constants";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
@@ -203,7 +198,7 @@ describe("Quests", function () {
       expect(balanceBefore.add(1)).to.eq(balanceAfter);
 
       // Check it's completed and no longer considered active
-      expect(await quests.questsCompleted(playerId, questId)).to.eq(true);
+      expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
       expect((await quests.activeQuests(playerId)).questId).to.be.eq(0);
     });
   });
@@ -235,7 +230,7 @@ describe("Quests", function () {
     await players.connect(alice).processActions(playerId);
 
     // Check it's completed
-    expect(await quests.questsCompleted(playerId, questId)).to.eq(true);
+    expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
       Math.floor((queuedAction.timespan * rate) / (3600 * 10) - quest.actionChoiceNum)
     );
@@ -335,7 +330,7 @@ describe("Quests", function () {
       );
 
       // Check it's completed
-      expect(await quests.questsCompleted(playerId, questId)).to.be.true;
+      expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
       // Check it can't be activated again
       await expect(quests.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(

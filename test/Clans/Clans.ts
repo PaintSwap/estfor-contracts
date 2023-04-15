@@ -56,8 +56,8 @@ describe("Clans", function () {
       expect(clan.name).to.eq(clanName);
       expect(tier.maxMemberCapacity).to.eq(3);
       expect(tier.maxBankCapacity).to.eq(3);
-      expect(await clans.canWithdraw(clanId, playerId)).to.eq(true);
-      expect(await clans.isClanMember(clanId, playerId)).to.eq(true);
+      expect(await clans.canWithdraw(clanId, playerId)).to.be.true;
+      expect(await clans.isClanMember(clanId, playerId)).to.be.true;
       expect(await clans.hasInviteRequest(clanId, playerId)).to.eq(false);
 
       const {timestamp} = await ethers.provider.getBlock("latest");
