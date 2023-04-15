@@ -251,4 +251,22 @@ export const addTestData = async (
   tx = await clans.connect(alice).requestToJoin(clanId, alicePlayerId);
   await tx.wait();
   console.log("Request to join as well");
+
+  // Remove invition via player
+  tx = await clans.connect(alice).deleteInvitesAsPlayer([clanId], alicePlayerId);
+  await tx.wait();
+  console.log("Delete invites as player");
+
+  tx = await clans.inviteMember(clanId, alicePlayerId, playerId);
+  await tx.wait();
+  console.log("Re-invite Alice1");
+
+  // Remove invitiation via clan
+  tx = await clans.deleteInvitesAsClan(clanId, [alicePlayerId], playerId);
+  await tx.wait();
+  console.log("Delete invites as clan");
+
+  tx = await clans.inviteMember(clanId, alicePlayerId, playerId);
+  await tx.wait();
+  console.log("Re-invite Alice2");
 };

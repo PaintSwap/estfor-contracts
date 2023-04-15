@@ -68,6 +68,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error ChangingRankOfPlayerEqualOrHigherThanSelf();
   error CannotRenounceToSelf();
   error InviteDoesNotExist();
+  error NoInvitesToDelete();
 
   enum ClanRank {
     NONE, // Not in a clan
@@ -212,6 +213,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function deleteInvitesAsPlayer(uint[] calldata _clanIds, uint _playerId) external isOwnerOfPlayer(_playerId) {
+    if (_clanIds.length == 0) {
+      revert NoInvitesToDelete();
+    }
+
     for (uint i = 0; i < _clanIds.length; ++i) {
       uint clanId = _clanIds[i];
       if (!clans[clanId].inviteRequests[_playerId]) {
@@ -228,6 +233,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint _playerId
   ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
     Clan storage clan = clans[_clanId];
+    if (_invitedPlayerIds.length == 0) {
+      revert NoInvitesToDelete();
+    }
+
     for (uint i = 0; i < _invitedPlayerIds.length; ++i) {
       uint invitedPlayerId = _invitedPlayerIds[i];
       if (!clan.inviteRequests[invitedPlayerId]) {
