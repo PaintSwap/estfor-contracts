@@ -216,7 +216,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         imageURI,
         isAlpha,
         _playerId,
-        clans.getClanName(_playerId)
+        clans.getClanNameOfPlayer(_playerId)
       );
   }
 

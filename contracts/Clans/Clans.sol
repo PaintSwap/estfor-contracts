@@ -8,7 +8,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IClans, Clan} from "../interfaces/IClans.sol";
+import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
@@ -18,8 +18,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   using UnsafeMath for uint256;
 
   event ClanCreated(uint clanId, uint playerId, string name, uint imageId, uint tierId);
-  event AdminAdded(uint clanId, uint playerId);
-  event AdminRemoved(uint clanId, uint playerId);
+  event SetClanRank(uint clanId, uint playerId, ClanRank clan);
   event InviteSent(uint clanId, uint playerId, uint fromPlayerId);
   event InviteAccepted(uint clanId, uint playerId);
   event MemberLeft(uint clanId, uint playerId);
@@ -33,23 +32,17 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event ClanEdited(uint clanId, uint playerId, string name, uint imageId);
   event ClanUpgraded(uint clanId, uint playerId, uint tierId);
   event ClanDestroyed(uint clanId);
+  event RankUpdated(uint clanId, uint memberId, ClanRank rank, uint playerId);
+  event InvitesDeletedByPlayer(uint[] clanIds, uint playerId);
+  event InvitesDeletedByClan(uint clanId, uint[] invitedPlayerIds, uint deletedInvitesPlayerId);
 
-  error OnlyOwner();
-  error OnlyAdmin();
   error AlreadyInClan();
-  error UserAlreadyAdmin();
   error NotOwnerOfPlayer();
   error NotOwnerOfPlayerAndActive();
   error NotMemberOfClan();
-  error NotAdmin();
   error ClanIsFull();
-  error NoInviteRequest();
-  error NotInClan();
   error OwnerExists();
   error InvalidTier();
-  error PlayerAlreadyAdmin();
-  error CannotBeCalledOnOwner();
-  error CannotBeCalledOnSelf();
   error InvalidImageId();
   error NameTooShort();
   error NameTooLong(uint length);
@@ -59,9 +52,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error CannotDowngradeTier();
   error TierAlreadyExists();
   error NameAlreadyExists();
-  error OnlyOwnerCanKickAdmin();
-  error OnlyOwnerOrSelf();
-  error OnlyAdminsOrOwnerCanKickMember();
   error ClanDestroyFailedHasMembers();
   error PriceTooLow();
   error MemberCapacityTooLow();
@@ -69,9 +59,37 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error ImageIdTooLow();
   error AlreadySentInvite();
   error AlreadySentJoinRequest();
+  error NoJoinRequest();
+  error RankMustBeLowerRenounce();
+  error RankNotHighEnough();
+  error CannotSetSameRank();
+  error ChangingRankEqualOrHigherThanSelf();
+  error ChangingRankOfPlayerHigherThanSelf();
+  error ChangingRankOfPlayerEqualOrHigherThanSelf();
+  error CannotRenounceToSelf();
+  error InviteDoesNotExist();
+
+  enum ClanRank {
+    NONE, // Not in a clan
+    COMMONER, // Member of the clan
+    SCOUT, // Invite and kick commoners
+    TREASURER, // Can withdraw from bank
+    LEADER // Can edit clan details
+  }
+
+  struct Clan {
+    uint80 owner;
+    uint16 imageId;
+    uint16 memberCount;
+    uint40 createdTimestamp;
+    uint8 tierId;
+    string name;
+    mapping(uint playerId => bool invited) inviteRequests;
+  }
 
   struct PlayerInfo {
     uint32 clanId; // What clan they are in
+    ClanRank rank; // Current clan rank
     uint32 requestedClanId; // What clan they have requested to join
   }
 
@@ -98,15 +116,22 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _;
   }
 
-  modifier onlyClanAdmin(uint _clanId, uint _playerId) {
-    if (!clans[_clanId].admins[_playerId]) {
-      revert OnlyAdmin();
+  modifier isMinimumRank(
+    uint _clanId,
+    uint _playerId,
+    ClanRank _rank
+  ) {
+    PlayerInfo storage player = playerInfo[_playerId];
+    if (player.clanId != _clanId) {
+      revert NotMemberOfClan();
+    } else if (playerInfo[_playerId].rank < _rank) {
+      revert RankNotHighEnough();
     }
     _;
   }
 
   modifier isMemberOfClan(uint _clanId, uint _playerId) {
-    if (!clans[_clanId].members[_playerId]) {
+    if (playerInfo[_playerId].clanId != _clanId) {
       revert NotMemberOfClan();
     }
     _;
@@ -122,8 +147,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(uint id => Tier tier) public tiers;
   mapping(string name => bool exists) public lowercaseNames;
   mapping(uint clanId => uint40 timestampLeft) public ownerlessClanTimestamps; // timestamp
-
-  // TODO Permissions
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -162,13 +185,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     clan.owner = uint80(_playerId);
     clan.tierId = _tierId;
     clan.imageId = _imageId;
-    clan.members[_playerId] = true;
     clan.memberCount = 1;
-    clan.admins[_playerId] = true;
-    clan.adminCount = 1;
     clan.createdTimestamp = uint40(block.timestamp);
 
     player.clanId = uint32(clanId);
+    player.rank = ClanRank.LEADER;
     if (player.requestedClanId != 0) {
       removeJoinRequest(clanId, _playerId);
     }
@@ -190,43 +211,39 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanEdited(_clanId, clans[_clanId].owner, trimmedName, _imageId);
   }
 
-  function editClanAsAdmin(
+  function deleteInvitesAsPlayer(uint[] calldata _clanIds, uint _playerId) external isOwnerOfPlayer(_playerId) {
+    for (uint i = 0; i < _clanIds.length; ++i) {
+      uint clanId = _clanIds[i];
+      if (!clans[clanId].inviteRequests[_playerId]) {
+        revert InviteDoesNotExist();
+      }
+      delete clans[clanId].inviteRequests[_playerId];
+    }
+    emit InvitesDeletedByPlayer(_clanIds, _playerId);
+  }
+
+  function deleteInvitesAsClan(
     uint _clanId,
-    uint _playerId,
-    uint _imageId
-  ) external isOwnerOfPlayer(_playerId) onlyClanAdmin(_clanId, _playerId) {
+    uint[] calldata _invitedPlayerIds,
+    uint _playerId
+  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
     Clan storage clan = clans[_clanId];
-    Tier storage tier = tiers[clan.tierId];
-    _checkClanImage(_imageId, tier.maxImageId);
-    emit ClanEdited(_clanId, _playerId, clan.name, _imageId);
-  }
-
-  function addAdmin(uint _clanId, uint _admin) public isOwnerOfPlayer(clans[_clanId].owner) {
-    Clan storage clan = clans[_clanId];
-
-    if (!clan.members[_admin]) {
-      revert NotMemberOfClan();
+    for (uint i = 0; i < _invitedPlayerIds.length; ++i) {
+      uint invitedPlayerId = _invitedPlayerIds[i];
+      if (!clan.inviteRequests[invitedPlayerId]) {
+        revert InviteDoesNotExist();
+      }
+      clan.inviteRequests[invitedPlayerId] = false;
     }
 
-    if (clan.admins[_admin]) {
-      revert PlayerAlreadyAdmin();
-    }
-    _addAdmin(_clanId, _admin);
-  }
-
-  function removeAdmin(uint _clanId, uint _admin) external {
-    if (!players.isOwnerOfPlayer(msg.sender, clans[_clanId].owner) && !players.isOwnerOfPlayer(msg.sender, _admin)) {
-      revert OnlyOwnerOrSelf();
-    }
-
-    _removeAdmin(_clanId, _admin);
+    emit InvitesDeletedByClan(_clanId, _invitedPlayerIds, _playerId);
   }
 
   function inviteMember(
     uint _clanId,
     uint _member,
     uint _playerId
-  ) external isOwnerOfPlayer(_playerId) onlyClanAdmin(_clanId, _playerId) {
+  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
     Clan storage clan = clans[_clanId];
 
     Tier storage tier = tiers[clan.tierId];
@@ -248,21 +265,22 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     PlayerInfo storage player = playerInfo[_playerId];
 
     if (!clan.inviteRequests[_playerId]) {
-      revert NoInviteRequest();
+      revert InviteDoesNotExist();
+    }
+
+    Tier storage tier = tiers[clan.tierId];
+    if (clan.memberCount >= tier.maxMemberCapacity) {
+      revert ClanIsFull();
     }
 
     clan.inviteRequests[_playerId] = false;
     clan.memberCount = uint16(clan.memberCount.inc());
-    clan.members[_playerId] = true;
 
     player.clanId = uint32(_clanId);
+    player.rank = ClanRank.COMMONER;
     player.requestedClanId = 0;
 
     emit InviteAccepted(_clanId, _playerId);
-  }
-
-  function leaveClan(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    _removeFromClan(_clanId, _playerId);
   }
 
   function requestToJoin(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
@@ -277,11 +295,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert AlreadyInClan();
     }
 
-    if (player.requestedClanId != 0) {
-      if (player.requestedClanId == _clanId) {
+    uint playerRequestedClanId = player.requestedClanId;
+    if (playerRequestedClanId != 0) {
+      if (playerRequestedClanId == _clanId) {
         revert AlreadySentJoinRequest();
       }
-      emit JoinRequestRemoved(player.requestedClanId, _playerId);
+      emit JoinRequestRemoved(playerRequestedClanId, _playerId);
     }
 
     player.requestedClanId = uint32(_clanId);
@@ -298,60 +317,101 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint _clanId,
     uint _member,
     uint _playerId
-  ) public isOwnerOfPlayerAndActive(_playerId) onlyClanAdmin(_clanId, _playerId) {
+  ) public isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
     Clan storage clan = clans[_clanId];
     PlayerInfo storage player = playerInfo[_member];
 
-    if (clan.inviteRequests[_member]) {
-      revert NoInviteRequest();
+    if (player.requestedClanId != _clanId) {
+      revert NoJoinRequest();
+    }
+
+    Tier storage tier = tiers[clan.tierId];
+    if (clan.memberCount >= tier.maxMemberCapacity) {
+      revert ClanIsFull();
     }
 
     clan.inviteRequests[_member] = false;
     clan.memberCount = uint16(clan.memberCount.inc());
-    clan.members[_member] = true;
 
     player.clanId = uint32(_clanId);
     player.requestedClanId = 0;
+    player.rank = ClanRank.COMMONER;
 
     emit JoinRequestAccepted(_clanId, _member, _playerId);
   }
 
-  function kickMember(uint _clanId, uint _member, uint playerId) external isOwnerOfPlayerAndActive(playerId) {
-    // Only owner can kick an admin
-    if (clans[_clanId].admins[_member] && clans[_clanId].owner != playerId) {
-      revert OnlyOwnerCanKickAdmin();
-    }
-    if (clans[_clanId].owner == _member) {
-      revert CannotBeCalledOnOwner();
-    }
-
-    // Only admins or owner can kick a member
-    if (!clans[_clanId].admins[playerId] && clans[_clanId].owner != playerId) {
-      revert OnlyAdminsOrOwnerCanKickMember();
-    }
-    _removeFromClan(_clanId, _member);
-  }
-
-  function renonuceOwnershipTo(
+  function changeRank(
     uint _clanId,
-    uint _admin,
-    bool _leaveClan
-  ) external isOwnerOfPlayer(clans[_clanId].owner) onlyClanAdmin(_clanId, _admin) {
-    Clan storage clan = clans[_clanId];
-    uint oldOwnerPlayerId = clan.owner;
-    _removeFromClan(_clanId, clan.owner);
-    if (!_leaveClan) {
-      // Add as a member
-      clan.memberCount = uint16(clan.memberCount.inc());
-      clan.members[oldOwnerPlayerId] = true;
-      playerInfo[oldOwnerPlayerId].clanId = uint32(_clanId);
-      // Add as an admin
-      _addAdmin(_clanId, _admin);
+    uint _memberId,
+    ClanRank _rank,
+    uint _playerId
+  ) external isOwnerOfPlayer(_playerId) isMemberOfClan(_clanId, _memberId) {
+    ClanRank currentMemberRank = playerInfo[_memberId].rank;
+    ClanRank callerRank = playerInfo[_playerId].rank;
+    bool changingSelf = _memberId == _playerId;
+
+    if (callerRank <= _rank) {
+      revert ChangingRankEqualOrHigherThanSelf();
     }
-    _claimOwnership(_clanId, _admin);
+
+    // Cannot change Rank of someone higher or equal yourself
+    if (changingSelf) {
+      if (callerRank < currentMemberRank) {
+        revert ChangingRankOfPlayerHigherThanSelf();
+      }
+    } else {
+      if (callerRank <= currentMemberRank) {
+        revert ChangingRankOfPlayerEqualOrHigherThanSelf();
+      }
+    }
+
+    if (currentMemberRank == _rank) {
+      revert CannotSetSameRank();
+    }
+
+    bool isDemoting = currentMemberRank > _rank;
+    if (isDemoting) {
+      // Are they leaving?
+      if (_rank == ClanRank.NONE) {
+        _removeFromClan(_clanId, _memberId);
+      } else {
+        // If owner is leaving their post then we need to update the owned state
+        if (currentMemberRank == ClanRank.LEADER) {
+          _ownerCleared(_clanId);
+        }
+        _updateRank(_clanId, _memberId, _rank, _playerId);
+      }
+    } else {
+      // Promoting
+      _updateRank(_clanId, _memberId, _rank, _playerId);
+    }
   }
 
-  // Can claim a clan if there is no owner. Must be an admin if there are any admins, otherwise can be any member.
+  function renounceOwnershipTo(
+    uint _clanId,
+    uint _newOwner,
+    ClanRank _newRank
+  ) external isOwnerOfPlayer(clans[_clanId].owner) isMemberOfClan(_clanId, _newOwner) {
+    Clan storage clan = clans[_clanId];
+    uint oldOwnerId = clan.owner;
+
+    if (_newOwner == oldOwnerId) {
+      revert CannotRenounceToSelf();
+    }
+
+    if (_newRank != ClanRank.NONE) {
+      if (_newRank >= ClanRank.LEADER) {
+        revert RankMustBeLowerRenounce();
+      }
+      // Change old owner to new rank
+      _updateRank(_clanId, oldOwnerId, _newRank, oldOwnerId);
+    } else {
+      _removeFromClan(_clanId, oldOwnerId);
+    }
+    _claimOwnership(_clanId, _newOwner);
+  }
+
+  // Can claim a clan if there is no owner
   function claimOwnership(
     uint _clanId,
     uint _playerId
@@ -361,13 +421,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert OwnerExists();
     }
 
-    if (clan.adminCount != 0) {
-      // Must be an admin
-      if (!clan.admins[_playerId]) {
-        revert NotAdmin();
-      }
-    }
-
     _claimOwnership(_clanId, _playerId);
   }
 
@@ -375,17 +428,17 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _upgradeClan(_clanId, _playerId, _newTierId);
   }
 
-  function getClanName(uint _playerId) external view returns (string memory) {
+  function getClanNameOfPlayer(uint _playerId) external view returns (string memory) {
     uint clanId = playerInfo[_playerId].clanId;
     return clans[clanId].name;
   }
 
-  function isClanAdmin(uint _clanId, uint _playerId) external view override returns (bool) {
-    return clans[_clanId].admins[_playerId];
+  function canWithdraw(uint _clanId, uint _playerId) external view override returns (bool) {
+    return playerInfo[_playerId].clanId == _clanId && playerInfo[_playerId].rank >= ClanRank.TREASURER;
   }
 
   function isClanMember(uint _clanId, uint _playerId) external view returns (bool) {
-    return clans[_clanId].members[_playerId];
+    return playerInfo[_playerId].clanId == _clanId;
   }
 
   function hasInviteRequest(uint _clanId, uint _playerId) external view returns (bool) {
@@ -400,23 +453,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function maxMemberCapacity(uint _clanId) external view override returns (uint16) {
     Tier storage tier = tiers[clans[_clanId].tierId];
     return tier.maxMemberCapacity;
-  }
-
-  function _removeAdmin(uint _clanId, uint _admin) private {
-    Clan storage clan = clans[_clanId];
-    // Check they are an admin first
-    if (!clan.admins[_admin]) {
-      revert NotAdmin();
-    }
-
-    // Make sure the owner isn't trying to remove themselves
-    if (_admin == clan.owner) {
-      revert CannotBeCalledOnOwner();
-    }
-
-    clan.admins[_admin] = false;
-    --clan.adminCount;
-    emit AdminRemoved(_clanId, _admin);
   }
 
   function _checkClanImage(uint _imageId, uint _maxImageId) private pure {
@@ -454,11 +490,17 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
   }
 
-  function _addAdmin(uint _clanId, uint _admin) private {
-    Clan storage clan = clans[_clanId];
-    clan.admins[_admin] = true;
-    clan.adminCount = uint16(clan.adminCount.inc());
-    emit AdminAdded(_clanId, _admin);
+  function _ownerCleared(uint _clanId) private {
+    uint oldOwnerId = clans[_clanId].owner;
+    clans[_clanId].owner = 0;
+    ownerlessClanTimestamps[_clanId] = uint40(block.timestamp);
+    emit ClanOwnerLeft(_clanId, oldOwnerId);
+  }
+
+  function _updateRank(uint _clanId, uint _memberId, ClanRank _rank, uint _playerId) private {
+    PlayerInfo storage player = playerInfo[_memberId];
+    player.rank = _rank;
+    emit RankUpdated(_clanId, _memberId, _rank, _playerId);
   }
 
   function _destroyClan(uint _clanId) private {
@@ -473,39 +515,27 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _removeFromClan(uint _clanId, uint _playerId) private {
     Clan storage clan = clans[_clanId];
-    PlayerInfo storage player = playerInfo[_playerId];
-
-    if (player.clanId != _clanId) {
-      revert NotInClan();
-    }
 
     if (clan.owner == _playerId) {
-      clan.owner = 0;
-      ownerlessClanTimestamps[_clanId] = uint40(block.timestamp);
-      emit ClanOwnerLeft(_clanId, _playerId);
-    }
-    if (clans[_clanId].admins[_playerId]) {
-      _removeAdmin(_clanId, _playerId);
+      _ownerCleared(_clanId);
     }
 
     --clan.memberCount;
     if (clan.memberCount == 0) {
       _destroyClan(_clanId);
     } else {
-      clan.members[_playerId] = false;
       emit MemberLeft(_clanId, _playerId);
     }
+    PlayerInfo storage player = playerInfo[_playerId];
     player.clanId = 0;
+    player.rank = ClanRank.NONE;
   }
 
   function _claimOwnership(uint _clanId, uint _playerId) private {
     Clan storage clan = clans[_clanId];
     clan.owner = uint80(_playerId);
     delete ownerlessClanTimestamps[_clanId];
-
-    if (!clan.admins[_playerId]) {
-      _addAdmin(_clanId, _playerId);
-    }
+    playerInfo[_playerId].rank = ClanRank.LEADER;
     emit ClanOwnershipTransferred(_clanId, _playerId);
   }
 

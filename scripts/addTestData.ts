@@ -1,5 +1,6 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {QUEST_STARTER_FIREMAKING} from "@paintswap/estfor-definitions/constants";
+import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Quests, Shop} from "../typechain-types";
 import {createPlayer} from "./utils";
@@ -229,25 +230,25 @@ export const addTestData = async (
   console.log("Send an item to the bank");
 
   // Invite new member
-  const newPlayerId = await createPlayer(playerNFT, startAvatarId, alice, "Alice", makeActive);
+  const alicePlayerId = await createPlayer(playerNFT, startAvatarId, alice, "Alice", makeActive);
   console.log("create Alice");
-  tx = await clans.inviteMember(clanId, newPlayerId, playerId);
+  tx = await clans.inviteMember(clanId, alicePlayerId, playerId);
   await tx.wait();
   console.log("Invite Alice");
-  tx = await clans.connect(alice).acceptInvite(clanId, newPlayerId);
+  tx = await clans.connect(alice).acceptInvite(clanId, alicePlayerId);
   await tx.wait();
   console.log("Accept invite");
 
   // Leave clan
-  tx = await clans.connect(alice).leaveClan(clanId, newPlayerId);
+  tx = await clans.connect(alice).changeRank(clanId, alicePlayerId, ClanRank.NONE, alicePlayerId);
   await tx.wait();
   console.log("Leave clan");
 
-  tx = await clans.inviteMember(clanId, newPlayerId, playerId);
+  tx = await clans.inviteMember(clanId, alicePlayerId, playerId);
   await tx.wait();
   console.log("Re-invite Alice");
 
-  tx = await clans.connect(alice).requestToJoin(clanId, newPlayerId);
+  tx = await clans.connect(alice).requestToJoin(clanId, alicePlayerId);
   await tx.wait();
   console.log("Request to join as well");
 };

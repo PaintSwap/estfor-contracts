@@ -1,4 +1,5 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {createPlayer} from "../../scripts/utils";
@@ -7,8 +8,7 @@ import {playersFixture} from "../Players/PlayersFixture";
 describe("Clans", function () {
   async function clanFixture() {
     const fixture = await loadFixture(playersFixture);
-
-    const {clans} = fixture;
+    const {clans, playerId, alice, bankFactory} = fixture;
 
     // Add basic tier
     await clans.addTiers([
@@ -23,28 +23,29 @@ describe("Clans", function () {
     ]);
 
     const clanName = "Clan 1";
-    return {...fixture, clans, clanName};
+
+    const tierId = 1;
+    const imageId = 2;
+    const clanId = 1;
+    const tier = await clans.tiers(tierId);
+
+    // Figure out what the address with would
+    const newContactAddr = ethers.utils.getContractAddress({
+      from: bankFactory.address,
+      nonce: clanId,
+    });
+
+    await expect(clans.connect(alice).createClan(playerId, clanName, imageId, tierId))
+      .to.emit(clans, "ClanCreated")
+      .withArgs(clanId, playerId, clanName, imageId, tierId)
+      .and.to.emit(bankFactory, "BankContractCreated")
+      .withArgs(alice.address, clanId, newContactAddr);
+
+    return {...fixture, clans, clanName, tierId, imageId, clanId, tier};
   }
   describe("Create a clan", () => {
     it("New clan", async () => {
-      const {clans, playerId, alice, clanName, bankFactory} = await loadFixture(clanFixture);
-
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      const tier = await clans.tiers(tierId);
-
-      // Figure out what the address with would
-      const newContactAddr = ethers.utils.getContractAddress({
-        from: bankFactory.address,
-        nonce: clanId,
-      });
-
-      await expect(clans.connect(alice).createClan(playerId, clanName, imageId, tierId))
-        .to.emit(clans, "ClanCreated")
-        .withArgs(clanId, playerId, clanName, imageId, tierId)
-        .and.to.emit(bankFactory, "BankContractCreated")
-        .withArgs(alice.address, clanId, newContactAddr);
+      const {clans, playerId, clanId, imageId, tierId, tier, clanName} = await loadFixture(clanFixture);
 
       // Check that the clan is created with the correct values
       const clan = await clans.clans(clanId);
@@ -55,7 +56,7 @@ describe("Clans", function () {
       expect(clan.name).to.eq(clanName);
       expect(tier.maxMemberCapacity).to.eq(3);
       expect(tier.maxBankCapacity).to.eq(3);
-      expect(await clans.isClanAdmin(clanId, playerId)).to.eq(true);
+      expect(await clans.canWithdraw(clanId, playerId)).to.eq(true);
       expect(await clans.isClanMember(clanId, playerId)).to.eq(true);
       expect(await clans.hasInviteRequest(clanId, playerId)).to.eq(false);
 
@@ -69,11 +70,7 @@ describe("Clans", function () {
     });
 
     it("Cannot create a clan if already in another", async () => {
-      const {clans, playerId, alice, clanName} = await loadFixture(clanFixture);
-
-      const tierId = 1;
-      const imageId = 2;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
+      const {clans, playerId, alice, imageId, tierId, clanName} = await loadFixture(clanFixture);
 
       await expect(clans.connect(alice).createClan(playerId, clanName, imageId, tierId)).to.be.revertedWithCustomError(
         clans,
@@ -82,63 +79,56 @@ describe("Clans", function () {
     });
 
     it("Cannot create a clan with the same name", async () => {
-      const {clans, playerId, alice, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
-
-      const tierId = 1;
-      const imageId = 2;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(playerNFT, avatarId, alice, "my name ser", true);
-      await expect(
-        clans.connect(alice).createClan(newPlayerId, clanName, imageId, tierId)
-      ).to.be.revertedWithCustomError(clans, "NameAlreadyExists");
+      const {clans, bob, playerNFT, avatarId, imageId, tierId, clanName} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await expect(clans.connect(bob).createClan(bobPlayerId, clanName, imageId, tierId)).to.be.revertedWithCustomError(
+        clans,
+        "NameAlreadyExists"
+      );
     });
 
     it("Cannot create a clan, with invalid name (empty or > 20 chars)", async () => {
       // Also check that whitespace is trimmed
+      const {clans, bob, playerNFT, avatarId, imageId, tierId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const name = " uhh$£";
+      await expect(clans.connect(bob).createClan(bobPlayerId, name, imageId, tierId)).to.be.revertedWithCustomError(
+        clans,
+        "NameInvalidCharacters"
+      );
     });
 
     it("Allowed to create a clan if there is a pending request elsewhere", async () => {
-      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
-
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
+      const {clans, alice, bob, clanId, clanName, playerNFT, avatarId, playerId, tierId, imageId} = await loadFixture(
+        clanFixture
+      );
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
       await expect(clans.connect(alice).requestToJoin(clanId, playerId)).to.be.revertedWithCustomError(
         clans,
         "AlreadyInClan"
       );
-      await expect(clans.requestToJoin(clanId + 1, newPlayerId)).to.be.revertedWithCustomError(
+      await expect(clans.connect(bob).requestToJoin(clanId + 1, bobPlayerId)).to.be.revertedWithCustomError(
         clans,
         "ClanDoesNotExist"
       );
-      await clans.requestToJoin(clanId, newPlayerId);
-      let newPlayer = await clans.playerInfo(newPlayerId);
+      await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
+      let newPlayer = await clans.playerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(clanId);
 
-      await clans.createClan(newPlayerId, clanName + "1", imageId, tierId);
+      await clans.connect(bob).createClan(bobPlayerId, clanName + "1", imageId, tierId);
 
       // Check that the player is created with the correct values
-      newPlayer = await clans.playerInfo(newPlayerId);
+      newPlayer = await clans.playerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId + 1);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
   });
 
   describe("Edit clans", () => {
-    it("Edit clan name", async () => {
-      // Only owner
-    });
-
     it("Edited clan name should be freed and available", async () => {
-      const {clans, playerId, alice, clanName, estforLibrary} = await loadFixture(clanFixture);
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
+      const {clans, alice, clanId, clanName, imageId} = await loadFixture(clanFixture);
       const anotherName = "Another name";
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
       await clans.connect(alice).editClan(clanId, anotherName, imageId);
       expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.false;
       expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
@@ -148,183 +138,359 @@ describe("Clans", function () {
       expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.true;
       expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.false;
       await clans.connect(alice).editClan(clanId, anotherName, imageId);
-      await clans.connect(alice).editClanAsAdmin(clanId, playerId, imageId + 1);
+      await clans.connect(alice).editClan(clanId, anotherName, imageId + 1);
       expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
     });
 
     it("Edit clan image", async () => {
-      // Owner or admin
-      const {clans, playerId, alice, clanName} = await loadFixture(clanFixture);
-
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      await clans.connect(alice).editClanAsAdmin(clanId, playerId, imageId + 1);
+      const {clans, alice, clanId, clanName, imageId} = await loadFixture(clanFixture);
+      await clans.connect(alice).editClan(clanId, clanName, imageId + 1);
     });
   });
 
-  describe("Admins", () => {
+  describe("Invites", () => {
+    it("Invite a player to a clan", async () => {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      expect(await clans.hasInviteRequest(clanId, bobPlayerId)).to.be.true;
+      expect(await clans.hasInviteRequest(clanId, playerId)).to.be.false; // sanity check
+      await expect(clans.acceptInvite(clanId, bobPlayerId)).to.be.revertedWithCustomError(
+        clans,
+        "NotOwnerOfPlayerAndActive"
+      );
+      await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+
+      expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.false;
+      expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
+
+      const newPlayer = await clans.playerInfo(bobPlayerId);
+      expect(newPlayer.clanId).to.eq(clanId);
+      expect(newPlayer.requestedClanId).to.eq(0);
+    });
+
+    it("Cannot accept an invite that does not exist", async () => {
+      const {clans, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+
+      await expect(clans.connect(bob).acceptInvite(clanId, bobPlayerId)).to.be.revertedWithCustomError(
+        clans,
+        "InviteDoesNotExist"
+      );
+    });
+
+    it("Cannot invite a player to a clan if you are not at least a scout", async () => {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+
+      await clans.connect(alice).changeRank(clanId, playerId, ClanRank.COMMONER, playerId);
+      const player = await clans.playerInfo(playerId);
+      expect(player.rank).to.eq(ClanRank.COMMONER);
+      await expect(clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId)).to.be.revertedWithCustomError(
+        clans,
+        "RankNotHighEnough"
+      );
+    });
+
+    it("Delete invites as a player", async () => {
+      const {clans, playerId, alice, bob, charlie, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+
+      await expect(clans.connect(bob).deleteInvitesAsPlayer([clanId], bobPlayerId)).to.be.revertedWithCustomError(
+        clans,
+        "InviteDoesNotExist"
+      );
+
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+      await clans.connect(alice).inviteMember(clanId, charliePlayerId, playerId);
+
+      // Not the owner of the invite
+      await expect(clans.deleteInvitesAsPlayer([clanId], charliePlayerId)).to.be.revertedWithCustomError(
+        clans,
+        "NotOwnerOfPlayer"
+      );
+
+      await expect(clans.connect(charlie).deleteInvitesAsPlayer([clanId], charliePlayerId))
+        .to.emit(clans, "InvitesDeletedByPlayer")
+        .withArgs([clanId], charliePlayerId);
+      expect(await clans.hasInviteRequest(clanId, charliePlayerId)).to.be.false;
+    });
+
+    it("Delete invites as a clan", async () => {
+      const {clans, playerId, alice, bob, charlie, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+      expect(await clans.hasInviteRequest(clanId, bobPlayerId)).to.be.false;
+
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+      await clans.connect(alice).inviteMember(clanId, charliePlayerId, playerId);
+
+      await expect(
+        clans.connect(charlie).deleteInvitesAsClan(clanId, [charliePlayerId], charliePlayerId)
+      ).to.be.revertedWithCustomError(clans, "NotMemberOfClan");
+
+      // Not a scout
+      await expect(
+        clans.connect(bob).deleteInvitesAsClan(clanId, [charliePlayerId], bobPlayerId)
+      ).to.be.revertedWithCustomError(clans, "RankNotHighEnough");
+
+      await clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.SCOUT, playerId);
+      await expect(clans.connect(bob).deleteInvitesAsClan(clanId, [charliePlayerId], bobPlayerId))
+        .to.emit(clans, "InvitesDeletedByClan")
+        .withArgs(clanId, [charliePlayerId], bobPlayerId);
+      expect(await clans.hasInviteRequest(clanId, charliePlayerId)).to.be.false;
+    });
+  });
+
+  describe("Treasurers", () => {
     it("Must be a member to be promoted to admin", async () => {
-      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
 
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
-      await clans.requestToJoin(clanId, newPlayerId);
+      await expect(
+        clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.TREASURER, playerId)
+      ).to.be.revertedWithCustomError(clans, "NotMemberOfClan");
+      await clans.connect(alice).acceptJoinRequest(clanId, bobPlayerId, playerId);
+      await clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.TREASURER, playerId);
 
-      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
-        clans,
-        "NotMemberOfClan"
-      );
-      await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId);
+      expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.true;
+      expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
 
-      expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.true;
-      expect(await clans.isClanMember(clanId, newPlayerId)).to.be.true;
-
-      const newPlayer = await clans.playerInfo(newPlayerId);
+      const newPlayer = await clans.playerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
 
-    it("Only owner can add new admins", async () => {
-      const {clans, playerId, alice, owner, bob, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
+    it("Only owner can add new treasurers", async () => {
+      const {clans, playerId, alice, bob, charlie, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
 
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
-      await clans.requestToJoin(clanId, newPlayerId);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
 
-      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
-        clans,
-        "NotMemberOfClan"
-      );
-      await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId);
-      await expect(clans.connect(alice).addAdmin(clanId, newPlayerId)).to.be.revertedWithCustomError(
-        clans,
-        "PlayerAlreadyAdmin"
-      );
+      await expect(
+        clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.TREASURER, playerId)
+      ).to.be.revertedWithCustomError(clans, "NotMemberOfClan");
+      await clans.connect(alice).acceptJoinRequest(clanId, bobPlayerId, playerId);
+      await clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.TREASURER, playerId);
+      await expect(
+        clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.TREASURER, playerId)
+      ).to.be.revertedWithCustomError(clans, "CannotSetSameRank");
 
-      expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.true;
-      expect(await clans.isClanMember(clanId, newPlayerId)).to.be.true;
+      expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.true;
+      expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
 
-      const newPlayer = await clans.playerInfo(newPlayerId);
+      const newPlayer = await clans.playerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId);
       expect(newPlayer.requestedClanId).to.eq(0);
 
-      const newPlayerId1 = createPlayer(playerNFT, avatarId, bob, "my name ser123", true);
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
 
-      await clans.connect(bob).requestToJoin(clanId, newPlayerId1);
-      await clans.acceptJoinRequest(clanId, newPlayerId1, newPlayerId);
-      await expect(clans.addAdmin(clanId, newPlayerId1)).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayer");
+      await clans.connect(charlie).requestToJoin(clanId, charliePlayerId);
+      await clans.connect(bob).acceptJoinRequest(clanId, charliePlayerId, bobPlayerId);
+      await expect(
+        clans.changeRank(clanId, charliePlayerId, ClanRank.TREASURER, charliePlayerId)
+      ).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayer");
     });
 
-    it("Only owner can remove admins", async () => {
-      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
+    it("Only owner can remove treasurers", async () => {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
+      await clans.connect(alice).acceptJoinRequest(clanId, bobPlayerId, playerId);
+      await clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.TREASURER, playerId);
 
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
-      await clans.requestToJoin(clanId, newPlayerId);
-      await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId);
+      await expect(
+        clans.connect(bob).changeRank(clanId, playerId, ClanRank.SCOUT, bobPlayerId)
+      ).to.be.revertedWithCustomError(clans, "ChangingRankOfPlayerEqualOrHigherThanSelf");
+      await clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.SCOUT, playerId);
 
-      await expect(clans.connect(alice).removeAdmin(clanId, playerId)).to.be.revertedWithCustomError(
-        clans,
-        "CannotBeCalledOnOwner"
-      );
-      await clans.connect(alice).removeAdmin(clanId, newPlayerId);
+      expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.false;
+      expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
 
-      expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.false;
-      expect(await clans.isClanMember(clanId, newPlayerId)).to.be.true;
-
-      const newPlayer = await clans.playerInfo(newPlayerId);
+      const newPlayer = await clans.playerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
 
-    it("Only owner or admins can remove a member", async () => {
-      const {clans, playerId, alice, owner, bob, charlie, clanName, playerNFT, avatarId} = await loadFixture(
-        clanFixture
-      );
+    it("Scouts and above can changes members below them in rank", async () => {
+      const {clans, playerId, alice, bob, charlie, dog, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
 
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
-      await clans.requestToJoin(clanId, newPlayerId);
-      await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
-      await clans.connect(alice).addAdmin(clanId, newPlayerId);
+      const dogPlayerId = await createPlayer(playerNFT, avatarId, dog, "dog", true);
+      await clans.connect(dog).requestToJoin(clanId, dogPlayerId);
+      await clans.connect(alice).acceptJoinRequest(clanId, dogPlayerId, playerId);
+      await clans.connect(alice).changeRank(clanId, dogPlayerId, ClanRank.SCOUT, playerId);
 
-      const bobPlayerId = createPlayer(playerNFT, avatarId, bob, "my name ser123", true);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
 
       await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
-      await clans.acceptJoinRequest(clanId, bobPlayerId, newPlayerId);
+      await clans.connect(dog).acceptJoinRequest(clanId, bobPlayerId, dogPlayerId);
       expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
-      await expect(clans.addAdmin(clanId, bobPlayerId)).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayer");
-      await clans.connect(alice).addAdmin(clanId, bobPlayerId);
-
-      // Admin cannot remove admin
-      await expect(clans.removeAdmin(clanId, bobPlayerId)).to.be.revertedWithCustomError(clans, "OnlyOwnerOrSelf");
-
-      // Remove self as admin
-      await clans.removeAdmin(clanId, newPlayerId);
-      expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.false;
-      expect(await clans.isClanMember(clanId, newPlayerId)).to.be.true;
-
-      // No longer an admin so can be kicked
-      await clans.connect(bob).kickMember(clanId, newPlayerId, bobPlayerId);
-
-      const newPlayerMemberId = createPlayer(playerNFT, avatarId, charlie, "my name ser1234", true);
-
-      await clans.connect(charlie).requestToJoin(clanId, newPlayerMemberId);
-      await clans.connect(bob).acceptJoinRequest(clanId, newPlayerMemberId, bobPlayerId);
-      await expect(clans.kickMember(clanId, newPlayerMemberId, newPlayerId)).to.be.revertedWithCustomError(
+      await expect(clans.changeRank(clanId, bobPlayerId, ClanRank.SCOUT, playerId)).to.be.revertedWithCustomError(
         clans,
-        "OnlyAdminsOrOwnerCanKickMember"
+        "NotOwnerOfPlayer"
       );
+      await clans.connect(alice).changeRank(clanId, bobPlayerId, ClanRank.SCOUT, playerId);
 
-      // Admin can remove a member
-      await clans.connect(bob).kickMember(clanId, newPlayerMemberId, bobPlayerId);
+      // Cannot change rank of someone of the same rank
+      await expect(
+        clans.connect(dog).changeRank(clanId, bobPlayerId, ClanRank.SCOUT, dogPlayerId)
+      ).to.be.revertedWithCustomError(clans, "ChangingRankEqualOrHigherThanSelf");
 
-      expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.false;
-      expect(await clans.isClanMember(clanId, newPlayerId)).to.be.false;
+      // Remove self as scout to commoner
+      await clans.connect(dog).changeRank(clanId, dogPlayerId, ClanRank.COMMONER, dogPlayerId);
+      expect(await clans.canWithdraw(clanId, dogPlayerId)).to.be.false;
+      expect(await clans.isClanMember(clanId, dogPlayerId)).to.be.true;
 
-      const newPlayer = await clans.playerInfo(newPlayerId);
+      // Kick this user from the clan
+      await clans.connect(bob).changeRank(clanId, dogPlayerId, ClanRank.NONE, bobPlayerId);
+
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+
+      await clans.connect(charlie).requestToJoin(clanId, charliePlayerId);
+      await clans.connect(bob).acceptJoinRequest(clanId, charliePlayerId, bobPlayerId);
+      await expect(
+        clans.connect(dog).changeRank(clanId, charliePlayerId, ClanRank.NONE, dogPlayerId)
+      ).to.be.revertedWithCustomError(clans, "ChangingRankEqualOrHigherThanSelf");
+
+      // Scout can remove a member
+      await clans.connect(bob).changeRank(clanId, charliePlayerId, ClanRank.NONE, bobPlayerId);
+
+      expect(await clans.canWithdraw(clanId, dogPlayerId)).to.be.false;
+      expect(await clans.isClanMember(clanId, dogPlayerId)).to.be.false;
+
+      const newPlayer = await clans.playerInfo(dogPlayerId);
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
+  });
 
-    it("Invite a player to a clan", async () => {
-      const {clans, playerId, alice, owner, clanName, playerNFT, avatarId} = await loadFixture(clanFixture);
+  it("Check max capacity of added members", async function () {
+    const {clans, playerId, alice, owner, bob, charlie, clanId, tierId, playerNFT, avatarId} = await loadFixture(
+      clanFixture
+    );
+    const maxMemberCapacity = (await clans.tiers(tierId)).maxMemberCapacity;
 
-      const tierId = 1;
-      const imageId = 2;
-      const clanId = 1;
-      await clans.connect(alice).createClan(playerId, clanName, imageId, tierId);
-      const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+    await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId); // Invite now as it won't be possible later when full
 
-      await clans.connect(alice).inviteMember(clanId, newPlayerId, playerId);
-      expect(await clans.hasInviteRequest(clanId, newPlayerId)).to.be.true;
-      expect(await clans.hasInviteRequest(clanId, playerId)).to.be.false; // sanity check
-      await clans.acceptInvite(clanId, newPlayerId);
+    for (let i = 0; i < maxMemberCapacity - 1; ++i) {
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie" + i, true);
+      await clans.connect(alice).inviteMember(clanId, charliePlayerId, playerId);
+      await clans.connect(charlie).acceptInvite(clanId, charliePlayerId);
+    }
 
-      expect(await clans.isClanAdmin(clanId, newPlayerId)).to.be.false;
-      expect(await clans.isClanMember(clanId, newPlayerId)).to.be.true;
+    // Should be max capacity
+    await expect(clans.connect(bob).acceptInvite(clanId, bobPlayerId)).to.be.revertedWithCustomError(
+      clans,
+      "ClanIsFull"
+    );
+    const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "unique name1", true);
+    await expect(clans.connect(alice).inviteMember(clanId, newPlayerId, playerId)).to.be.revertedWithCustomError(
+      clans,
+      "ClanIsFull"
+    );
 
-      const newPlayer = await clans.playerInfo(newPlayerId);
-      expect(newPlayer.clanId).to.eq(clanId);
-      expect(newPlayer.requestedClanId).to.eq(0);
+    await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
+    await expect(clans.connect(alice).acceptJoinRequest(clanId, bobPlayerId, playerId)).to.be.revertedWithCustomError(
+      clans,
+      "ClanIsFull"
+    );
+  });
+
+  it("Check getClanName is case sensitive", async function () {
+    const {clans, playerId, clanName} = await loadFixture(clanFixture);
+    expect(await clans.getClanNameOfPlayer(playerId)).to.eq(clanName);
+  });
+
+  describe("Renounce ownership", () => {
+    it("Must be owner to renounce", async function () {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+
+      await expect(
+        clans.connect(alice).renounceOwnershipTo(clanId, playerId, ClanRank.COMMONER)
+      ).to.be.revertedWithCustomError(clans, "CannotRenounceToSelf");
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "unique name", true);
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId); // Invite now as it won't be possible later when full
+      await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+      // Bob is now the leader
+      await clans.connect(alice).renounceOwnershipTo(clanId, bobPlayerId, ClanRank.COMMONER);
+
+      // Leader should now be a commoner
+      const oldLeaderPlayerInfo = await clans.connect(alice).playerInfo(playerId);
+      expect(oldLeaderPlayerInfo.rank).to.eq(ClanRank.COMMONER);
+      expect(oldLeaderPlayerInfo.clanId).to.eq(clanId);
+
+      // Check owner transferred to bob and other clan details
+      const clan = await clans.connect(alice).clans(clanId);
+      await expect(clan.owner).to.eq(bobPlayerId);
+      await expect(clan.memberCount).to.eq(2);
+
+      // Cannot renounce now as you aren't owner
+      await expect(
+        clans.connect(alice).renounceOwnershipTo(clanId, bobPlayerId, ClanRank.COMMONER)
+      ).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayer");
     });
+
+    it("Can only renounce to a member", async function () {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "unique name", true);
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      await expect(
+        clans.connect(alice).renounceOwnershipTo(clanId, bobPlayerId, ClanRank.COMMONER)
+      ).to.be.revertedWithCustomError(clans, "NotMemberOfClan");
+    });
+  });
+
+  it("Commoner leave clan", async function () {
+    const {clans, playerId, alice, clanId} = await loadFixture(clanFixture);
+    await clans.connect(alice).changeRank(clanId, playerId, ClanRank.COMMONER, playerId);
+    await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
+  });
+
+  it("Claim ownership of clan with no leader", async function () {
+    const {clans, playerId, alice, bob, charlie, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+    await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+
+    await expect(clans.connect(bob).claimOwnership(clanId, bobPlayerId)).to.be.revertedWithCustomError(
+      clans,
+      "NotMemberOfClan"
+    );
+
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+    await clans.connect(alice).inviteMember(clanId, charliePlayerId, playerId);
+    await clans.connect(charlie).acceptInvite(clanId, charliePlayerId);
+
+    await expect(clans.connect(charlie).claimOwnership(clanId, charliePlayerId)).to.be.revertedWithCustomError(
+      clans,
+      "OwnerExists"
+    );
+
+    await expect(clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId))
+      .to.emit(clans, "ClanOwnerLeft")
+      .withArgs(clanId, playerId);
+    let clan = await clans.connect(alice).clans(clanId);
+    await expect(clan.owner).to.eq(0);
+    await expect(clan.memberCount).to.eq(1);
+
+    await expect(clans.connect(bob).claimOwnership(clanId, bobPlayerId)).to.be.revertedWithCustomError(
+      clans,
+      "NotMemberOfClan"
+    );
+    await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+    await clans.connect(bob).claimOwnership(clanId, bobPlayerId);
+
+    clan = await clans.connect(alice).clans(clanId);
+    await expect(clan.owner).to.eq(bobPlayerId);
+    await expect(clan.memberCount).to.eq(2);
   });
 
   describe("Clan upgrades", () => {
@@ -343,22 +509,65 @@ describe("Clans", function () {
         },
       ]);
 
+      await clans.addTiers([
+        {
+          id: 3,
+          maxMemberCapacity: 20,
+          maxBankCapacity: 10,
+          maxImageId: 30,
+          price: 100,
+          minimumAge: 0,
+        },
+      ]);
+
       return {...fixture, clans};
     }
 
     it("Anyone can upgrade", async function () {
-      const {clans} = await loadFixture(upgradedClansFixture);
-      // TODO
+      const {clans, clanId, playerId, alice, brush} = await loadFixture(upgradedClansFixture);
+
+      await expect(clans.connect(alice).upgradeClan(clanId, playerId, 2)).to.be.revertedWith(
+        "ERC20: insufficient allowance"
+      );
+      const brushAmount = (await clans.tiers(2)).price;
+      await brush.mint(alice.address, brushAmount - 1);
+      await brush.connect(alice).approve(clans.address, brushAmount);
+      await expect(clans.connect(alice).upgradeClan(clanId, playerId, 2)).to.be.revertedWith(
+        "ERC20: transfer amount exceeds balance"
+      );
+      await brush.mint(alice.address, 1);
+      await clans.connect(alice).upgradeClan(clanId, playerId, 2);
+      const clan = await clans.clans(clanId);
+      expect(clan.tierId).to.eq(2);
     });
 
     it("Pay the difference for incremental upgrades", async function () {
-      // TODO
+      const {clans, clanId, alice, playerId, brush} = await loadFixture(upgradedClansFixture);
+
+      const brushAmount = (await clans.tiers(3)).price;
+      await brush.mint(alice.address, brushAmount);
+      const beforeBalance = await brush.balanceOf(alice.address);
+      await brush.connect(alice).approve(clans.address, brushAmount);
+
+      await clans.connect(alice).upgradeClan(clanId, playerId, 2);
+      expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance.sub((await clans.tiers(2)).price));
+      await clans.connect(alice).upgradeClan(clanId, playerId, 3);
+      expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance.sub(brushAmount));
+    });
+
+    it("Cannot upgrade to a tier that doesn't exist", async function () {
+      const {clans, clanId, playerNFT, avatarId, bob, brush} = await loadFixture(upgradedClansFixture);
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const brushAmount = (await clans.tiers(4)).price;
+      expect(brushAmount).to.eq(0);
+      await brush.mint(bob.address, 1000);
+      await brush.connect(bob).approve(clans.address, 1000);
+
+      await expect(clans.connect(bob).upgradeClan(clanId, bobPlayerId, 4)).to.be.revertedWithCustomError(
+        clans,
+        "TierDoesNotExist"
+      );
     });
   });
 });
-
-// it("Check max capacity of added members", async function () {});
-
-// kick owner, admin and member
-
-// Claim ownership of a clan where the owner has been removed

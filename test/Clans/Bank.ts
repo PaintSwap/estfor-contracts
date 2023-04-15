@@ -125,17 +125,13 @@ describe("Bank", function () {
       .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
     expect(balanceBefore.add(1)).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD));
 
-    const newPlayerId = createPlayer(playerNFT, avatarId, owner, "my name ser", true);
+    const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser", true);
     await clans.requestToJoin(clanId, newPlayerId);
     await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
 
     await expect(
       bank.connect(owner).withdrawItems(alice.address, newPlayerId, [EstforConstants.BRONZE_SHIELD], [1])
     ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
-  });
-
-  it("Max capacity of the tier should be adhered to with items", async function () {
-    const {clans, playerId, alice, clanName, bank, Bank, bankFactory} = await loadFixture(bankFixture);
   });
 
   it("Should be able to deposit and withdraw ftm", async function () {});

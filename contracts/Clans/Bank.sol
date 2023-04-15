@@ -46,8 +46,8 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     _;
   }
 
-  modifier isClanAdmin(uint _playerId) {
-    if (!bankRegistry.clans().isClanAdmin(clanId, _playerId)) {
+  modifier canWithdraw(uint _playerId) {
+    if (!bankRegistry.clans().canWithdraw(clanId, _playerId)) {
       revert NotClanAdmin();
     }
     _;
@@ -78,7 +78,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     uint _playerId,
     uint[] memory ids,
     uint[] memory amounts
-  ) external isOwnerOfPlayer(_playerId) isClanAdmin(_playerId) {
+  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
     bankRegistry.itemNFT().safeBatchTransferFrom(address(this), _to, ids, amounts, "");
 
     // Update uniqueItemCount after withdrawing items
@@ -150,7 +150,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     }
   }
 
-  function withdrawFTM(uint _playerId, uint amount) external isOwnerOfPlayer(_playerId) isClanAdmin(_playerId) {
+  function withdrawFTM(uint _playerId, uint amount) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
     (bool success, ) = msg.sender.call{value: amount}("");
     if (!success) {
       revert WithdrawFailed();
@@ -179,7 +179,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     uint _playerId,
     address token,
     uint amount
-  ) external isOwnerOfPlayer(_playerId) isClanAdmin(_playerId) {
+  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
     bool success = IERC20(token).transfer(msg.sender, amount);
     if (!success) {
       revert WithdrawFailed();

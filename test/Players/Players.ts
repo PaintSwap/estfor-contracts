@@ -840,7 +840,7 @@ describe("Players", function () {
         startSkills: [Skill.WOODCUTTING, Skill.NONE],
       };
       await playerNFT.setAvatars(avatarId, [avatarInfo]);
-      const playerId = createPlayer(playerNFT, avatarId, alice, "New name", true);
+      const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -868,7 +868,7 @@ describe("Players", function () {
         startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
       };
       await playerNFT.setAvatars(avatarId, [avatarInfo]);
-      const playerId = createPlayer(playerNFT, avatarId, alice, "New name", true);
+      const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);

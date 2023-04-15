@@ -4,7 +4,7 @@ import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {ItemNFT, PlayerNFT, Shop, World} from "../../typechain-types";
 
 export const playersFixture = async function () {
-  const [owner, alice, bob, charlie] = await ethers.getSigners();
+  const [owner, alice, bob, charlie, dog] = await ethers.getSigners();
 
   const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
   const brush = await MockBrushToken.deploy();
@@ -212,6 +212,7 @@ export const playersFixture = async function () {
     alice,
     bob,
     charlie,
+    dog,
     origName,
     editNameBrushPrice,
     mockOracleClient,

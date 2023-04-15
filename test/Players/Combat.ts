@@ -431,7 +431,7 @@ describe("Combat Actions", function () {
       };
       await playerNFT.setAvatars(avatarId, [avatarInfo]);
 
-      const noSkillPlayerId = createPlayer(playerNFT, avatarId, alice, "fakename123", true);
+      const noSkillPlayerId = await createPlayer(playerNFT, avatarId, alice, "fakename123", true);
       await players.connect(alice).startAction(noSkillPlayerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
