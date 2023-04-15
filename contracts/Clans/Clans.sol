@@ -32,7 +32,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event ClanEdited(uint clanId, uint playerId, string name, uint imageId);
   event ClanUpgraded(uint clanId, uint playerId, uint tierId);
   event ClanDestroyed(uint clanId);
-  event RankUpdated(uint clanId, uint memberId, ClanRank rank, uint playerId);
+  event PlayerRankUpdated(uint clanId, uint memberId, ClanRank rank, uint playerId);
   event InvitesDeletedByPlayer(uint[] clanIds, uint playerId);
   event InvitesDeletedByClan(uint clanId, uint[] invitedPlayerIds, uint deletedInvitesPlayerId);
 
@@ -500,7 +500,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function _updateRank(uint _clanId, uint _memberId, ClanRank _rank, uint _playerId) private {
     PlayerInfo storage player = playerInfo[_memberId];
     player.rank = _rank;
-    emit RankUpdated(_clanId, _memberId, _rank, _playerId);
+    emit PlayerRankUpdated(_clanId, _memberId, _rank, _playerId);
   }
 
   function _destroyClan(uint _clanId) private {
