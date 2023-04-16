@@ -41,31 +41,31 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.SHADOW_SCROLL,
-    price: ethers.utils.parseEther("5"),
+    price: ethers.utils.parseEther("0.05"),
   },
   {
     tokenId: EstforConstants.NATURE_SCROLL,
-    price: ethers.utils.parseEther("5"),
+    price: ethers.utils.parseEther("0.05"),
   },
   {
     tokenId: EstforConstants.AQUA_SCROLL,
-    price: ethers.utils.parseEther("10"),
+    price: ethers.utils.parseEther("0.10"),
   },
   {
     tokenId: EstforConstants.HELL_SCROLL,
-    price: ethers.utils.parseEther("10"),
+    price: ethers.utils.parseEther("0.10"),
   },
   {
     tokenId: EstforConstants.AIR_SCROLL,
-    price: ethers.utils.parseEther("25"),
+    price: ethers.utils.parseEther("0.25"),
   },
   {
     tokenId: EstforConstants.BARRAGE_SCROLL,
-    price: ethers.utils.parseEther("50"),
+    price: ethers.utils.parseEther("0.5"),
   },
   {
     tokenId: EstforConstants.FREEZE_SCROLL,
-    price: ethers.utils.parseEther("50"),
+    price: ethers.utils.parseEther("0.5"),
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
@@ -82,5 +82,9 @@ export const allShopItems: ShopItem[] = [
   {
     tokenId: EstforConstants.SKILL_BOOST,
     price: ethers.utils.parseEther("200"),
+  },
+  {
+    tokenId: EstforConstants.COOKED_MINNUS,
+    price: ethers.utils.parseEther("0.1"),
   },
 ];
