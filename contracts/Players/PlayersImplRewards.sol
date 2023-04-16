@@ -208,10 +208,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint _speedMultiplier = speedMultiplier[_playerId];
 
     pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length);
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates = pendingQueuedActionState
-      .equipmentStates;
     pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueue.length);
-    PendingQueuedActionMetadata[] memory pendingQueuedActionMetadatas = pendingQueuedActionState.actionMetadatas;
 
     uint[] memory choiceIds = new uint[](actionQueue.length);
     uint[] memory choiceIdAmounts = new uint[](actionQueue.length);
@@ -246,7 +243,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (isCombat) {
         // This will only ones that they have a balance for at this time. This will check balances
         combatStats = _getCachedCombatStats(player);
-        _updateCombatStats(from, combatStats, queuedAction.attire, pendingQueuedActionEquipmentStates);
+        _updateCombatStats(from, combatStats, queuedAction.attire, pendingQueuedActionState.equipmentStates);
       }
 
       bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
@@ -254,7 +251,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
-        pendingQueuedActionEquipmentStates
+        pendingQueuedActionState.equipmentStates
       );
       if (missingRequiredHandEquipment) {
         continue;
@@ -300,7 +297,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           elapsedTime,
           combatStats,
           actionChoice,
-          pendingQueuedActionEquipmentStates
+          pendingQueuedActionState.equipmentStates
         );
 
         choiceIds[choiceIdsLength] = queuedAction.choiceId;
@@ -338,7 +335,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           queuedAction,
           skill,
           xpElapsedTime,
-          pendingQueuedActionEquipmentStates
+          pendingQueuedActionState.equipmentStates
         );
       }
       uint32 xpGained = pointsAccrued;
@@ -462,8 +459,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     // Compact to fit the array
     assembly ("memory-safe") {
-      mstore(mload(pendingQueuedActionEquipmentStates), pendingQueuedActionStateLength)
-      mstore(mload(pendingQueuedActionMetadatas), pendingQueuedActionStateLength)
+      mstore(mload(pendingQueuedActionState), pendingQueuedActionStateLength)
+      mstore(mload(add(pendingQueuedActionState, 32)), pendingQueuedActionStateLength)
     }
   }
 
