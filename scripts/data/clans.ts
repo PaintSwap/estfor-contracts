@@ -9,12 +9,12 @@ export type Tier = {
   price: BigNumber; // Price to update the tier from the base tier
   minimumAge: number; // How old the clan must be before it can be upgraded to this tier
 };
-export const allTiers: Tier[] = [
+export const allClanTiers: Tier[] = [
   {
     id: 1,
     maxMemberCapacity: 3,
     maxBankCapacity: 5,
-    maxImageId: 8,
+    maxImageId: 10000,
     price: BigNumber.from(0),
     minimumAge: 0,
   },
@@ -22,7 +22,7 @@ export const allTiers: Tier[] = [
     id: 2,
     maxMemberCapacity: 10,
     maxBankCapacity: 20,
-    maxImageId: 214,
+    maxImageId: 20000,
     price: ethers.utils.parseEther("1000"),
     minimumAge: 0,
   },
@@ -30,13 +30,13 @@ export const allTiers: Tier[] = [
     id: 3,
     maxMemberCapacity: 50,
     maxBankCapacity: 75,
-    maxImageId: 238,
+    maxImageId: 30000,
     price: ethers.utils.parseEther("5000"),
     minimumAge: 0,
   },
 ];
 
-export const allTiersAlpha: Tier[] = allTiers.map((tier) => {
+export const allClanTiersAlpha: Tier[] = allClanTiers.map((tier) => {
   return {
     ...tier,
     price: tier.price.div(10),

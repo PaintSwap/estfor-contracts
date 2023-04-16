@@ -27,7 +27,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event JoinRequestRemoved(uint clanId, uint playerId);
   event ClanOwnershipTransferred(uint clanId, uint playerId);
   event AddTiers(Tier[] tiers);
-  event EditTier(Tier tier);
+  event EditTiers(Tier[] tiers);
   event ClanOwnerLeft(uint clanId, uint playerId);
   event ClanEdited(uint clanId, uint playerId, string name, uint imageId);
   event ClanUpgraded(uint clanId, uint playerId, uint tierId);
@@ -606,13 +606,16 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit AddTiers(_tiers);
   }
 
-  function editTier(Tier calldata _tier) external onlyOwner {
-    uint tierId = _tier.id;
-    if (tiers[tierId].id == 0) {
-      revert TierDoesNotExist();
+  function editTiers(Tier[] calldata _tiers) external onlyOwner {
+    U256 bounds = _tiers.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      if (tiers[_tiers[i].id].id == 0) {
+        revert TierDoesNotExist();
+      }
+      _setTier(_tiers[i]);
     }
-    _setTier(_tier);
-    emit EditTier(_tier);
+    emit EditTiers(_tiers);
   }
 
   function setBankFactory(IBankFactory _bankFactory) external onlyOwner {

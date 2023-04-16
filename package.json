@@ -76,6 +76,7 @@
     "addShopItem": "npx hardhat run scripts/addShopItem.ts",
     "editShopItems": "npx hardhat run scripts/editShopItems.ts",
     "removeShopItem": "npx hardhat run scripts/removeShopItem.ts",
+    "editClanTiers": "npx hardhat run scripts/editClanTiers.ts",
     "addAdmin": "npx hardhat run scripts/addAdmin.ts",
     "setMerkleRoot": "npx hardhat run scripts/setMerkleTreeWhitelist.ts",
     "impersonate": "npx hardhat run scripts/impersonate.ts",

@@ -43,7 +43,7 @@ import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarInfos} from "./data/avatars";
 import {allQuestsMinimumRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
-import {allTiers, allTiersAlpha} from "./data/clans";
+import {allClanTiers, allClanTiersAlpha} from "./data/clans";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -442,7 +442,7 @@ async function main() {
   console.log("Add quests");
 
   // Add clan tiers
-  tx = await clans.addTiers(isAlpha ? allTiersAlpha : allTiers);
+  tx = await clans.addTiers(isAlpha ? allClanTiersAlpha : allClanTiers);
   await tx.wait();
   console.log("Add clan tiers");
 

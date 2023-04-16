@@ -1,7 +1,9 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
+import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
+import {Tier} from "../../scripts/data/clans";
 import {createPlayer} from "../../scripts/utils";
 import {playersFixture} from "../Players/PlayersFixture";
 
@@ -569,5 +571,53 @@ describe("Clans", function () {
         "TierDoesNotExist"
       );
     });
+  });
+
+  it("Edit tiers", async () => {
+    const fixture = await loadFixture(clanFixture);
+    const {clans} = fixture;
+
+    await clans.addTiers([
+      {
+        id: 2,
+        maxMemberCapacity: 10,
+        maxBankCapacity: 10,
+        maxImageId: 16,
+        price: 10,
+        minimumAge: 0,
+      },
+    ]);
+
+    const tiers: Tier[] = [
+      {
+        id: 1,
+        maxMemberCapacity: 1,
+        maxBankCapacity: 1,
+        maxImageId: 50,
+        price: BigNumber.from(1),
+        minimumAge: 0,
+      },
+      {id: 2, maxMemberCapacity: 2, maxBankCapacity: 2, maxImageId: 50, price: BigNumber.from(2), minimumAge: 0},
+      {id: 3, maxMemberCapacity: 3, maxBankCapacity: 3, maxImageId: 150, price: BigNumber.from(3), minimumAge: 0},
+    ];
+
+    await expect(clans.editTiers(tiers)).to.be.revertedWithCustomError(clans, "TierDoesNotExist");
+    tiers.pop();
+    await clans.editTiers(tiers);
+
+    const tier1 = await clans.tiers(1);
+    const tier2 = await clans.tiers(2);
+
+    expect(tier1.maxMemberCapacity).to.eq(tiers[0].maxMemberCapacity);
+    expect(tier1.maxBankCapacity).to.eq(tiers[0].maxBankCapacity);
+    expect(tier1.maxImageId).to.eq(tiers[0].maxImageId);
+    expect(tier1.minimumAge).to.eq(tiers[0].minimumAge);
+    expect(tier1.price).to.eq(tiers[0].price);
+
+    expect(tier2.maxMemberCapacity).to.eq(tiers[1].maxMemberCapacity);
+    expect(tier2.maxBankCapacity).to.eq(tiers[1].maxBankCapacity);
+    expect(tier2.maxImageId).to.eq(tiers[1].maxImageId);
+    expect(tier2.minimumAge).to.eq(tiers[1].minimumAge);
+    expect(tier2.price).to.eq(tiers[1].price);
   });
 });

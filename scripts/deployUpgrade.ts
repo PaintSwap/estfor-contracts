@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {PlayersLibrary, ItemNFTLibrary} from "../typechain-types";
+import {PlayersLibrary, EstforLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -8,6 +8,8 @@ import {
   PLAYER_NFT_ADDRESS,
   QUESTS_ADDRESS,
   SHOP_ADDRESS,
+  CLANS_ADDRESS,
+  ESTFOR_LIBRARY_ADDRESS,
 } from "./constants";
 import {verifyContracts} from "./utils";
 
@@ -18,6 +20,18 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
 
+  const newEstforLibrary = false;
+  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
+  let estforLibrary: EstforLibrary;
+  if (newEstforLibrary) {
+    estforLibrary = await EstforLibrary.deploy();
+    await estforLibrary.deployed();
+    console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
+  } else {
+    estforLibrary = await EstforLibrary.attach(ESTFOR_LIBRARY_ADDRESS);
+  }
+
+  /*
   // Players
   const newPlayersLibrary = false;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
@@ -42,10 +56,6 @@ async function main() {
   await verifyContracts([players.address]);
 
   // PlayerNFT
-  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-  const estforLibrary = await EstforLibrary.deploy();
-  await estforLibrary.deployed();
-  console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
@@ -95,6 +105,18 @@ async function main() {
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
   await verifyContracts([quests.address]);
+*/
+  // Clan
+  const Clans = await ethers.getContractFactory("Clans", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
+  await clans.deployed();
+  console.log(`clans = "${clans.address.toLowerCase()}"`);
+  await verifyContracts([clans.address]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
