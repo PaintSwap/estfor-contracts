@@ -1,5 +1,6 @@
 const isAlpha = process.env.IS_ALPHA == "true";
 
+let worldLibrary;
 let world;
 let shop;
 let royaltyReceiver;
@@ -22,6 +23,7 @@ let playersImplMisc;
 let players;
 
 if (isAlpha) {
+  worldLibrary = "0xd37796f51b461bc483cde9cf7c6f7881cace4738";
   world = "0xd37796f51b461bc483cde9cf7c6f7881cace4738";
   shop = "0xa0f16f4489dd45e2fb36d39910f7f767b81d638c";
   royaltyReceiver = "0x4f87eec592ac027ddb89ddf51cd30b54a05bb1fa";
@@ -44,6 +46,7 @@ if (isAlpha) {
   players = "0xf7433aba1837f221ed432fc1b0e1833fe0c7ee01";
 } else {
   // TODO when live addresses are known
+  worldLibrary = "";
   world = "";
   shop = "";
   royaltyReceiver = "";
@@ -66,6 +69,7 @@ if (isAlpha) {
   players = "";
 }
 
+export const WORLD_LIBRARY_ADDRESS = worldLibrary;
 export const WORLD_ADDRESS = world;
 export const SHOP_ADDRESS = shop;
 export const ROYALTY_RECEIVER_ADDRESS = royaltyReceiver;

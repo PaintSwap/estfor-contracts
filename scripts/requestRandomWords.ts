@@ -1,8 +1,8 @@
 import {ethers} from "hardhat";
-import {WORLD_ADDRESS} from "./constants";
+import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./constants";
 
 async function main() {
-  const World = await ethers.getContractFactory("World");
+  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
   const world = await World.attach(WORLD_ADDRESS);
   const lastRandomWordsUpdatedTime = await world.lastRandomWordsUpdatedTime();
   if (lastRandomWordsUpdatedTime + 86400 < Math.floor(Date.now() / 1000)) {

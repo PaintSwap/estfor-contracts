@@ -178,7 +178,7 @@ abstract contract PlayersBase {
     _;
   }
 
-  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards/getRandomBytes can be exposed on the json abi.
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function pendingQueuedActionState(
     address _owner,
     uint _playerId

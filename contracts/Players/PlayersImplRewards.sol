@@ -611,7 +611,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (hasRandomWord) {
         uint numIterations = PlayersLibrary.min(MAX_UNIQUE_TICKETS_, _numTickets);
 
-        bytes memory b = PlayersLibrary.getRandomBytes(numIterations, skillEndTime, _playerId, world);
+        bytes memory b = world.getRandomBytes(numIterations, skillEndTime, _playerId);
         uint startLootLength = length;
         for (U256 iter; iter.lt(numIterations); iter = iter.inc()) {
           uint i = iter.asUint256();

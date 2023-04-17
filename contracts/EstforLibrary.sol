@@ -16,7 +16,7 @@ import "./globals/items.sol";
 
 /* solhint-enable no-global-import */
 
-// This file contains methods for interacting with the item NFT, used to decrease implementation deployment bytecode code.
+// This file contains methods for interacting with generic functions like trimming strings, merkle proof whitelisting etc.
 library EstforLibrary {
   using UnsafeMath for U256;
   using UnsafeMath for uint;

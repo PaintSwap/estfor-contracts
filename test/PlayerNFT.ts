@@ -89,7 +89,7 @@ describe("PlayerNFT", function () {
     const metadata = JSON.parse(Buffer.from(uri.split(";base64,")[1], "base64").toString());
     expect(metadata).to.have.property("name");
     expect(metadata.name.startsWith(origName));
-    expect(metadata.name.endsWith(` (5)`));
+    expect(metadata.name.endsWith(` (12)`));
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");

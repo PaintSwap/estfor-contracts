@@ -210,7 +210,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       PlayersLibrary.uri(
         _name,
         xp_[_playerId],
-        players_[_playerId].totalXP,
         _avatarName,
         _avatarDescription,
         imageURI,
@@ -292,10 +291,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       abi.encodeWithSelector(IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
     );
     return abi.decode(data, (bool[7]));
-  }
-
-  function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
-    return PlayersLibrary.getRandomBytes(_numTickets, _skillEndTime, _playerId, world);
   }
 
   function isOwnerOfPlayerAndActive(address _from, uint _playerId) public view override returns (bool) {

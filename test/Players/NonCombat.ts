@@ -199,13 +199,13 @@ describe("Non-Combat Actions", function () {
       minXP: 0,
       rate,
       inputTokenId1: EstforConstants.LOG,
-      num1: 1,
+      inputAmount1: 1,
       inputTokenId2: EstforConstants.NONE,
-      num2: 0,
+      inputAmount2: 0,
       inputTokenId3: EstforConstants.NONE,
-      num3: 0,
+      inputAmount3: 0,
       outputTokenId: EstforConstants.NONE,
-      outputNum: 0,
+      outputAmount: 0,
       successPercent: 100,
     });
     const choiceId = await getActionChoiceId(tx);
@@ -325,13 +325,13 @@ describe("Non-Combat Actions", function () {
         minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
-        num1: 1,
+        inputAmount1: 1,
         inputTokenId2: EstforConstants.NONE,
-        num2: 0,
+        inputAmount2: 0,
         inputTokenId3: EstforConstants.NONE,
-        num3: 0,
+        inputAmount3: 0,
         outputTokenId: EstforConstants.NONE,
-        outputNum: 0,
+        outputAmount: 0,
         successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
@@ -466,13 +466,13 @@ describe("Non-Combat Actions", function () {
         minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
-        num1: 1,
+        inputAmount1: 1,
         inputTokenId2: EstforConstants.NONE,
-        num2: 0,
+        inputAmount2: 0,
         inputTokenId3: EstforConstants.NONE,
-        num3: 0,
+        inputAmount3: 0,
         outputTokenId: EstforConstants.NONE,
-        outputNum: 0,
+        outputAmount: 0,
         successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
@@ -612,14 +612,14 @@ describe("Non-Combat Actions", function () {
       xpPerHour: 3600,
       minXP: 0,
       rate,
-      inputTokenId1: EstforConstants.COAL_ORE,
-      num1: 2,
-      inputTokenId2: EstforConstants.MITHRIL_ORE,
-      num2: 1,
+      inputTokenId1: EstforConstants.MITHRIL_ORE,
+      inputAmount1: 1,
+      inputTokenId2: EstforConstants.COAL_ORE,
+      inputAmount2: 2,
       inputTokenId3: EstforConstants.NONE,
-      num3: 0,
+      inputAmount3: 0,
       outputTokenId: EstforConstants.MITHRIL_BAR,
-      outputNum: 1,
+      outputAmount: 1,
       successPercent: 100,
     });
     const choiceId = await getActionChoiceId(tx);
@@ -1078,8 +1078,8 @@ describe("Non-Combat Actions", function () {
       checkPendingQueuedActionState(
         pendingQueuedActionState,
         [
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
           {itemTokenId: EstforConstants.ROPE, amount: 1},
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         3600,
@@ -1123,8 +1123,8 @@ describe("Non-Combat Actions", function () {
       checkPendingQueuedActionState(
         pendingQueuedActionState,
         [
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20 * numMade},
           {itemTokenId: EstforConstants.ROPE, amount: 1 * numMade},
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20 * numMade},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1 * numMade}],
         xpGained,
@@ -1162,8 +1162,8 @@ describe("Non-Combat Actions", function () {
       checkPendingQueuedActionState(
         pendingQueuedActionState,
         [
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
           {itemTokenId: EstforConstants.ROPE, amount: 1},
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         xpGained,
@@ -1178,13 +1178,13 @@ describe("Non-Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / 10);
     });
 
-    it("Don't complete all (run out of resource)", async function () {
+    it("Don't complete all (run out of id1 resource)", async function () {
       // Only get XP for the ones you did complete
       const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
       const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
-      // Don't enough enough rope (needs 2)
+      // Don't have enough rope (needs 2)
       await itemNFT.testMints(alice.address, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [40, 1]);
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
@@ -1196,8 +1196,8 @@ describe("Non-Combat Actions", function () {
       checkPendingQueuedActionState(
         pendingQueuedActionState,
         [
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
           {itemTokenId: EstforConstants.ROPE, amount: 1},
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         xpGained,
@@ -1208,6 +1208,81 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
       // Check the inputs/output are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(20);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(1);
+    });
+
+    it("Don't complete all (run out of id2 resource)", async function () {
+      // Only get XP for the ones you did complete
+      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
+      const queuedAction = {...queuedActionCrafting, timespan: 7200};
+
+      // Don't have enough rope (needs 2)
+      await itemNFT.testMints(alice.address, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 2]);
+
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+
+      const xpGained = 3600;
+      checkPendingQueuedActionState(
+        pendingQueuedActionState,
+        [
+          {itemTokenId: EstforConstants.ROPE, amount: 1},
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
+        ],
+        [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
+        xpGained,
+        7200
+      );
+
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(1);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(1);
+    });
+
+    it("Don't have any of both, id1 or id2", async function () {
+      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
+      const queuedAction = {...queuedActionCrafting, timespan: 7200};
+
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 7200);
+      await itemNFT.testMints(alice.address, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 0]);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 7200);
+      await itemNFT.connect(alice).burn(alice.address, EstforConstants.SAPPHIRE, 20);
+      await itemNFT.testMints(alice.address, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [0, 1]);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 7200);
+      await itemNFT.testMints(alice.address, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 0]);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(20);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(1);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      const xpGained = 3600;
+      checkPendingQueuedActionState(
+        pendingQueuedActionState,
+        [
+          {itemTokenId: EstforConstants.ROPE, amount: 1},
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
+        ],
+        [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
+        xpGained,
+        7200
+      );
+
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(1);
     });
@@ -1231,15 +1306,15 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(3);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(3);
       expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(2);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(20);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(EstforConstants.ROPE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(EstforConstants.ROPE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(20);
       expect(pendingQueuedActionState.equipmentStates[1].consumed.length).to.eq(2);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[0].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[0].amount).to.eq(20);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[1].itemTokenId).to.eq(EstforConstants.ROPE);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[1].amount).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[1].consumed[0].itemTokenId).to.eq(EstforConstants.ROPE);
+      expect(pendingQueuedActionState.equipmentStates[1].consumed[0].amount).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[1].consumed[1].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
+      expect(pendingQueuedActionState.equipmentStates[1].consumed[1].amount).to.eq(20);
       expect(pendingQueuedActionState.equipmentStates[2].consumed.length).to.eq(0);
 
       expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(1);
@@ -1278,10 +1353,10 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(2);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(20);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(EstforConstants.ROPE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(EstforConstants.ROPE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(20);
       expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(
         EstforConstants.SAPPHIRE_AMULET
@@ -1303,8 +1378,8 @@ describe("Non-Combat Actions", function () {
       // Only get XP for the ones you did complete
       const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
       const rate = 1 * 10;
-      const outputNum = 3;
-      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world, rate, outputNum);
+      const outputAmount = 3;
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world, rate, outputAmount);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       // Don't enough enough rope (needs 2)
@@ -1319,10 +1394,10 @@ describe("Non-Combat Actions", function () {
       checkPendingQueuedActionState(
         pendingQueuedActionState,
         [
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 40},
           {itemTokenId: EstforConstants.ROPE, amount: 2},
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 40},
         ],
-        [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: outputNum * 2}],
+        [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: outputAmount * 2}],
         xpGained,
         7200
       );
@@ -1332,7 +1407,7 @@ describe("Non-Combat Actions", function () {
       // Check the inputs/output are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(1);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(1);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(outputNum * 2);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(outputAmount * 2);
     });
   });
 

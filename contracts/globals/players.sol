@@ -129,13 +129,13 @@ struct ActionChoice {
   uint32 rate; // This can be uint16. Rate of output produced per hour (base 10) 1 decimal
   uint24 xpPerHour;
   uint16 inputTokenId1;
-  uint8 num1;
+  uint8 inputAmount1;
   uint16 inputTokenId2;
-  uint8 num2;
+  uint8 inputAmount2;
   uint16 inputTokenId3;
-  uint8 num3;
+  uint8 inputAmount3;
   uint16 outputTokenId;
-  uint8 outputNum;
+  uint8 outputAmount;
   uint8 successPercent; // 0-100
 }
 

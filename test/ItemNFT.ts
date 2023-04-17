@@ -22,10 +22,13 @@ describe("ItemNFT", function () {
     }
 
     // Create the world
+    const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
+    const worldLibrary = await WorldLibrary.deploy();
     const subscriptionId = 2;
-    const World = await ethers.getContractFactory("World");
+    const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
     const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
       kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
     });
 
     const Shop = await ethers.getContractFactory("Shop");

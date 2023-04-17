@@ -401,21 +401,21 @@ contract PlayersImplMisc is
       if (_actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId1,
-          numConsumed * _actionChoice.num1
+          numConsumed * _actionChoice.inputAmount1
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId2 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId2,
-          numConsumed * _actionChoice.num2
+          numConsumed * _actionChoice.inputAmount2
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId3 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId3,
-          numConsumed * _actionChoice.num3
+          numConsumed * _actionChoice.inputAmount3
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
@@ -433,7 +433,7 @@ contract PlayersImplMisc is
         );
       }
 
-      numProduced = uint24((numConsumed * _actionChoice.outputNum * successPercent) / 100);
+      numProduced = uint24((numConsumed * _actionChoice.outputAmount * successPercent) / 100);
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];

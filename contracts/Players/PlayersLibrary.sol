@@ -27,7 +27,6 @@ library PlayersLibrary {
   function uri(
     string calldata playerName,
     mapping(Skill skill => uint128 xp) storage xp,
-    uint overallXP,
     string calldata avatarName,
     string calldata avatarDescription,
     string calldata imageURI,
@@ -35,7 +34,19 @@ library PlayersLibrary {
     uint playerId,
     string calldata clanName
   ) external view returns (string memory) {
-    uint overallLevel = getLevel(overallXP);
+    uint overallLevel = getLevel(xp[Skill.MELEE]) +
+      getLevel(xp[Skill.MAGIC]) +
+      getLevel(xp[Skill.DEFENCE]) +
+      getLevel(xp[Skill.HEALTH]) +
+      getLevel(xp[Skill.MINING]) +
+      getLevel(xp[Skill.WOODCUTTING]) +
+      getLevel(xp[Skill.FISHING]) +
+      getLevel(xp[Skill.SMITHING]) +
+      getLevel(xp[Skill.THIEVING]) +
+      getLevel(xp[Skill.CRAFTING]) +
+      getLevel(xp[Skill.COOKING]) +
+      getLevel(xp[Skill.FIREMAKING]);
+
     string memory attributes = string(
       abi.encodePacked(
         _getTraitStringJSON("Avatar", avatarName),
@@ -274,7 +285,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId1,
-          _actionChoice.num1,
+          _actionChoice.inputAmount1,
           _numConsumed,
           maxRequiredRatio,
           _itemNFT,
@@ -285,7 +296,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId2,
-          _actionChoice.num2,
+          _actionChoice.inputAmount2,
           _numConsumed,
           maxRequiredRatio,
           _itemNFT,
@@ -296,7 +307,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId3,
-          _actionChoice.num3,
+          _actionChoice.inputAmount3,
           _numConsumed,
           maxRequiredRatio,
           _itemNFT,
@@ -309,26 +320,23 @@ library PlayersLibrary {
   function _getMaxRequiredRatioPartial(
     address _from,
     uint16 _inputTokenId,
-    uint16 _num,
+    uint16 _inputAmount,
     uint24 _numConsumed,
-    uint _maxRequiredRatio,
+    uint _prevConsumeMaxRatio,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     uint balance = getRealBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
-    if (_numConsumed > type(uint16).max && _numConsumed < balance / _num) {
+    if ((_numConsumed > type(uint16).max) && (balance >= type(uint16).max * _inputAmount)) {
       // Have enough balance but numConsumed exceeds 65535, too much so limit it.
-      balance = type(uint16).max * _num;
+      balance = type(uint16).max * _inputAmount;
     }
 
-    uint tempMaxRequiredRatio = _maxRequiredRatio;
-    if (_numConsumed > balance / _num) {
-      tempMaxRequiredRatio = balance / _num;
-    }
-
-    // Could be the first time
-    if (tempMaxRequiredRatio < _maxRequiredRatio || _maxRequiredRatio == _numConsumed) {
+    uint tempMaxRequiredRatio = balance / _inputAmount;
+    if (tempMaxRequiredRatio < _prevConsumeMaxRatio) {
       maxRequiredRatio = tempMaxRequiredRatio;
+    } else {
+      maxRequiredRatio = _prevConsumeMaxRatio;
     }
   }
 
@@ -452,7 +460,6 @@ library PlayersLibrary {
     ActionChoice memory _actionChoice,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) external view returns (uint xpElapsedTime, uint refundTime, uint24 numConsumed) {
-    // Update these as necessary
     // Check the max that can be used
     numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 10));
     // This checks the balances
@@ -538,50 +545,6 @@ library PlayersLibrary {
         }
       }
       return true;
-    }
-  }
-
-  // Move to world?
-  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
-  }
-
-  function getRandomBytes(
-    uint _numTickets,
-    uint _skillEndTime,
-    uint _playerId,
-    World _world
-  ) external view returns (bytes memory b) {
-    if (_numTickets <= 16) {
-      // 32 bytes
-      bytes32 word = bytes32(_world.getRandomWord(_skillEndTime));
-      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime, _playerId));
-    } else if (_numTickets <= 48) {
-      uint[3] memory fullWords = _world.getFullRandomWords(_skillEndTime);
-      // 3 * 32 bytes
-      for (U256 iter; iter.lt(3); iter = iter.inc()) {
-        uint i = iter.asUint256();
-        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime, _playerId));
-      }
-      b = abi.encodePacked(fullWords);
-    } else {
-      // 3 * 5 * 32 bytes
-      uint[3][5] memory multipleFullWords = _world.getMultipleFullRandomWords(_skillEndTime);
-      for (U256 iter; iter.lt(5); iter = iter.inc()) {
-        uint i = iter.asUint256();
-        for (U256 jter; jter.lt(3); jter = jter.inc()) {
-          uint j = jter.asUint256();
-          multipleFullWords[i][j] = uint(
-            _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
-          );
-          // XOR all the full words with the first fresh random number to give more randomness to the existing random words
-          if (i != 0) {
-            multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
-          }
-        }
-      }
-
-      b = abi.encodePacked(multipleFullWords);
     }
   }
 }

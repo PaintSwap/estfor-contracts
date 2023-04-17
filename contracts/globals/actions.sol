@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Skill, Attire, CombatStyle} from "./players.sol";
+import {Skill, Attire, CombatStyle, CombatStats} from "./players.sol";
+import {GuaranteedReward, RandomReward} from "./rewards.sol";
 
 enum ActionQueueStatus {
   NONE,
@@ -39,6 +40,15 @@ struct QueuedAction {
   uint40 startTime; // When the queued action started
   bool isValid; // If we still have the item, TODO: Not used yet
   uint64 queueId; // id of this queued action
+}
+
+// This is only used as an input arg
+struct Action {
+  uint16 actionId;
+  ActionInfo info;
+  GuaranteedReward[] guaranteedRewards;
+  RandomReward[] randomRewards;
+  CombatStats combatStats;
 }
 
 struct ActionInfo {

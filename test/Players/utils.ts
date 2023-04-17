@@ -82,13 +82,13 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
     minXP,
     rate,
     inputTokenId1: EstforConstants.LOG,
-    num1: 1,
+    inputAmount1: 1,
     inputTokenId2: EstforConstants.NONE,
-    num2: 0,
+    inputAmount2: 0,
     inputTokenId3: EstforConstants.NONE,
-    num3: 0,
+    inputAmount3: 0,
     outputTokenId: EstforConstants.NONE,
-    outputNum: 0,
+    outputAmount: 0,
     successPercent: 100,
   });
   const choiceId = await getActionChoiceId(tx);
@@ -253,13 +253,13 @@ export const setupBasicCooking = async function (
     minXP: getXPFromLevel(minLevel),
     rate,
     inputTokenId1: EstforConstants.RAW_MINNUS,
-    num1: 1,
+    inputAmount1: 1,
     inputTokenId2: EstforConstants.NONE,
-    num2: 0,
+    inputAmount2: 0,
     inputTokenId3: EstforConstants.NONE,
-    num3: 0,
+    inputAmount3: 0,
     outputTokenId: EstforConstants.COOKED_MINNUS,
-    outputNum: 1,
+    outputAmount: 1,
     successPercent,
   });
   const choiceId = await getActionChoiceId(tx);
@@ -299,7 +299,7 @@ export const setupBasicCrafting = async function (
   itemNFT: ItemNFT,
   world: World,
   rate = 1 * 10,
-  outputNum: number = 1
+  outputAmount: number = 1
 ) {
   let tx = await world.addAction({
     actionId: 1,
@@ -328,14 +328,14 @@ export const setupBasicCrafting = async function (
     xpPerHour: 3600,
     minXP: 0,
     rate,
-    inputTokenId1: EstforConstants.SAPPHIRE,
-    num1: 20,
-    inputTokenId2: EstforConstants.ROPE,
-    num2: 1,
+    inputTokenId1: EstforConstants.ROPE,
+    inputAmount1: 1,
+    inputTokenId2: EstforConstants.SAPPHIRE,
+    inputAmount2: 20,
     inputTokenId3: EstforConstants.NONE,
-    num3: 0,
+    inputAmount3: 0,
     outputTokenId: EstforConstants.SAPPHIRE_AMULET,
-    outputNum,
+    outputAmount,
     successPercent: 100,
   });
   const choiceId = await getActionChoiceId(tx);

@@ -142,13 +142,13 @@ contract DebugStorageSlots {
     uint32 rate; // rate of output produced per hour (base 10) 1 decimal
     uint24 xpPerHour;
     uint16 inputTokenId1;
-    uint8 num1;
+    uint8 inputAmount1;
     uint16 inputTokenId2;
-    uint8 num2;
+    uint8 inputAmount2;
     uint16 inputTokenId3;
-    uint8 num3;
+    uint8 inputAmount3;
     uint16 outputTokenId;
-    uint8 outputNum;
+    uint8 outputAmount;
     uint8 successPercent; // 0-100
   }
 
@@ -252,11 +252,11 @@ contract DebugStorageSlots {
   struct Quest {
     uint16 dependentQuestId; // The quest that must be completed before this one can be started
     uint16 actionId; // action to do
-    uint16 actionNum; // how many (up to 65535)
+    uint16 actionAmount; // how many (up to 65535)
     uint16 actionId1; // another action to do
-    uint16 actionNum1; // how many (up to 65535)
+    uint16 actionAmount1; // how many (up to 65535)
     uint16 actionChoiceId; // actionChoice to perform
-    uint16 actionChoiceNum; // how many to do (base number), (up to 65535)
+    uint16 actionChoiceAmount; // how many to do (base number), (up to 65535)
     Skill skillReward; // The skill to reward XP to
     uint16 skillXPGained; // The amount of XP to give (up to 65535)
     uint16 rewardItemTokenId; // Reward an item

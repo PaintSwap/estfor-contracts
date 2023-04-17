@@ -456,7 +456,7 @@ describe("Players", function () {
         const {queuedAction: queuedActionFiremaking, rate, actionId} = await setupBasicFiremaking(itemNFT, world, 0);
 
         // Logs go in, oak logs come out suprisingly!
-        const outputNum = 2;
+        const outputAmount = 2;
         const tx = await world.addActionChoice(actionId, 2, {
           skill: EstforTypes.Skill.FIREMAKING,
           diff: 0,
@@ -464,13 +464,13 @@ describe("Players", function () {
           minXP: 0,
           rate,
           inputTokenId1: EstforConstants.LOG,
-          num1: 1,
+          inputAmount1: 1,
           inputTokenId2: EstforConstants.NONE,
-          num2: 0,
+          inputAmount2: 0,
           inputTokenId3: EstforConstants.NONE,
-          num3: 0,
+          inputAmount3: 0,
           outputTokenId: EstforConstants.OAK_LOG,
-          outputNum,
+          outputAmount,
           successPercent: 100,
         });
         const choiceId = await getActionChoiceId(tx);
@@ -483,7 +483,7 @@ describe("Players", function () {
         await ethers.provider.send("evm_mine", []);
 
         const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-        const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputNum) / (3600 * 10));
+        const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * 10));
         expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(expectedOutputNum);
 
         await players.connect(alice).processActions(playerId);
@@ -523,13 +523,13 @@ describe("Players", function () {
         minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
-        num1: 1,
+        inputAmount1: 1,
         inputTokenId2: EstforConstants.NONE,
-        num2: 0,
+        inputAmount2: 0,
         inputTokenId3: EstforConstants.NONE,
-        num3: 0,
+        inputAmount3: 0,
         outputTokenId: EstforConstants.NONE,
-        outputNum: 0,
+        outputAmount: 0,
         successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);

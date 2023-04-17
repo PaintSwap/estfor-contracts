@@ -23,16 +23,20 @@ describe("World", function () {
     }
 
     // Create the world
+    const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
+    const worldLibrary = await WorldLibrary.deploy();
     const subscriptionId = 2;
-    const World = await ethers.getContractFactory("World");
+    const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
     const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
       kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
     });
 
     const minRandomWordsUpdateTime = await world.MIN_RANDOM_WORDS_UPDATE_TIME();
 
     return {
       world,
+      worldLibrary,
       mockOracleClient,
       minRandomWordsUpdateTime,
       owner,
@@ -166,24 +170,26 @@ describe("World", function () {
       });
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
-      await world.editAction({
-        actionId,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 20,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 1,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      await world.editActions([
+        {
+          actionId,
+          info: {
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 20,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 1,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
       expect((await world.actions(actionId)).xpPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
       await world.setAvailable(actionId, true);
@@ -192,24 +198,26 @@ describe("World", function () {
       expect((await world.actions(actionId)).isAvailable).to.be.false;
 
       // Set available on an action that is dynamic (this should be random only)
-      await world.editAction({
-        actionId,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: true,
-          numSpawned: 1,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      await world.editActions([
+        {
+          actionId,
+          info: {
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: true,
+            numSpawned: 1,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
       await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });
 
@@ -230,13 +238,13 @@ describe("World", function () {
           minXP: 0,
           rate: 1 * 10,
           inputTokenId1: EstforConstants.AIR_SCROLL,
-          num1: 1,
+          inputAmount1: 1,
           inputTokenId2: EstforConstants.NONE,
-          num2: 0,
+          inputAmount2: 0,
           inputTokenId3: EstforConstants.NONE,
-          num3: 0,
+          inputAmount3: 0,
           outputTokenId: EstforConstants.NONE,
-          outputNum: 0,
+          outputAmount: 0,
           successPercent: 100,
         })
       ).to.be.reverted;
@@ -245,7 +253,7 @@ describe("World", function () {
 
   describe("ActionRewards", function () {
     it("Guaranteed reward duplicates not allowed", async function () {
-      const {world} = await loadFixture(deployContracts);
+      const {world, worldLibrary} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {
         actionId: 1,
@@ -262,20 +270,23 @@ describe("World", function () {
           successPercent: 100,
         },
         guaranteedRewards: [
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
           {itemTokenId: EstforConstants.AIR_SCROLL, rate: 100},
+          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
         ],
         randomRewards: [],
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "GuaranteedRewardsNoDuplicates");
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(
+        worldLibrary,
+        "GuaranteedRewardsNoDuplicates"
+      );
       action.guaranteedRewards[0].itemTokenId = SHADOW_SCROLL;
       await expect(world.addAction(action)).to.not.be.reverted;
     });
 
     it("Random reward order", async function () {
-      const {world} = await loadFixture(deployContracts);
+      const {world, worldLibrary} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {
         actionId: 1,
@@ -301,17 +312,17 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "RandomRewardsMustBeInOrder");
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardsMustBeInOrder");
       action.randomRewards[0].chance = 300;
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "RandomRewardsMustBeInOrder");
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardsMustBeInOrder");
       action.randomRewards[1].chance = 250;
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "RandomRewardsMustBeInOrder");
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardsMustBeInOrder");
       action.randomRewards[2].chance = 225;
       await expect(world.addAction(action)).to.not.be.reverted;
     });
 
     it("Random reward duplicate not allowed", async function () {
-      const {world} = await loadFixture(deployContracts);
+      const {world, worldLibrary} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {
         actionId: 1,
@@ -335,7 +346,7 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "RandomRewardNoDuplicates");
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardNoDuplicates");
       action.randomRewards[0].itemTokenId = SHADOW_SCROLL;
       await expect(world.addAction(action)).to.not.be.reverted;
     });

@@ -9,6 +9,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
+import {WorldLibrary} from "./WorldLibrary.sol";
 import {IQuests} from "./interfaces/IQuests.sol";
 
 /* solhint-disable no-global-import */
@@ -26,7 +27,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
   event RequestFulfilled(uint requestId, uint[3] randomWords);
   event AddAction(Action action);
-  event EditAction(Action action);
+  event AddActions(Action[] action);
+  event EditActions(Action[] action);
   event SetAvailableAction(uint16 actionId, bool available);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
@@ -44,23 +46,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error ActionAlreadyExists();
   error ActionDoesNotExist();
   error ActionChoiceIdZeroNotAllowed();
-  error OutputSpecifiedWithoutAmount();
   error DynamicActionsCannotBeSet();
   error LengthMismatch();
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
-  error GuaranteedRewardsNoDuplicates();
-  error RandomRewardsMustBeInOrder();
-  error RandomRewardNoDuplicates();
-
-  // This is only used as an input arg
-  struct Action {
-    uint16 actionId;
-    ActionInfo info;
-    GuaranteedReward[] guaranteedRewards;
-    RandomReward[] randomRewards;
-    CombatStats combatStats;
-  }
 
   // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface public COORDINATOR;
@@ -296,14 +285,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return _getRandomWord(_timestamp) != 0;
   }
 
-  function getRandomWord(uint _timestamp) external view returns (uint randomWord) {
+  function getRandomWord(uint _timestamp) public view returns (uint randomWord) {
     randomWord = _getRandomWord(_timestamp);
     if (randomWord == 0) {
       revert NoValidRandomWord();
     }
   }
 
-  function _getFullRandomWords(uint _timestamp) private view returns (uint[3] memory) {
+  function getFullRandomWords(uint _timestamp) public view returns (uint[3] memory) {
     uint offset = _getRandomWordOffset(_timestamp);
     if (requestIds.length <= offset) {
       revert NoValidRandomWord();
@@ -311,14 +300,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return randomWords[requestIds[offset]];
   }
 
-  function getFullRandomWords(uint _timestamp) external view returns (uint[3] memory) {
-    return _getFullRandomWords(_timestamp);
-  }
-
-  function getMultipleFullRandomWords(uint _timestamp) external view returns (uint[3][5] memory words) {
+  function getMultipleFullRandomWords(uint _timestamp) public view returns (uint[3][5] memory words) {
     for (U256 iter; iter.lt(5); iter = iter.inc()) {
       uint i = iter.asUint256();
-      words[i] = _getFullRandomWords(_timestamp - i * 1 days);
+      words[i] = getFullRandomWords(_timestamp - i * 1 days);
     }
   }
 
@@ -392,98 +377,49 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // Set the rewards
     ActionRewards storage actionReward = actionRewards[_action.actionId];
-    _setActionGuaranteedRewards(_action, actionReward);
-    // Now do the same for randomRewards
-    _setActionRandomRewards(_action, actionReward);
+    WorldLibrary.setActionGuaranteedRewards(_action, actionReward);
+    WorldLibrary.setActionRandomRewards(_action, actionReward);
 
     if (_action.info.skill == Skill.COMBAT) {
       actionCombatStats[_action.actionId] = _action.combatStats;
     }
   }
 
-  function _setActionGuaranteedRewards(Action calldata _action, ActionRewards storage _actionRewards) private {
-    uint guaranteedRewardsLength = _action.guaranteedRewards.length;
-    if (guaranteedRewardsLength != 0) {
-      _actionRewards.guaranteedRewardTokenId1 = _action.guaranteedRewards[0].itemTokenId;
-      _actionRewards.guaranteedRewardRate1 = _action.guaranteedRewards[0].rate;
-    }
-    if (guaranteedRewardsLength > 1) {
-      _actionRewards.guaranteedRewardTokenId2 = _action.guaranteedRewards[1].itemTokenId;
-      _actionRewards.guaranteedRewardRate2 = _action.guaranteedRewards[1].rate;
-      if (_actionRewards.guaranteedRewardTokenId1 == _actionRewards.guaranteedRewardTokenId2) {
-        revert GuaranteedRewardsNoDuplicates();
-      }
-    }
-    if (guaranteedRewardsLength > 2) {
-      _actionRewards.guaranteedRewardTokenId3 = _action.guaranteedRewards[2].itemTokenId;
-      _actionRewards.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
-
-      U256 bounds = guaranteedRewardsLength.dec().asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        if (
-          _action.guaranteedRewards[i].itemTokenId ==
-          _action.guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId
-        ) {
-          revert GuaranteedRewardsNoDuplicates();
-        }
-      }
-    }
+  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
   }
 
-  // Random rewards but have most common one first
-  function _setActionRandomRewards(Action calldata _action, ActionRewards storage actionReward) private {
-    uint randomRewardsLength = _action.randomRewards.length;
-    if (randomRewardsLength != 0) {
-      actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
-      actionReward.randomRewardChance1 = _action.randomRewards[0].chance;
-      actionReward.randomRewardAmount1 = _action.randomRewards[0].amount;
-    }
-    if (randomRewardsLength > 1) {
-      actionReward.randomRewardTokenId2 = _action.randomRewards[1].itemTokenId;
-      actionReward.randomRewardChance2 = _action.randomRewards[1].chance;
-      actionReward.randomRewardAmount2 = _action.randomRewards[1].amount;
-
-      if (actionReward.randomRewardChance2 > actionReward.randomRewardChance1) {
-        revert RandomRewardsMustBeInOrder();
-      }
-      if (actionReward.randomRewardTokenId1 == actionReward.randomRewardTokenId2) {
-        revert RandomRewardNoDuplicates();
-      }
-    }
-    if (randomRewardsLength > 2) {
-      actionReward.randomRewardTokenId3 = _action.randomRewards[2].itemTokenId;
-      actionReward.randomRewardChance3 = _action.randomRewards[2].chance;
-      actionReward.randomRewardAmount3 = _action.randomRewards[2].amount;
-
-      if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
-        revert RandomRewardsMustBeInOrder();
-      }
-
-      U256 bounds = randomRewardsLength.dec().asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
+  function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
+    if (_numTickets <= 16) {
+      // 32 bytes
+      bytes32 word = bytes32(getRandomWord(_skillEndTime));
+      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime, _playerId));
+    } else if (_numTickets <= 48) {
+      uint[3] memory fullWords = getFullRandomWords(_skillEndTime);
+      // 3 * 32 bytes
+      for (U256 iter; iter.lt(3); iter = iter.inc()) {
         uint i = iter.asUint256();
-        if (_action.randomRewards[i].itemTokenId == _action.randomRewards[randomRewardsLength.dec()].itemTokenId) {
-          revert RandomRewardNoDuplicates();
+        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime, _playerId));
+      }
+      b = abi.encodePacked(fullWords);
+    } else {
+      // 3 * 5 * 32 bytes
+      uint[3][5] memory multipleFullWords = getMultipleFullRandomWords(_skillEndTime);
+      for (U256 iter; iter.lt(5); iter = iter.inc()) {
+        uint i = iter.asUint256();
+        for (U256 jter; jter.lt(3); jter = jter.inc()) {
+          uint j = jter.asUint256();
+          multipleFullWords[i][j] = uint(
+            _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
+          );
+          // XOR all the full words with the first fresh random number to give more randomness to the existing random words
+          if (i != 0) {
+            multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
+          }
         }
       }
-    }
-    if (_action.randomRewards.length > 3) {
-      actionReward.randomRewardTokenId4 = _action.randomRewards[3].itemTokenId;
-      actionReward.randomRewardChance4 = _action.randomRewards[3].chance;
-      actionReward.randomRewardAmount4 = _action.randomRewards[3].amount;
-      if (actionReward.randomRewardChance4 > actionReward.randomRewardChance3) {
-        revert RandomRewardsMustBeInOrder();
-      }
-      U256 bounds = _action.randomRewards.length.dec().asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        if (
-          _action.randomRewards[i].itemTokenId == _action.randomRewards[_action.randomRewards.length - 1].itemTokenId
-        ) {
-          revert RandomRewardNoDuplicates();
-        }
-      }
+
+      b = abi.encodePacked(multipleFullWords);
     }
   }
 
@@ -495,6 +431,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       revert ActionAlreadyExists();
     }
     _setAction(_action);
+  }
+
+  function addAction(Action calldata _action) external onlyOwner {
+    _addAction(_action);
     emit AddAction(_action);
   }
 
@@ -505,30 +445,28 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       uint16 i = iter.asUint16();
       _addAction(_actions[i]);
     }
+    emit AddActions(_actions);
   }
 
-  function addAction(Action calldata _action) external onlyOwner {
-    _addAction(_action);
-  }
-
-  function editAction(Action calldata _action) external onlyOwner {
-    if (actions[_action.actionId].skill == Skill.NONE) {
-      revert ActionDoesNotExist();
+  function editActions(Action[] calldata _actions) external onlyOwner {
+    for (uint i = 0; i < _actions.length; ++i) {
+      if (actions[_actions[i].actionId].skill == Skill.NONE) {
+        revert ActionDoesNotExist();
+      }
+      _setAction(_actions[i]);
     }
-    _setAction(_action);
-    emit EditAction(_action);
+    emit EditActions(_actions);
   }
 
   function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
     if (_actionChoiceId == 0) {
       revert ActionChoiceIdZeroNotAllowed();
     }
-    if (_actionChoice.outputTokenId != 0 && _actionChoice.outputNum == 0) {
-      revert OutputSpecifiedWithoutAmount();
-    }
     if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
       revert ActionChoiceAlreadyExists();
     }
+    WorldLibrary.checkActionChoice(_actionChoice);
+
     actionChoices[_actionId][_actionChoiceId] = _actionChoice;
   }
 

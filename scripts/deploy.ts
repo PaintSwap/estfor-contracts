@@ -92,10 +92,17 @@ async function main() {
   }
 
   // Create the world
+  const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
+  const worldLibrary = await WorldLibrary.deploy();
+  await worldLibrary.deployed();
+  console.log(`worldLibrary = "${worldLibrary.address.toLowerCase()}"`);
   const subscriptionId = 62;
-  const World = await ethers.getContractFactory("World");
+  const World = await ethers.getContractFactory("World", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
   const world = await upgrades.deployProxy(World, [oracle.address, subscriptionId], {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
   });
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
@@ -302,10 +309,13 @@ async function main() {
     try {
       const addresses = [
         players.address,
+        estforLibrary.address,
         playerNFT.address,
+        itemNFTLibrary.address,
         itemNFT.address,
         adminAccess.address,
         shop.address,
+        worldLibrary.address,
         world.address,
         royaltyReceiver.address,
         quests.address,

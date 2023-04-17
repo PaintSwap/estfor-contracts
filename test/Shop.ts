@@ -25,9 +25,12 @@ describe("Shop", function () {
 
     // Create the world
     const subscriptionId = 2;
-    const World = await ethers.getContractFactory("World");
+    const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
+    const worldLibrary = await WorldLibrary.deploy();
+    const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
     const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
       kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
     });
 
     const Shop = await ethers.getContractFactory("Shop");

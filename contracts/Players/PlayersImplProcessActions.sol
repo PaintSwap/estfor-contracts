@@ -316,7 +316,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         );
       }
 
-      numProduced = (numConsumed * _actionChoice.outputNum * successPercent) / 100;
+      numProduced = (numConsumed * _actionChoice.outputAmount * successPercent) / 100;
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
@@ -339,9 +339,27 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint64 _queueId
   ) private {
     if (_numConsumed != 0) {
-      _processConsumable(_from, _playerId, _actionChoice.inputTokenId1, _numConsumed * _actionChoice.num1, _queueId);
-      _processConsumable(_from, _playerId, _actionChoice.inputTokenId2, _numConsumed * _actionChoice.num2, _queueId);
-      _processConsumable(_from, _playerId, _actionChoice.inputTokenId3, _numConsumed * _actionChoice.num3, _queueId);
+      _processConsumable(
+        _from,
+        _playerId,
+        _actionChoice.inputTokenId1,
+        _numConsumed * _actionChoice.inputAmount1,
+        _queueId
+      );
+      _processConsumable(
+        _from,
+        _playerId,
+        _actionChoice.inputTokenId2,
+        _numConsumed * _actionChoice.inputAmount2,
+        _queueId
+      );
+      _processConsumable(
+        _from,
+        _playerId,
+        _actionChoice.inputTokenId3,
+        _numConsumed * _actionChoice.inputAmount3,
+        _queueId
+      );
     }
   }
 

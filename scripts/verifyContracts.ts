@@ -10,6 +10,7 @@ import {
   PLAYER_NFT_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
   SHOP_ADDRESS,
+  WORLD_LIBRARY_ADDRESS,
   WORLD_ADDRESS,
   QUESTS_ADDRESS,
   CLANS_ADDRESS,
@@ -22,6 +23,7 @@ import {verifyContracts} from "./utils";
 
 async function main() {
   const addresses = [
+    WORLD_LIBRARY_ADDRESS,
     WORLD_ADDRESS,
     SHOP_ADDRESS,
     ROYALTY_RECEIVER_ADDRESS,
