@@ -1,4 +1,6 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {Equipment} from "@paintswap/estfor-definitions/types";
+import {expect} from "chai";
 import {ethers} from "hardhat";
 import {ItemNFT, World} from "../../typechain-types";
 import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
@@ -292,6 +294,124 @@ export const setupBasicCooking = async function (
 
   return {queuedAction, rate, choiceId};
 };
+
+export const setupBasicCrafting = async function (
+  itemNFT: ItemNFT,
+  world: World,
+  rate = 1 * 10,
+  outputNum: number = 1
+) {
+  let tx = await world.addAction({
+    actionId: 1,
+    info: {
+      skill: EstforTypes.Skill.CRAFTING,
+      xpPerHour: 0,
+      minXP: 0,
+      isDynamic: false,
+      numSpawned: 0,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      isAvailable: true,
+      actionChoiceRequired: true,
+      successPercent: 100,
+    },
+    guaranteedRewards: [],
+    randomRewards: [],
+    combatStats: EstforTypes.emptyCombatStats,
+  });
+  const actionId = await getActionId(tx);
+
+  // Logs go in, nothing comes out
+  tx = await world.addActionChoice(actionId, 1, {
+    skill: EstforTypes.Skill.CRAFTING,
+    diff: 0,
+    xpPerHour: 3600,
+    minXP: 0,
+    rate,
+    inputTokenId1: EstforConstants.SAPPHIRE,
+    num1: 20,
+    inputTokenId2: EstforConstants.ROPE,
+    num2: 1,
+    inputTokenId3: EstforConstants.NONE,
+    num3: 0,
+    outputTokenId: EstforConstants.SAPPHIRE_AMULET,
+    outputNum,
+    successPercent: 100,
+  });
+  const choiceId = await getActionChoiceId(tx);
+
+  const timespan = 3600;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId,
+    choiceId1: EstforConstants.NONE,
+    choiceId2: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+  };
+
+  await itemNFT.addItem({
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.SAPPHIRE,
+    equipPosition: EstforTypes.EquipPosition.NONE,
+  });
+
+  await itemNFT.addItem({
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.ROPE,
+    equipPosition: EstforTypes.EquipPosition.NONE,
+  });
+
+  return {queuedAction, rate, choiceId};
+};
+
+export function checkPendingQueuedActionState(
+  pendingQueuedActionState: any,
+  consumed: Equipment[],
+  produced: Equipment[],
+  xpGained: number,
+  elapsedTime: number
+) {
+  expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
+  expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+  expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(consumed.length);
+  if (consumed.length > 0) {
+    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(consumed[0].itemTokenId);
+    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(consumed[0].amount);
+    if (consumed.length > 1) {
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(consumed[1].itemTokenId);
+      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(consumed[1].amount);
+    }
+  }
+
+  expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(produced.length);
+  if (produced.length > 0) {
+    expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(produced[0].itemTokenId);
+    expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(produced[0].amount);
+    if (produced.length > 1) {
+      expect(pendingQueuedActionState.equipmentStates[0].produced[1].itemTokenId).to.eq(produced[1].itemTokenId);
+      expect(pendingQueuedActionState.equipmentStates[0].produced[1].amount).to.eq(produced[1].amount);
+    }
+  }
+
+  expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(xpGained);
+  expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(0);
+  expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
+  expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(1);
+  expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
+  expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(elapsedTime);
+
+  expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
+  expect(pendingQueuedActionState.producedXPRewards.length).to.eq(0);
+  expect(pendingQueuedActionState.questRewards.length).to.eq(0);
+  expect(pendingQueuedActionState.questConsumed.length).to.eq(0);
+  expect(pendingQueuedActionState.activeQuestInfo.length).to.eq(0);
+  expect(pendingQueuedActionState.dailyRewards.length).to.eq(0);
+}
 
 export const getXPFromLevel = (level: number) => {
   return EstforConstants.levelXp[level - 1];
