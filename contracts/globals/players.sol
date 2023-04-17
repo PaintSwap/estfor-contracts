@@ -239,6 +239,7 @@ interface IPlayersMiscDelegateView {
       Equipment[] memory consumedEquipment,
       Equipment memory outputEquipment,
       uint xpElapsedTime,
+      uint refundTime,
       bool died,
       uint24 numConsumed,
       uint24 numProduced

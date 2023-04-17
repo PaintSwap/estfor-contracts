@@ -283,10 +283,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         Equipment memory outputEquipment;
         uint24 baseNumConsumed;
         uint24 numProduced;
+        uint refundTime;
         (
           consumedEquipment,
           outputEquipment,
           xpElapsedTime,
+          refundTime,
           died,
           baseNumConsumed,
           numProduced
@@ -324,6 +326,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         if (died) {
           pendingQueuedActionMetadata.died = true;
         }
+
+        pendingQueuedActionMetadata.elapsedTime -= uint24(refundTime);
       }
 
       uint pointsAccruedExclBaseBoost;
@@ -676,6 +680,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       Equipment[] memory consumedEquipment,
       Equipment memory outputEquipment,
       uint xpElapsedTime,
+      uint refundTime,
       bool died,
       uint24 numConsumed,
       uint24 numProduced
@@ -694,6 +699,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _pendingQueuedActionEquipmentStates
       )
     );
-    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint24, uint24));
+    return abi.decode(data, (Equipment[], Equipment, uint, uint, bool, uint24, uint24));
   }
 }

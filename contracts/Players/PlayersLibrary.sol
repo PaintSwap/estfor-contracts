@@ -451,10 +451,8 @@ library PlayersLibrary {
     uint _elapsedTime,
     ActionChoice memory _actionChoice,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
+  ) external view returns (uint xpElapsedTime, uint refundTime, uint24 numConsumed) {
     // Update these as necessary
-    xpElapsedTime = _elapsedTime;
-
     // Check the max that can be used
     numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 10));
     // This checks the balances
@@ -465,14 +463,16 @@ library PlayersLibrary {
       _itemNFT,
       _pendingQueuedActionEquipmentStates
     );
-    if (numConsumed > maxRequiredRatio) {
+    bool hadEnoughConsumables = numConsumed <= maxRequiredRatio;
+    if (!hadEnoughConsumables) {
       numConsumed = uint24(maxRequiredRatio);
-      if (numConsumed != 0) {
-        // Work out what the actual elapsedTime should really be because they didn't have enough equipped to gain all the XP
-        xpElapsedTime = (_elapsedTime * maxRequiredRatio) / numConsumed;
-      } else {
-        xpElapsedTime = 0;
-      }
+    }
+    // Work out what the actual elapsedTime should be had all those been made
+    xpElapsedTime = (uint(numConsumed) * 3600 * 10) / _actionChoice.rate;
+
+    if (hadEnoughConsumables) {
+      // Move start time back by the amount of time that was refunded if this action was not completed
+      refundTime = _elapsedTime - xpElapsedTime;
     }
   }
 

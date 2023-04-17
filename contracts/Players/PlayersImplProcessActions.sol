@@ -93,13 +93,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       ActionChoice memory actionChoice;
 
       uint xpElapsedTime = elapsedTime;
+      uint refundTime;
       if (queuedAction.choiceId != 0) {
         // Includes combat
         uint combatElapsedTime;
         actionChoice = world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
         uint24 baseNumConsumed;
         uint24 numProduced;
-        (xpElapsedTime, combatElapsedTime, died, baseNumConsumed, numProduced) = _processConsumables(
+        (xpElapsedTime, combatElapsedTime, refundTime, died, baseNumConsumed, numProduced) = _processConsumables(
           _from,
           _playerId,
           queuedAction,
@@ -144,7 +145,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
       if (!fullyFinished) {
         // Add the remainder if this action is not fully consumed
-        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime, remainingSkillsLength);
+        _addRemainingSkill(remainingSkills, queuedAction, nextStartTime.sub(refundTime), remainingSkillsLength);
         remainingSkillsLength = remainingSkillsLength.inc();
         nextStartTime = queuedAction.startTime.add(queuedAction.timespan);
       }
@@ -255,11 +256,22 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  ) private returns (uint xpElapsedTime, uint combatElapsedTime, bool died, uint24 numConsumed, uint24 numProduced) {
+  )
+    private
+    returns (
+      uint xpElapsedTime,
+      uint combatElapsedTime,
+      uint refundTime,
+      bool died,
+      uint24 numConsumed,
+      uint24 numProduced
+    )
+  {
     bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
 
     if (isCombat) {
       CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
+      // TODO: Needed here too?
       (xpElapsedTime, combatElapsedTime, numConsumed) = PlayersLibrary.getCombatAdjustedElapsedTimes(
         _from,
         itemNFT,
@@ -278,9 +290,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
       if (died) {
         xpElapsedTime = 0;
+        refundTime = 0;
       }
     } else {
-      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
+      (xpElapsedTime, refundTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
         itemNFT,
         _elapsedTime,

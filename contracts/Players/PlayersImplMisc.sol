@@ -335,6 +335,7 @@ contract PlayersImplMisc is
       Equipment[] memory consumedEquipment,
       Equipment memory outputEquipment,
       uint xpElapsedTime,
+      uint refundTime,
       bool died,
       uint24 numConsumed,
       uint24 numProduced
@@ -387,7 +388,7 @@ contract PlayersImplMisc is
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
     } else {
-      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
+      (xpElapsedTime, refundTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
         itemNFT,
         _elapsedTime,
