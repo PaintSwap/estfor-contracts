@@ -434,7 +434,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint i = iter.asUint256();
       pendingQueuedActionState.producedPastRandomRewards[i] = PastRandomRewardInfo(
         uint16(actionIds[i]),
-        uint40(queueIds[i]),
+        uint64(queueIds[i]),
         uint16(ids[i]),
         uint24(amounts[i])
       );

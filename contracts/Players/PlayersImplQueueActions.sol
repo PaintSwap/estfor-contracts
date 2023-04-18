@@ -86,7 +86,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         _queuedActions[i].timespan = uint24(MAX_TIME_.sub(totalTimespan));
       }
 
-      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint40(), prevEndTime);
+      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint64(), prevEndTime);
 
       queueId = queueId.inc();
       totalTimespan += _queuedActions[i].timespan;
@@ -96,7 +96,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     emit SetActionQueue(from, _playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME_); // Should never happen
-    nextQueueId = queueId.asUint40();
+    nextQueueId = queueId.asUint64();
 
     if (_boostItemTokenId != NONE) {
       consumeBoost(from, _playerId, _boostItemTokenId, _boostStartTime);
@@ -155,7 +155,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     address _from,
     uint _playerId,
     QueuedActionInput memory _queuedAction,
-    uint40 _queueId,
+    uint64 _queueId,
     uint _startTime
   ) private {
     _checkAddToQueue(_queuedAction);

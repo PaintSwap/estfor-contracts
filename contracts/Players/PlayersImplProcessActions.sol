@@ -148,7 +148,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         xpElapsedTime = xpElapsedTime > refundTime ? xpElapsedTime.sub(refundTime) : 0;
       }
 
-      uint40 _queueId = queuedAction.queueId;
+      uint64 _queueId = queuedAction.queueId;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
 
       uint pointsAccruedExclBaseBoost;
@@ -357,7 +357,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     ActionChoice memory _actionChoice,
     uint24 _numConsumed,
-    uint40 _queueId
+    uint64 _queueId
   ) private {
     if (_numConsumed != 0) {
       _processConsumable(
@@ -389,7 +389,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     uint16 _itemTokenId,
     uint24 _numConsumed,
-    uint40 _queueId
+    uint64 _queueId
   ) private {
     if (_itemTokenId == NONE) {
       return;
@@ -486,7 +486,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint16 _actionId,
-    uint40 _queueId,
+    uint64 _queueId,
     uint40 _skillStartTime,
     uint24 _elapsedTime,
     Attire storage _attire,
