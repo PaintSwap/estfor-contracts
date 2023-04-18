@@ -71,6 +71,7 @@ abstract contract PlayersBase {
   error NotItemNFT();
   error ActionNotAvailable();
   error UnsupportedAttire();
+  error UnsupportedChoiceId();
   error InvalidHandEquipment(uint16 itemTokenId);
   error DoNotHaveEnoughQuantityToEquipToAction();
   error NoActiveBoost();
@@ -130,6 +131,7 @@ abstract contract PlayersBase {
   mapping(uint playerId => mapping(Skill skill => uint128 xp)) internal xp_;
 
   mapping(uint playerId => Player player) internal players_;
+  mapping(uint playerId => mapping(uint queuedId => Attire attire)) internal attire_;
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
   mapping(uint playerId => PendingRandomReward[] pendingRandomRewards) internal pendingRandomRewards; // queue, will be sorted by timestamp
@@ -290,7 +292,7 @@ abstract contract PlayersBase {
     pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
     pointsAccrued += _extraXPFromFullAttire(
       _from,
-      _queuedAction.attire,
+      attire_[_playerId][_queuedAction.queueId],
       _skill,
       _xpElapsedTime,
       xpPerHour,

@@ -5,8 +5,7 @@ import {ethers} from "hardhat";
 import {ItemNFT, World} from "../../typechain-types";
 import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
 
-export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: World) {
-  const rate = 100 * 10; // per hour
+export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: World, rate = 100 * 10) {
   const tx = await world.addAction({
     actionId: 1,
     info: {
@@ -34,7 +33,6 @@ export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: Wo
     combatStyle: EstforTypes.CombatStyle.NONE,
     choiceId: EstforConstants.NONE,
     choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
@@ -100,7 +98,6 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
     combatStyle: EstforTypes.CombatStyle.NONE,
     choiceId,
     choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
@@ -175,7 +172,6 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     combatStyle: EstforTypes.CombatStyle.ATTACK,
     choiceId,
     choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.COOKED_MINNUS,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
@@ -271,7 +267,6 @@ export const setupBasicCooking = async function (
     combatStyle: EstforTypes.CombatStyle.NONE,
     choiceId,
     choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
@@ -347,7 +342,6 @@ export const setupBasicCrafting = async function (
     combatStyle: EstforTypes.CombatStyle.NONE,
     choiceId,
     choiceId1: EstforConstants.NONE,
-    choiceId2: EstforConstants.NONE,
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,

@@ -52,10 +52,7 @@ describe("Players", function () {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [361]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.deep.oneOf([
-      BigNumber.from(361),
-      BigNumber.from(362),
-    ]);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(360);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(10); // Should be rounded down
   });
 
@@ -157,7 +154,6 @@ describe("Players", function () {
       combatStyle: EstforTypes.CombatStyle.ATTACK,
       choiceId,
       choiceId1: EstforConstants.NONE,
-      choiceId2: EstforConstants.NONE,
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
@@ -365,13 +361,15 @@ describe("Players", function () {
       expect(actionQueue.length).to.eq(3);
       expect(actionQueue[0].queueId).to.eq(2);
       expect(actionQueue[0].timespan).to.be.oneOf([
-        basicWoodcuttingQueuedAction.timespan - 50,
-        basicWoodcuttingQueuedAction.timespan - 50 - 1,
+        // Takes 36 seconds to cut one
+        basicWoodcuttingQueuedAction.timespan - 36,
+        basicWoodcuttingQueuedAction.timespan - 36 - 1,
       ]);
       expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
       expect(actionQueue[2].queueId).to.eq(4);
       expect(actionQueue[2].timespan).to.eq(queuedAction.timespan);
+      itemNFT.balanceOf;
     });
   });
 
@@ -406,7 +404,6 @@ describe("Players", function () {
         combatStyle: EstforTypes.CombatStyle.NONE,
         choiceId: EstforConstants.NONE,
         choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
@@ -541,7 +538,6 @@ describe("Players", function () {
         combatStyle: EstforTypes.CombatStyle.NONE,
         choiceId,
         choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
@@ -700,7 +696,6 @@ describe("Players", function () {
         combatStyle: EstforTypes.CombatStyle.NONE,
         choiceId: EstforConstants.NONE,
         choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
@@ -758,7 +753,6 @@ describe("Players", function () {
         combatStyle: EstforTypes.CombatStyle.NONE,
         choiceId: EstforConstants.NONE,
         choiceId1: EstforConstants.NONE,
-        choiceId2: EstforConstants.NONE,
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,

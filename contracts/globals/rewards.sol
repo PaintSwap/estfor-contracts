@@ -18,7 +18,7 @@ struct PendingRandomReward {
   uint16 actionId;
   uint40 startTime;
   uint24 elapsedTime;
-  uint64 queueId;
+  uint40 queueId;
   // Boosts active at the time this was generated
   BoostType boostType;
   uint16 boostValue; // Varies, could be the % increase

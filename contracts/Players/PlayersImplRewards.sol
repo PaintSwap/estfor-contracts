@@ -243,7 +243,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (isCombat) {
         // This will only ones that they have a balance for at this time. This will check balances
         combatStats = _getCachedCombatStats(player);
-        _updateCombatStats(from, combatStats, queuedAction.attire, pendingQueuedActionState.equipmentStates);
+        _updateCombatStats(
+          from,
+          combatStats,
+          attire_[_playerId][queuedAction.queueId],
+          pendingQueuedActionState.equipmentStates
+        );
       }
 
       bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
@@ -273,9 +278,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       // Create some items if necessary (smithing ores to bars for instance)
       bool died;
-
+      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
+        queuedAction.actionId
+      );
+      bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
       ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
+      uint refundTime;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
@@ -283,7 +292,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         Equipment memory outputEquipment;
         uint24 baseNumConsumed;
         uint24 numProduced;
-        uint refundTime;
         (
           consumedEquipment,
           outputEquipment,
@@ -304,8 +312,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
         choiceIds[choiceIdsLength] = queuedAction.choiceId;
         choiceIdsLength = choiceIdsLength.inc();
-        Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
-        if (skill == Skill.COOKING) {
+        if (actionSkill == Skill.COOKING) {
           choiceIdAmounts[choiceIdAmountsLength] = numProduced; // Assume we want amount cooked
         } else {
           choiceIdAmounts[choiceIdAmountsLength] = baseNumConsumed;
@@ -326,9 +333,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         if (died) {
           pendingQueuedActionMetadata.died = true;
         }
+      } else {
+        bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;
+        if (hasGuaranteedRewards) {
+          uint numProduced = (elapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * 10);
+          refundTime = elapsedTime - (numProduced * (3600 * 10)) / actionRewards.guaranteedRewardRate1;
+        }
 
-        pendingQueuedActionMetadata.elapsedTime -= uint24(refundTime);
+        if (hasRandomRewards) {
+          uint tempRefundTime = elapsedTime % 3600;
+          if (tempRefundTime > refundTime) {
+            refundTime = tempRefundTime;
+          }
+        }
+        xpElapsedTime = xpElapsedTime > refundTime ? xpElapsedTime.sub(refundTime) : 0;
       }
+      pendingQueuedActionMetadata.elapsedTime -= uint24(refundTime);
 
       uint pointsAccruedExclBaseBoost;
       if (!died) {
@@ -369,10 +389,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       totalXPGained += xpGained;
 
       // Number of pending reward rolls
-      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
-        queuedAction.actionId
-      );
-      bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
       if (hasRandomRewards) {
         bool hasRandomWord = world.hasRandomWord(queuedAction.startTime + xpElapsedTime);
         if (!hasRandomWord) {
@@ -418,7 +434,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint i = iter.asUint256();
       pendingQueuedActionState.producedPastRandomRewards[i] = PastRandomRewardInfo(
         uint16(actionIds[i]),
-        uint64(queueIds[i]),
+        uint40(queueIds[i]),
         uint16(ids[i]),
         uint24(amounts[i])
       );

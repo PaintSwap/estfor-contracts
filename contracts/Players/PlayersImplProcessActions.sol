@@ -54,7 +54,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (isCombat) {
         // This will only ones that they have a balance for at this time. This will check balances
         combatStats = _getCachedCombatStats(player);
-        _updateCombatStats(_from, combatStats, queuedAction.attire, pendingQueuedActionEquipmentStates);
+        _updateCombatStats(
+          _from,
+          combatStats,
+          attire_[_playerId][queuedAction.queueId],
+          pendingQueuedActionEquipmentStates
+        );
       }
       bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
         _from,
@@ -94,6 +99,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
       uint xpElapsedTime = elapsedTime;
       uint refundTime;
+
+      ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
       if (queuedAction.choiceId != 0) {
         // Includes combat
         uint combatElapsedTime;
@@ -124,9 +131,24 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             choiceIdsLength = choiceIdsLength.inc();
           }
         }
+      } else {
+        bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;
+        bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
+        if (hasGuaranteedRewards) {
+          uint numProduced = (elapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * 10);
+          refundTime = elapsedTime - (numProduced * (3600 * 10)) / actionRewards.guaranteedRewardRate1;
+        }
+
+        if (hasRandomRewards) {
+          uint tempRefundTime = elapsedTime % 3600;
+          if (tempRefundTime > refundTime) {
+            refundTime = tempRefundTime;
+          }
+        }
+        xpElapsedTime = xpElapsedTime > refundTime ? xpElapsedTime.sub(refundTime) : 0;
       }
 
-      uint64 _queueId = queuedAction.queueId;
+      uint40 _queueId = queuedAction.queueId;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
 
       uint pointsAccruedExclBaseBoost;
@@ -169,7 +191,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         queuedAction.actionId
       );
 
-      ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
       _addPendingRandomReward(
         _from,
         _playerId,
@@ -179,7 +200,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _queueId,
         uint40(skillEndTime),
         uint24(xpElapsedTime),
-        queuedAction.attire,
+        attire_[_playerId][_queueId],
         skill,
         pendingQueuedActionEquipmentStates
       );
@@ -336,7 +357,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     ActionChoice memory _actionChoice,
     uint24 _numConsumed,
-    uint64 _queueId
+    uint40 _queueId
   ) private {
     if (_numConsumed != 0) {
       _processConsumable(
@@ -368,7 +389,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId,
     uint16 _itemTokenId,
     uint24 _numConsumed,
-    uint64 _queueId
+    uint40 _queueId
   ) private {
     if (_itemTokenId == NONE) {
       return;
@@ -465,7 +486,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint16 _actionId,
-    uint64 _queueId,
+    uint40 _queueId,
     uint40 _skillStartTime,
     uint24 _elapsedTime,
     Attire storage _attire,

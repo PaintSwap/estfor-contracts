@@ -166,7 +166,7 @@ struct AvatarInfo {
 
 struct PastRandomRewardInfo {
   uint16 actionId;
-  uint64 queueId;
+  uint40 queueId;
   uint16 itemTokenId;
   uint24 amount;
 }
@@ -181,7 +181,7 @@ struct PendingQueuedActionMetadata {
   uint32 rolls;
   bool died;
   uint16 actionId;
-  uint64 queueId;
+  uint40 queueId;
   uint24 elapsedTime;
 }
 

@@ -471,6 +471,7 @@ library PlayersLibrary {
       _pendingQueuedActionEquipmentStates
     );
     bool hadEnoughConsumables = numConsumed <= maxRequiredRatio;
+    uint ogElapsedTime = (uint(numConsumed) * 3600 * 10) / _actionChoice.rate;
     if (!hadEnoughConsumables) {
       numConsumed = uint24(maxRequiredRatio);
     }
@@ -479,7 +480,7 @@ library PlayersLibrary {
 
     if (hadEnoughConsumables) {
       // Move start time back by the amount of time that was refunded if this action was not completed
-      refundTime = _elapsedTime - xpElapsedTime;
+      refundTime = _elapsedTime - ogElapsedTime;
     }
   }
 

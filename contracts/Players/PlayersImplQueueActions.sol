@@ -30,7 +30,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function startActions(
     uint _playerId,
-    QueuedActionInput[] calldata _queuedActions,
+    QueuedActionInput[] memory _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
     ActionQueueStatus _queueStatus
@@ -77,40 +77,26 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
 
-      QueuedAction memory queuedAction;
-      queuedAction.attire = _queuedActions[i].attire;
-      queuedAction.actionId = _queuedActions[i].actionId;
-      queuedAction.regenerateId = _queuedActions[i].regenerateId;
-      queuedAction.choiceId = _queuedActions[i].choiceId;
-      queuedAction.choiceId1 = _queuedActions[i].choiceId1;
-      queuedAction.choiceId2 = _queuedActions[i].choiceId2;
-      queuedAction.rightHandEquipmentTokenId = _queuedActions[i].rightHandEquipmentTokenId;
-      queuedAction.leftHandEquipmentTokenId = _queuedActions[i].leftHandEquipmentTokenId;
-      queuedAction.timespan = _queuedActions[i].timespan;
-      queuedAction.combatStyle = _queuedActions[i].combatStyle;
-      queuedAction.isValid = true;
-      // startTime filled in later
-
-      if (totalTimespan.add(queuedAction.timespan) > MAX_TIME_) {
+      if (totalTimespan.add(_queuedActions[i].timespan) > MAX_TIME_) {
         // Must be the last one which will exceed the max time
         if (iter != queuedActionsLength.dec()) {
           revert ActionTimespanExceedsMaxTime();
         }
         // Shorten it so that it does not extend beyond the max time
-        queuedAction.timespan = uint24(MAX_TIME_.sub(totalTimespan));
+        _queuedActions[i].timespan = uint24(MAX_TIME_.sub(totalTimespan));
       }
 
-      _addToQueue(from, _playerId, queuedAction, queueId.asUint64(), prevEndTime);
+      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint40(), prevEndTime);
 
       queueId = queueId.inc();
-      totalTimespan += queuedAction.timespan;
-      prevEndTime += queuedAction.timespan;
+      totalTimespan += _queuedActions[i].timespan;
+      prevEndTime += _queuedActions[i].timespan;
     }
 
     emit SetActionQueue(from, _playerId, player.actionQueue);
 
     assert(totalTimespan <= MAX_TIME_); // Should never happen
-    nextQueueId = queueId.asUint64();
+    nextQueueId = queueId.asUint40();
 
     if (_boostItemTokenId != NONE) {
       consumeBoost(from, _playerId, _boostItemTokenId, _boostStartTime);
@@ -148,7 +134,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     emit ConsumeBoostVial(_from, _playerId, playerBoost);
   }
 
-  function _checkAddToQueue(QueuedAction memory _queuedAction) private view {
+  function _checkAddToQueue(QueuedActionInput memory _queuedAction) private view {
     if (_queuedAction.attire.ring != NONE) {
       revert UnsupportedAttire();
     }
@@ -156,12 +142,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       revert UnsupportedAttire();
     }
     if (_queuedAction.choiceId1 != NONE) {
-      revert UnsupportedAttire();
+      revert UnsupportedChoiceId();
     }
-    if (_queuedAction.choiceId2 != NONE) {
-      revert UnsupportedAttire();
-    }
-
     if (_queuedAction.regenerateId != NONE) {
       if (itemNFT.getItem(_queuedAction.regenerateId).equipPosition != EquipPosition.FOOD) {
         revert UnsupportedRegenerateItem();
@@ -172,8 +154,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   function _addToQueue(
     address _from,
     uint _playerId,
-    QueuedAction memory _queuedAction,
-    uint64 _queueId,
+    QueuedActionInput memory _queuedAction,
+    uint40 _queueId,
     uint _startTime
   ) private {
     _checkAddToQueue(_queuedAction);
@@ -224,6 +206,34 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
     }
 
+    Attire memory attire = _queuedAction.attire;
+    if (
+      attire.head != NONE ||
+      attire.neck != NONE ||
+      attire.body != NONE ||
+      attire.arms != NONE ||
+      attire.legs != NONE ||
+      attire.feet != NONE ||
+      attire.ring != NONE
+    ) {
+      attire_[_playerId][_queueId] = _queuedAction.attire;
+      _checkAttire(_from, _playerId, attire_[_playerId][_queueId]);
+    }
+
+    QueuedAction memory queuedAction;
+    queuedAction.isValid = true;
+    queuedAction.startTime = uint40(_startTime);
+    queuedAction.timespan = _queuedAction.timespan;
+    queuedAction.queueId = _queueId;
+    queuedAction.actionId = _queuedAction.actionId;
+    queuedAction.regenerateId = _queuedAction.regenerateId;
+    queuedAction.choiceId = _queuedAction.choiceId;
+    queuedAction.choiceId1 = _queuedAction.choiceId1;
+    queuedAction.rightHandEquipmentTokenId = _queuedAction.rightHandEquipmentTokenId;
+    queuedAction.leftHandEquipmentTokenId = _queuedAction.leftHandEquipmentTokenId;
+    queuedAction.combatStyle = _queuedAction.combatStyle;
+    _player.actionQueue.push(queuedAction);
+
     _checkHandEquipments(
       _from,
       _playerId,
@@ -234,19 +244,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     );
 
     _checkActionConsumables(_from, _playerId, _queuedAction, actionChoice);
-
-    _queuedAction.startTime = uint40(_startTime);
-    _queuedAction.queueId = _queueId;
-    _queuedAction.isValid = true;
-    _player.actionQueue.push(_queuedAction);
-
-    _checkAttire(_from, _playerId, _player.actionQueue[_player.actionQueue.length.dec()].attire);
   }
 
   function _checkActionConsumables(
     address _from,
     uint _playerId,
-    QueuedAction memory _queuedAction,
+    QueuedActionInput memory _queuedAction,
     ActionChoice memory actionChoice
   ) private view {
     if (_queuedAction.choiceId != NONE) {
@@ -295,7 +298,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       } */
     }
     //     if (_queuedAction.choiceId1 != NONE) {
-    //     if (_queuedAction.choiceId2 != NONE) {
   }
 
   function _checkEquipPosition(Attire storage _attire) private view {
