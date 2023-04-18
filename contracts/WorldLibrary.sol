@@ -22,7 +22,7 @@ library WorldLibrary {
   error OutputSpecifiedWithoutAmount();
   error RandomRewardsMustBeInOrder();
   error RandomRewardNoDuplicates();
-  error GuarenteedRewardsMustBeInOrder();
+  error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
 
   function checkActionChoice(ActionChoice calldata _actionChoice) external pure {
@@ -123,7 +123,7 @@ library WorldLibrary {
       _actionRewards.guaranteedRewardTokenId2 = _action.guaranteedRewards[1].itemTokenId;
       _actionRewards.guaranteedRewardRate2 = _action.guaranteedRewards[1].rate;
       if (_actionRewards.guaranteedRewardRate2 < _actionRewards.guaranteedRewardRate1) {
-        revert GuarenteedRewardsMustBeInOrder();
+        revert GuaranteedRewardsMustBeInOrder();
       }
       if (_actionRewards.guaranteedRewardTokenId1 == _actionRewards.guaranteedRewardTokenId2) {
         revert GuaranteedRewardsNoDuplicates();
@@ -134,7 +134,7 @@ library WorldLibrary {
       _actionRewards.guaranteedRewardRate3 = _action.guaranteedRewards[2].rate;
 
       if (_actionRewards.guaranteedRewardRate3 < _actionRewards.guaranteedRewardRate2) {
-        revert GuarenteedRewardsMustBeInOrder();
+        revert GuaranteedRewardsMustBeInOrder();
       }
 
       U256 bounds = guaranteedRewardsLength.dec().asU256();

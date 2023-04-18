@@ -134,7 +134,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     health: 20,
   };
 
-  const rate = 1 * 10; // per hour
+  const rate = 1 * 10; // per kill
   const numSpawned = 10;
   let tx = await world.addAction({
     actionId: 1,

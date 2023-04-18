@@ -499,7 +499,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     if (_rewardTokenId != NONE) {
       uint numRewards;
       if (_isCombat) {
-        numRewards = _monstersKilled;
+        numRewards = (_monstersKilled * _rewardRate) / 10; // rate is per kill
       } else {
         numRewards = (_elapsedTime.mul(_rewardRate).mul(_successPercent)).div(3600 * 10 * 100);
       }
@@ -621,7 +621,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     RandomReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
 
     if (_randomRewards.length != 0) {
-      // Was the boost active for this?
       uint skillEndTime = _skillStartTime.add(_elapsedTime);
       hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {

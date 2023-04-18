@@ -50,6 +50,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error LengthMismatch();
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
+  error OnlyCombatMultipleGuaranteedRewards();
 
   // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface public COORDINATOR;
@@ -373,6 +374,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (_action.info.handItemTokenIdRangeMin > _action.info.handItemTokenIdRangeMax) {
       revert MinCannotBeGreaterThanMax();
     }
+
+    if (_action.info.skill != Skill.COMBAT && _action.guaranteedRewards.length > 1) {
+      revert OnlyCombatMultipleGuaranteedRewards();
+    }
+
     actions[_action.actionId] = _action.info;
 
     // Set the rewards
