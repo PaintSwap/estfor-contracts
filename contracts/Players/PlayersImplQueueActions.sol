@@ -141,9 +141,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     if (_queuedAction.attire.reserved1 != NONE) {
       revert UnsupportedAttire();
     }
-    if (_queuedAction.choiceId1 != NONE) {
-      revert UnsupportedChoiceId();
-    }
     if (_queuedAction.regenerateId != NONE) {
       if (itemNFT.getItem(_queuedAction.regenerateId).equipPosition != EquipPosition.FOOD) {
         revert UnsupportedRegenerateItem();
@@ -228,7 +225,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     queuedAction.actionId = _queuedAction.actionId;
     queuedAction.regenerateId = _queuedAction.regenerateId;
     queuedAction.choiceId = _queuedAction.choiceId;
-    queuedAction.choiceId1 = _queuedAction.choiceId1;
     queuedAction.rightHandEquipmentTokenId = _queuedAction.rightHandEquipmentTokenId;
     queuedAction.leftHandEquipmentTokenId = _queuedAction.leftHandEquipmentTokenId;
     queuedAction.combatStyle = _queuedAction.combatStyle;
@@ -297,7 +293,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         }
       } */
     }
-    //     if (_queuedAction.choiceId1 != NONE) {
   }
 
   function _checkEquipPosition(Attire storage _attire) private view {
