@@ -57,7 +57,7 @@ describe("Bank", function () {
     await expect(bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "DepositItems")
       .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1])
-      .and.to.not.emit(bank, "DepositItemsNoPlayer");
+      .and.to.not.emit(bank, "DepositItems");
 
     expect(await bank.uniqueItemCount()).to.eq(1);
 
@@ -79,7 +79,7 @@ describe("Bank", function () {
           "0x"
         )
     )
-      .to.emit(bank, "DepositItemsNoPlayer")
+      .to.emit(bank, "DepositItems")
       .withArgs(alice.address, [EstforConstants.SAPPHIRE_AMULET, EstforConstants.BRONZE_ARROW], [5, 10]);
     expect(await bank.uniqueItemCount()).to.eq(3);
 

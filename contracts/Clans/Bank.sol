@@ -18,8 +18,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   using UnsafeMath for uint256;
 
   event DepositItems(address from, uint playerId, uint[] id, uint[] value);
-  event DepositItemNoPlayer(address from, uint id, uint value);
-  event DepositItemsNoPlayer(address from, uint[] id, uint[] value);
+  event DepositItem(address from, uint playerId, uint id, uint value);
   event WithdrawItems(address to, uint playerId, uint[] id, uint[] value);
   event DepositFTM(uint playerId, uint amount);
   event DepositFTMNoPlayer(address from, uint amount);
@@ -114,7 +113,8 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     if (msg.sender == address(bankRegistry.itemNFT()) && operator != address(this)) {
       uint maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
       _receivedItemUpdateUniqueItems(id, maxCapacity);
-      emit DepositItemNoPlayer(from, id, value);
+      uint activePlayerId = bankRegistry.players().activePlayer(from);
+      emit DepositItem(from, activePlayerId, id, value);
     }
     return super.onERC1155Received(operator, from, id, value, data);
   }
@@ -133,7 +133,8 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         _receivedItemUpdateUniqueItems(ids[iter.asUint256()], maxCapacity);
       }
-      emit DepositItemsNoPlayer(from, ids, values);
+      uint activePlayerId = bankRegistry.players().activePlayer(from);
+      emit DepositItems(from, activePlayerId, ids, values);
     }
     return super.onERC1155BatchReceived(operator, from, ids, values, data);
   }

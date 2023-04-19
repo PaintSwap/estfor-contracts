@@ -110,26 +110,6 @@ export const playersFixture = async function () {
     unsafeAllow: ["external-library-linking"],
   });
 
-  const Bank = await ethers.getContractFactory("Bank");
-  const bank = await Bank.deploy();
-
-  const BankRegistry = await ethers.getContractFactory("BankRegistry");
-  const bankRegistry = await upgrades.deployProxy(
-    BankRegistry,
-    [bank.address, itemNFT.address, playerNFT.address, clans.address],
-    {
-      kind: "uups",
-    }
-  );
-
-  const BankProxy = await ethers.getContractFactory("BankProxy");
-  const bankProxy = await BankProxy.deploy(bankRegistry.address);
-
-  const BankFactory = await ethers.getContractFactory("BankFactory");
-  const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
-    kind: "uups",
-  });
-
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playerLibrary = await PlayersLibrary.deploy();
@@ -178,6 +158,26 @@ export const playersFixture = async function () {
       unsafeAllow: ["delegatecall", "external-library-linking"],
     }
   );
+
+  const Bank = await ethers.getContractFactory("Bank");
+  const bank = await Bank.deploy();
+
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = await upgrades.deployProxy(
+    BankRegistry,
+    [bank.address, itemNFT.address, playerNFT.address, clans.address, players.address],
+    {
+      kind: "uups",
+    }
+  );
+
+  const BankProxy = await ethers.getContractFactory("BankProxy");
+  const bankProxy = await BankProxy.deploy(bankRegistry.address);
+
+  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
+    kind: "uups",
+  });
 
   await world.setQuests(quests.address);
 

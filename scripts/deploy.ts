@@ -220,29 +220,6 @@ async function main() {
   await bank.deployed();
   console.log(`bank = "${bank.address.toLowerCase()}"`);
 
-  const BankRegistry = await ethers.getContractFactory("BankRegistry");
-  const bankRegistry = await upgrades.deployProxy(
-    BankRegistry,
-    [bank.address, itemNFT.address, playerNFT.address, clans.address],
-    {
-      kind: "uups",
-    }
-  );
-  await bankRegistry.deployed();
-  console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
-
-  const BankProxy = await ethers.getContractFactory("BankProxy");
-  const bankProxy = await BankProxy.deploy(bankRegistry.address);
-  await bankProxy.deployed();
-  console.log(`bankProxy = "${bankProxy.address.toLowerCase()}"`);
-
-  const BankFactory = await ethers.getContractFactory("BankFactory");
-  const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
-    kind: "uups",
-  })) as BankFactory;
-  await bankFactory.deployed();
-  console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
-
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playerLibrary = await PlayersLibrary.deploy();
@@ -303,6 +280,29 @@ async function main() {
   )) as Players;
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
+
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = await upgrades.deployProxy(
+    BankRegistry,
+    [bank.address, itemNFT.address, playerNFT.address, clans.address, players.address],
+    {
+      kind: "uups",
+    }
+  );
+  await bankRegistry.deployed();
+  console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
+
+  const BankProxy = await ethers.getContractFactory("BankProxy");
+  const bankProxy = await BankProxy.deploy(bankRegistry.address);
+  await bankProxy.deployed();
+  console.log(`bankProxy = "${bankProxy.address.toLowerCase()}"`);
+
+  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
+    kind: "uups",
+  })) as BankFactory;
+  await bankFactory.deployed();
+  console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {

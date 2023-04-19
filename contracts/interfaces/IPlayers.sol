@@ -21,4 +21,6 @@ interface IPlayers {
   function isOwnerOfPlayer(address from, uint playerId) external view returns (bool);
 
   function isOwnerOfPlayerAndActive(address from, uint playerId) external view returns (bool);
+
+  function activePlayer(address owner) external view returns (uint playerId);
 }

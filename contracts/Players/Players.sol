@@ -317,7 +317,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return MAX_UNIQUE_TICKETS_;
   }
 
-  function activePlayer(address _owner) external view returns (uint playerId) {
+  function activePlayer(address _owner) external view override returns (uint playerId) {
     return activePlayer_[_owner];
   }
 
