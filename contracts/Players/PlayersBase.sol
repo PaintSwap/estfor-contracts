@@ -124,8 +124,12 @@ abstract contract PlayersBase {
 
   mapping(uint playerId => PlayerBoostInfo boostInfo) internal activeBoosts_;
 
-  uint64 internal nextQueueId; // Global queued action id
   World internal world;
+  // Constants for the damage formula
+  uint8 internal alphaCombat;
+  uint8 internal betaCombat;
+  uint64 internal nextQueueId; // Global queued action id
+  bool internal dailyRewardsEnabled;
   bool internal isAlpha;
 
   mapping(uint playerId => mapping(Skill skill => uint128 xp)) internal xp_;
@@ -136,16 +140,10 @@ abstract contract PlayersBase {
   PlayerNFT internal playerNFT;
   mapping(uint playerId => PendingRandomReward[] pendingRandomRewards) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
-  // Constants for the damage formula
-  uint128 internal alphaCombat;
-  uint128 internal betaCombat;
-
   // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
   mapping(uint playerId => bytes32) internal dailyRewardMasks;
 
   mapping(uint xp => Equipment[] equipments) internal xpRewardThresholds; // Thresholds and all items rewarded for it
-
-  bool internal dailyRewardsEnabled;
 
   address internal implQueueActions;
   address internal implProcessActions;
