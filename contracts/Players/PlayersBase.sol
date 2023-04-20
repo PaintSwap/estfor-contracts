@@ -459,8 +459,25 @@ abstract contract PlayersBase {
 
   function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) internal {
     Player storage player = players_[_playerId];
-    player.actionQueue = _queuedActions;
-    emit SetActionQueue(_from, _playerId, player.actionQueue);
+
+    // If ids are the same as existing, then just change the first one. Optimization when just claiming loot
+    bool same = true;
+    if (player.actionQueue.length == _queuedActions.length) {
+      for (uint i = 0; i < _queuedActions.length; ++i) {
+        if (player.actionQueue[i].queueId != _queuedActions[i].queueId) {
+          same = false;
+          break;
+        }
+      }
+    }
+
+    if (same && player.actionQueue.length == _queuedActions.length && _queuedActions.length > 0) {
+      player.actionQueue[0] = _queuedActions[0];
+    } else {
+      // Replace everything
+      player.actionQueue = _queuedActions;
+    }
+    emit SetActionQueue(_from, _playerId, _queuedActions);
   }
 
   function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) internal {
