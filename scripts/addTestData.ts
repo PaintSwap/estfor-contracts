@@ -51,10 +51,6 @@ export const addTestData = async (
   await tx.wait();
   console.log("Start woodcutting action");
 
-  tx = await players.setSpeedMultiplier(playerId, 60); // Turns 1 second into 1 minute
-  await tx.wait();
-  console.log("Set speed multiiplier");
-
   if (network.chainId == 31337 || network.chainId == 1337) {
     console.log("Increase time");
     await ethers.provider.send("evm_increaseTime", [10000]);

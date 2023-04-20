@@ -170,7 +170,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (players_[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
     }
-    QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
+    (QueuedAction[] memory remainingSkillQueue, uint startTime) = _processActions(msg.sender, _playerId);
+    players_[_playerId].queuedActionStartTime = uint40(startTime);
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue);
   }
 
@@ -188,15 +189,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external override onlyPlayerNFT {
     itemNFT.mintBatch(_to, _ids, _amounts);
-  }
-
-  function setSpeedMultiplier(uint _playerId, uint16 _multiplier) external isAdminAndAlpha {
-    if (_multiplier < 1) {
-      revert InvalidSpeedMultiplier();
-    }
-    // Disable for production code
-    speedMultiplier[_playerId] = _multiplier;
-    emit SetSpeedMultiplier(_playerId, _multiplier);
   }
 
   function getURI(

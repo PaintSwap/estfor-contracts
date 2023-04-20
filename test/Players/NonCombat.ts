@@ -891,7 +891,6 @@ describe("Non-Combat Actions", function () {
       let requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
       tx = await world.requestRandomWords();
       requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
@@ -921,12 +920,7 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(queuedAction.timespan / 2);
 
-      tx = await world.requestRandomWords();
-      requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
       await players.connect(alice).processActions(playerId);
-
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(0);

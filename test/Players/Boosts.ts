@@ -9,8 +9,6 @@ import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking} from ".
 describe("Boosts", function () {
   this.retries(3);
 
-  const NOW = Math.floor(Date.now() / 1000);
-
   it("Add Boost, Full consume", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
@@ -31,6 +29,7 @@ describe("Boosts", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
       .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
@@ -66,6 +65,7 @@ describe("Boosts", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
       .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
@@ -102,6 +102,7 @@ describe("Boosts", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
       await players
         .connect(alice)
         .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
@@ -139,6 +140,7 @@ describe("Boosts", function () {
       queuedActionFinishAfterBoost.timespan = 86400 - queuedAction.timespan;
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
       await players
         .connect(alice)
         .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
@@ -172,6 +174,7 @@ describe("Boosts", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
       await players
         .connect(alice)
         .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
@@ -202,6 +205,7 @@ describe("Boosts", function () {
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
       .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
@@ -243,6 +247,7 @@ describe("Boosts", function () {
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
       .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
@@ -289,6 +294,7 @@ describe("Boosts", function () {
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
       .startActionsExtra(
@@ -329,6 +335,7 @@ describe("Boosts", function () {
     const minLevel = 1;
     const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
       .startActionsExtra(

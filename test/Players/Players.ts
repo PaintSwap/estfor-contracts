@@ -69,22 +69,6 @@ describe("Players", function () {
     }
   });
 
-  it("Speed multiplier", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
-    await players.connect(alice).setSpeedMultiplier(playerId, 2);
-
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
-    await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
-    // Check the drops are as expected
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10))
-    );
-    expect((await players.getActionQueue(playerId)).length).to.eq(0);
-  });
-
   it("Partial consume aux items", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);

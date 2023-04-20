@@ -102,9 +102,15 @@ describe("World", function () {
       await expect(world.getRandomWord(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
       // Before 5 day offset
-      await expect(world.getRandomWord(currentTimestamp - minRandomWordsUpdateTime * 6)).to.be.reverted;
+      await expect(world.getRandomWord(currentTimestamp - minRandomWordsUpdateTime * 6)).to.be.revertedWithCustomError(
+        world,
+        "NoValidRandomWord"
+      );
       // After offset
-      await expect(world.getRandomWord(currentTimestamp + minRandomWordsUpdateTime)).to.be.reverted;
+      await expect(world.getRandomWord(currentTimestamp + minRandomWordsUpdateTime)).to.be.revertedWithCustomError(
+        world,
+        "NoValidRandomWord"
+      );
     });
 
     it("Get full/multiple words", async function () {

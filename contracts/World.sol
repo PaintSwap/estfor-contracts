@@ -269,17 +269,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     equipment = _getDailyReward(7);
   }
 
-  function _getRandomWordOffset(uint _timestamp) private view returns (uint) {
-    return (_timestamp - startTime) / MIN_RANDOM_WORDS_UPDATE_TIME;
+  function _getRandomWordOffset(uint _timestamp) private view returns (int) {
+    if (_timestamp < startTime) {
+      return -1;
+    }
+    return int((_timestamp - startTime) / MIN_RANDOM_WORDS_UPDATE_TIME);
   }
 
   // Just returns the first random word of the array
   function _getRandomWord(uint _timestamp) private view returns (uint) {
-    uint offset = _getRandomWordOffset(_timestamp);
-    if (requestIds.length <= offset) {
+    int offset = _getRandomWordOffset(_timestamp);
+    if (offset < 0 || requestIds.length <= uint(offset)) {
       return 0;
     }
-    return randomWords[requestIds[offset]][0];
+    return randomWords[requestIds[uint(offset)]][0];
   }
 
   function hasRandomWord(uint _timestamp) external view returns (bool) {
@@ -294,11 +297,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function getFullRandomWords(uint _timestamp) public view returns (uint[3] memory) {
-    uint offset = _getRandomWordOffset(_timestamp);
-    if (requestIds.length <= offset) {
+    int offset = _getRandomWordOffset(_timestamp);
+    if (offset < 0 || requestIds.length <= uint(offset)) {
       revert NoValidRandomWord();
     }
-    return randomWords[requestIds[offset]];
+    return randomWords[requestIds[uint(offset)]];
   }
 
   function getMultipleFullRandomWords(uint _timestamp) public view returns (uint[3][5] memory words) {

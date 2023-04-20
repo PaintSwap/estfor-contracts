@@ -324,6 +324,7 @@ contract PlayersImplMisc is
     address _from,
     uint _playerId,
     QueuedAction memory _queuedAction,
+    uint _queuedActionStartTime,
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
@@ -437,7 +438,7 @@ contract PlayersImplMisc is
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-      uint boostedTime = PlayersLibrary.getBoostedTime(_queuedAction.startTime, _elapsedTime, activeBoost);
+      uint boostedTime = PlayersLibrary.getBoostedTime(_queuedActionStartTime, _elapsedTime, activeBoost);
       if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
         numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
@@ -459,7 +460,7 @@ contract PlayersImplMisc is
     player.magic = 1;
     player.range = 1;
     player.defence = 1;
-    player.totalXP = uint128(START_XP_);
+    player.totalXP = uint112(START_XP_);
 
     U256 length = uint256(_startSkills[1] != Skill.NONE ? 2 : 1).asU256();
     uint32 xpEach = uint32(START_XP_ / length.asUint256());

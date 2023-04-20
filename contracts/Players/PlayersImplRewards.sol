@@ -205,8 +205,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState) {
     Player storage player = players_[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
-    uint _speedMultiplier = speedMultiplier[_playerId];
-
     pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length);
     pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueue.length);
 
@@ -223,9 +221,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint totalXPGained;
     U256 bounds = actionQueue.length.asU256();
     uint pendingQueuedActionStateLength;
+    uint startTime = players_[_playerId].queuedActionStartTime;
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
-
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
         .equipmentStates[i];
       PendingQueuedActionMetadata memory pendingQueuedActionMetadata = pendingQueuedActionState.actionMetadatas[i];
@@ -263,10 +261,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       uint32 pointsAccrued;
-      uint skillEndTime = queuedAction.startTime +
-        (_speedMultiplier > 1 ? uint(queuedAction.timespan) / _speedMultiplier : queuedAction.timespan);
+      uint endTime = startTime + queuedAction.timespan;
 
-      uint elapsedTime = _getElapsedTime(_playerId, skillEndTime, queuedAction);
+      uint elapsedTime = _getElapsedTime(startTime, endTime);
       if (elapsedTime == 0) {
         break;
       }
@@ -281,7 +278,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
         queuedAction.actionId
       );
-      bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
+      bool actionHasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
       ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
       uint refundTime;
@@ -304,6 +301,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           from,
           _playerId,
           queuedAction,
+          startTime,
           elapsedTime,
           combatStats,
           actionChoice,
@@ -340,7 +338,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           refundTime = elapsedTime - (numProduced * (3600 * 10)) / actionRewards.guaranteedRewardRate1;
         }
 
-        if (hasRandomRewards) {
+        if (actionHasRandomRewards) {
           uint tempRefundTime = elapsedTime % 3600;
           if (tempRefundTime > refundTime) {
             refundTime = tempRefundTime;
@@ -357,6 +355,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           from,
           _playerId,
           queuedAction,
+          startTime,
           skill,
           xpElapsedTime,
           pendingQueuedActionState.equipmentStates
@@ -370,7 +369,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       // Include loot
       (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
         _playerId,
-        queuedAction.startTime,
+        uint40(startTime),
         xpElapsedTime,
         queuedAction.actionId
       );
@@ -389,11 +388,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       totalXPGained += xpGained;
 
       // Number of pending reward rolls
-      if (hasRandomRewards) {
-        bool hasRandomWord = world.hasRandomWord(queuedAction.startTime + xpElapsedTime);
+      if (actionHasRandomRewards) {
+        bool hasRandomWord = world.hasRandomWord(startTime + elapsedTime - refundTime);
         if (!hasRandomWord) {
-          uint16 monstersKilled = uint16((numSpawnedPerHour * xpElapsedTime) / 3600);
-          pendingQueuedActionMetadata.rolls = uint32(isCombat ? monstersKilled : xpElapsedTime / 3600);
+          if (isCombat) {
+            uint16 monstersKilled = uint16((numSpawnedPerHour * xpElapsedTime) / 3600);
+            pendingQueuedActionMetadata.rolls = uint32(monstersKilled);
+          } else {
+            pendingQueuedActionMetadata.rolls = uint32(xpElapsedTime / 3600);
+          }
         }
       }
 
@@ -402,6 +405,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         mstore(mload(pendingQueuedActionEquipmentState), consumedLength)
         mstore(mload(add(pendingQueuedActionEquipmentState, 32)), producedLength)
       }
+      startTime += queuedAction.timespan;
     } // end of loop
 
     // XPRewards
@@ -684,6 +688,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     address _from,
     uint _playerId,
     QueuedAction storage _queuedAction,
+    uint _queuedActionStartTime,
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
@@ -708,6 +713,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _from,
         _playerId,
         _queuedAction,
+        _queuedActionStartTime,
         _elapsedTime,
         _combatStats,
         _actionChoice,

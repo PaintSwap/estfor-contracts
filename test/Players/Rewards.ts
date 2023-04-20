@@ -493,7 +493,6 @@ describe("Rewards", function () {
     let requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
     await mockOracleClient.fulfill(requestId, world.address);
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     tx = await world.requestRandomWords();
     requestId = getRequestId(tx);
     expect(requestId).to.not.eq(0);
@@ -520,7 +519,7 @@ describe("Rewards", function () {
       {
         const actionQueue = await players.getActionQueue(playerId);
         expect(actionQueue.length).to.eq(1);
-        endTime = actionQueue[0].startTime + actionQueue[0].timespan;
+        endTime = (await players.players(playerId)).queuedActionStartTime + actionQueue[0].timespan;
       }
 
       expect(await world.hasRandomWord(endTime)).to.be.false;
@@ -656,7 +655,8 @@ describe("Rewards", function () {
       {
         const actionQueue = await players.getActionQueue(playerId);
         expect(actionQueue.length).to.eq(2);
-        endTime = actionQueue[1].startTime + actionQueue[1].timespan;
+        endTime =
+          (await players.players(playerId)).queuedActionStartTime + actionQueue[0].timespan + actionQueue[1].timespan;
       }
 
       expect(await world.hasRandomWord(endTime)).to.be.false;

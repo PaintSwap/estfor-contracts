@@ -56,10 +56,11 @@ struct Player {
   int16 range;
   int16 defence;
   int16 health;
-  uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP
-  uint128 totalXP;
+  uint40 queuedActionStartTime; // The start time of the first queued action
   Skill skillBoosted1;
   Skill skillBoosted2;
+  uint112 totalXP;
+  uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP. Not used currently
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
   string name;
@@ -228,6 +229,7 @@ interface IPlayersMiscDelegateView {
     address from,
     uint playerId,
     QueuedAction memory queuedAction,
+    uint queuedActionStartTime,
     uint elapsedTime,
     CombatStats memory combatStats,
     ActionChoice memory actionChoice,

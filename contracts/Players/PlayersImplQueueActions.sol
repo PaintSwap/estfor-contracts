@@ -37,8 +37,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   ) external {
     address from = msg.sender;
     uint totalTimespan;
-    QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
-
+    (QueuedAction[] memory remainingSkills, uint startTime) = _processActions(from, _playerId);
     Player storage player = players_[_playerId];
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
@@ -46,6 +45,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         QueuedAction[] memory queuedActions;
         player.actionQueue = queuedActions;
       }
+      player.queuedActionStartTime = _queuedActions.length != 0 ? uint40(block.timestamp) : 0;
       if (_queuedActions.length > 3) {
         revert TooManyActionsQueued();
       }
@@ -67,6 +67,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         j = j.dec();
         totalTimespan += remainingSkills[j.asUint256()].timespan;
       }
+
+      if (remainingSkills.length > 0) {
+        player.queuedActionStartTime = uint40(startTime);
+      } else {
+        player.queuedActionStartTime = _queuedActions.length != 0 ? uint40(block.timestamp) : 0;
+      }
     }
 
     uint prevEndTime = block.timestamp.add(totalTimespan);
@@ -86,7 +92,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         _queuedActions[i].timespan = uint24(MAX_TIME_.sub(totalTimespan));
       }
 
-      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint64(), prevEndTime);
+      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint64());
 
       queueId = queueId.inc();
       totalTimespan += _queuedActions[i].timespan;
@@ -148,13 +154,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
   }
 
-  function _addToQueue(
-    address _from,
-    uint _playerId,
-    QueuedActionInput memory _queuedAction,
-    uint64 _queueId,
-    uint _startTime
-  ) private {
+  function _addToQueue(address _from, uint _playerId, QueuedActionInput memory _queuedAction, uint64 _queueId) private {
     _checkAddToQueue(_queuedAction);
     Player storage _player = players_[_playerId];
 
@@ -219,7 +219,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     QueuedAction memory queuedAction;
     queuedAction.isValid = true;
-    queuedAction.startTime = uint40(_startTime);
     queuedAction.timespan = _queuedAction.timespan;
     queuedAction.queueId = _queueId;
     queuedAction.actionId = _queuedAction.actionId;
@@ -443,6 +442,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   // Removes all the actions from the queue
   function clearEverything(address _from, uint _playerId) public {
     _processActions(_from, _playerId);
+    players_[_playerId].queuedActionStartTime = 0;
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);
     // Can re-mint boost if it hasn't been consumed at all yet

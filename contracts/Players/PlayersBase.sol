@@ -38,7 +38,6 @@ abstract contract PlayersBase {
     uint[] queueIds
   );
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
-  event SetSpeedMultiplier(uint playerId, uint16 multiplier);
 
   event BoostFinished(uint playerId);
 
@@ -99,7 +98,6 @@ abstract contract PlayersBase {
   error ActionChoiceIdRequired();
   error InvalidEquipPosition();
   error NoActionsToProcess();
-  error InvalidSpeedMultiplier();
   error NotAdminAndAlpha();
   error XPThresholdNotFound();
   error InvalidItemTokenId();
@@ -117,8 +115,6 @@ abstract contract PlayersBase {
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;
-
-  mapping(uint playerId => uint multiplier) internal speedMultiplier; // 0 or 1 is diabled, for testing only
 
   mapping(address user => uint playerId) internal activePlayer_;
 
@@ -280,6 +276,7 @@ abstract contract PlayersBase {
     address _from,
     uint _playerId,
     QueuedAction storage _queuedAction,
+    uint _startTime,
     Skill _skill,
     uint _xpElapsedTime,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
@@ -287,7 +284,7 @@ abstract contract PlayersBase {
     bool _isCombatSkill = _isCombatStyle(_queuedAction.combatStyle);
     uint24 xpPerHour = world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
-    pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _queuedAction.startTime, _xpElapsedTime, xpPerHour);
+    pointsAccrued += _extraXPFromBoost(_playerId, _isCombatSkill, _startTime, _xpElapsedTime, xpPerHour);
     pointsAccrued += _extraXPFromFullAttire(
       _from,
       attire_[_playerId][_queuedAction.queueId],
@@ -353,25 +350,14 @@ abstract contract PlayersBase {
     return _combatStyle != CombatStyle.NONE;
   }
 
-  function _getElapsedTime(
-    uint _playerId,
-    uint _skillEndTime,
-    QueuedAction storage _queuedAction
-  ) internal view returns (uint elapsedTime) {
-    uint _speedMultiplier = speedMultiplier[_playerId];
-    bool consumeAll = _skillEndTime <= block.timestamp;
-
+  function _getElapsedTime(uint _startTime, uint _endTime) internal view returns (uint elapsedTime) {
+    bool consumeAll = _endTime <= block.timestamp;
     if (consumeAll) {
       // Fully consume this skill
-      elapsedTime = _queuedAction.timespan;
-    } else if (block.timestamp > _queuedAction.startTime) {
+      elapsedTime = _endTime - _startTime;
+    } else if (block.timestamp > _startTime) {
       // partially consume
-      elapsedTime = block.timestamp - _queuedAction.startTime;
-      uint modifiedElapsedTime = _speedMultiplier > 1 ? uint(elapsedTime) * _speedMultiplier : elapsedTime;
-      // Up to timespan
-      if (modifiedElapsedTime > _queuedAction.timespan) {
-        elapsedTime = _queuedAction.timespan;
-      }
+      elapsedTime = block.timestamp - _startTime;
     }
   }
 
@@ -494,12 +480,15 @@ abstract contract PlayersBase {
     }
   }
 
-  function _processActions(address _from, uint _playerId) internal returns (QueuedAction[] memory remainingSkills) {
+  function _processActions(
+    address _from,
+    uint _playerId
+  ) internal returns (QueuedAction[] memory remainingSkills, uint startTime) {
     bytes memory data = _delegatecall(
       implProcessActions,
       abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)
     );
-    return abi.decode(data, (QueuedAction[]));
+    return abi.decode(data, (QueuedAction[], uint));
   }
 
   function _claimRandomRewards(uint _playerId) internal {
