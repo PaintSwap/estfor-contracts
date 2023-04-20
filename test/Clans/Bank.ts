@@ -56,16 +56,15 @@ describe("Bank", function () {
 
     await expect(bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "DepositItems")
-      .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1])
-      .and.to.not.emit(bank, "DepositItems");
+      .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
 
     expect(await bank.uniqueItemCount()).to.eq(1);
 
     await expect(
       itemNFT.connect(alice).safeTransferFrom(alice.address, clanBankAddress, EstforConstants.BRONZE_SHIELD, 1, "0x")
     )
-      .to.emit(bank, "DepositItemNoPlayer")
-      .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, 1);
+      .to.emit(bank, "DepositItem")
+      .withArgs(alice.address, playerId, EstforConstants.BRONZE_SHIELD, 1);
 
     expect(await bank.uniqueItemCount()).to.eq(1); // Still just 1 as it's the same
     await expect(
@@ -80,7 +79,7 @@ describe("Bank", function () {
         )
     )
       .to.emit(bank, "DepositItems")
-      .withArgs(alice.address, [EstforConstants.SAPPHIRE_AMULET, EstforConstants.BRONZE_ARROW], [5, 10]);
+      .withArgs(alice.address, playerId, [EstforConstants.SAPPHIRE_AMULET, EstforConstants.BRONZE_ARROW], [5, 10]);
     expect(await bank.uniqueItemCount()).to.eq(3);
 
     // Have now reached the max
