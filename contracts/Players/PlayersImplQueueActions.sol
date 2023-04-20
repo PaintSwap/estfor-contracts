@@ -99,7 +99,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       prevEndTime += _queuedActions[i].timespan;
     }
 
-    emit SetActionQueue(from, _playerId, player.actionQueue);
+    emit SetActionQueue(from, _playerId, player.actionQueue, player.queuedActionStartTime);
 
     assert(totalTimespan <= MAX_TIME_); // Should never happen
     nextQueueId = queueId.asUint64();
@@ -433,7 +433,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function _clearActionQueue(address _from, uint _playerId) private {
     QueuedAction[] memory queuedActions;
-    _setActionQueue(_from, _playerId, queuedActions);
+    uint startTime = 0;
+    _setActionQueue(_from, _playerId, queuedActions, startTime);
   }
 
   // Consumes all the actions in the queue up to this time.

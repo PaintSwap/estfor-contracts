@@ -24,7 +24,7 @@ abstract contract PlayersBase {
 
   event ClearAll(address from, uint playerId);
   event AddXP(address from, uint playerId, Skill skill, uint32 points);
-  event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions);
+  event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, uint startTime);
   event ConsumeBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
   event UnconsumeBoostVial(address from, uint playerId);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
@@ -457,7 +457,12 @@ abstract contract PlayersBase {
     //    combatStats.rangeDefence = _player.defence;
   }
 
-  function _setActionQueue(address _from, uint _playerId, QueuedAction[] memory _queuedActions) internal {
+  function _setActionQueue(
+    address _from,
+    uint _playerId,
+    QueuedAction[] memory _queuedActions,
+    uint _startTime
+  ) internal {
     Player storage player = players_[_playerId];
 
     // If ids are the same as existing, then just change the first one. Optimization when just claiming loot
@@ -477,7 +482,7 @@ abstract contract PlayersBase {
       // Replace everything
       player.actionQueue = _queuedActions;
     }
-    emit SetActionQueue(_from, _playerId, _queuedActions);
+    emit SetActionQueue(_from, _playerId, _queuedActions, _startTime);
   }
 
   function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) internal {
