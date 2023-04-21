@@ -105,7 +105,7 @@ export const playersFixture = async function () {
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
-  const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address], {
+  const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address, editNameBrushPrice], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });

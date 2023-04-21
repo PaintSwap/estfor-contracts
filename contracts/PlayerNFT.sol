@@ -26,6 +26,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   event NewPlayer(uint playerId, uint avatarId, string name);
   event EditPlayer(uint playerId, string newName);
+  event EditNameCost(uint newCost);
 
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
@@ -55,9 +56,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   IPlayers private players;
   address private pool;
 
-  uint public editNameCost;
-  uint private royaltyFee;
   address private royaltyReceiver;
+  uint8 private royaltyFee;
+  uint72 public editNameCost; // Max is 4700 BRUSH
   bool public isAlpha;
 
   bytes32 private merkleRoot; // For airdrop
@@ -103,7 +104,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     address _pool,
     address _royaltyReceiver,
     AdminAccess _adminAccess,
-    uint _editNameCost,
+    uint72 _editNameCost,
     string calldata _imageBaseUri,
     bool _isAlpha
   ) public initializer {
@@ -119,6 +120,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
     isAlpha = _isAlpha;
+
+    emit EditNameCost(_editNameCost);
   }
 
   function _mintStartingItems() private {
@@ -260,9 +263,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     // Pay
     brush.transferFrom(_msgSender(), address(this), brushCost);
     // Send half to the pool (currently shop)
-    brush.transfer(pool, brushCost - (brushCost / 2));
+    uint half = (brushCost / 2);
+    brush.transfer(pool, brushCost - half);
     // Burn the other half
-    brush.burn(brushCost / 2);
+    brush.burn(half);
 
     string memory trimmedName = _setName(_playerId, _newName);
     emit EditPlayer(_playerId, trimmedName);
@@ -326,8 +330,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     players = _players;
   }
 
-  function setEditNameCost(uint _editNameCost) external onlyOwner {
+  function setEditNameCost(uint72 _editNameCost) external onlyOwner {
     editNameCost = _editNameCost;
+    emit EditNameCost(_editNameCost);
   }
 
   // solhint-disable-next-line no-empty-blocks

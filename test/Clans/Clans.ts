@@ -43,7 +43,8 @@ describe("Clans", function () {
       .and.to.emit(bankFactory, "BankContractCreated")
       .withArgs(alice.address, clanId, newContactAddr);
 
-    return {...fixture, clans, clanName, tierId, imageId, clanId, tier};
+    const editNameCost = await clans.editNameCost();
+    return {...fixture, clans, clanName, tierId, imageId, clanId, tier, editNameCost};
   }
   describe("Create a clan", () => {
     it("New clan", async () => {
@@ -129,8 +130,14 @@ describe("Clans", function () {
 
   describe("Edit clans", () => {
     it("Edited clan name should be freed and available", async () => {
-      const {clans, alice, clanId, clanName, imageId} = await loadFixture(clanFixture);
+      const {clans, alice, clanId, clanName, imageId, brush, editNameCost} = await loadFixture(clanFixture);
       const anotherName = "Another name";
+      await expect(clans.connect(alice).editClan(clanId, anotherName, imageId)).to.be.reverted;
+      // Needs brush and approval
+      const brushAmount = editNameCost.mul(5);
+      await brush.mint(alice.address, brushAmount);
+      await brush.connect(alice).approve(clans.address, brushAmount);
+
       await clans.connect(alice).editClan(clanId, anotherName, imageId);
       expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.false;
       expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
