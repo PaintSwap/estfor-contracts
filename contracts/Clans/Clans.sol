@@ -15,6 +15,7 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   using UnsafeMath for U256;
   using UnsafeMath for uint16;
+  using UnsafeMath for uint80;
   using UnsafeMath for uint256;
 
   event ClanCreated(uint clanId, uint playerId, string name, uint imageId, uint tierId);
@@ -35,6 +36,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event PlayerRankUpdated(uint clanId, uint memberId, ClanRank rank, uint playerId);
   event InvitesDeletedByPlayer(uint[] clanIds, uint playerId);
   event InvitesDeletedByClan(uint clanId, uint[] invitedPlayerIds, uint deletedInvitesPlayerId);
+  event EditNameCost(uint newCost);
 
   error AlreadyInClan();
   error NotOwnerOfPlayer();
@@ -138,11 +140,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _;
   }
 
-  IBrushToken private brushToken;
+  IBrushToken private brush;
   IPlayers private players;
   IBankFactory public bankFactory;
+  uint80 public nextClanId;
   address private pool;
-  uint public nextClanId;
+  uint80 public editNameCost;
   mapping(uint clanId => Clan clan) public clans;
   mapping(uint playerId => PlayerInfo) public playerInfo;
   mapping(uint id => Tier tier) public tiers;
@@ -154,12 +157,14 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brushToken, address _pool) external initializer {
+  function initialize(IBrushToken _brush, address _pool, uint80 _editNameCost) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    brushToken = _brushToken;
+    brush = _brush;
     pool = _pool;
     nextClanId = 1;
+    editNameCost = _editNameCost;
+    emit EditNameCost(_editNameCost);
   }
 
   function createClan(
@@ -181,7 +186,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _checkClanImage(_imageId, tier.maxImageId);
 
     uint clanId = nextClanId;
-    nextClanId = nextClanId.inc();
+    nextClanId = uint80(nextClanId.inc());
     Clan storage clan = clans[clanId];
     clan.owner = uint80(_playerId);
     clan.tierId = _tierId;
@@ -195,7 +200,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       removeJoinRequest(clanId, _playerId);
     }
 
-    string memory trimmedName = _setName(clanId, _name);
+    (string memory trimmedName, bool nameChanged) = _setName(clanId, _name);
     emit ClanCreated(clanId, _playerId, trimmedName, _imageId, _tierId);
     if (_tierId != 1) {
       _upgradeClan(clanId, _playerId, _tierId);
@@ -208,7 +213,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     Clan storage clan = clans[_clanId];
     Tier storage tier = tiers[clan.tierId];
     _checkClanImage(_imageId, tier.maxImageId);
-    string memory trimmedName = _setName(_clanId, _name);
+    (string memory trimmedName, bool nameChanged) = _setName(_clanId, _name);
+    if (nameChanged) {
+      _pay(editNameCost);
+    }
     emit ClanEdited(_clanId, clans[_clanId].owner, trimmedName, _imageId);
   }
 
@@ -470,7 +478,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
   }
 
-  function _setName(uint _clanId, string calldata _name) private returns (string memory trimmedName) {
+  function _setName(uint _clanId, string calldata _name) private returns (string memory trimmedName, bool nameChanged) {
     // Trimmed name cannot be empty
     trimmedName = EstforLibrary.trim(_name);
     if (bytes(trimmedName).length < 3) {
@@ -486,7 +494,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
     string memory oldName = EstforLibrary.toLower(clans[_clanId].name);
-    bool nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
+    nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
       if (lowercaseNames[trimmedAndLowercaseName]) {
         revert NameAlreadyExists();
@@ -548,6 +556,16 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanOwnershipTransferred(_clanId, _playerId);
   }
 
+  function _pay(uint _brushCost) private {
+    // Pay
+    brush.transferFrom(msg.sender, address(this), _brushCost);
+    // Send half to the pool (currently shop)
+    uint half = _brushCost / 2;
+    brush.transfer(pool, _brushCost - half);
+    // Burn the other half
+    brush.burn(half);
+  }
+
   function _upgradeClan(uint _clanId, uint _playerId, uint8 _newTierId) private {
     Tier storage oldTier = tiers[clans[_clanId].tierId];
     if (oldTier.id == 0) {
@@ -564,10 +582,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     uint priceDifference = newTier.price - oldTier.price;
-    uint half = priceDifference / 2;
-    brushToken.transferFrom(msg.sender, address(this), priceDifference);
-    brushToken.burn(half);
-    brushToken.transfer(pool, priceDifference - half);
+    _pay(priceDifference);
+
     clans[_clanId].tierId = _newTierId; // Increase the tier
     emit ClanUpgraded(_clanId, _playerId, _newTierId);
   }
@@ -624,6 +640,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function setPlayers(IPlayers _players) external onlyOwner {
     players = _players;
+  }
+
+  function setEditNameCost(uint72 _editNameCost) external onlyOwner {
+    editNameCost = _editNameCost;
+    emit EditNameCost(_editNameCost);
   }
 
   function _authorizeUpgrade(address) internal override onlyOwner {}
