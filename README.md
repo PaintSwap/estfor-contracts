@@ -52,6 +52,7 @@ TODO
 
 ### Fantom mainnet alpha deployed contract addresses:
 
+WorldLibrary [0xd37796f51b461bc483cde9cf7c6f7881cace4738](https://ftmscan.com/address/0xd37796f51b461bc483cde9cf7c6f7881cace4738)  
 World [0xd37796f51b461bc483cde9cf7c6f7881cace4738](https://ftmscan.com/address/0xd37796f51b461bc483cde9cf7c6f7881cace4738)  
 Shop [0xa0f16f4489dd45e2fb36d39910f7f767b81d638c](https://ftmscan.com/address/0xa0f16f4489dd45e2fb36d39910f7f767b81d638c)  
 RoyaltyReceiver [0x4f87eec592ac027ddb89ddf51cd30b54a05bb1fa](https://ftmscan.com/address/0x4f87eec592ac027ddb89ddf51cd30b54a05bb1fa)  
@@ -59,7 +60,7 @@ AdminAccess [0xf48dd4dd241b5937ebd1863294461d2f7797cc17](https://ftmscan.com/add
 ItemNFTLibrary [0x4cc630e42217631b60673473d603883c644777d0](https://ftmscan.com/address/0x4cc630e42217631b60673473d603883c644777d0)  
 ItemNFT [0x346e7b2a1f79408a85ecb251893bf2d76c767e67](https://ftmscan.com/address/0x346e7b2a1f79408a85ecb251893bf2d76c767e67)  
 EstforLibrary [0x368c6c7c249ef53ff5b0b90deb517050afc965b5](https://ftmscan.com/address/0x368c6c7c249ef53ff5b0b90deb517050afc965b5)  
-PlayerNFT [0x8b2be032dd0de14344c714019f7ea3a796912cb1](https://ftmscan.com/address/0x8b2be032dd0de14344c714019f7ea3a796912cb1)
+PlayerNFT [0x8b2be032dd0de14344c714019f7ea3a796912cb1](https://ftmscan.com/address/0x8b2be032dd0de14344c714019f7ea3a796912cb1)  
 Quests [0xcf5e559cdd5ed66790aa0180ab01465e687f8942](https://ftmscan.com/address/0xcf5e559cdd5ed66790aa0180ab01465e687f8942)
 
 Clans [0x020f393c21b968a124b1280f319d2f84ff76ad9a](https://ftmscan.com/address/0x020f393c21b968a124b1280f319d2f84ff76ad9a)  
