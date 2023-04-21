@@ -105,11 +105,21 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       ActionRewards memory actionRewards = world.getActionRewards(queuedAction.actionId);
       if (queuedAction.choiceId != 0) {
         // Includes combat
-        uint combatElapsedTime;
         actionChoice = world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
+
+        Equipment[] memory consumedEquipments;
+        Equipment memory outputEquipment;
         uint24 baseNumConsumed;
         uint24 numProduced;
-        (xpElapsedTime, combatElapsedTime, refundTime, died, baseNumConsumed, numProduced) = _processConsumables(
+        (
+          consumedEquipments,
+          outputEquipment,
+          xpElapsedTime,
+          refundTime,
+          died,
+          baseNumConsumed,
+          numProduced
+        ) = _processConsumablesView(
           _from,
           _playerId,
           queuedAction,
@@ -119,6 +129,29 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           actionChoice,
           pendingQueuedActionEquipmentStates
         );
+
+        if (died) {
+          xpElapsedTime = 0;
+          refundTime = 0;
+        }
+
+        // Food and inputs
+        if (consumedEquipments.length > 0) {
+          uint[] memory itemTokenIds = new uint[](consumedEquipments.length);
+          uint[] memory amounts = new uint[](consumedEquipments.length);
+          for (uint j = 0; j < consumedEquipments.length; ++j) {
+            itemTokenIds[j] = consumedEquipments[j].itemTokenId;
+            amounts[j] = consumedEquipments[j].amount;
+          }
+
+          itemNFT.burnBatch(_from, itemTokenIds, amounts);
+          emit Consumes(_from, _playerId, queuedAction.queueId, itemTokenIds, amounts);
+        }
+        // Any output from the action choice
+        if (outputEquipment.itemTokenId != NONE) {
+          itemNFT.mint(_from, outputEquipment.itemTokenId, outputEquipment.amount);
+          emit Reward(_from, _playerId, queuedAction.queueId, outputEquipment.itemTokenId, outputEquipment.amount);
+        }
 
         Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
         if (skill == Skill.COOKING) {
@@ -255,16 +288,23 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint[] memory _choiceIds,
     uint[] memory _choiceIdAmounts
   ) private {
-    _delegatecall(
-      implMisc,
-      abi.encodeWithSelector(
-        IPlayersMiscDelegate.processQuests.selector,
-        _from,
-        _playerId,
-        _choiceIds,
-        _choiceIdAmounts
-      )
-    );
+    (
+      uint[] memory itemTokenIds,
+      uint[] memory amounts,
+      uint[] memory itemTokenIdsBurned,
+      uint[] memory amountsBurned
+    ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
+    // Mint the rewards
+    if (itemTokenIds.length != 0) {
+      itemNFT.mintBatch(_from, itemTokenIds, amounts);
+      emit Rewards(_from, _playerId, NONE, itemTokenIds, amounts);
+    }
+
+    // Burn some items if quest requires it.
+    if (itemTokenIdsBurned.length > 0) {
+      itemNFT.burnBatch(_from, itemTokenIdsBurned, amountsBurned);
+      emit Consumes(_from, _playerId, NONE, itemTokenIdsBurned, amountsBurned);
+    }
   }
 
   function _processActionsFinished(address _from, uint _playerId) private {
@@ -276,163 +316,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
       delete activeBoosts_[_playerId];
       emit BoostFinished(_playerId);
-    }
-  }
-
-  function _processConsumables(
-    address _from,
-    uint _playerId,
-    QueuedAction storage _queuedAction,
-    uint _startTime,
-    uint _elapsedTime,
-    CombatStats memory _combatStats,
-    ActionChoice memory _actionChoice,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  )
-    private
-    returns (
-      uint xpElapsedTime,
-      uint combatElapsedTime,
-      uint refundTime,
-      bool died,
-      uint24 numConsumed,
-      uint24 numProduced
-    )
-  {
-    bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
-
-    if (isCombat) {
-      CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
-      // TODO: Needed here too?
-      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayersLibrary.getCombatAdjustedElapsedTimes(
-        _from,
-        itemNFT,
-        world,
-        _elapsedTime,
-        _actionChoice,
-        _queuedAction,
-        _combatStats,
-        enemyCombatStats,
-        alphaCombat,
-        betaCombat,
-        _pendingQueuedActionEquipmentStates
-      );
-
-      died = _processFoodConsumed(_from, _playerId, _queuedAction, combatElapsedTime, _combatStats, enemyCombatStats);
-
-      if (died) {
-        xpElapsedTime = 0;
-        refundTime = 0;
-      }
-    } else {
-      (xpElapsedTime, refundTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
-        _from,
-        itemNFT,
-        _elapsedTime,
-        _actionChoice,
-        _pendingQueuedActionEquipmentStates
-      );
-    }
-
-    _processInputConsumables(_from, _playerId, _actionChoice, numConsumed, _queuedAction.queueId);
-
-    if (_actionChoice.outputTokenId != 0) {
-      uint8 successPercent = 100;
-      if (_actionChoice.successPercent != 100) {
-        uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
-        uint skillLevel = PlayersLibrary.getLevel(xp_[_playerId][_actionChoice.skill]);
-        uint extraBoost = skillLevel - minLevel;
-
-        successPercent = uint8(
-          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent.add(extraBoost))
-        );
-      }
-
-      numProduced = (numConsumed * _actionChoice.outputAmount * successPercent) / 100;
-
-      // Check for any gathering boosts
-      PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-      uint boostedTime = PlayersLibrary.getBoostedTime(_startTime, _elapsedTime, activeBoost);
-      if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-        numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
-      }
-      if (numProduced != 0) {
-        itemNFT.mint(_from, _actionChoice.outputTokenId, numProduced);
-        emit Reward(_from, _playerId, _queuedAction.queueId, _actionChoice.outputTokenId, numProduced);
-      }
-    }
-  }
-
-  function _processInputConsumables(
-    address _from,
-    uint _playerId,
-    ActionChoice memory _actionChoice,
-    uint24 _numConsumed,
-    uint64 _queueId
-  ) private {
-    if (_numConsumed != 0) {
-      _processConsumable(
-        _from,
-        _playerId,
-        _actionChoice.inputTokenId1,
-        _numConsumed * _actionChoice.inputAmount1,
-        _queueId
-      );
-      _processConsumable(
-        _from,
-        _playerId,
-        _actionChoice.inputTokenId2,
-        _numConsumed * _actionChoice.inputAmount2,
-        _queueId
-      );
-      _processConsumable(
-        _from,
-        _playerId,
-        _actionChoice.inputTokenId3,
-        _numConsumed * _actionChoice.inputAmount3,
-        _queueId
-      );
-    }
-  }
-
-  function _processConsumable(
-    address _from,
-    uint _playerId,
-    uint16 _itemTokenId,
-    uint24 _numConsumed,
-    uint64 _queueId
-  ) private {
-    if (_itemTokenId == NONE) {
-      return;
-    }
-    emit Consume(_from, _playerId, _queueId, _itemTokenId, _numConsumed);
-    itemNFT.burn(_from, _itemTokenId, _numConsumed);
-  }
-
-  function _processFoodConsumed(
-    address _from,
-    uint _playerId,
-    QueuedAction storage _queuedAction,
-    uint _combatElapsedTime,
-    CombatStats memory _combatStats,
-    CombatStats memory _enemyCombatStats
-  ) private returns (bool died) {
-    uint24 foodConsumed;
-    // Figure out how much food should be used
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
-    (foodConsumed, died) = PlayersLibrary.foodConsumedView(
-      _from,
-      _queuedAction.regenerateId,
-      _combatElapsedTime,
-      itemNFT,
-      _combatStats,
-      _enemyCombatStats,
-      alphaCombat,
-      betaCombat,
-      pendingQueuedActionEquipmentStates
-    );
-    if (foodConsumed != 0) {
-      _processConsumable(_from, _playerId, _queuedAction.regenerateId, foodConsumed, _queuedAction.queueId);
     }
   }
 

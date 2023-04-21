@@ -209,35 +209,6 @@ contract PlayersImplMisc is
     }
   }
 
-  function processQuests(
-    address _from,
-    uint _playerId,
-    uint[] memory _choiceIds,
-    uint[] memory _choiceIdAmounts
-  ) external override {
-    (
-      uint[] memory itemTokenIds,
-      uint[] memory amounts,
-      uint[] memory itemTokenIdsBurned,
-      uint[] memory amountsBurned,
-      Skill[] memory skillsGained,
-      uint32[] memory xpGained,
-      uint[] memory _questsCompleted,
-      PlayerQuest[] memory questsCompletedInfo
-    ) = quests.processQuests(_playerId, _choiceIds, _choiceIdAmounts);
-    // Mint the rewards
-    if (itemTokenIds.length != 0) {
-      itemNFT.mintBatch(_from, itemTokenIds, amounts);
-    }
-
-    // Burn some items if quest requires it.
-    U256 bounds = itemTokenIdsBurned.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      itemNFT.burn(_from, itemTokenIdsBurned[i], amountsBurned[i]);
-    }
-  }
-
   function initialize(
     ItemNFT _itemNFT,
     PlayerNFT _playerNFT,

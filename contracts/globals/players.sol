@@ -250,8 +250,6 @@ interface IPlayersMiscDelegateView {
 
 interface IPlayersMiscDelegate {
   function handleDailyRewards(address from, uint playerId) external;
-
-  function processQuests(address from, uint playerId, uint[] memory choiceIds, uint[] memory choiceIdAmounts) external;
 }
 
 struct FullAttireBonusInput {

@@ -683,43 +683,4 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
     }
   }
-
-  function _processConsumablesView(
-    address _from,
-    uint _playerId,
-    QueuedAction storage _queuedAction,
-    uint _queuedActionStartTime,
-    uint _elapsedTime,
-    CombatStats memory _combatStats,
-    ActionChoice memory _actionChoice,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  )
-    private
-    view
-    returns (
-      Equipment[] memory consumedEquipment,
-      Equipment memory outputEquipment,
-      uint xpElapsedTime,
-      uint refundTime,
-      bool died,
-      uint24 numConsumed,
-      uint24 numProduced
-    )
-  {
-    bytes memory data = _staticcall(
-      address(this),
-      abi.encodeWithSelector(
-        IPlayersMiscDelegateView.processConsumablesViewImpl.selector,
-        _from,
-        _playerId,
-        _queuedAction,
-        _queuedActionStartTime,
-        _elapsedTime,
-        _combatStats,
-        _actionChoice,
-        _pendingQueuedActionEquipmentStates
-      )
-    );
-    return abi.decode(data, (Equipment[], Equipment, uint, uint, bool, uint24, uint24));
-  }
 }

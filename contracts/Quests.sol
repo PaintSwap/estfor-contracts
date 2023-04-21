@@ -200,13 +200,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint[] memory itemTokenIds,
       uint[] memory amounts,
       uint[] memory itemTokenIdsBurned,
-      uint[] memory amountsBurned,
-      Skill[] memory skillsGained,
-      uint32[] memory xpGained,
-      uint[] memory _questsCompleted,
-      PlayerQuest[] memory activeQuestInfo
+      uint[] memory amountsBurned
     )
   {
+    Skill[] memory skillsGained;
+    uint32[] memory xpGained;
+    uint[] memory _questsCompleted;
+    PlayerQuest[] memory activeQuestInfo;
+
     // The items will get minted by the caller
     (
       itemTokenIds,
