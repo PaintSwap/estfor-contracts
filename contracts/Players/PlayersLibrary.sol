@@ -166,18 +166,18 @@ library PlayersLibrary {
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = _pendingQueuedActionEquipmentStates[
         i
       ];
-      U256 jBounds = pendingQueuedActionEquipmentState.produced.length.asU256();
+      U256 jBounds = pendingQueuedActionEquipmentState.producedItemTokenIds.length.asU256();
       for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
         uint j = jIter.asUint256();
-        if (pendingQueuedActionEquipmentState.produced[j].itemTokenId == _itemId) {
-          balance += pendingQueuedActionEquipmentState.produced[j].amount;
+        if (pendingQueuedActionEquipmentState.producedItemTokenIds[j] == _itemId) {
+          balance += pendingQueuedActionEquipmentState.producedAmounts[j];
         }
       }
-      jBounds = pendingQueuedActionEquipmentState.consumed.length.asU256();
+      jBounds = pendingQueuedActionEquipmentState.consumedItemTokenIds.length.asU256();
       for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
         uint j = jIter.asUint256();
-        if (pendingQueuedActionEquipmentState.consumed[j].itemTokenId == _itemId) {
-          balance -= pendingQueuedActionEquipmentState.consumed[j].amount;
+        if (pendingQueuedActionEquipmentState.consumedItemTokenIds[j] == _itemId) {
+          balance -= pendingQueuedActionEquipmentState.consumedAmounts[j];
         }
       }
     }

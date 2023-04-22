@@ -43,29 +43,25 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       PendingQueuedActionEquipmentState memory equipmentState = pendingQueuedActionState.equipmentStates[i];
       PendingQueuedActionMetadata memory actionMetadata = pendingQueuedActionState.actionMetadatas[i];
 
-      if (equipmentState.consumed.length > 0) {
-        Equipment[] memory consumed = equipmentState.consumed;
-        uint[] memory itemTokenIds = new uint[](consumed.length);
-        uint[] memory amounts = new uint[](consumed.length);
-        for (uint j = 0; j < consumed.length; ++j) {
-          itemTokenIds[j] = consumed[j].itemTokenId;
-          amounts[j] = consumed[j].amount;
-        }
-
-        itemNFT.burnBatch(_from, itemTokenIds, amounts);
-        emit Consumes(_from, _playerId, actionMetadata.queueId, itemTokenIds, amounts);
+      if (equipmentState.consumedItemTokenIds.length > 0) {
+        itemNFT.burnBatch(_from, equipmentState.consumedItemTokenIds, equipmentState.consumedAmounts);
+        emit Consumes(
+          _from,
+          _playerId,
+          actionMetadata.queueId,
+          equipmentState.consumedItemTokenIds,
+          equipmentState.consumedAmounts
+        );
       }
-      if (equipmentState.produced.length > 0) {
-        Equipment[] memory produced = equipmentState.produced;
-        uint[] memory itemTokenIds = new uint[](produced.length);
-        uint[] memory amounts = new uint[](produced.length);
-        for (uint j = 0; j < produced.length; ++j) {
-          itemTokenIds[j] = produced[j].itemTokenId;
-          amounts[j] = produced[j].amount;
-        }
-
-        itemNFT.mintBatch(_from, itemTokenIds, amounts);
-        emit Rewards(_from, _playerId, actionMetadata.queueId, itemTokenIds, amounts);
+      if (equipmentState.producedItemTokenIds.length > 0) {
+        itemNFT.mintBatch(_from, equipmentState.producedItemTokenIds, equipmentState.producedAmounts);
+        emit Rewards(
+          _from,
+          _playerId,
+          actionMetadata.queueId,
+          equipmentState.producedItemTokenIds,
+          equipmentState.producedAmounts
+        );
       }
 
       ActionRewards memory actionRewards = world.getActionRewards(actionMetadata.actionId);
@@ -98,7 +94,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (actionMetadata.died) {
         emit Died(_from, _playerId, actionMetadata.queueId);
       }
-
+      // XP gained
       if (actionMetadata.xpGained != 0) {
         uint previousTotalXP = player.totalXP;
         uint newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
@@ -109,28 +105,28 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           _cacheCombatStats(players_[_playerId], xp_[_playerId][Skill.HEALTH], skill, xp_[_playerId][skill]);
         }
 
-        // Daily rewards
-        if (pendingQueuedActionState.producedXPRewards.length > 0) {
-          Equipment[] memory rewards = pendingQueuedActionState.producedXPRewards;
-          uint[] memory itemTokenIds = new uint[](rewards.length);
-          uint[] memory amounts = new uint[](rewards.length);
-          for (uint j = 0; j < rewards.length; ++j) {
-            itemTokenIds[j] = rewards[j].itemTokenId;
-            amounts[j] = rewards[j].amount;
-          }
-          itemNFT.mintBatch(_from, itemTokenIds, amounts);
-          emit ClaimedXPThresholdRewards(_from, _playerId, itemTokenIds, amounts);
+        if (pendingQueuedActionState.xpRewardItemTokenIds.length > 0) {
+          itemNFT.mintBatch(
+            _from,
+            pendingQueuedActionState.xpRewardItemTokenIds,
+            pendingQueuedActionState.xpRewardAmounts
+          );
+          emit ClaimedXPThresholdRewards(
+            _from,
+            _playerId,
+            pendingQueuedActionState.xpRewardItemTokenIds,
+            pendingQueuedActionState.xpRewardAmounts
+          );
           player.totalXP = uint112(newTotalXP);
         }
-
-        bool fullyFinished = actionMetadata.elapsedTime >= players_[_playerId].actionQueue[i].timespan;
-        if (fullyFinished) {
-          emit ActionFinished(_from, _playerId, actionMetadata.queueId);
-        } else {
-          emit ActionPartiallyFinished(_from, _playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
-        }
-        startTime += actionMetadata.elapsedTime;
       }
+      bool fullyFinished = actionMetadata.elapsedTime >= players_[_playerId].actionQueue[i].timespan;
+      if (fullyFinished) {
+        emit ActionFinished(_from, _playerId, actionMetadata.queueId);
+      } else {
+        emit ActionPartiallyFinished(_from, _playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
+      }
+      startTime += actionMetadata.elapsedTime;
 
       // Oracle loot from past random rewards
       if (pendingQueuedActionState.producedPastRandomRewards.length > 0) {
@@ -170,53 +166,39 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         }
       }
 
-      quests.processQuests(
-        _playerId,
-        pendingQueuedActionState.choiceIds,
-        pendingQueuedActionState.choiceIdAmounts,
-        pendingQueuedActionState.questsCompleted
-      );
-      // Mint/burn rewards
-      if (pendingQueuedActionState.questConsumed.length > 0) {
-        Equipment[] memory consumed = pendingQueuedActionState.questConsumed;
-        uint[] memory itemTokenIds = new uint[](consumed.length);
-        uint[] memory amounts = new uint[](consumed.length);
-        for (uint j = 0; j < consumed.length; ++j) {
-          itemTokenIds[j] = consumed[j].itemTokenId;
-          amounts[j] = consumed[j].amount;
-        }
-
-        itemNFT.burnBatch(_from, itemTokenIds, amounts);
-        emit Consumes(_from, _playerId, 0, itemTokenIds, amounts);
+      // Quests
+      QuestState memory questState = pendingQueuedActionState.quests;
+      quests.processQuests(_playerId, questState.choiceIds, questState.choiceIdAmounts, questState.questsCompleted);
+      if (questState.consumedItemTokenIds.length > 0) {
+        itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
+        emit QuestConsumes(_from, _playerId, questState.consumedItemTokenIds, questState.consumedAmounts);
       }
-      if (pendingQueuedActionState.questRewards.length > 0) {
-        Equipment[] memory produced = pendingQueuedActionState.questRewards;
-        uint[] memory itemTokenIds = new uint[](produced.length);
-        uint[] memory amounts = new uint[](produced.length);
-        for (uint j = 0; j < produced.length; ++j) {
-          itemTokenIds[j] = produced[j].itemTokenId;
-          amounts[j] = produced[j].amount;
-        }
-
-        itemNFT.mintBatch(_from, itemTokenIds, amounts);
-        emit Rewards(_from, _playerId, 0, itemTokenIds, amounts);
+      if (questState.rewardItemTokenIds.length > 0) {
+        itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
+        emit QuestRewards(_from, _playerId, questState.rewardItemTokenIds, questState.rewardAmounts);
       }
 
-      // Daily rewards
-      if (pendingQueuedActionState.dailyRewards.length > 0) {
-        Equipment[] memory rewards = pendingQueuedActionState.dailyRewards;
-        uint[] memory itemTokenIds = new uint[](rewards.length);
-        uint[] memory amounts = new uint[](rewards.length);
-        for (uint j = 0; j < rewards.length; ++j) {
-          itemTokenIds[j] = rewards[j].itemTokenId;
-          amounts[j] = rewards[j].amount;
-        }
+      // Daily/weekly rewards
+      if (pendingQueuedActionState.dailyRewardItemTokenIds.length > 0) {
+        itemNFT.mintBatch(
+          _from,
+          pendingQueuedActionState.dailyRewardItemTokenIds,
+          pendingQueuedActionState.dailyRewardAmounts
+        );
+        emit DailyReward(
+          _from,
+          _playerId,
+          uint16(pendingQueuedActionState.dailyRewardItemTokenIds[0]),
+          pendingQueuedActionState.dailyRewardAmounts[0]
+        );
 
-        itemNFT.mintBatch(_from, itemTokenIds, amounts);
-        emit DailyReward(_from, _playerId, uint16(itemTokenIds[0]), amounts[0]);
-
-        if (rewards.length == 2) {
-          emit WeeklyReward(_from, _playerId, uint16(itemTokenIds[1]), amounts[1]);
+        if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
+          emit WeeklyReward(
+            _from,
+            _playerId,
+            uint16(pendingQueuedActionState.dailyRewardItemTokenIds[1]),
+            pendingQueuedActionState.dailyRewardAmounts[1]
+          );
         }
 
         if (uint(pendingQueuedActionState.dailyRewardMask) != 0) {

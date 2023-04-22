@@ -174,8 +174,10 @@ struct PastRandomRewardInfo {
 }
 
 struct PendingQueuedActionEquipmentState {
-  Equipment[] consumed;
-  Equipment[] produced;
+  uint[] consumedItemTokenIds;
+  uint[] consumedAmounts;
+  uint[] producedItemTokenIds;
+  uint[] producedAmounts;
 }
 
 struct PendingQueuedActionMetadata {
@@ -190,13 +192,18 @@ struct PendingQueuedActionMetadata {
   uint24 xpElapsedTime;
 }
 
-/*
 struct QuestState {
-  Equipment[] questRewards;
-  Equipment[] questConsumed;
+  uint[] consumedItemTokenIds;
+  uint[] consumedAmounts;
+  uint[] rewardItemTokenIds;
+  uint[] rewardAmounts;
   PlayerQuest[] activeQuestInfo;
-  uint16[] completedQuests;
-} */
+  uint[] choiceIds;
+  uint[] choiceIdAmounts;
+  uint[] questsCompleted;
+  Skill[] skills; // Skills gained XP in
+  uint32[] xpGainedSkills; // XP gained in these skills
+}
 
 struct PendingQueuedActionState {
   // These 2 are in sync. Separated to reduce gas/deployment costs as these are passed down many layers.
@@ -204,16 +211,12 @@ struct PendingQueuedActionState {
   PendingQueuedActionMetadata[] actionMetadatas;
   QueuedAction[] remainingSkills;
   PastRandomRewardInfo[] producedPastRandomRewards;
-  Equipment[] producedXPRewards;
-  Equipment[] dailyRewards;
+  uint[] xpRewardItemTokenIds;
+  uint[] xpRewardAmounts;
+  uint[] dailyRewardItemTokenIds;
+  uint[] dailyRewardAmounts;
   bytes32 dailyRewardMask;
-  //  QuestState questState;
-  Equipment[] questRewards;
-  Equipment[] questConsumed;
-  PlayerQuest[] activeQuestInfo;
-  uint[] choiceIds;
-  uint[] choiceIdAmounts;
-  uint[] questsCompleted;
+  QuestState quests;
 }
 
 // External view functions that are in other implementation files
@@ -241,7 +244,7 @@ interface IPlayersMiscDelegateView {
 
   function dailyRewardsViewImpl(
     uint _playerId
-  ) external view returns (Equipment[] memory rewards, bytes32 dailyRewardMask);
+  ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask);
 
   function processConsumablesViewImpl(
     address from,

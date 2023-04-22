@@ -32,11 +32,11 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
 
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed.length).is.eq(0);
-      expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).is.eq(EstforConstants.LOG);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).is.eq(0);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).is.eq(EstforConstants.LOG);
       const balanceExpected = Math.floor((queuedAction.timespan * rate) / (3600 * 10));
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).is.eq(balanceExpected);
+      expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).is.eq(balanceExpected);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(queuedAction.timespan);
@@ -362,8 +362,8 @@ describe("Non-Combat Actions", function () {
     await ethers.provider.send("evm_increaseTime", [10]);
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).is.eq(3);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).is.eq(3);
     expect(pendingQueuedActionState.actionMetadatas.length).is.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).is.eq(9);
 
@@ -377,13 +377,13 @@ describe("Non-Combat Actions", function () {
     expect((await players.getActionQueue(playerId)).length).to.eq(2);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.equipmentStates.length).is.eq(2);
-    expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).is.eq(EstforConstants.LOG);
-    expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).is.eq(2400);
-    expect(pendingQueuedActionState.equipmentStates[1].produced.length).is.eq(0);
-    expect(pendingQueuedActionState.equipmentStates[1].consumed.length).is.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[1].consumed[0].itemTokenId).is.eq(EstforConstants.LOG);
-    expect(pendingQueuedActionState.equipmentStates[1].consumed[0].amount).is.eq(1200);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).is.eq(EstforConstants.LOG);
+    expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).is.eq(2400);
+    expect(pendingQueuedActionState.equipmentStates[1].producedItemTokenIds.length).is.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[1].consumedItemTokenIds.length).is.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[1].consumedItemTokenIds[0]).is.eq(EstforConstants.LOG);
+    expect(pendingQueuedActionState.equipmentStates[1].consumedAmounts[0]).is.eq(1200);
     expect(pendingQueuedActionState.actionMetadatas.length).is.eq(2);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).is.eq(queuedActions[0].timespan - 10); // 1xp is wasted
     expect(pendingQueuedActionState.actionMetadatas[1].xpGained).is.eq(queuedActions[1].timespan);
@@ -715,9 +715,9 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       const foodNotBurned = Math.floor((queuedAction.timespan * rate) / (3600 * 10 * 2));
-      expect(pendingQueuedActionState.equipmentStates[0].produced.length).is.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(foodNotBurned);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.COOKED_MINNUS);
+      expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(foodNotBurned);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
 
@@ -1396,29 +1396,29 @@ describe("Non-Combat Actions", function () {
 
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(3);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(3);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(2);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(EstforConstants.ROPE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(20);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed.length).to.eq(2);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[0].itemTokenId).to.eq(EstforConstants.ROPE);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[0].amount).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[1].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
-      expect(pendingQueuedActionState.equipmentStates[1].consumed[1].amount).to.eq(20);
-      expect(pendingQueuedActionState.equipmentStates[2].consumed.length).to.eq(0);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(2);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(EstforConstants.ROPE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[1]).to.eq(EstforConstants.SAPPHIRE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[1]).to.eq(20);
+      expect(pendingQueuedActionState.equipmentStates[1].consumedItemTokenIds.length).to.eq(2);
+      expect(pendingQueuedActionState.equipmentStates[1].consumedItemTokenIds[0]).to.eq(EstforConstants.ROPE);
+      expect(pendingQueuedActionState.equipmentStates[1].consumedAmounts[0]).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[1].consumedItemTokenIds[1]).to.eq(EstforConstants.SAPPHIRE);
+      expect(pendingQueuedActionState.equipmentStates[1].consumedAmounts[1]).to.eq(20);
+      expect(pendingQueuedActionState.equipmentStates[2].consumedItemTokenIds.length).to.eq(0);
 
-      expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(
         EstforConstants.SAPPHIRE_AMULET
       );
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[1].produced.length).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[1].produced[0].itemTokenId).to.eq(
+      expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[1].producedItemTokenIds.length).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[1].producedItemTokenIds[0]).to.eq(
         EstforConstants.SAPPHIRE_AMULET
       );
-      expect(pendingQueuedActionState.equipmentStates[1].produced[0].amount).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[2].produced.length).to.eq(0);
+      expect(pendingQueuedActionState.equipmentStates[1].producedAmounts[0]).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[2].producedItemTokenIds.length).to.eq(0);
 
       expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
@@ -1443,16 +1443,16 @@ describe("Non-Combat Actions", function () {
 
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(2);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(EstforConstants.ROPE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(EstforConstants.SAPPHIRE);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(20);
-      expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(2);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(EstforConstants.ROPE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[1]).to.eq(EstforConstants.SAPPHIRE);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[1]).to.eq(20);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(
         EstforConstants.SAPPHIRE_AMULET
       );
-      expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(3);
       expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(3600);

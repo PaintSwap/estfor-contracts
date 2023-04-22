@@ -230,12 +230,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
         .equipmentStates[i];
       PendingQueuedActionMetadata memory pendingQueuedActionMetadata = pendingQueuedActionState.actionMetadatas[i];
-
-      pendingQueuedActionEquipmentState.produced = new Equipment[](
+      pendingQueuedActionEquipmentState.producedItemTokenIds = new uint[](
+        MAX_REWARDS_PER_ACTION + MAX_RANDOM_REWARDS_PER_ACTION
+      );
+      pendingQueuedActionEquipmentState.producedAmounts = new uint[](
         MAX_REWARDS_PER_ACTION + MAX_RANDOM_REWARDS_PER_ACTION
       );
       uint producedLength;
-      pendingQueuedActionEquipmentState.consumed = new Equipment[](MAX_CONSUMED_PER_ACTION);
+      pendingQueuedActionEquipmentState.consumedItemTokenIds = new uint[](MAX_CONSUMED_PER_ACTION);
+      pendingQueuedActionEquipmentState.consumedAmounts = new uint[](MAX_CONSUMED_PER_ACTION);
       uint consumedLength;
 
       QueuedAction storage queuedAction = actionQueue[i];
@@ -329,13 +332,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         choiceIdAmountsLength = choiceIdAmountsLength.inc();
 
         if (outputEquipment.itemTokenId != NONE) {
-          pendingQueuedActionEquipmentState.produced[producedLength] = outputEquipment;
+          pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = outputEquipment.itemTokenId;
+          pendingQueuedActionEquipmentState.producedAmounts[producedLength] = outputEquipment.amount;
           producedLength = producedLength.inc();
         }
         U256 consumedEquipmentLength = consumedEquipment.length.asU256();
         for (U256 jter; jter < consumedEquipmentLength; jter = jter.inc()) {
           uint j = jter.asUint256();
-          pendingQueuedActionEquipmentState.consumed[consumedLength] = consumedEquipment[j];
+          pendingQueuedActionEquipmentState.consumedItemTokenIds[consumedLength] = consumedEquipment[j].itemTokenId;
+          pendingQueuedActionEquipmentState.consumedAmounts[consumedLength] = consumedEquipment[j].amount;
           consumedLength = consumedLength.inc();
         }
 
@@ -421,10 +426,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       U256 newIdsLength = newIds.length.asU256();
       for (U256 jter; jter < newIdsLength; jter = jter.inc()) {
         uint j = jter.asUint256();
-        pendingQueuedActionEquipmentState.produced[producedLength] = Equipment(
-          uint16(newIds[j]),
-          uint24(newAmounts[j])
-        );
+        pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = newIds[j];
+        pendingQueuedActionEquipmentState.producedAmounts[producedLength] = newAmounts[j];
         producedLength = producedLength.inc();
       }
       // Total XP gained
@@ -447,25 +450,19 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       // Compact to fit the arrays
       assembly ("memory-safe") {
         mstore(mload(pendingQueuedActionEquipmentState), consumedLength)
-        mstore(mload(add(pendingQueuedActionEquipmentState, 32)), producedLength)
+        mstore(mload(add(pendingQueuedActionEquipmentState, 32)), consumedLength)
+        mstore(mload(add(pendingQueuedActionEquipmentState, 64)), producedLength)
+        mstore(mload(add(pendingQueuedActionEquipmentState, 96)), producedLength)
       }
       startTime += queuedAction.timespan;
     } // end of loop
 
     // XPRewards
     if (totalXPGained != 0) {
-      (uint[] memory ids, uint[] memory amounts) = _claimableXPThresholdRewards(
-        previousTotalXP,
-        previousTotalXP + totalXPGained
-      );
-      U256 idsLength = ids.length.asU256();
-      if (ids.length != 0) {
-        pendingQueuedActionState.producedXPRewards = new Equipment[](ids.length);
-        for (U256 iter; iter < idsLength; iter = iter.inc()) {
-          uint i = iter.asUint256();
-          pendingQueuedActionState.producedXPRewards[i] = Equipment(uint16(ids[i]), uint24(amounts[i]));
-        }
-      }
+      (
+        pendingQueuedActionState.xpRewardItemTokenIds,
+        pendingQueuedActionState.xpRewardAmounts
+      ) = _claimableXPThresholdRewards(previousTotalXP, previousTotalXP + totalXPGained);
     }
 
     // Past Random Rewards
@@ -495,40 +492,27 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
 
     // Quest Rewards
+    QuestState memory questState = pendingQueuedActionState.quests;
     (
-      uint[] memory questRewards,
-      uint[] memory questRewardAmounts,
-      uint[] memory itemTokenIdsBurned,
-      uint[] memory amountsBurned,
-      Skill[] memory skillsGained,
-      uint32[] memory xp,
-      uint[] memory _questsCompleted,
-      PlayerQuest[] memory activeQuestsCompletionInfo
+      questState.rewardItemTokenIds,
+      questState.rewardAmounts,
+      questState.consumedItemTokenIds,
+      questState.consumedAmounts,
+      questState.skills,
+      questState.xpGainedSkills,
+      questState.questsCompleted,
+      questState.activeQuestInfo
     ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts);
-    if (questRewards.length != 0) {
-      pendingQueuedActionState.questRewards = new Equipment[](questRewards.length);
-      U256 jbounds = questRewards.length.asU256();
-      for (U256 jter; jter < jbounds; jter = jter.inc()) {
-        uint j = jter.asUint256();
-        pendingQueuedActionState.questRewards[j] = Equipment(uint16(questRewards[j]), uint24(questRewardAmounts[j]));
-      }
-    }
-    if (itemTokenIdsBurned.length != 0) {
-      U256 jbounds = itemTokenIdsBurned.length.asU256();
-      pendingQueuedActionState.questConsumed = new Equipment[](jbounds.asUint256());
-      for (U256 jter; jter < jbounds; jter = jter.inc()) {
-        uint j = jter.asUint256();
-        pendingQueuedActionState.questConsumed[j] = Equipment(uint16(itemTokenIdsBurned[j]), uint24(amountsBurned[j]));
-      }
-    }
 
-    pendingQueuedActionState.activeQuestInfo = activeQuestsCompletionInfo;
-    pendingQueuedActionState.choiceIds = choiceIds;
-    pendingQueuedActionState.choiceIdAmounts = choiceIdAmounts;
-    pendingQueuedActionState.questsCompleted = _questsCompleted;
+    questState.choiceIds = choiceIds;
+    questState.choiceIdAmounts = choiceIdAmounts;
 
     // Daily rewards
-    (pendingQueuedActionState.dailyRewards, pendingQueuedActionState.dailyRewardMask) = dailyRewardsView(_playerId);
+    (
+      pendingQueuedActionState.dailyRewardItemTokenIds,
+      pendingQueuedActionState.dailyRewardAmounts,
+      pendingQueuedActionState.dailyRewardMask
+    ) = dailyRewardsView(_playerId);
 
     // Compact to fit the array
     assembly ("memory-safe") {

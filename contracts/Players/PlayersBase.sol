@@ -43,10 +43,11 @@ abstract contract PlayersBase {
 
   // For logging
   event Died(address from, uint playerId, uint queueId);
+  event QuestRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
+  event QuestConsumes(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event Rewards(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
-  event Reward(address from, uint playerId, uint queueId, uint16 itemTokenId, uint amount);
-  event DailyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
-  event WeeklyReward(address from, uint playerId, uint16 itemTokenId, uint amount);
+  event DailyReward(address from, uint playerId, uint itemTokenId, uint amount);
+  event WeeklyReward(address from, uint playerId, uint itemTokenId, uint amount);
   event Consumes(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
   event ActionFinished(address from, uint playerId, uint queueId);
   event ActionPartiallyFinished(address from, uint playerId, uint queueId, uint elapsedTime);
@@ -186,12 +187,14 @@ abstract contract PlayersBase {
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function dailyRewardsView(uint _playerId) public view returns (Equipment[] memory, bytes32) {
+  function dailyRewardsView(
+    uint _playerId
+  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(IPlayersMiscDelegateView.dailyRewardsViewImpl.selector, _playerId)
     );
-    return abi.decode(data, (Equipment[], bytes32));
+    return abi.decode(data, (uint[], uint[], bytes32));
   }
 
   function _extraXPFromBoost(

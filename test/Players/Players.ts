@@ -465,7 +465,7 @@ describe("Players", function () {
 
         const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
         const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * 10));
-        expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(expectedOutputNum);
+        expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(expectedOutputNum);
 
         await players.connect(alice).processActions(playerId);
         // Check the drops are as expected
