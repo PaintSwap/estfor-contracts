@@ -170,9 +170,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (players_[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
     }
-    (QueuedAction[] memory remainingSkillQueue, uint startTime) = _processActions(msg.sender, _playerId);
-    players_[_playerId].queuedActionStartTime = uint40(startTime);
-    _setActionQueue(msg.sender, _playerId, remainingSkillQueue, startTime);
+    QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
+    if (remainingSkillQueue.length != 0) {
+      players_[_playerId].queuedActionStartTime = uint40(block.timestamp);
+    }
+    _setActionQueue(msg.sender, _playerId, remainingSkillQueue, block.timestamp);
   }
 
   function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {

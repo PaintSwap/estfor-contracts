@@ -502,15 +502,12 @@ abstract contract PlayersBase {
     }
   }
 
-  function _processActions(
-    address _from,
-    uint _playerId
-  ) internal returns (QueuedAction[] memory remainingSkills, uint startTime) {
+  function _processActions(address _from, uint _playerId) internal returns (QueuedAction[] memory remainingSkills) {
     bytes memory data = _delegatecall(
       implProcessActions,
       abi.encodeWithSignature("processActions(address,uint256)", _from, _playerId)
     );
-    return abi.decode(data, (QueuedAction[], uint));
+    return abi.decode(data, (QueuedAction[]));
   }
 
   function _claimRandomRewards(uint _playerId) internal {

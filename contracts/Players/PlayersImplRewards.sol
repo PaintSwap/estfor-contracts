@@ -208,6 +208,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length);
     pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueue.length);
 
+    pendingQueuedActionState.remainingSkills = new QueuedAction[](actionQueue.length);
+    uint remainingSkillsLength;
+
     uint[] memory choiceIds = new uint[](actionQueue.length);
     uint[] memory choiceIdAmounts = new uint[](actionQueue.length);
     uint choiceIdsLength;
@@ -265,7 +268,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       uint elapsedTime = _getElapsedTime(startTime, endTime);
       if (elapsedTime == 0) {
-        break;
+        _addRemainingSkill(
+          pendingQueuedActionState.remainingSkills,
+          queuedAction,
+          queuedAction.timespan,
+          remainingSkillsLength
+        );
+        remainingSkillsLength = remainingSkillsLength.inc();
+        continue;
       }
       ++pendingQueuedActionStateLength;
 
@@ -274,6 +284,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       pendingQueuedActionMetadata.queueId = queuedAction.queueId;
 
       // Create some items if necessary (smithing ores to bars for instance)
+      bool fullyFinished = elapsedTime >= queuedAction.timespan;
       bool died;
       (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
         queuedAction.actionId
@@ -347,10 +358,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         xpElapsedTime = xpElapsedTime > refundTime ? xpElapsedTime.sub(refundTime) : 0;
       }
       pendingQueuedActionMetadata.elapsedTime -= uint24(refundTime);
+      pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
 
       uint pointsAccruedExclBaseBoost;
+      Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
       if (!died) {
-        Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
         (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
           from,
           _playerId,
@@ -362,8 +374,40 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         );
       }
       uint32 xpGained = pointsAccrued;
-      if (pointsAccruedExclBaseBoost != 0 && _isCombatStyle(queuedAction.combatStyle)) {
+
+      bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && _isCombatStyle(queuedAction.combatStyle);
+
+      if (pointsAccrued != 0) {
+        uint skillXPLength = hasCombatXP ? 2 : 1;
+        pendingQueuedActionMetadata.skills = new Skill[](skillXPLength);
+        pendingQueuedActionMetadata.xpGainedSkills = new uint32[](skillXPLength);
+        if (pendingQueuedActionMetadata.skills.length > 0) {
+          pendingQueuedActionMetadata.skills[0] = skill;
+          pendingQueuedActionMetadata.xpGainedSkills[0] = pointsAccrued;
+        }
+        if (hasCombatXP) {
+          pendingQueuedActionMetadata.skills[1] = Skill.HEALTH;
+          pendingQueuedActionMetadata.xpGainedSkills[1] = _getHealthPointsFromCombat(
+            _playerId,
+            pointsAccruedExclBaseBoost
+          );
+        }
+      }
+
+      if (hasCombatXP) {
         xpGained += _getHealthPointsFromCombat(_playerId, pointsAccruedExclBaseBoost);
+      }
+
+      if (!fullyFinished) {
+        // Add the remainder if this action is not fully consumed
+        uint remainingTimespan = queuedAction.timespan - elapsedTime + refundTime;
+        _addRemainingSkill(
+          pendingQueuedActionState.remainingSkills,
+          queuedAction,
+          remainingTimespan,
+          remainingSkillsLength
+        );
+        remainingSkillsLength = remainingSkillsLength.inc();
       }
 
       // Include loot
@@ -440,7 +484,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         uint16(actionIds[i]),
         uint64(queueIds[i]),
         uint16(ids[i]),
-        uint24(amounts[i])
+        uint24(amounts[i]),
+        numRemoved
       );
     }
 
@@ -467,25 +512,42 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         uint j = jter.asUint256();
         pendingQueuedActionState.questRewards[j] = Equipment(uint16(questRewards[j]), uint24(questRewardAmounts[j]));
       }
-      jbounds = itemTokenIdsBurned.length.asU256();
-      pendingQueuedActionState.questConsumed = new Equipment[](bounds.asUint256());
+    }
+    if (itemTokenIdsBurned.length != 0) {
+      U256 jbounds = itemTokenIdsBurned.length.asU256();
+      pendingQueuedActionState.questConsumed = new Equipment[](jbounds.asUint256());
       for (U256 jter; jter < jbounds; jter = jter.inc()) {
         uint j = jter.asUint256();
         pendingQueuedActionState.questConsumed[j] = Equipment(uint16(itemTokenIdsBurned[j]), uint24(amountsBurned[j]));
       }
     }
 
-    // Daily rewards
-    bytes32 dailyRewardMask;
-    (pendingQueuedActionState.dailyRewards, dailyRewardMask) = dailyRewardsView(_playerId);
-
     pendingQueuedActionState.activeQuestInfo = activeQuestsCompletionInfo;
+    pendingQueuedActionState.choiceIds = choiceIds;
+    pendingQueuedActionState.choiceIdAmounts = choiceIdAmounts;
+    pendingQueuedActionState.questsCompleted = _questsCompleted;
+
+    // Daily rewards
+    (pendingQueuedActionState.dailyRewards, pendingQueuedActionState.dailyRewardMask) = dailyRewardsView(_playerId);
 
     // Compact to fit the array
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), pendingQueuedActionStateLength)
       mstore(mload(add(pendingQueuedActionState, 32)), pendingQueuedActionStateLength)
+      mstore(mload(add(pendingQueuedActionState, 64)), remainingSkillsLength)
     }
+  }
+
+  function _addRemainingSkill(
+    QueuedAction[] memory _remainingSkills,
+    QueuedAction storage _queuedAction,
+    uint _timespan,
+    uint _length
+  ) private pure {
+    QueuedAction memory remainingAction = _queuedAction;
+    remainingAction.timespan = uint24(_timespan);
+    // Build a list of the skills queued that remain
+    _remainingSkills[_length] = remainingAction;
   }
 
   function _appendGuaranteedReward(

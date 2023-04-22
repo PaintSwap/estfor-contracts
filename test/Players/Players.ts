@@ -185,9 +185,11 @@ describe("Players", function () {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND);
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2 + 1]); // First one is now finished
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND); // This should complete the first one
-    const actionQueue = await players.getActionQueue(playerId);
+    actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue.length).to.eq(2);
     expect(actionQueue[0].queueId).to.eq(2);
     expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan - 1, queuedAction.timespan]);

@@ -170,6 +170,7 @@ struct PastRandomRewardInfo {
   uint64 queueId;
   uint16 itemTokenId;
   uint24 amount;
+  uint numRemoved;
 }
 
 struct PendingQueuedActionEquipmentState {
@@ -179,23 +180,40 @@ struct PendingQueuedActionEquipmentState {
 
 struct PendingQueuedActionMetadata {
   uint32 xpGained;
+  Skill[] skills; // Skills gained XP in
+  uint32[] xpGainedSkills; // XP gained in these skills
   uint32 rolls;
   bool died;
   uint16 actionId;
   uint64 queueId;
   uint24 elapsedTime;
+  uint24 xpElapsedTime;
 }
+
+/*
+struct QuestState {
+  Equipment[] questRewards;
+  Equipment[] questConsumed;
+  PlayerQuest[] activeQuestInfo;
+  uint16[] completedQuests;
+} */
 
 struct PendingQueuedActionState {
   // These 2 are in sync. Separated to reduce gas/deployment costs as these are passed down many layers.
   PendingQueuedActionEquipmentState[] equipmentStates;
   PendingQueuedActionMetadata[] actionMetadatas;
+  QueuedAction[] remainingSkills;
   PastRandomRewardInfo[] producedPastRandomRewards;
   Equipment[] producedXPRewards;
+  Equipment[] dailyRewards;
+  bytes32 dailyRewardMask;
+  //  QuestState questState;
   Equipment[] questRewards;
   Equipment[] questConsumed;
   PlayerQuest[] activeQuestInfo;
-  Equipment[] dailyRewards;
+  uint[] choiceIds;
+  uint[] choiceIdAmounts;
+  uint[] questsCompleted;
 }
 
 // External view functions that are in other implementation files
