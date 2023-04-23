@@ -192,33 +192,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   function processQuests(
     uint _playerId,
     uint[] calldata _choiceIds,
-    uint[] calldata _choiceIdAmounts
-  )
-    external
-    onlyPlayers
-    returns (
-      uint[] memory itemTokenIds,
-      uint[] memory amounts,
-      uint[] memory itemTokenIdsBurned,
-      uint[] memory amountsBurned
-    )
-  {
-    Skill[] memory skillsGained;
-    uint32[] memory xpGained;
-    uint[] memory _questsCompleted;
-    PlayerQuest[] memory activeQuestInfo;
-
-    // The items will get minted by the caller
-    (
-      itemTokenIds,
-      amounts,
-      itemTokenIdsBurned,
-      amountsBurned,
-      skillsGained,
-      xpGained,
-      _questsCompleted,
-      activeQuestInfo
-    ) = processQuestsView(_playerId, _choiceIds, _choiceIdAmounts);
+    uint[] calldata _choiceIdAmounts,
+    uint[] memory _questsCompleted
+  ) external onlyPlayers {
     if (_questsCompleted.length != 0) {
       U256 bounds = _questsCompleted.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {

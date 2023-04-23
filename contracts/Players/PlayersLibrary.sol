@@ -166,18 +166,18 @@ library PlayersLibrary {
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = _pendingQueuedActionEquipmentStates[
         i
       ];
-      U256 jBounds = pendingQueuedActionEquipmentState.produced.length.asU256();
+      U256 jBounds = pendingQueuedActionEquipmentState.producedItemTokenIds.length.asU256();
       for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
         uint j = jIter.asUint256();
-        if (pendingQueuedActionEquipmentState.produced[j].itemTokenId == _itemId) {
-          balance += pendingQueuedActionEquipmentState.produced[j].amount;
+        if (pendingQueuedActionEquipmentState.producedItemTokenIds[j] == _itemId) {
+          balance += pendingQueuedActionEquipmentState.producedAmounts[j];
         }
       }
-      jBounds = pendingQueuedActionEquipmentState.consumed.length.asU256();
+      jBounds = pendingQueuedActionEquipmentState.consumedItemTokenIds.length.asU256();
       for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
         uint j = jIter.asUint256();
-        if (pendingQueuedActionEquipmentState.consumed[j].itemTokenId == _itemId) {
-          balance -= pendingQueuedActionEquipmentState.consumed[j].amount;
+        if (pendingQueuedActionEquipmentState.consumedItemTokenIds[j] == _itemId) {
+          balance -= pendingQueuedActionEquipmentState.consumedAmounts[j];
         }
       }
     }
@@ -458,30 +458,28 @@ library PlayersLibrary {
     ItemNFT _itemNFT,
     uint _elapsedTime,
     ActionChoice memory _actionChoice,
+    bool _checkBalance,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  ) external view returns (uint xpElapsedTime, uint refundTime, uint24 numConsumed) {
+  ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
     // Check the max that can be used
     numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 10));
-    // This checks the balances
-    uint maxRequiredRatio = _getMaxRequiredRatio(
-      _from,
-      _actionChoice,
-      numConsumed,
-      _itemNFT,
-      _pendingQueuedActionEquipmentStates
-    );
-    bool hadEnoughConsumables = numConsumed <= maxRequiredRatio;
-    uint ogElapsedTime = (uint(numConsumed) * 3600 * 10) / _actionChoice.rate;
-    if (!hadEnoughConsumables) {
-      numConsumed = uint24(maxRequiredRatio);
+
+    if (_checkBalance) {
+      // This checks the balances
+      uint maxRequiredRatio = _getMaxRequiredRatio(
+        _from,
+        _actionChoice,
+        numConsumed,
+        _itemNFT,
+        _pendingQueuedActionEquipmentStates
+      );
+      bool hadEnoughConsumables = numConsumed <= maxRequiredRatio;
+      if (!hadEnoughConsumables) {
+        numConsumed = uint24(maxRequiredRatio);
+      }
     }
     // Work out what the actual elapsedTime should be had all those been made
     xpElapsedTime = (uint(numConsumed) * 3600 * 10) / _actionChoice.rate;
-
-    if (hadEnoughConsumables) {
-      // Move start time back by the amount of time that was refunded if this action was not completed
-      refundTime = _elapsedTime - ogElapsedTime;
-    }
   }
 
   function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
@@ -546,6 +544,40 @@ library PlayersLibrary {
         }
       }
       return true;
+    }
+  }
+
+  function normalizeRewards(
+    uint[] calldata newIds,
+    uint[] calldata newAmounts,
+    uint[] calldata prevNewIds,
+    uint[] calldata prevNewAmounts
+  ) external pure returns (uint[] memory ids, uint[] memory amounts) {
+    // Subtract previous rewards. If amount is zero after, replace with end
+    ids = newIds; // new uint[](newIds.length);
+    amounts = newAmounts; // uint[](newAmounts.length);
+    U256 prevNewIdsLength = prevNewIds.length.asU256();
+    for (U256 jter; jter < prevNewIdsLength; jter = jter.inc()) {
+      uint j = jter.asUint256();
+      uint16 prevNewId = uint16(prevNewIds[j]);
+      uint24 prevNewAmount = uint24(prevNewAmounts[j]);
+      uint length = ids.length;
+      for (uint k = 0; k < length; ++k) {
+        if (ids[k] == prevNewId) {
+          amounts[k] -= prevNewAmount;
+          if (amounts[k] == 0) {
+            ids[k] = ids[ids.length - 1];
+            amounts[k] = amounts[amounts.length - 1];
+
+            assembly ("memory-safe") {
+              mstore(ids, length)
+              mstore(amounts, length)
+            }
+            --length;
+          }
+          break;
+        }
+      }
     }
   }
 }

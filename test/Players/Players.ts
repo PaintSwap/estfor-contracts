@@ -185,9 +185,11 @@ describe("Players", function () {
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND);
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue.length).to.eq(2);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2 + 1]); // First one is now finished
     await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.APPEND); // This should complete the first one
-    const actionQueue = await players.getActionQueue(playerId);
+    actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue.length).to.eq(2);
     expect(actionQueue[0].queueId).to.eq(2);
     expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan - 1, queuedAction.timespan]);
@@ -344,9 +346,8 @@ describe("Players", function () {
       expect(actionQueue.length).to.eq(3);
       expect(actionQueue[0].queueId).to.eq(2);
       expect(actionQueue[0].timespan).to.be.oneOf([
-        // Takes 36 seconds to cut one
-        basicWoodcuttingQueuedAction.timespan - 36,
-        basicWoodcuttingQueuedAction.timespan - 36 - 1,
+        basicWoodcuttingQueuedAction.timespan - 50,
+        basicWoodcuttingQueuedAction.timespan - 50 - 1,
       ]);
       expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
@@ -463,7 +464,7 @@ describe("Players", function () {
 
         const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
         const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * 10));
-        expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(expectedOutputNum);
+        expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(expectedOutputNum);
 
         await players.connect(alice).processActions(playerId);
         // Check the drops are as expected

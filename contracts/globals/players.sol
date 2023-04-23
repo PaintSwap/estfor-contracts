@@ -170,32 +170,53 @@ struct PastRandomRewardInfo {
   uint64 queueId;
   uint16 itemTokenId;
   uint24 amount;
+  uint numRemoved;
 }
 
 struct PendingQueuedActionEquipmentState {
-  Equipment[] consumed;
-  Equipment[] produced;
+  uint[] consumedItemTokenIds;
+  uint[] consumedAmounts;
+  uint[] producedItemTokenIds;
+  uint[] producedAmounts;
 }
 
 struct PendingQueuedActionMetadata {
   uint32 xpGained;
+  Skill[] skills; // Skills gained XP in
+  uint32[] xpGainedSkills; // XP gained in these skills
   uint32 rolls;
   bool died;
   uint16 actionId;
   uint64 queueId;
   uint24 elapsedTime;
+  uint24 xpElapsedTime;
+}
+
+struct QuestState {
+  uint[] consumedItemTokenIds;
+  uint[] consumedAmounts;
+  uint[] rewardItemTokenIds;
+  uint[] rewardAmounts;
+  PlayerQuest[] activeQuestInfo;
+  uint[] choiceIds;
+  uint[] choiceIdAmounts;
+  uint[] questsCompleted;
+  Skill[] skills; // Skills gained XP in
+  uint32[] xpGainedSkills; // XP gained in these skills
 }
 
 struct PendingQueuedActionState {
   // These 2 are in sync. Separated to reduce gas/deployment costs as these are passed down many layers.
   PendingQueuedActionEquipmentState[] equipmentStates;
   PendingQueuedActionMetadata[] actionMetadatas;
+  QueuedAction[] remainingSkills;
   PastRandomRewardInfo[] producedPastRandomRewards;
-  Equipment[] producedXPRewards;
-  Equipment[] questRewards;
-  Equipment[] questConsumed;
-  PlayerQuest[] activeQuestInfo;
-  Equipment[] dailyRewards;
+  uint[] xpRewardItemTokenIds;
+  uint[] xpRewardAmounts;
+  uint[] dailyRewardItemTokenIds;
+  uint[] dailyRewardAmounts;
+  bytes32 dailyRewardMask;
+  QuestState quests;
 }
 
 // External view functions that are in other implementation files
@@ -213,6 +234,30 @@ interface IPlayersRewardsDelegateView {
   ) external view returns (uint[] memory newIds, uint[] memory newAmounts);
 }
 
+interface IPlayersProcessActionsDelegateView {
+  function completeProcessConsumablesView(
+    address from,
+    uint _playerId,
+    QueuedAction memory queuedAction,
+    ActionChoice memory actionChoice,
+    CombatStats memory combatStats,
+    uint elapsedTime,
+    uint startTime,
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+  )
+    external
+    view
+    returns (
+      Equipment[] memory consumedEquipments,
+      Equipment memory outputEquipment,
+      uint xpElapsedTime,
+      uint prevXPElapsedTime,
+      bool died,
+      uint24 numConsumed,
+      uint24 numProduced
+    );
+}
+
 interface IPlayersMiscDelegateView {
   function claimableXPThresholdRewardsImpl(
     uint oldTotalXP,
@@ -223,7 +268,7 @@ interface IPlayersMiscDelegateView {
 
   function dailyRewardsViewImpl(
     uint _playerId
-  ) external view returns (Equipment[] memory rewards, bytes32 dailyRewardMask);
+  ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask);
 
   function processConsumablesViewImpl(
     address from,
@@ -233,6 +278,7 @@ interface IPlayersMiscDelegateView {
     uint elapsedTime,
     CombatStats memory combatStats,
     ActionChoice memory actionChoice,
+    bool checkBalance,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   )
     external
@@ -241,7 +287,6 @@ interface IPlayersMiscDelegateView {
       Equipment[] memory consumedEquipment,
       Equipment memory outputEquipment,
       uint xpElapsedTime,
-      uint refundTime,
       bool died,
       uint24 numConsumed,
       uint24 numProduced

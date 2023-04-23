@@ -253,7 +253,7 @@ describe("Quests", function () {
     await ethers.provider.send("evm_mine", []);
 
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.questRewards.length).to.eq(0);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
 
     const timeNeeded = ((rate / 10) * 3600) / firemakingQuest.actionChoiceNum;
 
@@ -261,15 +261,16 @@ describe("Quests", function () {
     await ethers.provider.send("evm_increaseTime", [timeNeeded - 3]);
     await ethers.provider.send("evm_mine", []);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.questRewards.length).to.eq(0);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
     // Amount burnt should be over
     await ethers.provider.send("evm_increaseTime", [3]);
     await ethers.provider.send("evm_mine", []);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.questRewards.length).to.eq(1);
-    expect(pendingQueuedActionState.questRewards[0].amount).to.eq(firemakingQuest.rewardAmount);
-    expect(pendingQueuedActionState.questRewards[0].itemTokenId).to.eq(firemakingQuest.rewardItemTokenId);
-    expect(pendingQueuedActionState.producedXPRewards.length).to.eq(0); // Move this to another test
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(firemakingQuest.rewardAmount);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds[0]).to.eq(firemakingQuest.rewardItemTokenId);
+    expect(pendingQueuedActionState.xpRewardItemTokenIds.length).to.eq(0); // Move this to another test
+    expect(pendingQueuedActionState.xpRewardAmounts.length).to.eq(0); // Move this to another test
 
     await players.connect(alice).processActions(playerId);
 

@@ -353,7 +353,7 @@ describe("Boosts", function () {
     const foodCooked =
       (successPercent / 100) *
       ((queuedAction.timespan * rate) / (3600 * 10) + (boostDuration * boostValue * rate) / (100 * 10 * 3600));
-    expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(foodCooked);
+    expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(foodCooked);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);

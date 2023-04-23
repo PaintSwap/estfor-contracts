@@ -144,13 +144,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function _getDailyReward(uint256 _day) private view returns (Equipment memory equipment) {
-    bytes32 rewardItemTokenId = (dailyRewards & ((bytes32(hex"ffff0000") >> (_day * 32)))) >> ((7 - _day) * 32 + 16);
-    bytes32 rewardAmount = (dailyRewards & ((bytes32(hex"0000ffff") >> (_day * 32)))) >> ((7 - _day) * 32);
-    assembly ("memory-safe") {
-      mstore(equipment, rewardItemTokenId)
-      mstore(add(equipment, 32), rewardAmount)
-    }
+  function _getDailyReward(uint256 _day) private view returns (uint itemTokenId, uint amount) {
+    itemTokenId = uint((dailyRewards & ((bytes32(hex"ffff0000") >> (_day * 32)))) >> ((7 - _day) * 32 + 16));
+    amount = uint((dailyRewards & ((bytes32(hex"0000ffff") >> (_day * 32)))) >> ((7 - _day) * 32));
   }
 
   function _getUpdatedDailyReward(
@@ -259,14 +255,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function getDailyReward() external view returns (Equipment memory equipment) {
+  function getDailyReward() external view returns (uint itemTokenId, uint amount) {
     uint checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
     uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
-    equipment = _getDailyReward(day);
+    (itemTokenId, amount) = _getDailyReward(day);
   }
 
-  function getWeeklyReward() external view returns (Equipment memory equipment) {
-    equipment = _getDailyReward(7);
+  function getWeeklyReward() external view returns (uint itemTokenId, uint amount) {
+    (itemTokenId, amount) = _getDailyReward(7);
   }
 
   function _getRandomWordOffset(uint _timestamp) private view returns (int) {

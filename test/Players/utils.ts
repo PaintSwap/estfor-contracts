@@ -363,27 +363,27 @@ export function checkPendingQueuedActionState(
   consumed: Equipment[],
   produced: Equipment[],
   xpGained: number,
-  elapsedTime: number
+  elapsedTime: number | number[]
 ) {
   expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
   expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
-  expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(consumed.length);
+  expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(consumed.length);
   if (consumed.length > 0) {
-    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(consumed[0].itemTokenId);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(consumed[0].amount);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(consumed[0].itemTokenId);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(consumed[0].amount);
     if (consumed.length > 1) {
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].itemTokenId).to.eq(consumed[1].itemTokenId);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[1].amount).to.eq(consumed[1].amount);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[1]).to.eq(consumed[1].itemTokenId);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[1]).to.eq(consumed[1].amount);
     }
   }
 
-  expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(produced.length);
+  expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(produced.length);
   if (produced.length > 0) {
-    expect(pendingQueuedActionState.equipmentStates[0].produced[0].itemTokenId).to.eq(produced[0].itemTokenId);
-    expect(pendingQueuedActionState.equipmentStates[0].produced[0].amount).to.eq(produced[0].amount);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(produced[0].itemTokenId);
+    expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(produced[0].amount);
     if (produced.length > 1) {
-      expect(pendingQueuedActionState.equipmentStates[0].produced[1].itemTokenId).to.eq(produced[1].itemTokenId);
-      expect(pendingQueuedActionState.equipmentStates[0].produced[1].amount).to.eq(produced[1].amount);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[1]).to.eq(produced[1].itemTokenId);
+      expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[1]).to.eq(produced[1].amount);
     }
   }
 
@@ -392,14 +392,24 @@ export function checkPendingQueuedActionState(
   expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
   expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(1);
   expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
-  expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(elapsedTime);
+  // if elapsedTime is an array, then we are checking for a range
+  // else we are checking for an exact value
+  if (Array.isArray(elapsedTime)) {
+    expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.be.oneOf(elapsedTime);
+  } else {
+    expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(elapsedTime);
+  }
 
   expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
-  expect(pendingQueuedActionState.producedXPRewards.length).to.eq(0);
-  expect(pendingQueuedActionState.questRewards.length).to.eq(0);
-  expect(pendingQueuedActionState.questConsumed.length).to.eq(0);
-  expect(pendingQueuedActionState.activeQuestInfo.length).to.eq(0);
-  expect(pendingQueuedActionState.dailyRewards.length).to.eq(0);
+  expect(pendingQueuedActionState.xpRewardItemTokenIds.length).to.eq(0);
+  expect(pendingQueuedActionState.xpRewardAmounts.length).to.eq(0);
+  expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
+  expect(pendingQueuedActionState.quests.rewardAmounts.length).to.eq(0);
+  expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(0);
+  expect(pendingQueuedActionState.quests.consumedAmounts.length).to.eq(0);
+  expect(pendingQueuedActionState.quests.activeQuestInfo.length).to.eq(0);
+  expect(pendingQueuedActionState.dailyRewardItemTokenIds.length).to.eq(0);
+  expect(pendingQueuedActionState.dailyRewardAmounts.length).to.eq(0);
 }
 
 export const getXPFromLevel = (level: number) => {

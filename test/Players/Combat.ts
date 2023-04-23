@@ -254,9 +254,9 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
 
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(EstforConstants.COOKED_MINNUS);
-      expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(255);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(EstforConstants.COOKED_MINNUS);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(255);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255);
       await players.connect(alice).processActions(playerId);
@@ -732,11 +732,11 @@ describe("Combat Actions", function () {
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
     expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(queuedAction.actionId);
     expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(foodNum);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(COOKED_MINNUS);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(foodNum);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
 
     await players.connect(alice).processActions(playerId);
     // Should die so doesn't get any attack skill points, loot, and food should be consumed
@@ -750,9 +750,9 @@ describe("Combat Actions", function () {
     await ethers.provider.send("evm_mine", []);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
-    expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(0);
   });
 
   it("Dead, don't kill all", async function () {
@@ -834,13 +834,13 @@ describe("Combat Actions", function () {
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
     expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(queuedAction.actionId);
     expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[0].produced.length).to.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed.length).to.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(queuedAction.actionId);
     expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].amount).to.eq(foodNum);
-    expect(pendingQueuedActionState.equipmentStates[0].consumed[0].itemTokenId).to.eq(COOKED_MINNUS);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(foodNum);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
     await players.connect(alice).processActions(playerId);
     // Should die so doesn't get any attack skill points, and food should be consumed
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);

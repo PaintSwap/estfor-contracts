@@ -37,7 +37,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   ) external {
     address from = msg.sender;
     uint totalTimespan;
-    (QueuedAction[] memory remainingSkills, uint startTime) = _processActions(from, _playerId);
+    QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
     Player storage player = players_[_playerId];
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
@@ -67,18 +67,16 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         j = j.dec();
         totalTimespan += remainingSkills[j.asUint256()].timespan;
       }
-
-      if (remainingSkills.length > 0) {
-        player.queuedActionStartTime = uint40(startTime);
-      } else {
-        player.queuedActionStartTime = _queuedActions.length != 0 ? uint40(block.timestamp) : 0;
-      }
     }
 
     uint prevEndTime = block.timestamp.add(totalTimespan);
 
     U256 queueId = nextQueueId.asU256();
     U256 queuedActionsLength = _queuedActions.length.asU256();
+
+    if (remainingSkills.length != 0 || _queuedActions.length != 0) {
+      player.queuedActionStartTime = uint40(block.timestamp);
+    }
 
     for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
       uint i = iter.asUint256();

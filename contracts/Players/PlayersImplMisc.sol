@@ -147,7 +147,7 @@ contract PlayersImplMisc is
 
   function dailyRewardsViewImpl(
     uint _playerId
-  ) public view returns (Equipment[] memory rewards, bytes32 dailyRewardMask) {
+  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
     uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
     uint streakStartIndex = streakStart.div(1 weeks);
     bytes32 mask = dailyRewardMasks[_playerId];
@@ -160,17 +160,19 @@ contract PlayersImplMisc is
 
     // Claim daily reward as long as it's been set
     if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
-      Equipment memory dailyReward = world.getDailyReward();
-      if (dailyReward.itemTokenId != NONE) {
+      (uint itemTokenId, uint amount) = world.getDailyReward();
+      if (itemTokenId != NONE) {
         dailyRewardMask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
         bool canClaimWeeklyRewards = uint(dailyRewardMask >> (25 * 8)) == 2 ** (7 * 8) - 1;
         uint length = canClaimWeeklyRewards ? 2 : 1;
-        rewards = new Equipment[](length);
-        rewards[0] = dailyReward;
+        itemTokenIds = new uint[](length);
+        amounts = new uint[](length);
+        itemTokenIds[0] = itemTokenId;
+        amounts[0] = amount;
 
         // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
         if (canClaimWeeklyRewards) {
-          rewards[1] = world.getWeeklyReward();
+          (itemTokenIds[1], amounts[1]) = world.getWeeklyReward();
         }
       }
     }
@@ -192,20 +194,20 @@ contract PlayersImplMisc is
   }
 
   function handleDailyRewards(address _from, uint _playerId) external {
-    (Equipment[] memory rewards, bytes32 dailyRewardMask) = dailyRewardsViewImpl(_playerId);
+    (uint[] memory rewardItemTokenIds, uint[] memory rewardAmounts, bytes32 dailyRewardMask) = dailyRewardsViewImpl(
+      _playerId
+    );
     if (uint(dailyRewardMask) != 0) {
       dailyRewardMasks[_playerId] = dailyRewardMask;
     }
-    if (rewards.length >= 1) {
-      Equipment memory dailyReward = rewards[0];
-      itemNFT.mint(_from, dailyReward.itemTokenId, dailyReward.amount);
-      emit DailyReward(_from, _playerId, dailyReward.itemTokenId, dailyReward.amount);
+    if (rewardAmounts.length >= 1) {
+      itemNFT.mint(_from, rewardItemTokenIds[0], rewardAmounts[0]);
+      emit DailyReward(_from, _playerId, rewardItemTokenIds[0], rewardAmounts[0]);
     }
 
-    if (rewards.length == 2) {
-      Equipment memory weeklyReward = rewards[1];
-      itemNFT.mint(_from, weeklyReward.itemTokenId, weeklyReward.amount);
-      emit WeeklyReward(_from, _playerId, weeklyReward.itemTokenId, weeklyReward.amount);
+    if (rewardAmounts.length == 2) {
+      itemNFT.mint(_from, rewardItemTokenIds[1], rewardAmounts[1]);
+      emit WeeklyReward(_from, _playerId, rewardItemTokenIds[1], rewardAmounts[1]);
     }
   }
 
@@ -299,6 +301,7 @@ contract PlayersImplMisc is
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
+    bool _checkBalance,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   )
     external
@@ -307,7 +310,6 @@ contract PlayersImplMisc is
       Equipment[] memory consumedEquipment,
       Equipment memory outputEquipment,
       uint xpElapsedTime,
-      uint refundTime,
       bool died,
       uint24 numConsumed,
       uint24 numProduced
@@ -360,11 +362,12 @@ contract PlayersImplMisc is
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
     } else {
-      (xpElapsedTime, refundTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
+      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
         itemNFT,
         _elapsedTime,
         _actionChoice,
+        _checkBalance,
         _pendingQueuedActionEquipmentStates
       );
     }
