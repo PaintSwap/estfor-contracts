@@ -234,6 +234,30 @@ interface IPlayersRewardsDelegateView {
   ) external view returns (uint[] memory newIds, uint[] memory newAmounts);
 }
 
+interface IPlayersProcessActionsDelegateView {
+  function completeProcessConsumablesView(
+    address from,
+    uint _playerId,
+    QueuedAction memory queuedAction,
+    ActionChoice memory actionChoice,
+    CombatStats memory combatStats,
+    uint elapsedTime,
+    uint startTime,
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+  )
+    external
+    view
+    returns (
+      Equipment[] memory consumedEquipments,
+      Equipment memory outputEquipment,
+      uint xpElapsedTime,
+      uint prevXPElapsedTime,
+      bool died,
+      uint24 numConsumed,
+      uint24 numProduced
+    );
+}
+
 interface IPlayersMiscDelegateView {
   function claimableXPThresholdRewardsImpl(
     uint oldTotalXP,
@@ -254,6 +278,7 @@ interface IPlayersMiscDelegateView {
     uint elapsedTime,
     CombatStats memory combatStats,
     ActionChoice memory actionChoice,
+    bool checkBalance,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   )
     external
@@ -262,7 +287,6 @@ interface IPlayersMiscDelegateView {
       Equipment[] memory consumedEquipment,
       Equipment memory outputEquipment,
       uint xpElapsedTime,
-      uint refundTime,
       bool died,
       uint24 numConsumed,
       uint24 numProduced

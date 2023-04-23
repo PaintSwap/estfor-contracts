@@ -301,6 +301,7 @@ contract PlayersImplMisc is
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
+    bool _checkBalance,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   )
     external
@@ -309,7 +310,6 @@ contract PlayersImplMisc is
       Equipment[] memory consumedEquipment,
       Equipment memory outputEquipment,
       uint xpElapsedTime,
-      uint refundTime,
       bool died,
       uint24 numConsumed,
       uint24 numProduced
@@ -362,11 +362,12 @@ contract PlayersImplMisc is
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
     } else {
-      (xpElapsedTime, refundTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
+      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
         itemNFT,
         _elapsedTime,
         _actionChoice,
+        _checkBalance,
         _pendingQueuedActionEquipmentStates
       );
     }

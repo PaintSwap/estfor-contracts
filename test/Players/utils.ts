@@ -363,7 +363,7 @@ export function checkPendingQueuedActionState(
   consumed: Equipment[],
   produced: Equipment[],
   xpGained: number,
-  elapsedTime: number
+  elapsedTime: number | number[]
 ) {
   expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
   expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
@@ -392,7 +392,13 @@ export function checkPendingQueuedActionState(
   expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
   expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(1);
   expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
-  expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(elapsedTime);
+  // if elapsedTime is an array, then we are checking for a range
+  // else we are checking for an exact value
+  if (Array.isArray(elapsedTime)) {
+    expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.be.oneOf(elapsedTime);
+  } else {
+    expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(elapsedTime);
+  }
 
   expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
   expect(pendingQueuedActionState.xpRewardItemTokenIds.length).to.eq(0);

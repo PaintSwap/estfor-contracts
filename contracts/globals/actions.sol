@@ -24,13 +24,13 @@ struct QueuedActionInput {
 }
 
 struct QueuedAction {
-  // Keep this first
   uint16 actionId;
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
   uint16 choiceId; // Melee/Arrow/Magic (combat), logs, ore (non-combat)
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
+  uint24 processedTime; // How long the action has been processed for previously
   CombatStyle combatStyle; // specific style of combat,  can also be used
   bool isValid; // If we still have the item, TODO: Not used yet
   uint64 queueId; // id of this queued action

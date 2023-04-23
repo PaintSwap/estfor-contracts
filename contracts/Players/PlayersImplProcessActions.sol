@@ -17,6 +17,7 @@ import "../globals/rewards.sol";
 contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint8;
+  using UnsafeMath for uint24;
   using UnsafeMath for uint32;
   using UnsafeMath for uint40;
   using UnsafeMath for uint112;
@@ -335,6 +336,180 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         emit AddPendingRandomReward(_from, _playerId, _queueId, _skillStartTime, _xpElapsedTime);
       }
     }
+  }
+
+  function completeProcessConsumablesView(
+    address from,
+    uint _playerId,
+    QueuedAction memory queuedAction,
+    ActionChoice memory actionChoice,
+    CombatStats memory combatStats,
+    uint elapsedTime,
+    uint startTime,
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+  )
+    external
+    view
+    returns (
+      Equipment[] memory consumedEquipments,
+      Equipment memory outputEquipment,
+      uint xpElapsedTime,
+      uint prevXPElapsedTime,
+      bool died,
+      uint24 numConsumed,
+      uint24 numProduced
+    )
+  {
+    // Processed
+    uint processedTime = queuedAction.processedTime;
+    uint veryStartTime = startTime.sub(processedTime);
+
+    // Total used
+    if (processedTime > 0) {
+      // Used before
+      (
+        Equipment[] memory _consumedEquipments,
+        Equipment memory _outputEquipment,
+        uint _xpElapsedTime,
+        bool _died,
+        uint _numConsumed,
+        uint _numProduced
+      ) = _processConsumablesView(
+          from,
+          _playerId,
+          queuedAction,
+          veryStartTime,
+          processedTime,
+          combatStats,
+          actionChoice,
+          false,
+          pendingQueuedActionEquipmentStates
+        );
+
+      prevXPElapsedTime = _xpElapsedTime;
+
+      // Copy existing pending
+      PendingQueuedActionEquipmentState
+        memory extendedPendingQueuedActionEquipmentState = pendingQueuedActionEquipmentStates[
+          pendingQueuedActionEquipmentStates.length - 1
+        ];
+
+      if (_consumedEquipments.length > 0) {
+        // Add to produced
+        extendedPendingQueuedActionEquipmentState.producedItemTokenIds = new uint[](_consumedEquipments.length);
+        extendedPendingQueuedActionEquipmentState.producedAmounts = new uint[](_consumedEquipments.length);
+        for (uint j = 0; j < _consumedEquipments.length; ++j) {
+          extendedPendingQueuedActionEquipmentState.producedItemTokenIds[j] = _consumedEquipments[j].itemTokenId;
+          extendedPendingQueuedActionEquipmentState.producedAmounts[j] = _consumedEquipments[j].amount;
+        }
+      }
+      if (outputEquipment.itemTokenId != NONE) {
+        // Add to produced
+        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds = new uint[](1);
+        extendedPendingQueuedActionEquipmentState.consumedAmounts = new uint[](1);
+        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds[0] = outputEquipment.itemTokenId;
+        extendedPendingQueuedActionEquipmentState.consumedAmounts[0] = outputEquipment.amount;
+      }
+
+      Equipment[] memory __consumedEquipments;
+      (__consumedEquipments, outputEquipment, xpElapsedTime, died, numConsumed, numProduced) = _processConsumablesView(
+        from,
+        _playerId,
+        queuedAction,
+        veryStartTime,
+        elapsedTime + processedTime,
+        combatStats,
+        actionChoice,
+        true,
+        pendingQueuedActionEquipmentStates
+      );
+
+      delete extendedPendingQueuedActionEquipmentState;
+
+      // Get the difference
+      consumedEquipments = new Equipment[](__consumedEquipments.length); // This should be greater than _consumedEquipments
+      uint consumedEquipmentsLength;
+      for (uint j = 0; j < __consumedEquipments.length; ++j) {
+        // Check if it exists in _consumedEquipments and if so, subtract the amount
+        bool nonZero = true;
+        for (uint k = 0; k < _consumedEquipments.length; ++k) {
+          if (__consumedEquipments[j].itemTokenId == _consumedEquipments[k].itemTokenId) {
+            __consumedEquipments[j].amount = uint24(__consumedEquipments[j].amount.sub(_consumedEquipments[k].amount));
+            nonZero = __consumedEquipments[j].amount != 0;
+            break;
+          }
+        }
+        if (nonZero) {
+          consumedEquipments[consumedEquipmentsLength++] = __consumedEquipments[j];
+        }
+      }
+
+      assembly ("memory-safe") {
+        mstore(consumedEquipments, consumedEquipmentsLength)
+      }
+
+      // Do the same for outputEquipment, check if it exists and subtract amount
+      outputEquipment.amount = uint24(outputEquipment.amount.sub(_outputEquipment.amount));
+      if (outputEquipment.amount == 0) {
+        outputEquipment.itemTokenId = NONE;
+      }
+
+      xpElapsedTime = xpElapsedTime.sub(_xpElapsedTime);
+      numConsumed = uint24(numConsumed.sub(_numConsumed));
+      numProduced = uint24(numProduced.sub(_numProduced));
+    } else {
+      (consumedEquipments, outputEquipment, xpElapsedTime, died, numConsumed, numProduced) = _processConsumablesView(
+        from,
+        _playerId,
+        queuedAction,
+        veryStartTime,
+        elapsedTime + processedTime,
+        combatStats,
+        actionChoice,
+        true,
+        pendingQueuedActionEquipmentStates
+      );
+    }
+  }
+
+  function _processConsumablesView(
+    address _from,
+    uint _playerId,
+    QueuedAction memory _queuedAction,
+    uint _queuedActionStartTime,
+    uint _elapsedTime,
+    CombatStats memory _combatStats,
+    ActionChoice memory _actionChoice,
+    bool _checkBalance,
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+  )
+    private
+    view
+    returns (
+      Equipment[] memory consumedEquipment,
+      Equipment memory outputEquipment,
+      uint xpElapsedTime,
+      bool died,
+      uint24 numConsumed,
+      uint24 numProduced
+    )
+  {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersMiscDelegateView.processConsumablesViewImpl.selector,
+        _from,
+        _playerId,
+        _queuedAction,
+        _queuedActionStartTime,
+        _elapsedTime,
+        _combatStats,
+        _actionChoice,
+        _checkBalance,
+        _pendingQueuedActionEquipmentStates
+      )
+    );
+    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint24, uint24));
   }
 
   function _claimTotalXPThresholdRewards(address _from, uint _playerId, uint _oldTotalXP, uint _newTotalXP) private {

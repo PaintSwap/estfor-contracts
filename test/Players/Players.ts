@@ -346,9 +346,8 @@ describe("Players", function () {
       expect(actionQueue.length).to.eq(3);
       expect(actionQueue[0].queueId).to.eq(2);
       expect(actionQueue[0].timespan).to.be.oneOf([
-        // Takes 36 seconds to cut one
-        basicWoodcuttingQueuedAction.timespan - 36,
-        basicWoodcuttingQueuedAction.timespan - 36 - 1,
+        basicWoodcuttingQueuedAction.timespan - 50,
+        basicWoodcuttingQueuedAction.timespan - 50 - 1,
       ]);
       expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);

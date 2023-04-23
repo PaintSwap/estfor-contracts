@@ -373,6 +373,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       selector == IPlayersRewardsDelegateView.getRewards.selector
     ) {
       implementation = implRewards;
+    } else if (selector == IPlayersProcessActionsDelegateView.completeProcessConsumablesView.selector) {
+      implementation = implProcessActions;
     } else if (
       selector == IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector ||

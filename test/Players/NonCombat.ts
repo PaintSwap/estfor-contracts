@@ -385,7 +385,7 @@ describe("Non-Combat Actions", function () {
     expect(pendingQueuedActionState.equipmentStates[1].consumedItemTokenIds[0]).is.eq(EstforConstants.LOG);
     expect(pendingQueuedActionState.equipmentStates[1].consumedAmounts[0]).is.eq(1200);
     expect(pendingQueuedActionState.actionMetadatas.length).is.eq(2);
-    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).is.eq(queuedActions[0].timespan - 10); // 1xp is wasted
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).is.eq(queuedActions[0].timespan - 10); // 1 xp is wasted
     expect(pendingQueuedActionState.actionMetadatas[1].xpGained).is.eq(queuedActions[1].timespan);
 
     await players.connect(alice).processActions(playerId);
@@ -918,12 +918,14 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
       expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
-      expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(queuedAction.timespan / 2);
+      expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.be.oneOf([
+        queuedAction.timespan / 2 + 2,
+        queuedAction.timespan / 2 + 3,
+      ]);
 
       await players.connect(alice).processActions(playerId);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
-      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(0);
+      expect(pendingQueuedActionState.actionMetadatas.length).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2 - 2]);
       await ethers.provider.send("evm_mine", []);
@@ -1152,7 +1154,10 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 2]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 0);
+      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, [
+        queuedAction.timespan - 2,
+        queuedAction.timespan - 1,
+      ]);
 
       await players.connect(alice).processActions(playerId);
       // Get no XP, otherwise you could just stop before anything is consumed.
@@ -1174,7 +1179,7 @@ describe("Non-Combat Actions", function () {
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         3600,
-        3600
+        1
       );
 
       await players.connect(alice).processActions(playerId);
@@ -1205,7 +1210,7 @@ describe("Non-Combat Actions", function () {
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
-      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 10]); // Should make 59
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 12]); // Should make 59
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
 
@@ -1219,7 +1224,7 @@ describe("Non-Combat Actions", function () {
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1 * numMade}],
         xpGained,
-        xpGained
+        [queuedAction.timespan - 12, queuedAction.timespan - 11]
       );
 
       await players.connect(alice).processActions(playerId);
@@ -1228,24 +1233,24 @@ describe("Non-Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(1);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / 10 - 1);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-
-      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 0);
+      expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
       // 1 left, but don't fully complete it with the required time
       await ethers.provider.send("evm_increaseTime", [1]); // Should make 0
       await ethers.provider.send("evm_mine", []);
 
-      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 0);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, [1, 2]);
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained); // same as before
-      // Check the inputs/output are same as because
+      // Check the inputs/output are same as before
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(20);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(1);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / 10 - 1);
 
       // Now complete it
-      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // Should make 59
+      await ethers.provider.send("evm_increaseTime", [12]); // Should make 1
       await ethers.provider.send("evm_mine", []);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
 
@@ -1258,7 +1263,7 @@ describe("Non-Combat Actions", function () {
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         xpGained,
-        xpGained
+        [8, 9]
       );
 
       await players.connect(alice).processActions(playerId);
@@ -1428,7 +1433,7 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[1].elapsedTime).to.eq(3600);
       expect(pendingQueuedActionState.actionMetadatas[2].actionId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[2].queueId).to.eq(3);
-      expect(pendingQueuedActionState.actionMetadatas[2].elapsedTime).to.eq(0);
+      expect(pendingQueuedActionState.actionMetadatas[2].elapsedTime).to.eq(1800);
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(7200);
@@ -1455,7 +1460,10 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(3);
-      expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.eq(3600);
+      expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.be.oneOf([
+        queuedAction.timespan * 0.5,
+        queuedAction.timespan * 0.5 - 1,
+      ]);
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(3600 * 3);
