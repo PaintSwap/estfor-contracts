@@ -250,7 +250,7 @@ abstract contract PlayersBase {
     uint _combatPoints
   ) internal view returns (uint32 healthPointsAccured) {
     // Get 1/3 of the combat points as health
-    healthPointsAccured = uint32((_combatPoints * 333333) / 1000000);
+    healthPointsAccured = uint32(_combatPoints / 3);
     // Get bonus health points from avatar starting skills
     uint bonusPercent = _getBonusAvatarXPPercent(_playerId, Skill.HEALTH);
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));

@@ -441,12 +441,17 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
       uint32 xpGained = pointsAccrued;
+      uint32 healthPointsGained;
       if (pointsAccruedExclBaseBoost != 0 && _isCombatStyle(queuedAction.combatStyle)) {
+        healthPointsGained = _getHealthPointsFromCombat(
+          _playerId,
+          pointsAccruedExclBaseBoost + prevPointsAccruedExclBaseBoost
+        );
         if (prevPointsAccrued != 0) {
           // Remove old
-          xpGained -= _getHealthPointsFromCombat(_playerId, prevPointsAccruedExclBaseBoost);
+          healthPointsGained -= _getHealthPointsFromCombat(_playerId, prevPointsAccruedExclBaseBoost);
         }
-        xpGained += _getHealthPointsFromCombat(_playerId, pointsAccruedExclBaseBoost + prevPointsAccruedExclBaseBoost);
+        xpGained += healthPointsGained;
       }
 
       bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && _isCombatStyle(queuedAction.combatStyle);
@@ -461,10 +466,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         }
         if (hasCombatXP) {
           pendingQueuedActionMetadata.skills[1] = Skill.HEALTH;
-          pendingQueuedActionMetadata.xpGainedSkills[1] = _getHealthPointsFromCombat(
-            _playerId,
-            pointsAccruedExclBaseBoost
-          );
+          pendingQueuedActionMetadata.xpGainedSkills[1] = healthPointsGained;
         }
       }
 

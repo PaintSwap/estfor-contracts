@@ -126,8 +126,8 @@ struct PlayerBoostInfo {
 struct ActionChoice {
   Skill skill;
   uint32 minXP;
-  uint32 diff; // This can be uint16.
-  uint32 rate; // This can be uint16. Rate of output produced per hour (base 10) 1 decimal
+  uint16 diff; //
+  uint16 rate; // Rate of output produced per hour (base 10) 1 decimal
   uint24 xpPerHour;
   uint16 inputTokenId1;
   uint8 inputAmount1;

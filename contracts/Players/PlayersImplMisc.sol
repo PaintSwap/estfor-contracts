@@ -332,6 +332,7 @@ contract PlayersImplMisc is
         world,
         _elapsedTime,
         _actionChoice,
+        _checkBalance,
         _queuedAction,
         _combatStats,
         enemyCombatStats,

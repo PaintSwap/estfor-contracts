@@ -33,6 +33,9 @@ struct QueuedAction {
   uint24 processedTime; // How long the action has been processed for previously
   CombatStyle combatStyle; // specific style of combat,  can also be used
   bool isValid; // If we still have the item, TODO: Not used yet
+  // How much of the queued action was already processed beforehand. Useful for working out how many more consumables/food should be used due to previous rounding.
+  // uint16 startLevel; // This is the level that should be used (if set) instead of xp->level
+  // uint16 healthStartLevel; // Health is handled specially so also need to store it
   uint64 queueId; // id of this queued action
 }
 
