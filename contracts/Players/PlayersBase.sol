@@ -23,7 +23,7 @@ abstract contract PlayersBase {
   using UnsafeMath for uint256;
 
   event ClearAll(address from, uint playerId);
-  event AddXP(address from, uint playerId, Skill skill, uint32 points);
+  event AddXP(address from, uint playerId, Skill skill, uint points);
   event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, uint startTime);
   event ConsumeBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
   event UnconsumeBoostVial(address from, uint playerId);
@@ -129,7 +129,7 @@ abstract contract PlayersBase {
   bool internal dailyRewardsEnabled;
   bool internal isAlpha;
 
-  mapping(uint playerId => mapping(Skill skill => uint128 xp)) internal xp_;
+  mapping(uint playerId => PackedXP packedXP) internal xp_;
 
   mapping(uint playerId => Player player) internal players_;
   mapping(uint playerId => mapping(uint queuedId => Attire attire)) internal attire_;
@@ -473,13 +473,28 @@ abstract contract PlayersBase {
   }
 
   function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) internal {
-    uint oldPoints = xp_[_playerId][_skill];
+    PackedXP storage packedXP = xp_[_playerId];
+    uint oldPoints = PlayersLibrary.readXP(_skill, packedXP);
     uint newPoints = oldPoints.add(_pointsAccrued);
     if (newPoints > type(uint32).max) {
       newPoints = type(uint32).max;
     }
-    xp_[_playerId][_skill] = uint32(newPoints);
-    emit AddXP(_from, _playerId, _skill, uint32(newPoints));
+    uint offset = 2; // Accounts for NONE & COMBAT skills
+    uint skillOffsetted = uint8(_skill) - offset;
+    uint slotNum = skillOffsetted / 6;
+    uint relativePos = skillOffsetted % 6;
+
+    uint40 _newPoints = uint40(newPoints);
+    assembly ("memory-safe") {
+      let val := sload(add(packedXP.slot, slotNum))
+      // Clear the 5 bytes containing the old xp
+      val := and(val, not(shl(mul(relativePos, 40), 0xffffffffff)))
+      // Now set new xp
+      val := or(val, shl(mul(relativePos, 40), _newPoints))
+      sstore(add(packedXP.slot, slotNum), val)
+    }
+
+    emit AddXP(_from, _playerId, _skill, newPoints);
 
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
     uint16 newLevel = PlayersLibrary.getLevel(newPoints);

@@ -34,7 +34,7 @@ describe("AlphaWhitelist", function () {
       name: "Name goes here",
       description: "Hi I'm a description",
       imageURI: "1234.png",
-      startSkills: [Skill.NONE, Skill.NONE],
+      startSkills: [Skill.MAGIC, Skill.NONE],
     };
     await playerNFT.setAvatars(avatarId, [avatarInfo]);
 

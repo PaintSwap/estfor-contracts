@@ -23,10 +23,12 @@ library PlayersLibrary {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
 
+  error InvalidXPSkill();
+
   // Show all the player stats, return metadata json
   function uri(
     string calldata playerName,
-    mapping(Skill skill => uint128 xp) storage xp,
+    PackedXP storage _packedXP,
     string calldata avatarName,
     string calldata avatarDescription,
     string calldata imageURI,
@@ -34,18 +36,18 @@ library PlayersLibrary {
     uint playerId,
     string calldata clanName
   ) external view returns (string memory) {
-    uint overallLevel = getLevel(xp[Skill.MELEE]) +
-      getLevel(xp[Skill.MAGIC]) +
-      getLevel(xp[Skill.DEFENCE]) +
-      getLevel(xp[Skill.HEALTH]) +
-      getLevel(xp[Skill.MINING]) +
-      getLevel(xp[Skill.WOODCUTTING]) +
-      getLevel(xp[Skill.FISHING]) +
-      getLevel(xp[Skill.SMITHING]) +
-      getLevel(xp[Skill.THIEVING]) +
-      getLevel(xp[Skill.CRAFTING]) +
-      getLevel(xp[Skill.COOKING]) +
-      getLevel(xp[Skill.FIREMAKING]);
+    uint overallLevel = getLevel(readXP(Skill.MELEE, _packedXP)) +
+      getLevel(readXP(Skill.MAGIC, _packedXP)) +
+      getLevel(readXP(Skill.DEFENCE, _packedXP)) +
+      getLevel(readXP(Skill.HEALTH, _packedXP)) +
+      getLevel(readXP(Skill.MINING, _packedXP)) +
+      getLevel(readXP(Skill.WOODCUTTING, _packedXP)) +
+      getLevel(readXP(Skill.FISHING, _packedXP)) +
+      getLevel(readXP(Skill.SMITHING, _packedXP)) +
+      getLevel(readXP(Skill.THIEVING, _packedXP)) +
+      getLevel(readXP(Skill.CRAFTING, _packedXP)) +
+      getLevel(readXP(Skill.COOKING, _packedXP)) +
+      getLevel(readXP(Skill.FIREMAKING, _packedXP));
 
     string memory attributes = string(
       abi.encodePacked(
@@ -53,29 +55,29 @@ library PlayersLibrary {
         ",",
         _getTraitStringJSON("Clan", clanName),
         ",",
-        _getTraitNumberJSON("Melee level", getLevel(xp[Skill.MELEE])),
+        _getTraitNumberJSON("Melee level", getLevel(readXP(Skill.MELEE, _packedXP))),
         ",",
-        _getTraitNumberJSON("Magic level", getLevel(xp[Skill.MAGIC])),
+        _getTraitNumberJSON("Magic level", getLevel(readXP(Skill.MAGIC, _packedXP))),
         ",",
-        _getTraitNumberJSON("Defence level", getLevel(xp[Skill.DEFENCE])),
+        _getTraitNumberJSON("Defence level", getLevel(readXP(Skill.DEFENCE, _packedXP))),
         ",",
-        _getTraitNumberJSON("Health level", getLevel(xp[Skill.HEALTH])),
+        _getTraitNumberJSON("Health level", getLevel(readXP(Skill.HEALTH, _packedXP))),
         ",",
-        _getTraitNumberJSON("Mining level", getLevel(xp[Skill.MINING])),
+        _getTraitNumberJSON("Mining level", getLevel(readXP(Skill.MINING, _packedXP))),
         ",",
-        _getTraitNumberJSON("Woodcutting level", getLevel(xp[Skill.WOODCUTTING])),
+        _getTraitNumberJSON("Woodcutting level", getLevel(readXP(Skill.WOODCUTTING, _packedXP))),
         ",",
-        _getTraitNumberJSON("Fishing level", getLevel(xp[Skill.FISHING])),
+        _getTraitNumberJSON("Fishing level", getLevel(readXP(Skill.FISHING, _packedXP))),
         ",",
-        _getTraitNumberJSON("Smithing level", getLevel(xp[Skill.SMITHING])),
+        _getTraitNumberJSON("Smithing level", getLevel(readXP(Skill.SMITHING, _packedXP))),
         ",",
-        _getTraitNumberJSON("Thieving level", getLevel(xp[Skill.THIEVING])),
+        _getTraitNumberJSON("Thieving level", getLevel(readXP(Skill.THIEVING, _packedXP))),
         ",",
-        _getTraitNumberJSON("Crafting level", getLevel(xp[Skill.CRAFTING])),
+        _getTraitNumberJSON("Crafting level", getLevel(readXP(Skill.CRAFTING, _packedXP))),
         ",",
-        _getTraitNumberJSON("Cooking level", getLevel(xp[Skill.COOKING])),
+        _getTraitNumberJSON("Cooking level", getLevel(readXP(Skill.COOKING, _packedXP))),
         ",",
-        _getTraitNumberJSON("Firemaking level", getLevel(xp[Skill.FIREMAKING])),
+        _getTraitNumberJSON("Firemaking level", getLevel(readXP(Skill.FIREMAKING, _packedXP))),
         ",",
         _getTraitNumberJSON("Total level", uint16(overallLevel))
       )
@@ -630,10 +632,30 @@ library PlayersLibrary {
     }
   }
 
+  function readXP(Skill _skill, PackedXP storage _packedXP) internal view returns (uint) {
+    if (_skill == Skill.COMBAT) {
+      revert InvalidXPSkill();
+    }
+    if (_skill == Skill.NONE) {
+      return 0;
+    }
+    uint offset = 2; // Accounts for NONE & COMBAT skills
+    uint val = uint8(_skill) - offset;
+    uint slotNum = val / 6;
+    uint relativePos = val % 6;
+
+    uint slotVal;
+    assembly ("memory-safe") {
+      slotVal := sload(add(_packedXP.slot, slotNum))
+    }
+
+    return uint40(slotVal >> (relativePos * 40));
+  }
+
   function getCombatStats(
     uint _playerId,
     PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
-    mapping(uint playerId => mapping(Skill skill => uint128 xp)) storage xp_
+    mapping(uint playerId => PackedXP packedXP) storage xp_
   ) external view returns (CombatStats memory combatStats) {
     combatStats.melee = int16(
       getLevel(getAbsoluteActionStartXP(_playerId, Skill.MELEE, _pendingQueuedActionXPGained, xp_))
@@ -656,9 +678,9 @@ library PlayersLibrary {
     uint _playerId,
     Skill _skill,
     PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
-    mapping(uint playerId => mapping(Skill skill => uint128 xp)) storage xp_
+    mapping(uint playerId => PackedXP packedXP) storage xp_
   ) public view returns (uint) {
-    uint xp = xp_[_playerId][_skill];
+    uint xp = readXP(_skill, xp_[_playerId]);
     if (_pendingQueuedActionXPGained.alreadyProcessedSkill == _skill) {
       xp -= _pendingQueuedActionXPGained.alreadyProcessedXPGained;
     } else if (_pendingQueuedActionXPGained.alreadyProcessedSkill1 == _skill) {

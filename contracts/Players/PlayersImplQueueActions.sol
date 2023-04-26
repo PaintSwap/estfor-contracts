@@ -9,6 +9,8 @@ import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 
+import {PlayersLibrary} from "./PlayersLibrary.sol";
+
 /* solhint-disable no-global-import */
 import "../globals/players.sol";
 import "../globals/items.sol";
@@ -193,7 +195,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
 
     bool isCombat = skill == Skill.COMBAT;
-    if (!isCombat && xp_[_playerId][skill] < actionMinXP) {
+    if (!isCombat && PlayersLibrary.readXP(skill, xp_[_playerId]) < actionMinXP) {
       revert ActionMinimumXPNotReached();
     }
 
@@ -205,7 +207,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
 
-      if (xp_[_playerId][actionChoice.skill] < actionChoice.minXP) {
+      if (PlayersLibrary.readXP(actionChoice.skill, xp_[_playerId]) < actionChoice.minXP) {
         revert ActionChoiceMinimumXPNotReached();
       }
 
@@ -277,7 +279,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         (EquipPosition equipPosition, Skill skill, uint32 minXP) = itemNFT.getEquipPositionAndMinRequirement(
           itemTokenIds[itemLength.dec()]
         );
-        if (xp_[_playerId][skill] < minXP) {
+        if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
           revert ConsumableMinimumXPNotReached();
         }
       }
@@ -383,7 +385,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
-        if (xp_[_playerId][skills[i]] < minXPs[i]) {
+        if (PlayersLibrary.readXP(skills[i], xp_[_playerId]) < minXPs[i]) {
           revert AttireMinimumXPNotReached();
         }
         if (balances[i] == 0) {
@@ -423,7 +425,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         (EquipPosition equipPosition, Skill skill, uint32 minXP) = itemNFT.getEquipPositionAndMinRequirement(
           equippedItemTokenId
         );
-        if (xp_[_playerId][skill] < minXP) {
+        if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
           revert ItemMinimumXPNotReached();
         }
         if (isRightHand) {

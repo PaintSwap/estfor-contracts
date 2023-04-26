@@ -517,7 +517,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external {
     // Make sure it isn't less XP
-    uint128 oldPoints = xp_[_playerId][_skill];
+    uint oldPoints = PlayersLibrary.readXP(_skill, xp_[_playerId]);
     if (_xp < oldPoints) {
       revert TestInvalidXP();
     }

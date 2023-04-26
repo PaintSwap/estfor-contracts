@@ -148,6 +148,7 @@ enum Skill {
   MAGIC,
   DEFENCE,
   HEALTH,
+  RESERVED_COMBAT,
   MINING,
   WOODCUTTING,
   FISHING,
@@ -156,6 +157,26 @@ enum Skill {
   CRAFTING,
   COOKING,
   FIREMAKING
+}
+
+// Must be in the same order as Skill
+struct PackedXP {
+  uint40 melee;
+  uint40 range;
+  uint40 magic;
+  uint40 defence;
+  uint40 health;
+  uint40 reservedCombat;
+  // Next slot
+  uint40 mining;
+  uint40 woodcutting;
+  uint40 fishing;
+  uint40 smithing;
+  uint40 thieving;
+  uint40 crafting;
+  // Next slot
+  uint40 cooking;
+  uint40 firemaking;
 }
 
 struct AvatarInfo {
