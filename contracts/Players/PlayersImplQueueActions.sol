@@ -37,7 +37,11 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   ) external {
     address from = msg.sender;
     uint totalTimespan;
-    QueuedAction[] memory remainingSkills = _processActions(from, _playerId);
+    (
+      QueuedAction[] memory remainingSkills,
+      PendingQueuedActionXPGained memory pendingQueuedActionXPGained
+    ) = _processActions(from, _playerId);
+
     Player storage player = players_[_playerId];
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
@@ -45,7 +49,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         QueuedAction[] memory queuedActions;
         player.actionQueue = queuedActions;
       }
-      player.queuedActionStartTime = _queuedActions.length != 0 ? uint40(block.timestamp) : 0;
       if (_queuedActions.length > 3) {
         revert TooManyActionsQueued();
       }
@@ -69,6 +72,22 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       }
     }
 
+    if (
+      (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || _queueStatus == ActionQueueStatus.APPEND) &&
+      remainingSkills.length != 0
+    ) {
+      player.queuedActionAlreadyProcessedSkill = pendingQueuedActionXPGained.alreadyProcessedSkill;
+      player.queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.alreadyProcessedXPGained;
+      player.queuedActionAlreadyProcessedSkill1 = pendingQueuedActionXPGained.alreadyProcessedSkill1;
+      player.queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.alreadyProcessedXPGained1;
+    } else {
+      // clear it
+      player.queuedActionAlreadyProcessedSkill = Skill.NONE;
+      player.queuedActionAlreadyProcessedXPGained = 0;
+      player.queuedActionAlreadyProcessedSkill1 = Skill.NONE;
+      player.queuedActionAlreadyProcessedXPGained1 = 0;
+    }
+
     uint prevEndTime = block.timestamp.add(totalTimespan);
 
     U256 queueId = nextQueueId.asU256();
@@ -76,6 +95,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     if (remainingSkills.length != 0 || _queuedActions.length != 0) {
       player.queuedActionStartTime = uint40(block.timestamp);
+    } else {
+      player.queuedActionStartTime = 0;
     }
 
     for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
@@ -441,7 +462,13 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   // Removes all the actions from the queue
   function clearEverything(address _from, uint _playerId) public {
     _processActions(_from, _playerId);
+    // Ensure player info is cleared
     players_[_playerId].queuedActionStartTime = 0;
+    players_[_playerId].queuedActionAlreadyProcessedSkill = Skill.NONE;
+    players_[_playerId].queuedActionAlreadyProcessedXPGained = 0;
+    players_[_playerId].queuedActionAlreadyProcessedSkill1 = Skill.NONE;
+    players_[_playerId].queuedActionAlreadyProcessedXPGained1 = 0;
+
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);
     // Can re-mint boost if it hasn't been consumed at all yet

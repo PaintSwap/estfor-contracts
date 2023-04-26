@@ -2,7 +2,6 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
-import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {getActionChoiceId, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
@@ -1151,12 +1150,12 @@ describe("Non-Combat Actions", function () {
 
       await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
 
-      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 2]);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 3]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, [
+        queuedAction.timespan - 3,
         queuedAction.timespan - 2,
-        queuedAction.timespan - 1,
       ]);
 
       await players.connect(alice).processActions(playerId);
@@ -1179,7 +1178,7 @@ describe("Non-Combat Actions", function () {
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         3600,
-        1
+        2
       );
 
       await players.connect(alice).processActions(playerId);

@@ -40,11 +40,12 @@ const config: HardhatUserConfig = {
     hardhat: {
       gasPrice: 0,
       initialBaseFeePerGas: 0,
+      allowUnlimitedContractSize: true,
     },
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: 110000000000,
+      gasPrice: 150000000000,
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,

@@ -51,12 +51,12 @@ struct CombatStats {
 
 struct Player {
   // Combat levels, (Cached from skill points so this doesn't need to be calculated every combat)
-  int16 melee;
-  int16 magic;
-  int16 range;
-  int16 defence;
-  int16 health;
   uint40 queuedActionStartTime; // The start time of the first queued action
+  // For combat this will be attack, defence, magic or ranged, as well as health
+  Skill queuedActionAlreadyProcessedSkill; // The skill that the queued action has already gained XP in
+  uint24 queuedActionAlreadyProcessedXPGained; // The amount of XP that the queued action has already gained
+  Skill queuedActionAlreadyProcessedSkill1;
+  uint24 queuedActionAlreadyProcessedXPGained1;
   Skill skillBoosted1;
   Skill skillBoosted2;
   uint112 totalXP;
@@ -181,15 +181,24 @@ struct PendingQueuedActionEquipmentState {
 }
 
 struct PendingQueuedActionMetadata {
-  uint32 xpGained;
-  Skill[] skills; // Skills gained XP in
-  uint32[] xpGainedSkills; // XP gained in these skills
+  uint32 xpGained; // total xp gained
   uint32 rolls;
   bool died;
   uint16 actionId;
   uint64 queueId;
   uint24 elapsedTime;
   uint24 xpElapsedTime;
+}
+
+struct PendingQueuedActionXPGained {
+  // The amount of XP that the queued action has already gained
+  // XP gained during this session
+  Skill[] skills;
+  uint32[] xpGainedSkills;
+  Skill alreadyProcessedSkill;
+  uint24 alreadyProcessedXPGained;
+  Skill alreadyProcessedSkill1;
+  uint24 alreadyProcessedXPGained1;
 }
 
 struct QuestState {
@@ -201,8 +210,8 @@ struct QuestState {
   uint[] choiceIds;
   uint[] choiceIdAmounts;
   uint[] questsCompleted;
-  Skill[] skills; // Skills gained XP in
-  uint32[] xpGainedSkills; // XP gained in these skills
+  //  Skill[] skills; // Skills gained XP in
+  //  uint32[] xpGainedSkills; // XP gained in these skills
 }
 
 struct PendingQueuedActionState {
@@ -210,6 +219,7 @@ struct PendingQueuedActionState {
   PendingQueuedActionEquipmentState[] equipmentStates;
   PendingQueuedActionMetadata[] actionMetadatas;
   QueuedAction[] remainingSkills;
+  PendingQueuedActionXPGained xpGained;
   PastRandomRewardInfo[] producedPastRandomRewards;
   uint[] xpRewardItemTokenIds;
   uint[] xpRewardAmounts;
@@ -217,6 +227,10 @@ struct PendingQueuedActionState {
   uint[] dailyRewardAmounts;
   bytes32 dailyRewardMask;
   QuestState quests;
+}
+
+interface IPlayersRewardsDelegate {
+  function claimRandomRewards(uint _playerId, PendingQueuedActionXPGained memory _pendingQueuedActionXPGained) external;
 }
 
 // External view functions that are in other implementation files
@@ -230,8 +244,13 @@ interface IPlayersRewardsDelegateView {
     uint playerId,
     uint40 skillStartTime,
     uint elapsedTime,
-    uint16 _actionId
+    uint16 _actionId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   ) external view returns (uint[] memory newIds, uint[] memory newAmounts);
+}
+
+interface IPlayersProcessActionsDelegate {
+  function processActions(address from, uint playerId) external;
 }
 
 interface IPlayersProcessActionsDelegateView {
@@ -243,7 +262,8 @@ interface IPlayersProcessActionsDelegateView {
     CombatStats memory combatStats,
     uint elapsedTime,
     uint startTime,
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   )
     external
     view
@@ -279,7 +299,8 @@ interface IPlayersMiscDelegateView {
     CombatStats memory combatStats,
     ActionChoice memory actionChoice,
     bool checkBalance,
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
+    PendingQueuedActionXPGained memory pendingQueuedActionXPGained
   )
     external
     view

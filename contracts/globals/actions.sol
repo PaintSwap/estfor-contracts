@@ -30,7 +30,7 @@ struct QueuedAction {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  uint24 processedTime; // How long the action has been processed for previously
+  uint24 processedTime; // How long the action has been processed for previously. TODO: Can be moved to Player, only need 1
   CombatStyle combatStyle; // specific style of combat,  can also be used
   bool isValid; // If we still have the item, TODO: Not used yet
   // How much of the queued action was already processed beforehand. Useful for working out how many more consumables/food should be used due to previous rounding.

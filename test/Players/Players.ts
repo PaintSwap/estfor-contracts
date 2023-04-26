@@ -37,13 +37,7 @@ describe("Players", function () {
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
     expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP.div(2));
     expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(START_XP.div(2));
-
     expect((await players.players(newPlayerId)).totalXP).to.eq(START_XP);
-    expect((await players.players(newPlayerId)).health).to.eq(3);
-    expect((await players.players(newPlayerId)).melee).to.eq(1);
-    expect((await players.players(newPlayerId)).range).to.eq(1);
-    expect((await players.players(newPlayerId)).magic).to.eq(1);
-    expect((await players.players(newPlayerId)).defence).to.eq(1);
   });
 
   it("Skill points", async function () {
@@ -353,7 +347,6 @@ describe("Players", function () {
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
       expect(actionQueue[2].queueId).to.eq(4);
       expect(actionQueue[2].timespan).to.eq(queuedAction.timespan);
-      itemNFT.balanceOf;
     });
   });
 

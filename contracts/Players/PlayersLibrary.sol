@@ -467,7 +467,6 @@ library PlayersLibrary {
         _betaCombat,
         _enemyCombatStats.health
       );
-
       numKilled = _elapsedTime / combatTimePerKill;
       combatElapsedTime = _elapsedTime; // How time was spent in combat
     }
@@ -629,5 +628,51 @@ library PlayersLibrary {
         }
       }
     }
+  }
+
+  function getCombatStats(
+    uint _playerId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
+    mapping(uint playerId => mapping(Skill skill => uint128 xp)) storage xp_
+  ) external view returns (CombatStats memory combatStats) {
+    combatStats.melee = int16(
+      getLevel(getAbsoluteActionStartXP(_playerId, Skill.MELEE, _pendingQueuedActionXPGained, xp_))
+    );
+    combatStats.magic = int16(
+      getLevel(getAbsoluteActionStartXP(_playerId, Skill.MAGIC, _pendingQueuedActionXPGained, xp_))
+    );
+    combatStats.health = int16(
+      getLevel(getAbsoluteActionStartXP(_playerId, Skill.HEALTH, _pendingQueuedActionXPGained, xp_))
+    );
+    uint16 defenceLevel = getLevel(
+      getAbsoluteActionStartXP(_playerId, Skill.DEFENCE, _pendingQueuedActionXPGained, xp_)
+    );
+    combatStats.meleeDefence = int16(defenceLevel);
+    combatStats.magicDefence = int16(defenceLevel);
+  }
+
+  // Subtract any existing xp gained from the first in-progress actions and add the new xp gained
+  function getAbsoluteActionStartXP(
+    uint _playerId,
+    Skill _skill,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
+    mapping(uint playerId => mapping(Skill skill => uint128 xp)) storage xp_
+  ) public view returns (uint) {
+    uint xp = xp_[_playerId][_skill];
+    if (_pendingQueuedActionXPGained.alreadyProcessedSkill == _skill) {
+      xp -= _pendingQueuedActionXPGained.alreadyProcessedXPGained;
+    } else if (_pendingQueuedActionXPGained.alreadyProcessedSkill1 == _skill) {
+      xp -= _pendingQueuedActionXPGained.alreadyProcessedXPGained1;
+    }
+
+    // Add any new xp gained from previous actions completed in the queue. For instance
+    // battling monsters may increase your level so you are stronger for a later queued action.
+    for (uint i; i < _pendingQueuedActionXPGained.skills.length; ++i) {
+      if (_pendingQueuedActionXPGained.skills[i] == _skill) {
+        xp += _pendingQueuedActionXPGained.xpGainedSkills[i];
+      }
+    }
+
+    return xp;
   }
 }

@@ -28,16 +28,26 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     _checkStartSlot();
   }
 
-  function processActions(address _from, uint _playerId) external returns (QueuedAction[] memory remainingSkills) {
+  function processActions(
+    address _from,
+    uint _playerId
+  )
+    external
+    returns (QueuedAction[] memory remainingSkills, PendingQueuedActionXPGained memory pendingQueuedActionXPGained)
+  {
     Player storage player = players_[_playerId];
     if (player.actionQueue.length == 0) {
       // No actions remaining
-      _processActionsFinished(_from, _playerId); // TODO: Could still use pendingQueuedActionState
-      return remainingSkills;
+      _processActionsFinished(_from, _playerId, pendingQueuedActionXPGained); // TODO: Could still use pendingQueuedActionState
+      return (remainingSkills, pendingQueuedActionXPGained);
     }
-
     PendingQueuedActionState memory pendingQueuedActionState = pendingQueuedActionState(_from, _playerId);
     remainingSkills = pendingQueuedActionState.remainingSkills;
+    pendingQueuedActionXPGained = pendingQueuedActionState.xpGained;
+
+    for (uint i; i < pendingQueuedActionXPGained.skills.length; ++i) {
+      _updateXP(_from, _playerId, pendingQueuedActionXPGained.skills[i], pendingQueuedActionXPGained.xpGainedSkills[i]);
+    }
 
     uint startTime = players_[_playerId].queuedActionStartTime;
     for (uint i = 0; i < pendingQueuedActionState.equipmentStates.length; ++i) {
@@ -99,13 +109,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (actionMetadata.xpGained != 0) {
         uint previousTotalXP = player.totalXP;
         uint newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
-
-        _updateXP(_from, _playerId, actionMetadata.skills[0], actionMetadata.xpGainedSkills[0]);
-        if (_isCombatStyle(queuedAction.combatStyle)) {
-          _updateXP(_from, _playerId, actionMetadata.skills[1], actionMetadata.xpGainedSkills[1]);
-          _cacheCombatStats(players_[_playerId], xp_[_playerId][Skill.HEALTH], skill, xp_[_playerId][skill]);
-        }
-
         if (pendingQueuedActionState.xpRewardItemTokenIds.length > 0) {
           itemNFT.mintBatch(
             _from,
@@ -216,8 +219,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function _processActionsFinished(address _from, uint _playerId) private {
-    _claimRandomRewards(_playerId);
+  function _processActionsFinished(
+    address _from,
+    uint _playerId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  ) private {
+    _claimRandomRewards(_playerId, _pendingQueuedActionXPGained);
     _handleDailyRewards(_from, _playerId);
 
     // Clear boost if it has expired
@@ -228,31 +235,12 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function _cacheCombatStats(Player storage _player, uint128 _healthXP, Skill _skill, uint128 _xp) private {
-    {
-      int16 _health = int16(PlayersLibrary.getLevel(_healthXP));
-      _player.health = _health;
-    }
-
-    int16 _level = int16(PlayersLibrary.getLevel(_xp));
-    if (_skill == Skill.MELEE) {
-      _player.melee = _level;
-    } else if (_skill == Skill.MAGIC) {
-      _player.magic = _level;
-    }
-    /* else if (_skill == Skill.RANGE) {
-            _player.range = _level;
-          } */
-    else if (_skill == Skill.DEFENCE) {
-      _player.defence = _level;
-    }
-  }
-
   function _getRewards(
     uint _playerId,
     uint40 _skillStartTime,
     uint _elapsedTime,
-    uint16 _actionId
+    uint16 _actionId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   ) private view returns (uint[] memory newIds, uint[] memory newAmounts) {
     bytes memory data = _staticcall(
       address(this),
@@ -261,7 +249,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _playerId,
         _skillStartTime,
         _elapsedTime,
-        _actionId
+        _actionId,
+        _pendingQueuedActionXPGained
       )
     );
     return abi.decode(data, (uint[], uint[]));
@@ -346,7 +335,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     CombatStats memory combatStats,
     uint elapsedTime,
     uint startTime,
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   )
     external
     view
@@ -383,7 +373,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           combatStats,
           actionChoice,
           false,
-          pendingQueuedActionEquipmentStates
+          pendingQueuedActionEquipmentStates,
+          _pendingQueuedActionXPGained
         );
 
       prevXPElapsedTime = _xpElapsedTime;
@@ -421,7 +412,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         combatStats,
         actionChoice,
         true,
-        pendingQueuedActionEquipmentStates
+        pendingQueuedActionEquipmentStates,
+        _pendingQueuedActionXPGained
       );
 
       delete extendedPendingQueuedActionEquipmentState;
@@ -467,7 +459,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         combatStats,
         actionChoice,
         true,
-        pendingQueuedActionEquipmentStates
+        pendingQueuedActionEquipmentStates,
+        _pendingQueuedActionXPGained
       );
     }
   }
@@ -481,7 +474,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
     bool _checkBalance,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   )
     private
     view
@@ -506,7 +500,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _combatStats,
         _actionChoice,
         _checkBalance,
-        _pendingQueuedActionEquipmentStates
+        _pendingQueuedActionEquipmentStates,
+        _pendingQueuedActionXPGained
       )
     );
     return abi.decode(data, (Equipment[], Equipment, uint, bool, uint24, uint24));

@@ -302,7 +302,8 @@ contract PlayersImplMisc is
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
     bool _checkBalance,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   )
     external
     view
@@ -401,7 +402,9 @@ contract PlayersImplMisc is
       uint8 successPercent = 100;
       if (_actionChoice.successPercent != 100) {
         uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
-        uint skillLevel = PlayersLibrary.getLevel(xp_[_playerId][_actionChoice.skill]);
+        uint skillLevel = PlayersLibrary.getLevel(
+          PlayersLibrary.getAbsoluteActionStartXP(_playerId, _actionChoice.skill, _pendingQueuedActionXPGained, xp_)
+        );
         uint extraBoost = skillLevel - minLevel;
 
         successPercent = uint8(
@@ -430,11 +433,6 @@ contract PlayersImplMisc is
 
   function mintedPlayer(address _from, uint _playerId, Skill[2] calldata _startSkills) external {
     Player storage player = players_[_playerId];
-    player.health = 1;
-    player.melee = 1;
-    player.magic = 1;
-    player.range = 1;
-    player.defence = 1;
     player.totalXP = uint112(START_XP_);
 
     U256 length = uint256(_startSkills[1] != Skill.NONE ? 2 : 1).asU256();
@@ -443,18 +441,6 @@ contract PlayersImplMisc is
     for (U256 iter; iter < length; iter = iter.inc()) {
       uint i = iter.asUint256();
       Skill skill = _startSkills[i];
-      int16 level = int16(PlayersLibrary.getLevel(xpEach));
-      if (skill == Skill.HEALTH) {
-        player.health = level;
-      } else if (skill == Skill.MELEE) {
-        player.melee = level;
-      } else if (skill == Skill.MAGIC) {
-        player.magic = level;
-      } else if (skill == Skill.RANGE) {
-        player.range = level;
-      } else if (skill == Skill.DEFENCE) {
-        player.defence = level;
-      }
       _updateXP(_from, _playerId, skill, xpEach);
     }
 

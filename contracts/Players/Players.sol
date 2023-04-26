@@ -170,10 +170,22 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (players_[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
     }
-    QueuedAction[] memory remainingSkillQueue = _processActions(msg.sender, _playerId);
+
+    (
+      QueuedAction[] memory remainingSkillQueue,
+      PendingQueuedActionXPGained memory pendingQueuedActionXPGained
+    ) = _processActions(msg.sender, _playerId);
+
     if (remainingSkillQueue.length != 0) {
       players_[_playerId].queuedActionStartTime = uint40(block.timestamp);
+    } else {
+      players_[_playerId].queuedActionStartTime = 0;
     }
+    players_[_playerId].queuedActionAlreadyProcessedSkill = pendingQueuedActionXPGained.alreadyProcessedSkill;
+    players_[_playerId].queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.alreadyProcessedXPGained;
+    players_[_playerId].queuedActionAlreadyProcessedSkill1 = pendingQueuedActionXPGained.alreadyProcessedSkill1;
+    players_[_playerId].queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.alreadyProcessedXPGained1;
+
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue, block.timestamp);
   }
 
