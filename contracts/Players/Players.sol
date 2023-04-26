@@ -166,7 +166,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
+  function processActions(uint _playerId) public isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     if (players_[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
     }
@@ -305,6 +305,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function isOwnerOfPlayer(address _from, uint _playerId) public view override returns (bool) {
     return playerNFT.balanceOf(_from, _playerId) == 1;
+  }
+
+  function activateQuest(uint _playerId, uint questId) external isOwnerOfPlayerAndActiveMod(_playerId) {
+    if (players_[_playerId].actionQueue.length != 0) {
+      processActions(_playerId);
+    }
+    quests.activateQuest(_playerId, questId);
+  }
+
+  function deactiveQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
+    if (players_[_playerId].actionQueue.length == 0) {
+      processActions(_playerId);
+    }
+    quests.deactivateQuest(_playerId);
   }
 
   function MAX_TIME() external pure returns (uint32) {

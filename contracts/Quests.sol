@@ -124,7 +124,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     buyPath2 = _buyPath[1];
   }
 
-  function activateQuest(uint _playerId, uint _questId) external isOwnerOfPlayerAndActive(_playerId) {
+  function activateQuest(uint _playerId, uint _questId) external onlyPlayers {
     Quest storage quest = allFixedQuests[_questId];
     if (_questId == 0) {
       revert InvalidQuestId();
@@ -160,7 +160,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     emit ActivateNewQuest(_playerId, _questId);
   }
 
-  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+  function deactivateQuest(uint _playerId) external onlyPlayers {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
     uint questId = playerQuest.questId;
     if (questId == 0) {
@@ -390,6 +390,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
   function isRandomQuest(uint _questId) external view returns (bool) {
     return questIsRandom.get(_questId);
+  }
+
+  function hasActiveQuest(uint _playerId) external view returns (bool) {
+    return activeQuests[_playerId].questId != 0;
   }
 
   function _questCompleted(uint _playerId, uint _questId) private {

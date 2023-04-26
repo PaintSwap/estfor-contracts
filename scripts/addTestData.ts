@@ -198,7 +198,7 @@ export const addTestData = async (
   }
 
   // Activate a quest
-  tx = await quests.activateQuest(playerId, QUEST_STARTER_FIREMAKING);
+  tx = await players.activateQuest(playerId, QUEST_STARTER_FIREMAKING);
   await tx.wait();
   console.log("Activate quest");
 
