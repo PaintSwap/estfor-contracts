@@ -62,7 +62,11 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     bankRegistry = BankRegistry(_bankRegistry);
   }
 
-  function depositItems(uint _playerId, uint[] memory ids, uint[] memory values) external isOwnerOfPlayer(_playerId) {
+  function depositItems(
+    uint _playerId,
+    uint[] calldata ids,
+    uint[] calldata values
+  ) external isOwnerOfPlayer(_playerId) {
     uint maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
     U256 bounds = ids.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
@@ -75,8 +79,8 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   function withdrawItems(
     address _to,
     uint _playerId,
-    uint[] memory ids,
-    uint[] memory amounts
+    uint[] calldata ids,
+    uint[] calldata amounts
   ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
     bankRegistry.itemNFT().safeBatchTransferFrom(address(this), _to, ids, amounts, "");
 

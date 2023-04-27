@@ -55,7 +55,7 @@ library EstforLibrary {
     return string(trimmedBytes);
   }
 
-  function rightTrim(string memory _str) internal pure returns (string memory) {
+  function rightTrim(string calldata _str) internal pure returns (string memory) {
     bytes memory b = bytes(_str);
     uint strLen = b.length;
     if (strLen == 0) {

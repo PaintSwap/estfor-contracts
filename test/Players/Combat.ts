@@ -433,9 +433,6 @@ describe("Combat Actions", function () {
     it("Have no scrolls first then process with them", async function () {});
 
     it("In-progress combat update", async function () {
-      // 100 scrolls
-      // 100 monsters
-      // 100 food
       const {players, playerId, itemNFT, alice, world} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {

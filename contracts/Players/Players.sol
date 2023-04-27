@@ -142,7 +142,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _startActions(_playerId, _queuedActions, NONE, uint40(block.timestamp), _queueStatus);
   }
 

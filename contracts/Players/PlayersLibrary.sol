@@ -159,7 +159,7 @@ library PlayersLibrary {
   function _getRealBalance(
     uint _originalBalance,
     uint _itemId,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private pure returns (uint balance) {
     balance = _originalBalance;
     U256 bounds = _pendingQueuedActionEquipmentStates.length.asU256();
@@ -191,7 +191,7 @@ library PlayersLibrary {
     address _from,
     uint _itemId,
     ItemNFT _itemNFT,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint balance) {
     balance = _getRealBalance(_itemNFT.balanceOf(_from, _itemId), _itemId, _pendingQueuedActionEquipmentStates);
   }
@@ -200,7 +200,7 @@ library PlayersLibrary {
     address _from,
     uint16[] memory _itemIds,
     ItemNFT _itemNFT,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint[] memory balances) {
     balances = _itemNFT.balanceOfs(_from, _itemIds);
 
@@ -216,11 +216,11 @@ library PlayersLibrary {
     uint16 _regenerateId,
     uint _combatElapsedTime,
     ItemNFT _itemNFT,
-    CombatStats memory _combatStats,
-    CombatStats memory _enemyCombatStats,
+    CombatStats calldata _combatStats,
+    CombatStats calldata _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint24 foodConsumed, bool died) {
     uint32 totalHealthLost = _dmg(
       _enemyCombatStats.melee,
@@ -276,7 +276,7 @@ library PlayersLibrary {
     ActionChoice memory _actionChoice,
     uint24 _numConsumed,
     ItemNFT _itemNFT,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _numConsumed;
     if (_numConsumed != 0) {
@@ -323,7 +323,7 @@ library PlayersLibrary {
     uint24 _numConsumed,
     uint _prevConsumeMaxRatio,
     ItemNFT _itemNFT,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     uint balance = getRealBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
     if ((_numConsumed > type(uint16).max) && (balance >= type(uint16).max * _inputAmount)) {
@@ -417,9 +417,9 @@ library PlayersLibrary {
   }
 
   function _getDmg(
-    ActionChoice memory _actionChoice,
+    ActionChoice calldata _actionChoice,
     CombatStats memory _combatStats,
-    CombatStats memory _enemyCombatStats,
+    CombatStats calldata _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
     uint _elapsedTime
@@ -441,14 +441,14 @@ library PlayersLibrary {
     ItemNFT _itemNFT,
     World _world,
     uint _elapsedTime,
-    ActionChoice memory _actionChoice,
+    ActionChoice calldata _actionChoice,
     bool _checkBalance,
-    QueuedAction memory _queuedAction,
+    QueuedAction calldata _queuedAction,
     CombatStats memory _combatStats,
-    CombatStats memory _enemyCombatStats,
+    CombatStats calldata _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed) {
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
     uint respawnTime = 3600 / numSpawnedPerHour;
@@ -508,9 +508,9 @@ library PlayersLibrary {
     address _from,
     ItemNFT _itemNFT,
     uint _elapsedTime,
-    ActionChoice memory _actionChoice,
+    ActionChoice calldata _actionChoice,
     bool _checkBalance,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
     // Check the max that can be used
     numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 10));
@@ -702,7 +702,7 @@ library PlayersLibrary {
     Attire storage _attire,
     ItemNFT _itemNFT,
     bool _skipNeck,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
     uint attireLength;
     itemTokenIds = new uint16[](6);
@@ -765,7 +765,7 @@ library PlayersLibrary {
     uint16[2] calldata _handEquipmentTokenIds,
     CombatStats calldata _combatStats,
     bool _isCombat,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (bool missingRequiredHandEquipment, CombatStats memory combatStats) {
     U256 iter = _handEquipmentTokenIds.length.asU256();
     combatStats = _combatStats;
