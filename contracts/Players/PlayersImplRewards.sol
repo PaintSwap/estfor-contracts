@@ -23,201 +23,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     _checkStartSlot();
   }
 
-  // Action rewards
-  function getRewards(
-    uint _playerId,
-    uint40 _skillStartTime,
-    uint _elapsedTime,
-    uint16 _actionId,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  ) public view returns (uint[] memory ids, uint[] memory amounts) {
-    (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(_actionId);
-    bool isCombat = actionSkill == Skill.COMBAT;
-
-    ids = new uint[](MAX_REWARDS_PER_ACTION);
-    amounts = new uint[](MAX_REWARDS_PER_ACTION);
-
-    uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / 3600);
-    uint8 successPercent = _getSuccessPercent(
-      _playerId,
-      _actionId,
-      actionSkill,
-      isCombat,
-      _pendingQueuedActionXPGained
-    );
-
-    uint length = _appendGuaranteedRewards(
-      ids,
-      amounts,
-      _elapsedTime,
-      actionRewards,
-      monstersKilled,
-      isCombat,
-      successPercent
-    );
-
-    bool processedAny;
-    (length, processedAny) = _appendRandomRewards(
-      _playerId,
-      _skillStartTime,
-      _elapsedTime,
-      isCombat ? monstersKilled : _elapsedTime / 3600,
-      ids,
-      amounts,
-      length,
-      actionRewards,
-      successPercent
-    );
-
-    // Check for any boosts
-    PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-    uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
-    if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-      U256 bounds = length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        amounts[i] += uint32((boostedTime * amounts[i] * activeBoost.val) / (3600 * 100));
-      }
-    }
-
-    assembly ("memory-safe") {
-      mstore(ids, length)
-      mstore(amounts, length)
-    }
-  }
-
-  function _getSuccessPercent(
-    uint _playerId,
-    uint16 _actionId,
-    Skill _actionSkill,
-    bool _isCombat,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  ) private view returns (uint8 successPercent) {
-    successPercent = 100;
-    (uint8 actionSuccessPercent, uint32 minXP) = world.getActionSuccessPercentAndMinXP(_actionId);
-    if (actionSuccessPercent != 100) {
-      if (_isCombat) {
-        revert InvalidAction();
-      }
-
-      uint minLevel = PlayersLibrary.getLevel(minXP);
-      uint skillLevel = PlayersLibrary.getLevel(
-        PlayersLibrary.getAbsoluteActionStartXP(_playerId, _actionSkill, _pendingQueuedActionXPGained, xp_)
-      );
-      uint extraBoost = skillLevel - minLevel;
-
-      successPercent = uint8(PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, actionSuccessPercent + extraBoost));
-    }
-  }
-
-  function _claimableRandomRewards(
-    uint _playerId,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  )
-    private
-    view
-    returns (uint[] memory ids, uint[] memory amounts, uint[] memory actionIds, uint[] memory queueIds, uint numRemoved)
-  {
-    PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
-    U256 pendingRandomRewardsLength = _pendingRandomRewards.length.asU256();
-    ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-    amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-    actionIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-    queueIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-
-    uint length;
-    for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      PendingRandomReward storage pendingRandomReward = _pendingRandomRewards[i];
-      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
-        _pendingRandomRewards[i].actionId
-      );
-      bool isCombat = actionSkill == Skill.COMBAT;
-      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomReward.elapsedTime) / 3600);
-      uint8 successPercent = _getSuccessPercent(
-        _playerId,
-        pendingRandomReward.actionId,
-        actionSkill,
-        isCombat,
-        _pendingQueuedActionXPGained
-      );
-      uint oldLength = length;
-      bool processedAny;
-      (length, processedAny) = _appendRandomRewards(
-        _playerId,
-        pendingRandomReward.startTime,
-        pendingRandomReward.elapsedTime,
-        isCombat ? monstersKilled : pendingRandomReward.elapsedTime / 3600,
-        ids,
-        amounts,
-        oldLength,
-        actionRewards,
-        successPercent
-      );
-
-      if (processedAny) {
-        numRemoved = numRemoved.inc();
-      }
-
-      if (oldLength != length) {
-        // Check for any boosts
-        PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-        uint boostedTime = PlayersLibrary.getBoostedTime(
-          _pendingRandomRewards[i].startTime,
-          _pendingRandomRewards[i].elapsedTime,
-          activeBoost
-        );
-        U256 bounds = length.asU256();
-        if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-          for (U256 jter; jter < bounds; jter = jter.inc()) {
-            uint j = jter.asUint256();
-            amounts[j] = uint32((boostedTime * amounts[j] * activeBoost.val) / (3600 * 100));
-          }
-        }
-        for (U256 kter; kter < bounds; kter = kter.inc()) {
-          uint k = kter.asUint256();
-          queueIds[k] = pendingRandomReward.queueId;
-          actionIds[k] = pendingRandomReward.actionId;
-        }
-      }
-    }
-
-    assembly ("memory-safe") {
-      mstore(ids, length)
-      mstore(amounts, length)
-      mstore(actionIds, length)
-      mstore(queueIds, length)
-    }
-  }
-
-  function claimRandomRewards(
-    uint _playerId,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  ) external {
-    address from = msg.sender;
-    (
-      uint[] memory ids,
-      uint[] memory amounts,
-      uint[] memory actionIds,
-      uint[] memory queueIds,
-      uint numRemoved
-    ) = _claimableRandomRewards(_playerId, _pendingQueuedActionXPGained);
-    if (numRemoved != 0) {
-      // Shift the remaining rewards to the front of the array
-      U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(numRemoved);
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
-      }
-      for (U256 iter = numRemoved.asU256(); iter.neq(0); iter = iter.dec()) {
-        pendingRandomRewards[_playerId].pop();
-      }
-
-      itemNFT.mintBatch(from, ids, amounts);
-      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, queueIds);
-    }
-  }
-
   // Get any changes that are pending and not commited to the blockchain yet.
   // Such as items consumed/produced, xp gained, whether the player died, pending random reward rolls & quest rewards.
   function pendingQueuedActionStateImpl(
@@ -541,7 +346,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       // Include loot
       {
         // Full
-        (uint[] memory newIds, uint[] memory newAmounts) = getRewards(
+        (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
           _playerId,
           uint40(veryStartTime),
           xpElapsedTime + prevXPElapsedTime,
@@ -550,7 +355,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         );
 
         if (prevXPElapsedTime > 0) {
-          (uint[] memory prevNewIds, uint[] memory prevNewAmounts) = getRewards(
+          (uint[] memory prevNewIds, uint[] memory prevNewAmounts) = _getRewards(
             _playerId,
             uint40(veryStartTime),
             prevXPElapsedTime,
@@ -675,6 +480,200 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionXPGained), pendingQueuedActionXPGainedLength)
       mstore(mload(add(pendingQueuedActionXPGained, 32)), pendingQueuedActionXPGainedLength)
+    }
+  }
+
+  function claimRandomRewards(
+    uint _playerId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  ) external {
+    address from = msg.sender;
+    (
+      uint[] memory ids,
+      uint[] memory amounts,
+      uint[] memory actionIds,
+      uint[] memory queueIds,
+      uint numRemoved
+    ) = _claimableRandomRewards(_playerId, _pendingQueuedActionXPGained);
+    if (numRemoved != 0) {
+      // Shift the remaining rewards to the front of the array
+      U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(numRemoved);
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
+        pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
+      }
+      for (U256 iter = numRemoved.asU256(); iter.neq(0); iter = iter.dec()) {
+        pendingRandomRewards[_playerId].pop();
+      }
+
+      itemNFT.mintBatch(from, ids, amounts);
+      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, queueIds);
+    }
+  }
+
+  function _getRewards(
+    uint _playerId,
+    uint40 _skillStartTime,
+    uint _elapsedTime,
+    uint16 _actionId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  ) private view returns (uint[] memory ids, uint[] memory amounts) {
+    (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(_actionId);
+    bool isCombat = actionSkill == Skill.COMBAT;
+
+    ids = new uint[](MAX_REWARDS_PER_ACTION);
+    amounts = new uint[](MAX_REWARDS_PER_ACTION);
+
+    uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / 3600);
+    uint8 successPercent = _getSuccessPercent(
+      _playerId,
+      _actionId,
+      actionSkill,
+      isCombat,
+      _pendingQueuedActionXPGained
+    );
+
+    uint length = _appendGuaranteedRewards(
+      ids,
+      amounts,
+      _elapsedTime,
+      actionRewards,
+      monstersKilled,
+      isCombat,
+      successPercent
+    );
+
+    bool processedAny;
+    (length, processedAny) = _appendRandomRewards(
+      _playerId,
+      _skillStartTime,
+      _elapsedTime,
+      isCombat ? monstersKilled : _elapsedTime / 3600,
+      ids,
+      amounts,
+      length,
+      actionRewards,
+      successPercent
+    );
+
+    // Check for any boosts
+    PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
+    uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
+    if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
+      U256 bounds = length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
+        amounts[i] += uint32((boostedTime * amounts[i] * activeBoost.val) / (3600 * 100));
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(ids, length)
+      mstore(amounts, length)
+    }
+  }
+
+  function _getSuccessPercent(
+    uint _playerId,
+    uint16 _actionId,
+    Skill _actionSkill,
+    bool _isCombat,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  ) private view returns (uint8 successPercent) {
+    successPercent = 100;
+    (uint8 actionSuccessPercent, uint32 minXP) = world.getActionSuccessPercentAndMinXP(_actionId);
+    if (actionSuccessPercent != 100) {
+      if (_isCombat) {
+        revert InvalidAction();
+      }
+
+      uint minLevel = PlayersLibrary.getLevel(minXP);
+      uint skillLevel = PlayersLibrary.getLevel(
+        PlayersLibrary.getAbsoluteActionStartXP(_playerId, _actionSkill, _pendingQueuedActionXPGained, xp_)
+      );
+      uint extraBoost = skillLevel - minLevel;
+
+      successPercent = uint8(PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, actionSuccessPercent + extraBoost));
+    }
+  }
+
+  function _claimableRandomRewards(
+    uint _playerId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  )
+    private
+    view
+    returns (uint[] memory ids, uint[] memory amounts, uint[] memory actionIds, uint[] memory queueIds, uint numRemoved)
+  {
+    PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
+    U256 pendingRandomRewardsLength = _pendingRandomRewards.length.asU256();
+    ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    amounts = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    actionIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    queueIds = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+
+    uint length;
+    for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      PendingRandomReward storage pendingRandomReward = _pendingRandomRewards[i];
+      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
+        _pendingRandomRewards[i].actionId
+      );
+      bool isCombat = actionSkill == Skill.COMBAT;
+      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomReward.elapsedTime) / 3600);
+      uint8 successPercent = _getSuccessPercent(
+        _playerId,
+        pendingRandomReward.actionId,
+        actionSkill,
+        isCombat,
+        _pendingQueuedActionXPGained
+      );
+      uint oldLength = length;
+      bool processedAny;
+      (length, processedAny) = _appendRandomRewards(
+        _playerId,
+        pendingRandomReward.startTime,
+        pendingRandomReward.elapsedTime,
+        isCombat ? monstersKilled : pendingRandomReward.elapsedTime / 3600,
+        ids,
+        amounts,
+        oldLength,
+        actionRewards,
+        successPercent
+      );
+
+      if (processedAny) {
+        numRemoved = numRemoved.inc();
+      }
+
+      if (oldLength != length) {
+        // Check for any boosts
+        PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
+        uint boostedTime = PlayersLibrary.getBoostedTime(
+          _pendingRandomRewards[i].startTime,
+          _pendingRandomRewards[i].elapsedTime,
+          activeBoost
+        );
+        U256 bounds = length.asU256();
+        if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
+          for (U256 jter; jter < bounds; jter = jter.inc()) {
+            uint j = jter.asUint256();
+            amounts[j] = uint32((boostedTime * amounts[j] * activeBoost.val) / (3600 * 100));
+          }
+        }
+        for (U256 kter; kter < bounds; kter = kter.inc()) {
+          uint k = kter.asUint256();
+          queueIds[k] = pendingRandomReward.queueId;
+          actionIds[k] = pendingRandomReward.actionId;
+        }
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(ids, length)
+      mstore(amounts, length)
+      mstore(actionIds, length)
+      mstore(queueIds, length)
     }
   }
 

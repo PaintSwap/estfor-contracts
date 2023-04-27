@@ -260,14 +260,6 @@ interface IPlayersRewardsDelegateView {
     address _owner,
     uint _playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
-
-  function getRewards(
-    uint playerId,
-    uint40 skillStartTime,
-    uint elapsedTime,
-    uint16 _actionId,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  ) external view returns (uint[] memory newIds, uint[] memory newAmounts);
 }
 
 interface IPlayersProcessActionsDelegate {

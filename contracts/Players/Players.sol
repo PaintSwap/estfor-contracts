@@ -376,10 +376,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     bytes4 selector = bytes4(msg.data);
 
     address implementation;
-    if (
-      selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector ||
-      selector == IPlayersRewardsDelegateView.getRewards.selector
-    ) {
+    if (selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector) {
       implementation = implRewards;
     } else if (selector == IPlayersProcessActionsDelegateView.completeProcessConsumablesView.selector) {
       implementation = implProcessActions;

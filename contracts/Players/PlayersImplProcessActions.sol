@@ -235,27 +235,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function _getRewards(
-    uint _playerId,
-    uint40 _skillStartTime,
-    uint _elapsedTime,
-    uint16 _actionId,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  ) private view returns (uint[] memory newIds, uint[] memory newAmounts) {
-    bytes memory data = _staticcall(
-      address(this),
-      abi.encodeWithSelector(
-        IPlayersRewardsDelegateView.getRewards.selector,
-        _playerId,
-        _skillStartTime,
-        _elapsedTime,
-        _actionId,
-        _pendingQueuedActionXPGained
-      )
-    );
-    return abi.decode(data, (uint[], uint[]));
-  }
-
   function _addPendingRandomReward(
     address _from,
     uint _playerId,
