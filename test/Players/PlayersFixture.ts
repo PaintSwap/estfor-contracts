@@ -2,6 +2,7 @@ import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {ItemNFT, PlayerNFT, Shop, World} from "../../typechain-types";
+import {MAX_TIME} from "../utils";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dog] = await ethers.getSigners();
@@ -201,7 +202,7 @@ export const playersFixture = async function () {
   const origName = "0xSamWitch";
   const makeActive = true;
   const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
-  const maxTime = await players.MAX_TIME();
+  const maxTime = MAX_TIME;
 
   return {
     playerId,

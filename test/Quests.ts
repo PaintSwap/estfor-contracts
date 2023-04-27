@@ -210,7 +210,7 @@ describe("Quests", function () {
     const minLevel = 1;
     const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_STARTER_FEEDER);
@@ -248,7 +248,7 @@ describe("Quests", function () {
     const questId = 1;
     await players.connect(alice).activateQuest(playerId, questId);
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [1]);
     await ethers.provider.send("evm_mine", []);
 
@@ -319,7 +319,7 @@ describe("Quests", function () {
       const questId = 1;
       await players.connect(alice).activateQuest(playerId, questId);
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       const timeNeeded = ((rate / 10) * 3600) / firemakingQuest.actionChoiceNum;
 
       // Set time to just before, should still not have quest rewards

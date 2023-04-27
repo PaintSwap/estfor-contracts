@@ -60,3 +60,10 @@ export const emptyActionChoice: ActionChoiceInput = {
   outputAmount: 0,
   successPercent: 100,
 };
+
+// Should match the PlayersBase contract constants
+export const MAX_TIME = 86400; // 1 day
+export const START_XP = 374;
+// 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
+export const MAX_SUCCESS_PERCENT_CHANCE = 90;
+export const MAX_UNIQUE_TICKETS = 240;

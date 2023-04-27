@@ -39,12 +39,12 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  let gasLimit = await players.estimateGas.startAction(
+  let gasLimit = await players.estimateGas.startActions(
     playerId,
-    queuedActionWoodcutting,
+    [queuedActionWoodcutting],
     EstforTypes.ActionQueueStatus.NONE
   );
-  let tx = await players.startAction(playerId, queuedActionWoodcutting, EstforTypes.ActionQueueStatus.NONE, {
+  let tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStatus.NONE, {
     gasLimit: gasLimit.add(300000),
   });
 
@@ -77,12 +77,12 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  gasLimit = await players.estimateGas.startAction(
+  gasLimit = await players.estimateGas.startActions(
     playerId,
-    queuedActionFiremaking,
+    [queuedActionFiremaking],
     EstforTypes.ActionQueueStatus.NONE
   );
-  tx = await players.startAction(playerId, queuedActionFiremaking, EstforTypes.ActionQueueStatus.NONE, {
+  tx = await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStatus.NONE, {
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();
@@ -106,12 +106,12 @@ export const addTestData = async (
   );
 
   // Start another action
-  gasLimit = await players.estimateGas.startAction(
+  gasLimit = await players.estimateGas.startActions(
     playerId,
-    queuedActionWoodcutting,
+    [queuedActionWoodcutting],
     EstforTypes.ActionQueueStatus.NONE
   );
-  tx = await players.startAction(playerId, queuedActionWoodcutting, EstforTypes.ActionQueueStatus.NONE, {
+  tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStatus.NONE, {
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();
@@ -138,8 +138,8 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  gasLimit = await players.estimateGas.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE);
-  tx = await players.startAction(playerId, queuedActionCombat, EstforTypes.ActionQueueStatus.NONE, {
+  gasLimit = await players.estimateGas.startActions(playerId, [queuedActionCombat], EstforTypes.ActionQueueStatus.NONE);
+  tx = await players.startActions(playerId, [queuedActionCombat], EstforTypes.ActionQueueStatus.NONE, {
     gasLimit: gasLimit.add(300000),
   });
   await tx.wait();

@@ -133,16 +133,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function startAction(
-    uint _playerId,
-    QueuedActionInput calldata _queuedAction,
-    ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    QueuedActionInput[] memory queuedActions = new QueuedActionInput[](1);
-    queuedActions[0] = _queuedAction;
-    _startActions(_playerId, queuedActions, NONE, uint40(block.timestamp), _queueStatus);
-  }
-
   /// @notice Start actions for a player
   /// @param _playerId Id for the player
   /// @param _queuedActions Actions to queue
@@ -220,10 +210,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       implMisc,
       abi.encodeWithSelector(IPlayerDelegate.mintedPlayer.selector, _from, _playerId, _startSkills)
     );
-  }
-
-  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    _clearEverything(msg.sender, _playerId);
   }
 
   function activateQuest(uint _playerId, uint questId) external isOwnerOfPlayerAndActiveMod(_playerId) gameNotPaused {
@@ -327,22 +313,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _playerId,
         clans.getClanNameOfPlayer(_playerId)
       );
-  }
-
-  function MAX_TIME() external pure returns (uint32) {
-    return MAX_TIME_;
-  }
-
-  function START_XP() external pure returns (uint) {
-    return START_XP_;
-  }
-
-  function MAX_SUCCESS_PERCENT_CHANCE() external pure returns (uint) {
-    return MAX_SUCCESS_PERCENT_CHANCE_;
-  }
-
-  function MAX_UNIQUE_TICKETS() external pure returns (uint) {
-    return MAX_UNIQUE_TICKETS_;
   }
 
   function activePlayer(address _owner) external view override returns (uint playerId) {

@@ -4,7 +4,14 @@ import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
 import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, getRequestId} from "../utils";
+import {
+  bronzeHelmetStats,
+  emptyActionChoice,
+  getActionChoiceId,
+  getActionId,
+  getRequestId,
+  MAX_UNIQUE_TICKETS,
+} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
 
@@ -61,7 +68,7 @@ describe("Rewards", function () {
     );
     await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [50]);
     await ethers.provider.send("evm_mine", []);
 
@@ -128,7 +135,7 @@ describe("Rewards", function () {
     const rewards1: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_HELMET, amount: 4}];
     await players.addXPThresholdRewards([{xpThreshold: 1000, rewards: rewards1}]);
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [1600]);
     await ethers.provider.send("evm_mine", []);
 
@@ -179,10 +186,10 @@ describe("Rewards", function () {
       );
 
       for (let i = 0; i < 4; ++i) {
-        await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       }
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       let afterBalances = await itemNFT.balanceOfs(
         alice.address,
@@ -212,7 +219,7 @@ describe("Rewards", function () {
         prevBalanceDailyReward.toNumber() + equipments[equipments.length - 1].amount
       );
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST));
       let balanceAfterDailyReward = await itemNFT.balanceOf(
         alice.address,
@@ -236,7 +243,7 @@ describe("Rewards", function () {
       );
 
       for (let i = 0; i < 7; ++i) {
-        await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         if (i != 6) {
           await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         }
@@ -275,13 +282,13 @@ describe("Rewards", function () {
 
       const equipment = {itemTokenId: EstforConstants.COPPER_ORE, amount: 100};
       let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       let balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore.toNumber() + equipment.amount);
 
       // Start again, shouldn't get any more rewards
       balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore);
     });
@@ -300,7 +307,7 @@ describe("Rewards", function () {
 
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await players.connect(alice).processActions(playerId); // Daily reward should be given
@@ -344,7 +351,7 @@ describe("Rewards", function () {
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
       expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(110);
 
@@ -373,7 +380,6 @@ describe("Rewards", function () {
 
   it("Random reward ticket excess", async function () {
     const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
-    const MAX_UNIQUE_TICKETS = await players.MAX_UNIQUE_TICKETS();
 
     const monsterCombatStats: EstforTypes.CombatStats = {
       melee: 1,
@@ -435,7 +441,7 @@ describe("Rewards", function () {
     await mockOracleClient.fulfill(requestId, world.address);
 
     const timespan = 3600 * numHours;
-    expect(numHours * numSpawned).to.be.greaterThan(MAX_UNIQUE_TICKETS);
+    expect(numHours * numSpawned).to.be.gt(MAX_UNIQUE_TICKETS);
 
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -477,7 +483,7 @@ describe("Rewards", function () {
       equipPosition: EstforTypes.EquipPosition.FOOD,
     });
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [3600 * 24]);
     await ethers.provider.send("evm_mine", []);
@@ -571,7 +577,7 @@ describe("Rewards", function () {
     // Repeat the test a bunch of times to check the random rewards are as expected
     const numRepeats = 50;
     for (let i = 0; i < numRepeats; ++i) {
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       let endTime;
       {
         const actionQueue = await players.getActionQueue(playerId);
@@ -822,7 +828,7 @@ describe("Rewards", function () {
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
     });
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);

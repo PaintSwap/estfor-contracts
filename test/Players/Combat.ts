@@ -6,7 +6,7 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId} from "../utils";
+import {emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
 
@@ -35,7 +35,7 @@ describe("Combat Actions", function () {
         playersFixtureMelee
       );
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
@@ -75,7 +75,7 @@ describe("Combat Actions", function () {
       const queuedAction = {...meleeQueuedAction};
       queuedAction.attire = {...EstforTypes.noAttire};
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
@@ -102,7 +102,7 @@ describe("Combat Actions", function () {
     it("Don't kill anything", async function () {
       const {playerId, players, itemNFT, alice, queuedAction} = await loadFixture(playersFixtureMelee);
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const time = 10;
       await ethers.provider.send("evm_increaseTime", [time]);
@@ -129,7 +129,7 @@ describe("Combat Actions", function () {
       const queuedAction = {...meleeQueuedAction};
       queuedAction.combatStyle = EstforTypes.CombatStyle.DEFENCE;
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
@@ -166,7 +166,7 @@ describe("Combat Actions", function () {
       await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1);
 
       await expect(
-        players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(itemNFT, "ItemDoesNotExist");
 
       await itemNFT.addItem({
@@ -176,13 +176,13 @@ describe("Combat Actions", function () {
       });
 
       await expect(
-        players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "IncorrectRightHandEquipment");
 
       queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_SWORD;
       queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
@@ -250,7 +250,7 @@ describe("Combat Actions", function () {
 
       const queuedAction = {...meleeQueuedAction};
       queuedAction.actionId = actionId;
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const time = 3600;
       await ethers.provider.send("evm_increaseTime", [time]);
@@ -382,7 +382,7 @@ describe("Combat Actions", function () {
         },
       ]);
 
-      const startXP = (await players.START_XP()).toNumber();
+      const startXP = START_XP;
       return {
         playerId,
         players,
@@ -403,7 +403,7 @@ describe("Combat Actions", function () {
       const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned} =
         await loadFixture(playersFixtureMagic);
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
@@ -543,12 +543,12 @@ describe("Combat Actions", function () {
       ]);
 
       // Should be killing 1 every 72 seconds.
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [36]);
       await ethers.provider.send("evm_mine", []);
 
       // Check the XP is as expected
-      const startXP = (await players.START_XP()).toNumber();
+      const startXP = START_XP;
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
@@ -607,7 +607,7 @@ describe("Combat Actions", function () {
       await playerNFT.setAvatars(avatarId, [avatarInfo]);
 
       const noSkillPlayerId = await createPlayer(playerNFT, avatarId, alice, "fakename123", true);
-      await players.connect(alice).startAction(noSkillPlayerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(noSkillPlayerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(noSkillPlayerId);
@@ -647,7 +647,7 @@ describe("Combat Actions", function () {
       const queuedAction = {...magicQueuedAction};
       queuedAction.rightHandEquipmentTokenId = EstforConstants.NONE;
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
@@ -676,17 +676,17 @@ describe("Combat Actions", function () {
 
       queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
       await expect(
-        players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "CannotEquipTwoHandedAndOtherEquipment");
       queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
-      await expect(players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to
+      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
     });
 
     it("No scrolls equipped during processing action", async function () {
       const {playerId, players, itemNFT, alice, queuedAction, startXP} = await loadFixture(playersFixtureMagic);
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL);
       await itemNFT.connect(alice).burn(alice.address, EstforConstants.AIR_SCROLL, balance);
@@ -757,10 +757,10 @@ describe("Combat Actions", function () {
       queuedAction.choiceId = choiceId + 2;
 
       // Non-existent actionChoiceId
-      await expect(players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)).to.be
-        .reverted;
+      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+        .be.reverted;
       queuedAction.choiceId = choiceId;
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     });
 
     it("Use too much food (split over same action)", async function () {});
@@ -813,7 +813,7 @@ describe("Combat Actions", function () {
       await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 70000);
       const foodBalance = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
 
-      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
@@ -904,7 +904,7 @@ describe("Combat Actions", function () {
       equipPosition: EstforTypes.EquipPosition.FOOD,
     });
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
@@ -925,7 +925,7 @@ describe("Combat Actions", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
 
     // Have no food, should not show any in consumed
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -1005,7 +1005,7 @@ describe("Combat Actions", function () {
       metadataURI: "someIPFSURI.json",
     });
 
-    await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
