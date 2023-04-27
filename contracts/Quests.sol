@@ -5,6 +5,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IQuests} from "./interfaces/IQuests.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
@@ -24,6 +25,14 @@ interface Router {
     address to,
     uint deadline
   ) external payable returns (uint[] memory amounts);
+
+  function swapExactTokensForETH(
+    uint amountIn,
+    uint amountOutMin,
+    address[] calldata path,
+    address to,
+    uint deadline
+  ) external returns (uint[] memory amounts);
 }
 
 contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
@@ -54,6 +63,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   error LengthMismatch();
   error InvalidSkillXPGained();
   error InvalidFTMAmount();
+  error InvalidBrushAmount();
   error InvalidActiveQuest();
   error NoActiveQuest();
   error ActivatingQuestAlreadyActivated();
@@ -122,6 +132,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     router = _router;
     buyPath1 = _buyPath[0];
     buyPath2 = _buyPath[1];
+
+    IERC20(buyPath2).approve(address(_router), type(uint256).max);
   }
 
   function activateQuest(uint _playerId, uint _questId) external onlyPlayers {
@@ -251,7 +263,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     _questCompleted(_playerId, playerQuest.questId);
   }
 
-  function buyBrush(address _to, uint minimumBrushBack) public payable {
+  function buyBrush(address _to, uint _minimumBrushExpected) public payable {
     if (msg.value == 0) {
       revert InvalidFTMAmount();
     }
@@ -262,7 +274,24 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     buyPath[0] = buyPath1;
     buyPath[1] = buyPath2;
 
-    router.swapExactETHForTokens{value: msg.value}(minimumBrushBack, buyPath, _to, deadline);
+    router.swapExactETHForTokens{value: msg.value}(_minimumBrushExpected, buyPath, _to, deadline);
+  }
+
+  // This doesn't really belong here, just for consistency
+  function sellBrush(address _to, uint _brushAmount, uint _minFTM) external {
+    if (_brushAmount == 0) {
+      revert InvalidBrushAmount();
+    }
+
+    uint deadline = block.timestamp.add(10 minutes);
+    // Sell brush and send it back to the user
+    address[] memory sellPath = new address[](2);
+    sellPath[0] = buyPath2;
+    sellPath[1] = buyPath1;
+
+    IERC20(buyPath2).transferFrom(msg.sender, address(router), _brushAmount);
+
+    router.swapExactTokensForETH(_brushAmount, _minFTM, sellPath, _to, deadline);
   }
 
   function processQuestsView(
