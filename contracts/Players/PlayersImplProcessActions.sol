@@ -292,9 +292,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         if (bonusRewardsPercent != 0) {
           // Check if they have the full equipment set, if so they can get some bonus
           bool skipNeck = true;
-          (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(
+          (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithBalance(
             _from,
             _attire,
+            itemNFT,
             skipNeck,
             _pendingQueuedActionEquipmentStates
           );

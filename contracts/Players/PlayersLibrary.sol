@@ -201,7 +201,7 @@ library PlayersLibrary {
     uint16[] memory _itemIds,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  ) external view returns (uint[] memory balances) {
+  ) public view returns (uint[] memory balances) {
     balances = _itemNFT.balanceOfs(_from, _itemIds);
 
     U256 bounds = balances.length.asU256();
@@ -379,7 +379,7 @@ library PlayersLibrary {
     uint8 _alphaCombat,
     uint8 _betaCombat,
     int16 _enemyHealth
-  ) private view returns (uint) {
+  ) private pure returns (uint) {
     // Formula is max(1, a(atk) + b(2 * atk - def))
     // Always do at least 1 damage per minute
     uint dmgPerMinute = uint(_max(1, int128(attack) * int8(_alphaCombat) + (attack * 2 - defence) * int8(_betaCombat)));
@@ -393,7 +393,7 @@ library PlayersLibrary {
     uint8 _alphaCombat,
     uint8 _betaCombat,
     int16 _enemyHealth
-  ) private view returns (uint timeToKill) {
+  ) private pure returns (uint timeToKill) {
     if (_actionChoice.skill == Skill.MELEE) {
       timeToKill = _timeToKill(
         _combatStats.melee,
@@ -560,13 +560,13 @@ library PlayersLibrary {
     }
   }
 
-  function extraXPFromBoost(
+  function _extraXPFromBoost(
     bool _isCombatSkill,
     uint _actionStartTime,
     uint _elapsedTime,
     uint24 _xpPerHour,
     PlayerBoostInfo storage activeBoost
-  ) public view returns (uint32 boostPointsAccrued) {
+  ) private view returns (uint32 boostPointsAccrued) {
     if (activeBoost.itemTokenId != NONE && activeBoost.startTime < block.timestamp) {
       // A boost is active
       BoostType boostType = activeBoost.boostType;
@@ -584,8 +584,8 @@ library PlayersLibrary {
   function extraBoostFromFullAttire(
     uint16[] memory itemTokenIds,
     uint[] memory balances,
-    uint16[5] memory expectedItemTokenIds
-  ) external pure returns (bool matches) {
+    uint16[5] calldata expectedItemTokenIds
+  ) public pure returns (bool matches) {
     // Check if they have the full equipment required
     if (itemTokenIds.length == 5) {
       for (U256 iter; iter.lt(5); iter = iter.inc()) {
@@ -654,8 +654,12 @@ library PlayersLibrary {
 
   function getCombatStats(
     uint _playerId,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
-    mapping(uint playerId => PackedXP packedXP) storage xp_
+    PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
+    mapping(uint playerId => PackedXP packedXP) storage xp_,
+    address _from,
+    ItemNFT _itemNFT,
+    Attire storage _attire,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (CombatStats memory combatStats) {
     combatStats.melee = int16(
       getLevel(getAbsoluteActionStartXP(_playerId, Skill.MELEE, _pendingQueuedActionXPGained, xp_))
@@ -671,13 +675,70 @@ library PlayersLibrary {
     );
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
+
+    bool skipNeck;
+    (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
+      _from,
+      _attire,
+      _itemNFT,
+      skipNeck,
+      _pendingQueuedActionEquipmentStates
+    );
+    if (itemTokenIds.length != 0) {
+      Item[] memory items = _itemNFT.getItems(itemTokenIds);
+      U256 iter = items.length.asU256();
+      while (iter.neq(0)) {
+        iter = iter.dec();
+        uint i = iter.asUint256();
+        if (balances[i] != 0) {
+          _updateCombatStatsFromItem(combatStats, items[i]);
+        }
+      }
+    }
+  }
+
+  function getAttireWithBalance(
+    address _from,
+    Attire storage _attire,
+    ItemNFT _itemNFT,
+    bool _skipNeck,
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+  ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
+    uint attireLength;
+    itemTokenIds = new uint16[](6);
+    if (_attire.head != NONE) {
+      itemTokenIds[attireLength++] = _attire.head;
+    }
+    if (_attire.neck != NONE && !_skipNeck) {
+      itemTokenIds[attireLength++] = _attire.neck;
+    }
+    if (_attire.body != NONE) {
+      itemTokenIds[attireLength++] = _attire.body;
+    }
+    if (_attire.arms != NONE) {
+      itemTokenIds[attireLength++] = _attire.arms;
+    }
+    if (_attire.legs != NONE) {
+      itemTokenIds[attireLength++] = _attire.legs;
+    }
+    if (_attire.feet != NONE) {
+      itemTokenIds[attireLength++] = _attire.feet;
+    }
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, attireLength)
+    }
+
+    if (attireLength != 0) {
+      balances = getRealBalances(_from, itemTokenIds, _itemNFT, _pendingQueuedActionEquipmentStates);
+    }
   }
 
   // Subtract any existing xp gained from the first in-progress actions and add the new xp gained
   function getAbsoluteActionStartXP(
     uint _playerId,
     Skill _skill,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
+    PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
     mapping(uint playerId => PackedXP packedXP) storage xp_
   ) public view returns (uint) {
     uint xp = readXP(_skill, xp_[_playerId]);
@@ -696,5 +757,134 @@ library PlayersLibrary {
     }
 
     return xp;
+  }
+
+  function updateStatsFromHandEquipment(
+    address _from,
+    ItemNFT _itemNFT,
+    uint16[2] calldata _handEquipmentTokenIds,
+    CombatStats calldata _combatStats,
+    bool _isCombat,
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+  ) external view returns (bool missingRequiredHandEquipment, CombatStats memory combatStats) {
+    U256 iter = _handEquipmentTokenIds.length.asU256();
+    combatStats = _combatStats;
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint16 i = iter.asUint16();
+      uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
+      if (handEquipmentTokenId != NONE) {
+        uint256 balance = getRealBalance(_from, handEquipmentTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
+        if (balance == 0) {
+          // Assume that if the player doesn't have the non-combat item that this action cannot be done
+          if (!_isCombat) {
+            missingRequiredHandEquipment = true;
+          }
+        } else if (_isCombat) {
+          // Update the combat stats
+          Item memory item = _itemNFT.getItem(handEquipmentTokenId);
+          _updateCombatStatsFromItem(combatStats, item);
+        }
+      }
+    }
+  }
+
+  function _updateCombatStatsFromItem(CombatStats memory _combatStats, Item memory _item) private pure {
+    if (_item.melee != 0) {
+      _combatStats.melee += _item.melee;
+    }
+    if (_item.magic != 0) {
+      _combatStats.magic += _item.magic;
+    }
+    if (_item.meleeDefence != 0) {
+      _combatStats.meleeDefence += _item.meleeDefence;
+    }
+    if (_item.magicDefence != 0) {
+      _combatStats.magicDefence += _item.magicDefence;
+    }
+    if (_item.health != 0) {
+      _combatStats.health += _item.health;
+    }
+  }
+
+  function getBonusAvatarXPPercent(Player storage _player, Skill _skill) public view returns (uint8 bonusPercent) {
+    bool hasBonusSkill = _player.skillBoosted1 == _skill || _player.skillBoosted2 == _skill;
+    if (!hasBonusSkill) {
+      return 0;
+    }
+    bool bothSet = _player.skillBoosted1 != Skill.NONE && _player.skillBoosted2 != Skill.NONE;
+    bonusPercent = bothSet ? 5 : 10;
+  }
+
+  function _extraFromAvatar(
+    Player storage _player,
+    Skill _skill,
+    uint _elapsedTime,
+    uint24 _xpPerHour
+  ) internal view returns (uint32 extraPointsAccrued) {
+    uint8 bonusPercent = getBonusAvatarXPPercent(_player, _skill);
+    extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * bonusPercent) / (3600 * 100));
+  }
+
+  function getPointsAccrued(
+    address _from,
+    Player storage _player,
+    QueuedAction storage _queuedAction,
+    uint _startTime,
+    Skill _skill,
+    uint _xpElapsedTime,
+    Attire storage _attire,
+    PlayerBoostInfo storage _activeBoost,
+    ItemNFT _itemNFT,
+    World _world,
+    uint8 _bonusAttirePercent,
+    uint16[5] calldata _expectedItemTokenIds,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+  ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
+    bool _isCombatSkill = _queuedAction.combatStyle != CombatStyle.NONE;
+    uint24 xpPerHour = _world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
+    pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
+    pointsAccrued += _extraXPFromBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _activeBoost);
+    pointsAccrued += _extraXPFromFullAttire(
+      _from,
+      _attire,
+      _xpElapsedTime,
+      xpPerHour,
+      _itemNFT,
+      _bonusAttirePercent,
+      _expectedItemTokenIds,
+      _pendingQueuedActionEquipmentStates
+    );
+    pointsAccruedExclBaseBoost = pointsAccrued;
+    pointsAccrued += _extraFromAvatar(_player, _skill, _xpElapsedTime, xpPerHour);
+  }
+
+  function _extraXPFromFullAttire(
+    address _from,
+    Attire storage _attire,
+    uint _elapsedTime,
+    uint24 _xpPerHour,
+    ItemNFT _itemNFT,
+    uint8 _bonusPercent,
+    uint16[5] calldata _expectedItemTokenIds,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+  ) internal view returns (uint32 extraPointsAccrued) {
+    if (_bonusPercent == 0) {
+      return 0;
+    }
+
+    // Check if they have the full equipment set, if so they can get some bonus
+    bool skipNeck = true;
+    (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
+      _from,
+      _attire,
+      _itemNFT,
+      skipNeck,
+      _pendingQueuedActionEquipmentStates
+    );
+    bool hasFullAttire = extraBoostFromFullAttire(itemTokenIds, balances, _expectedItemTokenIds);
+    if (hasFullAttire) {
+      extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * _bonusPercent) / (3600 * 100));
+    }
   }
 }

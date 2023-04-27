@@ -373,9 +373,10 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     bool skipNeck;
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = _getAttireWithBalance(
+    (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithBalance(
       _from,
       _attire,
+      itemNFT,
       skipNeck,
       pendingQueuedActionEquipmentStates
     );

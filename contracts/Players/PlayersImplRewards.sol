@@ -277,23 +277,27 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       CombatStats memory combatStats;
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       if (isCombat) {
-        combatStats = PlayersLibrary.getCombatStats(_playerId, pendingQueuedActionXPGained, xp_);
-        // This will only update where they have a balance for at this time
-        _updateCombatStats(
+        combatStats = PlayersLibrary.getCombatStats(
+          _playerId,
+          pendingQueuedActionXPGained,
+          xp_,
           from,
-          combatStats,
+          itemNFT,
           attire_[_playerId][queuedAction.queueId],
           pendingQueuedActionState.equipmentStates
         );
       }
 
-      bool missingRequiredHandEquipment = _updateStatsFromHandEquipment(
+      bool missingRequiredHandEquipment;
+      (missingRequiredHandEquipment, combatStats) = PlayersLibrary.updateStatsFromHandEquipment(
         from,
+        itemNFT,
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
         pendingQueuedActionState.equipmentStates
       );
+
       if (missingRequiredHandEquipment) {
         continue;
       }
@@ -659,7 +663,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       pendingQueuedActionState.dailyRewardItemTokenIds,
       pendingQueuedActionState.dailyRewardAmounts,
       pendingQueuedActionState.dailyRewardMask
-    ) = dailyRewardsView(_playerId);
+    ) = _dailyRewardsView(_playerId);
 
     // Compact to fit the array
     assembly ("memory-safe") {
@@ -672,6 +676,32 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       mstore(mload(pendingQueuedActionXPGained), pendingQueuedActionXPGainedLength)
       mstore(mload(add(pendingQueuedActionXPGained, 32)), pendingQueuedActionXPGainedLength)
     }
+  }
+
+  function _getPointsAccrued(
+    address _from,
+    uint _playerId,
+    QueuedAction storage _queuedAction,
+    uint _startTime,
+    Skill _skill,
+    uint _xpElapsedTime,
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+  ) internal view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
+    (pointsAccrued, pointsAccruedExclBaseBoost) = PlayersLibrary.getPointsAccrued(
+      _from,
+      players_[_playerId],
+      _queuedAction,
+      _startTime,
+      _skill,
+      _xpElapsedTime,
+      attire_[_playerId][_queuedAction.queueId],
+      activeBoosts_[_playerId],
+      itemNFT,
+      world,
+      fullAttireBonus[_skill].bonusXPPercent,
+      fullAttireBonus[_skill].itemTokenIds,
+      _pendingQueuedActionEquipmentStates
+    );
   }
 
   function _addRemainingSkill(
@@ -923,5 +953,26 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       )
     );
     return abi.decode(data, (Equipment[], Equipment, uint, uint, bool, uint24, uint24));
+  }
+
+  function _getHealthPointsFromCombat(
+    uint _playerId,
+    uint _combatPoints
+  ) internal view returns (uint32 healthPointsAccured) {
+    // Get 1/3 of the combat points as health
+    healthPointsAccured = uint32(_combatPoints / 3);
+    // Get bonus health points from avatar starting skills
+    uint bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(players_[_playerId], Skill.HEALTH);
+    healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
+  }
+
+  function _dailyRewardsView(
+    uint _playerId
+  ) internal view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(IPlayersMiscDelegateView.dailyRewardsViewImpl.selector, _playerId)
+    );
+    return abi.decode(data, (uint[], uint[], bytes32));
   }
 }
