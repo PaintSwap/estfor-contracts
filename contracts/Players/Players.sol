@@ -68,6 +68,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   using UnsafeMath for U256;
 
   error InvalidSelector();
+  error GameIsPaused();
 
   modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
     if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -79,6 +80,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   modifier isOwnerOfPlayerMod(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
       revert NotOwnerOfPlayer();
+    }
+    _;
+  }
+
+  modifier gameNotPaused() {
+    if (gamePaused) {
+      revert GameIsPaused();
     }
     _;
   }
@@ -129,7 +137,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint _playerId,
     QueuedActionInput calldata _queuedAction,
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     QueuedActionInput[] memory queuedActions = new QueuedActionInput[](1);
     queuedActions[0] = _queuedAction;
     _startActions(_playerId, queuedActions, NONE, uint40(block.timestamp), _queueStatus);
@@ -161,12 +169,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint16 _boostItemTokenId,
     uint40 _boostStartTime, // Not used yet (always current time)
     ActionQueueStatus _queueStatus
-  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _queueStatus);
   }
 
   /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint _playerId) public isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
+  function processActions(uint _playerId) public isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length == 0) {
       revert NoActionsToProcess();
     }
@@ -193,36 +201,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.unequipBoostVial.selector, _playerId));
   }
 
-  function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
-    return pendingRandomRewards[_playerId];
-  }
-
-  function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
-    return players_[_playerId].actionQueue;
-  }
-
   function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external override onlyPlayerNFT {
     itemNFT.mintBatch(_to, _ids, _amounts);
-  }
-
-  function getURI(
-    uint _playerId,
-    string calldata _name,
-    string calldata _avatarName,
-    string calldata _avatarDescription,
-    string calldata imageURI
-  ) external view override returns (string memory) {
-    return
-      PlayersLibrary.uri(
-        _name,
-        xp_[_playerId],
-        _avatarName,
-        _avatarDescription,
-        imageURI,
-        isAlpha,
-        _playerId,
-        clans.getClanNameOfPlayer(_playerId)
-      );
   }
 
   // Callback after minting a player. If they aren't the active player then set it.
@@ -242,8 +222,22 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
+  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _clearEverything(msg.sender, _playerId);
+  }
+
+  function activateQuest(uint _playerId, uint questId) external isOwnerOfPlayerAndActiveMod(_playerId) gameNotPaused {
+    if (players_[_playerId].actionQueue.length != 0) {
+      processActions(_playerId);
+    }
+    quests.activateQuest(_playerId, questId);
+  }
+
+  function deactiveQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+    if (players_[_playerId].actionQueue.length == 0) {
+      processActions(_playerId);
+    }
+    quests.deactivateQuest(_playerId);
   }
 
   /// @notice Called by the PlayerNFT contract before a player is transferred
@@ -307,18 +301,32 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return playerNFT.balanceOf(_from, _playerId) == 1;
   }
 
-  function activateQuest(uint _playerId, uint questId) external isOwnerOfPlayerAndActiveMod(_playerId) {
-    if (players_[_playerId].actionQueue.length != 0) {
-      processActions(_playerId);
-    }
-    quests.activateQuest(_playerId, questId);
+  function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
+    return pendingRandomRewards[_playerId];
   }
 
-  function deactiveQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
-    if (players_[_playerId].actionQueue.length == 0) {
-      processActions(_playerId);
-    }
-    quests.deactivateQuest(_playerId);
+  function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
+    return players_[_playerId].actionQueue;
+  }
+
+  function getURI(
+    uint _playerId,
+    string calldata _name,
+    string calldata _avatarName,
+    string calldata _avatarDescription,
+    string calldata imageURI
+  ) external view override returns (string memory) {
+    return
+      PlayersLibrary.uri(
+        _name,
+        xp_[_playerId],
+        _avatarName,
+        _avatarDescription,
+        imageURI,
+        isAlpha,
+        _playerId,
+        clans.getClanNameOfPlayer(_playerId)
+      );
   }
 
   function MAX_TIME() external pure returns (uint32) {
@@ -376,6 +384,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function setDailyRewardsEnabled(bool _dailyRewardsEnabled) external onlyOwner {
     dailyRewardsEnabled = _dailyRewardsEnabled;
+  }
+
+  function pauseGame(bool _gamePaused) external onlyOwner {
+    gamePaused = _gamePaused;
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {

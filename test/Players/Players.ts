@@ -779,6 +779,27 @@ describe("Players", function () {
       expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
     });
 
+    it("Game paused", async function () {
+      const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+      // Do not allow processing an action while game is paused
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      await expect(players.connect(alice).pauseGame(true)).to.be.revertedWith("Ownable: caller is not the owner");
+      await players.pauseGame(true);
+      await expect(
+        players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "GameIsPaused");
+      await players.pauseGame(false);
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      await players.pauseGame(true);
+      await expect(players.connect(alice).processActions(playerId)).to.be.revertedWithCustomError(
+        players,
+        "GameIsPaused"
+      );
+      await players.pauseGame(false);
+      await expect(players.connect(alice).processActions(playerId)).to.not.be.reverted;
+    });
+
     it("Check timespan overflow", async function () {
       // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);

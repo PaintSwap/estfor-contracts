@@ -135,6 +135,7 @@ abstract contract PlayersBase {
   mapping(uint playerId => mapping(uint queuedId => Attire attire)) internal attire_;
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
+  bool internal gamePaused;
   mapping(uint playerId => PendingRandomReward[] pendingRandomRewards) internal pendingRandomRewards; // queue, will be sorted by timestamp
 
   // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
