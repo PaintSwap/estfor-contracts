@@ -95,9 +95,9 @@ describe("Quests", function () {
 
     it("Should fail to add a quest for non-owner", async function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
-      await expect(quests.connect(alice).addQuest(firemakingQuest, false, defaultMinRequirements)).to.be.revertedWith(
-        "Ownable: caller is not the owner"
-      );
+      await expect(
+        quests.connect(alice).addQuest(firemakingQuest, false, defaultMinRequirements)
+      ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
   });
 
@@ -125,7 +125,7 @@ describe("Quests", function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await expect(
         quests.connect(alice).addQuests([firemakingQuest], [false], [defaultMinRequirements])
-      ).to.be.revertedWith("Ownable: caller is not the owner");
+      ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
   });
 
@@ -140,7 +140,7 @@ describe("Quests", function () {
     it("Should fail to remove a quest for non-owner", async function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await quests.addQuest(firemakingQuest, false, defaultMinRequirements);
-      await expect(quests.connect(alice).removeQuest(1)).to.be.revertedWith("Ownable: caller is not the owner");
+      await expect(quests.connect(alice).removeQuest(1)).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
 
     it("Should fail to remove a non-existing quest", async function () {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.19;
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {Initializable} from "./ozUpgradeable/proxy/utils/Initializable.sol";
 
 /** ****************************************************************************
  * @notice Interface for contracts using VRF randomness

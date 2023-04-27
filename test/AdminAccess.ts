@@ -28,8 +28,9 @@ describe("AdminAccess", function () {
 
     it("Revert if not called by owner", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
-      await expect(adminAccess.connect(alice).addAdmins([owner.address])).to.be.revertedWith(
-        "Ownable: caller is not the owner"
+      await expect(adminAccess.connect(alice).addAdmins([owner.address])).to.be.revertedWithCustomError(
+        adminAccess,
+        "CallerIsNotOwner"
       );
     });
   });
@@ -44,8 +45,9 @@ describe("AdminAccess", function () {
 
     it("Revert if not called by owner", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
-      await expect(adminAccess.connect(alice).addAdmin(owner.address)).to.be.revertedWith(
-        "Ownable: caller is not the owner"
+      await expect(adminAccess.connect(alice).addAdmin(owner.address)).to.be.revertedWithCustomError(
+        adminAccess,
+        "CallerIsNotOwner"
       );
     });
   });
@@ -62,8 +64,9 @@ describe("AdminAccess", function () {
     it("Revert if not called by owner", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await adminAccess.addAdmins([owner.address, alice.address]);
-      await expect(adminAccess.connect(alice).removeAdmin(owner.address)).to.be.revertedWith(
-        "Ownable: caller is not the owner"
+      await expect(adminAccess.connect(alice).removeAdmin(owner.address)).to.be.revertedWithCustomError(
+        adminAccess,
+        "CallerIsNotOwner"
       );
     });
   });

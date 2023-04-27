@@ -90,13 +90,13 @@ describe("Bank", function () {
     // Reverting inside the on received function can't catch that revert message so check for the generic one
     await expect(
       itemNFT.connect(alice).safeTransferFrom(alice.address, clanBankAddress, EstforConstants.BRONZE_HELMET, 1, "0x")
-    ).to.be.revertedWith("ERC1155: transfer to non-ERC1155Receiver implementer");
+    ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferToNonERC1155Receiver");
 
     await expect(
       itemNFT
         .connect(alice)
         .safeBatchTransferFrom(alice.address, clanBankAddress, [EstforConstants.BRONZE_HELMET], [1], "0x")
-    ).to.be.revertedWith("ERC1155: transfer to non-ERC1155Receiver implementer");
+    ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferToNonERC1155Receiver");
 
     // Check same item can be deposited
     await bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_SHIELD], [1]);
