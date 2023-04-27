@@ -174,7 +174,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint8 _tierId
   ) external isOwnerOfPlayerAndActive(_playerId) {
     PlayerInfo storage player = playerInfo[_playerId];
-    if (player.clanId != 0) {
+    if (isMemberOfAnyClan(_playerId)) {
       revert AlreadyInClan();
     }
 
@@ -308,7 +308,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     PlayerInfo storage player = playerInfo[_playerId];
 
-    if (player.clanId != 0) {
+    if (isMemberOfAnyClan(_playerId)) {
       revert AlreadyInClan();
     }
 
@@ -456,6 +456,14 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function isClanMember(uint _clanId, uint _playerId) external view returns (bool) {
     return playerInfo[_playerId].clanId == _clanId;
+  }
+
+  function isMemberOfAnyClan(uint _playerId) public view returns (bool) {
+    return playerInfo[_playerId].clanId != 0;
+  }
+
+  function getClanTierMembership(uint _playerId) external view returns (uint8) {
+    return clans[playerInfo[_playerId].clanId].tierId;
   }
 
   function hasInviteRequest(uint _clanId, uint _playerId) external view returns (bool) {

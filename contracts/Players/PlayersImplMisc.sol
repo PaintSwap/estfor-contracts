@@ -158,10 +158,14 @@ contract PlayersImplMisc is
 
     uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
 
-    // Claim daily reward as long as it's been set
+    // Claim daily reward
     if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
       (uint itemTokenId, uint amount) = world.getDailyReward();
       if (itemTokenId != NONE) {
+        // Add clan member boost to daily reward (if applicable)
+        uint clanTierMembership = clans.getClanTierMembership(_playerId);
+        amount += (amount * clanTierMembership) / 10; // +10% extra for each clan tier
+
         dailyRewardMask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
         bool canClaimWeeklyRewards = uint(dailyRewardMask >> (25 * 8)) == 2 ** (7 * 8) - 1;
         uint length = canClaimWeeklyRewards ? 2 : 1;

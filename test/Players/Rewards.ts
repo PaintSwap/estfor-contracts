@@ -307,6 +307,61 @@ describe("Rewards", function () {
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
     });
 
+    it("Test clan tier bonus reward upgrades", async function () {
+      const {playerId, players, itemNFT, world, alice, clans} = await loadFixture(playersFixture);
+
+      // Be a member of a clan
+      await clans.addTiers([
+        {
+          id: 1,
+          maxMemberCapacity: 3,
+          maxBankCapacity: 3,
+          maxImageId: 16,
+          price: 0,
+          minimumAge: 0,
+        },
+        {
+          id: 2,
+          maxMemberCapacity: 3,
+          maxBankCapacity: 3,
+          maxImageId: 16,
+          price: 0,
+          minimumAge: 0,
+        },
+      ]);
+
+      let tierId = 1;
+      const imageId = 1;
+      await clans.connect(alice).createClan(playerId, "Clan name", imageId, tierId);
+
+      players.setDailyRewardsEnabled(true);
+      let baseEquipment = {itemTokenId: EstforConstants.COPPER_ORE, amount: 100};
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const oneDay = 24 * 3600;
+      const oneWeek = oneDay * 7;
+      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      await players.connect(alice).startAction(playerId, queuedAction, EstforTypes.ActionQueueStatus.NONE);
+      expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(110);
+
+      // Next day
+      baseEquipment = {itemTokenId: EstforConstants.COAL_ORE, amount: 200};
+
+      const clanId = 1;
+      tierId = 2;
+      await clans.connect(alice).upgradeClan(clanId, playerId, tierId);
+
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
+
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(240); // get 20% boost
+    });
+
     it("Test rewards in new week", async function () {
       // TODO
     });
