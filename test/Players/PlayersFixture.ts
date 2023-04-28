@@ -32,7 +32,7 @@ export const playersFixture = async function () {
   })) as World;
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [brush.address], {
+  const shop = (await upgrades.deployProxy(Shop, [brush.address, dev.address], {
     kind: "uups",
   })) as Shop;
 
@@ -86,6 +86,7 @@ export const playersFixture = async function () {
     [
       brush.address,
       shop.address,
+      dev.address,
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
@@ -106,7 +107,7 @@ export const playersFixture = async function () {
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
-  const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address, editNameBrushPrice], {
+  const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address, dev.address, editNameBrushPrice], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });

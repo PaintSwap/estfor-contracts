@@ -56,6 +56,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   IBrushToken public brush;
   ItemNFT public itemNFT;
+  address public dev;
   mapping(uint itemId => uint price) public shopItems;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -63,10 +64,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush) public initializer {
+  function initialize(IBrushToken _brush, address _dev) public initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
     brush = _brush;
+    dev = _dev;
   }
 
   function liquidatePrice(uint16 _tokenId) public view returns (uint price) {
@@ -110,11 +112,14 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (price == 0) {
       revert ItemCannotBeBought();
     }
+    uint brushCost = price * _quantity;
     // Pay
-    uint totalBrush = price * _quantity;
-    brush.transferFrom(msg.sender, address(this), totalBrush);
-    // Burn half, the rest goes into the pool for sellable items
-    brush.burn(totalBrush / 2);
+    brush.transferFrom(msg.sender, address(this), brushCost);
+    uint quarterCost = brushCost / 4;
+    // Send 1 quarter to the dev address
+    brush.transfer(dev, quarterCost);
+    // Burn 1 quarter
+    brush.burn(quarterCost);
 
     itemNFT.mint(msg.sender, _tokenId, _quantity);
     emit Buy(msg.sender, _tokenId, _quantity, price);
@@ -128,7 +133,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (iter.neq(_quantities.length)) {
       revert LengthMismatch();
     }
-    uint totalBrush;
+    uint brushCost;
     uint[] memory prices = new uint[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
@@ -137,14 +142,17 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       if (price == 0) {
         revert ItemCannotBeBought();
       }
-      totalBrush += price * _quantities[i];
+      brushCost += price * _quantities[i];
       prices[i] = price;
     }
 
     // Pay
-    brush.transferFrom(msg.sender, address(this), totalBrush);
-    // Burn half, the rest goes into the pool for sellable items
-    brush.burn(totalBrush / 2);
+    brush.transferFrom(msg.sender, address(this), brushCost);
+    uint quarterCost = brushCost / 4;
+    // Send 1 quarter to the dev address
+    brush.transfer(dev, quarterCost);
+    // Burn 1 quarter
+    brush.burn(quarterCost);
 
     itemNFT.mintBatch(msg.sender, _tokenIds, _quantities);
     emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);

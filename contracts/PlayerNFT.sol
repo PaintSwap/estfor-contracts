@@ -61,6 +61,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   uint72 public editNameCost; // Max is 4700 BRUSH
   bool public isAlpha;
 
+  address private dev;
+
   bytes32 private merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
   uint public constant MAX_ALPHA_WHITELIST = 3;
@@ -102,6 +104,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function initialize(
     IBrushToken _brush,
     address _pool,
+    address _dev,
     address _royaltyReceiver,
     AdminAccess _adminAccess,
     uint72 _editNameCost,
@@ -115,6 +118,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     nextPlayerId = 1;
     imageBaseUri = _imageBaseUri;
     pool = _pool;
+    dev = _dev;
     editNameCost = _editNameCost;
     royaltyFee = 30; // 3%
     royaltyReceiver = _royaltyReceiver;
@@ -262,11 +266,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint brushCost = editNameCost;
     // Pay
     brush.transferFrom(_msgSender(), address(this), brushCost);
+    uint quarterCost = brushCost / 4;
     // Send half to the pool (currently shop)
-    uint half = (brushCost / 2);
-    brush.transfer(pool, brushCost - half);
-    // Burn the other half
-    brush.burn(half);
+    brush.transfer(pool, brushCost - quarterCost * 2);
+    // Send 1 quarter to the dev address
+    brush.transfer(dev, quarterCost);
+    // Burn 1 quarter
+    brush.burn(quarterCost);
 
     string memory trimmedName = _setName(_playerId, _newName);
     emit EditPlayer(_playerId, trimmedName);

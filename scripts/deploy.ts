@@ -57,7 +57,7 @@ async function main() {
   let oracle: MockOracleClient;
   let router: MockRouter;
   let tx;
-  let devAddress = "0x3b99636439FBA6314C0F52D35FEd2fF442191407";
+  let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
@@ -109,7 +109,7 @@ async function main() {
   console.log(`world = "${world.address.toLowerCase()}"`);
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [brush.address], {
+  const shop = (await upgrades.deployProxy(Shop, [brush.address, devAddress], {
     kind: "uups",
   })) as Shop;
 
@@ -185,6 +185,7 @@ async function main() {
     [
       brush.address,
       shop.address,
+      devAddress,
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
@@ -209,7 +210,7 @@ async function main() {
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
-  const clans = (await upgrades.deployProxy(Clans, [brush.address, shop.address, editNameBrushPrice], {
+  const clans = (await upgrades.deployProxy(Clans, [brush.address, shop.address, devAddress, editNameBrushPrice], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   })) as Clans;

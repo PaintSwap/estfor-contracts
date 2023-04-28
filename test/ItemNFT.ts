@@ -32,7 +32,7 @@ describe("ItemNFT", function () {
     });
 
     const Shop = await ethers.getContractFactory("Shop");
-    const shop = await upgrades.deployProxy(Shop, [brush.address], {
+    const shop = await upgrades.deployProxy(Shop, [brush.address, dev.address], {
       kind: "uups",
     });
 

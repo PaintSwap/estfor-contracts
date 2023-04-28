@@ -146,6 +146,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   uint80 public nextClanId;
   address private pool;
   uint80 public editNameCost;
+  address private dev;
   mapping(uint clanId => Clan clan) public clans;
   mapping(uint playerId => PlayerInfo) public playerInfo;
   mapping(uint id => Tier tier) public tiers;
@@ -157,11 +158,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush, address _pool, uint80 _editNameCost) external initializer {
+  function initialize(IBrushToken _brush, address _pool, address _dev, uint80 _editNameCost) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
     brush = _brush;
     pool = _pool;
+    dev = _dev;
     nextClanId = 1;
     editNameCost = _editNameCost;
     emit EditNameCost(_editNameCost);
@@ -567,11 +569,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function _pay(uint _brushCost) private {
     // Pay
     brush.transferFrom(msg.sender, address(this), _brushCost);
+    uint quarterCost = _brushCost / 4;
     // Send half to the pool (currently shop)
-    uint half = _brushCost / 2;
-    brush.transfer(pool, _brushCost - half);
-    // Burn the other half
-    brush.burn(half);
+    brush.transfer(pool, _brushCost - quarterCost * 2);
+    // Send 1 quarter to the dev address
+    brush.transfer(dev, quarterCost);
+    // Burn 1 quarter
+    brush.burn(quarterCost);
   }
 
   function _upgradeClan(uint _clanId, uint _playerId, uint8 _newTierId) private {
