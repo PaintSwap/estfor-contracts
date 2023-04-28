@@ -12,6 +12,7 @@ import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {setupBasicCooking, setupBasicFiremaking} from "./Players/utils";
+import {START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -345,6 +346,34 @@ describe("Quests", function () {
       firemakingQuest.rewardAmount
     );
     expect(firemakingQuest.rewardAmount).to.be.gt(0); // sanity check
+  });
+
+  it("XP rewards gained", async function () {
+    const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+    // Activate a quest
+    const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as Quest;
+    const quest = {
+      ...quest1,
+      actionChoiceId: choiceId,
+      burnItemTokenId: COOKED_MINNUS,
+      skillReward: Skill.WOODCUTTING,
+      skillXPGained: 1,
+    };
+    await quests.addQuest(quest, false, defaultMinRequirements);
+    const questId = quest?.questId;
+    await players.connect(alice).activateQuest(playerId, questId);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+    const cookingXP = await players.xp(playerId, Skill.COOKING);
+    expect(await players.xp(playerId, Skill.WOODCUTTING)).to.eq(1);
+    expect((await players.players(playerId)).totalXP).to.eq(START_XP + Number(cookingXP) + 1);
   });
 
   describe("Activate a quest", function () {

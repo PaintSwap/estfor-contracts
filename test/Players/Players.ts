@@ -46,6 +46,7 @@ describe("Players", function () {
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(360);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(10); // Should be rounded down
+    expect((await players.players(playerId)).totalXP).to.eq(START_XP + 360);
   });
 
   it("Skill points (many)", async function () {

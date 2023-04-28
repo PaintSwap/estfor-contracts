@@ -247,6 +247,7 @@ abstract contract PlayersBase {
     emit SetActionQueue(_from, _playerId, _queuedActions, _startTime);
   }
 
+  // This does not update player.totalXP!!
   function _updateXP(address _from, uint _playerId, Skill _skill, uint128 _pointsAccrued) internal {
     PackedXP storage packedXP = xp_[_playerId];
     uint oldPoints = PlayersLibrary.readXP(_skill, packedXP);

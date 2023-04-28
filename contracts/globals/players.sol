@@ -231,8 +231,8 @@ struct QuestState {
   uint[] choiceIds;
   uint[] choiceIdAmounts;
   uint[] questsCompleted;
-  //  Skill[] skills; // Skills gained XP in
-  //  uint32[] xpGainedSkills; // XP gained in these skills
+  Skill[] skills; // Skills gained XP in
+  uint32[] xpGainedSkills; // XP gained in these skills
 }
 
 struct PendingQueuedActionState {

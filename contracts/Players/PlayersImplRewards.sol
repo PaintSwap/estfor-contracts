@@ -447,9 +447,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     // Quest Rewards
     QuestState memory questState = pendingQueuedActionState.quests;
-    Skill[] memory questSkillsGained;
-    uint32[] memory questXPGainedSkills;
-
     // Anything burnt happens after the actions are processed, so do not affect anything else.
     uint burnedAmountOwned;
     uint activeQuestBurnedItemTokenId = quests.getActiveQuestBurnedItemTokenId(_playerId);
@@ -467,8 +464,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       questState.rewardAmounts,
       questState.consumedItemTokenIds,
       questState.consumedAmounts,
-      questSkillsGained,
-      questXPGainedSkills,
+      questState.skills,
+      questState.xpGainedSkills,
       questState.questsCompleted,
       questState.activeQuestInfo
     ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts, burnedAmountOwned);

@@ -44,7 +44,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingQueuedActionState memory pendingQueuedActionState = pendingQueuedActionState(_from, _playerId);
     remainingSkills = pendingQueuedActionState.remainingSkills;
     pendingQueuedActionXPGained = pendingQueuedActionState.xpGained;
-
+    // total xp is updated later
     for (uint i; i < pendingQueuedActionXPGained.skills.length; ++i) {
       _updateXP(_from, _playerId, pendingQueuedActionXPGained.skills[i], pendingQueuedActionXPGained.xpGainedSkills[i]);
     }
@@ -121,8 +121,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             pendingQueuedActionState.xpRewardItemTokenIds,
             pendingQueuedActionState.xpRewardAmounts
           );
-          player.totalXP = uint112(newTotalXP);
         }
+        player.totalXP = uint112(newTotalXP);
       }
       bool fullyFinished = actionMetadata.elapsedTime >= players_[_playerId].actionQueue[i].timespan;
       if (fullyFinished) {
@@ -190,6 +190,15 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (questState.rewardItemTokenIds.length > 0) {
         itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
         emit QuestRewards(_from, _playerId, questState.rewardItemTokenIds, questState.rewardAmounts);
+      }
+      // Any quest XP gains
+      uint questXpGained;
+      for (uint j; j < questState.skills.length; ++j) {
+        _updateXP(_from, _playerId, questState.skills[j], questState.xpGainedSkills[j]);
+        questXpGained += questState.xpGainedSkills[j];
+      }
+      if (questXpGained != 0) {
+        player.totalXP = uint112(player.totalXP.add(questXpGained));
       }
 
       // Daily/weekly rewards
