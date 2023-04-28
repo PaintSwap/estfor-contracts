@@ -88,3 +88,10 @@ export const allShopItems: ShopItem[] = [
     price: ethers.utils.parseEther("0.1"),
   },
 ];
+
+export const allShopItemsAlpha: ShopItem[] = allShopItems.map((shopItem) => {
+  return {
+    ...shopItem,
+    price: shopItem.price.div(10),
+  };
+});

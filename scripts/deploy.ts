@@ -38,7 +38,7 @@ import {addTestData} from "./addTestData";
 import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
 import {BigNumber} from "ethers";
-import {allShopItems} from "./data/shopItems";
+import {allShopItems, allShopItemsAlpha} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarInfos} from "./data/avatars";
@@ -442,7 +442,7 @@ async function main() {
   console.log("Add action choices");
 
   // Add shop items
-  tx = await shop.addBuyableItems(allShopItems);
+  tx = await shop.addBuyableItems(isAlpha ? allShopItemsAlpha : allShopItems);
   await tx.wait();
   console.log("Add shopping items");
 
