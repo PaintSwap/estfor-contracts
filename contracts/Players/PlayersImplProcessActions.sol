@@ -172,7 +172,17 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
       // Quests
       QuestState memory questState = pendingQueuedActionState.quests;
-      quests.processQuests(_playerId, questState.choiceIds, questState.choiceIdAmounts, questState.questsCompleted);
+      uint burnedAmount;
+      if (questState.consumedAmounts.length > 0) {
+        burnedAmount = questState.consumedAmounts[0];
+      }
+      quests.processQuests(
+        _playerId,
+        questState.choiceIds,
+        questState.choiceIdAmounts,
+        burnedAmount,
+        questState.questsCompleted
+      );
       if (questState.consumedItemTokenIds.length > 0) {
         itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
         emit QuestConsumes(_from, _playerId, questState.consumedItemTokenIds, questState.consumedAmounts);

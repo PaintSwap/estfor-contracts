@@ -359,9 +359,10 @@ struct Quest {
 
 struct PlayerQuest {
   uint32 questId;
-  uint24 actionCompletedNum;
-  uint24 actionCompletedNum1;
-  uint24 actionChoiceCompletedNum;
+  uint16 actionCompletedNum;
+  uint16 actionCompletedNum1;
+  uint16 actionChoiceCompletedNum;
+  uint16 burnCompletedAmount;
   bool isFixed;
 }
 

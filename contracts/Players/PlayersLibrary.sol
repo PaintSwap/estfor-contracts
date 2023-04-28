@@ -3,6 +3,7 @@ pragma solidity ^0.8.19;
 
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -256,7 +257,7 @@ library PlayersLibrary {
       died = totalHealthLost != 0;
     } else {
       // Round up
-      foodConsumed = uint24(ceilDiv(uint32(totalHealthLost), healthRestored));
+      foodConsumed = uint24(Math.ceilDiv(uint32(totalHealthLost), healthRestored));
       // Can only consume a maximum of 65535 food
       if (foodConsumed > type(uint16).max) {
         foodConsumed = type(uint16).max;
@@ -343,18 +344,6 @@ library PlayersLibrary {
     return a > b ? a : b;
   }
 
-  function _max(uint a, uint b) private pure returns (uint) {
-    return a > b ? a : b;
-  }
-
-  function min(uint a, uint b) internal pure returns (uint) {
-    return a < b ? a : b;
-  }
-
-  function ceilDiv(uint a, uint b) internal pure returns (uint) {
-    return a == 0 ? 0 : (a - 1) / b + 1;
-  }
-
   function _dmg(
     int attack,
     int defence,
@@ -383,7 +372,7 @@ library PlayersLibrary {
     // Formula is max(1, a(atk) + b(2 * atk - def))
     // Always do at least 1 damage per minute
     uint dmgPerMinute = uint(_max(1, int128(attack) * int8(_alphaCombat) + (attack * 2 - defence) * int8(_betaCombat)));
-    return ceilDiv(uint(uint16(_enemyHealth)) * 60, dmgPerMinute);
+    return Math.ceilDiv(uint(uint16(_enemyHealth)) * 60, dmgPerMinute);
   }
 
   function _getTimeToKill(
@@ -458,7 +447,7 @@ library PlayersLibrary {
     if (dmgDealt > uint16(_enemyCombatStats.health)) {
       // Are able to kill them all, but how many can we kill in the time that has elapsed?
       numKilled = (_elapsedTime * numSpawnedPerHour) / 3600;
-      uint combatTimePerEnemy = ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
+      uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
       combatElapsedTime = combatTimePerEnemy * numKilled;
     } else {
       uint combatTimePerKill = _getTimeToKill(
@@ -476,9 +465,9 @@ library PlayersLibrary {
     xpElapsedTime = respawnTime * numKilled;
 
     // Check how many to consume, and also adjust xpElapsedTime if they don't have enough consumables
-    numConsumed = uint16(ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * 10));
+    numConsumed = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * 10));
     if (_actionChoice.rate != 0) {
-      numConsumed = uint16(_max(numKilled, numConsumed));
+      numConsumed = uint16(Math.max(numKilled, numConsumed));
     }
 
     if (_checkBalance) {

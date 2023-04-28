@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
@@ -411,9 +413,7 @@ contract PlayersImplMisc is
         );
         uint extraBoost = skillLevel - minLevel;
 
-        successPercent = uint8(
-          PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost)
-        );
+        successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost));
       }
 
       numProduced = uint24((numConsumed * _actionChoice.outputAmount * successPercent) / 100);

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
@@ -449,6 +450,18 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     Skill[] memory questSkillsGained;
     uint32[] memory questXPGainedSkills;
 
+    // Anything burnt happens after the actions are processed, so do not affect anything else.
+    uint burnedAmountOwned;
+    uint activeQuestBurnedItemTokenId = quests.getActiveQuestBurnedItemTokenId(_playerId);
+    if (activeQuestBurnedItemTokenId != NONE) {
+      burnedAmountOwned = PlayersLibrary.getRealBalance(
+        from,
+        activeQuestBurnedItemTokenId,
+        itemNFT,
+        pendingQueuedActionState.equipmentStates
+      );
+    }
+
     (
       questState.rewardItemTokenIds,
       questState.rewardAmounts,
@@ -458,7 +471,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       questXPGainedSkills,
       questState.questsCompleted,
       questState.activeQuestInfo
-    ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts);
+    ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts, burnedAmountOwned);
 
     questState.choiceIds = choiceIds;
     questState.choiceIdAmounts = choiceIdAmounts;
@@ -593,7 +606,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       );
       uint extraBoost = skillLevel - minLevel;
 
-      successPercent = uint8(PlayersLibrary.min(MAX_SUCCESS_PERCENT_CHANCE_, actionSuccessPercent + extraBoost));
+      successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, actionSuccessPercent + extraBoost));
     }
   }
 
@@ -857,7 +870,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint skillEndTime = _skillStartTime.add(_elapsedTime);
       hasRandomWord = world.hasRandomWord(skillEndTime);
       if (hasRandomWord) {
-        uint numIterations = PlayersLibrary.min(MAX_UNIQUE_TICKETS_, _numTickets);
+        uint numIterations = Math.min(MAX_UNIQUE_TICKETS_, _numTickets);
 
         bytes memory b = world.getRandomBytes(numIterations, skillEndTime, _playerId);
         uint startLootLength = length;
@@ -875,7 +888,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
           // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
           uint operation = (uint(_getSlice(b, i)) * 100) / _successPercent;
-          uint16 rand = uint16(PlayersLibrary.min(type(uint16).max, operation));
+          uint16 rand = uint16(Math.min(type(uint16).max, operation));
 
           U256 randomRewardsLength = _randomRewards.length.asU256();
           for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {

@@ -219,11 +219,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     quests.activateQuest(_playerId, questId);
   }
 
-  function deactiveQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length == 0) {
       processActions(_playerId);
     }
-    quests.deactivateQuest(_playerId);
+    // Quest may hve been completed as a result of this so don't bother trying to deactivate it
+    if (quests.getActiveQuestId(_playerId) != 0) {
+      quests.deactivateQuest(_playerId);
+    }
   }
 
   /// @notice Called by the PlayerNFT contract before a player is transferred
