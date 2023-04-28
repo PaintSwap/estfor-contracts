@@ -57,6 +57,7 @@ async function main() {
   let oracle: MockOracleClient;
   let router: MockRouter;
   let tx;
+  let devAddress = "0x3b99636439FBA6314C0F52D35FEd2fF442191407";
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
@@ -119,7 +120,7 @@ async function main() {
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, brush.address, buyPath],
+    [router.address, shop.address, devAddress, brush.address, buyPath],
     {
       kind: "uups",
     }

@@ -27,18 +27,20 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
 
   error AddressZero();
   error IncorrectBrushPath();
+  error FailedSendToDev();
 
   Router public router;
   address public pool;
   IBrushToken public brush;
   address private buyPath1;
-  address private dummy;
+  address private dev;
 
   uint public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
   function initialize(
     Router _router,
     address _pool,
+    address _dev,
     IBrushToken _brush,
     address[2] calldata _buyPath
   ) public initializer {
@@ -49,6 +51,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     router = _router;
     brush = _brush;
     buyPath1 = _buyPath[0];
+    dev = _dev;
     if (_buyPath[1] != address(_brush)) {
       revert IncorrectBrushPath();
     }
@@ -61,6 +64,9 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     if (address(_brush) == address(0)) {
       revert AddressZero();
     }
+    if (dev == address(0)) {
+      revert AddressZero();
+    }
   }
 
   function buyPath() private view returns (address[] memory _buyPath) {
@@ -71,8 +77,20 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
 
   receive() external payable {
     uint deadline = block.timestamp.add(DEADLINE_DURATION);
+
+    uint third = msg.value / 3;
+    (bool success, ) = dev.call{value: third}("");
+    if (!success) {
+      revert FailedSendToDev();
+    }
+
     // Buy brush and send it to the pool
-    uint[] memory amounts = router.swapExactETHForTokens{value: msg.value}(0, buyPath(), address(this), deadline);
+    uint[] memory amounts = router.swapExactETHForTokens{value: msg.value - third}(
+      0,
+      buyPath(),
+      address(this),
+      deadline
+    );
     brush.transfer(pool, amounts[amounts.length - 1]);
   }
 

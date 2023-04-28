@@ -57,7 +57,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   address private pool;
 
   address private royaltyReceiver;
-  uint8 private royaltyFee;
+  uint8 private royaltyFee; // base 1000, highest is 25.5
   uint72 public editNameCost; // Max is 4700 BRUSH
   bool public isAlpha;
 
@@ -116,7 +116,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     imageBaseUri = _imageBaseUri;
     pool = _pool;
     editNameCost = _editNameCost;
-    royaltyFee = 250; // 2.5%
+    royaltyFee = 30; // 3%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
     isAlpha = _isAlpha;
@@ -296,7 +296,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint256 /*_tokenId*/,
     uint256 _salePrice
   ) external view override returns (address receiver, uint256 royaltyAmount) {
-    uint256 amount = (_salePrice * royaltyFee) / 10000;
+    uint256 amount = (_salePrice * royaltyFee) / 1000;
     return (royaltyReceiver, amount);
   }
 

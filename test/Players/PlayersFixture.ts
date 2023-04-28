@@ -5,7 +5,7 @@ import {ItemNFT, PlayerNFT, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 
 export const playersFixture = async function () {
-  const [owner, alice, bob, charlie, dog] = await ethers.getSigners();
+  const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
 
   const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
   const brush = await MockBrushToken.deploy();
@@ -42,7 +42,7 @@ export const playersFixture = async function () {
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, brush.address, buyPath],
+    [router.address, shop.address, dev.address, brush.address, buyPath],
     {
       kind: "uups",
     }
@@ -217,7 +217,7 @@ export const playersFixture = async function () {
     alice,
     bob,
     charlie,
-    dog,
+    dev,
     origName,
     editNameBrushPrice,
     mockOracleClient,

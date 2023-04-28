@@ -7,7 +7,7 @@ import {ethers, upgrades} from "hardhat";
 describe("Shop", function () {
   const deployContracts = async function () {
     // Contracts are deployed using the first signer/account by default
-    const [owner, alice] = await ethers.getSigners();
+    const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
 
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const brush = await MockBrushToken.deploy();
@@ -44,7 +44,7 @@ describe("Shop", function () {
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = await upgrades.deployProxy(
       RoyaltyReceiver,
-      [router.address, shop.address, brush.address, buyPath],
+      [router.address, shop.address, dev.address, brush.address, buyPath],
       {
         kind: "uups",
       }

@@ -4,7 +4,7 @@ import {ethers, upgrades} from "hardhat";
 
 describe("RoyaltyReceiver", function () {
   async function deployContracts() {
-    const [owner, alice, pool] = await ethers.getSigners();
+    const [owner, alice, pool, dev] = await ethers.getSigners();
 
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const brush = await MockBrushToken.deploy();
@@ -18,7 +18,7 @@ describe("RoyaltyReceiver", function () {
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = await upgrades.deployProxy(
       RoyaltyReceiver,
-      [router.address, pool.address, brush.address, buyPath],
+      [router.address, pool.address, dev.address, brush.address, buyPath],
       {
         kind: "uups",
       }
@@ -30,31 +30,41 @@ describe("RoyaltyReceiver", function () {
       owner,
       alice,
       pool,
+      dev,
       brush,
       buyPath,
       router,
     };
   }
 
-  it("Brush buyback", async function () {
-    const {royaltyReceiver, alice, brush, pool} = await loadFixture(deployContracts);
+  it("Check recipients", async function () {
+    const {royaltyReceiver, alice, brush, pool, dev} = await loadFixture(deployContracts);
 
+    const beforeBalance = await ethers.provider.getBalance(dev.address);
     await alice.sendTransaction({
       to: royaltyReceiver.address,
       value: 100,
     });
 
-    expect(await brush.balanceOf(pool.address)).to.equal(10);
+    // 1/3 to dao
+    expect(await ethers.provider.getBalance(dev.address)).to.equal(beforeBalance.add(33));
+
+    // 2/3 buys brush and sends to pool
+    expect(await brush.balanceOf(pool.address)).to.equal(6);
   });
 
   it("Incorrect brush path", async function () {
-    const {pool, router, buyPath, RoyaltyReceiver} = await loadFixture(deployContracts);
+    const {pool, dev, router, buyPath, RoyaltyReceiver} = await loadFixture(deployContracts);
 
     const incorrectBrushAddress = pool.address;
     await expect(
-      upgrades.deployProxy(RoyaltyReceiver, [router.address, pool.address, incorrectBrushAddress, buyPath], {
-        kind: "uups",
-      })
+      upgrades.deployProxy(
+        RoyaltyReceiver,
+        [router.address, pool.address, dev.address, incorrectBrushAddress, buyPath],
+        {
+          kind: "uups",
+        }
+      )
     ).to.be.revertedWithCustomError(RoyaltyReceiver, "IncorrectBrushPath");
   });
 });

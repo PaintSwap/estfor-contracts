@@ -329,17 +329,17 @@ describe("Clans", function () {
     });
 
     it("Scouts and above can changes members below them in rank", async () => {
-      const {clans, playerId, alice, bob, charlie, dog, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const {clans, playerId, alice, bob, charlie, dev, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
 
-      const dogPlayerId = await createPlayer(playerNFT, avatarId, dog, "dog", true);
-      await clans.connect(dog).requestToJoin(clanId, dogPlayerId);
-      await clans.connect(alice).acceptJoinRequest(clanId, dogPlayerId, playerId);
-      await clans.connect(alice).changeRank(clanId, dogPlayerId, ClanRank.SCOUT, playerId);
+      const devPlayerId = await createPlayer(playerNFT, avatarId, dev, "dev", true);
+      await clans.connect(dev).requestToJoin(clanId, devPlayerId);
+      await clans.connect(alice).acceptJoinRequest(clanId, devPlayerId, playerId);
+      await clans.connect(alice).changeRank(clanId, devPlayerId, ClanRank.SCOUT, playerId);
 
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
 
       await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
-      await clans.connect(dog).acceptJoinRequest(clanId, bobPlayerId, dogPlayerId);
+      await clans.connect(dev).acceptJoinRequest(clanId, bobPlayerId, devPlayerId);
       expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
       await expect(clans.changeRank(clanId, bobPlayerId, ClanRank.SCOUT, playerId)).to.be.revertedWithCustomError(
         clans,
@@ -349,32 +349,32 @@ describe("Clans", function () {
 
       // Cannot change rank of someone of the same rank
       await expect(
-        clans.connect(dog).changeRank(clanId, bobPlayerId, ClanRank.SCOUT, dogPlayerId)
+        clans.connect(dev).changeRank(clanId, bobPlayerId, ClanRank.SCOUT, devPlayerId)
       ).to.be.revertedWithCustomError(clans, "ChangingRankEqualOrHigherThanSelf");
 
       // Remove self as scout to commoner
-      await clans.connect(dog).changeRank(clanId, dogPlayerId, ClanRank.COMMONER, dogPlayerId);
-      expect(await clans.canWithdraw(clanId, dogPlayerId)).to.be.false;
-      expect(await clans.isClanMember(clanId, dogPlayerId)).to.be.true;
+      await clans.connect(dev).changeRank(clanId, devPlayerId, ClanRank.COMMONER, devPlayerId);
+      expect(await clans.canWithdraw(clanId, devPlayerId)).to.be.false;
+      expect(await clans.isClanMember(clanId, devPlayerId)).to.be.true;
 
       // Kick this user from the clan
-      await clans.connect(bob).changeRank(clanId, dogPlayerId, ClanRank.NONE, bobPlayerId);
+      await clans.connect(bob).changeRank(clanId, devPlayerId, ClanRank.NONE, bobPlayerId);
 
       const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
 
       await clans.connect(charlie).requestToJoin(clanId, charliePlayerId);
       await clans.connect(bob).acceptJoinRequest(clanId, charliePlayerId, bobPlayerId);
       await expect(
-        clans.connect(dog).changeRank(clanId, charliePlayerId, ClanRank.NONE, dogPlayerId)
+        clans.connect(dev).changeRank(clanId, charliePlayerId, ClanRank.NONE, devPlayerId)
       ).to.be.revertedWithCustomError(clans, "ChangingRankEqualOrHigherThanSelf");
 
       // Scout can remove a member
       await clans.connect(bob).changeRank(clanId, charliePlayerId, ClanRank.NONE, bobPlayerId);
 
-      expect(await clans.canWithdraw(clanId, dogPlayerId)).to.be.false;
-      expect(await clans.isClanMember(clanId, dogPlayerId)).to.be.false;
+      expect(await clans.canWithdraw(clanId, devPlayerId)).to.be.false;
+      expect(await clans.isClanMember(clanId, devPlayerId)).to.be.false;
 
-      const newPlayer = await clans.playerInfo(dogPlayerId);
+      const newPlayer = await clans.playerInfo(devPlayerId);
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(0);
     });

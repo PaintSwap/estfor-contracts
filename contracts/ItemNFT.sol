@@ -60,7 +60,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   // Royalties
   address private royaltyReceiver;
-  uint16 private royaltyFee;
+  uint8 private royaltyFee; // base 1000, highest is 25.5
 
   mapping(uint itemId => string tokenURI) private tokenURIs;
   mapping(uint itemId => CombatStats combatStats) private combatStats;
@@ -104,7 +104,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     world = _world;
     shop = _shop;
     baseURI = _baseURI;
-    royaltyFee = 250; // 2.5%
+    royaltyFee = 30; // 3%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
     isAlpha = _isAlpha;
@@ -279,7 +279,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     uint256 /*_tokenId*/,
     uint256 _salePrice
   ) external view override returns (address receiver, uint256 royaltyAmount) {
-    uint256 amount = (_salePrice * royaltyFee) / 10000;
+    uint256 amount = (_salePrice * royaltyFee) / 1000;
     return (royaltyReceiver, amount);
   }
 
