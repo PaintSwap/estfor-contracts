@@ -1,6 +1,11 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions";
-import {COOKED_MINNUS, QUEST_STARTER_FEEDER, QUEST_STARTER_TRADER} from "@paintswap/estfor-definitions/constants";
+import {
+  COOKED_MINNUS,
+  QUEST_ALMS_POOR,
+  QUEST_PURSE_STRINGS,
+  SKILL_BOOST,
+} from "@paintswap/estfor-definitions/constants";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
@@ -31,6 +36,7 @@ export async function questsFixture() {
     rewardAmount1: 0,
     burnItemTokenId: NONE,
     burnAmount: 0,
+    requireActionsCompletedBeforeBurning: false,
   };
 
   const firemakingQuestLog: Quest = {
@@ -50,6 +56,7 @@ export async function questsFixture() {
     rewardAmount1: 0,
     burnItemTokenId: NONE,
     burnAmount: 0,
+    requireActionsCompletedBeforeBurning: false,
   };
 
   await itemNFT.testMint(alice.address, EstforConstants.LOG, 200);
@@ -166,7 +173,7 @@ describe("Quests", function () {
   describe("Brush buying quest", function () {
     it("Quest not activated", async function () {
       const {alice, playerId, quests} = await loadFixture(questsFixture);
-      const quest = allQuests.find((q) => q.questId === QUEST_STARTER_TRADER);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
       await quests.addQuest(quest, false, defaultMinRequirements);
       await expect(
         quests.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10})
@@ -175,7 +182,7 @@ describe("Quests", function () {
 
     it("Trying to buy with no FTM", async function () {
       const {alice, playerId, quests, players} = await loadFixture(questsFixture);
-      const quest = allQuests.find((q) => q.questId === QUEST_STARTER_TRADER);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
       await quests.addQuest(quest, false, defaultMinRequirements);
       const questId = quest?.questId;
       await players.connect(alice).activateQuest(playerId, questId);
@@ -186,7 +193,7 @@ describe("Quests", function () {
 
     it("Quest completed", async function () {
       const {alice, playerId, quests, players, brush} = await loadFixture(questsFixture);
-      const quest = allQuests.find((q) => q.questId === QUEST_STARTER_TRADER);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
       await quests.addQuest(quest, false, defaultMinRequirements);
       const questId = quest?.questId;
       expect(questId).to.not.eq(0);
@@ -213,13 +220,11 @@ describe("Quests", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     // Activate a quest
-    const quest1 = allQuests.find((q) => q.questId === QUEST_STARTER_FEEDER);
+    const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as Quest;
     const quest = {
       ...quest1,
       actionChoiceId: choiceId,
       burnItemTokenId: COOKED_MINNUS,
-      actionChoiceNum: 5,
-      burnAmount: 5,
     };
     await quests.addQuest(quest, false, defaultMinRequirements);
     const questId = quest?.questId;
@@ -230,14 +235,14 @@ describe("Quests", function () {
     // Check it's completed
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10) - quest.actionChoiceNum)
+      Math.floor((queuedAction.timespan * rate) / (3600 * 10) - quest1.actionChoiceNum)
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
       1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
     );
   });
 
-  it("Cooked food giving away quest, check burn can happen separately", async function () {
+  it("Cooked food giving away quest, check burn can happen before quest completed", async function () {
     const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
 
     const successPercent = 100;
@@ -246,13 +251,11 @@ describe("Quests", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     // Activate a quest
-    const quest1 = allQuests.find((q) => q.questId === QUEST_STARTER_FEEDER);
+    const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as Quest;
     const quest = {
       ...quest1,
       actionChoiceId: choiceId,
       burnItemTokenId: COOKED_MINNUS,
-      actionChoiceNum: 5,
-      burnAmount: 5,
     };
     await quests.addQuest(quest, false, defaultMinRequirements);
     const questId = quest?.questId;
@@ -262,26 +265,41 @@ describe("Quests", function () {
     await itemNFT.connect(alice).testMints(alice.address, [COOKED_MINNUS], [initialMintNum]);
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
-    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1);
-    expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
-    expect(pendingQueuedActionState.quests.consumedAmounts[0]).to.eq(5);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(0);
     await players.connect(alice).processActions(playerId);
 
     // Should not be completed, but the cooked items can be burned
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
 
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(5); // Use 5
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(10);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(1000);
 
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    // rate is 100 an hour. So 1 would be done in 36 seconds
+    await ethers.provider.send("evm_increaseTime", [36]);
     await ethers.provider.send("evm_mine", []);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
-    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(0);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
+    expect(pendingQueuedActionState.quests.consumedAmounts[0]).to.eq(1);
+    // Finish it
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(
+      pendingQueuedActionState.quests.rewardAmounts.length
+    );
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds[0]).to.eq(SKILL_BOOST);
+    expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(3);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.consumedAmounts.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
+    expect(pendingQueuedActionState.quests.consumedAmounts[0]).to.eq(5);
     await players.connect(alice).processActions(playerId);
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10) - quest.actionChoiceNum) + initialMintNum
+      Math.floor((queuedAction.timespan * rate) / (3600 * 10) - quest1.actionChoiceNum) + initialMintNum
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
       1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))

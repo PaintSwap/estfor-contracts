@@ -76,7 +76,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     uint64 xp;
   }
 
-  uint constant QUEST_ID_STARTER_TRADER = 2; // MAKE SURE THIS MATCHES definitions
+  uint constant QUEST_PURSE_STRINGS = 5; // MAKE SURE THIS MATCHES definitions
 
   struct PlayerQuestInfo {
     uint32 numFixedQuestsCompleted;
@@ -200,7 +200,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     randomQuest = randomQuests[index];
     uint oldQuestId = randomQuest.questId;
     uint newQuestId = randomQuestId++;
-    randomQuest.questId = uint24(newQuestId); // Update to a unique one so we can distinguish the same quests
+    randomQuest.questId = uint16(newQuestId); // Update to a unique one so we can distinguish the same quests
     emit NewRandomQuest(randomQuest, oldQuestId);
   }
 
@@ -267,7 +267,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   ) external payable isOwnerOfPlayerAndActive(_playerId) {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
     buyBrush(_to, _minimumBrushBack);
-    if (playerQuest.questId != QUEST_ID_STARTER_TRADER) {
+    if (playerQuest.questId != QUEST_PURSE_STRINGS) {
       revert InvalidActiveQuest();
     }
 
@@ -485,12 +485,24 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         uint remainingAmount = quest.actionChoiceNum - _playerQuest.actionChoiceCompletedNum;
         uint amount = Math.min(remainingAmount, _choiceIdAmounts[i]);
         _playerQuest.actionChoiceCompletedNum += uint16(amount);
+
+        if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
+          // Handle quest that burns and requires actions to be done at the same time
+          uint burnRemainingAmount = quest.burnAmount - _playerQuest.burnCompletedAmount;
+          amountBurned = Math.min(burnRemainingAmount, amount);
+          amountBurned = Math.min(amount, _burnedAmountOwned);
+          if (amountBurned != 0) {
+            itemTokenIdBurned = quest.burnItemTokenId;
+            _playerQuest.burnCompletedAmount += uint16(amountBurned);
+          }
+        }
       }
     }
 
-    if (quest.burnItemTokenId != NONE) {
-      uint remainingAmount = quest.burnAmount - _playerQuest.burnCompletedAmount;
-      amountBurned = Math.min(remainingAmount, _burnedAmountOwned);
+    // Handle quest that burns but doesn't require actions completed before burning
+    if (quest.burnItemTokenId != NONE && !quest.requireActionsCompletedBeforeBurning) {
+      uint burnRemainingAmount = quest.burnAmount - _playerQuest.burnCompletedAmount;
+      amountBurned = Math.min(burnRemainingAmount, _burnedAmountOwned);
       if (amountBurned != 0) {
         itemTokenIdBurned = quest.burnItemTokenId;
         _playerQuest.burnCompletedAmount += uint16(amountBurned);

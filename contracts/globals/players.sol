@@ -354,7 +354,8 @@ struct Quest {
   uint16 rewardAmount1; // amount of the reward (up to 65535)
   uint16 burnItemTokenId; // Burn an item
   uint16 burnAmount; // amount of the burn (up to 65535)
-  uint24 questId; // Unique id for this quest
+  uint16 questId; // Unique id for this quest
+  bool requireActionsCompletedBeforeBurning; // If true, the player must complete the actions before the item can be burnt
 }
 
 struct PlayerQuest {
