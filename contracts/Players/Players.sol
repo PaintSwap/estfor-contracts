@@ -39,7 +39,13 @@ interface IPlayerDelegate {
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
 
-  function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills) external;
+  function mintedPlayer(
+    address from,
+    uint playerId,
+    Skill[2] calldata startSkills,
+    uint[] calldata startingItemTokenIds,
+    uint[] calldata startingAmounts
+  ) external;
 
   function clearEverything(address from, uint playerId) external;
 
@@ -163,12 +169,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _queueStatus);
   }
 
-  /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint _playerId) public isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    if (players_[_playerId].actionQueue.length == 0) {
-      revert NoActionsToProcess();
-    }
-
+  function _processActions(uint _playerId) private {
     (
       QueuedAction[] memory remainingSkillQueue,
       PendingQueuedActionXPGained memory pendingQueuedActionXPGained
@@ -187,20 +188,19 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue, block.timestamp);
   }
 
-  function unequipBoostVial(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
-    _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.unequipBoostVial.selector, _playerId));
+  /// @notice Process actions for a player up to the current block timestamp
+  function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+    _processActions(_playerId);
   }
 
-  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external override onlyPlayerNFT {
-    itemNFT.mintBatch(_to, _ids, _amounts);
-  }
-
-  // Callback after minting a player. If they aren't the active player then set it.
+  // Callback after minting a player
   function mintedPlayer(
     address _from,
     uint _playerId,
     Skill[2] calldata _startSkills,
-    bool _makeActive
+    bool _makeActive,
+    uint[] calldata _startingItemTokenIds,
+    uint[] calldata _startingAmounts
   ) external override onlyPlayerNFT {
     if (_makeActive) {
       _setActivePlayer(_from, _playerId);
@@ -208,20 +208,30 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
     _delegatecall(
       implMisc,
-      abi.encodeWithSelector(IPlayerDelegate.mintedPlayer.selector, _from, _playerId, _startSkills)
+      abi.encodeWithSelector(
+        IPlayerDelegate.mintedPlayer.selector,
+        _from,
+        _playerId,
+        _startSkills,
+        _startingItemTokenIds,
+        _startingAmounts
+      )
     );
   }
 
-  function activateQuest(uint _playerId, uint questId) external isOwnerOfPlayerAndActiveMod(_playerId) gameNotPaused {
+  function activateQuest(
+    uint _playerId,
+    uint questId
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length != 0) {
-      processActions(_playerId);
+      _processActions(_playerId);
     }
     quests.activateQuest(_playerId, questId);
   }
 
   function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    if (players_[_playerId].actionQueue.length == 0) {
-      processActions(_playerId);
+    if (players_[_playerId].actionQueue.length != 0) {
+      _processActions(_playerId);
     }
     // Quest may hve been completed as a result of this so don't bother trying to deactivate it
     if (quests.getActiveQuestId(_playerId) != 0) {
@@ -283,11 +293,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function isOwnerOfPlayerAndActive(address _from, uint _playerId) public view override returns (bool) {
-    return isOwnerOfPlayer(_from, _playerId) && activePlayer_[_from] == _playerId;
-  }
-
-  function isOwnerOfPlayer(address _from, uint _playerId) public view override returns (bool) {
-    return playerNFT.balanceOf(_from, _playerId) == 1;
+    return playerNFT.balanceOf(_from, _playerId) == 1 && activePlayer_[_from] == _playerId;
   }
 
   function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {

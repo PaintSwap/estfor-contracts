@@ -220,4 +220,9 @@ export const allQuestsMinimumRequirements: MinRequirementArray[] = [
   defaultMinRequirements,
   defaultMinRequirements,
   defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
 ];

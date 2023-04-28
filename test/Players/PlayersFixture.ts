@@ -107,10 +107,14 @@ export const playersFixture = async function () {
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
-  const clans = await upgrades.deployProxy(Clans, [brush.address, shop.address, dev.address, editNameBrushPrice], {
-    kind: "uups",
-    unsafeAllow: ["external-library-linking"],
-  });
+  const clans = await upgrades.deployProxy(
+    Clans,
+    [brush.address, playerNFT.address, shop.address, dev.address, editNameBrushPrice],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+    }
+  );
 
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");

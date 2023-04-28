@@ -435,7 +435,13 @@ contract PlayersImplMisc is
     }
   }
 
-  function mintedPlayer(address _from, uint _playerId, Skill[2] calldata _startSkills) external {
+  function mintedPlayer(
+    address _from,
+    uint _playerId,
+    Skill[2] calldata _startSkills,
+    uint[] calldata _startingItemTokenIds,
+    uint[] calldata _startingAmounts
+  ) external {
     Player storage player = players_[_playerId];
     player.totalXP = uint112(START_XP_);
 
@@ -450,5 +456,8 @@ contract PlayersImplMisc is
 
     player.skillBoosted1 = _startSkills[0];
     player.skillBoosted2 = _startSkills[1]; // Can be NONE
+
+    // Mint starting equipment
+    itemNFT.mintBatch(_from, _startingItemTokenIds, _startingAmounts);
   }
 }

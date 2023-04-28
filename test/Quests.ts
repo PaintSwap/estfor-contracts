@@ -77,7 +77,7 @@ describe("Quests", function () {
     it("Should add a quest correctly", async function () {
       const {quests, firemakingQuest} = await loadFixture(questsFixture);
 
-      await quests.addQuest(firemakingQuest, false, defaultMinRequirements);
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
       const quest = await quests.allFixedQuests(1);
       expect(quest.questId).to.equal(firemakingQuest.questId);
       expect(quest.rewardItemTokenId).to.equal(firemakingQuest.rewardItemTokenId);
@@ -88,23 +88,22 @@ describe("Quests", function () {
     it("Should add a random quest correctly", async function () {
       const {quests, firemakingQuest} = await loadFixture(questsFixture);
 
-      await quests.addQuest(firemakingQuest, true, defaultMinRequirements);
+      await quests.addQuests([firemakingQuest], [true], [defaultMinRequirements]);
       expect(await quests.isRandomQuest(firemakingQuest.questId)).to.be.true;
     });
 
     it("Should fail to add same quest twice", async function () {
       const {quests, firemakingQuest} = await loadFixture(questsFixture);
-      await quests.addQuest(firemakingQuest, false, defaultMinRequirements);
-      await expect(quests.addQuest(firemakingQuest, false, defaultMinRequirements)).to.be.revertedWithCustomError(
-        quests,
-        "QuestWithIdAlreadyExists"
-      );
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
+      await expect(
+        quests.addQuests([firemakingQuest], [false], [defaultMinRequirements])
+      ).to.be.revertedWithCustomError(quests, "QuestWithIdAlreadyExists");
     });
 
     it("Should fail to add a quest for non-owner", async function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await expect(
-        quests.connect(alice).addQuest(firemakingQuest, false, defaultMinRequirements)
+        quests.connect(alice).addQuests([firemakingQuest], [false], [defaultMinRequirements])
       ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
   });
@@ -140,14 +139,14 @@ describe("Quests", function () {
   describe("Remove quest", function () {
     it("Should remove a quest correctly", async function () {
       const {quests, firemakingQuest} = await loadFixture(questsFixture);
-      await quests.addQuest(firemakingQuest, false, defaultMinRequirements);
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
       await expect(quests.removeQuest(1)).to.emit(quests, "RemoveQuest").withArgs(1);
       await expect(quests.removeQuest(2)).to.be.revertedWithCustomError(quests, "QuestDoesntExist");
     });
 
     it("Should fail to remove a quest for non-owner", async function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
-      await quests.addQuest(firemakingQuest, false, defaultMinRequirements);
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
       await expect(quests.connect(alice).removeQuest(1)).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
 
@@ -175,7 +174,7 @@ describe("Quests", function () {
     it("Quest not activated", async function () {
       const {alice, playerId, quests} = await loadFixture(questsFixture);
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
-      await quests.addQuest(quest, false, defaultMinRequirements);
+      await quests.addQuests([quest], [false], [defaultMinRequirements]);
       await expect(
         quests.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10})
       ).to.be.revertedWithCustomError(quests, "InvalidActiveQuest");
@@ -184,7 +183,7 @@ describe("Quests", function () {
     it("Trying to buy with no FTM", async function () {
       const {alice, playerId, quests, players} = await loadFixture(questsFixture);
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
-      await quests.addQuest(quest, false, defaultMinRequirements);
+      await quests.addQuests([quest], [false], [defaultMinRequirements]);
       const questId = quest?.questId;
       await players.connect(alice).activateQuest(playerId, questId);
       await expect(
@@ -195,7 +194,7 @@ describe("Quests", function () {
     it("Quest completed", async function () {
       const {alice, playerId, quests, players, brush} = await loadFixture(questsFixture);
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
-      await quests.addQuest(quest, false, defaultMinRequirements);
+      await quests.addQuests([quest], [false], [defaultMinRequirements]);
       const questId = quest?.questId;
       expect(questId).to.not.eq(0);
       await players.connect(alice).activateQuest(playerId, questId);
@@ -227,7 +226,7 @@ describe("Quests", function () {
       actionChoiceId: choiceId,
       burnItemTokenId: COOKED_MINNUS,
     };
-    await quests.addQuest(quest, false, defaultMinRequirements);
+    await quests.addQuests([quest], [false], [defaultMinRequirements]);
     const questId = quest?.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -258,7 +257,7 @@ describe("Quests", function () {
       actionChoiceId: choiceId,
       burnItemTokenId: COOKED_MINNUS,
     };
-    await quests.addQuest(quest, false, defaultMinRequirements);
+    await quests.addQuests([quest], [false], [defaultMinRequirements]);
     const questId = quest?.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     // Process immediately
@@ -312,7 +311,7 @@ describe("Quests", function () {
       questsFixture
     );
 
-    await quests.addQuest(firemakingQuest, false, defaultMinRequirements);
+    await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
     const questId = 1;
     await players.connect(alice).activateQuest(playerId, questId);
 
@@ -366,7 +365,7 @@ describe("Quests", function () {
       skillReward: Skill.WOODCUTTING,
       skillXPGained: 1,
     };
-    await quests.addQuest(quest, false, defaultMinRequirements);
+    await quests.addQuests([quest], [false], [defaultMinRequirements]);
     const questId = quest?.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -379,7 +378,7 @@ describe("Quests", function () {
   describe("Activate a quest", function () {
     it("Should activate a quest for player correctly", async function () {
       const {alice, playerId, quests, firemakingQuestLog, players} = await loadFixture(questsFixture);
-      await quests.addQuest(firemakingQuestLog, false, defaultMinRequirements);
+      await quests.addQuests([firemakingQuestLog], [false], [defaultMinRequirements]);
       const questId = 2;
       await players.connect(alice).activateQuest(playerId, questId);
       const activeQuest = await quests.activeQuests(playerId);
@@ -388,7 +387,7 @@ describe("Quests", function () {
 
     it("Should fail to activate a quest for non-owner of player", async function () {
       const {players, playerId, quests, firemakingQuestLog} = await loadFixture(questsFixture);
-      await quests.addQuest(firemakingQuestLog, false, defaultMinRequirements);
+      await quests.addQuests([firemakingQuestLog], [false], [defaultMinRequirements]);
       const questId = 2;
       await expect(players.activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         players,
@@ -398,7 +397,7 @@ describe("Quests", function () {
 
     it("Should fail to activate a non-existing quest", async function () {
       const {alice, players, playerId, quests, firemakingQuestLog} = await loadFixture(questsFixture);
-      await quests.addQuest(firemakingQuestLog, false, defaultMinRequirements);
+      await quests.addQuests([firemakingQuestLog], [false], [defaultMinRequirements]);
       const questId = 3;
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
@@ -411,7 +410,7 @@ describe("Quests", function () {
         questsFixture
       );
 
-      await quests.addQuest(firemakingQuest, false, defaultMinRequirements);
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
       const questId = 1;
       await players.connect(alice).activateQuest(playerId, questId);
 

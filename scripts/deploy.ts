@@ -210,10 +210,14 @@ async function main() {
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
-  const clans = (await upgrades.deployProxy(Clans, [brush.address, shop.address, devAddress, editNameBrushPrice], {
-    kind: "uups",
-    unsafeAllow: ["external-library-linking"],
-  })) as Clans;
+  const clans = (await upgrades.deployProxy(
+    Clans,
+    [brush.address, playerNFT.address, shop.address, devAddress, editNameBrushPrice],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+    }
+  )) as Clans;
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
 

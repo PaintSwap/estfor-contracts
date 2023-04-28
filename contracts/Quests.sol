@@ -289,7 +289,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   // This doesn't really belong here, just for consistency
-  function sellBrush(address _to, uint _brushAmount, uint _minFTM) external {
+  /*  function sellBrush(address _to, uint _brushAmount, uint _minFTM) external {
     if (_brushAmount == 0) {
       revert InvalidBrushAmount();
     }
@@ -303,7 +303,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     IERC20(buyPath2).transferFrom(msg.sender, address(router), _brushAmount);
 
     router.swapExactTokensForETH(_brushAmount, _minFTM, sellPath, _to, deadline);
-  }
+  } */
 
   function processQuestsView(
     uint _playerId,
@@ -311,7 +311,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     uint[] calldata _choiceIdAmounts,
     uint _burnedAmountOwned
   )
-    public
+    external
     view
     returns (
       uint[] memory itemTokenIds,
@@ -595,14 +595,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     players = _players;
   }
 
-  function addQuest(
-    Quest calldata _quest,
-    bool _isRandom,
-    MinimumRequirement[3] calldata _minimumRequirements
-  ) external onlyOwner {
-    _addQuest(_quest, _isRandom, _minimumRequirements);
-  }
-
   function addQuests(
     Quest[] calldata _quests,
     bool[] calldata _isRandom,
@@ -611,6 +603,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (_quests.length != _isRandom.length) {
       revert LengthMismatch();
     }
+    if (_quests.length != _minimumRequirements.length) {
+      revert LengthMismatch();
+    }
+
     U256 bounds = _quests.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();

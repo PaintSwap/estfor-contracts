@@ -128,24 +128,24 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     emit EditNameCost(_editNameCost);
   }
 
-  function _mintStartingItems() private {
+  function _mintStartingItems(address _from, uint _playerId, uint _avatarId, bool _makeActive) private {
     // Give the player some starting items
-    uint[] memory itemNFTs = new uint[](6);
-    itemNFTs[0] = BRONZE_SWORD;
-    itemNFTs[1] = BRONZE_AXE;
-    itemNFTs[2] = MAGIC_FIRE_STARTER;
-    itemNFTs[3] = NET_STICK;
-    itemNFTs[4] = BRONZE_PICKAXE;
-    itemNFTs[5] = TOTEM_STAFF;
+    uint[] memory itemTokenIds = new uint[](6);
+    itemTokenIds[0] = BRONZE_SWORD;
+    itemTokenIds[1] = BRONZE_AXE;
+    itemTokenIds[2] = MAGIC_FIRE_STARTER;
+    itemTokenIds[3] = NET_STICK;
+    itemTokenIds[4] = BRONZE_PICKAXE;
+    itemTokenIds[5] = TOTEM_STAFF;
 
-    uint[] memory quantities = new uint[](6);
-    quantities[0] = 1;
-    quantities[1] = 1;
-    quantities[2] = 1;
-    quantities[3] = 1;
-    quantities[4] = 1;
-    quantities[5] = 1;
-    players.mintBatch(_msgSender(), itemNFTs, quantities);
+    uint[] memory amounts = new uint[](6);
+    amounts[0] = 1;
+    amounts[1] = 1;
+    amounts[2] = 1;
+    amounts[3] = 1;
+    amounts[4] = 1;
+    amounts[5] = 1;
+    players.mintedPlayer(_from, _playerId, avatars[_avatarId].startSkills, _makeActive, itemTokenIds, amounts);
   }
 
   function _setName(uint _playerId, string calldata _name) private returns (string memory trimmedName) {
@@ -194,8 +194,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     string memory trimmedName = _setName(playerId, _name);
     emit NewPlayer(playerId, _avatarId, trimmedName);
     _mint(from, playerId, 1, "");
-    players.mintedPlayer(from, playerId, avatars[_avatarId].startSkills, _makeActive);
-    _mintStartingItems();
+    _mintStartingItems(from, playerId, _avatarId, _makeActive);
     _setTokenIdToAvatar(playerId, _avatarId);
   }
 

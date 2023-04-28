@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+
 import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 
@@ -106,7 +108,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   modifier isOwnerOfPlayer(uint _playerId) {
-    if (!players.isOwnerOfPlayer(msg.sender, _playerId)) {
+    if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
     _;
@@ -143,6 +145,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IBrushToken private brush;
   IPlayers private players;
   IBankFactory public bankFactory;
+  IERC1155 private playerNFT;
   uint80 public nextClanId;
   address private pool;
   uint80 public editNameCost;
@@ -158,10 +161,17 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush, address _pool, address _dev, uint80 _editNameCost) external initializer {
+  function initialize(
+    IBrushToken _brush,
+    IERC1155 _playerNFT,
+    address _pool,
+    address _dev,
+    uint80 _editNameCost
+  ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
     brush = _brush;
+    playerNFT = _playerNFT;
     pool = _pool;
     dev = _dev;
     nextClanId = 1;

@@ -14,11 +14,14 @@ interface IPlayers {
     string calldata imageURI
   ) external view returns (string memory);
 
-  function mintBatch(address to, uint[] calldata ids, uint256[] calldata amounts) external;
-
-  function mintedPlayer(address from, uint playerId, Skill[2] calldata startSkills, bool makeActive) external;
-
-  function isOwnerOfPlayer(address from, uint playerId) external view returns (bool);
+  function mintedPlayer(
+    address from,
+    uint playerId,
+    Skill[2] calldata startSkills,
+    bool makeActive,
+    uint[] calldata startingItemTokenIds,
+    uint[] calldata startingAmounts
+  ) external;
 
   function isOwnerOfPlayerAndActive(address from, uint playerId) external view returns (bool);
 
