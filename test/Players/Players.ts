@@ -5,7 +5,7 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {emptyActionChoice, getActionChoiceId, getActionId, START_XP} from "../utils";
+import {emptyActionChoice, getActionChoiceId, getActionId, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicFiremaking, setupBasicWoodcutting} from "./utils";
 
@@ -105,7 +105,7 @@ describe("Players", function () {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawned: 1,
+        numSpawned: 1 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionIsAvailable,

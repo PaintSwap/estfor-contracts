@@ -3,7 +3,7 @@ import {Equipment} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {ItemNFT, World} from "../../typechain-types";
-import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId} from "../utils";
+import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, SPAWN_MUL} from "../utils";
 
 export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: World, rate = 100 * 10) {
   const tx = await world.addAction({
@@ -133,7 +133,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   };
 
   const rate = 1 * 10; // per kill
-  const numSpawned = 10;
+  const numSpawned = 10 * SPAWN_MUL;
   let tx = await world.addAction({
     actionId: 1,
     info: {

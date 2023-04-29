@@ -33,9 +33,6 @@ struct QueuedAction {
   uint24 processedTime; // How long the action has been processed for previously. TODO: Can be moved to Player, only need 1
   CombatStyle combatStyle; // specific style of combat,  can also be used
   bool isValid; // If we still have the item, TODO: Not used yet
-  // How much of the queued action was already processed beforehand. Useful for working out how many more consumables/food should be used due to previous rounding.
-  // uint16 startLevel; // This is the level that should be used (if set) instead of xp->level
-  // uint16 healthStartLevel; // Health is handled specially so also need to store it
   uint64 queueId; // id of this queued action
 }
 
@@ -55,8 +52,10 @@ struct ActionInfo {
   bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint24 xpPerHour;
   uint32 minXP;
-  uint16 numSpawned; // Mostly for combat, capped respawn rate for xp/drops
+  uint24 numSpawned; // Mostly for combat, capped respawn rate for xp/drops. Per hour, base 10000
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
   uint8 successPercent; // 0-100
 }
+
+uint constant SPAWN_MUL = 1000; // Allows for 2, 4 or 8 hour respawn time

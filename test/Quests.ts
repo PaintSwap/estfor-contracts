@@ -15,7 +15,7 @@ import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat} from "./Players/utils";
-import {getActionId, START_XP} from "./utils";
+import {getActionId, SPAWN_MUL, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -405,7 +405,7 @@ describe("Quests", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     // Kill 1
-    const time = 3600 / numSpawned;
+    const time = (3600 * SPAWN_MUL) / numSpawned;
     await ethers.provider.send("evm_increaseTime", [time]);
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -440,12 +440,14 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.skills[0]).to.eq(Skill.DEFENCE);
     expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(2500);
     await players.connect(alice).processActions(playerId);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq((rate * numSpawned) / 10 - 5);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+      (rate * numSpawned) / (10 * SPAWN_MUL) - 5
+    );
   });
 
   it("Dependent quest", async function () {
     const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(playersFixture);
-    const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;

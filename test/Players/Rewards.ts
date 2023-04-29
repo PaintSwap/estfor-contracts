@@ -11,6 +11,7 @@ import {
   getActionId,
   getRequestId,
   MAX_UNIQUE_TICKETS,
+  SPAWN_MUL,
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
@@ -392,7 +393,7 @@ describe("Rewards", function () {
     };
 
     const randomChance = 65535; // 100%
-    const numSpawned = 100;
+    const numSpawned = 100 * SPAWN_MUL;
     let tx = await world.addAction({
       actionId: 1,
       info: {
@@ -441,7 +442,7 @@ describe("Rewards", function () {
     await mockOracleClient.fulfill(requestId, world.address);
 
     const timespan = 3600 * numHours;
-    expect(numHours * numSpawned).to.be.gt(MAX_UNIQUE_TICKETS);
+    expect(numHours * (numSpawned / SPAWN_MUL)).to.be.gt(MAX_UNIQUE_TICKETS);
 
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -502,7 +503,7 @@ describe("Rewards", function () {
     await players.connect(alice).processActions(playerId);
 
     // Check output
-    expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(numHours * numSpawned);
+    expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(numHours * (numSpawned / SPAWN_MUL));
   });
 
   // This test only works if the timespan does not go over 00:00 utc

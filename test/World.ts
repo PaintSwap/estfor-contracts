@@ -4,7 +4,7 @@ import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
 import {ActionInput} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {getActionId} from "./utils";
+import {getActionId, SPAWN_MUL} from "./utils";
 
 describe("World", function () {
   const deployContracts = async function () {
@@ -163,7 +163,7 @@ describe("World", function () {
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          numSpawned: 1,
+          numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
@@ -184,7 +184,7 @@ describe("World", function () {
             xpPerHour: 20,
             minXP: 0,
             isDynamic: false,
-            numSpawned: 1,
+            numSpawned: 1 * SPAWN_MUL,
             handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionAvailable,
@@ -212,7 +212,7 @@ describe("World", function () {
             xpPerHour: 3600,
             minXP: 0,
             isDynamic: true,
-            numSpawned: 1,
+            numSpawned: 1 * SPAWN_MUL,
             handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionAvailable,
@@ -268,7 +268,7 @@ describe("World", function () {
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          numSpawned: 1,
+          numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
@@ -312,7 +312,7 @@ describe("World", function () {
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          numSpawned: 1,
+          numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
@@ -345,7 +345,7 @@ describe("World", function () {
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          numSpawned: 1,
+          numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: actionAvailable,
@@ -376,7 +376,7 @@ describe("World", function () {
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          numSpawned: 1,
+          numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
@@ -412,7 +412,7 @@ describe("World", function () {
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          numSpawned: 1,
+          numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,

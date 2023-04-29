@@ -441,13 +441,13 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed) {
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
-    uint respawnTime = 3600 / numSpawnedPerHour;
+    uint respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
     uint32 dmgDealt = _getDmg(_actionChoice, _combatStats, _enemyCombatStats, _alphaCombat, _betaCombat, respawnTime);
 
     uint numKilled;
     if (dmgDealt > uint16(_enemyCombatStats.health)) {
       // Are able to kill them all, but how many can we kill in the time that has elapsed?
-      numKilled = (_elapsedTime * numSpawnedPerHour) / 3600;
+      numKilled = (_elapsedTime * numSpawnedPerHour) / (3600 * SPAWN_MUL);
       uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
       combatElapsedTime = combatTimePerEnemy * numKilled;
     } else {

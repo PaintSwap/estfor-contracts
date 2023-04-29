@@ -6,7 +6,7 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId, START_XP} from "../utils";
+import {emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
 
@@ -52,7 +52,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10))
+        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -92,7 +92,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10))
+        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -142,7 +142,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10))
+        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -195,7 +195,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10))
+        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -227,7 +227,7 @@ describe("Combat Actions", function () {
         health: 1200,
       };
 
-      const numSpawned = 10;
+      const numSpawned = 10 * SPAWN_MUL;
       let tx = await world.addAction({
         actionId: 2,
         info: {
@@ -285,7 +285,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * 10; // per monster
-      const numSpawned = 10;
+      const numSpawned = 10 * SPAWN_MUL;
       let tx = await world.addAction({
         actionId: 1,
         info: {
@@ -419,7 +419,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10))
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10 * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -446,7 +446,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * 10; // per monster
-      const numSpawned = 100;
+      const numSpawned = 100 * SPAWN_MUL;
       let tx = await world.addAction({
         actionId: 1,
         info: {
@@ -617,7 +617,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10))
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10 * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -655,7 +655,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10))
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10 * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -791,7 +791,7 @@ describe("Combat Actions", function () {
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          numSpawned: 100,
+          numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionIsAvailable,
@@ -845,7 +845,7 @@ describe("Combat Actions", function () {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawned: 100,
+        numSpawned: 100 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionIsAvailable,
@@ -954,7 +954,7 @@ describe("Combat Actions", function () {
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        numSpawned: 100,
+        numSpawned: 100 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionIsAvailable,

@@ -67,3 +67,5 @@ export const START_XP = 374;
 // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
 export const MAX_SUCCESS_PERCENT_CHANCE = 90;
 export const MAX_UNIQUE_TICKETS = 240;
+
+export const SPAWN_MUL = 1000;

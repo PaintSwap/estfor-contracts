@@ -182,7 +182,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         uint numActionsCompleted;
         if (actionSkill == Skill.COMBAT) {
           // Want monsters killed
-          numActionsCompleted = uint16((numSpawnedPerHour * xpElapsedTime) / 3600);
+          numActionsCompleted = uint16((numSpawnedPerHour * xpElapsedTime) / (3600 * SPAWN_MUL));
         } else {
           // Not currently used
         }
@@ -419,9 +419,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           if (isCombat) {
             uint16 monstersKilled = uint16(
               (numSpawnedPerHour * (xpElapsedTime + prevXPElapsedTime)) /
-                3600 -
+                (SPAWN_MUL * 3600) -
                 (numSpawnedPerHour * (prevXPElapsedTime)) /
-                3600
+                (SPAWN_MUL * 3600)
             );
             pendingQueuedActionMetadata.rolls = uint32(monstersKilled);
           } else {
@@ -579,7 +579,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     ids = new uint[](MAX_REWARDS_PER_ACTION);
     amounts = new uint[](MAX_REWARDS_PER_ACTION);
 
-    uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / 3600);
+    uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / (SPAWN_MUL * 3600));
     uint8 successPercent = _getSuccessPercent(
       _playerId,
       _actionId,
@@ -670,7 +670,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _pendingRandomRewards[i].actionId
       );
       bool isCombat = actionSkill == Skill.COMBAT;
-      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomReward.elapsedTime) / 3600);
+      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomReward.elapsedTime) / (SPAWN_MUL * 3600));
       uint8 successPercent = _getSuccessPercent(
         _playerId,
         pendingRandomReward.actionId,
