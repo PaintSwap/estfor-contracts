@@ -71,6 +71,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   error NoActiveQuest();
   error ActivatingQuestAlreadyActivated();
   error RandomNotSupportedYet();
+  error DependentQuestNotCompleted(uint16 dependentQuestId);
 
   struct MinimumRequirement {
     Skill skill;
@@ -152,6 +153,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       revert QuestCompletedAlready();
     }
 
+    if (quest.dependentQuestId != 0) {
+      if (!questsCompleted[_playerId].get(quest.dependentQuestId)) {
+        revert DependentQuestNotCompleted(quest.dependentQuestId);
+      }
+    }
+
     uint existingActiveQuestId = activeQuests[_playerId].questId;
     if (existingActiveQuestId == _questId) {
       revert ActivatingQuestAlreadyActivated();
@@ -207,8 +214,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
   function processQuests(
     uint _playerId,
+    uint[] calldata _actionIds,
+    uint[] calldata _actionAmounts,
     uint[] calldata _choiceIds,
-    uint[] calldata _choiceIdAmounts,
+    uint[] calldata _choiceAmounts,
     uint _amountBurned,
     uint[] memory _questsCompleted
   ) external onlyPlayers {
@@ -222,12 +231,22 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     } else {
       // Update the quest progress
       bool foundActive;
-      U256 bounds = _choiceIds.length.asU256();
       uint activeQuestId = activeQuests[_playerId].questId;
+      U256 bounds = _actionIds.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
+        uint actionId = _actionIds[i];
+        uint amount = _actionAmounts[i];
+        if (allFixedQuests[activeQuestId].actionId == actionId) {
+          activeQuests[_playerId].actionCompletedNum += uint16(amount);
+          foundActive = true;
+        }
+      }
+      bounds = _choiceIds.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
         uint choiceId = _choiceIds[i];
-        uint amount = _choiceIdAmounts[i];
+        uint amount = _choiceAmounts[i];
         if (allFixedQuests[activeQuestId].actionChoiceId == choiceId) {
           activeQuests[_playerId].actionChoiceCompletedNum += uint16(amount);
           foundActive = true;
@@ -293,8 +312,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
   function processQuestsView(
     uint _playerId,
+    uint[] calldata _actionIds,
+    uint[] calldata _actionAmounts,
     uint[] calldata _choiceIds,
-    uint[] calldata _choiceIdAmounts,
+    uint[] calldata _choiceAmounts,
     uint _burnedAmountOwned
   )
     external
@@ -310,8 +331,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       PlayerQuest[] memory activeQuestsCompletionInfo
     )
   {
-    if (_choiceIds.length != 0) {
-      // Handle active rquest
+    // Handle active request
+    PlayerQuest memory questCompletionInfo = activeQuests[_playerId];
+    if (questCompletionInfo.questId != 0) {
       activeQuestsCompletionInfo = new PlayerQuest[](2);
       itemTokenIds = new uint[](2 * MAX_QUEST_REWARDS);
       amounts = new uint[](2 * MAX_QUEST_REWARDS);
@@ -325,39 +347,44 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint skillsGainedLength;
       uint questsCompletedLength;
       uint activeQuestsLength;
-      PlayerQuest memory questCompletionInfo = activeQuests[_playerId];
-      if (questCompletionInfo.questId != 0) {
-        (
-          uint[] memory _itemTokenIds,
-          uint[] memory _amounts,
-          uint itemTokenIdBurned,
-          uint amountBurned,
-          Skill skillGained,
-          uint32 xp,
-          bool questCompleted
-        ) = _processQuestView(_choiceIds, _choiceIdAmounts, questCompletionInfo, _burnedAmountOwned);
 
-        U256 bounds = _itemTokenIds.length.asU256();
-        for (U256 iter; iter < bounds; iter = iter.inc()) {
-          uint i = iter.asUint256();
-          itemTokenIds[itemTokenIdsLength] = _itemTokenIds[i];
-          amounts[itemTokenIdsLength] = _amounts[i];
-          itemTokenIdsLength = itemTokenIdsLength.inc();
-        }
+      (
+        uint[] memory _itemTokenIds,
+        uint[] memory _amounts,
+        uint itemTokenIdBurned,
+        uint amountBurned,
+        Skill skillGained,
+        uint32 xp,
+        bool questCompleted
+      ) = _processQuestView(
+          _actionIds,
+          _actionAmounts,
+          _choiceIds,
+          _choiceAmounts,
+          questCompletionInfo,
+          _burnedAmountOwned
+        );
 
-        if (questCompleted) {
-          _questsCompleted[questsCompletedLength++] = questCompletionInfo.questId;
-        } else {
-          activeQuestsCompletionInfo[activeQuestsLength++] = questCompletionInfo;
-        }
-        if (itemTokenIdBurned != NONE) {
-          itemTokenIdsBurned[itemTokenIdsBurnedLength] = itemTokenIdBurned;
-          amountsBurned[itemTokenIdsBurnedLength++] = amountBurned;
-        }
-        if (xp != 0) {
-          skillsGained[skillsGainedLength] = skillGained;
-          xpGained[skillsGainedLength++] = xp;
-        }
+      U256 bounds = _itemTokenIds.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint i = iter.asUint256();
+        itemTokenIds[itemTokenIdsLength] = _itemTokenIds[i];
+        amounts[itemTokenIdsLength] = _amounts[i];
+        itemTokenIdsLength = itemTokenIdsLength.inc();
+      }
+
+      if (questCompleted) {
+        _questsCompleted[questsCompletedLength++] = questCompletionInfo.questId;
+      } else {
+        activeQuestsCompletionInfo[activeQuestsLength++] = questCompletionInfo;
+      }
+      if (itemTokenIdBurned != NONE) {
+        itemTokenIdsBurned[itemTokenIdsBurnedLength] = itemTokenIdBurned;
+        amountsBurned[itemTokenIdsBurnedLength++] = amountBurned;
+      }
+      if (xp != 0) {
+        skillsGained[skillsGainedLength] = skillGained;
+        xpGained[skillsGainedLength++] = xp;
       }
 
       assembly ("memory-safe") {
@@ -401,9 +428,26 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     ++playerInfo[_playerId].numFixedQuestsCompleted;
   }
 
+  function _addToBurn(
+    Quest storage _quest,
+    PlayerQuest memory _playerQuest,
+    uint _burnedAmountOwned,
+    uint _amount
+  ) private view returns (uint amountBurned) {
+    // Handle quest that burns and requires actions to be done at the same time
+    uint burnRemainingAmount = _quest.burnAmount - _playerQuest.burnCompletedAmount;
+    amountBurned = Math.min(burnRemainingAmount, _burnedAmountOwned);
+    amountBurned = Math.min(_amount, amountBurned);
+    if (amountBurned != 0) {
+      _playerQuest.burnCompletedAmount += uint16(amountBurned);
+    }
+  }
+
   function _processQuestView(
+    uint[] calldata _actionIds,
+    uint[] calldata _actionAmounts,
     uint[] calldata _choiceIds,
-    uint[] calldata _choiceIdAmounts,
+    uint[] calldata _choiceAmounts,
     PlayerQuest memory _playerQuest,
     uint _burnedAmountOwned
   )
@@ -420,38 +464,44 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     )
   {
     Quest storage quest = allFixedQuests[_playerQuest.questId];
-    U256 bounds = _choiceIds.length.asU256();
+    U256 bounds = _actionIds.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      if (quest.actionId == _actionIds[i]) {
+        uint remainingAmount = quest.actionNum - _playerQuest.actionCompletedNum;
+        uint amount = Math.min(remainingAmount, _actionAmounts[i]);
+        _playerQuest.actionCompletedNum += uint16(amount);
+        if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
+          amountBurned += _addToBurn(quest, _playerQuest, _burnedAmountOwned, amount);
+        }
+      }
+    }
+
+    bounds = _choiceIds.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
       if (quest.actionChoiceId == _choiceIds[i]) {
         uint remainingAmount = quest.actionChoiceNum - _playerQuest.actionChoiceCompletedNum;
-        uint amount = Math.min(remainingAmount, _choiceIdAmounts[i]);
+        uint amount = Math.min(remainingAmount, _choiceAmounts[i]);
         _playerQuest.actionChoiceCompletedNum += uint16(amount);
 
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
-          // Handle quest that burns and requires actions to be done at the same time
-          uint burnRemainingAmount = quest.burnAmount - _playerQuest.burnCompletedAmount;
-          amountBurned = Math.min(burnRemainingAmount, amount);
-          amountBurned = Math.min(amount, _burnedAmountOwned);
-          if (amountBurned != 0) {
-            itemTokenIdBurned = quest.burnItemTokenId;
-            _playerQuest.burnCompletedAmount += uint16(amountBurned);
-          }
+          amountBurned += _addToBurn(quest, _playerQuest, _burnedAmountOwned, amount);
         }
       }
     }
 
     // Handle quest that burns but doesn't require actions completed before burning
     if (quest.burnItemTokenId != NONE && !quest.requireActionsCompletedBeforeBurning) {
-      uint burnRemainingAmount = quest.burnAmount - _playerQuest.burnCompletedAmount;
-      amountBurned = Math.min(burnRemainingAmount, _burnedAmountOwned);
-      if (amountBurned != 0) {
-        itemTokenIdBurned = quest.burnItemTokenId;
-        _playerQuest.burnCompletedAmount += uint16(amountBurned);
-      }
+      amountBurned += _addToBurn(quest, _playerQuest, _burnedAmountOwned, _burnedAmountOwned);
+    }
+
+    if (amountBurned != 0) {
+      itemTokenIdBurned = quest.burnItemTokenId;
     }
 
     questCompleted =
+      _playerQuest.actionCompletedNum >= quest.actionNum &&
       _playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum &&
       _playerQuest.burnCompletedAmount >= quest.burnAmount;
 

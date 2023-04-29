@@ -49,10 +49,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     pendingQueuedActionState.remainingSkills = new QueuedAction[](actionQueue.length);
     uint remainingSkillsLength;
 
+    uint[] memory actionIds = new uint[](actionQueue.length);
+    uint[] memory actionAmounts = new uint[](actionQueue.length);
     uint[] memory choiceIds = new uint[](actionQueue.length);
-    uint[] memory choiceIdAmounts = new uint[](actionQueue.length);
+    uint[] memory choiceAmounts = new uint[](actionQueue.length);
+    uint actionIdsLength;
     uint choiceIdsLength;
-    uint choiceIdAmountsLength;
 
     address from = _owner;
     if (playerNFT.balanceOf(_owner, _playerId) == 0) {
@@ -165,14 +167,32 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           pendingQueuedActionState.equipmentStates,
           pendingQueuedActionState.xpGained
         );
-        choiceIds[choiceIdsLength] = queuedAction.choiceId;
-        choiceIdsLength = choiceIdsLength.inc();
+
+        uint numChoicesCompleted;
         if (actionSkill == Skill.COOKING) {
-          choiceIdAmounts[choiceIdAmountsLength] = numProduced; // Assume we want amount cooked
+          numChoicesCompleted = numProduced; // Assume we want amount cooked
         } else {
-          choiceIdAmounts[choiceIdAmountsLength] = numConsumed;
+          numChoicesCompleted = numConsumed;
         }
-        choiceIdAmountsLength = choiceIdAmountsLength.inc();
+        if (numChoicesCompleted != 0) {
+          choiceIds[choiceIdsLength] = queuedAction.choiceId;
+          choiceAmounts[choiceIdsLength] = numChoicesCompleted;
+          choiceIdsLength = choiceIdsLength.inc();
+        }
+
+        uint numActionsCompleted;
+        if (actionSkill == Skill.COMBAT) {
+          // Want monsters killed
+          numActionsCompleted = uint16((numSpawnedPerHour * xpElapsedTime) / 3600);
+        } else {
+          // Not currently used
+        }
+
+        if (numActionsCompleted != 0) {
+          actionIds[actionIdsLength] = queuedAction.actionId;
+          actionAmounts[actionIdsLength] = numActionsCompleted;
+          actionIdsLength = actionIdsLength.inc();
+        }
 
         if (outputEquipment.itemTokenId != NONE) {
           pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = outputEquipment.itemTokenId;
@@ -244,6 +264,20 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             }
           }
           xpElapsedTime = xpElapsedTime > refundTime ? xpElapsedTime.sub(refundTime) : 0;
+        }
+
+        uint numActionsCompleted;
+        if (actionSkill == Skill.THIEVING) {
+          // Hours thieving
+          numActionsCompleted = xpElapsedTime / 3600;
+        } else {
+          // Output produced
+          numActionsCompleted = (xpElapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * 10);
+        }
+        if (numActionsCompleted != 0) {
+          actionIds[actionIdsLength] = queuedAction.actionId;
+          actionAmounts[actionIdsLength] = numActionsCompleted;
+          actionIdsLength = actionIdsLength.inc();
         }
       }
 
@@ -423,7 +457,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     (
       uint[] memory ids,
       uint[] memory amounts,
-      uint[] memory actionIds,
+      uint[] memory pastActionIds,
       uint[] memory queueIds,
       uint numRemoved
     ) = _claimableRandomRewards(_playerId, emptyPendingQueuedActionXPGained);
@@ -432,7 +466,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     for (U256 iter; iter < idsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       pendingQueuedActionState.producedPastRandomRewards[i] = PastRandomRewardInfo(
-        uint16(actionIds[i]),
+        uint16(pastActionIds[i]),
         uint64(queueIds[i]),
         uint16(ids[i]),
         uint24(amounts[i]),
@@ -441,8 +475,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
 
     assembly ("memory-safe") {
+      mstore(actionIds, actionIdsLength)
+      mstore(actionAmounts, actionIdsLength)
+    }
+
+    assembly ("memory-safe") {
       mstore(choiceIds, choiceIdsLength)
-      mstore(choiceIdAmounts, choiceIdAmountsLength)
+      mstore(choiceAmounts, choiceIdsLength)
     }
 
     // Quest Rewards
@@ -468,10 +507,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       questState.xpGainedSkills,
       questState.questsCompleted,
       questState.activeQuestInfo
-    ) = quests.processQuestsView(_playerId, choiceIds, choiceIdAmounts, burnedAmountOwned);
+    ) = quests.processQuestsView(_playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
 
+    questState.actionIds = actionIds;
+    questState.actionAmounts = actionAmounts;
     questState.choiceIds = choiceIds;
-    questState.choiceIdAmounts = choiceIdAmounts;
+    questState.choiceAmounts = choiceAmounts;
 
     // Daily rewards
     (

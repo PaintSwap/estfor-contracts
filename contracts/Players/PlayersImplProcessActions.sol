@@ -178,8 +178,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
       quests.processQuests(
         _playerId,
+        questState.actionIds,
+        questState.actionAmounts,
         questState.choiceIds,
-        questState.choiceIdAmounts,
+        questState.choiceAmounts,
         burnedAmount,
         questState.questsCompleted
       );

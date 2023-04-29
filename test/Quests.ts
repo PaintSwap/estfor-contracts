@@ -3,7 +3,10 @@ import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions"
 import {
   COOKED_MINNUS,
   QUEST_ALMS_POOR,
+  QUEST_HIDDEN_BOUNTY,
   QUEST_PURSE_STRINGS,
+  QUEST_SUPPLY_RUN,
+  QUEST_TWO_BIRDS,
   SKILL_BOOST,
 } from "@paintswap/estfor-definitions/constants";
 import {Skill} from "@paintswap/estfor-definitions/types";
@@ -11,8 +14,8 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
-import {setupBasicCooking, setupBasicFiremaking} from "./Players/utils";
-import {START_XP} from "./utils";
+import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat} from "./Players/utils";
+import {getActionId, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -182,9 +185,9 @@ describe("Quests", function () {
 
     it("Trying to buy with no FTM", async function () {
       const {alice, playerId, quests, players} = await loadFixture(questsFixture);
-      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as Quest;
       await quests.addQuests([quest], [false], [defaultMinRequirements]);
-      const questId = quest?.questId;
+      const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
       await expect(
         quests.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 0})
@@ -193,9 +196,9 @@ describe("Quests", function () {
 
     it("Quest completed", async function () {
       const {alice, playerId, quests, players, brush} = await loadFixture(questsFixture);
-      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as Quest;
       await quests.addQuests([quest], [false], [defaultMinRequirements]);
-      const questId = quest?.questId;
+      const questId = quest.questId;
       expect(questId).to.not.eq(0);
       await players.connect(alice).activateQuest(playerId, questId);
       expect((await quests.activeQuests(playerId)).questId).to.be.eq(questId);
@@ -227,7 +230,7 @@ describe("Quests", function () {
       burnItemTokenId: COOKED_MINNUS,
     };
     await quests.addQuests([quest], [false], [defaultMinRequirements]);
-    const questId = quest?.questId;
+    const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await players.connect(alice).processActions(playerId);
@@ -258,7 +261,7 @@ describe("Quests", function () {
       burnItemTokenId: COOKED_MINNUS,
     };
     await quests.addQuests([quest], [false], [defaultMinRequirements]);
-    const questId = quest?.questId;
+    const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     // Process immediately
     const initialMintNum = 10;
@@ -304,6 +307,176 @@ describe("Quests", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
       1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
     );
+  });
+
+  it("Thieving quest", async function () {
+    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(questsFixture);
+
+    const xpPerHour = 2;
+    let tx = await world.addAction({
+      actionId: 2,
+      info: {
+        skill: EstforTypes.Skill.THIEVING,
+        xpPerHour,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: true,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+
+    const actionId = await getActionId(tx);
+    const numHours = 24;
+    const timespan = 3600 * numHours;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    // Activate a quest
+    const quest1 = allQuests.find((q) => q.questId === QUEST_HIDDEN_BOUNTY) as Quest;
+    const quest = {
+      ...quest1,
+      actionId,
+    };
+    await quests.addQuests([quest], [false], [defaultMinRequirements]);
+    const questId = quest.questId;
+    await players.connect(alice).activateQuest(playerId, questId);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [(quest1.actionNum / 2) * 3600]);
+    await ethers.provider.send("evm_mine", []);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
+    expect(pendingQueuedActionState.quests.actionIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.actionAmounts.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.actionAmounts[0]).to.eq(quest1.actionNum / 2);
+    expect(pendingQueuedActionState.quests.actionIds[0]).to.eq(actionId);
+    await players.connect(alice).processActions(playerId);
+    await ethers.provider.send("evm_increaseTime", [(quest1.actionNum / 2) * 3600]);
+    await ethers.provider.send("evm_mine", []);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(2);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(
+      pendingQueuedActionState.quests.rewardAmounts.length
+    );
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds[0]).to.eq(EstforConstants.RUBY);
+    expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(1);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds[1]).to.eq(EstforConstants.EMERALD);
+    expect(pendingQueuedActionState.quests.rewardAmounts[1]).to.eq(1);
+    expect(pendingQueuedActionState.quests.skills.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.xpGainedSkills.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.skills[0]).to.eq(Skill.THIEVING);
+    expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(1500);
+    await players.connect(alice).processActions(playerId);
+    expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUBY)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.EMERALD)).to.eq(1);
+  });
+
+  it("Monsters killed", async function () {
+    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(playersFixture);
+    const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, world);
+
+    // Activate a quest
+    const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+    const quest = {
+      ...quest1,
+      actionId: queuedAction.actionId,
+      actionNum: 5,
+      burnItemTokenId: EstforConstants.BRONZE_ARROW,
+      burnAmount: 5,
+    };
+    await quests.addQuests([quest], [false], [defaultMinRequirements]);
+    const questId = quest.questId;
+    await players.connect(alice).activateQuest(playerId, questId);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+    // Kill 1
+    const time = 3600 / numSpawned;
+    await ethers.provider.send("evm_increaseTime", [time]);
+    await ethers.provider.send("evm_mine", []);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1); // Burn 1 of them
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(EstforConstants.BRONZE_ARROW);
+    expect(pendingQueuedActionState.quests.consumedAmounts[0]).to.eq(1);
+    expect(pendingQueuedActionState.quests.actionIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.actionAmounts.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.actionIds[0]).to.eq(queuedAction.actionId);
+    expect(pendingQueuedActionState.quests.actionAmounts[0]).to.eq(1);
+
+    await players.connect(alice).processActions(playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0); // All are burned
+
+    // Kill the rest
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].producedAmounts.length).to.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(9);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(EstforConstants.BRONZE_ARROW);
+    expect(pendingQueuedActionState.quests.consumedAmounts[0]).to.eq(4);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds[0]).to.eq(EstforConstants.NATUOW_LEATHER);
+    expect(pendingQueuedActionState.quests.rewardAmounts.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(100);
+    expect(pendingQueuedActionState.quests.skills.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.xpGainedSkills.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.skills[0]).to.eq(Skill.DEFENCE);
+    expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(2500);
+    await players.connect(alice).processActions(playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq((rate * numSpawned) / 10 - 5);
+  });
+
+  it("Dependent quest", async function () {
+    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(playersFixture);
+    const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, world);
+
+    // Activate a quest
+    const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+    const quest = {
+      ...quest1,
+      actionId: queuedAction.actionId,
+      actionNum: 5,
+      burnItemTokenId: EstforConstants.BRONZE_ARROW,
+      burnAmount: 5,
+    };
+
+    const anotherQuest = {...quest, questId: QUEST_TWO_BIRDS, dependentQuestId: QUEST_SUPPLY_RUN};
+    await quests.addQuests([quest, anotherQuest], [false, false], [defaultMinRequirements, defaultMinRequirements]);
+
+    const anotherQuestId = anotherQuest.questId;
+    await expect(players.connect(alice).activateQuest(playerId, anotherQuestId))
+      .to.be.revertedWithCustomError(quests, "DependentQuestNotCompleted")
+      .withArgs(QUEST_SUPPLY_RUN);
+
+    // Complete it
+    const questId = quest.questId;
+    await players.connect(alice).activateQuest(playerId, questId);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    await players.connect(alice).processActions(playerId);
+
+    await expect(players.connect(alice).activateQuest(playerId, anotherQuestId)).to.not.be.reverted;
   });
 
   it("ActionChoice quest", async function () {
@@ -366,7 +539,7 @@ describe("Quests", function () {
       skillXPGained: 1,
     };
     await quests.addQuests([quest], [false], [defaultMinRequirements]);
-    const questId = quest?.questId;
+    const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await players.connect(alice).processActions(playerId);
