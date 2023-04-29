@@ -58,4 +58,7 @@ struct ActionInfo {
   uint8 successPercent; // 0-100
 }
 
-uint constant SPAWN_MUL = 1000; // Allows for 2, 4 or 8 hour respawn time
+// Allows for 2, 4 or 8 hour respawn time
+uint constant SPAWN_MUL = 1000;
+uint constant RATE_MUL = 1000;
+uint constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour respawn time)

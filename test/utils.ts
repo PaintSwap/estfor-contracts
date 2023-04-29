@@ -69,3 +69,5 @@ export const MAX_SUCCESS_PERCENT_CHANCE = 90;
 export const MAX_UNIQUE_TICKETS = 240;
 
 export const SPAWN_MUL = 1000;
+export const RATE_MUL = 1000;
+export const GUAR_MUL = 10;

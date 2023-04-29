@@ -127,7 +127,7 @@ struct ActionChoice {
   Skill skill;
   uint32 minXP;
   uint16 diff; //
-  uint16 rate; // Rate of output produced per hour (base 10) 1 decimal
+  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
   uint16 inputTokenId1;
   uint8 inputAmount1;

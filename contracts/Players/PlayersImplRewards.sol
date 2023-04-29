@@ -217,18 +217,18 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           uint previouslyRefundedTime;
           uint refundTime;
           if (hasGuaranteedRewards) {
-            uint numProduced = (queuedAction.processedTime * actionRewards.guaranteedRewardRate1) / (3600 * 10);
+            uint numProduced = (queuedAction.processedTime * actionRewards.guaranteedRewardRate1) / (3600 * GUAR_MUL);
             previouslyRefundedTime =
               queuedAction.processedTime -
-              (numProduced * (3600 * 10)) /
+              (numProduced * (3600 * GUAR_MUL)) /
               actionRewards.guaranteedRewardRate1;
 
             // Get remainder for current too
             uint numProduced1 = ((elapsedTime + queuedAction.processedTime) * actionRewards.guaranteedRewardRate1) /
-              (3600 * 10);
+              (3600 * GUAR_MUL);
             refundTime =
               (elapsedTime + queuedAction.processedTime) -
-              (numProduced1 * (3600 * 10)) /
+              (numProduced1 * (3600 * GUAR_MUL)) /
               actionRewards.guaranteedRewardRate1;
           }
 
@@ -252,8 +252,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;
           uint refundTime;
           if (hasGuaranteedRewards) {
-            uint numProduced = (elapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * 10);
-            refundTime = elapsedTime - (numProduced * (3600 * 10)) / actionRewards.guaranteedRewardRate1;
+            uint numProduced = (elapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * GUAR_MUL);
+            refundTime = elapsedTime - (numProduced * (3600 * GUAR_MUL)) / actionRewards.guaranteedRewardRate1;
           }
 
           if (actionHasRandomRewards) {
@@ -271,7 +271,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           numActionsCompleted = xpElapsedTime / 3600;
         } else {
           // Output produced
-          numActionsCompleted = (xpElapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * 10);
+          numActionsCompleted = (xpElapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * GUAR_MUL);
         }
         if (numActionsCompleted != 0) {
           actionIds[actionIdsLength] = queuedAction.actionId;
@@ -782,9 +782,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     if (_rewardTokenId != NONE) {
       uint numRewards;
       if (_isCombat) {
-        numRewards = (_monstersKilled * _rewardRate) / 10; // rate is per kill
+        numRewards = (_monstersKilled * _rewardRate) / GUAR_MUL; // rate is per kill
       } else {
-        numRewards = (_elapsedTime.mul(_rewardRate).mul(_successPercent)).div(3600 * 10 * 100);
+        numRewards = (_elapsedTime.mul(_rewardRate).mul(_successPercent)).div(3600 * GUAR_MUL * 100);
       }
 
       if (numRewards != 0) {

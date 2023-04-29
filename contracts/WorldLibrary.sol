@@ -24,6 +24,7 @@ library WorldLibrary {
   error RandomRewardNoDuplicates();
   error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
+  error NotAFactorOf3600();
 
   function checkActionChoice(ActionChoice calldata _actionChoice) external pure {
     if (_actionChoice.inputTokenId1 != NONE && _actionChoice.inputAmount1 == 0) {
@@ -54,6 +55,13 @@ library WorldLibrary {
 
     if (_actionChoice.outputTokenId != 0 && _actionChoice.outputAmount == 0) {
       revert OutputSpecifiedWithoutAmount();
+    }
+
+    if (_actionChoice.rate != 0) {
+      // Check that it is a factor of 3600
+      if ((3600 * RATE_MUL) % _actionChoice.rate != 0) {
+        revert NotAFactorOf3600();
+      }
     }
   }
 

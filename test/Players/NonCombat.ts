@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionChoiceId, getActionId, getRequestId} from "../utils";
+import {getActionChoiceId, getActionId, getRequestId, GUAR_MUL, RATE_MUL} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
   getXPFromLevel,
@@ -34,7 +34,7 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).is.eq(0);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).is.eq(EstforConstants.LOG);
-      const balanceExpected = Math.floor((queuedAction.timespan * rate) / (3600 * 10));
+      const balanceExpected = Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL));
       expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).is.eq(balanceExpected);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
@@ -46,7 +46,7 @@ describe("Non-Combat Actions", function () {
     it("Full nature equipment", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-      const rate = 100 * 10; // per hour
+      const rate = 100 * GUAR_MUL; // per hour
       const tx = await world.addAction({
         actionId: 1,
         info: {
@@ -155,7 +155,7 @@ describe("Non-Combat Actions", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      const balanceExpected = Math.floor((timespan * rate) / (3600 * 10));
+      const balanceExpected = Math.floor((timespan * rate) / (3600 * GUAR_MUL));
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
         queuedAction.timespan + queuedAction.timespan * 0.03
@@ -167,7 +167,7 @@ describe("Non-Combat Actions", function () {
 
   it("Firemaking", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * 10; // per hour
+    const rate = 100 * RATE_MUL; // per hour
     let tx = await world.addAction({
       actionId: 1,
       info: {
@@ -239,7 +239,7 @@ describe("Non-Combat Actions", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(
-      queuedAction.timespan / (rate / (mintAmount * 10))
+      queuedAction.timespan / (rate / (mintAmount * RATE_MUL))
     );
 
     // Check how many logs they have now, 100 logs burnt per hour
@@ -249,7 +249,7 @@ describe("Non-Combat Actions", function () {
   it("Multi skill appending, woodcutting + firemaking", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
-    const rate = 1200 * 10; // per hour
+    const rate = 1200 * GUAR_MUL; // per hour
     {
       const tx = await world.addAction({
         actionId: 1,
@@ -289,67 +289,67 @@ describe("Non-Combat Actions", function () {
 
       queuedActions.push(queuedAction);
     }
-    {
-      let tx = await world.addAction({
-        actionId: 2,
-        info: {
-          skill: EstforTypes.Skill.FIREMAKING,
-          xpPerHour: 0,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
-          handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
-      const actionId = await getActionId(tx);
 
-      // Logs go in, nothing comes out
-      tx = await world.addActionChoice(actionId, 1, {
+    let tx = await world.addAction({
+      actionId: 2,
+      info: {
         skill: EstforTypes.Skill.FIREMAKING,
-        diff: 0,
-        xpPerHour: 3600,
+        xpPerHour: 0,
         minXP: 0,
-        rate,
-        inputTokenId1: EstforConstants.LOG,
-        inputAmount1: 1,
-        inputTokenId2: EstforConstants.NONE,
-        inputAmount2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
+        isDynamic: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
+        handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: true,
         successPercent: 100,
-      });
-      const choiceId = await getActionChoiceId(tx);
+      },
+      guaranteedRewards: [],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+    const actionId = await getActionId(tx);
 
-      await itemNFT.testMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
-      const timespan = 3600;
+    // Logs go in, nothing comes out
+    const firemakingRate = 1200 * RATE_MUL; // per hour
+    tx = await world.addActionChoice(actionId, 1, {
+      skill: EstforTypes.Skill.FIREMAKING,
+      diff: 0,
+      xpPerHour: 3600,
+      minXP: 0,
+      rate: firemakingRate,
+      inputTokenId1: EstforConstants.LOG,
+      inputAmount1: 1,
+      inputTokenId2: EstforConstants.NONE,
+      inputAmount2: 0,
+      inputTokenId3: EstforConstants.NONE,
+      inputAmount3: 0,
+      outputTokenId: EstforConstants.NONE,
+      outputAmount: 0,
+      successPercent: 100,
+    });
+    const choiceId = await getActionChoiceId(tx);
 
-      const queuedAction: EstforTypes.QueuedActionInput = {
-        attire: EstforTypes.noAttire,
-        actionId,
-        combatStyle: EstforTypes.CombatStyle.NONE,
-        choiceId,
-        regenerateId: EstforConstants.NONE,
-        timespan,
-        rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
-      };
+    await itemNFT.testMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.MAGIC_FIRE_STARTER,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+    });
+    const timespan = 3600;
 
-      queuedActions.push(queuedAction);
-    }
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    queuedActions.push(queuedAction);
 
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
@@ -392,9 +392,9 @@ describe("Non-Combat Actions", function () {
     expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 1200 logs burnt per hour, 2 hours producing logs, 1 hour burning
     expect((await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).toNumber()).to.be.oneOf([
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10 - 1,
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10,
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) - rate / 10 + 1,
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) - firemakingRate / RATE_MUL - 1,
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) - firemakingRate / RATE_MUL,
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) - firemakingRate / RATE_MUL + 1,
     ]);
     // Action queue should be empty
     expect((await players.getActionQueue(playerId)).length).to.eq(0);
@@ -403,7 +403,7 @@ describe("Non-Combat Actions", function () {
   it("Multi skill, woodcutting + firemaking", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
-    const rate = 100 * 10; // per hour
+    const rate = 100 * GUAR_MUL; // per hour
     {
       const tx = await world.addAction({
         actionId: 1,
@@ -527,8 +527,8 @@ describe("Non-Combat Actions", function () {
     expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActions[1].timespan);
     // Check how many logs they have now, 100 logs burnt per hour, 2 hours producing logs, 1 hour burning
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * 10)) -
-        Math.floor((queuedActions[1].timespan * rate) / (3600 * 10)) +
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) -
+        Math.floor((queuedActions[1].timespan * rate) / (3600 * RATE_MUL)) +
         1
     );
     expect((await players.getActionQueue(playerId)).length).to.eq(0);
@@ -590,7 +590,7 @@ describe("Non-Combat Actions", function () {
 
   it("Smithing", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * 10; // per hour
+    const rate = 100 * RATE_MUL; // per hour
 
     let tx = await world.addAction({
       actionId: 1,
@@ -666,13 +666,13 @@ describe("Non-Combat Actions", function () {
 
     // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
-      Math.floor((timespan * rate) / (3600 * 10))
+      Math.floor((timespan * rate) / (3600 * RATE_MUL))
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COAL_ORE)).to.eq(
-      255 - Math.floor((timespan * rate) / (3600 * 10)) * 2
+      255 - Math.floor((timespan * rate) / (3600 * RATE_MUL)) * 2
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ORE)).to.eq(
-      255 - Math.floor((timespan * rate) / (3600 * 10))
+      255 - Math.floor((timespan * rate) / (3600 * RATE_MUL))
     );
   });
 
@@ -691,10 +691,10 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
     });
 
@@ -713,7 +713,7 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      const foodNotBurned = Math.floor((queuedAction.timespan * rate) / (3600 * 10 * 2));
+      const foodNotBurned = Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL * 2));
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.COOKED_MINNUS);
       expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(foodNotBurned);
@@ -722,7 +722,7 @@ describe("Non-Combat Actions", function () {
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(foodNotBurned);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
     });
 
@@ -742,10 +742,10 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        Math.floor((queuedAction.timespan * rate * 0.9) / (3600 * 10)) // Max 90% success
+        Math.floor((queuedAction.timespan * rate * 0.9) / (3600 * RATE_MUL)) // Max 90% success
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
     });
   });
@@ -1127,13 +1127,13 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(queuedAction.timespan);
       // Check the inputs/output are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(
-        startingAmount - Math.floor((queuedAction.timespan * rate * 20) / (3600 * 10))
+        startingAmount - Math.floor((queuedAction.timespan * rate * 20) / (3600 * RATE_MUL))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(
-        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(
-        Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
     });
 
@@ -1186,13 +1186,13 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(queuedAction.timespan); // Get all the XP
       // Check the inputs/output are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(
-        startingAmount - Math.floor((queuedAction.timespan * rate * 20) / (3600 * 10))
+        startingAmount - Math.floor((queuedAction.timespan * rate * 20) / (3600 * RATE_MUL))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(
-        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(
-        Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -1202,7 +1202,7 @@ describe("Non-Combat Actions", function () {
 
     it("More than 1 rate", async function () {
       const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const rate = 60 * 10;
+      const rate = 60 * RATE_MUL;
       const {queuedAction} = await setupBasicCrafting(itemNFT, world, rate);
 
       await itemNFT.testMints(alice.address, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20 * 60, 1 * 60]);
@@ -1213,8 +1213,8 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
 
-      const numMade = rate / 10 - 1;
-      let xpGained = 3600 - rate / 10;
+      const numMade = rate / RATE_MUL - 1;
+      let xpGained = 3600 - rate / RATE_MUL;
       checkPendingQueuedActionState(
         pendingQueuedActionState,
         [
@@ -1230,7 +1230,7 @@ describe("Non-Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(20);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(1);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / 10 - 1);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / RATE_MUL - 1);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
@@ -1246,14 +1246,14 @@ describe("Non-Combat Actions", function () {
       // Check the inputs/output are same as before
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(20);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(1);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / 10 - 1);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / RATE_MUL - 1);
 
       // Now complete it
       await ethers.provider.send("evm_increaseTime", [12]); // Should make 1
       await ethers.provider.send("evm_mine", []);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
 
-      xpGained = rate / 10;
+      xpGained = rate / RATE_MUL;
       checkPendingQueuedActionState(
         pendingQueuedActionState,
         [
@@ -1270,7 +1270,7 @@ describe("Non-Combat Actions", function () {
       // Check the inputs/output are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(0);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / 10);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(rate / RATE_MUL);
     });
 
     it("Don't complete all (run out of id1 resource)", async function () {
@@ -1475,7 +1475,7 @@ describe("Non-Combat Actions", function () {
     it("Craft, multiple output num", async function () {
       // Only get XP for the ones you did complete
       const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const rate = 1 * 10;
+      const rate = 1 * RATE_MUL;
       const outputAmount = 3;
       const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world, rate, outputAmount);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
@@ -1525,14 +1525,14 @@ describe("Non-Combat Actions", function () {
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan - 1);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor(((queuedAction.timespan - 1) * rate) / (3600 * 10))
+      Math.floor(((queuedAction.timespan - 1) * rate) / (3600 * GUAR_MUL))
     );
   });
 
   it("Check refund time for actions", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-    const rate = 2 * 10;
+    const rate = 2 * GUAR_MUL;
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, rate);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -1545,7 +1545,7 @@ describe("Non-Combat Actions", function () {
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -1559,7 +1559,7 @@ describe("Non-Combat Actions", function () {
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
     });
 
-    const rate = 0.1 * 10; // 0.1 per hour
+    const rate = 0.1 * GUAR_MUL; // 0.1 per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {

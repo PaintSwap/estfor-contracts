@@ -5,7 +5,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 122 * 10,
+    rate: 122 * 1000,
     xpPerHour: 25,
     minXP: 0,
     inputTokenId1: EstforConstants.LOG,
@@ -21,7 +21,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 110 * 10,
+    rate: 110 * 1000,
     xpPerHour: 45,
     minXP: 1021,
     inputTokenId1: EstforConstants.OAK_LOG,
@@ -37,7 +37,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 95 * 10,
+    rate: 95 * 1000,
     xpPerHour: 65,
     minXP: 7650,
     inputTokenId1: EstforConstants.WILLOW_LOG,
@@ -53,7 +53,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 87 * 10,
+    rate: 87 * 1000,
     xpPerHour: 130,
     minXP: 23681,
     inputTokenId1: EstforConstants.MAPLE_LOG,
@@ -69,7 +69,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 76 * 10,
+    rate: 76 * 1000,
     xpPerHour: 290,
     minXP: 48359,
     inputTokenId1: EstforConstants.REDWOOD_LOG,
@@ -85,7 +85,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 69 * 10,
+    rate: 69 * 1000,
     xpPerHour: 360,
     minXP: 68761,
     inputTokenId1: EstforConstants.MAGICAL_LOG,
@@ -101,7 +101,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 58 * 10,
+    rate: 58 * 1000,
     xpPerHour: 480,
     minXP: 138307,
     inputTokenId1: EstforConstants.ASH_LOG,
@@ -117,7 +117,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 42 * 10,
+    rate: 42 * 1000,
     xpPerHour: 570,
     minXP: 392228,
     inputTokenId1: EstforConstants.ENCHANTED_LOG,
@@ -133,7 +133,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
   {
     skill: Skill.FIREMAKING,
     diff: 0,
-    rate: 35 * 10,
+    rate: 35 * 1000,
     xpPerHour: 680,
     minXP: 784726,
     inputTokenId1: EstforConstants.LIVING_LOG,
@@ -151,7 +151,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 244 * 10,
+    rate: 244 * 1000,
     xpPerHour: 25,
     minXP: 0,
     inputTokenId1: EstforConstants.COPPER_ORE,
@@ -167,7 +167,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 223 * 10,
+    rate: 223 * 1000,
     xpPerHour: 35,
     minXP: 374,
     inputTokenId1: EstforConstants.IRON_ORE,
@@ -183,7 +183,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 174 * 10,
+    rate: 174 * 1000,
     xpPerHour: 300,
     minXP: 1938,
     inputTokenId1: EstforConstants.MITHRIL_ORE,
@@ -199,7 +199,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 152 * 10,
+    rate: 152 * 1000,
     xpPerHour: 400,
     minXP: 7650,
     inputTokenId1: EstforConstants.ADAMANTINE_ORE,
@@ -215,7 +215,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 138 * 10,
+    rate: 138 * 1000,
     xpPerHour: 650,
     minXP: 33913,
     inputTokenId1: EstforConstants.RUNITE_ORE,
@@ -231,7 +231,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 116 * 10,
+    rate: 116 * 1000,
     xpPerHour: 900,
     minXP: 97582,
     inputTokenId1: EstforConstants.TITANIUM_ORE,
@@ -247,7 +247,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 84 * 10,
+    rate: 84 * 1000,
     xpPerHour: 800,
     minXP: 195864,
     inputTokenId1: EstforConstants.ORICHALCUM_ORE,
@@ -263,7 +263,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 150,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -279,7 +279,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 1021,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -295,7 +295,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 240,
     minXP: 1938,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -311,7 +311,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 300,
     minXP: 11294,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -327,7 +327,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 360,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -343,7 +343,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 450,
     minXP: 138307,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -359,7 +359,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 277219,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -375,7 +375,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 250,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -391,7 +391,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 300,
     minXP: 1021,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -407,7 +407,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 400,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -423,7 +423,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 500,
     minXP: 11294,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -439,7 +439,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -455,7 +455,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 750,
     minXP: 138307,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -471,7 +471,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 1000,
     minXP: 277219,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -487,7 +487,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 150,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -503,7 +503,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 1021,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -519,7 +519,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 240,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -535,7 +535,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 300,
     minXP: 11294,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -551,7 +551,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 360,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -567,7 +567,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 450,
     minXP: 138307,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -583,7 +583,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 277219,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -599,7 +599,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 120,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -615,7 +615,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 280,
     minXP: 1021,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -631,7 +631,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 160,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -647,7 +647,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 200,
     minXP: 11294,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -663,7 +663,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 240,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -679,7 +679,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 300,
     minXP: 138307,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -695,7 +695,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 400,
     minXP: 277219,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -711,7 +711,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 200,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -727,7 +727,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 240,
     minXP: 1021,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -743,7 +743,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 320,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -759,7 +759,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 400,
     minXP: 11294,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -775,7 +775,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 480,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -791,7 +791,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 138307,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -807,7 +807,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 800,
     minXP: 277219,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -823,7 +823,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 360,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -839,7 +839,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 420,
     minXP: 1021,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -855,7 +855,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 480,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -871,7 +871,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 11294,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -887,7 +887,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 820,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -903,7 +903,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 1000,
     minXP: 138307,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -919,7 +919,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 1300,
     minXP: 277219,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -935,7 +935,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -951,7 +951,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 140,
     minXP: 1021,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -967,7 +967,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -983,7 +983,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 240,
     minXP: 11294,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -999,7 +999,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 320,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -1015,7 +1015,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 380,
     minXP: 138307,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -1031,7 +1031,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
     skill: Skill.SMITHING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 500,
     minXP: 277219,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -1049,7 +1049,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 122 * 10,
+    rate: 122 * 1000,
     xpPerHour: 25,
     minXP: 0,
     inputTokenId1: EstforConstants.RAW_MINNUS,
@@ -1065,7 +1065,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 122 * 10,
+    rate: 122 * 1000,
     xpPerHour: 45,
     minXP: 374,
     inputTokenId1: EstforConstants.RAW_BLEKK,
@@ -1081,7 +1081,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 110 * 10,
+    rate: 110 * 1000,
     xpPerHour: 65,
     minXP: 1021,
     inputTokenId1: EstforConstants.RAW_SKRIMP,
@@ -1097,7 +1097,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 50 * 10,
+    rate: 50 * 1000,
     xpPerHour: 130,
     minXP: 1938,
     inputTokenId1: EstforConstants.RAW_FEOLA,
@@ -1113,7 +1113,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 95 * 10,
+    rate: 95 * 1000,
     xpPerHour: 290,
     minXP: 3236,
     inputTokenId1: EstforConstants.RAW_ANCHO,
@@ -1129,7 +1129,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 45 * 10,
+    rate: 45 * 1000,
     xpPerHour: 360,
     minXP: 5067,
     inputTokenId1: EstforConstants.RAW_TROUT,
@@ -1145,7 +1145,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 87 * 10,
+    rate: 87 * 1000,
     xpPerHour: 480,
     minXP: 7650,
     inputTokenId1: EstforConstants.RAW_ROJJA,
@@ -1161,7 +1161,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 40 * 10,
+    rate: 40 * 1000,
     xpPerHour: 570,
     minXP: 11294,
     inputTokenId1: EstforConstants.RAW_BOWFISH,
@@ -1177,7 +1177,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 76 * 10,
+    rate: 76 * 1000,
     xpPerHour: 600,
     minXP: 16432,
     inputTokenId1: EstforConstants.RAW_GOLDFISH,
@@ -1193,7 +1193,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 35 * 10,
+    rate: 35 * 1000,
     xpPerHour: 620,
     minXP: 33913,
     inputTokenId1: EstforConstants.RAW_MYSTY_BLUE,
@@ -1209,7 +1209,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 30 * 10,
+    rate: 30 * 1000,
     xpPerHour: 670,
     minXP: 68761,
     inputTokenId1: EstforConstants.RAW_FLITFISH,
@@ -1225,7 +1225,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 69 * 10,
+    rate: 69 * 1000,
     xpPerHour: 700,
     minXP: 97582,
     inputTokenId1: EstforConstants.RAW_RAZORFISH,
@@ -1241,7 +1241,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 20 * 10,
+    rate: 20 * 1000,
     xpPerHour: 730,
     minXP: 138307,
     inputTokenId1: EstforConstants.RAW_QUAFFER,
@@ -1257,7 +1257,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 58 * 10,
+    rate: 58 * 1000,
     xpPerHour: 790,
     minXP: 170430,
     inputTokenId1: EstforConstants.RAW_ROXA,
@@ -1273,7 +1273,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 42 * 10,
+    rate: 42 * 1000,
     xpPerHour: 820,
     minXP: 241267,
     inputTokenId1: EstforConstants.RAW_AZACUDDA,
@@ -1289,7 +1289,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 38 * 10,
+    rate: 38 * 1000,
     xpPerHour: 845,
     minXP: 392228,
     inputTokenId1: EstforConstants.RAW_STONECLAW,
@@ -1305,7 +1305,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 33 * 10,
+    rate: 33 * 1000,
     xpPerHour: 900,
     minXP: 554828,
     inputTokenId1: EstforConstants.RAW_CRUSKAN,
@@ -1321,7 +1321,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 30 * 10,
+    rate: 30 * 1000,
     xpPerHour: 930,
     minXP: 637364,
     inputTokenId1: EstforConstants.RAW_CHODFISH,
@@ -1337,7 +1337,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 28 * 10,
+    rate: 28 * 1000,
     xpPerHour: 950,
     minXP: 784726,
     inputTokenId1: EstforConstants.RAW_DOUBTFISH,
@@ -1353,7 +1353,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
     skill: Skill.COOKING,
     diff: 0,
-    rate: 25 * 10,
+    rate: 25 * 1000,
     xpPerHour: 1000,
     minXP: 1035476,
     inputTokenId1: EstforConstants.RAW_ROSEFIN,
@@ -1371,7 +1371,7 @@ export const allActionChoicesMelee: ActionChoiceInput[] = [
   {
     skill: Skill.MELEE,
     diff: 0,
-    rate: 0 * 10,
+    rate: 0 * 1000,
     xpPerHour: 0,
     minXP: 0,
     inputTokenId1: EstforConstants.NONE,
@@ -1389,7 +1389,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 2,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 0,
     inputTokenId1: EstforConstants.SHADOW_SCROLL,
@@ -1405,7 +1405,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 4,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 374,
     inputTokenId1: EstforConstants.NATURE_SCROLL,
@@ -1421,7 +1421,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 7,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 1938,
     inputTokenId1: EstforConstants.SHADOW_SCROLL,
@@ -1437,7 +1437,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 12,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 6510,
     inputTokenId1: EstforConstants.AQUA_SCROLL,
@@ -1453,7 +1453,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 14,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 16432,
     inputTokenId1: EstforConstants.AQUA_SCROLL,
@@ -1469,7 +1469,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 20,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 39102,
     inputTokenId1: EstforConstants.SHADOW_SCROLL,
@@ -1485,7 +1485,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 25,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 112206,
     inputTokenId1: EstforConstants.HELL_SCROLL,
@@ -1501,7 +1501,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 28,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 277219,
     inputTokenId1: EstforConstants.AIR_SCROLL,
@@ -1517,7 +1517,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 32,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 392228,
     inputTokenId1: EstforConstants.HELL_SCROLL,
@@ -1533,7 +1533,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 40,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 784726,
     inputTokenId1: EstforConstants.BARRAGE_SCROLL,
@@ -1549,7 +1549,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
     skill: Skill.MAGIC,
     diff: 45,
-    rate: 100 * 10,
+    rate: 100 * 1000,
     xpPerHour: 0,
     minXP: 1035476,
     inputTokenId1: EstforConstants.FREEZE_SCROLL,
@@ -1567,7 +1567,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 50,
     minXP: 374,
     inputTokenId1: EstforConstants.SAPPHIRE,
@@ -1583,7 +1583,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 200,
     minXP: 5067,
     inputTokenId1: EstforConstants.EMERALD,
@@ -1599,7 +1599,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 250,
     minXP: 16432,
     inputTokenId1: EstforConstants.RUBY,
@@ -1615,7 +1615,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 375,
     minXP: 48359,
     inputTokenId1: EstforConstants.AMETHYST,
@@ -1631,7 +1631,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 450,
     minXP: 68761,
     inputTokenId1: EstforConstants.DIAMOND,
@@ -1647,7 +1647,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 277219,
     inputTokenId1: EstforConstants.DRAGONSTONE,
@@ -1663,7 +1663,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 10,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -1679,7 +1679,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 35,
     minXP: 374,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -1695,7 +1695,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -1711,7 +1711,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 220,
     minXP: 16432,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -1727,7 +1727,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 340,
     minXP: 68761,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -1743,7 +1743,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 277219,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -1759,7 +1759,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 750,
     minXP: 554828,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -1775,7 +1775,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 10,
     minXP: 0,
     inputTokenId1: EstforConstants.BRONZE_BAR,
@@ -1791,7 +1791,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 35,
     minXP: 374,
     inputTokenId1: EstforConstants.IRON_BAR,
@@ -1807,7 +1807,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
@@ -1823,7 +1823,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 220,
     minXP: 16432,
     inputTokenId1: EstforConstants.ADAMANTINE_BAR,
@@ -1839,7 +1839,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 340,
     minXP: 68761,
     inputTokenId1: EstforConstants.RUNITE_BAR,
@@ -1855,7 +1855,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 600,
     minXP: 277219,
     inputTokenId1: EstforConstants.TITANIUM_BAR,
@@ -1871,7 +1871,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 750,
     minXP: 554828,
     inputTokenId1: EstforConstants.ORICHALCUM_BAR,
@@ -1887,7 +1887,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.NATUOW_HIDE,
@@ -1903,7 +1903,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 20 * 10,
+    rate: 20 * 1000,
     xpPerHour: 150,
     minXP: 374,
     inputTokenId1: EstforConstants.SMALL_BONE,
@@ -1919,7 +1919,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 20 * 10,
+    rate: 20 * 1000,
     xpPerHour: 200,
     minXP: 374,
     inputTokenId1: EstforConstants.LARGE_BONE,
@@ -1935,7 +1935,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 20 * 10,
+    rate: 20 * 1000,
     xpPerHour: 250,
     minXP: 374,
     inputTokenId1: EstforConstants.DRAGON_BONE,
@@ -1951,7 +1951,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 20 * 10,
+    rate: 20 * 1000,
     xpPerHour: 200,
     minXP: 1021,
     inputTokenId1: EstforConstants.STRING,
@@ -1967,7 +1967,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 10 * 10,
+    rate: 10 * 1000,
     xpPerHour: 220,
     minXP: 1938,
     inputTokenId1: EstforConstants.ENCHANTED_ACORN,
@@ -1983,7 +1983,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 10 * 10,
+    rate: 10 * 1000,
     xpPerHour: 300,
     minXP: 3236,
     inputTokenId1: EstforConstants.BAT_WING,
@@ -1999,7 +1999,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 1021,
     inputTokenId1: EstforConstants.NATUOW_LEATHER,
@@ -2015,7 +2015,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 1021,
     inputTokenId1: EstforConstants.NATUOW_LEATHER,
@@ -2031,7 +2031,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 1021,
     inputTokenId1: EstforConstants.NATUOW_LEATHER,
@@ -2047,7 +2047,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 1021,
     inputTokenId1: EstforConstants.NATUOW_LEATHER,
@@ -2063,7 +2063,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 1021,
     inputTokenId1: EstforConstants.NATUOW_LEATHER,
@@ -2079,7 +2079,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 1938,
     inputTokenId1: EstforConstants.ACORN_PATCH,
@@ -2095,7 +2095,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 1938,
     inputTokenId1: EstforConstants.ACORN_PATCH,
@@ -2111,7 +2111,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 1938,
     inputTokenId1: EstforConstants.ACORN_PATCH,
@@ -2127,7 +2127,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 1938,
     inputTokenId1: EstforConstants.ACORN_PATCH,
@@ -2143,7 +2143,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 180,
     minXP: 1938,
     inputTokenId1: EstforConstants.ACORN_PATCH,
@@ -2159,7 +2159,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 260,
     minXP: 3236,
     inputTokenId1: EstforConstants.BAT_WING_PATCH,
@@ -2175,7 +2175,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 260,
     minXP: 3236,
     inputTokenId1: EstforConstants.BAT_WING_PATCH,
@@ -2191,7 +2191,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 260,
     minXP: 3236,
     inputTokenId1: EstforConstants.BAT_WING_PATCH,
@@ -2207,7 +2207,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 260,
     minXP: 3236,
     inputTokenId1: EstforConstants.BAT_WING_PATCH,
@@ -2223,7 +2223,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 260,
     minXP: 3236,
     inputTokenId1: EstforConstants.BAT_WING_PATCH,
@@ -2239,7 +2239,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 20,
     minXP: 0,
     inputTokenId1: EstforConstants.QUARTZ_INFUSED_FEATHER,
@@ -2255,7 +2255,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 45,
     minXP: 1021,
     inputTokenId1: EstforConstants.SAPPHIRE,
@@ -2271,7 +2271,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 120,
     minXP: 3236,
     inputTokenId1: EstforConstants.EMERALD,
@@ -2287,7 +2287,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 190,
     minXP: 11294,
     inputTokenId1: EstforConstants.RUBY,
@@ -2303,7 +2303,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 220,
     minXP: 48359,
     inputTokenId1: EstforConstants.AMETHYST,
@@ -2319,7 +2319,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 450,
     minXP: 138307,
     inputTokenId1: EstforConstants.DIAMOND,
@@ -2335,7 +2335,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.LEAF_FRAGMENTS,
@@ -2351,7 +2351,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.LEAF_FRAGMENTS,
@@ -2367,7 +2367,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.LEAF_FRAGMENTS,
@@ -2383,7 +2383,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.LEAF_FRAGMENTS,
@@ -2399,7 +2399,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.LEAF_FRAGMENTS,
@@ -2415,7 +2415,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 150,
     minXP: 1021,
     inputTokenId1: EstforConstants.BLUECANAR,
@@ -2431,7 +2431,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 150,
     minXP: 1021,
     inputTokenId1: EstforConstants.BLUECANAR,
@@ -2447,7 +2447,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 150,
     minXP: 1021,
     inputTokenId1: EstforConstants.BLUECANAR,
@@ -2463,7 +2463,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 150,
     minXP: 1021,
     inputTokenId1: EstforConstants.BLUECANAR,
@@ -2479,7 +2479,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 150,
     minXP: 1021,
     inputTokenId1: EstforConstants.BLUECANAR,
@@ -2495,7 +2495,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 350,
     minXP: 11294,
     inputTokenId1: EstforConstants.ANURGAT,
@@ -2511,7 +2511,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 350,
     minXP: 11294,
     inputTokenId1: EstforConstants.ANURGAT,
@@ -2527,7 +2527,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 350,
     minXP: 11294,
     inputTokenId1: EstforConstants.ANURGAT,
@@ -2543,7 +2543,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 350,
     minXP: 11294,
     inputTokenId1: EstforConstants.ANURGAT,
@@ -2559,7 +2559,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 350,
     minXP: 11294,
     inputTokenId1: EstforConstants.ANURGAT,
@@ -2575,7 +2575,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 470,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUFARUM,
@@ -2591,7 +2591,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 470,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUFARUM,
@@ -2607,7 +2607,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 470,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUFARUM,
@@ -2623,7 +2623,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 470,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUFARUM,
@@ -2639,7 +2639,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 470,
     minXP: 48359,
     inputTokenId1: EstforConstants.RUFARUM,
@@ -2655,7 +2655,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 800,
     minXP: 138307,
     inputTokenId1: EstforConstants.WHITE_DEATH_SPORE,
@@ -2671,7 +2671,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 800,
     minXP: 138307,
     inputTokenId1: EstforConstants.WHITE_DEATH_SPORE,
@@ -2687,7 +2687,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 800,
     minXP: 138307,
     inputTokenId1: EstforConstants.WHITE_DEATH_SPORE,
@@ -2703,7 +2703,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 800,
     minXP: 138307,
     inputTokenId1: EstforConstants.WHITE_DEATH_SPORE,
@@ -2719,7 +2719,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     diff: 0,
-    rate: 1 * 10,
+    rate: 1 * 1000,
     xpPerHour: 800,
     minXP: 138307,
     inputTokenId1: EstforConstants.WHITE_DEATH_SPORE,

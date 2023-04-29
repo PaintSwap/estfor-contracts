@@ -5,7 +5,7 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {emptyActionChoice, getActionChoiceId, getActionId, SPAWN_MUL, START_XP} from "../utils";
+import {emptyActionChoice, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicFiremaking, setupBasicWoodcutting} from "./utils";
 
@@ -75,7 +75,7 @@ describe("Players", function () {
     ]);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor(((queuedAction.timespan / 2) * rate) / (3600 * 10))
+      Math.floor(((queuedAction.timespan / 2) * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -352,7 +352,7 @@ describe("Players", function () {
   describe("Minimum skill points", function () {
     it("Action", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 10; // per hour
+      const rate = 100 * GUAR_MUL; // per hour
       const tx = await world.addAction({
         actionId: 1,
         info: {
@@ -455,7 +455,7 @@ describe("Players", function () {
         await ethers.provider.send("evm_mine", []);
 
         const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-        const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * 10));
+        const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * RATE_MUL));
         expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(expectedOutputNum);
 
         await players.connect(alice).processActions(playerId);
@@ -466,7 +466,7 @@ describe("Players", function () {
 
     it("Consumables (food)", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 10; // per hour
+      const rate = 100 * RATE_MUL; // per hour
       let tx = await world.addAction({
         actionId: 1,
         info: {
@@ -642,7 +642,7 @@ describe("Players", function () {
 
     it("Left/Right equipment", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 10; // per hour
+      const rate = 100 * GUAR_MUL; // per hour
       const tx = await world.addAction({
         actionId: 1,
         info: {
@@ -698,7 +698,7 @@ describe("Players", function () {
 
     it("Maxing out XP", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const rate = 100 * 10; // per hour
+      const rate = 100 * GUAR_MUL; // per hour
       const tx = await world.addAction({
         actionId: 1,
         info: {

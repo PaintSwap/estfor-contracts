@@ -3,6 +3,7 @@ import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions"
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
+import {GUAR_MUL, RATE_MUL} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking} from "./utils";
 
@@ -42,7 +43,7 @@ describe("Boosts", function () {
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -78,7 +79,7 @@ describe("Boosts", function () {
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -263,7 +264,7 @@ describe("Boosts", function () {
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10))
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -311,7 +312,10 @@ describe("Boosts", function () {
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * 10) + (boostDuration * boostValue * rate) / (100 * 10 * 3600))
+      Math.floor(
+        (queuedAction.timespan * rate) / (3600 * GUAR_MUL) +
+          (boostDuration * boostValue * rate) / (100 * GUAR_MUL * 3600)
+      )
     );
   });
 
@@ -352,7 +356,8 @@ describe("Boosts", function () {
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     const foodCooked =
       (successPercent / 100) *
-      ((queuedAction.timespan * rate) / (3600 * 10) + (boostDuration * boostValue * rate) / (100 * 10 * 3600));
+      ((queuedAction.timespan * rate) / (3600 * RATE_MUL) +
+        (boostDuration * boostValue * rate) / (100 * RATE_MUL * 3600));
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(foodCooked);
 
     await players.connect(alice).processActions(playerId);

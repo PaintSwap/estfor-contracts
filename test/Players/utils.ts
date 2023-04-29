@@ -3,9 +3,17 @@ import {Equipment} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {ItemNFT, World} from "../../typechain-types";
-import {bronzeHelmetStats, emptyActionChoice, getActionChoiceId, getActionId, SPAWN_MUL} from "../utils";
+import {
+  bronzeHelmetStats,
+  emptyActionChoice,
+  getActionChoiceId,
+  getActionId,
+  GUAR_MUL,
+  RATE_MUL,
+  SPAWN_MUL,
+} from "../utils";
 
-export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: World, rate = 100 * 10) {
+export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: World, rate = 100 * GUAR_MUL) {
   const tx = await world.addAction({
     actionId: 1,
     info: {
@@ -50,7 +58,7 @@ export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: Wo
 export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: World, minXP: number) {
   const [owner, alice] = await ethers.getSigners();
 
-  const rate = 100 * 10; // per hour
+  const rate = 100 * RATE_MUL; // per hour
   let tx = await world.addAction({
     actionId: 1,
     info: {
@@ -132,7 +140,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     health: 20,
   };
 
-  const rate = 1 * 10; // per kill
+  const rate = 1 * GUAR_MUL; // per kill
   const numSpawned = 10 * SPAWN_MUL;
   let tx = await world.addAction({
     actionId: 1,
@@ -216,7 +224,7 @@ export const setupBasicCooking = async function (
 ) {
   const [owner, alice] = await ethers.getSigners();
 
-  const rate = 100 * 10; // per hour
+  const rate = 100 * RATE_MUL; // per hour
 
   let tx = await world.addAction({
     actionId: 1,
@@ -289,7 +297,7 @@ export const setupBasicCooking = async function (
 export const setupBasicCrafting = async function (
   itemNFT: ItemNFT,
   world: World,
-  rate = 1 * 10,
+  rate = 1 * RATE_MUL,
   outputAmount: number = 1
 ) {
   let tx = await world.addAction({

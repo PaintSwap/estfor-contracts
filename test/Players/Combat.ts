@@ -6,7 +6,16 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {emptyActionChoice, getActionChoiceId, getActionChoiceIds, getActionId, SPAWN_MUL, START_XP} from "../utils";
+import {
+  emptyActionChoice,
+  getActionChoiceId,
+  getActionChoiceIds,
+  getActionId,
+  GUAR_MUL,
+  RATE_MUL,
+  SPAWN_MUL,
+  START_XP,
+} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
 
@@ -52,7 +61,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -92,7 +101,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -142,7 +151,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -195,7 +204,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * 10 * SPAWN_MUL))
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -208,6 +217,68 @@ describe("Combat Actions", function () {
     });
 
     it("Fight powerful boss", async function () {
+      const {
+        playerId,
+        players,
+        itemNFT,
+        alice,
+        queuedAction: meleeQueuedAction,
+        world,
+      } = await loadFixture(playersFixtureMelee);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 80,
+        magic: 80,
+        range: 80,
+        meleeDefence: 80,
+        magicDefence: 80,
+        rangeDefence: 80,
+        health: 1200,
+      };
+
+      const numSpawned = 10 * SPAWN_MUL;
+      let tx = await world.addAction({
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const queuedAction = {...meleeQueuedAction};
+      queuedAction.actionId = actionId;
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const time = 3600;
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await ethers.provider.send("evm_mine", []);
+
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(EstforConstants.COOKED_MINNUS);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(255);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
+
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
+    });
+
+    it("Multi-hour respawn time", async function () {
       const {
         playerId,
         players,
@@ -284,7 +355,7 @@ describe("Combat Actions", function () {
         health: 5,
       };
 
-      const dropRate = 1 * 10; // per monster
+      const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 10 * SPAWN_MUL;
       let tx = await world.addAction({
         actionId: 1,
@@ -318,7 +389,7 @@ describe("Combat Actions", function () {
         [1, 1, 1000, 200, 100]
       );
 
-      const scrollsConsumedRate = 1 * 10; // per hour
+      const scrollsConsumedRate = 1 * RATE_MUL; // per hour
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
         skill: EstforTypes.Skill.MAGIC,
         diff: 2,
@@ -419,7 +490,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10 * SPAWN_MUL))
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -445,7 +516,7 @@ describe("Combat Actions", function () {
         health: 36,
       };
 
-      const dropRate = 1 * 10; // per monster
+      const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 100 * SPAWN_MUL;
       let tx = await world.addAction({
         actionId: 1,
@@ -480,7 +551,7 @@ describe("Combat Actions", function () {
       );
 
       // Start with 5 magic
-      const scrollsConsumedRate = 100 * 10; // per hour
+      const scrollsConsumedRate = 100 * RATE_MUL; // per hour
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
         skill: EstforTypes.Skill.MAGIC,
         diff: 5,
@@ -617,7 +688,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10 * SPAWN_MUL))
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -655,7 +726,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * 10 * SPAWN_MUL))
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -705,7 +776,7 @@ describe("Combat Actions", function () {
       const {playerId, players, alice, world, queuedAction: magicQueuedAction} = await loadFixture(playersFixtureMagic);
 
       const queuedAction = {...magicQueuedAction};
-      const scrollsConsumedRate = 1 * 10; // per hour
+      const scrollsConsumedRate = 1 * RATE_MUL; // per hour
 
       let choiceId = 2;
       const tx = await world.addBulkActionChoices(
@@ -783,7 +854,7 @@ describe("Combat Actions", function () {
         health: 5,
       };
 
-      const dropRate = 1 * 10; // per hour
+      const dropRate = 1 * GUAR_MUL; // per hour
       await world.addAction({
         actionId: 2,
         info: {
@@ -837,7 +908,7 @@ describe("Combat Actions", function () {
       health: 1,
     };
 
-    const rate = 6000 * 10; // per hour
+    const rate = 6000 * GUAR_MUL; // per hour
     let tx = await world.addAction({
       actionId: 1,
       info: {
@@ -946,7 +1017,7 @@ describe("Combat Actions", function () {
       health: 100,
     };
 
-    const rate = 1 * 10; // per hour
+    const rate = 1 * GUAR_MUL; // per hour
     let tx = await world.addAction({
       actionId: 1,
       info: {

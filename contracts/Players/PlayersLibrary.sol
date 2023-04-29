@@ -466,7 +466,7 @@ library PlayersLibrary {
     xpElapsedTime = respawnTime * numKilled;
 
     // Check how many to consume, and also adjust xpElapsedTime if they don't have enough consumables
-    numConsumed = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * 10));
+    numConsumed = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * RATE_MUL));
     if (_actionChoice.rate != 0) {
       numConsumed = uint16(Math.max(numKilled, numConsumed));
     }
@@ -503,7 +503,7 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
     // Check the max that can be used
-    numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * 10));
+    numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * RATE_MUL));
 
     if (_checkBalance && numConsumed != 0) {
       // This checks the balances
@@ -520,7 +520,7 @@ library PlayersLibrary {
       }
     }
     // Work out what the actual elapsedTime should be had all those been made
-    xpElapsedTime = (uint(numConsumed) * 3600 * 10) / _actionChoice.rate;
+    xpElapsedTime = (uint(numConsumed) * 3600 * RATE_MUL) / _actionChoice.rate;
   }
 
   function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {

@@ -10,6 +10,7 @@ import {
   getActionChoiceId,
   getActionId,
   getRequestId,
+  GUAR_MUL,
   MAX_UNIQUE_TICKETS,
   SPAWN_MUL,
 } from "../utils";
@@ -30,7 +31,7 @@ describe("Rewards", function () {
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
     });
 
-    const rate = 100 * 10; // per hour
+    const rate = 100 * GUAR_MUL; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {
@@ -98,7 +99,7 @@ describe("Rewards", function () {
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
     });
 
-    const rate = 100 * 10; // per hour
+    const rate = 100 * GUAR_MUL; // per hour
 
     const tx = await world.addAction({
       actionId: 1,
@@ -791,7 +792,7 @@ describe("Rewards", function () {
     // Check that you can get guaranteed rewards even if you don't get XP (rewards rate >> XP rate)
     const {playerId, players, alice, world, itemNFT} = await loadFixture(playersFixture);
 
-    const rate = 6500 * 10; // per hour
+    const rate = 3600 * GUAR_MUL; // per hour
     const tx = await world.addAction({
       actionId: 1,
       info: {

@@ -4,7 +4,7 @@ import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
 import {ActionInput} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {getActionId, SPAWN_MUL} from "./utils";
+import {getActionId, RATE_MUL, SPAWN_MUL} from "./utils";
 
 describe("World", function () {
   const deployContracts = async function () {
@@ -242,7 +242,7 @@ describe("World", function () {
           diff: 2,
           xpPerHour: 0,
           minXP: 0,
-          rate: 1 * 10,
+          rate: 1 * RATE_MUL,
           inputTokenId1: EstforConstants.AIR_SCROLL,
           inputAmount1: 1,
           inputTokenId2: EstforConstants.NONE,
