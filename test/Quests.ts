@@ -19,7 +19,7 @@ import {getActionId, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
-  const {world, itemNFT, alice} = fixture;
+  const {world, itemNFT} = fixture;
 
   const {queuedAction, choiceId, rate} = await setupBasicFiremaking(itemNFT, world, 0);
 
@@ -62,8 +62,6 @@ export async function questsFixture() {
     burnAmount: 0,
     requireActionsCompletedBeforeBurning: false,
   };
-
-  await itemNFT.testMint(alice.address, EstforConstants.LOG, 200);
 
   return {
     ...fixture,
@@ -590,13 +588,12 @@ describe("Quests", function () {
       );
 
       await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
-      const questId = 1;
+      const questId = firemakingQuest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       const timeNeeded = ((rate / 10) * 3600) / firemakingQuest.actionChoiceNum;
 
-      // Set time to just before, should still not have quest rewards
       await ethers.provider.send("evm_increaseTime", [timeNeeded]);
       await players.connect(alice).processActions(playerId);
 
@@ -614,6 +611,107 @@ describe("Quests", function () {
       );
     });
 
-    // TODO: Deactivate a quest, start a new one do some progress then reactivate the old one and check that it continues
+    it("Re-activated quest which was deactivated should continue at the same place", async function () {
+      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
+        questsFixture
+      );
+
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
+      const questId = firemakingQuest.questId;
+      await players.connect(alice).activateQuest(playerId, questId);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      const timeNeeded = ((rate / 10) * 3600) / firemakingQuest.actionChoiceNum;
+
+      // Set time to just before, should still not have quest rewards
+      await ethers.provider.send("evm_increaseTime", [timeNeeded - 10]);
+      // Deactivate it, should auto process
+      await players.connect(alice).deactivateQuest(playerId);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * 10)) + 1
+      );
+
+      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId)).to.eq(0);
+
+      // Check it's not completed
+      expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
+      expect((await quests.activeQuests(playerId)).questId).to.eq(0);
+
+      // Re-activate it
+      await players.connect(alice).activateQuest(playerId, questId);
+      await ethers.provider.send("evm_increaseTime", [10]);
+      await players.connect(alice).processActions(playerId);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+        5000 - Math.floor((rate * 3600) / (timeNeeded * 10))
+      );
+
+      expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
+      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId)).to.eq(
+        firemakingQuest.rewardAmount
+      );
+      expect((await quests.activeQuests(playerId)).questId).to.eq(0);
+    });
+
+    it("Re-activated quest which has progress in another quest should continue at the same place once reactivated", async function () {
+      const {
+        players,
+        playerId,
+        alice,
+        quests,
+        firemakingQuest,
+        firemakingQuestLog,
+        queuedAction: queuedActionFiremaking,
+        rate,
+        itemNFT,
+      } = await loadFixture(questsFixture);
+
+      const queuedAction = {...queuedActionFiremaking, timespan: 3636};
+
+      await quests.addQuests(
+        [firemakingQuest, firemakingQuestLog],
+        [false, false],
+        [defaultMinRequirements, defaultMinRequirements]
+      );
+      const questId = firemakingQuest.questId;
+      await players.connect(alice).activateQuest(playerId, questId);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      const timeNeeded = ((rate / 10) * 3600) / firemakingQuest.actionChoiceNum;
+
+      // Set time to just before, should still not have quest rewards
+      await ethers.provider.send("evm_increaseTime", [timeNeeded - 10]);
+      // Activate another quest should auto process current quest
+      const anotherQuestId = firemakingQuestLog.questId;
+      await players.connect(alice).activateQuest(playerId, anotherQuestId);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * 10)) + 1
+      );
+
+      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId)).to.eq(0);
+
+      // Check it's not completed
+      expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
+      expect((await quests.activeQuests(playerId)).questId).to.eq(anotherQuestId);
+
+      await ethers.provider.send("evm_increaseTime", [10]);
+      // Activate the other quest and finish it
+      await players.connect(alice).activateQuest(playerId, questId);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * 10))
+      );
+      expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
+      await ethers.provider.send("evm_increaseTime", [36]);
+      await players.connect(alice).processActions(playerId);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+        5000 - Math.floor((rate * 3600) / (timeNeeded * 10)) - 1
+      );
+
+      expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
+      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId)).to.eq(
+        firemakingQuest.rewardAmount
+      );
+      expect((await quests.activeQuests(playerId)).questId).to.eq(0);
+    });
   });
 });
