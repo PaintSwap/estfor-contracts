@@ -294,20 +294,6 @@ abstract contract PlayersBase {
     return abi.decode(data, (QueuedAction[], PendingQueuedActionXPGained));
   }
 
-  function _claimRandomRewards(
-    uint _playerId,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  ) internal {
-    _delegatecall(
-      implRewards,
-      abi.encodeWithSelector(
-        IPlayersRewardsDelegate.claimRandomRewards.selector,
-        _playerId,
-        _pendingQueuedActionXPGained
-      )
-    );
-  }
-
   function _claimableXPThresholdRewards(
     uint _oldTotalXP,
     uint _newTotalXP

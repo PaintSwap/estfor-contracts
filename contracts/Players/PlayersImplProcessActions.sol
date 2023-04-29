@@ -256,6 +256,20 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
+  function _claimRandomRewards(
+    uint _playerId,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  ) private {
+    _delegatecall(
+      implRewards,
+      abi.encodeWithSelector(
+        IPlayersRewardsDelegate.claimRandomRewards.selector,
+        _playerId,
+        _pendingQueuedActionXPGained
+      )
+    );
+  }
+
   function _addPendingRandomReward(
     address _from,
     uint _playerId,
