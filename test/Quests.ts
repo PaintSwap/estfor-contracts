@@ -85,7 +85,7 @@ describe("Quests", function () {
       expect(await quests.isRandomQuest(firemakingQuest.questId)).to.be.false;
     });
 
-    it("Should add a random quest correctly", async function () {
+    it.skip("Should add a random quest correctly", async function () {
       const {quests, firemakingQuest} = await loadFixture(questsFixture);
 
       await quests.addQuests([firemakingQuest], [true], [defaultMinRequirements]);

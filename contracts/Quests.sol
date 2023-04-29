@@ -70,6 +70,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   error InvalidBurnAmount();
   error NoActiveQuest();
   error ActivatingQuestAlreadyActivated();
+  error RandomNotSupportedYet();
 
   struct MinimumRequirement {
     Skill skill;
@@ -221,10 +222,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     } else {
       // Update the quest progress
       bool foundActive;
-      bool foundRandomQuest;
       U256 bounds = _choiceIds.length.asU256();
       uint activeQuestId = activeQuests[_playerId].questId;
-      uint randomQuestId = randomQuest.questId;
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
         uint choiceId = _choiceIds[i];
@@ -232,16 +231,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         if (allFixedQuests[activeQuestId].actionChoiceId == choiceId) {
           activeQuests[_playerId].actionChoiceCompletedNum += uint16(amount);
           foundActive = true;
-        }
-
-        if (randomQuest.actionChoiceId == choiceId) {
-          if (inProgressRandomQuests[_playerId].questId != randomQuestId) {
-            // If this is a new one clear it
-            PlayerQuest memory playerQuest;
-            inProgressRandomQuests[_playerId] = playerQuest;
-          }
-          inProgressRandomQuests[_playerId].actionChoiceCompletedNum += uint16(amount);
-          foundRandomQuest = true;
         }
       }
 
@@ -253,9 +242,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
       if (foundActive) {
         emit UpdateQuestProgress(_playerId, activeQuests[_playerId]);
-      }
-      if (foundRandomQuest) {
-        emit UpdateQuestProgress(_playerId, inProgressRandomQuests[_playerId]);
       }
     }
   }
@@ -289,7 +275,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   // This doesn't really belong here, just for consistency
-  /*  function sellBrush(address _to, uint _brushAmount, uint _minFTM) external {
+  function sellBrush(address _to, uint _brushAmount, uint _minFTM) external {
     if (_brushAmount == 0) {
       revert InvalidBrushAmount();
     }
@@ -303,7 +289,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     IERC20(buyPath2).transferFrom(msg.sender, address(router), _brushAmount);
 
     router.swapExactTokensForETH(_brushAmount, _minFTM, sellPath, _to, deadline);
-  } */
+  }
 
   function processQuestsView(
     uint _playerId,
@@ -373,44 +359,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
           xpGained[skillsGainedLength++] = xp;
         }
       }
-      // Handle random request
-      if (randomQuest.questId != 0) {
-        PlayerQuest memory randomQuestCompletionInfo;
-        // TODO: This assumes that inProgressRandomQuests is set, which is not always the case.
-        if (randomQuest.questId == inProgressRandomQuests[_playerId].questId) {
-          randomQuestCompletionInfo = inProgressRandomQuests[_playerId];
-        }
-        activeQuestsCompletionInfo[activeQuestsLength++] = randomQuestCompletionInfo;
-        (
-          uint[] memory _itemTokenIds,
-          uint[] memory _amounts,
-          uint itemTokenIdBurned,
-          uint amountBurned,
-          Skill skillGained,
-          uint32 xp,
-          bool questCompleted
-        ) = _processQuestView(_choiceIds, _choiceIdAmounts, randomQuestCompletionInfo, _burnedAmountOwned);
-
-        U256 bounds = _itemTokenIds.length.asU256();
-        for (U256 iter; iter < bounds; iter = iter.inc()) {
-          uint i = iter.asUint256();
-          itemTokenIds[itemTokenIdsLength] = _itemTokenIds[i];
-          amounts[itemTokenIdsLength++] = _amounts[i];
-        }
-
-        if (questCompleted) {
-          _questsCompleted[questsCompletedLength++] = randomQuestCompletionInfo.questId;
-        }
-
-        if (itemTokenIdBurned != NONE) {
-          itemTokenIdsBurned[itemTokenIdsBurnedLength] = itemTokenIdBurned;
-          amountsBurned[itemTokenIdsBurnedLength++] = amountBurned;
-        }
-        if (xp != 0) {
-          skillsGained[skillsGainedLength] = skillGained;
-          xpGained[skillsGainedLength++] = xp;
-        }
-      }
 
       assembly ("memory-safe") {
         mstore(itemTokenIds, itemTokenIdsLength)
@@ -450,13 +398,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     emit QuestCompleted(_playerId, _questId);
     questsCompleted[_playerId].set(_questId);
     delete activeQuests[_playerId];
-
-    if (questIsRandom.get(_questId)) {
-      ++playerInfo[_playerId].numRandomQuestsCompleted;
-      delete inProgressRandomQuests[_playerId];
-    } else {
-      ++playerInfo[_playerId].numFixedQuestsCompleted;
-    }
+    ++playerInfo[_playerId].numFixedQuestsCompleted;
   }
 
   function _processQuestView(
@@ -477,7 +419,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       bool questCompleted
     )
   {
-    Quest storage quest = _playerQuest.isFixed ? allFixedQuests[_playerQuest.questId] : randomQuest;
+    Quest storage quest = allFixedQuests[_playerQuest.questId];
     U256 bounds = _choiceIds.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -562,6 +504,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (_quest.questId == 0) {
       revert InvalidQuestId();
     }
+    if (_isRandom) {
+      revert RandomNotSupportedYet();
+    }
 
     bool anyMinimumRequirement;
     U256 bounds = _minimumRequirements.length.asU256();
@@ -577,18 +522,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       minimumRequirements[_quest.questId] = _minimumRequirements;
     }
 
-    if (_isRandom) {
-      randomQuests.push(_quest);
-      questIsRandom.set(_quest.questId);
-      emit AddBaseRandomQuest(_quest);
-    } else {
-      if (allFixedQuests[_quest.questId].questId != 0) {
-        revert QuestWithIdAlreadyExists();
-      }
-
-      allFixedQuests[_quest.questId] = _quest;
-      emit AddFixedQuest(_quest);
+    if (allFixedQuests[_quest.questId].questId != 0) {
+      revert QuestWithIdAlreadyExists();
     }
+
+    allFixedQuests[_quest.questId] = _quest;
+    emit AddFixedQuest(_quest);
   }
 
   function setPlayers(IPlayers _players) external onlyOwner {
@@ -618,31 +557,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (_questId == 0) {
       revert InvalidQuestId();
     }
-    if (questIsRandom.get(_questId)) {
-      // Check it's not the active one
-      if (randomQuest.questId == _questId) {
-        revert CannotRemoveActiveRandomQuest();
-      }
-      questIsRandom.unset(_questId);
-
-      // Remove from array
-      U256 bounds = randomQuests.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        if (randomQuests[i].questId == _questId) {
-          randomQuests[i] = randomQuests[randomQuests.length - 1];
-          randomQuests.pop();
-          break;
-        }
-      }
-    } else {
-      Quest storage quest = allFixedQuests[_questId];
-      if (quest.questId != _questId) {
-        revert QuestDoesntExist();
-      }
-
-      delete allFixedQuests[_questId];
+    Quest storage quest = allFixedQuests[_questId];
+    if (quest.questId != _questId) {
+      revert QuestDoesntExist();
     }
+
+    delete allFixedQuests[_questId];
     emit RemoveQuest(_questId);
   }
 
