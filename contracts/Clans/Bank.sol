@@ -20,11 +20,9 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   event DepositItems(address from, uint playerId, uint[] id, uint[] value);
   event DepositItem(address from, uint playerId, uint id, uint value);
   event WithdrawItems(address to, uint playerId, uint[] id, uint[] value);
-  event DepositFTM(uint playerId, uint amount);
-  event DepositFTMNoPlayer(address from, uint amount);
+  event DepositFTM(address from, uint playerId, uint amount);
   event WithdrawFTM(address to, uint playerId, uint amount);
-  event DepositToken(uint playerId, address token, uint amount);
-  event DepositTokenNoPlayer(address from, address token, uint amount);
+  event DepositToken(address from, uint playerId, address token, uint amount);
   event WithdrawToken(address to, uint playerId, address token, uint amount);
 
   error MaxBankCapacityReached();
@@ -145,13 +143,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
 
   function depositFTM(uint _playerId) external payable isOwnerOfPlayer(_playerId) {
     if (msg.value != 0) {
-      emit DepositFTM(_playerId, msg.value);
-    }
-  }
-
-  function depositFTMNoPlayer() external payable {
-    if (msg.value != 0) {
-      emit DepositFTMNoPlayer(msg.sender, msg.value);
+      emit DepositFTM(msg.sender, _playerId, msg.value);
     }
   }
 
@@ -169,15 +161,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       revert DepositFailed();
     }
 
-    emit DepositToken(_playerId, token, amount);
-  }
-
-  function depositTokenNoPlayer(address token, uint amount) external {
-    bool success = IERC20(token).transferFrom(msg.sender, address(this), amount);
-    if (!success) {
-      revert DepositFailed();
-    }
-    emit DepositTokenNoPlayer(msg.sender, token, amount);
+    emit DepositToken(msg.sender, _playerId, token, amount);
   }
 
   function withdrawToken(
@@ -194,5 +178,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
 
   receive() external payable {
     // Accept FTM
+    uint activePlayerId = bankRegistry.players().activePlayer(msg.sender);
+    emit DepositFTM(msg.sender, activePlayerId, msg.value);
   }
 }
