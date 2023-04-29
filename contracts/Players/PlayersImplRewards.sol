@@ -86,9 +86,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       if (isCombat) {
         combatStats = PlayersLibrary.getCombatStats(
-          _playerId,
           pendingQueuedActionXPGained,
-          xp_,
+          xp_[_playerId],
           from,
           itemNFT,
           attire_[_playerId][queuedAction.queueId],
@@ -443,6 +442,41 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       startTime += queuedAction.timespan;
     } // end of loop
 
+    // Quest Rewards
+    QuestState memory questState = pendingQueuedActionState.quests;
+    // Anything burnt happens after the actions are processed, so do not affect anything else.
+    uint burnedAmountOwned;
+    uint activeQuestBurnedItemTokenId = quests.getActiveQuestBurnedItemTokenId(_playerId);
+    if (activeQuestBurnedItemTokenId != NONE) {
+      burnedAmountOwned = PlayersLibrary.getRealBalance(
+        from,
+        activeQuestBurnedItemTokenId,
+        itemNFT,
+        pendingQueuedActionState.equipmentStates
+      );
+    }
+
+    (
+      questState.rewardItemTokenIds,
+      questState.rewardAmounts,
+      questState.consumedItemTokenIds,
+      questState.consumedAmounts,
+      questState.skills,
+      questState.xpGainedSkills,
+      questState.questsCompleted,
+      questState.activeQuestInfo
+    ) = quests.processQuestsView(_playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
+
+    questState.actionIds = actionIds;
+    questState.actionAmounts = actionAmounts;
+    questState.choiceIds = choiceIds;
+    questState.choiceAmounts = choiceAmounts;
+
+    // Total XP gained
+    for (uint i = 0; i < questState.xpGainedSkills.length; ++i) {
+      totalXPGained += questState.xpGainedSkills[i];
+    }
+
     // XPRewards
     if (totalXPGained != 0) {
       (
@@ -483,36 +517,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       mstore(choiceIds, choiceIdsLength)
       mstore(choiceAmounts, choiceIdsLength)
     }
-
-    // Quest Rewards
-    QuestState memory questState = pendingQueuedActionState.quests;
-    // Anything burnt happens after the actions are processed, so do not affect anything else.
-    uint burnedAmountOwned;
-    uint activeQuestBurnedItemTokenId = quests.getActiveQuestBurnedItemTokenId(_playerId);
-    if (activeQuestBurnedItemTokenId != NONE) {
-      burnedAmountOwned = PlayersLibrary.getRealBalance(
-        from,
-        activeQuestBurnedItemTokenId,
-        itemNFT,
-        pendingQueuedActionState.equipmentStates
-      );
-    }
-
-    (
-      questState.rewardItemTokenIds,
-      questState.rewardAmounts,
-      questState.consumedItemTokenIds,
-      questState.consumedAmounts,
-      questState.skills,
-      questState.xpGainedSkills,
-      questState.questsCompleted,
-      questState.activeQuestInfo
-    ) = quests.processQuestsView(_playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
-
-    questState.actionIds = actionIds;
-    questState.actionAmounts = actionAmounts;
-    questState.choiceIds = choiceIds;
-    questState.choiceAmounts = choiceAmounts;
 
     // Daily rewards
     (
@@ -631,21 +635,16 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     bool _isCombat,
     PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   ) private view returns (uint8 successPercent) {
-    successPercent = 100;
-    (uint8 actionSuccessPercent, uint32 minXP) = world.getActionSuccessPercentAndMinXP(_actionId);
-    if (actionSuccessPercent != 100) {
-      if (_isCombat) {
-        revert InvalidAction();
-      }
-
-      uint minLevel = PlayersLibrary.getLevel(minXP);
-      uint skillLevel = PlayersLibrary.getLevel(
-        PlayersLibrary.getAbsoluteActionStartXP(_playerId, _actionSkill, _pendingQueuedActionXPGained, xp_)
+    return
+      PlayersLibrary.getSuccessPercent(
+        _actionId,
+        _actionSkill,
+        _isCombat,
+        _pendingQueuedActionXPGained,
+        world,
+        MAX_SUCCESS_PERCENT_CHANCE_,
+        xp_[_playerId]
       );
-      uint extraBoost = skillLevel - minLevel;
-
-      successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, actionSuccessPercent + extraBoost));
-    }
   }
 
   function _claimableRandomRewards(

@@ -25,6 +25,7 @@ library PlayersLibrary {
   using UnsafeMath for uint256;
 
   error InvalidXPSkill();
+  error InvalidAction();
 
   // Show all the player stats, return metadata json
   function uri(
@@ -642,26 +643,19 @@ library PlayersLibrary {
   }
 
   function getCombatStats(
-    uint _playerId,
     PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
-    mapping(uint playerId => PackedXP packedXP) storage xp_,
+    PackedXP storage _packedXP,
     address _from,
     ItemNFT _itemNFT,
     Attire storage _attire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (CombatStats memory combatStats) {
-    combatStats.melee = int16(
-      getLevel(getAbsoluteActionStartXP(_playerId, Skill.MELEE, _pendingQueuedActionXPGained, xp_))
-    );
-    combatStats.magic = int16(
-      getLevel(getAbsoluteActionStartXP(_playerId, Skill.MAGIC, _pendingQueuedActionXPGained, xp_))
-    );
+    combatStats.melee = int16(getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionXPGained, _packedXP)));
+    combatStats.magic = int16(getLevel(getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionXPGained, _packedXP)));
     combatStats.health = int16(
-      getLevel(getAbsoluteActionStartXP(_playerId, Skill.HEALTH, _pendingQueuedActionXPGained, xp_))
+      getLevel(getAbsoluteActionStartXP(Skill.HEALTH, _pendingQueuedActionXPGained, _packedXP))
     );
-    uint16 defenceLevel = getLevel(
-      getAbsoluteActionStartXP(_playerId, Skill.DEFENCE, _pendingQueuedActionXPGained, xp_)
-    );
+    uint16 defenceLevel = getLevel(getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionXPGained, _packedXP));
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
 
@@ -725,12 +719,11 @@ library PlayersLibrary {
 
   // Subtract any existing xp gained from the first in-progress actions and add the new xp gained
   function getAbsoluteActionStartXP(
-    uint _playerId,
     Skill _skill,
     PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
-    mapping(uint playerId => PackedXP packedXP) storage xp_
+    PackedXP storage packedXP
   ) public view returns (uint) {
-    uint xp = readXP(_skill, xp_[_playerId]);
+    uint xp = readXP(_skill, packedXP);
     if (_pendingQueuedActionXPGained.alreadyProcessedSkill == _skill) {
       xp -= _pendingQueuedActionXPGained.alreadyProcessedXPGained;
     } else if (_pendingQueuedActionXPGained.alreadyProcessedSkill1 == _skill) {
@@ -874,6 +867,30 @@ library PlayersLibrary {
     bool hasFullAttire = extraBoostFromFullAttire(itemTokenIds, balances, _expectedItemTokenIds);
     if (hasFullAttire) {
       extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * _bonusPercent) / (3600 * 100));
+    }
+  }
+
+  function getSuccessPercent(
+    uint16 _actionId,
+    Skill _actionSkill,
+    bool _isCombat,
+    PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
+    World _world,
+    uint _maxSuccessPercentChange,
+    PackedXP storage _packedXP
+  ) external view returns (uint8 successPercent) {
+    successPercent = 100;
+    (uint8 actionSuccessPercent, uint32 minXP) = _world.getActionSuccessPercentAndMinXP(_actionId);
+    if (actionSuccessPercent != 100) {
+      if (_isCombat) {
+        revert InvalidAction();
+      }
+
+      uint minLevel = getLevel(minXP);
+      uint skillLevel = getLevel(getAbsoluteActionStartXP(_actionSkill, _pendingQueuedActionXPGained, _packedXP));
+      uint extraBoost = skillLevel - minLevel;
+
+      successPercent = uint8(Math.min(_maxSuccessPercentChange, actionSuccessPercent + extraBoost));
     }
   }
 }

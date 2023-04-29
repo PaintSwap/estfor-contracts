@@ -41,7 +41,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       _processActionsFinished(_from, _playerId, pendingQueuedActionXPGained); // TODO: Could still use pendingQueuedActionState
       return (remainingSkills, pendingQueuedActionXPGained);
     }
-    PendingQueuedActionState memory pendingQueuedActionState = pendingQueuedActionState(_from, _playerId);
+    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(_from, _playerId);
     remainingSkills = pendingQueuedActionState.remainingSkills;
     pendingQueuedActionXPGained = pendingQueuedActionState.xpGained;
     // total xp is updated later
@@ -545,5 +545,17 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
   function _handleDailyRewards(address _from, uint _playerId) private {
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.handleDailyRewards.selector, _from, _playerId));
+  }
+
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
+  function _pendingQueuedActionState(
+    address _owner,
+    uint _playerId
+  ) private view returns (PendingQueuedActionState memory) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
+    );
+    return abi.decode(data, (PendingQueuedActionState));
   }
 }

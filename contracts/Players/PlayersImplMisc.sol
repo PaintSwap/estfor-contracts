@@ -95,12 +95,12 @@ contract PlayersImplMisc is
       }
 
       U256 bounds = xpThresholdReward.rewards.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        if (xpThresholdReward.rewards[i].itemTokenId == NONE) {
+      for (U256 jIter; jIter < bounds; jIter = jIter.inc()) {
+        uint j = jIter.asUint256();
+        if (xpThresholdReward.rewards[j].itemTokenId == NONE) {
           revert InvalidItemTokenId();
         }
-        if (xpThresholdReward.rewards[i].amount == 0) {
+        if (xpThresholdReward.rewards[j].amount == 0) {
           revert InvalidAmount();
         }
       }
@@ -409,7 +409,7 @@ contract PlayersImplMisc is
       if (_actionChoice.successPercent != 100) {
         uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
         uint skillLevel = PlayersLibrary.getLevel(
-          PlayersLibrary.getAbsoluteActionStartXP(_playerId, _actionChoice.skill, _pendingQueuedActionXPGained, xp_)
+          PlayersLibrary.getAbsoluteActionStartXP(_actionChoice.skill, _pendingQueuedActionXPGained, xp_[_playerId])
         );
         uint extraBoost = skillLevel - minLevel;
 

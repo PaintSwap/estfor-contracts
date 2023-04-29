@@ -520,7 +520,7 @@ describe("Quests", function () {
     expect(firemakingQuest.rewardAmount).to.be.gt(0); // sanity check
   });
 
-  it("XP rewards gained", async function () {
+  it("XP gained", async function () {
     const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
 
     const successPercent = 100;
@@ -536,16 +536,22 @@ describe("Quests", function () {
       actionChoiceId: choiceId,
       burnItemTokenId: COOKED_MINNUS,
       skillReward: Skill.WOODCUTTING,
-      skillXPGained: 1,
+      skillXPGained: 10000,
     };
     await quests.addQuests([quest], [false], [defaultMinRequirements]);
     const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+
+    // Check XP threshold rewards are given
+    const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
+    await players.addXPThresholdRewards([{xpThreshold: 10000, rewards}]);
+
     await players.connect(alice).processActions(playerId);
     const cookingXP = await players.xp(playerId, Skill.COOKING);
-    expect(await players.xp(playerId, Skill.WOODCUTTING)).to.eq(1);
-    expect((await players.players(playerId)).totalXP).to.eq(START_XP + Number(cookingXP) + 1);
+    expect(await players.xp(playerId, Skill.WOODCUTTING)).to.eq(10000);
+    expect((await players.players(playerId)).totalXP).to.eq(START_XP + Number(cookingXP) + 10000);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
   });
 
   describe("Activate a quest", function () {

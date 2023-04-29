@@ -182,7 +182,7 @@ export const allQuests: Quest[] = [
   },
   {
     questId: QUEST_TWO_BIRDS,
-    dependentQuestId: QUEST_HIDDEN_BOUNTY,
+    dependentQuestId: QUEST_SUPPLY_RUN,
     actionId: ACTION_COMBAT_UFFINCH,
     actionNum: 400,
     actionId1: NONE,
