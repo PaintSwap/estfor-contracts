@@ -20,7 +20,7 @@ library WorldLibrary {
   error PreviousInputTokenIdMustBeSpecified();
   error InputAmountsMustBeInOrder();
   error OutputSpecifiedWithoutAmount();
-  error RandomRewardsMustBeInOrder();
+  error RandomRewardsMustBeInOrder(uint16 chance1, uint16 chance2);
   error RandomRewardNoDuplicates();
   error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
@@ -79,7 +79,7 @@ library WorldLibrary {
       actionReward.randomRewardAmount2 = _action.randomRewards[1].amount;
 
       if (actionReward.randomRewardChance2 > actionReward.randomRewardChance1) {
-        revert RandomRewardsMustBeInOrder();
+        revert RandomRewardsMustBeInOrder(_action.randomRewards[0].chance, _action.randomRewards[1].chance);
       }
       if (actionReward.randomRewardTokenId1 == actionReward.randomRewardTokenId2) {
         revert RandomRewardNoDuplicates();
@@ -91,7 +91,7 @@ library WorldLibrary {
       actionReward.randomRewardAmount3 = _action.randomRewards[2].amount;
 
       if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
-        revert RandomRewardsMustBeInOrder();
+        revert RandomRewardsMustBeInOrder(_action.randomRewards[1].chance, _action.randomRewards[2].chance);
       }
 
       U256 bounds = randomRewardsLength.dec().asU256();
@@ -107,7 +107,7 @@ library WorldLibrary {
       actionReward.randomRewardChance4 = _action.randomRewards[3].chance;
       actionReward.randomRewardAmount4 = _action.randomRewards[3].amount;
       if (actionReward.randomRewardChance4 > actionReward.randomRewardChance3) {
-        revert RandomRewardsMustBeInOrder();
+        revert RandomRewardsMustBeInOrder(_action.randomRewards[2].chance, _action.randomRewards[3].chance);
       }
       U256 bounds = _action.randomRewards.length.dec().asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
