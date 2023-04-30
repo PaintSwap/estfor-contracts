@@ -173,11 +173,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function _processActions(uint _playerId) private {
     (
-      QueuedAction[] memory remainingSkillQueue,
+      QueuedAction[] memory remainingQueuedActions,
       PendingQueuedActionXPGained memory pendingQueuedActionXPGained
     ) = _processActions(msg.sender, _playerId);
 
-    if (remainingSkillQueue.length != 0) {
+    if (remainingQueuedActions.length != 0) {
       players_[_playerId].queuedActionStartTime = uint40(block.timestamp);
     } else {
       players_[_playerId].queuedActionStartTime = 0;
@@ -187,7 +187,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     players_[_playerId].queuedActionPrevProcessedSkill1 = pendingQueuedActionXPGained.prevProcessedSkill1;
     players_[_playerId].queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.prevProcessedXPGained1;
 
-    _setActionQueue(msg.sender, _playerId, remainingSkillQueue, block.timestamp);
+    Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
+    for (uint i = 0; i < remainingQueuedActions.length; ++i) {
+      remainingAttire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
+    }
+
+    _setActionQueue(msg.sender, _playerId, remainingQueuedActions, remainingAttire, block.timestamp);
   }
 
   /// @notice Process actions for a player up to the current block timestamp

@@ -24,7 +24,7 @@ abstract contract PlayersBase {
 
   event ClearAll(address from, uint playerId);
   event AddXP(address from, uint playerId, Skill skill, uint points);
-  event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, uint startTime);
+  event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, Attire[] attire, uint startTime);
   event ConsumeBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
   event UnconsumeBoostVial(address from, uint playerId);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
@@ -43,8 +43,14 @@ abstract contract PlayersBase {
 
   // For logging
   event Died(address from, uint playerId, uint queueId);
-  event QuestRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
-  event QuestConsumes(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
+  event QuestRewardConsumes(
+    address from,
+    uint playerId,
+    uint[] rewardItemTokenIds,
+    uint[] rewardAmounts,
+    uint[] consumedItemTokenIds,
+    uint[] consumedAmounts
+  );
   event Rewards(address from, uint playerId, uint queueId, uint[] itemTokenIds, uint[] amounts);
   event DailyReward(address from, uint playerId, uint itemTokenId, uint amount);
   event WeeklyReward(address from, uint playerId, uint itemTokenId, uint amount);
@@ -210,6 +216,7 @@ abstract contract PlayersBase {
     address _from,
     uint _playerId,
     QueuedAction[] memory _queuedActions,
+    Attire[] memory _attire,
     uint _startTime
   ) internal {
     Player storage player = players_[_playerId];
@@ -230,8 +237,11 @@ abstract contract PlayersBase {
     } else {
       // Replace everything
       player.actionQueue = _queuedActions;
+      for (uint i; i < _attire.length; ++i) {
+        attire_[_playerId][player.actionQueue[i].queueId] = _attire[i];
+      }
     }
-    emit SetActionQueue(_from, _playerId, _queuedActions, _startTime);
+    emit SetActionQueue(_from, _playerId, _queuedActions, _attire, _startTime);
   }
 
   // This does not update player.totalXP!!
@@ -272,7 +282,10 @@ abstract contract PlayersBase {
     uint _playerId
   )
     internal
-    returns (QueuedAction[] memory remainingSkills, PendingQueuedActionXPGained memory pendingQueuedActionXPGained)
+    returns (
+      QueuedAction[] memory remainingQueuedActions,
+      PendingQueuedActionXPGained memory pendingQueuedActionXPGained
+    )
   {
     bytes memory data = _delegatecall(
       implProcessActions,

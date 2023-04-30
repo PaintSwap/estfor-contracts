@@ -46,8 +46,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     pendingQueuedActionXPGained.prevProcessedSkill1 = player.queuedActionPrevProcessedSkill1;
     pendingQueuedActionXPGained.prevProcessedXPGained1 = player.queuedActionAlreadyProcessedXPGained1;
 
-    pendingQueuedActionState.remainingSkills = new QueuedAction[](actionQueue.length);
-    uint remainingSkillsLength;
+    pendingQueuedActionState.remainingQueuedActions = new QueuedAction[](actionQueue.length);
+    uint remainingQueuedActionsLength;
 
     uint[] memory actionIds = new uint[](actionQueue.length);
     uint[] memory actionAmounts = new uint[](actionQueue.length);
@@ -115,13 +115,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint elapsedTime = _getElapsedTime(startTime, endTime);
       if (elapsedTime == 0) {
         _addRemainingSkill(
-          pendingQueuedActionState.remainingSkills,
+          pendingQueuedActionState.remainingQueuedActions,
           queuedAction,
           queuedAction.timespan,
           0,
-          remainingSkillsLength
+          remainingQueuedActionsLength
         );
-        remainingSkillsLength = remainingSkillsLength.inc();
+        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
         continue;
       }
       ++pendingQueuedActionStateLength;
@@ -341,13 +341,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         // Add the remainder if this action is not fully consumed
         uint remainingTimespan = queuedAction.timespan - elapsedTime;
         _addRemainingSkill(
-          pendingQueuedActionState.remainingSkills,
+          pendingQueuedActionState.remainingQueuedActions,
           queuedAction,
           remainingTimespan,
           elapsedTime,
-          remainingSkillsLength
+          remainingQueuedActionsLength
         );
-        remainingSkillsLength = remainingSkillsLength.inc();
+        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
 
         if (i == 0 && pendingQueuedActionXPGained.prevProcessedSkill == skill) {
           // Append it
@@ -527,7 +527,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), pendingQueuedActionStateLength)
       mstore(mload(add(pendingQueuedActionState, 32)), pendingQueuedActionStateLength)
-      mstore(mload(add(pendingQueuedActionState, 64)), remainingSkillsLength)
+      mstore(mload(add(pendingQueuedActionState, 64)), remainingQueuedActionsLength)
     }
 
     assembly ("memory-safe") {
@@ -752,7 +752,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   }
 
   function _addRemainingSkill(
-    QueuedAction[] memory _remainingSkills,
+    QueuedAction[] memory _remainingQueuedActions,
     QueuedAction storage _queuedAction,
     uint _timespan,
     uint _processedTime,
@@ -762,7 +762,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     remainingAction.timespan = uint24(_timespan);
     remainingAction.processedTime += uint24(_processedTime);
     // Build a list of the skills queued that remain
-    _remainingSkills[_length] = remainingAction;
+    _remainingQueuedActions[_length] = remainingAction;
   }
 
   function _appendGuaranteedReward(

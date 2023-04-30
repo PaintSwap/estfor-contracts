@@ -33,16 +33,19 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _playerId
   )
     external
-    returns (QueuedAction[] memory remainingSkills, PendingQueuedActionXPGained memory pendingQueuedActionXPGained)
+    returns (
+      QueuedAction[] memory remainingQueuedActions,
+      PendingQueuedActionXPGained memory pendingQueuedActionXPGained
+    )
   {
     Player storage player = players_[_playerId];
     if (player.actionQueue.length == 0) {
       // No actions remaining
       _processActionsFinished(_from, _playerId, pendingQueuedActionXPGained); // TODO: Could still use pendingQueuedActionState
-      return (remainingSkills, pendingQueuedActionXPGained);
+      return (remainingQueuedActions, pendingQueuedActionXPGained);
     }
     PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(_from, _playerId);
-    remainingSkills = pendingQueuedActionState.remainingSkills;
+    remainingQueuedActions = pendingQueuedActionState.remainingQueuedActions;
     pendingQueuedActionXPGained = pendingQueuedActionState.xpGained;
     // total xp is updated later
     for (uint i; i < pendingQueuedActionXPGained.skills.length; ++i) {
@@ -185,14 +188,23 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         burnedAmount,
         questState.questsCompleted
       );
-      if (questState.consumedItemTokenIds.length > 0) {
-        itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
-        emit QuestConsumes(_from, _playerId, questState.consumedItemTokenIds, questState.consumedAmounts);
+      if (questState.consumedItemTokenIds.length > 0 || questState.rewardItemTokenIds.length > 0) {
+        if (questState.consumedItemTokenIds.length > 0) {
+          itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
+        }
+        if (questState.rewardItemTokenIds.length > 0) {
+          itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
+        }
+        emit QuestRewardConsumes(
+          _from,
+          _playerId,
+          questState.rewardItemTokenIds,
+          questState.rewardAmounts,
+          questState.consumedItemTokenIds,
+          questState.consumedAmounts
+        );
       }
-      if (questState.rewardItemTokenIds.length > 0) {
-        itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
-        emit QuestRewards(_from, _playerId, questState.rewardItemTokenIds, questState.rewardAmounts);
-      }
+
       // Any quest XP gains
       uint questXpGained;
       for (uint j; j < questState.skills.length; ++j) {

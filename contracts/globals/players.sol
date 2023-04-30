@@ -238,7 +238,7 @@ struct PendingQueuedActionState {
   // These 2 are in sync. Separated to reduce gas/deployment costs as these are passed down many layers.
   PendingQueuedActionEquipmentState[] equipmentStates;
   PendingQueuedActionMetadata[] actionMetadatas;
-  QueuedAction[] remainingSkills;
+  QueuedAction[] remainingQueuedActions;
   PendingQueuedActionXPGained xpGained;
   PastRandomRewardInfo[] producedPastRandomRewards;
   uint[] xpRewardItemTokenIds;

@@ -40,7 +40,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     address from = msg.sender;
     uint totalTimespan;
     (
-      QueuedAction[] memory remainingSkills,
+      QueuedAction[] memory remainingQueuedActions,
       PendingQueuedActionXPGained memory pendingQueuedActionXPGained
     ) = _processActions(from, _playerId);
 
@@ -51,32 +51,37 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         QueuedAction[] memory queuedActions;
         player.actionQueue = queuedActions;
       }
+      // Don't care about remaining actions
+      assembly ("memory-safe") {
+        mstore(remainingQueuedActions, 0)
+      }
+
       if (_queuedActions.length > 3) {
         revert TooManyActionsQueued();
       }
     } else {
-      if (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingSkills.length > 1) {
+      if (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingQueuedActions.length > 1) {
         // Only want one
         assembly ("memory-safe") {
-          mstore(remainingSkills, 1)
+          mstore(remainingQueuedActions, 1)
         }
       }
 
       // Keep remaining actions
-      if (remainingSkills.length + _queuedActions.length > 3) {
+      if (remainingQueuedActions.length + _queuedActions.length > 3) {
         revert TooManyActionsQueuedSomeAlreadyExist();
       }
-      player.actionQueue = remainingSkills;
-      U256 j = remainingSkills.length.asU256();
+      player.actionQueue = remainingQueuedActions;
+      U256 j = remainingQueuedActions.length.asU256();
       while (j.neq(0)) {
         j = j.dec();
-        totalTimespan += remainingSkills[j.asUint256()].timespan;
+        totalTimespan += remainingQueuedActions[j.asUint256()].timespan;
       }
     }
 
     if (
       (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || _queueStatus == ActionQueueStatus.APPEND) &&
-      remainingSkills.length != 0
+      remainingQueuedActions.length != 0
     ) {
       player.queuedActionPrevProcessedSkill = pendingQueuedActionXPGained.prevProcessedSkill;
       player.queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.prevProcessedXPGained;
@@ -95,7 +100,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     U256 queueId = nextQueueId.asU256();
     U256 queuedActionsLength = _queuedActions.length.asU256();
 
-    if (remainingSkills.length != 0 || _queuedActions.length != 0) {
+    if (remainingQueuedActions.length != 0 || _queuedActions.length != 0) {
       player.queuedActionStartTime = uint40(block.timestamp);
     } else {
       player.queuedActionStartTime = 0;
@@ -120,7 +125,17 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       prevEndTime += _queuedActions[i].timespan;
     }
 
-    emit SetActionQueue(from, _playerId, player.actionQueue, player.queuedActionStartTime);
+    // Create an array from remainingAttire and queuedActions passed in
+    uint length = remainingQueuedActions.length + _queuedActions.length;
+    Attire[] memory attire = new Attire[](length);
+    for (uint i = 0; i < remainingQueuedActions.length; ++i) {
+      attire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
+    }
+    for (uint i = 0; i < _queuedActions.length; ++i) {
+      attire[i + remainingQueuedActions.length] = _queuedActions[i].attire;
+    }
+
+    emit SetActionQueue(from, _playerId, player.actionQueue, attire, player.queuedActionStartTime);
 
     assert(totalTimespan <= MAX_TIME_); // Should never happen
     nextQueueId = queueId.asUint64();
@@ -455,8 +470,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
   function _clearActionQueue(address _from, uint _playerId) private {
     QueuedAction[] memory queuedActions;
+    Attire[] memory attire;
     uint startTime = 0;
-    _setActionQueue(_from, _playerId, queuedActions, startTime);
+    _setActionQueue(_from, _playerId, queuedActions, attire, startTime);
   }
 
   // Consumes all the actions in the queue up to this time.
