@@ -23,10 +23,6 @@ async function main() {
       rangeDefence: 0,
       health: 0,
     },
-    nonCombatStats: {
-      skill: Skill.NONE,
-      diff: 0,
-    },
     tokenId: EstforConstants.BRONZE_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,

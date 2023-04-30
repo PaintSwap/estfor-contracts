@@ -431,7 +431,7 @@ describe("Players", function () {
         const outputAmount = 2;
         const tx = await world.addActionChoice(actionId, 2, {
           skill: EstforTypes.Skill.FIREMAKING,
-          diff: 0,
+          skillDiff: 0,
           xpPerHour: 3600,
           minXP: 0,
           rate,
@@ -490,7 +490,7 @@ describe("Players", function () {
       // Logs go in, nothing comes out
       tx = await world.addActionChoice(actionId, 1, {
         skill: EstforTypes.Skill.FIREMAKING,
-        diff: 0,
+        skillDiff: 0,
         xpPerHour: 3600,
         minXP: 0,
         rate,

@@ -440,7 +440,7 @@ describe("Combat Actions", function () {
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
         skill: EstforTypes.Skill.MAGIC,
-        diff: 2,
+        skillDiff: 2,
         xpPerHour: 0,
         minXP: 0,
         rate: scrollsConsumedRate,
@@ -602,7 +602,7 @@ describe("Combat Actions", function () {
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
         skill: EstforTypes.Skill.MAGIC,
-        diff: 5,
+        skillDiff: 5,
         xpPerHour: 0,
         minXP: 0,
         rate: scrollsConsumedRate,
@@ -834,7 +834,7 @@ describe("Combat Actions", function () {
           [
             {
               skill: EstforTypes.Skill.MAGIC,
-              diff: 2,
+              skillDiff: 2,
               xpPerHour: 0,
               minXP: 0,
               rate: scrollsConsumedRate,
@@ -850,7 +850,7 @@ describe("Combat Actions", function () {
             },
             {
               skill: EstforTypes.Skill.MAGIC,
-              diff: 2,
+              skillDiff: 2,
               xpPerHour: 0,
               minXP: 0,
               rate: scrollsConsumedRate,

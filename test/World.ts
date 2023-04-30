@@ -239,7 +239,7 @@ describe("World", function () {
       await expect(
         world.addActionChoice(EstforConstants.NONE, choiceId, {
           skill: EstforTypes.Skill.MAGIC,
-          diff: 2,
+          skillDiff: 2,
           xpPerHour: 0,
           minXP: 0,
           rate: 1 * RATE_MUL,

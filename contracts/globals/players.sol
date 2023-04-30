@@ -108,9 +108,6 @@ struct Item {
   // Minimum requirements in this skill to use this item (can be NONE)
   Skill skill;
   uint32 minXP;
-  // Noncombat skill
-  Skill skill1; // This is related to skillDiff1 (here to keep packing constant as this replaces an old field)
-  uint8 skillDiff1;
 }
 
 struct PlayerBoostInfo {
@@ -124,9 +121,9 @@ struct PlayerBoostInfo {
 // This is effectively a ratio to produce 1 of outputTokenId.
 // Fixed based available actions that can be undertaken for an action
 struct ActionChoice {
-  Skill skill;
-  uint32 minXP;
-  uint16 diff; //
+  Skill skill; // Skill that this action choice is related to
+  uint32 minXP; // Min XP in the skill to be able to do this action choice
+  int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
   uint16 inputTokenId1;
@@ -367,16 +364,9 @@ struct PlayerQuest {
   bool isFixed;
 }
 
-// Input only
-struct NonCombatStats {
-  Skill skill;
-  uint8 diff;
-}
-
 // Contains everything you need to create an item
 struct InputItem {
   CombatStats combatStats;
-  NonCombatStats nonCombatStats;
   uint16 tokenId;
   EquipPosition equipPosition;
   // Can it be transferred?

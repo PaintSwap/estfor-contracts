@@ -28,8 +28,6 @@ library ItemNFTLibrary {
       _item.rangeDefence = _inputItem.combatStats.rangeDefence;
       _item.health = _inputItem.combatStats.health;
     }
-    _item.skill1 = _inputItem.nonCombatStats.skill;
-    _item.skillDiff1 = _inputItem.nonCombatStats.diff;
 
     if (_inputItem.healthRestored != 0) {
       _item.healthRestored = _inputItem.healthRestored;

@@ -1,5 +1,5 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {ActionChoiceInput, PendingFlags} from "@paintswap/estfor-definitions/types";
+import {ActionChoiceInput} from "@paintswap/estfor-definitions/types";
 import {ContractTransaction} from "ethers";
 
 export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
@@ -46,7 +46,7 @@ export const bronzeHelmetStats: EstforTypes.CombatStats = {
 
 export const emptyActionChoice: ActionChoiceInput = {
   skill: EstforTypes.Skill.NONE,
-  diff: 0,
+  skillDiff: 0,
   rate: 0,
   xpPerHour: 0,
   minXP: 0,

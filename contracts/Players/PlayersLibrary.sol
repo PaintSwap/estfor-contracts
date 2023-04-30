@@ -412,7 +412,7 @@ library PlayersLibrary {
     if (_actionChoice.skill == Skill.MELEE) {
       dmgDealt = _dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
     } else if (_actionChoice.skill == Skill.MAGIC) {
-      _combatStats.magic += int16(_actionChoice.diff); // Extra magic damage
+      _combatStats.magic += _actionChoice.skillDiff; // Extra/Reduced magic damage
       dmgDealt = _dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
     }
   }

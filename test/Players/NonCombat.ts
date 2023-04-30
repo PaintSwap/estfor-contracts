@@ -191,7 +191,7 @@ describe("Non-Combat Actions", function () {
     // Logs go in, nothing comes out
     tx = await world.addActionChoice(actionId, 1, {
       skill: EstforTypes.Skill.FIREMAKING,
-      diff: 0,
+      skillDiff: 0,
       xpPerHour: 3600,
       minXP: 0,
       rate,
@@ -314,7 +314,7 @@ describe("Non-Combat Actions", function () {
     const firemakingRate = 1200 * RATE_MUL; // per hour
     tx = await world.addActionChoice(actionId, 1, {
       skill: EstforTypes.Skill.FIREMAKING,
-      diff: 0,
+      skillDiff: 0,
       xpPerHour: 3600,
       minXP: 0,
       rate: firemakingRate,
@@ -467,7 +467,7 @@ describe("Non-Combat Actions", function () {
       // Logs go in, nothing comes out
       tx = await world.addActionChoice(actionId, 1, {
         skill: EstforTypes.Skill.FIREMAKING,
-        diff: 0,
+        skillDiff: 0,
         xpPerHour: 3600,
         minXP: 0,
         rate,
@@ -615,7 +615,7 @@ describe("Non-Combat Actions", function () {
     // Ores go in, bars come out
     tx = await world.addActionChoice(actionId, 1, {
       skill: EstforTypes.Skill.SMITHING,
-      diff: 0,
+      skillDiff: 0,
       xpPerHour: 3600,
       minXP: 0,
       rate,

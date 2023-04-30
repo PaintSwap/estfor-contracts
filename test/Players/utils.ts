@@ -82,7 +82,7 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
   // Logs go in, nothing comes out
   tx = await world.addActionChoice(actionId, 1, {
     skill: EstforTypes.Skill.FIREMAKING,
-    diff: 0,
+    skillDiff: 0,
     xpPerHour: 3600,
     minXP,
     rate,
@@ -249,7 +249,7 @@ export const setupBasicCooking = async function (
   // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
   tx = await world.addActionChoice(actionId, 1, {
     skill: EstforTypes.Skill.COOKING,
-    diff: 0,
+    skillDiff: 0,
     xpPerHour: 3600,
     minXP: getXPFromLevel(minLevel),
     rate,
@@ -323,7 +323,7 @@ export const setupBasicCrafting = async function (
   // Logs go in, nothing comes out
   tx = await world.addActionChoice(actionId, 1, {
     skill: EstforTypes.Skill.CRAFTING,
-    diff: 0,
+    skillDiff: 0,
     xpPerHour: 3600,
     minXP: 0,
     rate,

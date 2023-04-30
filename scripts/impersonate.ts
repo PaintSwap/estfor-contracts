@@ -1,4 +1,3 @@
-import {PendingFlags} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {
   PLAYERS_ADDRESS,
