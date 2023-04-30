@@ -240,6 +240,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       uint[] memory rewardAmounts = new uint[](1);
       rewardAmounts[0] = 1;
       uint[] memory empty;
+      itemNFT.mint(msg.sender, rewardItemTokenIds[0], rewardAmounts[0]);
       emit QuestRewardConsumes(msg.sender, _playerId, rewardItemTokenIds, rewardAmounts, empty, empty);
     }
   }

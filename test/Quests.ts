@@ -228,18 +228,23 @@ describe("Quests", function () {
     const quest = {
       ...quest1,
       actionChoiceId: choiceId,
+      actionChoiceNum: 5,
       burnItemTokenId: COOKED_MINNUS,
+      burnAmount: 5,
     };
     await quests.addQuests([quest], [false], [defaultMinRequirements]);
     const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    console.log(pendingQueuedActionState.quests);
     await players.connect(alice).processActions(playerId);
 
     // Check it's completed
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest1.actionChoiceNum)
+      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum)
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
       1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
@@ -259,7 +264,9 @@ describe("Quests", function () {
     const quest = {
       ...quest1,
       actionChoiceId: choiceId,
+      actionChoiceNum: 5,
       burnItemTokenId: COOKED_MINNUS,
+      burnAmount: 5,
     };
     await quests.addQuests([quest], [false], [defaultMinRequirements]);
     const questId = quest.questId;
@@ -303,7 +310,7 @@ describe("Quests", function () {
     await players.connect(alice).processActions(playerId);
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest1.actionChoiceNum) + initialMintNum
+      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum) + initialMintNum
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
       1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
@@ -380,8 +387,8 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.rewardAmounts[1]).to.eq(1);
     expect(pendingQueuedActionState.quests.skills.length).to.eq(1);
     expect(pendingQueuedActionState.quests.xpGainedSkills.length).to.eq(1);
-    expect(pendingQueuedActionState.quests.skills[0]).to.eq(Skill.THIEVING);
-    expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(1500);
+    expect(pendingQueuedActionState.quests.skills[0]).to.eq(quest1.skillReward);
+    expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(quest1.skillXPGained);
     await players.connect(alice).processActions(playerId);
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUBY)).to.eq(1);
@@ -440,8 +447,8 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(100);
     expect(pendingQueuedActionState.quests.skills.length).to.eq(1);
     expect(pendingQueuedActionState.quests.xpGainedSkills.length).to.eq(1);
-    expect(pendingQueuedActionState.quests.skills[0]).to.eq(Skill.DEFENCE);
-    expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(2500);
+    expect(pendingQueuedActionState.quests.skills[0]).to.eq(quest1.skillReward);
+    expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(quest1.skillXPGained);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
       (rate * numSpawned) / (10 * SPAWN_MUL) - 5
@@ -537,7 +544,9 @@ describe("Quests", function () {
     const quest = {
       ...quest1,
       actionChoiceId: choiceId,
+      actionChoiceNum: 5,
       burnItemTokenId: COOKED_MINNUS,
+      burnAmount: 5,
       skillReward: Skill.WOODCUTTING,
       skillXPGained: 10000,
     };
