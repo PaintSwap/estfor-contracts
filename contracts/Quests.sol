@@ -266,17 +266,18 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   function buyBrushQuest(
+    address _from,
     address _to,
     uint _playerId,
     uint _minimumBrushBack
-  ) external payable isOwnerOfPlayerAndActive(_playerId) {
+  ) external payable onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
-    buyBrush(_to, _minimumBrushBack);
     if (playerQuest.questId != QUEST_PURSE_STRINGS) {
       revert InvalidActiveQuest();
     }
-
-    _questCompleted(msg.sender, _playerId, playerQuest.questId);
+    buyBrush(_to, _minimumBrushBack);
+    _questCompleted(_from, _playerId, playerQuest.questId);
+    success = true;
   }
 
   function buyBrush(address _to, uint _minimumBrushExpected) public payable {

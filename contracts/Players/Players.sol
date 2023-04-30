@@ -226,6 +226,24 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
+  function buyBrushQuest(
+    address _to,
+    uint _playerId,
+    uint _questId
+  ) external payable isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+    // This is a one off quest
+    bool success = quests.buyBrushQuest{value: msg.value}(msg.sender, _to, _playerId, _questId);
+    if (success) {
+      // Mint reward, just hardcoding for gas saving
+      uint[] memory rewardItemTokenIds = new uint[](1);
+      rewardItemTokenIds[0] = GATHERING_BOOST;
+      uint[] memory rewardAmounts = new uint[](1);
+      rewardAmounts[0] = 1;
+      uint[] memory empty;
+      emit QuestRewardConsumes(msg.sender, _playerId, rewardItemTokenIds, rewardAmounts, empty, empty);
+    }
+  }
+
   function activateQuest(
     uint _playerId,
     uint questId

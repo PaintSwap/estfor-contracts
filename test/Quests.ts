@@ -173,11 +173,11 @@ describe("Quests", function () {
 
   describe("Brush buying quest", function () {
     it("Quest not activated", async function () {
-      const {alice, playerId, quests} = await loadFixture(questsFixture);
+      const {alice, playerId, quests, players} = await loadFixture(questsFixture);
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
       await quests.addQuests([quest], [false], [defaultMinRequirements]);
       await expect(
-        quests.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10})
+        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10})
       ).to.be.revertedWithCustomError(quests, "InvalidActiveQuest");
     });
 
@@ -188,12 +188,12 @@ describe("Quests", function () {
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
       await expect(
-        quests.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 0})
+        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 0})
       ).to.be.revertedWithCustomError(quests, "InvalidFTMAmount");
     });
 
     it("Quest completed", async function () {
-      const {alice, playerId, quests, players, brush} = await loadFixture(questsFixture);
+      const {alice, playerId, quests, players, brush, itemNFT} = await loadFixture(questsFixture);
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as Quest;
       await quests.addQuests([quest], [false], [defaultMinRequirements]);
       const questId = quest.questId;
@@ -201,13 +201,16 @@ describe("Quests", function () {
       await players.connect(alice).activateQuest(playerId, questId);
       expect((await quests.activeQuests(playerId)).questId).to.be.eq(questId);
       const balanceBefore = await brush.balanceOf(alice.address);
-      await quests.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10});
+      await players.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10});
       const balanceAfter = await brush.balanceOf(alice.address);
       expect(balanceBefore.add(1)).to.eq(balanceAfter);
 
       // Check it's completed and no longer considered active
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
       expect((await quests.activeQuests(playerId)).questId).to.be.eq(0);
+
+      // Check the rewards are as expected
+      expect(await itemNFT.balanceOf(alice.address, quest.rewardItemTokenId)).to.eq(quest.rewardAmount);
     });
   });
 
