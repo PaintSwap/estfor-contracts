@@ -48,7 +48,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   event NewRandomQuest(Quest randomQuest, uint oldQuestId);
   event ActivateNewQuest(uint playerId, uint questId);
   event DeactivateQuest(uint playerId, uint questId);
-  event QuestCompleted(uint playerId, uint questId);
+  event QuestCompleted(address from, uint playerId, uint questId);
   event UpdateQuestProgress(uint playerId, PlayerQuest playerQuest);
 
   error NotWorld();
@@ -226,7 +226,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
         uint questId = _questsCompleted[i];
-        _questCompleted(_playerId, questId);
+        _questCompleted(msg.sender, _playerId, questId);
       }
     } else {
       // Update the quest progress
@@ -276,7 +276,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       revert InvalidActiveQuest();
     }
 
-    _questCompleted(_playerId, playerQuest.questId);
+    _questCompleted(msg.sender, _playerId, playerQuest.questId);
   }
 
   function buyBrush(address _to, uint _minimumBrushExpected) public payable {
@@ -421,8 +421,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     return allFixedQuests[questId].burnItemTokenId;
   }
 
-  function _questCompleted(uint _playerId, uint _questId) private {
-    emit QuestCompleted(_playerId, _questId);
+  function _questCompleted(address _from, uint _playerId, uint _questId) private {
+    emit QuestCompleted(_from, _playerId, _questId);
     questsCompleted[_playerId].set(_questId);
     delete activeQuests[_playerId];
     ++playerInfo[_playerId].numFixedQuestsCompleted;
