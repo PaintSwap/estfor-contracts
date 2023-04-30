@@ -460,7 +460,7 @@ library PlayersLibrary {
         _enemyCombatStats.health
       );
       numKilled = _elapsedTime / combatTimePerKill;
-      combatElapsedTime = _elapsedTime; // How time was spent in combat
+      combatElapsedTime = _elapsedTime; // How much time was spent in combat
     }
 
     xpElapsedTime = respawnTime * numKilled;

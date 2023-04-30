@@ -278,27 +278,20 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
     });
 
-    it("Multi-hour respawn time", async function () {
-      const {
-        playerId,
-        players,
-        itemNFT,
-        alice,
-        queuedAction: meleeQueuedAction,
-        world,
-      } = await loadFixture(playersFixtureMelee);
+    it("Multi-hour respawn time, can kill all", async function () {
+      const {playerId, players, alice, queuedAction: meleeQueuedAction, world} = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 80,
-        magic: 80,
-        range: 80,
-        meleeDefence: 80,
-        magicDefence: 80,
-        rangeDefence: 80,
-        health: 1200,
+        melee: 10,
+        magic: 0,
+        range: 0,
+        meleeDefence: 10,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 70,
       };
 
-      const numSpawned = 10 * SPAWN_MUL;
+      const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
       let tx = await world.addAction({
         actionId: 2,
         info: {
@@ -321,6 +314,62 @@ describe("Combat Actions", function () {
 
       const queuedAction = {...meleeQueuedAction};
       queuedAction.actionId = actionId;
+      queuedAction.timespan = 7200;
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const time = 3600;
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await ethers.provider.send("evm_mine", []);
+
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(0);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Haven't killed any yet
+      await players.connect(alice).processActions(playerId);
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await ethers.provider.send("evm_mine", []);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(14);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(7200 + 7200 / 3); // Killed 1
+    });
+
+    it("Multi-hour respawn time, cannot kill", async function () {
+      const {playerId, players, alice, queuedAction: meleeQueuedAction, world} = await loadFixture(playersFixtureMelee);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 1,
+        magic: 0,
+        range: 0,
+        meleeDefence: 80,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 32000,
+      };
+
+      const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
+      let tx = await world.addAction({
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      const queuedAction = {...meleeQueuedAction};
+      queuedAction.actionId = actionId;
+      queuedAction.timespan = 7200;
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       const time = 3600;
@@ -329,15 +378,14 @@ describe("Combat Actions", function () {
 
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(EstforConstants.COOKED_MINNUS);
-      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(255);
-
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Haven't killed any yet
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
-
-      // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await ethers.provider.send("evm_mine", []);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(10);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Killed none
     });
   });
 
