@@ -27,8 +27,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
   event RequestFulfilled(uint requestId, uint[3] randomWords);
   event AddAction(Action action);
-  event AddActions(Action[] action);
-  event EditActions(Action[] action);
+  event AddActions(Action[] actions);
+  event EditActions(Action[] actions);
   event SetAvailableAction(uint16 actionId, bool available);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
