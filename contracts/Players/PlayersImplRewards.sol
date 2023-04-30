@@ -144,17 +144,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
         Equipment[] memory consumedEquipments;
-        Equipment memory outputEquipment;
+        Equipment memory producedEquipment;
         uint24 numConsumed;
-        uint24 numProduced;
         (
           consumedEquipments,
-          outputEquipment,
+          producedEquipment,
           xpElapsedTime,
           prevXPElapsedTime,
           died,
-          numConsumed,
-          numProduced
+          numConsumed
         ) = _completeProcessConsumablesView(
           from,
           _playerId,
@@ -169,7 +167,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
         uint numChoicesCompleted;
         if (actionSkill == Skill.COOKING) {
-          numChoicesCompleted = numProduced; // Assume we want amount cooked
+          numChoicesCompleted = producedEquipment.amount; // Assume we want amount cooked
         } else {
           numChoicesCompleted = numConsumed;
         }
@@ -193,9 +191,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           actionIdsLength = actionIdsLength.inc();
         }
 
-        if (outputEquipment.itemTokenId != NONE) {
-          pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = outputEquipment.itemTokenId;
-          pendingQueuedActionEquipmentState.producedAmounts[producedLength] = outputEquipment.amount;
+        if (producedEquipment.itemTokenId != NONE) {
+          pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = producedEquipment.itemTokenId;
+          pendingQueuedActionEquipmentState.producedAmounts[producedLength] = producedEquipment.amount;
           producedLength = producedLength.inc();
         }
         U256 consumedEquipmentLength = consumedEquipments.length.asU256();
@@ -978,12 +976,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     view
     returns (
       Equipment[] memory consumedEquipment,
-      Equipment memory outputEquipment,
+      Equipment memory producedEquipment,
       uint xpElapsedTime,
       uint prevXPElapsedTime,
       bool died,
-      uint24 numConsumed,
-      uint24 numProduced
+      uint24 numConsumed
     )
   {
     bytes memory data = _staticcall(
@@ -1001,7 +998,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _pendingQueuedActionXPGained
       )
     );
-    return abi.decode(data, (Equipment[], Equipment, uint, uint, bool, uint24, uint24));
+    return abi.decode(data, (Equipment[], Equipment, uint, uint, bool, uint24));
   }
 
   function _getHealthPointsFromCombat(

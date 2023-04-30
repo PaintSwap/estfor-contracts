@@ -284,12 +284,11 @@ interface IPlayersProcessActionsDelegateView {
     view
     returns (
       Equipment[] memory consumedEquipments,
-      Equipment memory outputEquipment,
+      Equipment memory producedEquipment,
       uint xpElapsedTime,
       uint prevXPElapsedTime,
       bool died,
-      uint24 numConsumed,
-      uint24 numProduced
+      uint24 numConsumed
     );
 }
 
@@ -321,11 +320,10 @@ interface IPlayersMiscDelegateView {
     view
     returns (
       Equipment[] memory consumedEquipment,
-      Equipment memory outputEquipment,
+      Equipment memory producedEquipment,
       uint xpElapsedTime,
       bool died,
-      uint24 numConsumed,
-      uint24 numProduced
+      uint24 numConsumed
     );
 }
 

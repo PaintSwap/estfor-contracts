@@ -400,9 +400,6 @@ library PlayersLibrary {
         _betaCombat,
         _enemyHealth
       );
-    } else if (_actionChoice.skill == Skill.RANGE) {
-      // Add later
-      //        timeToKill = _timeToKill(_combatStats.range, _enemyCombatStats.rangeDefence, _alphaCombat, _betaCombat, _enemyHealth);
     }
   }
 
@@ -419,10 +416,6 @@ library PlayersLibrary {
     } else if (_actionChoice.skill == Skill.MAGIC) {
       _combatStats.magic += int16(_actionChoice.diff); // Extra magic damage
       dmgDealt = _dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
-    } else if (_actionChoice.skill == Skill.RANGE) {
-      // Add later
-      //        _combatStats.range += int16(int32(_actionChoice.diff)); // Extra magic damage
-      //        totalHealthDealt = _dmg(_combatStats.range, _enemyCombatStats.rangeDefence, _alphaCombat, _betaCombat, _elapsedTime);
     }
   }
 

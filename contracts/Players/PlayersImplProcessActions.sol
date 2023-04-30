@@ -357,12 +357,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     view
     returns (
       Equipment[] memory consumedEquipments,
-      Equipment memory outputEquipment,
+      Equipment memory producedEquipment,
       uint xpElapsedTime,
       uint prevXPElapsedTime,
       bool died,
-      uint24 numConsumed,
-      uint24 numProduced
+      uint24 numConsumed
     )
   {
     // Processed
@@ -374,11 +373,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       // Used before
       (
         Equipment[] memory _consumedEquipments,
-        Equipment memory _outputEquipment,
+        Equipment memory _producedEquipment,
         uint _xpElapsedTime,
         bool _died,
-        uint _numConsumed,
-        uint _numProduced
+        uint _numConsumed
       ) = _processConsumablesView(
           from,
           _playerId,
@@ -409,16 +407,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           extendedPendingQueuedActionEquipmentState.producedAmounts[j] = _consumedEquipments[j].amount;
         }
       }
-      if (outputEquipment.itemTokenId != NONE) {
-        // Add to produced
+      if (_producedEquipment.itemTokenId != NONE) {
+        // Add to consumed
         extendedPendingQueuedActionEquipmentState.consumedItemTokenIds = new uint[](1);
         extendedPendingQueuedActionEquipmentState.consumedAmounts = new uint[](1);
-        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds[0] = outputEquipment.itemTokenId;
-        extendedPendingQueuedActionEquipmentState.consumedAmounts[0] = outputEquipment.amount;
+        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds[0] = _producedEquipment.itemTokenId;
+        extendedPendingQueuedActionEquipmentState.consumedAmounts[0] = _producedEquipment.amount;
       }
 
       Equipment[] memory __consumedEquipments;
-      (__consumedEquipments, outputEquipment, xpElapsedTime, died, numConsumed, numProduced) = _processConsumablesView(
+      (__consumedEquipments, producedEquipment, xpElapsedTime, died, numConsumed) = _processConsumablesView(
         from,
         _playerId,
         queuedAction,
@@ -456,16 +454,15 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       // Do the same for outputEquipment, check if it exists and subtract amount
-      outputEquipment.amount = uint24(outputEquipment.amount.sub(_outputEquipment.amount));
-      if (outputEquipment.amount == 0) {
-        outputEquipment.itemTokenId = NONE;
+      producedEquipment.amount = uint24(producedEquipment.amount.sub(_producedEquipment.amount));
+      if (producedEquipment.amount == 0) {
+        producedEquipment.itemTokenId = NONE;
       }
 
       xpElapsedTime = xpElapsedTime.sub(_xpElapsedTime);
       numConsumed = uint24(numConsumed.sub(_numConsumed));
-      numProduced = uint24(numProduced.sub(_numProduced));
     } else {
-      (consumedEquipments, outputEquipment, xpElapsedTime, died, numConsumed, numProduced) = _processConsumablesView(
+      (consumedEquipments, producedEquipment, xpElapsedTime, died, numConsumed) = _processConsumablesView(
         from,
         _playerId,
         queuedAction,
@@ -496,11 +493,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     view
     returns (
       Equipment[] memory consumedEquipment,
-      Equipment memory outputEquipment,
+      Equipment memory producedEquipment,
       uint xpElapsedTime,
       bool died,
-      uint24 numConsumed,
-      uint24 numProduced
+      uint24 numConsumed
     )
   {
     bytes memory data = _staticcall(
@@ -519,7 +515,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _pendingQueuedActionXPGained
       )
     );
-    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint24, uint24));
+    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint24));
   }
 
   function _claimTotalXPThresholdRewards(address _from, uint _playerId, uint _oldTotalXP, uint _newTotalXP) private {

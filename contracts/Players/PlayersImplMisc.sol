@@ -315,11 +315,10 @@ contract PlayersImplMisc is
     view
     returns (
       Equipment[] memory consumedEquipment,
-      Equipment memory outputEquipment,
+      Equipment memory producedEquipment,
       uint xpElapsedTime,
       bool died,
-      uint24 numConsumed,
-      uint24 numProduced
+      uint24 numConsumed
     )
   {
     consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
@@ -416,7 +415,8 @@ contract PlayersImplMisc is
         successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost));
       }
 
-      numProduced = uint24((numConsumed * _actionChoice.outputAmount * successPercent) / 100);
+      // Some might be burnt cooking for instance
+      uint24 numProduced = uint24((numConsumed * _actionChoice.outputAmount * successPercent) / 100);
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
@@ -426,7 +426,7 @@ contract PlayersImplMisc is
       }
 
       if (numProduced != 0) {
-        outputEquipment = Equipment(_actionChoice.outputTokenId, numProduced);
+        producedEquipment = Equipment(_actionChoice.outputTokenId, numProduced);
       }
     }
 
