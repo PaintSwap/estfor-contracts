@@ -332,7 +332,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       PlayerQuest[] memory activeQuestsCompletionInfo
     )
   {
-    // Handle active request
+    // Handle active quest
     PlayerQuest memory questCompletionInfo = activeQuests[_playerId];
     if (questCompletionInfo.questId != 0) {
       activeQuestsCompletionInfo = new PlayerQuest[](2);
