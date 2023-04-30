@@ -41,10 +41,10 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint pendingQueuedActionXPGainedLength;
 
     // This is used so that we can start the full XP calculation using the same stats as before
-    pendingQueuedActionXPGained.alreadyProcessedSkill = player.queuedActionAlreadyProcessedSkill;
-    pendingQueuedActionXPGained.alreadyProcessedXPGained = player.queuedActionAlreadyProcessedXPGained;
-    pendingQueuedActionXPGained.alreadyProcessedSkill1 = player.queuedActionAlreadyProcessedSkill1;
-    pendingQueuedActionXPGained.alreadyProcessedXPGained1 = player.queuedActionAlreadyProcessedXPGained1;
+    pendingQueuedActionXPGained.prevProcessedSkill = player.queuedActionPrevProcessedSkill;
+    pendingQueuedActionXPGained.prevProcessedXPGained = player.queuedActionAlreadyProcessedXPGained;
+    pendingQueuedActionXPGained.prevProcessedSkill1 = player.queuedActionPrevProcessedSkill1;
+    pendingQueuedActionXPGained.prevProcessedXPGained1 = player.queuedActionAlreadyProcessedXPGained1;
 
     pendingQueuedActionState.remainingSkills = new QueuedAction[](actionQueue.length);
     uint remainingSkillsLength;
@@ -349,31 +349,31 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         );
         remainingSkillsLength = remainingSkillsLength.inc();
 
-        if (i == 0 && pendingQueuedActionXPGained.alreadyProcessedSkill == skill) {
+        if (i == 0 && pendingQueuedActionXPGained.prevProcessedSkill == skill) {
           // Append it
-          pendingQueuedActionXPGained.alreadyProcessedXPGained += uint24(pointsAccrued);
+          pendingQueuedActionXPGained.prevProcessedXPGained += uint24(pointsAccrued);
           if (hasCombatXP) {
-            pendingQueuedActionXPGained.alreadyProcessedSkill1 = Skill.HEALTH;
-            pendingQueuedActionXPGained.alreadyProcessedXPGained1 += uint24(healthPointsGained);
+            pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.HEALTH;
+            pendingQueuedActionXPGained.prevProcessedXPGained1 += uint24(healthPointsGained);
           }
         } else {
           // Set it absolutely, this is a fresh "first action"
-          pendingQueuedActionXPGained.alreadyProcessedSkill = skill;
-          pendingQueuedActionXPGained.alreadyProcessedXPGained = uint24(pointsAccrued);
+          pendingQueuedActionXPGained.prevProcessedSkill = skill;
+          pendingQueuedActionXPGained.prevProcessedXPGained = uint24(pointsAccrued);
           if (hasCombatXP) {
-            pendingQueuedActionXPGained.alreadyProcessedSkill1 = Skill.HEALTH;
-            pendingQueuedActionXPGained.alreadyProcessedXPGained1 = uint24(healthPointsGained);
+            pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.HEALTH;
+            pendingQueuedActionXPGained.prevProcessedXPGained1 = uint24(healthPointsGained);
           } else {
-            pendingQueuedActionXPGained.alreadyProcessedSkill1 = Skill.NONE;
-            pendingQueuedActionXPGained.alreadyProcessedXPGained1 = 0;
+            pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.NONE;
+            pendingQueuedActionXPGained.prevProcessedXPGained1 = 0;
           }
         }
       } else {
         // Clear it
-        pendingQueuedActionXPGained.alreadyProcessedSkill = Skill.NONE;
-        pendingQueuedActionXPGained.alreadyProcessedXPGained = 0;
-        pendingQueuedActionXPGained.alreadyProcessedSkill1 = Skill.NONE;
-        pendingQueuedActionXPGained.alreadyProcessedXPGained1 = 0;
+        pendingQueuedActionXPGained.prevProcessedSkill = Skill.NONE;
+        pendingQueuedActionXPGained.prevProcessedXPGained = 0;
+        pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.NONE;
+        pendingQueuedActionXPGained.prevProcessedXPGained1 = 0;
       }
       // Include loot
       {
@@ -567,7 +567,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   function _getRewards(
     uint _playerId,
     uint40 _skillStartTime,
-    uint _elapsedTime,
+    uint _xpElapsedTime,
     uint16 _actionId,
     PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   ) private view returns (uint[] memory ids, uint[] memory amounts) {
@@ -577,7 +577,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     ids = new uint[](MAX_REWARDS_PER_ACTION);
     amounts = new uint[](MAX_REWARDS_PER_ACTION);
 
-    uint16 monstersKilled = uint16((numSpawnedPerHour * _elapsedTime) / (SPAWN_MUL * 3600));
+    uint16 monstersKilled = uint16((numSpawnedPerHour * _xpElapsedTime) / (SPAWN_MUL * 3600));
     uint8 successPercent = _getSuccessPercent(
       _playerId,
       _actionId,
@@ -589,7 +589,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint length = _appendGuaranteedRewards(
       ids,
       amounts,
-      _elapsedTime,
+      _xpElapsedTime,
       actionRewards,
       monstersKilled,
       isCombat,
@@ -600,8 +600,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     (length, processedAny) = _appendRandomRewards(
       _playerId,
       _skillStartTime,
-      _elapsedTime,
-      isCombat ? monstersKilled : _elapsedTime / 3600,
+      _xpElapsedTime,
+      isCombat ? monstersKilled : _xpElapsedTime / 3600,
       ids,
       amounts,
       length,
@@ -611,7 +611,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
     // Check for any boosts
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-    uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
+    uint boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _xpElapsedTime, activeBoost);
     if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
       U256 bounds = length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {

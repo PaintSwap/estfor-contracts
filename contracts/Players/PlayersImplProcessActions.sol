@@ -372,11 +372,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     if (processedTime > 0) {
       // Used before
       (
-        Equipment[] memory _consumedEquipments,
-        Equipment memory _producedEquipment,
-        uint _xpElapsedTime,
-        bool _died,
-        uint _numConsumed
+        Equipment[] memory prevConsumedEquipments,
+        Equipment memory prevProducedEquipment,
+        uint _prevXPElapsedTime,
+        bool prevDied,
+        uint prevNumConsumed
       ) = _processConsumablesView(
           from,
           _playerId,
@@ -390,7 +390,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           _pendingQueuedActionXPGained
         );
 
-      prevXPElapsedTime = _xpElapsedTime;
+      prevXPElapsedTime = _prevXPElapsedTime;
 
       // Copy existing pending
       PendingQueuedActionEquipmentState
@@ -398,21 +398,21 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           pendingQueuedActionEquipmentStates.length - 1
         ];
 
-      if (_consumedEquipments.length > 0) {
+      if (prevConsumedEquipments.length > 0) {
         // Add to produced
-        extendedPendingQueuedActionEquipmentState.producedItemTokenIds = new uint[](_consumedEquipments.length);
-        extendedPendingQueuedActionEquipmentState.producedAmounts = new uint[](_consumedEquipments.length);
-        for (uint j = 0; j < _consumedEquipments.length; ++j) {
-          extendedPendingQueuedActionEquipmentState.producedItemTokenIds[j] = _consumedEquipments[j].itemTokenId;
-          extendedPendingQueuedActionEquipmentState.producedAmounts[j] = _consumedEquipments[j].amount;
+        extendedPendingQueuedActionEquipmentState.producedItemTokenIds = new uint[](prevConsumedEquipments.length);
+        extendedPendingQueuedActionEquipmentState.producedAmounts = new uint[](prevConsumedEquipments.length);
+        for (uint j = 0; j < prevConsumedEquipments.length; ++j) {
+          extendedPendingQueuedActionEquipmentState.producedItemTokenIds[j] = prevConsumedEquipments[j].itemTokenId;
+          extendedPendingQueuedActionEquipmentState.producedAmounts[j] = prevConsumedEquipments[j].amount;
         }
       }
-      if (_producedEquipment.itemTokenId != NONE) {
+      if (prevProducedEquipment.itemTokenId != NONE) {
         // Add to consumed
         extendedPendingQueuedActionEquipmentState.consumedItemTokenIds = new uint[](1);
         extendedPendingQueuedActionEquipmentState.consumedAmounts = new uint[](1);
-        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds[0] = _producedEquipment.itemTokenId;
-        extendedPendingQueuedActionEquipmentState.consumedAmounts[0] = _producedEquipment.amount;
+        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds[0] = prevProducedEquipment.itemTokenId;
+        extendedPendingQueuedActionEquipmentState.consumedAmounts[0] = prevProducedEquipment.amount;
       }
 
       Equipment[] memory __consumedEquipments;
@@ -437,9 +437,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       for (uint j = 0; j < __consumedEquipments.length; ++j) {
         // Check if it exists in _consumedEquipments and if so, subtract the amount
         bool nonZero = true;
-        for (uint k = 0; k < _consumedEquipments.length; ++k) {
-          if (__consumedEquipments[j].itemTokenId == _consumedEquipments[k].itemTokenId) {
-            __consumedEquipments[j].amount = uint24(__consumedEquipments[j].amount.sub(_consumedEquipments[k].amount));
+        for (uint k = 0; k < prevConsumedEquipments.length; ++k) {
+          if (__consumedEquipments[j].itemTokenId == prevConsumedEquipments[k].itemTokenId) {
+            __consumedEquipments[j].amount = uint24(
+              __consumedEquipments[j].amount.sub(prevConsumedEquipments[k].amount)
+            );
             nonZero = __consumedEquipments[j].amount != 0;
             break;
           }
@@ -454,13 +456,13 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       // Do the same for outputEquipment, check if it exists and subtract amount
-      producedEquipment.amount = uint24(producedEquipment.amount.sub(_producedEquipment.amount));
+      producedEquipment.amount = uint24(producedEquipment.amount.sub(prevProducedEquipment.amount));
       if (producedEquipment.amount == 0) {
         producedEquipment.itemTokenId = NONE;
       }
 
-      xpElapsedTime = xpElapsedTime.sub(_xpElapsedTime);
-      numConsumed = uint24(numConsumed.sub(_numConsumed));
+      xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
+      numConsumed = uint24(numConsumed.sub(prevNumConsumed));
     } else {
       (consumedEquipments, producedEquipment, xpElapsedTime, died, numConsumed) = _processConsumablesView(
         from,

@@ -73,6 +73,8 @@ interface IPlayerDelegate {
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
   using UnsafeMath for U256;
 
+  event GamePaused(bool gamePaused);
+
   error InvalidSelector();
   error GameIsPaused();
 
@@ -180,10 +182,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     } else {
       players_[_playerId].queuedActionStartTime = 0;
     }
-    players_[_playerId].queuedActionAlreadyProcessedSkill = pendingQueuedActionXPGained.alreadyProcessedSkill;
-    players_[_playerId].queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.alreadyProcessedXPGained;
-    players_[_playerId].queuedActionAlreadyProcessedSkill1 = pendingQueuedActionXPGained.alreadyProcessedSkill1;
-    players_[_playerId].queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.alreadyProcessedXPGained1;
+    players_[_playerId].queuedActionPrevProcessedSkill = pendingQueuedActionXPGained.prevProcessedSkill;
+    players_[_playerId].queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.prevProcessedXPGained;
+    players_[_playerId].queuedActionPrevProcessedSkill1 = pendingQueuedActionXPGained.prevProcessedSkill1;
+    players_[_playerId].queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.prevProcessedXPGained1;
 
     _setActionQueue(msg.sender, _playerId, remainingSkillQueue, block.timestamp);
   }
@@ -379,6 +381,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function pauseGame(bool _gamePaused) external onlyOwner {
     gamePaused = _gamePaused;
+    emit GamePaused(_gamePaused);
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {

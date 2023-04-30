@@ -53,9 +53,9 @@ struct Player {
   // Combat levels, (Cached from skill points so this doesn't need to be calculated every combat)
   uint40 queuedActionStartTime; // The start time of the first queued action
   // For combat this will be attack, defence, magic or ranged, as well as health
-  Skill queuedActionAlreadyProcessedSkill; // The skill that the queued action has already gained XP in
+  Skill queuedActionPrevProcessedSkill; // The skill that the queued action has already gained XP in
   uint24 queuedActionAlreadyProcessedXPGained; // The amount of XP that the queued action has already gained
-  Skill queuedActionAlreadyProcessedSkill1;
+  Skill queuedActionPrevProcessedSkill1;
   uint24 queuedActionAlreadyProcessedXPGained1;
   Skill skillBoosted1;
   Skill skillBoosted2;
@@ -216,10 +216,10 @@ struct PendingQueuedActionXPGained {
   // XP gained during this session
   Skill[] skills;
   uint32[] xpGainedSkills;
-  Skill alreadyProcessedSkill;
-  uint24 alreadyProcessedXPGained;
-  Skill alreadyProcessedSkill1;
-  uint24 alreadyProcessedXPGained1;
+  Skill prevProcessedSkill;
+  uint24 prevProcessedXPGained;
+  Skill prevProcessedSkill1;
+  uint24 prevProcessedXPGained1;
 }
 
 struct QuestState {

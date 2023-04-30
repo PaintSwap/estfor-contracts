@@ -78,15 +78,15 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || _queueStatus == ActionQueueStatus.APPEND) &&
       remainingSkills.length != 0
     ) {
-      player.queuedActionAlreadyProcessedSkill = pendingQueuedActionXPGained.alreadyProcessedSkill;
-      player.queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.alreadyProcessedXPGained;
-      player.queuedActionAlreadyProcessedSkill1 = pendingQueuedActionXPGained.alreadyProcessedSkill1;
-      player.queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.alreadyProcessedXPGained1;
+      player.queuedActionPrevProcessedSkill = pendingQueuedActionXPGained.prevProcessedSkill;
+      player.queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.prevProcessedXPGained;
+      player.queuedActionPrevProcessedSkill1 = pendingQueuedActionXPGained.prevProcessedSkill1;
+      player.queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.prevProcessedXPGained1;
     } else {
       // clear it
-      player.queuedActionAlreadyProcessedSkill = Skill.NONE;
+      player.queuedActionPrevProcessedSkill = Skill.NONE;
       player.queuedActionAlreadyProcessedXPGained = 0;
-      player.queuedActionAlreadyProcessedSkill1 = Skill.NONE;
+      player.queuedActionPrevProcessedSkill1 = Skill.NONE;
       player.queuedActionAlreadyProcessedXPGained1 = 0;
     }
 
@@ -467,9 +467,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _processActions(_from, _playerId);
     // Ensure player info is cleared
     players_[_playerId].queuedActionStartTime = 0;
-    players_[_playerId].queuedActionAlreadyProcessedSkill = Skill.NONE;
+    players_[_playerId].queuedActionPrevProcessedSkill = Skill.NONE;
     players_[_playerId].queuedActionAlreadyProcessedXPGained = 0;
-    players_[_playerId].queuedActionAlreadyProcessedSkill1 = Skill.NONE;
+    players_[_playerId].queuedActionPrevProcessedSkill1 = Skill.NONE;
     players_[_playerId].queuedActionAlreadyProcessedXPGained1 = 0;
 
     emit ClearAll(_from, _playerId);

@@ -29,14 +29,14 @@ library PlayersLibrary {
 
   // Show all the player stats, return metadata json
   function uri(
-    string calldata playerName,
+    string calldata _playerName,
     PackedXP storage _packedXP,
-    string calldata avatarName,
-    string calldata avatarDescription,
-    string calldata imageURI,
-    bool isAlpha,
-    uint playerId,
-    string calldata clanName
+    string calldata _avatarName,
+    string calldata _avatarDescription,
+    string calldata _imageURI,
+    bool _isAlpha,
+    uint _playerId,
+    string calldata _clanName
   ) external view returns (string memory) {
     uint overallLevel = getLevel(readXP(Skill.MELEE, _packedXP)) +
       getLevel(readXP(Skill.MAGIC, _packedXP)) +
@@ -53,9 +53,9 @@ library PlayersLibrary {
 
     string memory attributes = string(
       abi.encodePacked(
-        _getTraitStringJSON("Avatar", avatarName),
+        _getTraitStringJSON("Avatar", _avatarName),
         ",",
-        _getTraitStringJSON("Clan", clanName),
+        _getTraitStringJSON("Clan", _clanName),
         ",",
         _getTraitNumberJSON("Melee level", getLevel(readXP(Skill.MELEE, _packedXP))),
         ",",
@@ -85,12 +85,12 @@ library PlayersLibrary {
       )
     );
 
-    bytes memory fullName = abi.encodePacked(playerName, " (", overallLevel.toString(), ")");
+    bytes memory fullName = abi.encodePacked(_playerName, " (", overallLevel.toString(), ")");
     bytes memory externalURL = abi.encodePacked(
       "https://",
-      isAlpha ? "alpha." : "",
+      _isAlpha ? "alpha." : "",
       "estfor.com/game/journal/",
-      playerId.toString()
+      _playerId.toString()
     );
 
     string memory json = Base64.encode(
@@ -98,11 +98,11 @@ library PlayersLibrary {
         '{"name":"',
         fullName,
         '","description":"',
-        avatarDescription,
+        _avatarDescription,
         '","attributes":[',
         attributes,
         '],"image":"',
-        imageURI,
+        _imageURI,
         '", "external_url":"',
         externalURL,
         '"}'
@@ -112,16 +112,16 @@ library PlayersLibrary {
     return string(abi.encodePacked("data:application/json;base64,", json));
   }
 
-  function _getTraitStringJSON(string memory traitType, string memory value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(traitType), '"', value, '"}');
+  function _getTraitStringJSON(string memory _traitType, string memory _value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(_traitType), '"', _value, '"}');
   }
 
-  function _getTraitNumberJSON(string memory traitType, uint32 value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(traitType), value.toString(), "}");
+  function _getTraitNumberJSON(string memory _traitType, uint32 _value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(_traitType), _value.toString(), "}");
   }
 
-  function _getTraitTypeJSON(string memory traitType) private pure returns (bytes memory) {
-    return abi.encodePacked('{"trait_type":"', traitType, '","value":');
+  function _getTraitTypeJSON(string memory _traitType) private pure returns (bytes memory) {
+    return abi.encodePacked('{"trait_type":"', _traitType, '","value":');
   }
 
   // Index not level, add one after (check for > max)
@@ -238,8 +238,6 @@ library PlayersLibrary {
       _betaCombat,
       _combatElapsedTime
     );
-    //    totalHealthLost +=  _dmg(_enemyCombatStats.range, _combatStats.rangeDefence, _alphaCombat, _betaCombat, _combatElapsedTime);
-
     if (int32(totalHealthLost) > _combatStats.health) {
       // Take away our health points from the total dealt
       totalHealthLost -= uint16(int16(_max(0, _combatStats.health)));
@@ -717,10 +715,10 @@ library PlayersLibrary {
     PackedXP storage packedXP
   ) public view returns (uint) {
     uint xp = readXP(_skill, packedXP);
-    if (_pendingQueuedActionXPGained.alreadyProcessedSkill == _skill) {
-      xp -= _pendingQueuedActionXPGained.alreadyProcessedXPGained;
-    } else if (_pendingQueuedActionXPGained.alreadyProcessedSkill1 == _skill) {
-      xp -= _pendingQueuedActionXPGained.alreadyProcessedXPGained1;
+    if (_pendingQueuedActionXPGained.prevProcessedSkill == _skill) {
+      xp -= _pendingQueuedActionXPGained.prevProcessedXPGained;
+    } else if (_pendingQueuedActionXPGained.prevProcessedSkill1 == _skill) {
+      xp -= _pendingQueuedActionXPGained.prevProcessedXPGained1;
     }
 
     // Add any new xp gained from previous actions completed in the queue. For instance
