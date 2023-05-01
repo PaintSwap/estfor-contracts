@@ -202,7 +202,7 @@ export const allQuests: Quest[] = [
   },
 ];
 
-export const allQuestsRandomFlags: boolean[] = [false, false, false];
+export const allQuestsRandomFlags: boolean[] = [false, false, false, false, false, false, false, false];
 
 type MinRequirement = {
   skill: Skill;

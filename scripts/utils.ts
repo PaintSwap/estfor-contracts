@@ -1,8 +1,9 @@
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {BigNumber} from "ethers";
-import {run} from "hardhat";
+import {ethers, run} from "hardhat";
 import {PlayerNFT} from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
+import {Network} from "@ethersproject/providers";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -33,4 +34,8 @@ export const verifyContracts = async (addresses: string[]) => {
     });
   }
   console.log("Verified all contracts");
+};
+
+export const isDevNetwork = (network: Network): boolean => {
+  return network.chainId == 31337 || network.chainId == 1337;
 };

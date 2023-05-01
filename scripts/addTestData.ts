@@ -1,9 +1,9 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {QUEST_STARTER_FIREMAKING} from "@paintswap/estfor-definitions/constants";
+import {QUEST_BURN_BAN} from "@paintswap/estfor-definitions/constants";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Quests, Shop} from "../typechain-types";
-import {createPlayer} from "./utils";
+import {createPlayer, isDevNetwork} from "./utils";
 
 export const addTestData = async (
   itemNFT: ItemNFT,
@@ -51,7 +51,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Start woodcutting action");
 
-  if (network.chainId == 31337 || network.chainId == 1337) {
+  if (isDevNetwork(network)) {
     console.log("Increase time");
     await ethers.provider.send("evm_increaseTime", [10000]);
   }
@@ -88,7 +88,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Start firemaking action");
 
-  if (network.chainId == 31337 || network.chainId == 1337) {
+  if (isDevNetwork(network)) {
     console.log("Increase time 2");
     await ethers.provider.send("evm_increaseTime", [3]);
   }
@@ -117,7 +117,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Start an unprocessed action");
 
-  if (network.chainId == 31337 || network.chainId == 1337) {
+  if (isDevNetwork(network)) {
     console.log("Increase time 3");
     await ethers.provider.send("evm_increaseTime", [1000000]);
   }
@@ -171,36 +171,47 @@ export const addTestData = async (
   await tx.wait();
   console.log("Transfer some brush");
 
-  tx = await itemNFT.testMint(owner.address, EstforConstants.TITANIUM_SWORD, 100);
+  tx = await itemNFT.testMints(
+    owner.address,
+    [EstforConstants.MAGIC_FIRE_STARTER, EstforConstants.TITANIUM_ARMOR],
+    [100, 1]
+  );
   await tx.wait();
   console.log("Mint enough magic fire starters that they can be sold");
 
   // Sell to shop (can be anything)
-  if (network.chainId == 31337 || network.chainId == 1337) {
+  if (isDevNetwork(network)) {
     try {
-      tx = await shop.sell(EstforConstants.TITANIUM_SWORD, 1, 1);
-      process.exit(100); // This shouldn't happen
+      tx = await shop.sell(EstforConstants.TITANIUM_ARMOR, 1, 1);
+      process.exit(100); // This shouldn't happen as those can't be sold yet
     } catch {
-      if (network.chainId == 31337 || network.chainId == 1337) {
-        console.log("Increase time");
-        await ethers.provider.send("evm_increaseTime", [86400 * 2]);
-        tx = await shop.sell(EstforConstants.TITANIUM_SWORD, 1, 1);
-        await tx.wait();
-        console.log("Sell");
-      }
+      console.log("Increase time");
+      await ethers.provider.send("evm_increaseTime", [86400 * 2]);
+      tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);
+      await tx.wait();
+      console.log("Sell");
     }
   } else {
     // Sell should revert
     try {
-      tx = await shop.sell(EstforConstants.TITANIUM_SWORD, 1, 1);
+      tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);
       process.exit(101); // This shouldn't happen
     } catch {}
   }
 
   // Activate a quest
-  tx = await players.activateQuest(playerId, QUEST_STARTER_FIREMAKING);
+  tx = await players.activateQuest(playerId, QUEST_BURN_BAN);
   await tx.wait();
   console.log("Activate quest");
+
+  if (isDevNetwork(network)) {
+    // Make some progress on the quest and process the action
+    await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [100]);
+    await players.deactivateQuest(playerId); // Deactivate the quest so we can activate it again
+    await players.activateQuest(playerId, QUEST_BURN_BAN); // Deactivate the quest so we can activate it again
+    console.log("Make progress on the quest");
+  }
 
   // Create a clan
   const imageId = 2;

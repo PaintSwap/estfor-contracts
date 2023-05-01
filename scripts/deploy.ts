@@ -13,7 +13,7 @@ import {
   Quests,
   Shop,
 } from "../typechain-types";
-import {verifyContracts} from "./utils";
+import {isDevNetwork, verifyContracts} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
 
@@ -63,7 +63,7 @@ async function main() {
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
     const MockRouter = await ethers.getContractFactory("MockRouter");
-    if (network.chainId == 31337 || network.chainId == 1337) {
+    if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       wftm = await MockWrappedFantom.deploy();
