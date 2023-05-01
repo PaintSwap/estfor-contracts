@@ -90,7 +90,7 @@ export const addTestData = async (
 
   if (isDevNetwork(network)) {
     console.log("Increase time 2");
-    await ethers.provider.send("evm_increaseTime", [3]);
+    await ethers.provider.send("evm_increaseTime", [300]);
   }
 
   gasLimit = await players.estimateGas.processActions(playerId);
@@ -207,8 +207,13 @@ export const addTestData = async (
   if (isDevNetwork(network)) {
     // Make some progress on the quest and process the action
     await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStatus.NONE);
-    await ethers.provider.send("evm_increaseTime", [100]);
+    console.log(
+      "Number of logs before quest",
+      (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber()
+    );
+    await ethers.provider.send("evm_increaseTime", [1000]);
     await players.deactivateQuest(playerId); // Deactivate the quest so we can activate it again
+    console.log("Number of logs after quest", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
     await players.activateQuest(playerId, QUEST_BURN_BAN); // Deactivate the quest so we can activate it again
     console.log("Make progress on the quest");
   }
