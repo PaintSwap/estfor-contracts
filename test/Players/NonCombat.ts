@@ -16,7 +16,7 @@ import {
 const actionIsAvailable = true;
 
 describe("Non-Combat Actions", function () {
-  this.retries(3);
+  //  this.retries(3);
 
   // Test isDynamic
   describe("Woodcutting", function () {
@@ -724,6 +724,41 @@ describe("Non-Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
         1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
+    });
+
+    it("Burn food, in-progress processing (many)", async function () {
+      this.timeout(100000); // 100 seconds, this test can take a while on CI
+
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const successPercent = 25;
+      const minLevel = 65;
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+      await players.testModifyXP(playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const numLoops = queuedAction.timespan / 240;
+
+      for (let i = 0; i < numLoops; ++i) {
+        // Increase by random time
+        const randomTimespan = Math.floor(Math.random() * 240);
+        await ethers.provider.send("evm_increaseTime", [randomTimespan]);
+        await players.connect(alice).processActions(playerId);
+      }
+
+      // Check that some are used at least before completing the action
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.not.eq(1000);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // This makes sure everything is used
+      await players.connect(alice).processActions(playerId);
+      // The results should be the same as if we didn't do the intermediate processing. See "burn some food" test
+      const foodNotBurned = Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL * 2));
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(foodNotBurned);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
+        1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(getXPFromLevel(90) + queuedAction.timespan);
     });
 
     it("Burn food, check max 90% success upper bound", async function () {
