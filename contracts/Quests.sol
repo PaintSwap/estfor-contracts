@@ -42,8 +42,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;
 
-  event AddFixedQuest(Quest quest);
-  event AddBaseRandomQuest(Quest quest);
+  event AddFixedQuest(Quest quest); // Needed for backwards compatibility
+  event AddFixedQuestNew(Quest quest, MinimumRequirement[3] minimumRequirements);
+  event EditQuest(Quest quest, MinimumRequirement[3] minimumRequirements);
+  event AddBaseRandomQuest(Quest quest, MinimumRequirement[3] minimumRequirements);
   event RemoveQuest(uint questId);
   event NewRandomQuest(Quest randomQuest, uint oldQuestId);
   event ActivateNewQuest(uint playerId, uint questId);
@@ -526,11 +528,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
   }
 
-  function _addQuest(
-    Quest calldata _quest,
-    bool _isRandom,
-    MinimumRequirement[3] calldata _minimumRequirements
-  ) private {
+  function _checkQuest(Quest calldata _quest) private pure {
     if (_quest.rewardItemTokenId != NONE && _quest.rewardAmount == 0) {
       revert InvalidRewardAmount();
     }
@@ -555,6 +553,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (_quest.questId == 0) {
       revert InvalidQuestId();
     }
+  }
+
+  function _addQuest(
+    Quest calldata _quest,
+    bool _isRandom,
+    MinimumRequirement[3] calldata _minimumRequirements
+  ) private {
+    _checkQuest(_quest);
     if (_isRandom) {
       revert RandomNotSupportedYet();
     }
@@ -578,7 +584,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
 
     allFixedQuests[_quest.questId] = _quest;
-    emit AddFixedQuest(_quest);
+    emit AddFixedQuestNew(_quest, _minimumRequirements);
   }
 
   function setPlayers(IPlayers _players) external onlyOwner {
@@ -602,6 +608,19 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint i = iter.asUint256();
       _addQuest(_quests[i], _isRandom[i], _minimumRequirements[i]);
     }
+  }
+
+  function editQuest(Quest calldata _quest, MinimumRequirement[3] calldata _minimumRequirements) external onlyOwner {
+    _checkQuest(_quest);
+
+    minimumRequirements[_quest.questId] = _minimumRequirements;
+
+    if (allFixedQuests[_quest.questId].questId == 0) {
+      revert QuestDoesntExist();
+    }
+
+    allFixedQuests[_quest.questId] = _quest;
+    emit EditQuest(_quest, _minimumRequirements);
   }
 
   function removeQuest(uint _questId) external onlyOwner {

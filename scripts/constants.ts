@@ -23,27 +23,27 @@ let playersImplMisc;
 let players;
 
 if (isAlpha) {
-  worldLibrary = "0xd37796f51b461bc483cde9cf7c6f7881cace4738";
-  world = "0xd37796f51b461bc483cde9cf7c6f7881cace4738";
-  shop = "0xa0f16f4489dd45e2fb36d39910f7f767b81d638c";
-  royaltyReceiver = "0x4f87eec592ac027ddb89ddf51cd30b54a05bb1fa";
-  adminAccess = "0xf48dd4dd241b5937ebd1863294461d2f7797cc17";
-  itemNFTLibrary = "0x4cc630e42217631b60673473d603883c644777d0";
-  itemNFT = "0x346e7b2a1f79408a85ecb251893bf2d76c767e67";
-  estforLibrary = "0x368c6c7c249ef53ff5b0b90deb517050afc965b5";
-  playerNFT = "0x8b2be032dd0de14344c714019f7ea3a796912cb1";
-  quests = "0xcf5e559cdd5ed66790aa0180ab01465e687f8942";
-  clans = "0x020f393c21b968a124b1280f319d2f84ff76ad9a";
-  bank = "0xf3c3ceec56f4b36dea9626c6bf8cbcd995df4be8";
-  bankRegistry = "0x41d407956d532c611525e8c09192de80d07a0fa7";
-  bankProxy = "0x5b59e9a0a074a2c3a0a813d3283c40fb1b3cb3db";
-  bankFactory = "0x7adde2c738fcd1afeca25154c190db519b148a1b";
-  playersLibrary = "0xe7b4a3a633ff2e7096a0e4985cbf9c924443acda";
-  playersImplQueueActions = "0xadc7e4ea1ce13954f494baabdaa7e378a4862f35";
-  playersImplProcessActions = "0xe0436667445f2a26a49261ba2977d04dee3e33bf";
-  playersImplRewards = "0xf6d7bc4d7a3390bd551cb4aff1b3868f8118fb93";
-  playersImplMisc = "0x83837f96f087aad019f581d4c3d9bf0c491d3725";
-  players = "0xf7433aba1837f221ed432fc1b0e1833fe0c7ee01";
+  worldLibrary = "0x75eb7ad4647b0bae81b7d69627f90ec11bb8b0c9";
+  world = "0x94cb4ff6818b0969b62ac7b44d97a996594fb1c8";
+  shop = "0x593ed05fa8a1c19c90657850044fbf7315f123dc";
+  royaltyReceiver = "0xa40b25c086dbc4b12025ecf9bf28f35095113301";
+  adminAccess = "0x5e94ef5c4140591b2cf19d1f0c93c09d45c749aa";
+  itemNFTLibrary = "0x8d33d43de611801b940c1a65e2ae277c8e9f9292";
+  itemNFT = "0xbf7c0526730e85eb2934f61f9f13fa165148f501";
+  estforLibrary = "0x0628ecce6783aee0ca9f6332814e138dad93e561";
+  playerNFT = "0x3366554fbd63e75ab5a115677d8a28a2ef9e9e6d";
+  quests = "0xb8b58f9d48f696d3ff6942dca53ad42500d72073";
+  clans = "0x170bbaddf0a0a7272870930805fad59f4181bd82";
+  bank = "0xa145c002bc92fd5116d309b7f7a596bc6bbe4477";
+  playersLibrary = "0x706492f261ab6c127c6c7ed10ef977207504dac5";
+  playersImplQueueActions = "0x889d4a5ad2b5b495fd9a24171276a4cd2048a12f";
+  playersImplProcessActions = "0x90ff8dcd03176963cb7185aaa3773be983ccfda8";
+  playersImplRewards = "0xc4655ef67025f8c2a2e58a1f2474f0a3ae80c3ba";
+  playersImplMisc = "0x843591cab6e7c6e61fa20fc78a31b7cdaff2c9c9";
+  players = "0x06b91f57d59cee17b31371fc0dbc72595dda1f23";
+  bankRegistry = "0x5d30889454257fdbe25f3baf3dba08ba7dedd429";
+  bankProxy = "0x64099e35ec572dada43c1b38df9699923bb0a209";
+  bankFactory = "0x94e06a7421d49247c6bb664117c2d2a3f1e6fbc7";
 } else {
   // TODO when live addresses are known
   worldLibrary = "";

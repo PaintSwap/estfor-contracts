@@ -84,7 +84,7 @@ export const allQuests: Quest[] = [
     rewardAmount1: 0,
     burnItemTokenId: LOG,
     burnAmount: 1000,
-    requireActionsCompletedBeforeBurning: false,
+    requireActionsCompletedBeforeBurning: true,
   },
   {
     questId: QUEST_SUPPLY_RUN,

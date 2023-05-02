@@ -157,6 +157,35 @@ describe("Quests", function () {
     });
   });
 
+  describe("Edit quest", function () {
+    it("Should edit a quest correctly", async function () {
+      const {quests, firemakingQuest} = await loadFixture(questsFixture);
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
+      const editedQuest = {...firemakingQuest, actionChoiceNum: 23};
+      await quests.editQuest(editedQuest, defaultMinRequirements);
+      const quest = await quests.allFixedQuests(1);
+      expect(quest.actionChoiceNum).to.equal(editedQuest.actionChoiceNum);
+    });
+
+    it("Should fail to edit a quest for non-owner", async function () {
+      const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
+      await expect(
+        quests.connect(alice).editQuest(firemakingQuest, defaultMinRequirements)
+      ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
+    });
+
+    it("Should fail to edit a non-existing quest", async function () {
+      const {quests, firemakingQuest} = await loadFixture(questsFixture);
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
+      const editedQuest = {...firemakingQuest, questId: 100, actionChoiceNum: 23};
+      await expect(quests.editQuest(editedQuest, defaultMinRequirements)).to.be.revertedWithCustomError(
+        quests,
+        "QuestDoesntExist"
+      );
+    });
+  });
+
   describe("Set new oracle random words", function () {
     it("Should set the random quest correctly", async function () {
       // TODO
@@ -236,9 +265,6 @@ describe("Quests", function () {
     const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-    await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    console.log(pendingQueuedActionState.quests);
     await players.connect(alice).processActions(playerId);
 
     // Check it's completed
