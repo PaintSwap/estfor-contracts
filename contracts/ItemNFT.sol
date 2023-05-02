@@ -41,10 +41,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
   error NotAdminAndAlpha();
-  // Migration only
-  error NotOwner();
-  error TooMuchForMigration();
-  // End migration only
 
   World private world;
   bool private isAlpha;
@@ -67,9 +63,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(uint itemId => Item item) private items;
 
   AdminAccess private adminAccess;
-  // Migration (stub out later)
-  address oldItemNFT;
-  address oldPlayerNFT;
 
   modifier onlyPlayersOrShop() {
     if (_msgSender() != players && _msgSender() != shop) {
@@ -115,32 +108,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _mintBatchItems(_to, _ids, _amounts);
   }
 
-  // Migration (remove later)
-  function setMigrationContracts(address _oldItemNFT, address _oldPlayerNFT) external onlyOwner {
-    oldItemNFT = _oldItemNFT;
-    oldPlayerNFT = _oldPlayerNFT;
-  }
-
-  /*
-  function migrateTokens(uint playerId, uint[] calldata _ids, uint[] calldata _amounts) external {
-    if (ItemNFT(oldPlayerNFT).balanceOf(msg.sender, playerId) != 1) {
-      revert NotOwner();
-    }
-
-    // Burn existing
-    for (uint i; i < _ids.length; ++i) {
-      ItemNFT(oldItemNFT).burn(msg.sender, _ids[i], _amounts[i]);
-    }
-
-    // Mint new
-    for (uint i; i < _ids.length; ++i) {
-      if (_amounts[i] > 20) {
-        revert TooMuchForMigration();
-      }
-    }
-    _mintBatchItems(msg.sender, _ids, _amounts);
-  }
-*/
   function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     if (!exists(_tokenId)) {
       revert ItemDoesNotExist(uint16(_tokenId));
