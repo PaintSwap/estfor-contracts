@@ -14,8 +14,8 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
-import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat} from "./Players/utils";
-import {getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
+import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat, setupBasicWoodcutting} from "./Players/utils";
+import {getActionId, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -240,6 +240,21 @@ describe("Quests", function () {
 
       // Check the rewards are as expected
       expect(await itemNFT.balanceOf(alice.address, quest.rewardItemTokenId)).to.eq(quest.rewardAmount);
+    });
+
+    it("Check that quest is not completed after an action", async function () {
+      const {alice, playerId, quests, players, itemNFT, world} = await loadFixture(playersFixture);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as Quest;
+      await quests.addQuests([quest], [false], [defaultMinRequirements]);
+      const questId = quest.questId;
+      await players.connect(alice).activateQuest(playerId, questId);
+      // Check that this is not marked as completed automatically
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await ethers.provider.send("evm_mine", []);
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.quests.questsCompleted.length).is.eq(0);
     });
   });
 

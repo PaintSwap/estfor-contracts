@@ -180,6 +180,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         burnedAmount = questState.consumedAmounts[0];
       }
       quests.processQuests(
+        _from,
         _playerId,
         questState.actionIds,
         questState.actionAmounts,

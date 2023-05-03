@@ -215,6 +215,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   function processQuests(
+    address _from,
     uint _playerId,
     uint[] calldata _actionIds,
     uint[] calldata _actionAmounts,
@@ -228,7 +229,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
         uint questId = _questsCompleted[i];
-        _questCompleted(msg.sender, _playerId, questId);
+        _questCompleted(_from, _playerId, questId);
       }
     } else {
       // Update the quest progress
@@ -503,10 +504,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       itemTokenIdBurned = quest.burnItemTokenId;
     }
 
-    questCompleted =
-      _playerQuest.actionCompletedNum >= quest.actionNum &&
-      _playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum &&
-      _playerQuest.burnCompletedAmount >= quest.burnAmount;
+    // Buy brush quest is handled specially for instance and doesn't have any of these set
+    if (quest.actionNum != 0 || quest.actionChoiceNum != 0 || quest.burnAmount != 0) {
+      questCompleted =
+        _playerQuest.actionCompletedNum >= quest.actionNum &&
+        _playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum &&
+        _playerQuest.burnCompletedAmount >= quest.burnAmount;
+    }
 
     if (questCompleted) {
       // length can be 0, 1 or 2
