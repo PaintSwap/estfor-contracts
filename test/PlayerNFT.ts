@@ -107,10 +107,10 @@ describe("PlayerNFT", function () {
     expect(metadata.attributes[2]).to.have.property("value");
     expect(metadata.attributes[2].value).to.equal(1);
     expect(metadata).to.have.property("external_url");
-    expect(metadata.external_url).to.eq(`https://alpha.estfor.com/game/journal/${playerId}`);
+    expect(metadata.external_url).to.eq(`https://beta.estfor.com/game/journal/${playerId}`);
   });
 
-  it("external_url when not in alpha", async function () {
+  it("external_url when not in beta", async function () {
     const {
       adminAccess,
       brush,
@@ -132,7 +132,7 @@ describe("PlayerNFT", function () {
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
-    const isAlpha = false;
+    const isBeta = false;
     const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
     const estforLibrary = await EstforLibrary.deploy();
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -140,7 +140,7 @@ describe("PlayerNFT", function () {
     });
     const editNameBrushPrice = ethers.utils.parseEther("1");
     const imageBaseUri = "ipfs://";
-    const playerNFTNotAlpha = (await upgrades.deployProxy(
+    const playerNFTNotBeta = (await upgrades.deployProxy(
       PlayerNFT,
       [
         brush.address,
@@ -150,7 +150,7 @@ describe("PlayerNFT", function () {
         adminAccess.address,
         editNameBrushPrice,
         imageBaseUri,
-        isAlpha,
+        isBeta,
       ],
       {
         kind: "uups",
@@ -162,7 +162,7 @@ describe("PlayerNFT", function () {
       Players,
       [
         itemNFT.address,
-        playerNFTNotAlpha.address,
+        playerNFTNotBeta.address,
         world.address,
         adminAccess.address,
         quests.address,
@@ -171,7 +171,7 @@ describe("PlayerNFT", function () {
         playersImplProcessActions.address,
         playersImplRewards.address,
         playersImplMisc.address,
-        isAlpha,
+        isBeta,
       ],
       {
         kind: "uups",
@@ -180,16 +180,16 @@ describe("PlayerNFT", function () {
     );
 
     await itemNFT.setPlayers(players.address);
-    await playerNFTNotAlpha.setPlayers(players.address);
-    await playerNFTNotAlpha.setAvatars(avatarId, [avatarInfo]);
+    await playerNFTNotBeta.setPlayers(players.address);
+    await playerNFTNotBeta.setAvatars(avatarId, [avatarInfo]);
 
     const origName = "0xSamWitch";
     const makeActive = true;
-    const playerId = await createPlayer(playerNFTNotAlpha, avatarId, alice, origName, makeActive);
+    const playerId = await createPlayer(playerNFTNotBeta, avatarId, alice, origName, makeActive);
 
-    const uriNotAlpha = await playerNFTNotAlpha.uri(playerId);
-    const metadataNotAlpha = JSON.parse(Buffer.from(uriNotAlpha.split(";base64,")[1], "base64").toString());
-    expect(metadataNotAlpha.external_url).to.eq(`https://estfor.com/game/journal/${playerId}`);
+    const uriNotBeta = await playerNFTNotBeta.uri(playerId);
+    const metadataNotBeta = JSON.parse(Buffer.from(uriNotBeta.split(";base64,")[1], "base64").toString());
+    expect(metadataNotBeta.external_url).to.eq(`https://estfor.com/game/journal/${playerId}`);
   });
 
   describe("supportsInterface", async function () {
@@ -216,10 +216,10 @@ describe("PlayerNFT", function () {
 
   it("name & symbol", async function () {
     const {playerNFT, adminAccess, brush, shop, dev, royaltyReceiver} = await loadFixture(deployContracts);
-    expect(await playerNFT.name()).to.be.eq("Estfor Players (Alpha)");
-    expect(await playerNFT.symbol()).to.be.eq("EK_PA");
+    expect(await playerNFT.name()).to.be.eq("Estfor Players (Beta)");
+    expect(await playerNFT.symbol()).to.be.eq("EK_PB");
 
-    const isAlpha = false;
+    const isBeta = false;
     // Create NFT contract which contains all the players
     const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
     const estforLibrary = await EstforLibrary.deploy();
@@ -228,7 +228,7 @@ describe("PlayerNFT", function () {
     });
     const editNameBrushPrice = ethers.utils.parseEther("1");
     const imageBaseUri = "ipfs://";
-    const playerNFTNotAlpha = (await upgrades.deployProxy(
+    const playerNFTNotBeta = (await upgrades.deployProxy(
       PlayerNFT,
       [
         brush.address,
@@ -238,7 +238,7 @@ describe("PlayerNFT", function () {
         adminAccess.address,
         editNameBrushPrice,
         imageBaseUri,
-        isAlpha,
+        isBeta,
       ],
       {
         kind: "uups",
@@ -246,8 +246,8 @@ describe("PlayerNFT", function () {
       }
     )) as PlayerNFT;
 
-    expect(await playerNFTNotAlpha.name()).to.be.eq("Estfor Players");
-    expect(await playerNFTNotAlpha.symbol()).to.be.eq("EK_P");
+    expect(await playerNFTNotBeta.name()).to.be.eq("Estfor Players");
+    expect(await playerNFTNotBeta.symbol()).to.be.eq("EK_P");
   });
 
   it("Check starting items", async function () {

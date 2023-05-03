@@ -58,7 +58,7 @@ describe("Shop", function () {
     });
     await adminAccess.deployed();
 
-    const isAlpha = true;
+    const isBeta = true;
     // Create NFT contract which contains all items
     const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
     const itemNFTLibrary = await ItemNFTLibrary.deploy();
@@ -66,7 +66,7 @@ describe("Shop", function () {
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],

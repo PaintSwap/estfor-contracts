@@ -40,10 +40,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAllowedHardhat();
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
-  error NotAdminAndAlpha();
+  error NotAdminAndBeta();
 
   World private world;
-  bool private isAlpha;
+  bool private isBeta;
   string private baseURI;
 
   // How many of this item exist
@@ -71,9 +71,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _;
   }
 
-  modifier isAdminAndAlpha() {
-    if (!(adminAccess.isAdmin(_msgSender()) && isAlpha)) {
-      revert NotAdminAndAlpha();
+  modifier isAdminAndBeta() {
+    if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
+      revert NotAdminAndBeta();
     }
     _;
   }
@@ -89,7 +89,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     address _royaltyReceiver,
     AdminAccess _adminAccess,
     string calldata _baseURI,
-    bool _isAlpha
+    bool _isBeta
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
@@ -100,7 +100,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     royaltyFee = 30; // 3%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
-    isAlpha = _isAlpha;
+    isBeta = _isBeta;
   }
 
   // Can't use Item[] array unfortunately as they don't support array casts
@@ -322,11 +322,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function name() external view returns (string memory) {
-    return string(abi.encodePacked("Estfor Items", isAlpha ? " (Alpha)" : ""));
+    return string(abi.encodePacked("Estfor Items", isBeta ? " (Beta)" : ""));
   }
 
   function symbol() external view returns (string memory) {
-    return string(abi.encodePacked("EK_I", isAlpha ? "A" : ""));
+    return string(abi.encodePacked("EK_I", isBeta ? "A" : ""));
   }
 
   // Or make it constants and redeploy the contracts
@@ -381,11 +381,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  function testMint(address _to, uint _tokenId, uint _amount) external isAdminAndAlpha {
+  function testMint(address _to, uint _tokenId, uint _amount) external isAdminAndBeta {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isAdminAndAlpha {
+  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isAdminAndBeta {
     _mintBatchItems(_to, _tokenIds, _amounts);
   }
 }

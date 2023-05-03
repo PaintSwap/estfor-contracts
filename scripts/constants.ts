@@ -1,4 +1,4 @@
-const isAlpha = process.env.IS_ALPHA == "true";
+const isBeta = process.env.IS_BETA == "true";
 
 let worldLibrary;
 let world;
@@ -22,7 +22,7 @@ let playersImplRewards;
 let playersImplMisc;
 let players;
 
-if (isAlpha) {
+if (isBeta) {
   worldLibrary = "0x75eb7ad4647b0bae81b7d69627f90ec11bb8b0c9";
   world = "0x94cb4ff6818b0969b62ac7b44d97a996594fb1c8";
   shop = "0x593ed05fa8a1c19c90657850044fbf7315f123dc";

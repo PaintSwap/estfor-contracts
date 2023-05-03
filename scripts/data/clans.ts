@@ -36,7 +36,7 @@ export const allClanTiers: Tier[] = [
   },
 ];
 
-export const allClanTiersAlpha: Tier[] = allClanTiers.map((tier) => {
+export const allClanTiersBeta: Tier[] = allClanTiers.map((tier) => {
   return {
     ...tier,
     price: tier.price.div(10),

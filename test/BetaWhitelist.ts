@@ -2,12 +2,11 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
-import {ethers} from "hardhat";
 import {MerkleTreeWhitelist} from "../scripts/MerkleTreeWhitelist";
 import {AvatarInfo} from "../scripts/utils";
 import {playersFixture} from "./Players/PlayersFixture";
 
-describe("AlphaWhitelist", function () {
+describe("BetaWhitelist", function () {
   async function deployContracts() {
     const fixture = await loadFixture(playersFixture);
     return {...fixture};
@@ -38,7 +37,7 @@ describe("AlphaWhitelist", function () {
     };
     await playerNFT.setAvatars(avatarId, [avatarInfo]);
 
-    const maxMints = await playerNFT.MAX_ALPHA_WHITELIST();
+    const maxMints = await playerNFT.MAX_BETA_WHITELIST();
     for (let i = 0; i < maxMints.toNumber(); ++i) {
       const name = `name${i}`;
       await playerNFT.mintWhitelist(1, name, true, proof);

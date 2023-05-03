@@ -89,7 +89,7 @@ export const allShopItems: ShopItem[] = [
   },
 ];
 
-export const allShopItemsAlpha: ShopItem[] = allShopItems.map((shopItem) => {
+export const allShopItemsBeta: ShopItem[] = allShopItems.map((shopItem) => {
   return {
     ...shopItem,
     price: shopItem.price.div(10),

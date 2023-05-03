@@ -28,21 +28,21 @@ async function main() {
   } else {
     playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
-
+  /*
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
   console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
   await playersImplQueueActions.deployed();
-
+*/
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
   const playersImplProcessActions = await PlayersImplProcessActions.deploy();
   console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
   await playersImplProcessActions.deployed();
-
+  /*
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
@@ -57,6 +57,7 @@ async function main() {
   console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
   await playersImplMisc.deployed();
 
+   */
   // Set the implementations
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
@@ -71,7 +72,7 @@ async function main() {
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
+    playersImplProcessActions.address,
     PLAYERS_IMPL_REWARDS_ADDRESS,
     PLAYERS_IMPL_MISC_ADDRESS
   );
@@ -79,10 +80,10 @@ async function main() {
 
   if (network.chainId == 250) {
     await verifyContracts([
-      playersImplQueueActions.address,
+      //  playersImplQueueActions.address,
       playersImplProcessActions.address,
-      playersImplRewards.address,
-      playersImplMisc.address,
+      //    playersImplRewards.address,
+      //    playersImplMisc.address,
     ]);
   }
 }

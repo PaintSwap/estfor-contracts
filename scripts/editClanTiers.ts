@@ -1,6 +1,6 @@
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS, ESTFOR_LIBRARY_ADDRESS, PLAYER_NFT_ADDRESS} from "./constants";
-import {allClanTiers, allClanTiersAlpha} from "./data/clans";
+import {allClanTiers, allClanTiersBeta} from "./data/clans";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -13,8 +13,8 @@ async function main() {
     libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
   });
   const playerNFT = PlayerNFT.attach(PLAYER_NFT_ADDRESS);
-  const isAlpha = await playerNFT.isAlpha();
-  const clanTiers = isAlpha ? allClanTiersAlpha : allClanTiers;
+  const isBeta = await playerNFT.isBeta();
+  const clanTiers = isBeta ? allClanTiersBeta : allClanTiers;
 
   const Clans = await ethers.getContractFactory("Clans", {libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS}});
   const clans = Clans.attach(CLANS_ADDRESS);

@@ -34,7 +34,7 @@ library PlayersLibrary {
     string calldata _avatarName,
     string calldata _avatarDescription,
     string calldata _imageURI,
-    bool _isAlpha,
+    bool _isBeta,
     uint _playerId,
     string calldata _clanName
   ) external view returns (string memory) {
@@ -88,7 +88,7 @@ library PlayersLibrary {
     bytes memory fullName = abi.encodePacked(_playerName, " (", overallLevel.toString(), ")");
     bytes memory externalURL = abi.encodePacked(
       "https://",
-      _isAlpha ? "alpha." : "",
+      _isBeta ? "beta." : "",
       "estfor.com/game/journal/",
       _playerId.toString()
     );

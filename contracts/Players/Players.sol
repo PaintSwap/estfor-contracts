@@ -66,7 +66,7 @@ interface IPlayerDelegate {
     address implProcessActions,
     address implRewards,
     address implMisc,
-    bool isAlpha
+    bool isBeta
   ) external;
 }
 
@@ -116,7 +116,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address _implProcessActions,
     address _implRewards,
     address _implMisc,
-    bool _isAlpha
+    bool _isBeta
   ) public initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
@@ -136,7 +136,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _implProcessActions,
         _implRewards,
         _implMisc,
-        _isAlpha
+        _isBeta
       )
     );
   }
@@ -344,7 +344,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _avatarName,
         _avatarDescription,
         imageURI,
-        isAlpha,
+        isBeta,
         _playerId,
         clans.getClanNameOfPlayer(_playerId)
       );
@@ -412,7 +412,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses));
   }
 
-  function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external isAdminAndAlpha {
+  function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external isAdminAndBeta {
     _delegatecall(
       implProcessActions,
       abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _playerId, _skill, _xp)

@@ -105,7 +105,7 @@ abstract contract PlayersBase {
   error ActionChoiceIdRequired();
   error InvalidEquipPosition();
   error NoActionsToProcess();
-  error NotAdminAndAlpha();
+  error NotAdminAndBeta();
   error XPThresholdNotFound();
   error InvalidItemTokenId();
   error ItemDoesNotExist();
@@ -132,7 +132,7 @@ abstract contract PlayersBase {
   uint8 internal betaCombat;
   uint64 internal nextQueueId; // Global queued action id
   bool internal dailyRewardsEnabled;
-  bool internal isAlpha;
+  bool internal isBeta;
 
   mapping(uint playerId => PackedXP packedXP) internal xp_;
 
@@ -174,9 +174,9 @@ abstract contract PlayersBase {
     _;
   }
 
-  modifier isAdminAndAlpha() {
-    if (!(adminAccess.isAdmin(msg.sender) && isAlpha)) {
-      revert NotAdminAndAlpha();
+  modifier isAdminAndBeta() {
+    if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
+      revert NotAdminAndBeta();
     }
     _;
   }

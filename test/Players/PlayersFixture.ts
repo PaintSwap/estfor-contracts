@@ -56,7 +56,7 @@ export const playersFixture = async function () {
   });
   await adminAccess.deployed();
 
-  const isAlpha = true;
+  const isBeta = true;
 
   // Create NFT contract which contains all items
   const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
@@ -65,7 +65,7 @@ export const playersFixture = async function () {
   const itemsUri = "ipfs://";
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
+    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -91,7 +91,7 @@ export const playersFixture = async function () {
       adminAccess.address,
       editNameBrushPrice,
       imageBaseUri,
-      isAlpha,
+      isBeta,
     ],
     {
       kind: "uups",
@@ -157,7 +157,7 @@ export const playersFixture = async function () {
       playersImplProcessActions.address,
       playersImplRewards.address,
       playersImplMisc.address,
-      isAlpha,
+      isBeta,
     ],
     {
       kind: "uups",

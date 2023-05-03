@@ -59,13 +59,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   address private royaltyReceiver;
   uint8 private royaltyFee; // base 1000, highest is 25.5
   uint72 public editNameCost; // Max is 4700 BRUSH
-  bool public isAlpha;
+  bool public isBeta;
 
   address private dev;
 
   bytes32 private merkleRoot; // For airdrop
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
-  uint public constant MAX_ALPHA_WHITELIST = 3;
+  uint public constant MAX_BETA_WHITELIST = 3;
   AdminAccess private adminAccess;
 
   modifier isOwnerOfPlayer(uint playerId) {
@@ -90,7 +90,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   modifier isAdminOrMain() {
-    if (!adminAccess.isAdmin(_msgSender()) && !isAlpha) {
+    if (!adminAccess.isAdmin(_msgSender()) && !isBeta) {
       revert NotAdminOrLive();
     }
     _;
@@ -109,7 +109,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     AdminAccess _adminAccess,
     uint72 _editNameCost,
     string calldata _imageBaseUri,
-    bool _isAlpha
+    bool _isBeta
   ) public initializer {
     __ERC1155_init("");
     __Ownable_init();
@@ -123,7 +123,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     royaltyFee = 30; // 3%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
-    isAlpha = _isAlpha;
+    isBeta = _isBeta;
 
     emit EditNameCost(_editNameCost);
   }
@@ -177,7 +177,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
   }
 
-  // Minting whitelist for the alpha
+  // Minting whitelist for the beta
   function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
     merkleRoot = _merkleRoot;
   }
@@ -204,7 +204,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       revert NotInWhitelist();
     }
     uint _numMintedFromWhitelist = numMintedFromWhitelist[_msgSender()];
-    if (_numMintedFromWhitelist.inc() > MAX_ALPHA_WHITELIST) {
+    if (_numMintedFromWhitelist.inc() > MAX_BETA_WHITELIST) {
       revert MintedMoreThanAllowed();
     }
     numMintedFromWhitelist[_msgSender()] = _numMintedFromWhitelist.inc();
@@ -310,11 +310,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function name() external view returns (string memory) {
-    return string(abi.encodePacked("Estfor Players", isAlpha ? " (Alpha)" : ""));
+    return string(abi.encodePacked("Estfor Players", isBeta ? " (Beta)" : ""));
   }
 
   function symbol() external view returns (string memory) {
-    return string(abi.encodePacked("EK_P", isAlpha ? "A" : ""));
+    return string(abi.encodePacked("EK_P", isBeta ? "B" : ""));
   }
 
   function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {

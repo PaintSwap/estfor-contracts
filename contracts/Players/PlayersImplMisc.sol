@@ -228,7 +228,7 @@ contract PlayersImplMisc is
     address _implProcessActions,
     address _implRewards,
     address _implMisc,
-    bool _isAlpha
+    bool _isBeta
   ) external {
     // Check that this isn't called on this contract (implementation) directly.
     // Slot 0 on the Players contract is initializable
@@ -255,7 +255,7 @@ contract PlayersImplMisc is
     nextQueueId = 1;
     alphaCombat = 1;
     betaCombat = 1;
-    isAlpha = _isAlpha;
+    isBeta = _isBeta;
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {

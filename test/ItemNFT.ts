@@ -56,7 +56,7 @@ describe("ItemNFT", function () {
     });
     await adminAccess.deployed();
 
-    const isAlpha = true;
+    const isBeta = true;
     // Create NFT contract which contains all items
     const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
     const itemNFTLibrary = await ItemNFTLibrary.deploy();
@@ -64,7 +64,7 @@ describe("ItemNFT", function () {
     const itemsUri = "ipfs://";
     const itemNFT = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
@@ -180,23 +180,23 @@ describe("ItemNFT", function () {
 
   it("name & symbol", async function () {
     const {itemNFT, world, shop, royaltyReceiver, adminAccess} = await loadFixture(deployContracts);
-    expect(await itemNFT.name()).to.be.eq("Estfor Items (Alpha)");
+    expect(await itemNFT.name()).to.be.eq("Estfor Items (Beta)");
     expect(await itemNFT.symbol()).to.be.eq("EK_IA");
 
-    const isAlpha = false;
+    const isBeta = false;
     const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
     const itemNFTLibrary = await ItemNFTLibrary.deploy();
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
-    const itemNFTNotAlpha = await upgrades.deployProxy(
+    const itemNFTNotBeta = await upgrades.deployProxy(
       ItemNFT,
-      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
+      [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
       }
     );
-    expect(await itemNFTNotAlpha.name()).to.be.eq("Estfor Items");
-    expect(await itemNFTNotAlpha.symbol()).to.be.eq("EK_I");
+    expect(await itemNFTNotBeta.name()).to.be.eq("Estfor Items");
+    expect(await itemNFTNotBeta.symbol()).to.be.eq("EK_I");
   });
 });

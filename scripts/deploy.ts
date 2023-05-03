@@ -38,12 +38,12 @@ import {addTestData} from "./addTestData";
 import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
 import {BigNumber} from "ethers";
-import {allShopItems, allShopItemsAlpha} from "./data/shopItems";
+import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarInfos} from "./data/avatars";
 import {allQuestsMinimumRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
-import {allClanTiers, allClanTiersAlpha} from "./data/clans";
+import {allClanTiers, allClanTiersBeta} from "./data/clans";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -143,15 +143,15 @@ async function main() {
   let itemsUri: string;
   let imageBaseUri: string;
   let editNameBrushPrice: BigNumber;
-  const isAlpha = process.env.IS_ALPHA == "true";
-  if (isAlpha) {
-    itemsUri = "ipfs://QmYtVoXAGxN2pDxsx8hrgUgwUTvyj6wvoxxQt4s7QNgKf2/";
-    imageBaseUri = "ipfs://Qmf6NMUSyG4FShVCyNYH4PzKyAWWh5qQvrNt1BXgU2eBre/";
+  const isBeta = process.env.IS_BETA == "true";
+  if (isBeta) {
+    itemsUri = "ipfs://QmbeAfkwtN6noryKLwzhA3JzsDd67FXuS4RCLfyugUowEP/";
+    imageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
   } else {
     // live version
     itemsUri = "ipfs://TODO/";
-    imageBaseUri = "ipfs://QmNkgG8nfMvTgfKUQWRRXRBPTDVbcwgwHp7FcvFP91UgGs/";
+    imageBaseUri = "ipfs://TODO/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
   }
 
@@ -163,7 +163,7 @@ async function main() {
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isAlpha],
+    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -190,7 +190,7 @@ async function main() {
       adminAccess.address,
       editNameBrushPrice,
       imageBaseUri,
-      isAlpha,
+      isBeta,
     ],
     {
       kind: "uups",
@@ -277,7 +277,7 @@ async function main() {
       playersImplProcessActions.address,
       playersImplRewards.address,
       playersImplMisc.address,
-      isAlpha,
+      isBeta,
     ],
     {
       kind: "uups",
@@ -374,7 +374,7 @@ async function main() {
   await tx.wait();
   console.log("Add avatars");
 
-  if (isAlpha) {
+  if (isBeta) {
     // Calculate the merkle root
     const treeWhitelist = new MerkleTreeWhitelist(whitelistedSnapshot);
     const root = treeWhitelist.getRoot();
@@ -448,7 +448,7 @@ async function main() {
   console.log("Add action choices");
 
   // Add shop items
-  tx = await shop.addBuyableItems(isAlpha ? allShopItemsAlpha : allShopItems);
+  tx = await shop.addBuyableItems(isBeta ? allShopItemsBeta : allShopItems);
   await tx.wait();
   console.log("Add shopping items");
 
@@ -458,12 +458,12 @@ async function main() {
   console.log("Add quests");
 
   // Add clan tiers
-  tx = await clans.addTiers(isAlpha ? allClanTiersAlpha : allClanTiers);
+  tx = await clans.addTiers(isBeta ? allClanTiersBeta : allClanTiers);
   await tx.wait();
   console.log("Add clan tiers");
 
   // Add test data for the game
-  if (isAlpha) {
+  if (isBeta) {
     await addTestData(itemNFT, playerNFT, players, shop, brush, quests, clans, bankFactory);
   }
 }
