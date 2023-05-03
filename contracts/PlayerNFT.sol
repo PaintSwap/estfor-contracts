@@ -59,6 +59,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   address private royaltyReceiver;
   uint8 private royaltyFee; // base 1000, highest is 25.5
   uint72 public editNameCost; // Max is 4700 BRUSH
+  /// @custom:oz-renamed-from isAlpha
   bool public isBeta;
 
   address private dev;

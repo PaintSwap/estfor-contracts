@@ -43,6 +43,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAdminAndBeta();
 
   World private world;
+  /// @custom:oz-renamed-from isAlpha
   bool private isBeta;
   string private baseURI;
 

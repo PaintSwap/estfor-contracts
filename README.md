@@ -66,7 +66,7 @@ Quests [0xb8b58f9d48f696d3ff6942dca53ad42500d72073](https://ftmscan.com/address/
 Clans [0x170bbaddf0a0a7272870930805fad59f4181bd82](https://ftmscan.com/address/0x170bbaddf0a0a7272870930805fad59f4181bd82)  
 Bank Impl [0xa145c002bc92fd5116d309b7f7a596bc6bbe4477](https://ftmscan.com/address/0xa145c002bc92fd5116d309b7f7a596bc6bbe4477)
 
-PlayersLibrary [0x706492f261ab6c127c6c7ed10ef977207504dac5](https://ftmscan.com/address/0x706492f261ab6c127c6c7ed10ef977207504dac5)  
+PlayersLibrary [0x39c6190ab86586dc52d83c5ecd261cce924b2a12](https://ftmscan.com/address/0x39c6190ab86586dc52d83c5ecd261cce924b2a12)  
 PlayersImplQueueActions [0x889d4a5ad2b5b495fd9a24171276a4cd2048a12f](https://ftmscan.com/address/0x889d4a5ad2b5b495fd9a24171276a4cd2048a12f)  
 PlayersImplProcessActions [0x90ff8dcd03176963cb7185aaa3773be983ccfda8](https://ftmscan.com/address/0x90ff8dcd03176963cb7185aaa3773be983ccfda8)  
 PlayersImplRewards [0xc4655ef67025f8c2a2e58a1f2474f0a3ae80c3ba](https://ftmscan.com/address/0xc4655ef67025f8c2a2e58a1f2474f0a3ae80c3ba)  

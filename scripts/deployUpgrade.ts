@@ -26,12 +26,11 @@ async function main() {
   if (newEstforLibrary) {
     estforLibrary = await EstforLibrary.deploy();
     await estforLibrary.deployed();
-    console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
   } else {
     estforLibrary = await EstforLibrary.attach(ESTFOR_LIBRARY_ADDRESS);
   }
+  console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
 
-  /*
   // Players
   const newPlayersLibrary = false;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
@@ -39,10 +38,10 @@ async function main() {
   if (newPlayersLibrary) {
     playerLibrary = await PlayersLibrary.deploy();
     await playerLibrary.deployed();
-    console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
   } else {
     playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
+  console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
 
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
@@ -70,14 +69,14 @@ async function main() {
   // ItemNFT
   const newItemNFTLibrary = false;
   const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  let itemNFTLibrary: ItemNFTLibrary;
+  let itemNFTLibrary: any;
   if (newItemNFTLibrary) {
-    itemNFTLibrary = await PlayersLibrary.deploy();
+    itemNFTLibrary = await ItemNFTLibrary.deploy();
     await itemNFTLibrary.deployed();
-    console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
   } else {
     itemNFTLibrary = await ItemNFTLibrary.attach(ITEM_NFT_LIBRARY_ADDRESS);
   }
+  console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
@@ -87,7 +86,7 @@ async function main() {
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
   await verifyContracts([itemNFT.address]);
-
+  /*
   // Shop
   const Shop = await ethers.getContractFactory("Shop");
   const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
@@ -97,6 +96,7 @@ async function main() {
   console.log(`shop = "${shop.address.toLowerCase()}"`);
   await verifyContracts([shop.address]);
 */
+  /*
   // Quests
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
@@ -105,7 +105,7 @@ async function main() {
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
   await verifyContracts([quests.address]);
-
+*/
   /*
   // Clan
   const Clans = await ethers.getContractFactory("Clans", {
@@ -118,7 +118,7 @@ async function main() {
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
   */
-  await verifyContracts([quests.address]);
+  await verifyContracts([playerNFT.address, itemNFT.address, players.address]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
