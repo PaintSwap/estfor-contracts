@@ -70,6 +70,50 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NONE)).to.eq(0);
     });
 
+    it("In-progress combat updates (many)", async function () {
+      const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} = await loadFixture(
+        playersFixtureMelee
+      );
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const numLoops = queuedAction.timespan / 240;
+      expect(numLoops).to.not.eq(0);
+
+      for (let i = 0; i < numLoops; ++i) {
+        // Increase by random time
+        const randomTimespan = Math.floor(Math.random() * 240);
+        await ethers.provider.send("evm_increaseTime", [randomTimespan]);
+        await players.connect(alice).processActions(playerId);
+      }
+
+      const healthXP = await players.xp(playerId, EstforTypes.Skill.HEALTH);
+      // Check that some are used at least before completing the action
+      expect(healthXP).to.not.eq(0);
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.be.gt(0);
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.be.lt(255);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // This makes sure everything is used
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(queuedAction.timespan);
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+        BigNumber.from(Math.floor(queuedAction.timespan / 3) - 1),
+        BigNumber.from(Math.floor(queuedAction.timespan / 3)),
+      ]); // Health should get 33% of the stats
+      expect(healthXP).to.not.be.deep.oneOf([
+        BigNumber.from(Math.floor(queuedAction.timespan / 3) - 1),
+        BigNumber.from(Math.floor(queuedAction.timespan / 3)),
+      ]);
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((queuedAction.timespan * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 2);
+    });
+
     it("No defence equipment", async function () {
       const {
         playerId,
@@ -702,8 +746,6 @@ describe("Combat Actions", function () {
         startXP + Math.floor((queuedAction.timespan / 2) * 1.1)
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
-
-      // Doing 30 dmg per minute or 0.5 dmg per second
     });
 
     //    it("Defence", async function () {
