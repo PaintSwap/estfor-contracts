@@ -86,7 +86,6 @@ async function main() {
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
   await verifyContracts([itemNFT.address]);
-  /*
   // Shop
   const Shop = await ethers.getContractFactory("Shop");
   const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
@@ -95,8 +94,6 @@ async function main() {
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
   await verifyContracts([shop.address]);
-*/
-  /*
   // Quests
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
@@ -105,8 +102,6 @@ async function main() {
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
   await verifyContracts([quests.address]);
-*/
-  /*
   // Clan
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
@@ -117,7 +112,6 @@ async function main() {
   });
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
-  */
   await verifyContracts([playerNFT.address, itemNFT.address, players.address]);
 }
 

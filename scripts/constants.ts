@@ -30,7 +30,7 @@ if (isBeta) {
   adminAccess = "0x5e94ef5c4140591b2cf19d1f0c93c09d45c749aa";
   itemNFTLibrary = "0x8d33d43de611801b940c1a65e2ae277c8e9f9292";
   itemNFT = "0xbf7c0526730e85eb2934f61f9f13fa165148f501";
-  estforLibrary = "0x0628ecce6783aee0ca9f6332814e138dad93e561";
+  estforLibrary = "0x143dbe140837cedce7c0a0d295df90707ed43a0b";
   playerNFT = "0x3366554fbd63e75ab5a115677d8a28a2ef9e9e6d";
   quests = "0xb8b58f9d48f696d3ff6942dca53ad42500d72073";
   clans = "0x170bbaddf0a0a7272870930805fad59f4181bd82";
