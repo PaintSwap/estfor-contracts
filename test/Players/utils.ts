@@ -143,7 +143,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   const rate = 1 * GUAR_MUL; // per kill
   const numSpawned = 10 * SPAWN_MUL;
   let tx = await world.addAction({
-    actionId: 1,
+    actionId: 10,
     info: {
       skill: EstforTypes.Skill.COMBAT,
       xpPerHour: 3600,
@@ -285,6 +285,7 @@ export const setupBasicCooking = async function (
 
   await itemNFT.addItem({
     ...EstforTypes.defaultInputItem,
+    healthRestored: 1,
     tokenId: EstforConstants.COOKED_MINNUS,
     equipPosition: EstforTypes.EquipPosition.FOOD,
   });

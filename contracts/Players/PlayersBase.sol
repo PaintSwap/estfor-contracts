@@ -252,6 +252,10 @@ abstract contract PlayersBase {
     uint newPoints = oldPoints.add(_pointsAccrued);
     if (newPoints > type(uint32).max) {
       newPoints = type(uint32).max;
+      _pointsAccrued = uint32(newPoints - oldPoints);
+    }
+    if (_pointsAccrued == 0) {
+      return;
     }
     uint offset = 2; // Accounts for NONE & COMBAT skills
     uint skillOffsetted = uint8(_skill) - offset;
@@ -268,7 +272,7 @@ abstract contract PlayersBase {
       sstore(add(packedXP.slot, slotNum), val)
     }
 
-    emit AddXP(_from, _playerId, _skill, newPoints);
+    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
 
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
     uint16 newLevel = PlayersLibrary.getLevel(newPoints);

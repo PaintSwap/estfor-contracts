@@ -53,7 +53,7 @@ interface IPlayerDelegate {
 
   function unequipBoostVial(uint playerId) external;
 
-  function testModifyXP(uint playerId, Skill skill, uint128 xp) external;
+  function testModifyXP(address from, uint playerId, Skill skill, uint112 xp) external;
 
   function initialize(
     ItemNFT itemNFT,
@@ -412,10 +412,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses));
   }
 
-  function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external isAdminAndBeta {
+  function testModifyXP(address _from, uint _playerId, Skill _skill, uint112 _xp) external isAdminAndBeta {
     _delegatecall(
       implProcessActions,
-      abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _playerId, _skill, _xp)
+      abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp)
     );
   }
 

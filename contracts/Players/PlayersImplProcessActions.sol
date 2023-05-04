@@ -528,17 +528,20 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function testModifyXP(uint _playerId, Skill _skill, uint128 _xp) external {
+  function testModifyXP(address _from, uint _playerId, Skill _skill, uint112 _xp) external {
     // Make sure it isn't less XP
     uint oldPoints = PlayersLibrary.readXP(_skill, xp_[_playerId]);
     if (_xp < oldPoints) {
       revert TestInvalidXP();
     }
-    address from = msg.sender;
-    uint128 updatedPoints = uint128(_xp.sub(oldPoints));
-    _updateXP(msg.sender, _playerId, _skill, updatedPoints);
-    _claimTotalXPThresholdRewards(from, _playerId, oldPoints, _xp);
-    players_[_playerId].totalXP = uint112(players_[_playerId].totalXP.add(updatedPoints));
+    if (playerNFT.balanceOf(_from, _playerId) == 0) {
+      revert NotOwnerOfPlayer();
+    }
+    uint112 updatedPoints = uint112(_xp.sub(oldPoints));
+    _updateXP(_from, _playerId, _skill, updatedPoints);
+    uint112 newPoints = uint112(players_[_playerId].totalXP.add(updatedPoints));
+    _claimTotalXPThresholdRewards(_from, _playerId, oldPoints, newPoints);
+    players_[_playerId].totalXP = newPoints;
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {

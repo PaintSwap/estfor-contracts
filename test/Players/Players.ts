@@ -399,7 +399,7 @@ describe("Players", function () {
       ).to.be.revertedWithCustomError(players, "ActionMinimumXPNotReached");
 
       // Update to level 70, check it works
-      await players.testModifyXP(playerId, EstforTypes.Skill.WOODCUTTING, getXPFromLevel(70));
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, getXPFromLevel(70));
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
     });
@@ -416,7 +416,7 @@ describe("Players", function () {
         ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
         // Update firemamking level, check it works
-        await players.testModifyXP(playerId, EstforTypes.Skill.FIREMAKING, minXP);
+        await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, minXP);
         expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE))
           .to.not.be.reverted;
 
@@ -547,7 +547,7 @@ describe("Players", function () {
         players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "ConsumableMinimumXPNotReached");
 
-      await players.testModifyXP(playerId, EstforTypes.Skill.HEALTH, minXP);
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.HEALTH, minXP);
 
       // Update health level, check it works
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
@@ -630,7 +630,7 @@ describe("Players", function () {
         await expect(
           players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
         ).to.be.revertedWithCustomError(players, "AttireMinimumXPNotReached");
-        await players.testModifyXP(playerId, attireEquipped[i].skill, minXP);
+        await players.testModifyXP(alice.address, playerId, attireEquipped[i].skill, minXP);
         expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE))
           .to.not.be.reverted;
       }
@@ -691,7 +691,7 @@ describe("Players", function () {
       ).to.be.revertedWithCustomError(players, "ItemMinimumXPNotReached");
 
       // Update to level 70, check it works
-      await players.testModifyXP(playerId, EstforTypes.Skill.WOODCUTTING, minXP);
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, minXP);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
     });
@@ -732,7 +732,7 @@ describe("Players", function () {
       };
 
       const minXP = getXPFromLevel(98);
-      await players.testModifyXP(playerId, EstforTypes.Skill.WOODCUTTING, minXP);
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, minXP);
 
       await itemNFT.addItem({
         ...EstforTypes.defaultInputItem,
