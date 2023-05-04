@@ -15,7 +15,7 @@ import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat, setupBasicWoodcutting} from "./Players/utils";
-import {getActionId, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
+import {emptyActionChoice, getActionChoiceId, getActionId, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -84,13 +84,6 @@ describe("Quests", function () {
       expect(quest.rewardItemTokenId).to.equal(firemakingQuest.rewardItemTokenId);
       expect(quest.rewardAmount).to.equal(firemakingQuest.rewardAmount);
       expect(await quests.isRandomQuest(firemakingQuest.questId)).to.be.false;
-    });
-
-    it.skip("Should add a random quest correctly", async function () {
-      const {quests, firemakingQuest} = await loadFixture(questsFixture);
-
-      await quests.addQuests([firemakingQuest], [true], [defaultMinRequirements]);
-      expect(await quests.isRandomQuest(firemakingQuest.questId)).to.be.true;
     });
 
     it("Should fail to add same quest twice", async function () {
@@ -358,6 +351,106 @@ describe("Quests", function () {
     );
   });
 
+  it("Cooked food giving away quest, check combat consuming the cooked food, before quest completed", async function () {
+    const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction: queuedActionCooking, choiceId} = await setupBasicCooking(
+      itemNFT,
+      world,
+      successPercent,
+      minLevel
+    );
+    let queuedAction = {...queuedActionCooking, timespan: 100};
+
+    const monsterCombatStats: EstforTypes.CombatStats = {
+      melee: 100,
+      magic: 0,
+      range: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangeDefence: 0,
+      health: 1000,
+    };
+
+    const numSpawned = 100 * SPAWN_MUL;
+    let tx = await world.addAction({
+      actionId: 2,
+      info: {
+        skill: EstforTypes.Skill.COMBAT,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned,
+        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+        isAvailable: true,
+        actionChoiceRequired: true,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [],
+      combatStats: monsterCombatStats,
+    });
+    const actionId = await getActionId(tx);
+
+    tx = await world.addActionChoice(EstforConstants.NONE, 2, {
+      ...emptyActionChoice,
+      skill: EstforTypes.Skill.MELEE,
+    });
+    const timespan = 3600;
+    const queuedActionMelee: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
+      choiceId: await getActionChoiceId(tx),
+      regenerateId: EstforConstants.COOKED_MINNUS,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, queuedActionMelee], EstforTypes.ActionQueueStatus.NONE);
+
+    // Activate a quest
+    const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as Quest;
+    const quest = {
+      ...quest1,
+      actionChoiceId: choiceId,
+      actionChoiceNum: 5,
+      burnItemTokenId: COOKED_MINNUS,
+      burnAmount: 5,
+    };
+    await quests.addQuests([quest], [false], [defaultMinRequirements]);
+    const questId = quest.questId;
+    await players.connect(alice).activateQuest(playerId, questId);
+
+    // rate is 100 an hour. So 1 would be done in 36 seconds
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedActionMelee.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    // Check died in the second one
+    expect(pendingQueuedActionState.equipmentStates.length).to.eq(2);
+    expect(pendingQueuedActionState.actionMetadatas.length).to.eq(2);
+    expect(pendingQueuedActionState.actionMetadatas[1].died).to.be.true;
+    expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts.length).to.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(2);
+    expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0); // Quest not completed
+    expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(0); // No fish consumed as all used up in combat
+    await players.connect(alice).processActions(playerId);
+    expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
+
+    // Queue more cooking
+    queuedAction.timespan = 3600;
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+    expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
+  });
+
   it("Thieving quest", async function () {
     const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(questsFixture);
 
@@ -410,10 +503,8 @@ describe("Quests", function () {
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
-    expect(pendingQueuedActionState.quests.actionIds.length).to.eq(1);
-    expect(pendingQueuedActionState.quests.actionAmounts.length).to.eq(1);
-    expect(pendingQueuedActionState.quests.actionAmounts[0]).to.eq(quest1.actionNum / 2);
-    expect(pendingQueuedActionState.quests.actionIds[0]).to.eq(actionId);
+    expect(pendingQueuedActionState.quests.activeQuestInfo.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.activeQuestInfo[0].actionCompletedNum).to.eq(quest1.actionNum / 2);
     await players.connect(alice).processActions(playerId);
     await ethers.provider.send("evm_increaseTime", [(quest1.actionNum / 2) * 3600]);
     await ethers.provider.send("evm_mine", []);
@@ -464,10 +555,8 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1); // Burn 1 of them
     expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(EstforConstants.BRONZE_ARROW);
     expect(pendingQueuedActionState.quests.consumedAmounts[0]).to.eq(1);
-    expect(pendingQueuedActionState.quests.actionIds.length).to.eq(1);
-    expect(pendingQueuedActionState.quests.actionAmounts.length).to.eq(1);
-    expect(pendingQueuedActionState.quests.actionIds[0]).to.eq(queuedAction.actionId);
-    expect(pendingQueuedActionState.quests.actionAmounts[0]).to.eq(1);
+    expect(pendingQueuedActionState.quests.activeQuestInfo.length).to.eq(1);
+    expect(pendingQueuedActionState.quests.activeQuestInfo[0].actionCompletedNum).to.eq(1);
 
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0); // All are burned

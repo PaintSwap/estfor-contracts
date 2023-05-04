@@ -225,10 +225,6 @@ struct QuestState {
   uint[] rewardItemTokenIds;
   uint[] rewardAmounts;
   PlayerQuest[] activeQuestInfo;
-  uint[] actionIds;
-  uint[] actionAmounts;
-  uint[] choiceIds;
-  uint[] choiceAmounts;
   uint[] questsCompleted;
   Skill[] skills; // Skills gained XP in
   uint32[] xpGainedSkills; // XP gained in these skills

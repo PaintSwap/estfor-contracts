@@ -217,11 +217,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   function processQuests(
     address _from,
     uint _playerId,
-    uint[] calldata _actionIds,
-    uint[] calldata _actionAmounts,
-    uint[] calldata _choiceIds,
-    uint[] calldata _choiceAmounts,
-    uint _amountBurned,
+    PlayerQuest[] calldata _activeQuestInfo,
     uint[] memory _questsCompleted
   ) external onlyPlayers {
     if (_questsCompleted.length != 0) {
@@ -231,39 +227,17 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         uint questId = _questsCompleted[i];
         _questCompleted(_from, _playerId, questId);
       }
-    } else {
-      // Update the quest progress
-      bool foundActive;
-      uint activeQuestId = activeQuests[_playerId].questId;
-      U256 bounds = _actionIds.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        uint actionId = _actionIds[i];
-        uint amount = _actionAmounts[i];
-        if (allFixedQuests[activeQuestId].actionId == actionId) {
-          activeQuests[_playerId].actionCompletedNum += uint16(amount);
-          foundActive = true;
-        }
-      }
-      bounds = _choiceIds.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        uint choiceId = _choiceIds[i];
-        uint amount = _choiceAmounts[i];
-        if (allFixedQuests[activeQuestId].actionChoiceId == choiceId) {
-          activeQuests[_playerId].actionChoiceCompletedNum += uint16(amount);
-          foundActive = true;
-        }
-      }
+    } else if (_activeQuestInfo.length != 0) {
+      PlayerQuest storage activeQuest = activeQuests[_playerId];
+      // Only handling 1 active quest at a time currently
+      PlayerQuest calldata activeQuestInfo = _activeQuestInfo[0];
+      bool hasQuestProgress = activeQuestInfo.actionCompletedNum != activeQuest.actionCompletedNum ||
+        activeQuestInfo.actionChoiceCompletedNum != activeQuest.actionChoiceCompletedNum ||
+        activeQuestInfo.burnCompletedAmount != activeQuest.burnCompletedAmount;
 
-      // Check for burn progress
-      if (activeQuestId != 0 && allFixedQuests[activeQuestId].burnItemTokenId != NONE) {
-        activeQuests[_playerId].burnCompletedAmount += uint16(_amountBurned);
-        foundActive = true;
-      }
-
-      if (foundActive) {
-        emit UpdateQuestProgress(_playerId, activeQuests[_playerId]);
+      if (hasQuestProgress) {
+        activeQuests[_playerId] = activeQuestInfo;
+        emit UpdateQuestProgress(_playerId, activeQuestInfo);
       }
     }
   }
@@ -435,13 +409,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   function _addToBurn(
     Quest storage _quest,
     PlayerQuest memory _playerQuest,
-    uint _burnedAmountOwned,
-    uint _amount
+    uint _burnedAmountOwned
   ) private view returns (uint amountBurned) {
     // Handle quest that burns and requires actions to be done at the same time
     uint burnRemainingAmount = _quest.burnAmount - _playerQuest.burnCompletedAmount;
     amountBurned = Math.min(burnRemainingAmount, _burnedAmountOwned);
-    amountBurned = Math.min(_amount, amountBurned);
     if (amountBurned != 0) {
       _playerQuest.burnCompletedAmount += uint16(amountBurned);
     }
@@ -474,10 +446,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       if (quest.actionId == _actionIds[i]) {
         uint remainingAmount = quest.actionNum - _playerQuest.actionCompletedNum;
         uint amount = Math.min(remainingAmount, _actionAmounts[i]);
-        _playerQuest.actionCompletedNum += uint16(amount);
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
-          amountBurned += _addToBurn(quest, _playerQuest, _burnedAmountOwned, amount);
+          amount = Math.min(_burnedAmountOwned, amount);
+          amount = _addToBurn(quest, _playerQuest, amount);
+          amountBurned += amount;
         }
+        _playerQuest.actionCompletedNum += uint16(amount);
       }
     }
 
@@ -487,17 +461,18 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       if (quest.actionChoiceId == _choiceIds[i]) {
         uint remainingAmount = quest.actionChoiceNum - _playerQuest.actionChoiceCompletedNum;
         uint amount = Math.min(remainingAmount, _choiceAmounts[i]);
-        _playerQuest.actionChoiceCompletedNum += uint16(amount);
-
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
-          amountBurned += _addToBurn(quest, _playerQuest, _burnedAmountOwned, amount);
+          amount = Math.min(_burnedAmountOwned, amount);
+          amount = _addToBurn(quest, _playerQuest, amount);
+          amountBurned += amount;
         }
+        _playerQuest.actionChoiceCompletedNum += uint16(amount);
       }
     }
 
     // Handle quest that burns but doesn't require actions completed before burning
     if (quest.burnItemTokenId != NONE && !quest.requireActionsCompletedBeforeBurning) {
-      amountBurned += _addToBurn(quest, _playerQuest, _burnedAmountOwned, _burnedAmountOwned);
+      amountBurned += _addToBurn(quest, _playerQuest, _burnedAmountOwned);
     }
 
     if (amountBurned != 0) {

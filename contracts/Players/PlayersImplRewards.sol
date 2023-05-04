@@ -465,11 +465,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       questState.activeQuestInfo
     ) = quests.processQuestsView(_playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
 
-    questState.actionIds = actionIds;
-    questState.actionAmounts = actionAmounts;
-    questState.choiceIds = choiceIds;
-    questState.choiceAmounts = choiceAmounts;
-
     // Total XP gained
     for (uint i = 0; i < questState.xpGainedSkills.length; ++i) {
       totalXPGained += questState.xpGainedSkills[i];

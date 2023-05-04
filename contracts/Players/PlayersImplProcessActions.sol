@@ -134,114 +134,101 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         emit ActionPartiallyFinished(_from, _playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
       }
       startTime += actionMetadata.elapsedTime;
+    }
 
-      // Oracle loot from past random rewards
-      if (pendingQueuedActionState.producedPastRandomRewards.length > 0) {
-        PastRandomRewardInfo[] memory pastRandomRewardInfo = pendingQueuedActionState.producedPastRandomRewards;
+    // Oracle loot from past random rewards
+    if (pendingQueuedActionState.producedPastRandomRewards.length > 0) {
+      PastRandomRewardInfo[] memory pastRandomRewardInfo = pendingQueuedActionState.producedPastRandomRewards;
 
-        uint[] memory itemTokenIds = new uint[](pastRandomRewardInfo.length);
-        uint[] memory amounts = new uint[](pastRandomRewardInfo.length);
-        uint[] memory queueIds = new uint[](pastRandomRewardInfo.length);
-        for (uint j = 0; j < pastRandomRewardInfo.length; ++j) {
-          itemTokenIds[j] = pastRandomRewardInfo[j].itemTokenId;
-          amounts[j] = pastRandomRewardInfo[j].amount;
-          queueIds[j] = pastRandomRewardInfo[j].queueId;
+      uint[] memory itemTokenIds = new uint[](pastRandomRewardInfo.length);
+      uint[] memory amounts = new uint[](pastRandomRewardInfo.length);
+      uint[] memory queueIds = new uint[](pastRandomRewardInfo.length);
+      for (uint j = 0; j < pastRandomRewardInfo.length; ++j) {
+        itemTokenIds[j] = pastRandomRewardInfo[j].itemTokenId;
+        amounts[j] = pastRandomRewardInfo[j].amount;
+        queueIds[j] = pastRandomRewardInfo[j].queueId;
 
-          if (pastRandomRewardInfo[j].numRemoved != 0) {
-            // Shift the remaining rewards to the front of the array
-            U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(pastRandomRewardInfo[j].numRemoved);
-            for (U256 iter; iter < bounds; iter = iter.inc()) {
-              uint k = iter.asUint256();
-              pendingRandomRewards[_playerId][k] = pendingRandomRewards[_playerId][
-                k + pastRandomRewardInfo[j].numRemoved
-              ];
-            }
-            for (U256 iter = pastRandomRewardInfo[j].numRemoved.asU256(); iter.neq(0); iter = iter.dec()) {
-              pendingRandomRewards[_playerId].pop();
-            }
-
-            itemNFT.mintBatch(_from, itemTokenIds, amounts);
-            emit PendingRandomRewardsClaimed(
-              _from,
-              _playerId,
-              pastRandomRewardInfo[j].numRemoved,
-              itemTokenIds,
-              amounts,
-              queueIds
-            );
+        if (pastRandomRewardInfo[j].numRemoved != 0) {
+          // Shift the remaining rewards to the front of the array
+          U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(pastRandomRewardInfo[j].numRemoved);
+          for (U256 iter; iter < bounds; iter = iter.inc()) {
+            uint k = iter.asUint256();
+            pendingRandomRewards[_playerId][k] = pendingRandomRewards[_playerId][
+              k + pastRandomRewardInfo[j].numRemoved
+            ];
           }
-        }
-      }
+          for (U256 iter = pastRandomRewardInfo[j].numRemoved.asU256(); iter.neq(0); iter = iter.dec()) {
+            pendingRandomRewards[_playerId].pop();
+          }
 
-      // Quests
-      QuestState memory questState = pendingQueuedActionState.quests;
-      uint burnedAmount;
-      if (questState.consumedAmounts.length > 0) {
-        burnedAmount = questState.consumedAmounts[0];
-      }
-      quests.processQuests(
-        _from,
-        _playerId,
-        questState.actionIds,
-        questState.actionAmounts,
-        questState.choiceIds,
-        questState.choiceAmounts,
-        burnedAmount,
-        questState.questsCompleted
-      );
-      if (questState.consumedItemTokenIds.length > 0 || questState.rewardItemTokenIds.length > 0) {
-        if (questState.consumedItemTokenIds.length > 0) {
-          itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
-        }
-        if (questState.rewardItemTokenIds.length > 0) {
-          itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
-        }
-        emit QuestRewardConsumes(
-          _from,
-          _playerId,
-          questState.rewardItemTokenIds,
-          questState.rewardAmounts,
-          questState.consumedItemTokenIds,
-          questState.consumedAmounts
-        );
-      }
-
-      // Any quest XP gains
-      uint questXpGained;
-      for (uint j; j < questState.skills.length; ++j) {
-        _updateXP(_from, _playerId, questState.skills[j], questState.xpGainedSkills[j]);
-        questXpGained += questState.xpGainedSkills[j];
-      }
-      if (questXpGained != 0) {
-        player.totalXP = uint112(player.totalXP.add(questXpGained));
-      }
-
-      // Daily/weekly rewards
-      if (pendingQueuedActionState.dailyRewardItemTokenIds.length > 0) {
-        itemNFT.mintBatch(
-          _from,
-          pendingQueuedActionState.dailyRewardItemTokenIds,
-          pendingQueuedActionState.dailyRewardAmounts
-        );
-        emit DailyReward(
-          _from,
-          _playerId,
-          uint16(pendingQueuedActionState.dailyRewardItemTokenIds[0]),
-          pendingQueuedActionState.dailyRewardAmounts[0]
-        );
-
-        if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
-          emit WeeklyReward(
+          itemNFT.mintBatch(_from, itemTokenIds, amounts);
+          emit PendingRandomRewardsClaimed(
             _from,
             _playerId,
-            uint16(pendingQueuedActionState.dailyRewardItemTokenIds[1]),
-            pendingQueuedActionState.dailyRewardAmounts[1]
+            pastRandomRewardInfo[j].numRemoved,
+            itemTokenIds,
+            amounts,
+            queueIds
           );
         }
+      }
+    }
 
-        if (uint(pendingQueuedActionState.dailyRewardMask) != 0) {
-          dailyRewardMasks[_playerId] = pendingQueuedActionState.dailyRewardMask;
-        }
+    // Quests
+    QuestState memory questState = pendingQueuedActionState.quests;
+    quests.processQuests(_from, _playerId, questState.activeQuestInfo, questState.questsCompleted);
+    if (questState.consumedItemTokenIds.length > 0 || questState.rewardItemTokenIds.length > 0) {
+      if (questState.consumedItemTokenIds.length > 0) {
+        itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
+      }
+      if (questState.rewardItemTokenIds.length > 0) {
+        itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
+      }
+      emit QuestRewardConsumes(
+        _from,
+        _playerId,
+        questState.rewardItemTokenIds,
+        questState.rewardAmounts,
+        questState.consumedItemTokenIds,
+        questState.consumedAmounts
+      );
+    }
+
+    // Any quest XP gains
+    uint questXpGained;
+    for (uint j; j < questState.skills.length; ++j) {
+      _updateXP(_from, _playerId, questState.skills[j], questState.xpGainedSkills[j]);
+      questXpGained += questState.xpGainedSkills[j];
+    }
+    if (questXpGained != 0) {
+      player.totalXP = uint112(player.totalXP.add(questXpGained));
+    }
+
+    // Daily/weekly rewards
+    if (pendingQueuedActionState.dailyRewardItemTokenIds.length > 0) {
+      itemNFT.mintBatch(
+        _from,
+        pendingQueuedActionState.dailyRewardItemTokenIds,
+        pendingQueuedActionState.dailyRewardAmounts
+      );
+      emit DailyReward(
+        _from,
+        _playerId,
+        uint16(pendingQueuedActionState.dailyRewardItemTokenIds[0]),
+        pendingQueuedActionState.dailyRewardAmounts[0]
+      );
+
+      if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
+        emit WeeklyReward(
+          _from,
+          _playerId,
+          uint16(pendingQueuedActionState.dailyRewardItemTokenIds[1]),
+          pendingQueuedActionState.dailyRewardAmounts[1]
+        );
+      }
+
+      if (uint(pendingQueuedActionState.dailyRewardMask) != 0) {
+        dailyRewardMasks[_playerId] = pendingQueuedActionState.dailyRewardMask;
       }
     }
 
