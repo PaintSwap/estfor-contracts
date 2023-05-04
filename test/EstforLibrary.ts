@@ -19,6 +19,7 @@ describe("EstforLibrary", function () {
     expect(await estforLibrary.trim("")).to.eq("");
     expect(await estforLibrary.trim("Alice")).to.eq("Alice");
     expect(await estforLibrary.trim("Sam test clan")).to.eq("Sam test clan");
+    expect(await estforLibrary.trim("Double  space")).to.eq("Double  space");
   });
 
   it("Validate strings", async () => {
@@ -34,5 +35,10 @@ describe("EstforLibrary", function () {
     for (const char of nonAllowedCharacters) {
       expect(await estforLibrary.containsValidCharacters(char)).to.be.false;
     }
+
+    // Check for multiple spaces
+    expect(await estforLibrary.containsValidCharacters("Double  space")).to.be.false;
+    expect(await estforLibrary.containsValidCharacters("Triple   space")).to.be.false;
+    expect(await estforLibrary.containsValidCharacters("Single space")).to.be.true;
   });
 });
