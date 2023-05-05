@@ -1,6 +1,6 @@
 import {ethers} from "hardhat";
 import {QUESTS_ADDRESS} from "./constants";
-import {allQuests, defaultMinRequirements} from "./data/quests";
+import {Quest, allQuests, defaultMinRequirements} from "./data/quests";
 import {QUEST_NYMPTH_WATCH} from "@paintswap/estfor-definitions/constants";
 
 async function main() {
