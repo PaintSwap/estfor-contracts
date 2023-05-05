@@ -299,84 +299,21 @@ contract PlayersImplMisc is
     }
   }
 
-  function processConsumablesViewImpl(
-    address _from,
+  function processConsumablesViewStateTrans(
     uint _playerId,
-    QueuedAction memory _queuedAction,
     uint _queuedActionStartTime,
     uint _elapsedTime,
-    CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
-    bool _checkBalance,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
-  )
-    external
-    view
-    returns (
-      Equipment[] memory consumedEquipment,
-      Equipment memory producedEquipment,
-      uint xpElapsedTime,
-      bool died,
-      uint24 numConsumed
-    )
-  {
+    uint16 _regenerateId,
+    uint24 _foodConsumed,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
+    uint24 numConsumed
+  ) public view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
     uint consumedEquipmentLength;
-
-    // Figure out how much food should be consumed.
-    // This is based on the damage done from battling
-    bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
-    if (isCombat) {
-      // Fetch the requirements for it
-      CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
-
-      uint combatElapsedTime;
-      (xpElapsedTime, combatElapsedTime, numConsumed) = PlayersLibrary.getCombatAdjustedElapsedTimes(
-        _from,
-        itemNFT,
-        world,
-        _elapsedTime,
-        _actionChoice,
-        _checkBalance,
-        _queuedAction,
-        _combatStats,
-        enemyCombatStats,
-        alphaCombat,
-        betaCombat,
-        _pendingQueuedActionEquipmentStates
-      );
-
-      uint24 foodConsumed;
-      (foodConsumed, died) = PlayersLibrary.foodConsumedView(
-        _from,
-        _queuedAction.regenerateId,
-        combatElapsedTime,
-        itemNFT,
-        _combatStats,
-        enemyCombatStats,
-        alphaCombat,
-        betaCombat,
-        _pendingQueuedActionEquipmentStates
-      );
-
-      if (died) {
-        xpElapsedTime = 0;
-      }
-
-      if (_queuedAction.regenerateId != NONE && foodConsumed != 0) {
-        consumedEquipment[consumedEquipmentLength] = Equipment(_queuedAction.regenerateId, foodConsumed);
-        consumedEquipmentLength = consumedEquipmentLength.inc();
-      }
-    } else {
-      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
-        _from,
-        itemNFT,
-        _elapsedTime,
-        _actionChoice,
-        _checkBalance,
-        _pendingQueuedActionEquipmentStates
-      );
+    if (_regenerateId != NONE && _foodConsumed != 0) {
+      consumedEquipment[consumedEquipmentLength] = Equipment(_regenerateId, _foodConsumed);
+      consumedEquipmentLength = consumedEquipmentLength.inc();
     }
 
     if (numConsumed != 0) {
@@ -433,6 +370,73 @@ contract PlayersImplMisc is
     assembly ("memory-safe") {
       mstore(consumedEquipment, consumedEquipmentLength)
     }
+  }
+
+  function processConsumablesViewImpl(
+    address _from,
+    uint _playerId,
+    QueuedAction memory _queuedAction,
+    uint _queuedActionStartTime,
+    uint _elapsedTime,
+    CombatStats memory _combatStats,
+    ActionChoice memory _actionChoice,
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  )
+    external
+    view
+    returns (
+      Equipment[] memory consumedEquipment,
+      Equipment memory producedEquipment,
+      uint xpElapsedTime,
+      bool died,
+      uint16 foodConsumed,
+      uint24 numConsumed
+    )
+  {
+    // Figure out how much food should be consumed.
+    // This is based on the damage done from battling
+    bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
+    if (isCombat) {
+      // Fetch the requirements for it
+      CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
+
+      uint combatElapsedTime;
+      (xpElapsedTime, combatElapsedTime, numConsumed, foodConsumed, died) = PlayersLibrary
+        .getCombatAdjustedElapsedTimes(
+          _from,
+          itemNFT,
+          world,
+          _elapsedTime,
+          _actionChoice,
+          _queuedAction.regenerateId,
+          _queuedAction,
+          _combatStats,
+          enemyCombatStats,
+          alphaCombat,
+          betaCombat,
+          _pendingQueuedActionEquipmentStates
+        );
+    } else {
+      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
+        _from,
+        itemNFT,
+        _elapsedTime,
+        _actionChoice,
+        _pendingQueuedActionEquipmentStates
+      );
+    }
+
+    (consumedEquipment, producedEquipment) = processConsumablesViewStateTrans(
+      _playerId,
+      _queuedActionStartTime,
+      _elapsedTime,
+      _actionChoice,
+      _queuedAction.regenerateId,
+      foodConsumed,
+      _pendingQueuedActionXPGained,
+      numConsumed
+    );
   }
 
   function mintedPlayer(

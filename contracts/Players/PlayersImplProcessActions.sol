@@ -17,6 +17,7 @@ import "../globals/rewards.sol";
 contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint8;
+  using UnsafeMath for uint16;
   using UnsafeMath for uint24;
   using UnsafeMath for uint32;
   using UnsafeMath for uint40;
@@ -359,8 +360,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       Equipment[] memory consumedEquipments,
       Equipment memory producedEquipment,
       uint xpElapsedTime,
-      uint prevXPElapsedTime,
       bool died,
+      uint16 foodConsumed,
       uint24 numConsumed
     )
   {
@@ -370,27 +371,24 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
     // Total used
     if (processedTime > 0) {
-      // Used before
+      uint24 prevFoodConsumed = queuedAction.prevFoodConsumed;
+      uint16 prevNumConsumed = queuedAction.prevNumConsumed;
+
       (
         Equipment[] memory prevConsumedEquipments,
-        Equipment memory prevProducedEquipment,
-        uint _prevXPElapsedTime,
-        bool prevDied,
-        uint prevNumConsumed
-      ) = _processConsumablesView(
-          from,
+        Equipment memory prevProducedEquipment
+      ) = _processConsumablesViewStateTrans(
           _playerId,
-          queuedAction,
           veryStartTime,
           processedTime,
-          combatStats,
           actionChoice,
-          false,
-          pendingQueuedActionEquipmentStates,
-          _pendingQueuedActionXPGained
+          queuedAction.regenerateId,
+          prevFoodConsumed,
+          _pendingQueuedActionXPGained,
+          prevNumConsumed
         );
 
-      prevXPElapsedTime = _prevXPElapsedTime;
+      uint prevXPElapsedTime = queuedAction.processedXPTime;
 
       // Copy existing pending
       PendingQueuedActionEquipmentState
@@ -416,7 +414,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
 
       Equipment[] memory __consumedEquipments;
-      (__consumedEquipments, producedEquipment, xpElapsedTime, died, numConsumed) = _processConsumablesView(
+      (
+        __consumedEquipments,
+        producedEquipment,
+        xpElapsedTime,
+        died,
+        foodConsumed,
+        numConsumed
+      ) = _processConsumablesView(
         from,
         _playerId,
         queuedAction,
@@ -424,11 +429,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         elapsedTime + processedTime,
         combatStats,
         actionChoice,
-        true,
         pendingQueuedActionEquipmentStates,
         _pendingQueuedActionXPGained
       );
-
       delete extendedPendingQueuedActionEquipmentState;
 
       // Get the difference
@@ -461,10 +464,20 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         producedEquipment.itemTokenId = NONE;
       }
 
-      xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
-      numConsumed = uint24(numConsumed.sub(prevNumConsumed));
+      if (xpElapsedTime >= prevXPElapsedTime) {
+        // Maybe died
+        xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
+      }
+      // This is scrolls, doesn't affect melee actually
+      if (numConsumed >= prevNumConsumed) {
+        numConsumed = uint24(numConsumed.sub(prevNumConsumed));
+      }
+
+      if (foodConsumed >= prevFoodConsumed) {
+        foodConsumed = uint16(foodConsumed.sub(prevFoodConsumed));
+      }
     } else {
-      (consumedEquipments, producedEquipment, xpElapsedTime, died, numConsumed) = _processConsumablesView(
+      (consumedEquipments, producedEquipment, xpElapsedTime, died, foodConsumed, numConsumed) = _processConsumablesView(
         from,
         _playerId,
         queuedAction,
@@ -472,7 +485,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         elapsedTime + processedTime,
         combatStats,
         actionChoice,
-        true,
         pendingQueuedActionEquipmentStates,
         _pendingQueuedActionXPGained
       );
@@ -487,7 +499,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
-    bool _checkBalance,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
     PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
   )
@@ -498,6 +509,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       Equipment memory producedEquipment,
       uint xpElapsedTime,
       bool died,
+      uint16 foodConsumed,
       uint24 numConsumed
     )
   {
@@ -512,12 +524,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _elapsedTime,
         _combatStats,
         _actionChoice,
-        _checkBalance,
         _pendingQueuedActionEquipmentStates,
         _pendingQueuedActionXPGained
       )
     );
-    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint24));
+    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint16, uint24));
   }
 
   function _claimTotalXPThresholdRewards(address _from, uint _playerId, uint _oldTotalXP, uint _newTotalXP) private {
@@ -558,5 +569,32 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
+  }
+
+  function _processConsumablesViewStateTrans(
+    uint _playerId,
+    uint _queuedActionStartTime,
+    uint _elapsedTime,
+    ActionChoice memory _actionChoice,
+    uint16 _regenerateId,
+    uint24 _foodConsumed,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
+    uint24 _numConsumed
+  ) private view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersMiscDelegateView.processConsumablesViewStateTrans.selector,
+        _playerId,
+        _queuedActionStartTime,
+        _elapsedTime,
+        _actionChoice,
+        _regenerateId,
+        _foodConsumed,
+        _pendingQueuedActionXPGained,
+        _numConsumed
+      )
+    );
+    return abi.decode(data, (Equipment[], Equipment));
   }
 }

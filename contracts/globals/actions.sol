@@ -34,6 +34,9 @@ struct QueuedAction {
   CombatStyle combatStyle; // specific style of combat,  can also be used
   bool isValid; // If we still have the item, TODO: Not used yet
   uint64 queueId; // id of this queued action
+  uint24 processedXPTime;
+  uint16 prevFoodConsumed;
+  uint16 prevNumConsumed; // Scrolls
 }
 
 // This is only used as an input arg

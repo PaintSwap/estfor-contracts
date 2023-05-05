@@ -279,8 +279,8 @@ interface IPlayersProcessActionsDelegateView {
       Equipment[] memory consumedEquipments,
       Equipment memory producedEquipment,
       uint xpElapsedTime,
-      uint prevXPElapsedTime,
       bool died,
+      uint16 foodConsumed,
       uint24 numConsumed
     );
 }
@@ -305,7 +305,6 @@ interface IPlayersMiscDelegateView {
     uint elapsedTime,
     CombatStats memory combatStats,
     ActionChoice memory actionChoice,
-    bool checkBalance,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
     PendingQueuedActionXPGained memory pendingQueuedActionXPGained
   )
@@ -316,8 +315,20 @@ interface IPlayersMiscDelegateView {
       Equipment memory producedEquipment,
       uint xpElapsedTime,
       bool died,
+      uint16 foodConsumed,
       uint24 numConsumed
     );
+
+  function processConsumablesViewStateTrans(
+    uint playerId,
+    uint queuedActionStartTime,
+    uint elapsedTime,
+    ActionChoice memory actionChoice,
+    uint16 regenerateId,
+    uint24 foodConsumed,
+    PendingQueuedActionXPGained memory pendingQueuedActionXPGained,
+    uint24 numConsumed
+  ) external view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment);
 }
 
 interface IPlayersMiscDelegate {

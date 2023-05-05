@@ -19,6 +19,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   using UnsafeMath for uint256;
   using UnsafeMath for uint40;
   using UnsafeMath for uint24;
+  using UnsafeMath for uint16;
 
   constructor() {
     _checkStartSlot();
@@ -119,6 +120,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           queuedAction,
           queuedAction.timespan,
           0,
+          0,
+          0,
+          0,
           remainingQueuedActionsLength
         );
         remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
@@ -139,19 +143,20 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       bool actionHasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
       ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
-      uint prevXPElapsedTime;
+      uint prevXPElapsedTime = queuedAction.processedXPTime;
+      uint16 foodConsumed;
+      uint24 numConsumed;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
         Equipment[] memory consumedEquipments;
         Equipment memory producedEquipment;
-        uint24 numConsumed;
         (
           consumedEquipments,
           producedEquipment,
           xpElapsedTime,
-          prevXPElapsedTime,
           died,
+          foodConsumed,
           numConsumed
         ) = _completeProcessConsumablesView(
           from,
@@ -180,7 +185,10 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         uint numActionsCompleted;
         if (actionSkill == Skill.COMBAT) {
           // Want monsters killed
-          numActionsCompleted = uint16((numSpawnedPerHour * xpElapsedTime) / (3600 * SPAWN_MUL));
+          uint prevActionsCompleted = uint16((numSpawnedPerHour * prevXPElapsedTime) / (3600 * SPAWN_MUL));
+          numActionsCompleted =
+            uint16((numSpawnedPerHour * (xpElapsedTime + prevXPElapsedTime)) / (3600 * SPAWN_MUL)) -
+            prevActionsCompleted;
         } else {
           // Not currently used
         }
@@ -242,9 +250,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             }
           }
 
-          prevXPElapsedTime = queuedAction.processedTime > previouslyRefundedTime
-            ? queuedAction.processedTime.sub(previouslyRefundedTime)
-            : 0;
           xpElapsedTime = elapsedTime + queuedAction.processedTime - refundTime - prevXPElapsedTime;
         } else {
           bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;
@@ -266,10 +271,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         uint numActionsCompleted;
         if (actionSkill == Skill.THIEVING) {
           // Hours thieving
-          numActionsCompleted = xpElapsedTime / 3600;
+          uint prevNumActionsCompleted = prevXPElapsedTime / 3600;
+          numActionsCompleted = ((xpElapsedTime + prevXPElapsedTime) / 3600) - prevNumActionsCompleted;
         } else {
           // Output produced
-          numActionsCompleted = (xpElapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * GUAR_MUL);
+          uint prevNumActionsCompleted = (prevXPElapsedTime * actionRewards.guaranteedRewardRate1) / (3600 * GUAR_MUL);
+          numActionsCompleted =
+            ((prevXPElapsedTime + xpElapsedTime) * actionRewards.guaranteedRewardRate1) /
+            (3600 * GUAR_MUL) -
+            prevNumActionsCompleted;
         }
         if (numActionsCompleted != 0) {
           actionIds[actionIdsLength] = queuedAction.actionId;
@@ -284,32 +294,32 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint prevPointsAccrued;
       uint prevPointsAccruedExclBaseBoost;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
-      if (!died) {
-        (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
+      //   if (!died) {
+      (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
+        from,
+        _playerId,
+        queuedAction,
+        veryStartTime,
+        skill,
+        xpElapsedTime + prevXPElapsedTime,
+        pendingQueuedActionState.equipmentStates
+      );
+
+      if (processedTime > 0) {
+        (prevPointsAccrued, prevPointsAccruedExclBaseBoost) = _getPointsAccrued(
           from,
           _playerId,
           queuedAction,
           veryStartTime,
           skill,
-          xpElapsedTime + prevXPElapsedTime,
+          prevXPElapsedTime,
           pendingQueuedActionState.equipmentStates
         );
 
-        if (processedTime > 0) {
-          (prevPointsAccrued, prevPointsAccruedExclBaseBoost) = _getPointsAccrued(
-            from,
-            _playerId,
-            queuedAction,
-            veryStartTime,
-            skill,
-            prevXPElapsedTime,
-            pendingQueuedActionState.equipmentStates
-          );
-
-          pointsAccrued -= uint32(prevPointsAccrued);
-          pointsAccruedExclBaseBoost -= uint32(prevPointsAccruedExclBaseBoost);
-        }
+        pointsAccrued -= uint32(prevPointsAccrued);
+        pointsAccruedExclBaseBoost -= uint32(prevPointsAccruedExclBaseBoost);
       }
+      //     }
 
       pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
       uint32 xpGained = pointsAccrued;
@@ -345,6 +355,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           queuedAction,
           remainingTimespan,
           elapsedTime,
+          xpElapsedTime,
+          foodConsumed,
+          numConsumed,
           remainingQueuedActionsLength
         );
         remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
@@ -415,17 +428,14 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         bool hasRandomWord = world.hasRandomWord(startTime + elapsedTime);
         if (!hasRandomWord) {
           if (isCombat) {
+            uint prevMonstersKilled = (numSpawnedPerHour * prevXPElapsedTime) / (SPAWN_MUL * 3600);
             uint16 monstersKilled = uint16(
-              (numSpawnedPerHour * (xpElapsedTime + prevXPElapsedTime)) /
-                (SPAWN_MUL * 3600) -
-                (numSpawnedPerHour * (prevXPElapsedTime)) /
-                (SPAWN_MUL * 3600)
+              (numSpawnedPerHour * (xpElapsedTime + prevXPElapsedTime)) / (SPAWN_MUL * 3600) - prevMonstersKilled
             );
             pendingQueuedActionMetadata.rolls = uint32(monstersKilled);
           } else {
-            pendingQueuedActionMetadata.rolls = uint32(
-              (xpElapsedTime + prevXPElapsedTime) / 3600 - prevXPElapsedTime / 3600
-            );
+            uint prevRolls = prevXPElapsedTime / 3600;
+            pendingQueuedActionMetadata.rolls = uint32((xpElapsedTime + prevXPElapsedTime) / 3600 - prevRolls);
           }
         }
       }
@@ -750,12 +760,18 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     QueuedAction[] memory _remainingQueuedActions,
     QueuedAction storage _queuedAction,
     uint _timespan,
-    uint _processedTime,
+    uint _elapsedTime,
+    uint _xpElapsedTime,
+    uint _prevFoodConsumed,
+    uint _prevNumConsumed,
     uint _length
   ) private pure {
     QueuedAction memory remainingAction = _queuedAction;
     remainingAction.timespan = uint24(_timespan);
-    remainingAction.processedTime += uint24(_processedTime);
+    remainingAction.processedTime += uint24(_elapsedTime);
+    remainingAction.processedXPTime += uint24(_xpElapsedTime);
+    remainingAction.prevFoodConsumed += uint16(_prevFoodConsumed);
+    remainingAction.prevNumConsumed += uint16(_prevNumConsumed);
     // Build a list of the skills queued that remain
     _remainingQueuedActions[_length] = remainingAction;
   }
@@ -973,8 +989,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       Equipment[] memory consumedEquipment,
       Equipment memory producedEquipment,
       uint xpElapsedTime,
-      uint prevXPElapsedTime,
       bool died,
+      uint16 foodConsumed,
       uint24 numConsumed
     )
   {
@@ -993,7 +1009,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _pendingQueuedActionXPGained
       )
     );
-    return abi.decode(data, (Equipment[], Equipment, uint, uint, bool, uint24));
+    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint16, uint24));
   }
 
   function _getHealthPointsFromCombat(

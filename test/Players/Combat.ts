@@ -431,6 +431,136 @@ describe("Combat Actions", function () {
       expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(10);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Killed none
     });
+
+    it("Use too much food", async function () {
+      // Check same food is used
+      const {
+        playerId,
+        players,
+        alice,
+        queuedAction: meleeQueuedAction,
+        world,
+        itemNFT,
+      } = await loadFixture(playersFixtureMelee);
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 15000,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per hour
+      await world.addAction({
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 100 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+
+      const queuedAction = {...meleeQueuedAction};
+      queuedAction.actionId = 2;
+
+      // Exceed 2^16
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too;
+      const foodBalance = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+
+      // Should have died. You still get XP for the ones you killed while processing.it  He could kill
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(2484); // Killed 67
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(69);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+        foodBalance.sub(Math.pow(2, 16) - 1)
+      );
+    });
+
+    it("Use too much food (split over same action)", async function () {
+      const {
+        playerId,
+        players,
+        alice,
+        queuedAction: meleeQueuedAction,
+        world,
+        itemNFT,
+      } = await loadFixture(playersFixtureMelee);
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 15000,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per hour
+      await world.addAction({
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 100 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+
+      const queuedAction = {...meleeQueuedAction};
+      queuedAction.actionId = 2;
+
+      // Exceed 2^16
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too;
+      const foodBalance = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      // Food should be used each time until it is all used up
+      let beforeBal = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+      for (let i = 0; i < 36; ++i) {
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 36]);
+        await ethers.provider.send("evm_mine", []);
+        await players.connect(alice).processActions(playerId);
+        const newBalance = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+        expect(beforeBal).to.satisfy((num: BigNumber) => {
+          return num.gt(newBalance) || num.eq(foodBalance.sub(65535));
+        });
+        beforeBal = newBalance;
+      }
+
+      // Should have died. You still get XP for the ones you killed while processing.it  He could kill
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(2484); // Killed 69
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(69);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+        foodBalance.sub(Math.pow(2, 16) - 1)
+      );
+    });
   });
 
   describe("Magic", function () {
@@ -921,7 +1051,75 @@ describe("Combat Actions", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     });
 
-    it("Use too much food (split over same action)", async function () {});
+    it("Use too much food (split over same action)", async function () {
+      const {
+        playerId,
+        players,
+        alice,
+        world,
+        queuedAction: magicQueuedAction,
+        itemNFT,
+        startXP,
+      } = await loadFixture(playersFixtureMagic);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 15000,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per hour
+      await world.addAction({
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 100 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+
+      const queuedAction = {...magicQueuedAction};
+      queuedAction.actionId = 2;
+
+      // Exceed 2^16
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 70000);
+      const foodBalance = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      // Food should be used each time
+      let beforeBal = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+      for (let i = 0; i < 36; ++i) {
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 36]);
+        await ethers.provider.send("evm_mine", []);
+        await players.connect(alice).processActions(playerId);
+        const newBalance = await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS);
+        expect(beforeBal).to.satisfy((num: BigNumber) => {
+          return num.gt(newBalance) || num.eq(foodBalance.sub(65535));
+        });
+        beforeBal = newBalance;
+      }
+
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(3106);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+        foodBalance.sub(Math.pow(2, 16) - 1)
+      );
+    });
 
     it("Use too much food", async function () {
       const {
@@ -975,8 +1173,8 @@ describe("Combat Actions", function () {
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players.connect(alice).processActions(playerId);
-      // Died
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
+      // Died but still get XP
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + 2732);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance.sub(Math.pow(2, 16) - 1)
@@ -998,7 +1196,7 @@ describe("Combat Actions", function () {
       health: 1,
     };
 
-    const rate = 6000 * GUAR_MUL; // per hour
+    const rate = 6000 * GUAR_MUL; // per kill
     let tx = await world.addAction({
       actionId: 1,
       info: {
@@ -1070,16 +1268,16 @@ describe("Combat Actions", function () {
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
     expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(queuedAction.actionId);
     expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
-    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
     expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(foodNum);
     expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
 
     await players.connect(alice).processActions(playerId);
-    // Should die so doesn't get any attack skill points, loot, and food should be consumed
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
+    // Should die, but still get skill points & loot for the ones you did kill. Also food should be consumed
+    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(1188);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(198000);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
 
     // Have no food, should not show any in consumed

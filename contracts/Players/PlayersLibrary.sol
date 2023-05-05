@@ -162,7 +162,7 @@ library PlayersLibrary {
     uint _originalBalance,
     uint _itemId,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) private pure returns (uint balance) {
+  ) private view returns (uint balance) {
     balance = _originalBalance;
     U256 bounds = _pendingQueuedActionEquipmentStates.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
@@ -222,8 +222,9 @@ library PlayersLibrary {
     CombatStats calldata _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) external view returns (uint24 foodConsumed, bool died) {
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    bool _checkBalance
+  ) external view returns (uint16 foodConsumed, bool died) {
     uint32 totalHealthLost = _dmg(
       _enemyCombatStats.melee,
       _combatStats.meleeDefence,
@@ -256,18 +257,19 @@ library PlayersLibrary {
       died = totalHealthLost != 0;
     } else {
       // Round up
-      foodConsumed = uint24(Math.ceilDiv(uint32(totalHealthLost), healthRestored));
+      uint _foodConsumed = Math.ceilDiv(uint32(totalHealthLost), healthRestored);
       // Can only consume a maximum of 65535 food
-      if (foodConsumed > type(uint16).max) {
-        foodConsumed = type(uint16).max;
+      if (_foodConsumed > type(uint16).max) {
+        _foodConsumed = type(uint16).max;
         died = true;
-      } else {
+      } else if (_checkBalance) {
         uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
-        died = foodConsumed > balance;
+        died = _foodConsumed > balance;
         if (died) {
-          foodConsumed = uint16(balance);
+          _foodConsumed = uint16(balance);
         }
       }
+      foodConsumed = uint16(_foodConsumed);
     }
   }
 
@@ -330,7 +332,6 @@ library PlayersLibrary {
       // Have enough balance but numConsumed exceeds 65535, too much so limit it.
       balance = type(uint16).max * _inputAmount;
     }
-
     uint tempMaxRequiredRatio = balance / _inputAmount;
     if (tempMaxRequiredRatio < _prevConsumeMaxRatio) {
       maxRequiredRatio = tempMaxRequiredRatio;
@@ -423,21 +424,26 @@ library PlayersLibrary {
     World _world,
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
-    bool _checkBalance,
+    uint16 _regenerateId,
     QueuedAction calldata _queuedAction,
     CombatStats memory _combatStats,
     CombatStats calldata _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) external view returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed) {
+  )
+    external
+    view
+    returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed, uint16 foodConsumed, bool died)
+  {
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
     uint respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
     uint32 dmgDealt = _getDmg(_actionChoice, _combatStats, _enemyCombatStats, _alphaCombat, _betaCombat, respawnTime);
 
     uint numKilled;
-    if (dmgDealt > uint16(_enemyCombatStats.health)) {
-      // Are able to kill them all, but how many can we kill in the time that has elapsed?
+    bool canKillAll = dmgDealt > uint16(_enemyCombatStats.health);
+    if (canKillAll) {
+      // But how many can we kill in the time that has elapsed?
       numKilled = (_elapsedTime * numSpawnedPerHour) / (3600 * SPAWN_MUL);
       uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
       combatElapsedTime = combatTimePerEnemy * numKilled;
@@ -462,25 +468,84 @@ library PlayersLibrary {
       numConsumed = uint16(Math.max(numKilled, numConsumed));
     }
 
-    if (_checkBalance) {
-      if (numConsumed != 0) {
-        // This checks the balances
-        uint maxRequiredRatio = _getMaxRequiredRatio(
-          _from,
-          _actionChoice,
-          numConsumed,
-          _itemNFT,
-          _pendingQueuedActionEquipmentStates
-        );
+    //    if (_checkBalance) {
+    if (numConsumed != 0) {
+      // This checks the balances
+      uint maxRequiredRatio = _getMaxRequiredRatio(
+        _from,
+        _actionChoice,
+        numConsumed,
+        _itemNFT,
+        _pendingQueuedActionEquipmentStates
+      );
 
-        if (numConsumed > maxRequiredRatio) {
-          xpElapsedTime = 0;
-          combatElapsedTime = _elapsedTime;
-          numConsumed = uint16(maxRequiredRatio);
-        }
-      } else if (_actionChoice.rate != 0) {
+      if (numConsumed > maxRequiredRatio) {
         xpElapsedTime = 0;
         combatElapsedTime = _elapsedTime;
+        numConsumed = uint16(maxRequiredRatio);
+      }
+    } else if (_actionChoice.rate != 0) {
+      xpElapsedTime = 0;
+      combatElapsedTime = _elapsedTime;
+    }
+    //  }
+
+    // Also check food
+
+    uint32 totalHealthLost = _dmg(
+      _enemyCombatStats.melee,
+      _combatStats.meleeDefence,
+      _alphaCombat,
+      _betaCombat,
+      combatElapsedTime
+    );
+    totalHealthLost += _dmg(
+      _enemyCombatStats.magic,
+      _combatStats.magicDefence,
+      _alphaCombat,
+      _betaCombat,
+      combatElapsedTime
+    );
+    if (int32(totalHealthLost) > _combatStats.health) {
+      // Take away our health points from the total dealt
+      totalHealthLost -= uint16(int16(_max(0, _combatStats.health)));
+    } else {
+      totalHealthLost = 0;
+    }
+
+    uint healthRestored;
+    if (_regenerateId != NONE) {
+      Item memory item = _itemNFT.getItem(_regenerateId);
+      healthRestored = item.healthRestored;
+    }
+
+    if (healthRestored == 0 || totalHealthLost <= 0) {
+      // No food attached or didn't lose any health
+      died = totalHealthLost != 0;
+      if (died) {
+        xpElapsedTime = 0;
+      }
+    } else {
+      // Round up
+      uint _totalFoodRequired = Math.ceilDiv(uint32(totalHealthLost), healthRestored);
+      // Can only consume a maximum of 65535 food
+      if (_totalFoodRequired > type(uint16).max) {
+        foodConsumed = type(uint16).max;
+        died = true;
+      } else {
+        uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
+        died = _totalFoodRequired > balance;
+        if (died) {
+          foodConsumed = uint16(balance);
+        } else {
+          foodConsumed = uint16(_totalFoodRequired);
+        }
+      }
+
+      if (died) {
+        // How many can we kill with the food we did consume
+        numKilled = (numKilled * foodConsumed) / _totalFoodRequired;
+        xpElapsedTime = respawnTime * numKilled;
       }
     }
   }
@@ -490,13 +555,12 @@ library PlayersLibrary {
     ItemNFT _itemNFT,
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
-    bool _checkBalance,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
     // Check the max that can be used
     numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * RATE_MUL));
 
-    if (_checkBalance && numConsumed != 0) {
+    if (numConsumed != 0) {
       // This checks the balances
       uint maxRequiredRatio = _getMaxRequiredRatio(
         _from,
