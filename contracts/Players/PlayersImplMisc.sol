@@ -305,9 +305,9 @@ contract PlayersImplMisc is
     uint _elapsedTime,
     ActionChoice memory _actionChoice,
     uint16 _regenerateId,
-    uint24 _foodConsumed,
+    uint16 _foodConsumed,
     PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
-    uint24 numConsumed
+    uint16 numConsumed
   ) public view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
     uint consumedEquipmentLength;
@@ -353,13 +353,13 @@ contract PlayersImplMisc is
       }
 
       // Some might be burnt cooking for instance
-      uint24 numProduced = uint24((numConsumed * _actionChoice.outputAmount * successPercent) / 100);
+      uint16 numProduced = uint16((uint(numConsumed) * _actionChoice.outputAmount * successPercent) / 100);
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
       uint boostedTime = PlayersLibrary.getBoostedTime(_queuedActionStartTime, _elapsedTime, activeBoost);
       if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-        numProduced += uint24((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
+        numProduced += uint16((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
 
       if (numProduced != 0) {
@@ -391,7 +391,7 @@ contract PlayersImplMisc is
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint24 numConsumed
+      uint16 numConsumed
     )
   {
     // Figure out how much food should be consumed.
@@ -447,7 +447,7 @@ contract PlayersImplMisc is
     uint[] calldata _startingAmounts
   ) external {
     Player storage player = players_[_playerId];
-    player.totalXP = uint112(START_XP_);
+    player.totalXP = uint56(START_XP_);
 
     U256 length = uint256(_startSkills[1] != Skill.NONE ? 2 : 1).asU256();
     uint32 xpEach = uint32(START_XP_ / length.asUint256());

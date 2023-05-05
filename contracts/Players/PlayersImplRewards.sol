@@ -42,10 +42,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint pendingQueuedActionXPGainedLength;
 
     // This is used so that we can start the full XP calculation using the same stats as before
-    pendingQueuedActionXPGained.prevProcessedSkill = player.queuedActionPrevProcessedSkill;
-    pendingQueuedActionXPGained.prevProcessedXPGained = player.queuedActionAlreadyProcessedXPGained;
     pendingQueuedActionXPGained.prevProcessedSkill1 = player.queuedActionPrevProcessedSkill1;
     pendingQueuedActionXPGained.prevProcessedXPGained1 = player.queuedActionAlreadyProcessedXPGained1;
+    pendingQueuedActionXPGained.prevProcessedSkill2 = player.queuedActionPrevProcessedSkill2;
+    pendingQueuedActionXPGained.prevProcessedXPGained2 = player.queuedActionAlreadyProcessedXPGained2;
+    pendingQueuedActionXPGained.prevFoodConsumed = player.prevFoodConsumed;
+    pendingQueuedActionXPGained.prevNumConsumed = player.prevNumConsumed;
 
     pendingQueuedActionState.remainingQueuedActions = new QueuedAction[](actionQueue.length);
     uint remainingQueuedActionsLength;
@@ -121,8 +123,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           queuedAction.timespan,
           0,
           0,
-          0,
-          0,
           remainingQueuedActionsLength
         );
         remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
@@ -143,9 +143,9 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       bool actionHasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
       ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
-      uint prevXPElapsedTime = queuedAction.processedXPTime;
+      uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
       uint16 foodConsumed;
-      uint24 numConsumed;
+      uint16 numConsumed;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
@@ -217,29 +217,30 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         }
       } else {
         // Elapsed time is the time that we actually spent doing the action, not the time that has passed
-        if (queuedAction.processedTime != 0) {
+        if (queuedAction.prevProcessedTime != 0) {
           // PrevXP
           bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;
           uint previouslyRefundedTime;
           uint refundTime;
           if (hasGuaranteedRewards) {
-            uint numProduced = (queuedAction.processedTime * actionRewards.guaranteedRewardRate1) / (3600 * GUAR_MUL);
+            uint numProduced = (queuedAction.prevProcessedTime * actionRewards.guaranteedRewardRate1) /
+              (3600 * GUAR_MUL);
             previouslyRefundedTime =
-              queuedAction.processedTime -
+              queuedAction.prevProcessedTime -
               (numProduced * (3600 * GUAR_MUL)) /
               actionRewards.guaranteedRewardRate1;
 
             // Get remainder for current too
-            uint numProduced1 = ((elapsedTime + queuedAction.processedTime) * actionRewards.guaranteedRewardRate1) /
+            uint numProduced1 = ((elapsedTime + queuedAction.prevProcessedTime) * actionRewards.guaranteedRewardRate1) /
               (3600 * GUAR_MUL);
             refundTime =
-              (elapsedTime + queuedAction.processedTime) -
+              (elapsedTime + queuedAction.prevProcessedTime) -
               (numProduced1 * (3600 * GUAR_MUL)) /
               actionRewards.guaranteedRewardRate1;
           }
 
           if (actionHasRandomRewards) {
-            uint tempRefundTime = queuedAction.processedTime % 3600;
+            uint tempRefundTime = queuedAction.prevProcessedTime % 3600;
             if (tempRefundTime > refundTime) {
               previouslyRefundedTime = tempRefundTime;
             }
@@ -250,7 +251,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             }
           }
 
-          xpElapsedTime = elapsedTime + queuedAction.processedTime - refundTime - prevXPElapsedTime;
+          xpElapsedTime = elapsedTime + queuedAction.prevProcessedTime - refundTime - prevXPElapsedTime;
         } else {
           bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;
           uint refundTime;
@@ -289,12 +290,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       uint pointsAccruedExclBaseBoost;
-      uint processedTime = queuedAction.processedTime;
-      uint veryStartTime = startTime.sub(processedTime);
+      uint prevProcessedTime = queuedAction.prevProcessedTime;
+      uint veryStartTime = startTime.sub(prevProcessedTime);
       uint prevPointsAccrued;
       uint prevPointsAccruedExclBaseBoost;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
-      //   if (!died) {
       (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
         from,
         _playerId,
@@ -305,7 +305,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         pendingQueuedActionState.equipmentStates
       );
 
-      if (processedTime > 0) {
+      if (prevProcessedTime > 0) {
         (prevPointsAccrued, prevPointsAccruedExclBaseBoost) = _getPointsAccrued(
           from,
           _playerId,
@@ -319,7 +319,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         pointsAccrued -= uint32(prevPointsAccrued);
         pointsAccruedExclBaseBoost -= uint32(prevPointsAccruedExclBaseBoost);
       }
-      //     }
 
       pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
       uint32 xpGained = pointsAccrued;
@@ -356,37 +355,43 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           remainingTimespan,
           elapsedTime,
           xpElapsedTime,
-          foodConsumed,
-          numConsumed,
           remainingQueuedActionsLength
         );
         remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
 
-        if (i == 0 && pendingQueuedActionXPGained.prevProcessedSkill == skill) {
-          // Append it
-          pendingQueuedActionXPGained.prevProcessedXPGained += uint24(pointsAccrued);
+        if (i == 0) {
+          // Append it (or set it absolutely if unset)
+          pendingQueuedActionXPGained.prevProcessedSkill1 = skill;
+          pendingQueuedActionXPGained.prevProcessedXPGained1 += uint24(pointsAccrued);
           if (hasCombatXP) {
-            pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.HEALTH;
-            pendingQueuedActionXPGained.prevProcessedXPGained1 += uint24(healthPointsGained);
+            pendingQueuedActionXPGained.prevProcessedSkill2 = Skill.HEALTH;
+            pendingQueuedActionXPGained.prevProcessedXPGained2 += uint24(healthPointsGained);
           }
+
+          pendingQueuedActionXPGained.prevFoodConsumed += foodConsumed;
+          pendingQueuedActionXPGained.prevNumConsumed += numConsumed;
         } else {
           // Set it absolutely, this is a fresh "first action"
-          pendingQueuedActionXPGained.prevProcessedSkill = skill;
-          pendingQueuedActionXPGained.prevProcessedXPGained = uint24(pointsAccrued);
+          pendingQueuedActionXPGained.prevProcessedSkill1 = skill;
+          pendingQueuedActionXPGained.prevProcessedXPGained1 = uint24(pointsAccrued);
           if (hasCombatXP) {
-            pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.HEALTH;
-            pendingQueuedActionXPGained.prevProcessedXPGained1 = uint24(healthPointsGained);
+            pendingQueuedActionXPGained.prevProcessedSkill2 = Skill.HEALTH;
+            pendingQueuedActionXPGained.prevProcessedXPGained2 = uint24(healthPointsGained);
           } else {
-            pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.NONE;
-            pendingQueuedActionXPGained.prevProcessedXPGained1 = 0;
+            pendingQueuedActionXPGained.prevProcessedSkill2 = Skill.NONE;
+            pendingQueuedActionXPGained.prevProcessedXPGained2 = 0;
           }
+          pendingQueuedActionXPGained.prevFoodConsumed = foodConsumed;
+          pendingQueuedActionXPGained.prevNumConsumed = numConsumed;
         }
       } else {
         // Clear it
-        pendingQueuedActionXPGained.prevProcessedSkill = Skill.NONE;
-        pendingQueuedActionXPGained.prevProcessedXPGained = 0;
         pendingQueuedActionXPGained.prevProcessedSkill1 = Skill.NONE;
         pendingQueuedActionXPGained.prevProcessedXPGained1 = 0;
+        pendingQueuedActionXPGained.prevProcessedSkill2 = Skill.NONE;
+        pendingQueuedActionXPGained.prevProcessedXPGained2 = 0;
+        pendingQueuedActionXPGained.prevFoodConsumed = 0;
+        pendingQueuedActionXPGained.prevNumConsumed = 0;
       }
       // Include loot
       {
@@ -762,16 +767,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint _timespan,
     uint _elapsedTime,
     uint _xpElapsedTime,
-    uint _prevFoodConsumed,
-    uint _prevNumConsumed,
     uint _length
   ) private pure {
     QueuedAction memory remainingAction = _queuedAction;
     remainingAction.timespan = uint24(_timespan);
-    remainingAction.processedTime += uint24(_elapsedTime);
-    remainingAction.processedXPTime += uint24(_xpElapsedTime);
-    remainingAction.prevFoodConsumed += uint16(_prevFoodConsumed);
-    remainingAction.prevNumConsumed += uint16(_prevNumConsumed);
+    remainingAction.prevProcessedTime += uint24(_elapsedTime);
+    remainingAction.prevProcessedXPTime += uint24(_xpElapsedTime);
     // Build a list of the skills queued that remain
     _remainingQueuedActions[_length] = remainingAction;
   }
@@ -991,7 +992,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint24 numConsumed
+      uint16 numConsumed
     )
   {
     bytes memory data = _staticcall(
@@ -1009,7 +1010,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _pendingQueuedActionXPGained
       )
     );
-    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint16, uint24));
+    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint16, uint16));
   }
 
   function _getHealthPointsFromCombat(

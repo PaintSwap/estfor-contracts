@@ -326,6 +326,18 @@ abstract contract PlayersBase {
     }
   }
 
+  function _setPrevPlayerState(
+    Player storage _player,
+    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+  ) internal {
+    _player.queuedActionPrevProcessedSkill1 = _pendingQueuedActionXPGained.prevProcessedSkill1;
+    _player.queuedActionAlreadyProcessedXPGained1 = _pendingQueuedActionXPGained.prevProcessedXPGained1;
+    _player.queuedActionPrevProcessedSkill2 = _pendingQueuedActionXPGained.prevProcessedSkill2;
+    _player.queuedActionAlreadyProcessedXPGained2 = _pendingQueuedActionXPGained.prevProcessedXPGained2;
+    _player.prevFoodConsumed = _pendingQueuedActionXPGained.prevFoodConsumed;
+    _player.prevNumConsumed = _pendingQueuedActionXPGained.prevNumConsumed;
+  }
+
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {
     bool success;
     (success, returndata) = target.delegatecall(data);

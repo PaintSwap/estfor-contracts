@@ -83,16 +83,15 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || _queueStatus == ActionQueueStatus.APPEND) &&
       remainingQueuedActions.length != 0
     ) {
-      player.queuedActionPrevProcessedSkill = pendingQueuedActionXPGained.prevProcessedSkill;
-      player.queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.prevProcessedXPGained;
-      player.queuedActionPrevProcessedSkill1 = pendingQueuedActionXPGained.prevProcessedSkill1;
-      player.queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.prevProcessedXPGained1;
+      _setPrevPlayerState(player, pendingQueuedActionXPGained);
     } else {
       // clear it
-      player.queuedActionPrevProcessedSkill = Skill.NONE;
-      player.queuedActionAlreadyProcessedXPGained = 0;
       player.queuedActionPrevProcessedSkill1 = Skill.NONE;
       player.queuedActionAlreadyProcessedXPGained1 = 0;
+      player.queuedActionPrevProcessedSkill2 = Skill.NONE;
+      player.queuedActionAlreadyProcessedXPGained2 = 0;
+      player.prevFoodConsumed = 0;
+      player.prevNumConsumed = 0;
     }
 
     uint prevEndTime = block.timestamp.add(totalTimespan);
@@ -483,10 +482,10 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _processActions(_from, _playerId);
     // Ensure player info is cleared
     players_[_playerId].queuedActionStartTime = 0;
-    players_[_playerId].queuedActionPrevProcessedSkill = Skill.NONE;
-    players_[_playerId].queuedActionAlreadyProcessedXPGained = 0;
     players_[_playerId].queuedActionPrevProcessedSkill1 = Skill.NONE;
     players_[_playerId].queuedActionAlreadyProcessedXPGained1 = 0;
+    players_[_playerId].queuedActionPrevProcessedSkill2 = Skill.NONE;
+    players_[_playerId].queuedActionAlreadyProcessedXPGained2 = 0;
 
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);

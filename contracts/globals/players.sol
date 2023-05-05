@@ -53,13 +53,15 @@ struct Player {
   // Combat levels, (Cached from skill points so this doesn't need to be calculated every combat)
   uint40 queuedActionStartTime; // The start time of the first queued action
   // For combat this will be attack, defence, magic or ranged, as well as health
-  Skill queuedActionPrevProcessedSkill; // The skill that the queued action has already gained XP in
-  uint24 queuedActionAlreadyProcessedXPGained; // The amount of XP that the queued action has already gained
-  Skill queuedActionPrevProcessedSkill1;
-  uint24 queuedActionAlreadyProcessedXPGained1;
-  Skill skillBoosted1;
-  Skill skillBoosted2;
-  uint112 totalXP;
+  Skill queuedActionPrevProcessedSkill1; // The skill that the queued action has already gained XP in
+  uint24 queuedActionAlreadyProcessedXPGained1; // The amount of XP that the queued action has already gained
+  Skill queuedActionPrevProcessedSkill2;
+  uint24 queuedActionAlreadyProcessedXPGained2;
+  Skill skillBoosted1; // The skill that is boosted
+  Skill skillBoosted2; // The second skill that is boosted
+  uint56 totalXP;
+  uint16 prevFoodConsumed;
+  uint16 prevNumConsumed; // Scrolls
   uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP. Not used currently
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
@@ -213,10 +215,12 @@ struct PendingQueuedActionXPGained {
   // XP gained during this session
   Skill[] skills;
   uint32[] xpGainedSkills;
-  Skill prevProcessedSkill;
-  uint24 prevProcessedXPGained;
   Skill prevProcessedSkill1;
   uint24 prevProcessedXPGained1;
+  Skill prevProcessedSkill2;
+  uint24 prevProcessedXPGained2;
+  uint16 prevFoodConsumed;
+  uint16 prevNumConsumed;
 }
 
 struct QuestState {
@@ -281,7 +285,7 @@ interface IPlayersProcessActionsDelegateView {
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint24 numConsumed
+      uint16 numConsumed
     );
 }
 
@@ -316,7 +320,7 @@ interface IPlayersMiscDelegateView {
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint24 numConsumed
+      uint16 numConsumed
     );
 
   function processConsumablesViewStateTrans(
@@ -325,9 +329,9 @@ interface IPlayersMiscDelegateView {
     uint elapsedTime,
     ActionChoice memory actionChoice,
     uint16 regenerateId,
-    uint24 foodConsumed,
+    uint16 foodConsumed,
     PendingQueuedActionXPGained memory pendingQueuedActionXPGained,
-    uint24 numConsumed
+    uint16 numConsumed
   ) external view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment);
 }
 

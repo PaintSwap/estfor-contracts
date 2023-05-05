@@ -53,7 +53,7 @@ interface IPlayerDelegate {
 
   function unequipBoostVial(uint playerId) external;
 
-  function testModifyXP(address from, uint playerId, Skill skill, uint112 xp) external;
+  function testModifyXP(address from, uint playerId, Skill skill, uint56 xp) external;
 
   function initialize(
     ItemNFT itemNFT,
@@ -177,15 +177,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       PendingQueuedActionXPGained memory pendingQueuedActionXPGained
     ) = _processActions(msg.sender, _playerId);
 
+    Player storage player = players_[_playerId];
     if (remainingQueuedActions.length != 0) {
-      players_[_playerId].queuedActionStartTime = uint40(block.timestamp);
+      player.queuedActionStartTime = uint40(block.timestamp);
     } else {
-      players_[_playerId].queuedActionStartTime = 0;
+      player.queuedActionStartTime = 0;
     }
-    players_[_playerId].queuedActionPrevProcessedSkill = pendingQueuedActionXPGained.prevProcessedSkill;
-    players_[_playerId].queuedActionAlreadyProcessedXPGained = pendingQueuedActionXPGained.prevProcessedXPGained;
-    players_[_playerId].queuedActionPrevProcessedSkill1 = pendingQueuedActionXPGained.prevProcessedSkill1;
-    players_[_playerId].queuedActionAlreadyProcessedXPGained1 = pendingQueuedActionXPGained.prevProcessedXPGained1;
+    _setPrevPlayerState(player, pendingQueuedActionXPGained);
 
     Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
     for (uint i = 0; i < remainingQueuedActions.length; ++i) {
@@ -412,7 +410,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses));
   }
 
-  function testModifyXP(address _from, uint _playerId, Skill _skill, uint112 _xp) external isAdminAndBeta {
+  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp) external isAdminAndBeta {
     _delegatecall(
       implProcessActions,
       abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp)

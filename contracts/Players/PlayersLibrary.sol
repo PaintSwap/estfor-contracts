@@ -213,70 +213,10 @@ library PlayersLibrary {
     }
   }
 
-  function foodConsumedView(
-    address _from,
-    uint16 _regenerateId,
-    uint _combatElapsedTime,
-    ItemNFT _itemNFT,
-    CombatStats calldata _combatStats,
-    CombatStats calldata _enemyCombatStats,
-    uint8 _alphaCombat,
-    uint8 _betaCombat,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
-    bool _checkBalance
-  ) external view returns (uint16 foodConsumed, bool died) {
-    uint32 totalHealthLost = _dmg(
-      _enemyCombatStats.melee,
-      _combatStats.meleeDefence,
-      _alphaCombat,
-      _betaCombat,
-      _combatElapsedTime
-    );
-    totalHealthLost += _dmg(
-      _enemyCombatStats.magic,
-      _combatStats.magicDefence,
-      _alphaCombat,
-      _betaCombat,
-      _combatElapsedTime
-    );
-    if (int32(totalHealthLost) > _combatStats.health) {
-      // Take away our health points from the total dealt
-      totalHealthLost -= uint16(int16(_max(0, _combatStats.health)));
-    } else {
-      totalHealthLost = 0;
-    }
-
-    uint healthRestored;
-    if (_regenerateId != NONE) {
-      Item memory item = _itemNFT.getItem(_regenerateId);
-      healthRestored = item.healthRestored;
-    }
-
-    if (healthRestored == 0 || totalHealthLost <= 0) {
-      // No food attached or didn't lose any health
-      died = totalHealthLost != 0;
-    } else {
-      // Round up
-      uint _foodConsumed = Math.ceilDiv(uint32(totalHealthLost), healthRestored);
-      // Can only consume a maximum of 65535 food
-      if (_foodConsumed > type(uint16).max) {
-        _foodConsumed = type(uint16).max;
-        died = true;
-      } else if (_checkBalance) {
-        uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
-        died = _foodConsumed > balance;
-        if (died) {
-          _foodConsumed = uint16(balance);
-        }
-      }
-      foodConsumed = uint16(_foodConsumed);
-    }
-  }
-
   function _getMaxRequiredRatio(
     address _from,
     ActionChoice memory _actionChoice,
-    uint24 _numConsumed,
+    uint16 _numConsumed,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
@@ -287,7 +227,6 @@ library PlayersLibrary {
           _from,
           _actionChoice.inputTokenId1,
           _actionChoice.inputAmount1,
-          _numConsumed,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -298,7 +237,6 @@ library PlayersLibrary {
           _from,
           _actionChoice.inputTokenId2,
           _actionChoice.inputAmount2,
-          _numConsumed,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -309,7 +247,6 @@ library PlayersLibrary {
           _from,
           _actionChoice.inputTokenId3,
           _actionChoice.inputAmount3,
-          _numConsumed,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -322,16 +259,11 @@ library PlayersLibrary {
     address _from,
     uint16 _inputTokenId,
     uint16 _inputAmount,
-    uint24 _numConsumed,
     uint _prevConsumeMaxRatio,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     uint balance = getRealBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
-    if ((_numConsumed > type(uint16).max) && (balance >= type(uint16).max * _inputAmount)) {
-      // Have enough balance but numConsumed exceeds 65535, too much so limit it.
-      balance = type(uint16).max * _inputAmount;
-    }
     uint tempMaxRequiredRatio = balance / _inputAmount;
     if (tempMaxRequiredRatio < _prevConsumeMaxRatio) {
       maxRequiredRatio = tempMaxRequiredRatio;
@@ -468,7 +400,6 @@ library PlayersLibrary {
       numConsumed = uint16(Math.max(numKilled, numConsumed));
     }
 
-    //    if (_checkBalance) {
     if (numConsumed != 0) {
       // This checks the balances
       uint maxRequiredRatio = _getMaxRequiredRatio(
@@ -488,10 +419,8 @@ library PlayersLibrary {
       xpElapsedTime = 0;
       combatElapsedTime = _elapsedTime;
     }
-    //  }
 
     // Also check food
-
     uint32 totalHealthLost = _dmg(
       _enemyCombatStats.melee,
       _combatStats.meleeDefence,
@@ -556,9 +485,9 @@ library PlayersLibrary {
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) external view returns (uint xpElapsedTime, uint24 numConsumed) {
+  ) external view returns (uint xpElapsedTime, uint16 numConsumed) {
     // Check the max that can be used
-    numConsumed = uint24((_elapsedTime * _actionChoice.rate) / (3600 * RATE_MUL));
+    numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * RATE_MUL));
 
     if (numConsumed != 0) {
       // This checks the balances
@@ -571,7 +500,7 @@ library PlayersLibrary {
       );
       bool hadEnoughConsumables = numConsumed <= maxRequiredRatio;
       if (!hadEnoughConsumables) {
-        numConsumed = uint24(maxRequiredRatio);
+        numConsumed = uint16(maxRequiredRatio);
       }
     }
     // Work out what the actual elapsedTime should be had all those been made
@@ -779,10 +708,10 @@ library PlayersLibrary {
     PackedXP storage packedXP
   ) public view returns (uint) {
     uint xp = readXP(_skill, packedXP);
-    if (_pendingQueuedActionXPGained.prevProcessedSkill == _skill) {
-      xp -= _pendingQueuedActionXPGained.prevProcessedXPGained;
-    } else if (_pendingQueuedActionXPGained.prevProcessedSkill1 == _skill) {
+    if (_pendingQueuedActionXPGained.prevProcessedSkill1 == _skill) {
       xp -= _pendingQueuedActionXPGained.prevProcessedXPGained1;
+    } else if (_pendingQueuedActionXPGained.prevProcessedSkill2 == _skill) {
+      xp -= _pendingQueuedActionXPGained.prevProcessedXPGained2;
     }
 
     // Add any new xp gained from previous actions completed in the queue. For instance

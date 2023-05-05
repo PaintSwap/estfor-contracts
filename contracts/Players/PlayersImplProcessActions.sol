@@ -21,7 +21,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   using UnsafeMath for uint24;
   using UnsafeMath for uint32;
   using UnsafeMath for uint40;
-  using UnsafeMath for uint112;
+  using UnsafeMath for uint56;
   using UnsafeMath for uint128;
   using UnsafeMath for uint256;
 
@@ -126,7 +126,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             pendingQueuedActionState.xpRewardAmounts
           );
         }
-        player.totalXP = uint112(newTotalXP);
+        player.totalXP = uint56(newTotalXP);
       }
       bool fullyFinished = actionMetadata.elapsedTime >= players_[_playerId].actionQueue[i].timespan;
       if (fullyFinished) {
@@ -202,7 +202,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       questXpGained += questState.xpGainedSkills[j];
     }
     if (questXpGained != 0) {
-      player.totalXP = uint112(player.totalXP.add(questXpGained));
+      player.totalXP = uint56(player.totalXP.add(questXpGained));
     }
 
     // Daily/weekly rewards
@@ -362,17 +362,17 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint24 numConsumed
+      uint16 numConsumed
     )
   {
     // Processed
-    uint processedTime = queuedAction.processedTime;
-    uint veryStartTime = startTime.sub(processedTime);
+    uint prevProcessedTime = queuedAction.prevProcessedTime;
+    uint veryStartTime = startTime.sub(prevProcessedTime);
 
     // Total used
-    if (processedTime > 0) {
-      uint24 prevFoodConsumed = queuedAction.prevFoodConsumed;
-      uint16 prevNumConsumed = queuedAction.prevNumConsumed;
+    if (prevProcessedTime > 0) {
+      uint16 prevFoodConsumed = players_[_playerId].prevFoodConsumed;
+      uint16 prevNumConsumed = players_[_playerId].prevNumConsumed;
 
       (
         Equipment[] memory prevConsumedEquipments,
@@ -380,7 +380,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       ) = _processConsumablesViewStateTrans(
           _playerId,
           veryStartTime,
-          processedTime,
+          prevProcessedTime,
           actionChoice,
           queuedAction.regenerateId,
           prevFoodConsumed,
@@ -388,7 +388,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           prevNumConsumed
         );
 
-      uint prevXPElapsedTime = queuedAction.processedXPTime;
+      uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
 
       // Copy existing pending
       PendingQueuedActionEquipmentState
@@ -426,7 +426,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _playerId,
         queuedAction,
         veryStartTime,
-        elapsedTime + processedTime,
+        elapsedTime + prevProcessedTime,
         combatStats,
         actionChoice,
         pendingQueuedActionEquipmentStates,
@@ -470,7 +470,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       }
       // This is scrolls, doesn't affect melee actually
       if (numConsumed >= prevNumConsumed) {
-        numConsumed = uint24(numConsumed.sub(prevNumConsumed));
+        numConsumed = uint16(numConsumed.sub(prevNumConsumed));
       }
 
       if (foodConsumed >= prevFoodConsumed) {
@@ -482,7 +482,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _playerId,
         queuedAction,
         veryStartTime,
-        elapsedTime + processedTime,
+        elapsedTime + prevProcessedTime,
         combatStats,
         actionChoice,
         pendingQueuedActionEquipmentStates,
@@ -510,7 +510,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint24 numConsumed
+      uint16 numConsumed
     )
   {
     bytes memory data = _staticcall(
@@ -528,7 +528,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _pendingQueuedActionXPGained
       )
     );
-    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint16, uint24));
+    return abi.decode(data, (Equipment[], Equipment, uint, bool, uint16, uint16));
   }
 
   function _claimTotalXPThresholdRewards(address _from, uint _playerId, uint _oldTotalXP, uint _newTotalXP) private {
@@ -539,7 +539,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function testModifyXP(address _from, uint _playerId, Skill _skill, uint112 _xp) external {
+  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp) external {
     // Make sure it isn't less XP
     uint oldPoints = PlayersLibrary.readXP(_skill, xp_[_playerId]);
     if (_xp < oldPoints) {
@@ -548,9 +548,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     if (playerNFT.balanceOf(_from, _playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
-    uint112 updatedPoints = uint112(_xp.sub(oldPoints));
+    uint56 updatedPoints = uint56(_xp.sub(oldPoints));
     _updateXP(_from, _playerId, _skill, updatedPoints);
-    uint112 newPoints = uint112(players_[_playerId].totalXP.add(updatedPoints));
+    uint56 newPoints = uint56(players_[_playerId].totalXP.add(updatedPoints));
     _claimTotalXPThresholdRewards(_from, _playerId, oldPoints, newPoints);
     players_[_playerId].totalXP = newPoints;
   }
@@ -577,9 +577,9 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint _elapsedTime,
     ActionChoice memory _actionChoice,
     uint16 _regenerateId,
-    uint24 _foodConsumed,
+    uint16 _foodConsumed,
     PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
-    uint24 _numConsumed
+    uint16 _numConsumed
   ) private view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     bytes memory data = _staticcall(
       address(this),
