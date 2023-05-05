@@ -27,9 +27,24 @@ interface Router {
     uint deadline
   ) external payable returns (uint[] memory amounts);
 
+  function swapETHForExactTokens(
+    uint amountOut,
+    address[] calldata path,
+    address to,
+    uint deadline
+  ) external payable returns (uint[] memory amounts);
+
   function swapExactTokensForETH(
     uint amountIn,
     uint amountOutMin,
+    address[] calldata path,
+    address to,
+    uint deadline
+  ) external returns (uint[] memory amounts);
+
+  function swapTokensForExactETH(
+    uint amountOut,
+    uint amountInMax,
     address[] calldata path,
     address to,
     uint deadline
@@ -246,18 +261,19 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     address _from,
     address _to,
     uint _playerId,
-    uint _minimumBrushBack
+    uint _minimumBrushBack,
+    bool _useExactETH
   ) external payable onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
     if (playerQuest.questId != QUEST_PURSE_STRINGS) {
       revert InvalidActiveQuest();
     }
-    buyBrush(_to, _minimumBrushBack);
+    buyBrush(_to, _minimumBrushBack, _useExactETH);
     _questCompleted(_from, _playerId, playerQuest.questId);
     success = true;
   }
 
-  function buyBrush(address _to, uint _minimumBrushExpected) public payable {
+  function buyBrush(address _to, uint _minimumBrushExpected, bool _useExactETH) public payable {
     if (msg.value == 0) {
       revert InvalidFTMAmount();
     }
@@ -268,11 +284,17 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     buyPath[0] = buyPath1;
     buyPath[1] = buyPath2;
 
-    router.swapExactETHForTokens{value: msg.value}(_minimumBrushExpected, buyPath, _to, deadline);
+    if (_useExactETH) {
+      uint amountOutMin = _minimumBrushExpected;
+      router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, _to, deadline);
+    } else {
+      uint amountOut = _minimumBrushExpected;
+      router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, _to, deadline);
+    }
   }
 
   // This doesn't really belong here, just for consistency
-  function sellBrush(address _to, uint _brushAmount, uint _minFTM) external {
+  function sellBrush(address _to, uint _brushAmount, uint _minFTM, bool _useExactETH) external {
     if (_brushAmount == 0) {
       revert InvalidBrushAmount();
     }
@@ -285,7 +307,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
     IERC20(buyPath2).transferFrom(msg.sender, address(router), _brushAmount);
 
-    router.swapExactTokensForETH(_brushAmount, _minFTM, sellPath, _to, deadline);
+    if (_useExactETH) {
+      uint amountOut = _minFTM;
+      uint amountInMax = _brushAmount;
+      router.swapTokensForExactETH(amountOut, amountInMax, sellPath, _to, deadline);
+    } else {
+      uint amountIn = _brushAmount;
+      uint amountOutMin = _minFTM;
+      router.swapExactTokensForETH(amountIn, amountOutMin, sellPath, _to, deadline);
+    }
   }
 
   function processQuestsView(

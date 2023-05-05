@@ -199,7 +199,7 @@ describe("Quests", function () {
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
       await quests.addQuests([quest], [false], [defaultMinRequirements]);
       await expect(
-        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10})
+        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 10})
       ).to.be.revertedWithCustomError(quests, "InvalidActiveQuest");
     });
 
@@ -210,7 +210,7 @@ describe("Quests", function () {
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
       await expect(
-        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 0})
+        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 0})
       ).to.be.revertedWithCustomError(quests, "InvalidFTMAmount");
     });
 
@@ -223,7 +223,7 @@ describe("Quests", function () {
       await players.connect(alice).activateQuest(playerId, questId);
       expect((await quests.activeQuests(playerId)).questId).to.be.eq(questId);
       const balanceBefore = await brush.balanceOf(alice.address);
-      await players.connect(alice).buyBrushQuest(alice.address, playerId, 0, {value: 10});
+      await players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 10});
       const balanceAfter = await brush.balanceOf(alice.address);
       expect(balanceBefore.add(1)).to.eq(balanceAfter);
 

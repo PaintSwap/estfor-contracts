@@ -227,10 +227,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function buyBrushQuest(
     address _to,
     uint _playerId,
-    uint _questId
+    uint _questId,
+    bool _useExactETH
   ) external payable isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     // This is a one off quest
-    bool success = quests.buyBrushQuest{value: msg.value}(msg.sender, _to, _playerId, _questId);
+    bool success = quests.buyBrushQuest{value: msg.value}(msg.sender, _to, _playerId, _questId, _useExactETH);
     if (success) {
       // Mint reward, just hardcoding for gas saving
       uint[] memory rewardItemTokenIds = new uint[](1);
