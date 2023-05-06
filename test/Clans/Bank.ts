@@ -24,11 +24,25 @@ describe("Bank", function () {
     ]);
 
     const clanName = "Clan 1";
-    return {...fixture, clans, clanName};
+    const discord = "G4ZgtP52JK";
+    const telegram = "fantomfoundation";
+    return {...fixture, clans, clanName, discord, telegram};
   }
   it("Should be able to deposit items up to max capacity", async function () {
-    const {clans, playerId, alice, clanName, Bank, bankFactory, itemNFT, playerNFT, avatarId, owner} =
-      await loadFixture(bankFixture);
+    const {
+      clans,
+      playerId,
+      alice,
+      clanName,
+      discord,
+      telegram,
+      Bank,
+      bankFactory,
+      itemNFT,
+      playerNFT,
+      avatarId,
+      owner,
+    } = await loadFixture(bankFixture);
 
     await itemNFT.testMints(
       alice.address,
@@ -48,7 +62,7 @@ describe("Bank", function () {
       nonce: clanId,
     });
 
-    await clans.connect(alice).createClan(playerId, clanName, 2, 1);
+    await clans.connect(alice).createClan(playerId, clanName, discord, telegram, 2, 1);
     await itemNFT.connect(alice).setApprovalForAll(clanBankAddress, true);
     const bank = await Bank.attach(clanBankAddress);
     expect(await bankFactory.createdHere(clanBankAddress)).to.be.true;

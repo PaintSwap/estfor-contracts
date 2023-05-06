@@ -341,7 +341,7 @@ describe("Rewards", function () {
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
     });
 
-    it("Test clan tier bonus reward upgrades", async function () {
+    it("Clan tier bonus reward upgrades", async function () {
       const {playerId, players, itemNFT, world, alice, clans} = await loadFixture(playersFixture);
 
       // Be a member of a clan
@@ -366,7 +366,7 @@ describe("Rewards", function () {
 
       let tierId = 1;
       const imageId = 1;
-      await clans.connect(alice).createClan(playerId, "Clan name", imageId, tierId);
+      await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
       players.setDailyRewardsEnabled(true);
       let baseEquipment = {itemTokenId: EstforConstants.COPPER_ORE, amount: 100};

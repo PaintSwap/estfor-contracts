@@ -159,7 +159,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       revert NameTooLong(bytes(trimmedName).length, _name, trimmedName);
     }
 
-    if (!EstforLibrary.containsValidCharacters(trimmedName)) {
+    if (!EstforLibrary.containsValidNameCharacters(trimmedName)) {
       revert NameInvalidCharacters();
     }
 

@@ -87,8 +87,8 @@ library EstforLibrary {
   }
 
   // Assumes the string is already trimmed
-  function containsValidCharacters(string calldata _str) external pure returns (bool) {
-    bytes memory b = bytes(_str);
+  function containsValidNameCharacters(string calldata _name) external pure returns (bool) {
+    bytes memory b = bytes(_name);
     bool lastCharIsWhitespace;
     U256 iter = b.length.asU256();
     while (iter.neq(0)) {
@@ -107,6 +107,44 @@ library EstforLibrary {
         return false;
       }
     }
+    return true;
+  }
+
+  function containsValidDiscordCharacters(string calldata _discord) external pure returns (bool) {
+    bytes memory discord = bytes(_discord);
+    U256 iter = discord.length.asU256();
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      bytes1 char = discord[i];
+
+      bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
+      bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
+      bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function containsValidTelegramCharacters(string calldata _telegram) external pure returns (bool) {
+    bytes memory telegram = bytes(_telegram);
+    U256 iter = telegram.length.asU256();
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      bytes1 char = telegram[i];
+
+      bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
+      bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
+      bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit) {
+        return false;
+      }
+    }
+
     return true;
   }
 

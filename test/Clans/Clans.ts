@@ -30,6 +30,8 @@ describe("Clans", function () {
     const imageId = 2;
     const clanId = 1;
     const tier = await clans.tiers(tierId);
+    const discord = "G4ZgtP52JK";
+    const telegram = "fantomfoundation";
 
     // Figure out what the address with would
     const newContactAddr = ethers.utils.getContractAddress({
@@ -37,14 +39,14 @@ describe("Clans", function () {
       nonce: clanId,
     });
 
-    await expect(clans.connect(alice).createClan(playerId, clanName, imageId, tierId))
+    await expect(clans.connect(alice).createClan(playerId, clanName, discord, telegram, imageId, tierId))
       .to.emit(clans, "ClanCreated")
-      .withArgs(clanId, playerId, clanName, imageId, tierId)
+      .withArgs(clanId, playerId, [clanName, discord, telegram], imageId, tierId)
       .and.to.emit(bankFactory, "BankContractCreated")
       .withArgs(alice.address, clanId, newContactAddr);
 
     const editNameCost = await clans.editNameCost();
-    return {...fixture, clans, clanName, tierId, imageId, clanId, tier, editNameCost};
+    return {...fixture, clans, clanName, discord, telegram, tierId, imageId, clanId, tier, editNameCost};
   }
   describe("Create a clan", () => {
     it("New clan", async () => {
@@ -73,38 +75,73 @@ describe("Clans", function () {
     });
 
     it("Cannot create a clan if already in another", async () => {
-      const {clans, playerId, alice, imageId, tierId, clanName} = await loadFixture(clanFixture);
+      const {clans, playerId, alice, imageId, tierId, clanName, discord, telegram} = await loadFixture(clanFixture);
 
-      await expect(clans.connect(alice).createClan(playerId, clanName, imageId, tierId)).to.be.revertedWithCustomError(
-        clans,
-        "AlreadyInClan"
-      );
+      await expect(
+        clans.connect(alice).createClan(playerId, clanName, discord, telegram, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "AlreadyInClan");
     });
 
     it("Cannot create a clan with the same name", async () => {
-      const {clans, bob, playerNFT, avatarId, imageId, tierId, clanName} = await loadFixture(clanFixture);
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-      await expect(clans.connect(bob).createClan(bobPlayerId, clanName, imageId, tierId)).to.be.revertedWithCustomError(
-        clans,
-        "NameAlreadyExists"
+      const {clans, bob, playerNFT, avatarId, imageId, tierId, clanName, discord, telegram} = await loadFixture(
+        clanFixture
       );
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await expect(
+        clans.connect(bob).createClan(bobPlayerId, clanName, discord, telegram, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "NameAlreadyExists");
     });
 
     it("Cannot create a clan, with invalid name (empty or > 20 chars)", async () => {
       // Also check that whitespace is trimmed
-      const {clans, bob, playerNFT, avatarId, imageId, tierId} = await loadFixture(clanFixture);
+      const {clans, bob, playerNFT, avatarId, imageId, tierId, discord, telegram} = await loadFixture(clanFixture);
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
       const name = " uhh$£";
-      await expect(clans.connect(bob).createClan(bobPlayerId, name, imageId, tierId)).to.be.revertedWithCustomError(
-        clans,
-        "NameInvalidCharacters"
-      );
+      await expect(
+        clans.connect(bob).createClan(bobPlayerId, name, discord, telegram, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "NameInvalidCharacters");
+    });
+
+    it("Cannot create a clan, with invalid social media handles", async () => {
+      const {clans, bob, playerNFT, avatarId, imageId, tierId, discord, telegram} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const anotherName = "Another name";
+      let discordInvalid = "uhh$£";
+      await expect(
+        clans.connect(bob).createClan(bobPlayerId, anotherName, discordInvalid, telegram, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "DiscordInvalidCharacters");
+      discordInvalid = "12";
+      await expect(
+        clans.connect(bob).createClan(bobPlayerId, anotherName, discordInvalid, telegram, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "DiscordTooShort");
+
+      const telegramInvalid = "uhh$£";
+      await expect(
+        clans.connect(bob).createClan(bobPlayerId, anotherName, discord, telegramInvalid, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "TelegramInvalidCharacters");
+    });
+
+    it("Allowed to create a clan with empty discord", async () => {
+      const {clans, bob, playerNFT, avatarId, imageId, tierId, telegram} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const anotherName = "Another name";
+      const emptyHandle = "";
+      await expect(clans.connect(bob).createClan(bobPlayerId, anotherName, emptyHandle, telegram, imageId, tierId)).to
+        .not.be.reverted;
+    });
+
+    it("Allowed to create a clan with empty telegram", async () => {
+      const {clans, bob, playerNFT, avatarId, imageId, tierId, discord} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const anotherName = "Another name";
+      const emptyHandle = "";
+      await expect(clans.connect(bob).createClan(bobPlayerId, anotherName, discord, emptyHandle, imageId, tierId)).to
+        .not.be.reverted;
     });
 
     it("Allowed to create a clan if there is a pending request elsewhere", async () => {
-      const {clans, alice, bob, clanId, clanName, playerNFT, avatarId, playerId, tierId, imageId} = await loadFixture(
-        clanFixture
-      );
+      const {clans, alice, bob, clanId, clanName, discord, telegram, playerNFT, avatarId, playerId, tierId, imageId} =
+        await loadFixture(clanFixture);
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
       await expect(clans.connect(alice).requestToJoin(clanId, playerId)).to.be.revertedWithCustomError(
         clans,
@@ -119,7 +156,7 @@ describe("Clans", function () {
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(clanId);
 
-      await clans.connect(bob).createClan(bobPlayerId, clanName + "1", imageId, tierId);
+      await clans.connect(bob).createClan(bobPlayerId, clanName + "1", discord, telegram, imageId, tierId);
 
       // Check that the player is created with the correct values
       newPlayer = await clans.playerInfo(bobPlayerId);
@@ -130,30 +167,32 @@ describe("Clans", function () {
 
   describe("Edit clans", () => {
     it("Edited clan name should be freed and available", async () => {
-      const {clans, alice, clanId, clanName, imageId, brush, editNameCost} = await loadFixture(clanFixture);
+      const {clans, alice, clanId, clanName, discord, telegram, imageId, brush, editNameCost} = await loadFixture(
+        clanFixture
+      );
       const anotherName = "Another name";
-      await expect(clans.connect(alice).editClan(clanId, anotherName, imageId)).to.be.reverted;
+      await expect(clans.connect(alice).editClan(clanId, anotherName, discord, telegram, imageId)).to.be.reverted;
       // Needs brush and approval
       const brushAmount = editNameCost.mul(5);
       await brush.mint(alice.address, brushAmount);
       await brush.connect(alice).approve(clans.address, brushAmount);
 
-      await clans.connect(alice).editClan(clanId, anotherName, imageId);
+      await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, imageId);
       expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.false;
       expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
 
-      await clans.connect(alice).editClan(clanId, anotherName, imageId); // Use same name, should not fail unless both the same
-      await clans.connect(alice).editClan(clanId, clanName, imageId);
+      await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, imageId); // Use same name, should not fail unless both the same
+      await clans.connect(alice).editClan(clanId, clanName, discord, telegram, imageId);
       expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.true;
       expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.false;
-      await clans.connect(alice).editClan(clanId, anotherName, imageId);
-      await clans.connect(alice).editClan(clanId, anotherName, imageId + 1);
+      await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, imageId);
+      await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, imageId + 1);
       expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
     });
 
     it("Edit clan image", async () => {
-      const {clans, alice, clanId, clanName, imageId} = await loadFixture(clanFixture);
-      await clans.connect(alice).editClan(clanId, clanName, imageId + 1);
+      const {clans, alice, clanId, clanName, discord, telegram, imageId} = await loadFixture(clanFixture);
+      await clans.connect(alice).editClan(clanId, clanName, discord, telegram, imageId + 1);
     });
   });
 

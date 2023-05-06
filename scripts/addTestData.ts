@@ -221,7 +221,7 @@ export const addTestData = async (
   // Create a clan
   const imageId = 2;
   const tierId = 1;
-  tx = await clans.createClan(playerId, "Sam test clan", imageId, tierId);
+  tx = await clans.createClan(playerId, "Sam test clan", "G4ZgtP52JK", "fantomfoundation", imageId, tierId);
   await tx.wait();
   console.log("Create clan");
 

@@ -6,7 +6,10 @@ describe("EstforLibrary", function () {
   async function deployContracts() {
     const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
     const estforLibrary = await EstforLibrary.deploy();
-    return {estforLibrary};
+    const upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+    const digits = "0123456789";
+    return {estforLibrary, upperCaseLetters, lowerCaseLetters, digits};
   }
 
   it("Trim string", async () => {
@@ -22,23 +25,42 @@ describe("EstforLibrary", function () {
     expect(await estforLibrary.trim("Double  space")).to.eq("Double  space");
   });
 
-  it("Validate strings", async () => {
-    const {estforLibrary} = await loadFixture(deployContracts);
-    const upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-    const digits = "0123456789";
+  it("Validate names", async () => {
+    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits} = await loadFixture(deployContracts);
     const specialCharacters = "-_ .";
     const allowedCharacters = upperCaseLetters + lowerCaseLetters + digits + specialCharacters;
-    expect(await estforLibrary.containsValidCharacters(allowedCharacters)).to.be.true;
+    expect(await estforLibrary.containsValidNameCharacters(allowedCharacters)).to.be.true;
 
     const nonAllowedCharacters = "@!#$%^&*()+={}[]|;\"'<>,/?`~";
     for (const char of nonAllowedCharacters) {
-      expect(await estforLibrary.containsValidCharacters(char)).to.be.false;
+      expect(await estforLibrary.containsValidNameCharacters(char)).to.be.false;
     }
 
     // Check for multiple spaces
-    expect(await estforLibrary.containsValidCharacters("Double  space")).to.be.false;
-    expect(await estforLibrary.containsValidCharacters("Triple   space")).to.be.false;
-    expect(await estforLibrary.containsValidCharacters("Single space")).to.be.true;
+    expect(await estforLibrary.containsValidNameCharacters("Double  space")).to.be.false;
+    expect(await estforLibrary.containsValidNameCharacters("Triple   space")).to.be.false;
+    expect(await estforLibrary.containsValidNameCharacters("Single space")).to.be.true;
+  });
+
+  it("Validate discord invite code", async () => {
+    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits} = await loadFixture(deployContracts);
+    const allowedCharacters = upperCaseLetters + lowerCaseLetters + digits;
+    expect(await estforLibrary.containsValidDiscordCharacters(allowedCharacters)).to.be.true;
+
+    const nonAllowedCharacters = "@!#$%^&*()+={}[]|;\"'<>,/?`~ _-.";
+    for (const char of nonAllowedCharacters) {
+      expect(await estforLibrary.containsValidDiscordCharacters(char)).to.be.false;
+    }
+  });
+
+  it("Validate telegram handle", async () => {
+    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits} = await loadFixture(deployContracts);
+    const allowedCharacters = upperCaseLetters + lowerCaseLetters + digits;
+    expect(await estforLibrary.containsValidTelegramCharacters(allowedCharacters)).to.be.true;
+
+    const nonAllowedCharacters = "@!#$%^&*()+={}[]|;\"'<>,/?`~ _-.";
+    for (const char of nonAllowedCharacters) {
+      expect(await estforLibrary.containsValidTelegramCharacters(char)).to.be.false;
+    }
   });
 });
