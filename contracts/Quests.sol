@@ -245,7 +245,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       PlayerQuest storage activeQuest = activeQuests[_playerId];
       // Only handling 1 active quest at a time currently
       PlayerQuest calldata activeQuestInfo = _activeQuestInfo[0];
-      bool hasQuestProgress = activeQuestInfo.actionCompletedNum != activeQuest.actionCompletedNum ||
+      bool hasQuestProgress = activeQuestInfo.actionCompletedNum1 != activeQuest.actionCompletedNum1 ||
         activeQuestInfo.actionChoiceCompletedNum != activeQuest.actionChoiceCompletedNum ||
         activeQuestInfo.burnCompletedAmount != activeQuest.burnCompletedAmount;
 
@@ -472,15 +472,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     U256 bounds = _actionIds.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
-      if (quest.actionId == _actionIds[i]) {
-        uint remainingAmount = quest.actionNum - _playerQuest.actionCompletedNum;
+      if (quest.actionId1 == _actionIds[i]) {
+        uint remainingAmount = quest.actionNum1 - _playerQuest.actionCompletedNum1;
         uint amount = Math.min(remainingAmount, _actionAmounts[i]);
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
           amount = Math.min(_burnedAmountOwned, amount);
           amount = _addToBurn(quest, _playerQuest, amount);
           amountBurned += amount;
         }
-        _playerQuest.actionCompletedNum += uint16(amount);
+        _playerQuest.actionCompletedNum1 += uint16(amount);
       }
     }
 
@@ -509,27 +509,27 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
 
     // Buy brush quest is handled specially for instance and doesn't have any of these set
-    if (quest.actionNum != 0 || quest.actionChoiceNum != 0 || quest.burnAmount != 0) {
+    if (quest.actionNum1 != 0 || quest.actionChoiceNum != 0 || quest.burnAmount != 0) {
       questCompleted =
-        _playerQuest.actionCompletedNum >= quest.actionNum &&
+        _playerQuest.actionCompletedNum1 >= quest.actionNum1 &&
         _playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum &&
         _playerQuest.burnCompletedAmount >= quest.burnAmount;
     }
 
     if (questCompleted) {
       // length can be 0, 1 or 2
-      uint mintLength = quest.rewardItemTokenId == NONE ? 0 : 1;
-      mintLength += (quest.rewardItemTokenId1 == NONE ? 0 : 1);
+      uint mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
+      mintLength += (quest.rewardItemTokenId2 == NONE ? 0 : 1);
 
       itemTokenIds = new uint[](mintLength);
       amounts = new uint[](mintLength);
-      if (quest.rewardItemTokenId != NONE) {
-        itemTokenIds[0] = quest.rewardItemTokenId;
-        amounts[0] = quest.rewardAmount;
-      }
       if (quest.rewardItemTokenId1 != NONE) {
-        itemTokenIds[1] = quest.rewardItemTokenId1;
-        amounts[1] = quest.rewardAmount1;
+        itemTokenIds[0] = quest.rewardItemTokenId1;
+        amounts[0] = quest.rewardAmount1;
+      }
+      if (quest.rewardItemTokenId2 != NONE) {
+        itemTokenIds[1] = quest.rewardItemTokenId2;
+        amounts[1] = quest.rewardAmount2;
       }
       skillGained = quest.skillReward;
       xpGained = quest.skillXPGained;
@@ -537,16 +537,16 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   }
 
   function _checkQuest(Quest calldata _quest) private pure {
-    if (_quest.rewardItemTokenId != NONE && _quest.rewardAmount == 0) {
-      revert InvalidRewardAmount();
-    }
     if (_quest.rewardItemTokenId1 != NONE && _quest.rewardAmount1 == 0) {
       revert InvalidRewardAmount();
     }
-    if (_quest.actionId != 0 && _quest.actionNum == 0) {
-      revert InvalidActionNum();
+    if (_quest.rewardItemTokenId2 != NONE && _quest.rewardAmount2 == 0) {
+      revert InvalidRewardAmount();
     }
     if (_quest.actionId1 != 0 && _quest.actionNum1 == 0) {
+      revert InvalidActionNum();
+    }
+    if (_quest.actionId2 != 0 && _quest.actionNum2 == 0) {
       revert InvalidActionNum();
     }
     if (_quest.actionChoiceId != 0 && _quest.actionChoiceNum == 0) {
