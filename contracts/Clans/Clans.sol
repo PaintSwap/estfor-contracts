@@ -46,7 +46,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error NotMemberOfClan();
   error ClanIsFull();
   error OwnerExists();
-  error InvalidTier();
   error InvalidImageId();
   error NameTooShort();
   error NameTooLong();
@@ -184,6 +183,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit EditNameCost(_editNameCost);
   }
 
+  function _checkTierExists(uint _tierId) private view {
+    Tier storage tier = tiers[_tierId];
+    if (tier.id == 0) {
+      revert TierDoesNotExist();
+    }
+  }
+
   function createClan(
     uint _playerId,
     string calldata _name,
@@ -198,10 +204,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     Tier storage tier = tiers[_tierId];
-    if (tier.id != _tierId) {
-      revert InvalidTier();
-    }
-
+    _checkTierExists(_tierId);
     _checkClanImage(_imageId, tier.maxImageId);
 
     uint clanId = nextClanId;
@@ -571,8 +574,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _createClanInfo(
     string memory _trimmedName,
-    string memory _discord,
-    string memory _telegram
+    string calldata _discord,
+    string calldata _telegram
   ) private pure returns (string[] memory clanInfo) {
     clanInfo = new string[](3);
     clanInfo[0] = _trimmedName;
@@ -651,11 +654,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert CannotDowngradeTier();
     }
 
-    Tier storage newTier = tiers[_newTierId];
-    if (newTier.id == 0) {
-      revert TierDoesNotExist();
-    }
+    _checkTierExists(_newTierId);
 
+    Tier storage newTier = tiers[_newTierId];
     uint priceDifference = newTier.price - oldTier.price;
     _pay(priceDifference);
 
@@ -701,9 +702,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     U256 bounds = _tiers.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
-      if (tiers[_tiers[i].id].id == 0) {
-        revert TierDoesNotExist();
-      }
+      _checkTierExists(_tiers[i].id);
       _setTier(_tiers[i]);
     }
     emit EditTiers(_tiers);
