@@ -91,7 +91,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       player.currentActionProcessedSkill2 = Skill.NONE;
       player.currentActionProcessedXPGained2 = 0;
       player.currentActionProcessedFoodConsumed = 0;
-      player.currentActionProcessedNumConsumed = 0;
+      player.currentActionProcessedBaseInputItemsConsumedNum = 0;
     }
 
     uint prevEndTime = block.timestamp.add(totalTimespan);

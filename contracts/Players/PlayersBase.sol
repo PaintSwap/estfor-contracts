@@ -332,7 +332,7 @@ abstract contract PlayersBase {
     _player.currentActionProcessedSkill2 = _currentActionProcessed.skill2;
     _player.currentActionProcessedXPGained2 = _currentActionProcessed.xpGained2;
     _player.currentActionProcessedFoodConsumed = _currentActionProcessed.foodConsumed;
-    _player.currentActionProcessedNumConsumed = _currentActionProcessed.numConsumed;
+    _player.currentActionProcessedBaseInputItemsConsumedNum = _currentActionProcessed.baseInputItemsConsumedNum;
   }
 
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {

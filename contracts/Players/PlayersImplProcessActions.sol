@@ -366,7 +366,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint16 numConsumed
+      uint16 baseInputItemsConsumedNum
     )
   {
     // Processed
@@ -376,7 +376,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     // Total used
     if (prevProcessedTime > 0) {
       uint16 currentActionProcessedFoodConsumed = players_[_playerId].currentActionProcessedFoodConsumed;
-      uint16 currentActionProcessedNumConsumed = players_[_playerId].currentActionProcessedNumConsumed;
+      uint16 currentActionProcessedBaseInputItemsConsumedNum = players_[_playerId]
+        .currentActionProcessedBaseInputItemsConsumedNum;
 
       (
         Equipment[] memory prevConsumedEquipments,
@@ -389,7 +390,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           queuedAction.regenerateId,
           currentActionProcessedFoodConsumed,
           _pendingQueuedActionProcessed,
-          currentActionProcessedNumConsumed
+          currentActionProcessedBaseInputItemsConsumedNum
         );
 
       uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
@@ -424,7 +425,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         xpElapsedTime,
         died,
         foodConsumed,
-        numConsumed
+        baseInputItemsConsumedNum
       ) = _processConsumablesView(
         from,
         _playerId,
@@ -473,15 +474,24 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
       }
       // This is scrolls, doesn't affect melee actually
-      if (numConsumed >= currentActionProcessedNumConsumed) {
-        numConsumed = uint16(numConsumed.sub(currentActionProcessedNumConsumed));
+      if (baseInputItemsConsumedNum >= currentActionProcessedBaseInputItemsConsumedNum) {
+        baseInputItemsConsumedNum = uint16(
+          baseInputItemsConsumedNum.sub(currentActionProcessedBaseInputItemsConsumedNum)
+        );
       }
 
       if (foodConsumed >= currentActionProcessedFoodConsumed) {
         foodConsumed = uint16(foodConsumed.sub(currentActionProcessedFoodConsumed));
       }
     } else {
-      (consumedEquipments, producedEquipment, xpElapsedTime, died, foodConsumed, numConsumed) = _processConsumablesView(
+      (
+        consumedEquipments,
+        producedEquipment,
+        xpElapsedTime,
+        died,
+        foodConsumed,
+        baseInputItemsConsumedNum
+      ) = _processConsumablesView(
         from,
         _playerId,
         queuedAction,
@@ -514,7 +524,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint16 numConsumed
+      uint16 baseInputItemsConsumedNum
     )
   {
     bytes memory data = _staticcall(
@@ -583,7 +593,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     uint16 _regenerateId,
     uint16 _foodConsumed,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
-    uint16 _numConsumed
+    uint16 _baseInputItemsConsumedNum
   ) private view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     bytes memory data = _staticcall(
       address(this),
@@ -596,7 +606,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         _regenerateId,
         _foodConsumed,
         _pendingQueuedActionProcessed,
-        _numConsumed
+        _baseInputItemsConsumedNum
       )
     );
     return abi.decode(data, (Equipment[], Equipment));

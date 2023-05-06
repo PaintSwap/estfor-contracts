@@ -56,7 +56,7 @@ struct Player {
   Skill currentActionProcessedSkill2;
   uint24 currentActionProcessedXPGained2;
   uint16 currentActionProcessedFoodConsumed;
-  uint16 currentActionProcessedNumConsumed; // e.g scrolls, crafting materials etc
+  uint16 currentActionProcessedBaseInputItemsConsumedNum; // e.g scrolls, crafting materials etc
   Skill skillBoosted1; // The skill that is boosted
   Skill skillBoosted2; // The second skill that is boosted
   uint56 totalXP;
@@ -217,7 +217,7 @@ struct PendingQueuedActionData {
   // How much food is consumed in the current action so far
   uint16 foodConsumed;
   // How many base consumables are consumed in the current action so far
-  uint16 numConsumed;
+  uint16 baseInputItemsConsumedNum;
 }
 
 struct PendingQueuedActionProcessed {
@@ -290,7 +290,7 @@ interface IPlayersProcessActionsDelegateView {
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint16 numConsumed
+      uint16 baseInputItemsConsumedNum
     );
 }
 
@@ -325,7 +325,7 @@ interface IPlayersMiscDelegateView {
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint16 numConsumed
+      uint16 baseInputItemsConsumedNum
     );
 
   function processConsumablesViewStateTrans(
@@ -336,7 +336,7 @@ interface IPlayersMiscDelegateView {
     uint16 regenerateId,
     uint16 foodConsumed,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
-    uint16 numConsumed
+    uint16 baseInputItemsConsumedNum
   ) external view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment);
 }
 

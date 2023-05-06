@@ -307,7 +307,7 @@ contract PlayersImplMisc is
     uint16 _regenerateId,
     uint16 _foodConsumed,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
-    uint16 numConsumed
+    uint16 baseInputItemsConsumedNum
   ) public view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
     uint consumedEquipmentLength;
@@ -316,25 +316,25 @@ contract PlayersImplMisc is
       consumedEquipmentLength = consumedEquipmentLength.inc();
     }
 
-    if (numConsumed != 0) {
+    if (baseInputItemsConsumedNum != 0) {
       if (_actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId1,
-          numConsumed * _actionChoice.inputAmount1
+          baseInputItemsConsumedNum * _actionChoice.inputAmount1
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId2 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId2,
-          numConsumed * _actionChoice.inputAmount2
+          baseInputItemsConsumedNum * _actionChoice.inputAmount2
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId3 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId3,
-          numConsumed * _actionChoice.inputAmount3
+          baseInputItemsConsumedNum * _actionChoice.inputAmount3
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
@@ -353,7 +353,9 @@ contract PlayersImplMisc is
       }
 
       // Some might be burnt cooking for instance
-      uint16 numProduced = uint16((uint(numConsumed) * _actionChoice.outputAmount * successPercent) / 100);
+      uint16 numProduced = uint16(
+        (uint(baseInputItemsConsumedNum) * _actionChoice.outputAmount * successPercent) / 100
+      );
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
@@ -391,7 +393,7 @@ contract PlayersImplMisc is
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint16 numConsumed
+      uint16 baseInputItemsConsumedNum
     )
   {
     // Figure out how much food should be consumed.
@@ -402,7 +404,7 @@ contract PlayersImplMisc is
       CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
 
       uint combatElapsedTime;
-      (xpElapsedTime, combatElapsedTime, numConsumed, foodConsumed, died) = PlayersLibrary
+      (xpElapsedTime, combatElapsedTime, baseInputItemsConsumedNum, foodConsumed, died) = PlayersLibrary
         .getCombatAdjustedElapsedTimes(
           _from,
           itemNFT,
@@ -418,7 +420,7 @@ contract PlayersImplMisc is
           _pendingQueuedActionEquipmentStates
         );
     } else {
-      (xpElapsedTime, numConsumed) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
+      (xpElapsedTime, baseInputItemsConsumedNum) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
         itemNFT,
         _elapsedTime,
@@ -435,7 +437,7 @@ contract PlayersImplMisc is
       _queuedAction.regenerateId,
       foodConsumed,
       _pendingQueuedActionProcessed,
-      numConsumed
+      baseInputItemsConsumedNum
     );
   }
 

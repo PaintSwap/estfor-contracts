@@ -48,7 +48,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     currentActionProcessed.skill2 = player.currentActionProcessedSkill2;
     currentActionProcessed.xpGained2 = player.currentActionProcessedXPGained2;
     currentActionProcessed.foodConsumed = player.currentActionProcessedFoodConsumed;
-    currentActionProcessed.numConsumed = player.currentActionProcessedNumConsumed;
+    currentActionProcessed.baseInputItemsConsumedNum = player.currentActionProcessedBaseInputItemsConsumedNum;
 
     pendingQueuedActionState.remainingQueuedActions = new QueuedAction[](actionQueue.length);
     uint remainingQueuedActionsLength;
@@ -146,7 +146,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint xpElapsedTime = elapsedTime;
       uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
       uint16 foodConsumed;
-      uint16 numConsumed;
+      uint16 baseInputItemsConsumedNum;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
 
@@ -158,7 +158,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           xpElapsedTime,
           died,
           foodConsumed,
-          numConsumed
+          baseInputItemsConsumedNum
         ) = _completeProcessConsumablesView(
           from,
           _playerId,
@@ -175,7 +175,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         if (actionSkill == Skill.COOKING) {
           numChoicesCompleted = producedEquipment.amount; // Assume we want amount cooked
         } else {
-          numChoicesCompleted = numConsumed;
+          numChoicesCompleted = baseInputItemsConsumedNum;
         }
         if (numChoicesCompleted != 0) {
           choiceIds[choiceIdsLength] = queuedAction.choiceId;
@@ -370,7 +370,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           }
 
           currentActionProcessed.foodConsumed += foodConsumed;
-          currentActionProcessed.numConsumed += numConsumed;
+          currentActionProcessed.baseInputItemsConsumedNum += baseInputItemsConsumedNum;
         } else {
           // Set it absolutely, this is a fresh "first action"
           currentActionProcessed.skill1 = skill;
@@ -383,7 +383,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             currentActionProcessed.xpGained2 = 0;
           }
           currentActionProcessed.foodConsumed = foodConsumed;
-          currentActionProcessed.numConsumed = numConsumed;
+          currentActionProcessed.baseInputItemsConsumedNum = baseInputItemsConsumedNum;
         }
       } else {
         // Clear it
@@ -392,7 +392,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         currentActionProcessed.skill2 = Skill.NONE;
         currentActionProcessed.xpGained2 = 0;
         currentActionProcessed.foodConsumed = 0;
-        currentActionProcessed.numConsumed = 0;
+        currentActionProcessed.baseInputItemsConsumedNum = 0;
       }
       // Include loot
       {
@@ -993,7 +993,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
-      uint16 numConsumed
+      uint16 baseInputItemsConsumedNum
     )
   {
     bytes memory data = _staticcall(

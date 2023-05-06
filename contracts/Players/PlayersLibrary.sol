@@ -216,12 +216,12 @@ library PlayersLibrary {
   function _getMaxRequiredRatio(
     address _from,
     ActionChoice memory _actionChoice,
-    uint16 _numConsumed,
+    uint16 _baseInputItemsConsumedNum,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
-    maxRequiredRatio = _numConsumed;
-    if (_numConsumed != 0) {
+    maxRequiredRatio = _baseInputItemsConsumedNum;
+    if (_baseInputItemsConsumedNum != 0) {
       if (_actionChoice.inputTokenId1 != 0) {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
@@ -366,7 +366,13 @@ library PlayersLibrary {
   )
     external
     view
-    returns (uint xpElapsedTime, uint combatElapsedTime, uint16 numConsumed, uint16 foodConsumed, bool died)
+    returns (
+      uint xpElapsedTime,
+      uint combatElapsedTime,
+      uint16 baseInputItemsConsumedNum,
+      uint16 foodConsumed,
+      bool died
+    )
   {
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
     uint respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
@@ -395,25 +401,25 @@ library PlayersLibrary {
     xpElapsedTime = respawnTime * numKilled;
 
     // Check how many to consume, and also adjust xpElapsedTime if they don't have enough consumables
-    numConsumed = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * RATE_MUL));
+    baseInputItemsConsumedNum = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * RATE_MUL));
     if (_actionChoice.rate != 0) {
-      numConsumed = uint16(Math.max(numKilled, numConsumed));
+      baseInputItemsConsumedNum = uint16(Math.max(numKilled, baseInputItemsConsumedNum));
     }
 
-    if (numConsumed != 0) {
+    if (baseInputItemsConsumedNum != 0) {
       // This checks the balances
       uint maxRequiredRatio = _getMaxRequiredRatio(
         _from,
         _actionChoice,
-        numConsumed,
+        baseInputItemsConsumedNum,
         _itemNFT,
         _pendingQueuedActionEquipmentStates
       );
 
-      if (numConsumed > maxRequiredRatio) {
+      if (baseInputItemsConsumedNum > maxRequiredRatio) {
         xpElapsedTime = 0;
         combatElapsedTime = _elapsedTime;
-        numConsumed = uint16(maxRequiredRatio);
+        baseInputItemsConsumedNum = uint16(maxRequiredRatio);
       }
     } else if (_actionChoice.rate != 0) {
       xpElapsedTime = 0;
@@ -485,26 +491,26 @@ library PlayersLibrary {
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) external view returns (uint xpElapsedTime, uint16 numConsumed) {
+  ) external view returns (uint xpElapsedTime, uint16 baseInputItemsConsumedNum) {
     // Check the max that can be used
-    numConsumed = uint16((_elapsedTime * _actionChoice.rate) / (3600 * RATE_MUL));
+    baseInputItemsConsumedNum = uint16((_elapsedTime * _actionChoice.rate) / (3600 * RATE_MUL));
 
-    if (numConsumed != 0) {
+    if (baseInputItemsConsumedNum != 0) {
       // This checks the balances
       uint maxRequiredRatio = _getMaxRequiredRatio(
         _from,
         _actionChoice,
-        numConsumed,
+        baseInputItemsConsumedNum,
         _itemNFT,
         _pendingQueuedActionEquipmentStates
       );
-      bool hadEnoughConsumables = numConsumed <= maxRequiredRatio;
+      bool hadEnoughConsumables = baseInputItemsConsumedNum <= maxRequiredRatio;
       if (!hadEnoughConsumables) {
-        numConsumed = uint16(maxRequiredRatio);
+        baseInputItemsConsumedNum = uint16(maxRequiredRatio);
       }
     }
     // Work out what the actual elapsedTime should be had all those been made
-    xpElapsedTime = (uint(numConsumed) * 3600 * RATE_MUL) / _actionChoice.rate;
+    xpElapsedTime = (uint(baseInputItemsConsumedNum) * 3600 * RATE_MUL) / _actionChoice.rate;
   }
 
   function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
