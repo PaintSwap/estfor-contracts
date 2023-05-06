@@ -162,7 +162,7 @@ library PlayersLibrary {
     uint _originalBalance,
     uint _itemId,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) private view returns (uint balance) {
+  ) private pure returns (uint balance) {
     balance = _originalBalance;
     U256 bounds = _pendingQueuedActionEquipmentStates.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
@@ -627,19 +627,23 @@ library PlayersLibrary {
   }
 
   function getCombatStats(
-    PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
+    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     PackedXP storage _packedXP,
     address _from,
     ItemNFT _itemNFT,
     Attire storage _attire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (CombatStats memory combatStats) {
-    combatStats.melee = int16(getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionXPGained, _packedXP)));
-    combatStats.magic = int16(getLevel(getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionXPGained, _packedXP)));
-    combatStats.health = int16(
-      getLevel(getAbsoluteActionStartXP(Skill.HEALTH, _pendingQueuedActionXPGained, _packedXP))
+    combatStats.melee = int16(
+      getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
     );
-    uint16 defenceLevel = getLevel(getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionXPGained, _packedXP));
+    combatStats.magic = int16(
+      getLevel(getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionProcessed, _packedXP))
+    );
+    combatStats.health = int16(
+      getLevel(getAbsoluteActionStartXP(Skill.HEALTH, _pendingQueuedActionProcessed, _packedXP))
+    );
+    uint16 defenceLevel = getLevel(getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionProcessed, _packedXP));
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
 
@@ -704,21 +708,21 @@ library PlayersLibrary {
   // Subtract any existing xp gained from the first in-progress actions and add the new xp gained
   function getAbsoluteActionStartXP(
     Skill _skill,
-    PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
+    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     PackedXP storage packedXP
   ) public view returns (uint) {
     uint xp = readXP(_skill, packedXP);
-    if (_pendingQueuedActionXPGained.prevProcessedSkill1 == _skill) {
-      xp -= _pendingQueuedActionXPGained.prevProcessedXPGained1;
-    } else if (_pendingQueuedActionXPGained.prevProcessedSkill2 == _skill) {
-      xp -= _pendingQueuedActionXPGained.prevProcessedXPGained2;
+    if (_pendingQueuedActionProcessed.currentAction.skill1 == _skill) {
+      xp -= _pendingQueuedActionProcessed.currentAction.xpGained1;
+    } else if (_pendingQueuedActionProcessed.currentAction.skill2 == _skill) {
+      xp -= _pendingQueuedActionProcessed.currentAction.xpGained2;
     }
 
     // Add any new xp gained from previous actions completed in the queue. For instance
     // battling monsters may increase your level so you are stronger for a later queued action.
-    for (uint i; i < _pendingQueuedActionXPGained.skills.length; ++i) {
-      if (_pendingQueuedActionXPGained.skills[i] == _skill) {
-        xp += _pendingQueuedActionXPGained.xpGainedSkills[i];
+    for (uint i; i < _pendingQueuedActionProcessed.skills.length; ++i) {
+      if (_pendingQueuedActionProcessed.skills[i] == _skill) {
+        xp += _pendingQueuedActionProcessed.xpGainedSkills[i];
       }
     }
 
@@ -857,8 +861,8 @@ library PlayersLibrary {
   function getSuccessPercent(
     uint16 _actionId,
     Skill _actionSkill,
-    bool _isCombat,
-    PendingQueuedActionXPGained calldata _pendingQueuedActionXPGained,
+    bool isCombat,
+    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     World _world,
     uint _maxSuccessPercentChange,
     PackedXP storage _packedXP
@@ -866,12 +870,12 @@ library PlayersLibrary {
     successPercent = 100;
     (uint8 actionSuccessPercent, uint32 minXP) = _world.getActionSuccessPercentAndMinXP(_actionId);
     if (actionSuccessPercent != 100) {
-      if (_isCombat) {
+      if (isCombat) {
         revert InvalidAction();
       }
 
       uint minLevel = getLevel(minXP);
-      uint skillLevel = getLevel(getAbsoluteActionStartXP(_actionSkill, _pendingQueuedActionXPGained, _packedXP));
+      uint skillLevel = getLevel(getAbsoluteActionStartXP(_actionSkill, _pendingQueuedActionProcessed, _packedXP));
       uint extraBoost = skillLevel - minLevel;
 
       successPercent = uint8(Math.min(_maxSuccessPercentChange, actionSuccessPercent + extraBoost));

@@ -1,7 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
-import {BoostType} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
@@ -611,7 +610,7 @@ describe("Rewards", function () {
       {
         const actionQueue = await players.getActionQueue(playerId);
         expect(actionQueue.length).to.eq(1);
-        endTime = (await players.players(playerId)).queuedActionStartTime + actionQueue[0].timespan;
+        endTime = (await players.players(playerId)).currentActionStartTime + actionQueue[0].timespan;
       }
 
       expect(await world.hasRandomWord(endTime)).to.be.false;
@@ -748,7 +747,7 @@ describe("Rewards", function () {
         const actionQueue = await players.getActionQueue(playerId);
         expect(actionQueue.length).to.eq(2);
         endTime =
-          (await players.players(playerId)).queuedActionStartTime + actionQueue[0].timespan + actionQueue[1].timespan;
+          (await players.players(playerId)).currentActionStartTime + actionQueue[0].timespan + actionQueue[1].timespan;
       }
 
       expect(await world.hasRandomWord(endTime)).to.be.false;

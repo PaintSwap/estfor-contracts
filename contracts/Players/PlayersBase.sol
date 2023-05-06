@@ -287,16 +287,13 @@ abstract contract PlayersBase {
     uint _playerId
   )
     internal
-    returns (
-      QueuedAction[] memory remainingQueuedActions,
-      PendingQueuedActionXPGained memory pendingQueuedActionXPGained
-    )
+    returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
   {
     bytes memory data = _delegatecall(
       implProcessActions,
       abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActions.selector, _from, _playerId)
     );
-    return abi.decode(data, (QueuedAction[], PendingQueuedActionXPGained));
+    return abi.decode(data, (QueuedAction[], PendingQueuedActionData));
   }
 
   function _claimableXPThresholdRewards(
@@ -328,14 +325,14 @@ abstract contract PlayersBase {
 
   function _setPrevPlayerState(
     Player storage _player,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+    PendingQueuedActionData memory _currentActionProcessed
   ) internal {
-    _player.queuedActionPrevProcessedSkill1 = _pendingQueuedActionXPGained.prevProcessedSkill1;
-    _player.queuedActionAlreadyProcessedXPGained1 = _pendingQueuedActionXPGained.prevProcessedXPGained1;
-    _player.queuedActionPrevProcessedSkill2 = _pendingQueuedActionXPGained.prevProcessedSkill2;
-    _player.queuedActionAlreadyProcessedXPGained2 = _pendingQueuedActionXPGained.prevProcessedXPGained2;
-    _player.prevFoodConsumed = _pendingQueuedActionXPGained.prevFoodConsumed;
-    _player.prevNumConsumed = _pendingQueuedActionXPGained.prevNumConsumed;
+    _player.currentActionProcessedSkill1 = _currentActionProcessed.skill1;
+    _player.currentActionProcessedXPGained1 = _currentActionProcessed.xpGained1;
+    _player.currentActionProcessedSkill2 = _currentActionProcessed.skill2;
+    _player.currentActionProcessedXPGained2 = _currentActionProcessed.xpGained2;
+    _player.currentActionProcessedFoodConsumed = _currentActionProcessed.foodConsumed;
+    _player.currentActionProcessedNumConsumed = _currentActionProcessed.numConsumed;
   }
 
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {

@@ -50,22 +50,20 @@ struct CombatStats {
 }
 
 struct Player {
-  // Combat levels, (Cached from skill points so this doesn't need to be calculated every combat)
-  uint40 queuedActionStartTime; // The start time of the first queued action
-  // For combat this will be attack, defence, magic or ranged, as well as health
-  Skill queuedActionPrevProcessedSkill1; // The skill that the queued action has already gained XP in
-  uint24 queuedActionAlreadyProcessedXPGained1; // The amount of XP that the queued action has already gained
-  Skill queuedActionPrevProcessedSkill2;
-  uint24 queuedActionAlreadyProcessedXPGained2;
+  uint40 currentActionStartTime; // The start time of the first queued action
+  Skill currentActionProcessedSkill1; // The skill that the queued action has already gained XP in
+  uint24 currentActionProcessedXPGained1; // The amount of XP that the queued action has already gained
+  Skill currentActionProcessedSkill2;
+  uint24 currentActionProcessedXPGained2;
+  uint16 currentActionProcessedFoodConsumed;
+  uint16 currentActionProcessedNumConsumed; // e.g scrolls, crafting materials etc
   Skill skillBoosted1; // The skill that is boosted
   Skill skillBoosted2; // The second skill that is boosted
   uint56 totalXP;
-  uint16 prevFoodConsumed;
-  uint16 prevNumConsumed; // Scrolls
-  uint8 version; // This is used in case we want to do some migration of old characters, like halt them at level 30 from gaining XP. Not used currently
+  uint8 version; // Not used currently
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
-  string name;
+  string name; // Raw name
 }
 
 enum BoostType {
@@ -210,17 +208,24 @@ struct PendingQueuedActionMetadata {
   uint24 xpElapsedTime;
 }
 
-struct PendingQueuedActionXPGained {
+struct PendingQueuedActionData {
   // The amount of XP that the queued action has already gained
+  Skill skill1;
+  uint24 xpGained1;
+  Skill skill2;
+  uint24 xpGained2;
+  // How much food is consumed in the current action so far
+  uint16 foodConsumed;
+  // How many base consumables are consumed in the current action so far
+  uint16 numConsumed;
+}
+
+struct PendingQueuedActionProcessed {
   // XP gained during this session
   Skill[] skills;
   uint32[] xpGainedSkills;
-  Skill prevProcessedSkill1;
-  uint24 prevProcessedXPGained1;
-  Skill prevProcessedSkill2;
-  uint24 prevProcessedXPGained2;
-  uint16 prevFoodConsumed;
-  uint16 prevNumConsumed;
+  // Data for the current action which has been previously processed
+  PendingQueuedActionData currentAction;
 }
 
 struct QuestState {
@@ -239,7 +244,7 @@ struct PendingQueuedActionState {
   PendingQueuedActionEquipmentState[] equipmentStates;
   PendingQueuedActionMetadata[] actionMetadatas;
   QueuedAction[] remainingQueuedActions;
-  PendingQueuedActionXPGained xpGained;
+  PendingQueuedActionProcessed processedData;
   PastRandomRewardInfo[] producedPastRandomRewards;
   uint[] xpRewardItemTokenIds;
   uint[] xpRewardAmounts;
@@ -250,14 +255,14 @@ struct PendingQueuedActionState {
 }
 
 interface IPlayersRewardsDelegate {
-  function claimRandomRewards(uint _playerId, PendingQueuedActionXPGained memory _pendingQueuedActionXPGained) external;
+  function claimRandomRewards(uint playerId, PendingQueuedActionProcessed memory pendingQueuedActionProcessed) external;
 }
 
 // External view functions that are in other implementation files
 interface IPlayersRewardsDelegateView {
   function pendingQueuedActionStateImpl(
-    address _owner,
-    uint _playerId
+    address owner,
+    uint playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
 }
 
@@ -275,7 +280,7 @@ interface IPlayersProcessActionsDelegateView {
     uint elapsedTime,
     uint startTime,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed
   )
     external
     view
@@ -305,12 +310,12 @@ interface IPlayersMiscDelegateView {
     address from,
     uint playerId,
     QueuedAction memory queuedAction,
-    uint queuedActionStartTime,
+    uint currentActionStartTime,
     uint elapsedTime,
     CombatStats memory combatStats,
     ActionChoice memory actionChoice,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
-    PendingQueuedActionXPGained memory pendingQueuedActionXPGained
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed
   )
     external
     view
@@ -325,12 +330,12 @@ interface IPlayersMiscDelegateView {
 
   function processConsumablesViewStateTrans(
     uint playerId,
-    uint queuedActionStartTime,
+    uint currentActionStartTime,
     uint elapsedTime,
     ActionChoice memory actionChoice,
     uint16 regenerateId,
     uint16 foodConsumed,
-    PendingQueuedActionXPGained memory pendingQueuedActionXPGained,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     uint16 numConsumed
   ) external view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment);
 }

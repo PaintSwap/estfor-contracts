@@ -41,7 +41,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     uint totalTimespan;
     (
       QueuedAction[] memory remainingQueuedActions,
-      PendingQueuedActionXPGained memory pendingQueuedActionXPGained
+      PendingQueuedActionData memory currentActionProcessed
     ) = _processActions(from, _playerId);
 
     Player storage player = players_[_playerId];
@@ -83,15 +83,15 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || _queueStatus == ActionQueueStatus.APPEND) &&
       remainingQueuedActions.length != 0
     ) {
-      _setPrevPlayerState(player, pendingQueuedActionXPGained);
+      _setPrevPlayerState(player, currentActionProcessed);
     } else {
       // clear it
-      player.queuedActionPrevProcessedSkill1 = Skill.NONE;
-      player.queuedActionAlreadyProcessedXPGained1 = 0;
-      player.queuedActionPrevProcessedSkill2 = Skill.NONE;
-      player.queuedActionAlreadyProcessedXPGained2 = 0;
-      player.prevFoodConsumed = 0;
-      player.prevNumConsumed = 0;
+      player.currentActionProcessedSkill1 = Skill.NONE;
+      player.currentActionProcessedXPGained1 = 0;
+      player.currentActionProcessedSkill2 = Skill.NONE;
+      player.currentActionProcessedXPGained2 = 0;
+      player.currentActionProcessedFoodConsumed = 0;
+      player.currentActionProcessedNumConsumed = 0;
     }
 
     uint prevEndTime = block.timestamp.add(totalTimespan);
@@ -100,9 +100,9 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     U256 queuedActionsLength = _queuedActions.length.asU256();
 
     if (remainingQueuedActions.length != 0 || _queuedActions.length != 0) {
-      player.queuedActionStartTime = uint40(block.timestamp);
+      player.currentActionStartTime = uint40(block.timestamp);
     } else {
-      player.queuedActionStartTime = 0;
+      player.currentActionStartTime = 0;
     }
 
     for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
@@ -134,7 +134,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       attire[i + remainingQueuedActions.length] = _queuedActions[i].attire;
     }
 
-    emit SetActionQueue(from, _playerId, player.actionQueue, attire, player.queuedActionStartTime);
+    emit SetActionQueue(from, _playerId, player.actionQueue, attire, player.currentActionStartTime);
 
     assert(totalTimespan <= MAX_TIME_); // Should never happen
     nextQueueId = queueId.asUint64();
@@ -273,11 +273,10 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       isCombat
     );
 
-    _checkActionConsumables(_from, _playerId, _queuedAction, actionChoice);
+    _checkActionConsumables(_playerId, _queuedAction, actionChoice);
   }
 
   function _checkActionConsumables(
-    address _from,
     uint _playerId,
     QueuedActionInput memory _queuedAction,
     ActionChoice memory actionChoice
@@ -290,9 +289,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       if (_queuedAction.regenerateId != NONE) {
         itemTokenIds[itemLength] = _queuedAction.regenerateId;
         itemLength = itemLength.inc();
-        (EquipPosition equipPosition, Skill skill, uint32 minXP) = itemNFT.getEquipPositionAndMinRequirement(
-          itemTokenIds[itemLength.dec()]
-        );
+        (Skill skill, uint32 minXP, ) = itemNFT.getEquipPositionAndMinRequirement(itemTokenIds[itemLength.dec()]);
         if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
           revert ConsumableMinimumXPNotReached();
         }
@@ -312,20 +309,6 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       assembly ("memory-safe") {
         mstore(itemTokenIds, itemLength)
       }
-      /* Not checking item balances for now. It's possible a previous action consumes them all (like food) and
-      // will cause errors trying to queue it up. Probably should check but meh
-      if (itemLength != 0) {
-        uint256[] memory balances = itemNFT.balanceOfs(_from, itemTokenIds);
-
-        U256 iter = balances.length.asU256();
-        while (iter.neq(0)) {
-          iter = iter.dec();
-          uint i = iter.asUint256();
-          if (balances[i] == 0) {
-            revert NoItemBalance(itemTokenIds[i]);
-          }
-        }
-      } */
     }
   }
 
@@ -437,7 +420,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         if (balance == 0) {
           revert DoNotHaveEnoughQuantityToEquipToAction();
         }
-        (EquipPosition equipPosition, Skill skill, uint32 minXP) = itemNFT.getEquipPositionAndMinRequirement(
+        (Skill skill, uint32 minXP, EquipPosition equipPosition) = itemNFT.getEquipPositionAndMinRequirement(
           equippedItemTokenId
         );
         if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
@@ -481,11 +464,11 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   function clearEverything(address _from, uint _playerId) public {
     _processActions(_from, _playerId);
     // Ensure player info is cleared
-    players_[_playerId].queuedActionStartTime = 0;
-    players_[_playerId].queuedActionPrevProcessedSkill1 = Skill.NONE;
-    players_[_playerId].queuedActionAlreadyProcessedXPGained1 = 0;
-    players_[_playerId].queuedActionPrevProcessedSkill2 = Skill.NONE;
-    players_[_playerId].queuedActionAlreadyProcessedXPGained2 = 0;
+    players_[_playerId].currentActionStartTime = 0;
+    players_[_playerId].currentActionProcessedSkill1 = Skill.NONE;
+    players_[_playerId].currentActionProcessedXPGained1 = 0;
+    players_[_playerId].currentActionProcessedSkill2 = Skill.NONE;
+    players_[_playerId].currentActionProcessedXPGained2 = 0;
 
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);

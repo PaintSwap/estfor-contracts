@@ -126,9 +126,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function getEquipPositionAndMinRequirement(
     uint16 _item
-  ) external view returns (EquipPosition equipPosition, Skill skill, uint32 minXP) {
-    equipPosition = _getEquipPosition(_item);
+  ) external view returns (Skill skill, uint32 minXP, EquipPosition equipPosition) {
     (skill, minXP) = _getMinRequirement(_item);
+    equipPosition = _getEquipPosition(_item);
   }
 
   function getMinRequirements(

@@ -174,16 +174,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function _processActions(uint _playerId) private {
     (
       QueuedAction[] memory remainingQueuedActions,
-      PendingQueuedActionXPGained memory pendingQueuedActionXPGained
+      PendingQueuedActionData memory currentActionProcessed
     ) = _processActions(msg.sender, _playerId);
 
     Player storage player = players_[_playerId];
     if (remainingQueuedActions.length != 0) {
-      player.queuedActionStartTime = uint40(block.timestamp);
+      player.currentActionStartTime = uint40(block.timestamp);
     } else {
-      player.queuedActionStartTime = 0;
+      player.currentActionStartTime = 0;
     }
-    _setPrevPlayerState(player, pendingQueuedActionXPGained);
+    _setPrevPlayerState(player, currentActionProcessed);
 
     Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
     for (uint i = 0; i < remainingQueuedActions.length; ++i) {

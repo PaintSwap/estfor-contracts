@@ -301,12 +301,12 @@ contract PlayersImplMisc is
 
   function processConsumablesViewStateTrans(
     uint _playerId,
-    uint _queuedActionStartTime,
+    uint _currentActionStartTime,
     uint _elapsedTime,
     ActionChoice memory _actionChoice,
     uint16 _regenerateId,
     uint16 _foodConsumed,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained,
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     uint16 numConsumed
   ) public view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
@@ -345,7 +345,7 @@ contract PlayersImplMisc is
       if (_actionChoice.successPercent != 100) {
         uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
         uint skillLevel = PlayersLibrary.getLevel(
-          PlayersLibrary.getAbsoluteActionStartXP(_actionChoice.skill, _pendingQueuedActionXPGained, xp_[_playerId])
+          PlayersLibrary.getAbsoluteActionStartXP(_actionChoice.skill, _pendingQueuedActionProcessed, xp_[_playerId])
         );
         uint extraBoost = skillLevel - minLevel;
 
@@ -357,7 +357,7 @@ contract PlayersImplMisc is
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-      uint boostedTime = PlayersLibrary.getBoostedTime(_queuedActionStartTime, _elapsedTime, activeBoost);
+      uint boostedTime = PlayersLibrary.getBoostedTime(_currentActionStartTime, _elapsedTime, activeBoost);
       if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
         numProduced += uint16((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }
@@ -376,12 +376,12 @@ contract PlayersImplMisc is
     address _from,
     uint _playerId,
     QueuedAction memory _queuedAction,
-    uint _queuedActionStartTime,
+    uint _currentActionStartTime,
     uint _elapsedTime,
     CombatStats memory _combatStats,
     ActionChoice memory _actionChoice,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
-    PendingQueuedActionXPGained memory _pendingQueuedActionXPGained
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
   )
     external
     view
@@ -429,12 +429,12 @@ contract PlayersImplMisc is
 
     (consumedEquipment, producedEquipment) = processConsumablesViewStateTrans(
       _playerId,
-      _queuedActionStartTime,
+      _currentActionStartTime,
       _elapsedTime,
       _actionChoice,
       _queuedAction.regenerateId,
       foodConsumed,
-      _pendingQueuedActionXPGained,
+      _pendingQueuedActionProcessed,
       numConsumed
     );
   }
