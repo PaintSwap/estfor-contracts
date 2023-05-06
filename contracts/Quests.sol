@@ -57,8 +57,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;
 
-  event AddFixedQuest(Quest quest); // Needed for backwards compatibility
-  event AddFixedQuestNew(Quest quest, MinimumRequirement[3] minimumRequirements);
+  event AddFixedQuest(Quest quest, MinimumRequirement[3] minimumRequirements);
   event EditQuest(Quest quest, MinimumRequirement[3] minimumRequirements);
   event AddBaseRandomQuest(Quest quest, MinimumRequirement[3] minimumRequirements);
   event RemoveQuest(uint questId);
@@ -593,7 +592,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
 
     allFixedQuests[_quest.questId] = _quest;
-    emit AddFixedQuestNew(_quest, _minimumRequirements);
+    emit AddFixedQuest(_quest, _minimumRequirements);
   }
 
   function setPlayers(IPlayers _players) external onlyOwner {
