@@ -68,42 +68,38 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       const timespan = 3600;
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.NATURE_MASK,
-        equipPosition: EstforTypes.EquipPosition.HEAD,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.NATURE_BODY,
-        equipPosition: EstforTypes.EquipPosition.BODY,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.NATURE_BRACERS,
-        equipPosition: EstforTypes.EquipPosition.ARMS,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.NATURE_TROUSERS,
-        equipPosition: EstforTypes.EquipPosition.LEGS,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.NATURE_BOOTS,
-        equipPosition: EstforTypes.EquipPosition.FEET,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.BRONZE_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATURE_MASK,
+          equipPosition: EstforTypes.EquipPosition.HEAD,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATURE_BODY,
+          equipPosition: EstforTypes.EquipPosition.BODY,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATURE_BRACERS,
+          equipPosition: EstforTypes.EquipPosition.ARMS,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATURE_TROUSERS,
+          equipPosition: EstforTypes.EquipPosition.LEGS,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATURE_BOOTS,
+          equipPosition: EstforTypes.EquipPosition.FEET,
+        },
+      ]);
 
       await players.addFullAttireBonuses([
         {
@@ -1047,6 +1043,11 @@ describe("Non-Combat Actions", function () {
         await players.connect(alice).processActions(playerId);
       }
 
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
 
       const expectedTotal = numRepeats * randomChanceFraction * numHours;
@@ -1127,6 +1128,11 @@ describe("Non-Combat Actions", function () {
         await players.connect(alice).processActions(playerId);
       }
 
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
 
       const expectedTotal = numRepeats * randomChanceFraction * numHours * (successPercent / 100);
@@ -1135,6 +1141,153 @@ describe("Non-Combat Actions", function () {
       expect(balance).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
       expect(balance).to.be.gte(expectedTotal * 0.8); // Within 20% below
       expect(balance).to.be.lte(expectedTotal * 1.2); // Within 20% above
+    });
+
+    // Gives +3% XP and +100% success chance
+    it("Full natuow equipment", async function () {
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      const randomChanceFraction = 1 / 100; // 1% chance
+      const randomChance = Math.floor(65536 * randomChanceFraction);
+
+      const xpPerHour = 50;
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: false,
+          successPercent: 0,
+        },
+        guaranteedRewards: [],
+        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+
+      const actionId = await getActionId(tx);
+
+      const numHours = 2;
+
+      // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+      const {timestamp} = await ethers.provider.getBlock("latest");
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
+      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+      tx = await world.requestRandomWords();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      const timespan = 3600 * numHours;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: {
+          head: EstforConstants.NATUOW_HOOD,
+          neck: EstforConstants.NONE,
+          body: EstforConstants.NATUOW_BODY,
+          arms: EstforConstants.NATUOW_BRACERS,
+          legs: EstforConstants.NATUOW_TASSETS,
+          feet: EstforConstants.NATUOW_BOOTS,
+          ring: EstforConstants.NONE, // Always NONE for now
+          reserved1: EstforConstants.NONE, // Always NONE for now
+        },
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await itemNFT.testMints(
+        alice.address,
+        [
+          EstforConstants.NATUOW_HOOD,
+          EstforConstants.NATUOW_BODY,
+          EstforConstants.NATUOW_BRACERS,
+          EstforConstants.NATUOW_TASSETS,
+          EstforConstants.NATUOW_BOOTS,
+        ],
+        [1, 1, 1, 1, 1]
+      );
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATUOW_HOOD,
+          equipPosition: EstforTypes.EquipPosition.HEAD,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATUOW_BODY,
+          equipPosition: EstforTypes.EquipPosition.BODY,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATUOW_BRACERS,
+          equipPosition: EstforTypes.EquipPosition.ARMS,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATUOW_TASSETS,
+          equipPosition: EstforTypes.EquipPosition.LEGS,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.NATUOW_BOOTS,
+          equipPosition: EstforTypes.EquipPosition.FEET,
+        },
+      ]);
+
+      await players.addFullAttireBonuses([
+        {
+          skill: Skill.THIEVING,
+          itemTokenIds: [
+            EstforConstants.NATUOW_HOOD,
+            EstforConstants.NATUOW_BODY,
+            EstforConstants.NATUOW_BRACERS,
+            EstforConstants.NATUOW_TASSETS,
+            EstforConstants.NATUOW_BOOTS,
+          ],
+          bonusXPPercent: 3,
+          bonusRewardsPercent: 100,
+        },
+      ]);
+
+      const numRepeats = 10; // Should get it at least once
+      for (let i = 0; i < numRepeats; ++i) {
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+        const tx = await world.requestRandomWords();
+        let requestId = getRequestId(tx);
+        expect(requestId).to.not.eq(0);
+        await mockOracleClient.fulfill(requestId, world.address);
+        await players.connect(alice).processActions(playerId);
+      }
+
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+
+      expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(
+        Math.floor(xpPerHour * numRepeats * numHours * 1.03)
+      ); // + 3% from full attire bonus equipment
+
+      const expectedTotal = numRepeats * numHours;
+      const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
+      // Have 2 queued actions so twice as much
+      expect(balance).to.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
     });
   });
 

@@ -561,11 +561,11 @@ library PlayersLibrary {
     }
   }
 
-  function extraBoostFromFullAttire(
+  function _extraBoostFromFullAttire(
     uint16[] memory itemTokenIds,
     uint[] memory balances,
     uint16[5] calldata expectedItemTokenIds
-  ) public pure returns (bool matches) {
+  ) private pure returns (bool matches) {
     // Check if they have the full equipment required
     if (itemTokenIds.length == 5) {
       for (U256 iter; iter.lt(5); iter = iter.inc()) {
@@ -858,7 +858,7 @@ library PlayersLibrary {
       skipNeck,
       _pendingQueuedActionEquipmentStates
     );
-    bool hasFullAttire = extraBoostFromFullAttire(itemTokenIds, balances, _expectedItemTokenIds);
+    bool hasFullAttire = _extraBoostFromFullAttire(itemTokenIds, balances, _expectedItemTokenIds);
     if (hasFullAttire) {
       extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * _bonusPercent) / (3600 * 100));
     }
@@ -885,6 +885,32 @@ library PlayersLibrary {
       uint extraBoost = skillLevel - minLevel;
 
       successPercent = uint8(Math.min(_maxSuccessPercentChange, actionSuccessPercent + extraBoost));
+    }
+  }
+
+  function getFullAttireBonusRewardsPercent(
+    address _from,
+    Attire storage _attire,
+    ItemNFT _itemNFT,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    uint8 _bonusRewardsPercent,
+    uint16[5] calldata fullAttireBonusItemTokenIds
+  ) external view returns (uint8 fullAttireBonusRewardsPercent) {
+    if (_bonusRewardsPercent != 0) {
+      // Check if they have the full equipment set, if so they can get some bonus
+      bool skipNeck = true;
+      (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
+        _from,
+        _attire,
+        _itemNFT,
+        skipNeck,
+        _pendingQueuedActionEquipmentStates
+      );
+      bool hasFullAttire = _extraBoostFromFullAttire(itemTokenIds, balances, fullAttireBonusItemTokenIds);
+
+      if (hasFullAttire) {
+        fullAttireBonusRewardsPercent = _bonusRewardsPercent;
+      }
     }
   }
 }

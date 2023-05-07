@@ -307,27 +307,14 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
         // Special case where thieving gives you a bonus if wearing full equipment
         uint8 bonusRewardsPercent = fullAttireBonus[_skill].bonusRewardsPercent;
-        uint8 fullAttireBonusRewardsPercent;
-        if (bonusRewardsPercent != 0) {
-          // Check if they have the full equipment set, if so they can get some bonus
-          bool skipNeck = true;
-          (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithBalance(
-            _from,
-            _attire,
-            itemNFT,
-            skipNeck,
-            _pendingQueuedActionEquipmentStates
-          );
-          bool hasFullAttire = PlayersLibrary.extraBoostFromFullAttire(
-            itemTokenIds,
-            balances,
-            fullAttireBonus[_skill].itemTokenIds
-          );
-
-          if (hasFullAttire) {
-            fullAttireBonusRewardsPercent = bonusRewardsPercent;
-          }
-        }
+        uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
+          _from,
+          _attire,
+          itemNFT,
+          _pendingQueuedActionEquipmentStates,
+          bonusRewardsPercent,
+          fullAttireBonus[_skill].itemTokenIds
+        );
 
         // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
         _pendingRandomRewards.push(

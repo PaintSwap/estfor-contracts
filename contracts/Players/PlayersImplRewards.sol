@@ -396,13 +396,24 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
       // Include loot
       {
+        uint8 bonusRewardsPercent = fullAttireBonus[skill].bonusRewardsPercent;
+        uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
+          from,
+          attire_[_playerId][queuedAction.queueId],
+          itemNFT,
+          pendingQueuedActionState.equipmentStates,
+          bonusRewardsPercent,
+          fullAttireBonus[skill].itemTokenIds
+        );
+
         // Full
         (uint[] memory newIds, uint[] memory newAmounts) = _getRewards(
           _playerId,
           uint40(veryStartTime),
           xpElapsedTime + prevXPElapsedTime,
           queuedAction.actionId,
-          pendingQueuedActionProcessed
+          pendingQueuedActionProcessed,
+          fullAttireBonusRewardsPercent
         );
 
         if (prevXPElapsedTime > 0) {
@@ -411,7 +422,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             uint40(veryStartTime),
             prevXPElapsedTime,
             queuedAction.actionId,
-            pendingQueuedActionProcessed
+            pendingQueuedActionProcessed,
+            fullAttireBonusRewardsPercent
           );
 
           (newIds, newAmounts) = PlayersLibrary.normalizeRewards(newIds, newAmounts, prevNewIds, prevNewAmounts);
@@ -580,7 +592,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint40 _skillStartTime,
     uint _xpElapsedTime,
     uint16 _actionId,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    uint8 fullAttireBonusRewardsPercent
   ) private view returns (uint[] memory ids, uint[] memory amounts) {
     (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(_actionId);
     bool isCombat = actionSkill == Skill.COMBAT;
@@ -617,7 +630,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       amounts,
       length,
       actionRewards,
-      successPercent
+      successPercent,
+      fullAttireBonusRewardsPercent
     );
 
     // Check for any boosts
@@ -698,7 +712,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         amounts,
         oldLength,
         actionRewards,
-        successPercent
+        successPercent,
+        pendingRandomReward.fullAttireBonusRewardsPercent
       );
 
       if (processedAny) {
@@ -908,7 +923,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint[] memory _amounts, // in-out
     uint _oldLength,
     ActionRewards memory _actionRewards,
-    uint8 _successPercent
+    uint8 _successPercent,
+    uint8 fullAttireBonusRewardsPercent
   ) private view returns (uint length, bool hasRandomWord) {
     length = _oldLength;
 
@@ -920,7 +936,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (hasRandomWord) {
         uint numIterations = Math.min(MAX_UNIQUE_TICKETS_, _numTickets);
 
-        bytes memory b = world.getRandomBytes(numIterations, skillEndTime, _playerId);
+        bytes memory randomBytes = world.getRandomBytes(numIterations, skillEndTime, _playerId);
         uint startLootLength = length;
         for (U256 iter; iter.lt(numIterations); iter = iter.inc()) {
           uint i = iter.asUint256();
@@ -935,7 +951,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           }
 
           // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
-          uint operation = (uint(_getSlice(b, i)) * 100) / _successPercent;
+          uint operation = (uint(_getSlice(randomBytes, i)) * 100) / _successPercent;
+          uint extraChance = (operation * fullAttireBonusRewardsPercent) / 100;
+          if (operation > extraChance) {
+            operation -= extraChance;
+          } else {
+            operation = 1;
+          }
           uint16 rand = uint16(Math.min(type(uint16).max, operation));
 
           U256 randomRewardsLength = _randomRewards.length.asU256();

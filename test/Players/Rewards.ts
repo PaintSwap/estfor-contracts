@@ -648,6 +648,12 @@ describe("Rewards", function () {
         );
       }
     }
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    requestId = getRequestId(await world.requestRandomWords());
+    await mockOracleClient.fulfill(requestId, world.address);
+    await players.connect(alice).processActions(playerId);
+
     const expectedTotal = numRepeats * randomChanceFraction * numHours;
     expect(numProduced).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
     expect(numProduced).to.be.gte(expectedTotal * 0.85); // Within 15% below
@@ -779,6 +785,11 @@ describe("Rewards", function () {
         }
       }
     }
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    requestId = getRequestId(await world.requestRandomWords());
+    await mockOracleClient.fulfill(requestId, world.address);
+    await players.connect(alice).processActions(playerId);
 
     let i = 0;
     for (const [itemTokenId, amount] of balanceMap) {
