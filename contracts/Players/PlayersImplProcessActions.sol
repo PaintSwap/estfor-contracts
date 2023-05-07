@@ -298,7 +298,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         uint16 boostValue;
         uint24 boostedTime;
         if (activeBoost.boostType == BoostType.GATHERING) {
-          boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _elapsedTime, activeBoost);
+          boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _xpElapsedTime, activeBoost);
           if (boostedTime != 0) {
             boostType = activeBoost.boostType;
             boostValue = activeBoost.val;
@@ -322,7 +322,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             actionId: _actionId,
             queueId: _queueId,
             startTime: uint40(_skillStartTime),
-            elapsedTime: uint24(_xpElapsedTime),
+            xpElapsedTime: uint24(_xpElapsedTime),
             boostType: boostType,
             boostValue: boostValue,
             boostedTime: boostedTime,

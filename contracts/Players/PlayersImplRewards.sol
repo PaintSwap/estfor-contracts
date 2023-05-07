@@ -641,7 +641,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       U256 bounds = length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint i = iter.asUint256();
-        amounts[i] += uint32((boostedTime * amounts[i] * activeBoost.val) / (3600 * 100));
+        // amounts[i] takes into account the whole elapsed time so additional boosted amount is a fraction of that.
+        amounts[i] += uint32((boostedTime * amounts[i] * activeBoost.val) / (_xpElapsedTime * 100));
       }
     }
 
@@ -693,7 +694,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         _pendingRandomRewards[i].actionId
       );
       bool isCombat = actionSkill == Skill.COMBAT;
-      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomReward.elapsedTime) / (SPAWN_MUL * 3600));
+      uint16 monstersKilled = uint16((numSpawnedPerHour * pendingRandomReward.xpElapsedTime) / (SPAWN_MUL * 3600));
       uint8 successPercent = _getSuccessPercent(
         _playerId,
         pendingRandomReward.actionId,
@@ -706,8 +707,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       (length, processedAny) = _appendRandomRewards(
         _playerId,
         pendingRandomReward.startTime,
-        pendingRandomReward.elapsedTime,
-        isCombat ? monstersKilled : pendingRandomReward.elapsedTime / 3600,
+        pendingRandomReward.xpElapsedTime,
+        isCombat ? monstersKilled : pendingRandomReward.xpElapsedTime / 3600,
         ids,
         amounts,
         oldLength,
@@ -721,18 +722,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       }
 
       if (oldLength != length) {
-        // Check for any boosts
-        PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-        uint boostedTime = PlayersLibrary.getBoostedTime(
-          _pendingRandomRewards[i].startTime,
-          _pendingRandomRewards[i].elapsedTime,
-          activeBoost
-        );
+        uint boostedTime = _pendingRandomRewards[i].boostedTime;
         U256 bounds = length.asU256();
-        if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
+        if (boostedTime != 0 && _pendingRandomRewards[i].boostType == BoostType.GATHERING) {
           for (U256 jter; jter < bounds; jter = jter.inc()) {
             uint j = jter.asUint256();
-            amounts[j] = uint32((boostedTime * amounts[j] * activeBoost.val) / (3600 * 100));
+            amounts[j] += uint32(
+              (boostedTime * amounts[j] * _pendingRandomRewards[i].boostValue) /
+                (_pendingRandomRewards[i].xpElapsedTime * 100)
+            );
           }
         }
         for (U256 kter; kter < bounds; kter = kter.inc()) {

@@ -3,9 +3,10 @@ import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions"
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
-import {GUAR_MUL, RATE_MUL} from "../utils";
+import {GUAR_MUL, RATE_MUL, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking} from "./utils";
+import {noAttire} from "@paintswap/estfor-definitions/types";
 
 describe("Boosts", function () {
   this.retries(3);
@@ -366,7 +367,206 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(foodCooked);
   });
 
-  it("Gathering boost, random rewards (100%) same day", async function () {});
+  it("Gathering boost, random rewards obtain same day", async function () {
+    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-  it("Gathering boost, random rewards (100%) next day", async function () {});
+    const boostValue = 10;
+    const boostDuration = 3600;
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.GATHERING_BOOST,
+      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+      // Boost
+      boostType: EstforTypes.BoostType.GATHERING,
+      boostValue,
+      boostDuration,
+      isTransferable: false,
+    });
+
+    const randomChance = 65535;
+    const xpPerHour = 50;
+    const amount = 100;
+    let tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.THIEVING,
+        xpPerHour,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: true,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+
+    const actionId = await getActionId(tx);
+
+    const numHours = 2;
+
+    // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+    const {timestamp} = await ethers.provider.getBlock("latest");
+    const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
+    await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+    tx = await world.requestRandomWords();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+
+    const timespan = 3600 * numHours;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    await players
+      .connect(alice)
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.GATHERING_BOOST,
+        NOW,
+        EstforTypes.ActionQueueStatus.NONE
+      );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    await players.connect(alice).processActions(playerId);
+
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))
+    );
+  });
+
+  it("Gathering boost, random rewards, obtain next day", async function () {
+    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+    const boostValue = 10;
+    const boostDuration = 3600;
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.GATHERING_BOOST,
+      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+      // Boost
+      boostType: EstforTypes.BoostType.GATHERING,
+      boostValue,
+      boostDuration,
+      isTransferable: false,
+    });
+
+    const randomChance = 65535;
+    const xpPerHour = 50;
+    const amount = 100;
+    let tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.THIEVING,
+        xpPerHour,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: true,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
+      combatStats: EstforTypes.emptyCombatStats,
+    });
+
+    const actionId = await getActionId(tx);
+
+    const numHours = 2;
+
+    // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+    const {timestamp} = await ethers.provider.getBlock("latest");
+    const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
+    await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+    tx = await world.requestRandomWords();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+
+    const timespan = 3600 * numHours;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    await players
+      .connect(alice)
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.GATHERING_BOOST,
+        NOW,
+        EstforTypes.ActionQueueStatus.NONE
+      );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    await players.connect(alice).processActions(playerId);
+
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    tx = await world.requestRandomWords();
+    requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    await players.connect(alice).processActions(playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))
+    );
+  });
 });
