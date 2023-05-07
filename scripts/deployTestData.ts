@@ -11,7 +11,7 @@ import {
   CLANS_ADDRESS,
   BANK_FACTORY_ADDRESS,
   QUESTS_ADDRESS,
-} from "./constants";
+} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 
 async function main() {

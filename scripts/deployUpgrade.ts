@@ -10,7 +10,7 @@ import {
   SHOP_ADDRESS,
   CLANS_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
-} from "./constants";
+} from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
 async function main() {

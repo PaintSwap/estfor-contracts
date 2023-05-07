@@ -7,7 +7,7 @@ import {
   PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
   PLAYERS_IMPL_REWARDS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
-} from "./constants";
+} from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
 async function main() {

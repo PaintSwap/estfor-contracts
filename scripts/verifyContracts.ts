@@ -18,7 +18,7 @@ import {
   BANK_REGISTRY_ADDRESS,
   BANK_PROXY_ADDRESS,
   BANK_FACTORY_ADDRESS,
-} from "./constants";
+} from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
 async function main() {

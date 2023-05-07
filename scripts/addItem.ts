@@ -2,7 +2,7 @@ import {EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {defaultInputItem, EquipPosition} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
-import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./constants";
+import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();

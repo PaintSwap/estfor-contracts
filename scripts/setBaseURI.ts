@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./constants";
+import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();

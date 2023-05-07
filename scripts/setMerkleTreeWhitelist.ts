@@ -1,6 +1,6 @@
 import {ethers} from "hardhat";
 import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
-import {PLAYER_NFT_ADDRESS, ESTFOR_LIBRARY_ADDRESS} from "./constants";
+import {PLAYER_NFT_ADDRESS, ESTFOR_LIBRARY_ADDRESS} from "./contractAddresses";
 import {whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 
 async function main() {

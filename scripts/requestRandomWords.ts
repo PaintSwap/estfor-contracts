@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./constants";
+import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});

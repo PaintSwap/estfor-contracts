@@ -1,6 +1,6 @@
 import {MEDIUM_NET} from "@paintswap/estfor-definitions/constants";
 import {ethers} from "hardhat";
-import {SHOP_ADDRESS} from "./constants";
+import {SHOP_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();

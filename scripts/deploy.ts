@@ -33,7 +33,7 @@ import {
   allActionChoiceIdsMelee,
   allActionChoiceIdsSmithing,
 } from "./data/actionChoiceIds";
-import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./constants";
+import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
 import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";

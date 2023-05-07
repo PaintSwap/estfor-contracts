@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {CLANS_ADDRESS, ESTFOR_LIBRARY_ADDRESS, PLAYER_NFT_ADDRESS} from "./constants";
+import {CLANS_ADDRESS, ESTFOR_LIBRARY_ADDRESS, PLAYER_NFT_ADDRESS} from "./contractAddresses";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 
 async function main() {

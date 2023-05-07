@@ -1,4 +1,4 @@
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 import {
   PLAYERS_ADDRESS,
   PLAYERS_IMPL_MISC_ADDRESS,
@@ -6,7 +6,9 @@ import {
   PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
   PLAYERS_IMPL_REWARDS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
-} from "./constants";
+  PLAYER_NFT_ADDRESS,
+} from "./contractAddresses";
+import {EstforTypes} from "@paintswap/estfor-definitions";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -21,10 +23,14 @@ async function main() {
   const player = await ethers.getImpersonatedSigner("0xa801864d0D24686B15682261aa05D4e1e6e5BD94");
 
   // Set the implementations
-  const Players = await ethers.getContractFactory("Players", {
+  let Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
-  const players = Players.attach(PLAYERS_ADDRESS);
+  Players = Players.connect(owner);
+  const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
+    kind: "uups",
+    unsafeAllow: ["delegatecall", "external-library-linking"],
+  });
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playerLibrary.address},
@@ -64,8 +70,30 @@ async function main() {
     );
   await tx.wait();
 
-  const playerId = 4;
-  console.log(await players.pendingQueuedActionState(player.address, playerId));
+  const playerId = 3;
+
+  // PlayerNFT
+  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
+  let estforLibrary = await EstforLibrary.deploy();
+  await estforLibrary.deployed();
+  let PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  PlayerNFT = PlayerNFT.connect(owner);
+  const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
+
+  console.log(await players.xp(playerId, EstforTypes.Skill.COOKING));
+  console.log(await players.packedXP(playerId));
+
+  // Test max level works
+  const uri = await playerNFT.uri(playerId);
+  const metadata = JSON.parse(Buffer.from(uri.split(";base64,")[1], "base64").toString());
+  console.log(metadata.attributes[2].value);
+
+  //  console.log(await playerNFT.uri()pendingQueuedActionState(player.address, playerId));
   /*
   // Do action
   await players.connect(player).processActions(playerId);

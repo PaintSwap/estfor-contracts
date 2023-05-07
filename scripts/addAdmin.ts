@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {ADMIN_ACCESS_ADDRESS} from "./constants";
+import {ADMIN_ACCESS_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();

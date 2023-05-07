@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {QUESTS_ADDRESS} from "./constants";
+import {QUESTS_ADDRESS} from "./contractAddresses";
 import {Quest, allQuests, defaultMinRequirements} from "./data/quests";
 import {QUEST_NYMPTH_WATCH} from "@paintswap/estfor-definitions/constants";
 
