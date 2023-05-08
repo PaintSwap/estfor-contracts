@@ -580,19 +580,19 @@ library PlayersLibrary {
   }
 
   function normalizeRewards(
-    uint[] calldata newIds,
-    uint[] calldata newAmounts,
-    uint[] calldata prevNewIds,
-    uint[] calldata prevNewAmounts
+    uint[] calldata _newIds,
+    uint[] calldata _newAmounts,
+    uint[] calldata _prevNewIds,
+    uint[] calldata _prevNewAmounts
   ) external pure returns (uint[] memory ids, uint[] memory amounts) {
     // Subtract previous rewards. If amount is zero after, replace with end
-    ids = newIds; // new uint[](newIds.length);
-    amounts = newAmounts; // uint[](newAmounts.length);
-    U256 prevNewIdsLength = prevNewIds.length.asU256();
+    ids = _newIds;
+    amounts = _newAmounts;
+    U256 prevNewIdsLength = _prevNewIds.length.asU256();
     for (U256 jter; jter < prevNewIdsLength; jter = jter.inc()) {
       uint j = jter.asUint256();
-      uint16 prevNewId = uint16(prevNewIds[j]);
-      uint24 prevNewAmount = uint24(prevNewAmounts[j]);
+      uint16 prevNewId = uint16(_prevNewIds[j]);
+      uint24 prevNewAmount = uint24(_prevNewAmounts[j]);
       uint length = ids.length;
       for (uint k = 0; k < length; ++k) {
         if (ids[k] == prevNewId) {
@@ -793,12 +793,12 @@ library PlayersLibrary {
     bonusPercent = bothSet ? 5 : 10;
   }
 
-  function _extraFromAvatar(
+  function extraFromAvatar(
     Player storage _player,
     Skill _skill,
     uint _elapsedTime,
     uint24 _xpPerHour
-  ) internal view returns (uint32 extraPointsAccrued) {
+  ) public view returns (uint32 extraPointsAccrued) {
     uint8 bonusPercent = getBonusAvatarXPPercent(_player, _skill);
     extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * bonusPercent) / (3600 * 100));
   }
@@ -833,7 +833,7 @@ library PlayersLibrary {
       _pendingQueuedActionEquipmentStates
     );
     pointsAccruedExclBaseBoost = pointsAccrued;
-    pointsAccrued += _extraFromAvatar(_player, _skill, _xpElapsedTime, xpPerHour);
+    pointsAccrued += extraFromAvatar(_player, _skill, _xpElapsedTime, xpPerHour);
   }
 
   function _extraXPFromFullAttire(

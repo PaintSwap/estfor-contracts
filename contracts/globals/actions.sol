@@ -33,6 +33,7 @@ struct QueuedAction {
   CombatStyle combatStyle; // specific style of combat,  can also be used
   uint24 prevProcessedTime; // How long the action has been processed for previously
   uint24 prevProcessedXPTime; // How much XP has been gained for this action so far
+  uint24 prevPointsAccrued; // How many points have been accrued for this action so far
   uint64 queueId; // id of this queued action
   bool isValid; // If we still have the item, TODO: Not used yet
 }
