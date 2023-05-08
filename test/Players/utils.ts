@@ -157,7 +157,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
       successPercent: 100,
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
-    randomRewards: [],
+    randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 33500, amount: 1}], // ~50% chance
     combatStats: monsterCombatStats,
   });
   const actionId = await getActionId(tx);

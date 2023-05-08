@@ -11,6 +11,7 @@ import {
   getActionChoiceId,
   getActionChoiceIds,
   getActionId,
+  getRequestId,
   GUAR_MUL,
   RATE_MUL,
   SPAWN_MUL,
@@ -22,6 +23,8 @@ import {setupBasicMeleeCombat} from "./utils";
 const actionIsAvailable = true;
 
 describe("Combat Actions", function () {
+  this.retries(3);
+
   describe("Melee", async function () {
     async function playersFixtureMelee() {
       const fixture = await loadFixture(playersFixture);
@@ -560,6 +563,105 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance.sub(Math.pow(2, 16) - 1)
       );
+    });
+
+    it("Check random rewards", async function () {
+      const {playerId, players, world, itemNFT, alice, queuedAction, rate, numSpawned, mockOracleClient} =
+        await loadFixture(playersFixtureMelee);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const time = 3600;
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(time + time / 3);
+      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numSpawned / SPAWN_MUL);
+      await players.connect(alice).processActions(playerId);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      let tx = await world.requestRandomWords();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) - 1),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2)),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) + 1),
+      ]); // Roughly 1/2 of the time
+    });
+
+    it("Check random rewards, next day", async function () {
+      const {playerId, players, world, itemNFT, alice, queuedAction, rate, numSpawned, mockOracleClient} =
+        await loadFixture(playersFixtureMelee);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const time = 3600;
+      await ethers.provider.send("evm_increaseTime", [time]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(time + time / 3);
+      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numSpawned / SPAWN_MUL);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      let tx = await world.requestRandomWords();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) - 2),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) - 1),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2)),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) + 1),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) + 2),
+      ]); // Roughly 1/2 of the time
+    });
+
+    it("Check random rewards, in-progress updates (many)", async function () {
+      const {playerId, players, world, itemNFT, alice, queuedAction, rate, numSpawned, mockOracleClient} =
+        await loadFixture(playersFixtureMelee);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const numLoops = queuedAction.timespan / 240;
+      expect(numLoops).to.not.eq(0);
+
+      for (let i = 0; i < numLoops; ++i) {
+        // Increase by random time
+        const randomTimespan = Math.floor(Math.random() * 240);
+        await ethers.provider.send("evm_increaseTime", [randomTimespan]);
+        await players.connect(alice).processActions(playerId);
+      }
+
+      let tx = await world.requestRandomWords();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]); // This makes sure everything is used
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) - 1),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2)),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) + 1),
+      ]); // Roughly 1/2 of the time
     });
   });
 
