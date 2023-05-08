@@ -124,7 +124,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           queuedAction.timespan,
           0,
           0,
-          0,
           remainingQueuedActionsLength
         );
         remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
@@ -308,25 +307,18 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       );
 
       if (prevProcessedTime > 0) {
-        prevPointsAccrued = uint32(queuedAction.prevPointsAccrued);
-        uint24 xpPerHour = world.getXPPerHour(queuedAction.actionId, isCombat ? NONE : queuedAction.choiceId);
-        uint extraPointsAccruedFromAvatar = PlayersLibrary.extraFromAvatar(
-          players_[_playerId],
+        (prevPointsAccrued, prevPointsAccruedExclBaseBoost) = _getPointsAccrued(
+          from,
+          _playerId,
+          queuedAction,
+          veryStartTime,
           skill,
           prevXPElapsedTime,
-          xpPerHour
+          pendingQueuedActionState.equipmentStates
         );
-        prevPointsAccruedExclBaseBoost = prevPointsAccrued;
-        if (pointsAccrued >= prevPointsAccrued) {
-          pointsAccrued -= uint32(prevPointsAccrued);
-        }
 
-        if (prevPointsAccruedExclBaseBoost >= extraPointsAccruedFromAvatar) {
-          prevPointsAccruedExclBaseBoost = prevPointsAccruedExclBaseBoost.sub(extraPointsAccruedFromAvatar);
-        }
-        if (pointsAccruedExclBaseBoost >= prevPointsAccruedExclBaseBoost) {
-          pointsAccruedExclBaseBoost -= uint32(prevPointsAccruedExclBaseBoost);
-        }
+        pointsAccrued -= uint32(prevPointsAccrued);
+        pointsAccruedExclBaseBoost -= uint32(prevPointsAccruedExclBaseBoost);
       }
 
       pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
@@ -364,7 +356,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           remainingTimespan,
           elapsedTime,
           xpElapsedTime,
-          pointsAccrued,
           remainingQueuedActionsLength
         );
         remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
@@ -788,14 +779,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     uint _timespan,
     uint _elapsedTime,
     uint _xpElapsedTime,
-    uint _pointsAccrued,
     uint _length
   ) private pure {
     QueuedAction memory remainingAction = _queuedAction;
     remainingAction.timespan = uint24(_timespan);
     remainingAction.prevProcessedTime += uint24(_elapsedTime);
     remainingAction.prevProcessedXPTime += uint24(_xpElapsedTime);
-    remainingAction.prevPointsAccrued += uint24(_pointsAccrued);
     // Build a list of the skills queued that remain
     _remainingQueuedActions[_length] = remainingAction;
   }
