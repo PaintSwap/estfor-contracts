@@ -98,7 +98,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       _addPendingRandomReward(
         _from,
         _playerId,
-        pendingRandomRewards[_playerId],
         actionRewards,
         actionMetadata.actionId,
         actionMetadata.queueId,
@@ -132,7 +131,7 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         }
         player.totalXP = uint56(newTotalXP);
       }
-      bool fullyFinished = actionMetadata.elapsedTime >= players_[_playerId].actionQueue[i].timespan;
+      bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
         emit ActionFinished(_from, _playerId, actionMetadata.queueId);
       } else {
@@ -278,7 +277,6 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
   function _addPendingRandomReward(
     address _from,
     uint _playerId,
-    PendingRandomReward[] storage _pendingRandomRewards,
     ActionRewards memory _actionRewards,
     uint16 _actionId,
     uint64 _queueId,
@@ -290,18 +288,26 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
-    if (hasRandomRewards) {
+    if (_xpElapsedTime != 0 && hasRandomRewards) {
       bool hasRandomWord = world.hasRandomWord(_skillStartTime.add(_elapsedTime));
       if (!hasRandomWord) {
         PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
         BoostType boostType;
         uint16 boostValue;
-        uint24 boostedTime;
+        uint24 boostDuration;
+        uint40 boostStartTime;
         if (activeBoost.boostType == BoostType.GATHERING) {
-          boostedTime = PlayersLibrary.getBoostedTime(_skillStartTime, _xpElapsedTime, activeBoost);
+          uint24 boostedTime = PlayersLibrary.getBoostedTime(
+            _skillStartTime,
+            _xpElapsedTime,
+            activeBoost.startTime,
+            activeBoost.duration
+          );
           if (boostedTime != 0) {
             boostType = activeBoost.boostType;
             boostValue = activeBoost.val;
+            boostStartTime = activeBoost.startTime;
+            boostDuration = activeBoost.duration;
           }
         }
 
@@ -317,15 +323,16 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         );
 
         // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
-        _pendingRandomRewards.push(
+        pendingRandomRewards[_playerId].push(
           PendingRandomReward({
             actionId: _actionId,
             queueId: _queueId,
-            startTime: uint40(_skillStartTime),
+            startTime: _skillStartTime,
             xpElapsedTime: uint24(_xpElapsedTime),
             boostType: boostType,
             boostValue: boostValue,
-            boostedTime: boostedTime,
+            boostStartTime: boostStartTime,
+            boostDuration: boostDuration,
             fullAttireBonusRewardsPercent: fullAttireBonusRewardsPercent
           })
         );

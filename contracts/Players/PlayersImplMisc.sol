@@ -359,7 +359,12 @@ contract PlayersImplMisc is
 
       // Check for any gathering boosts
       PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-      uint boostedTime = PlayersLibrary.getBoostedTime(_currentActionStartTime, _elapsedTime, activeBoost);
+      uint boostedTime = PlayersLibrary.getBoostedTime(
+        _currentActionStartTime,
+        _elapsedTime,
+        activeBoost.startTime,
+        activeBoost.duration
+      );
       if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
         numProduced += uint16((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
       }

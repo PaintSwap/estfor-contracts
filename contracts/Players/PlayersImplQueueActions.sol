@@ -469,6 +469,8 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     players_[_playerId].currentActionProcessedXPGained1 = 0;
     players_[_playerId].currentActionProcessedSkill2 = Skill.NONE;
     players_[_playerId].currentActionProcessedXPGained2 = 0;
+    players_[_playerId].currentActionProcessedFoodConsumed = 0;
+    players_[_playerId].currentActionProcessedBaseInputItemsConsumedNum = 0;
 
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);

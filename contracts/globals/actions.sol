@@ -31,10 +31,10 @@ struct QueuedAction {
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
   CombatStyle combatStyle; // specific style of combat,  can also be used
-  bool isValid; // If we still have the item, TODO: Not used yet
-  uint64 queueId; // id of this queued action
   uint24 prevProcessedTime; // How long the action has been processed for previously
   uint24 prevProcessedXPTime; // How much XP has been gained for this action so far
+  uint64 queueId; // id of this queued action
+  bool isValid; // If we still have the item, TODO: Not used yet
 }
 
 // This is only used as an input arg

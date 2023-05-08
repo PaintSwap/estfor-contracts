@@ -520,21 +520,22 @@ library PlayersLibrary {
   function getBoostedTime(
     uint _actionStartTime,
     uint _elapsedTime,
-    PlayerBoostInfo storage _activeBoost
-  ) public view returns (uint24 boostedTime) {
+    uint40 _boostStartTime,
+    uint24 _boostDuration
+  ) public pure returns (uint24 boostedTime) {
     uint actionEndTime = _actionStartTime + _elapsedTime;
-    uint boostEndTime = _activeBoost.startTime + _activeBoost.duration;
+    uint boostEndTime = _boostStartTime + _boostDuration;
     bool boostFinishedBeforeActionStarted = _actionStartTime > boostEndTime;
-    bool boostStartedAfterActionFinished = actionEndTime < _activeBoost.startTime;
+    bool boostStartedAfterActionFinished = actionEndTime < _boostStartTime;
     if (boostFinishedBeforeActionStarted || boostStartedAfterActionFinished) {
       // Boost was not active at all during this queued action
       boostedTime = 0;
-    } else if (_actionStartTime >= _activeBoost.startTime && actionEndTime >= boostEndTime) {
+    } else if (_actionStartTime >= _boostStartTime && actionEndTime >= boostEndTime) {
       boostedTime = uint24(boostEndTime - _actionStartTime);
-    } else if (actionEndTime > _activeBoost.startTime && boostEndTime >= actionEndTime) {
-      boostedTime = uint24(actionEndTime - _activeBoost.startTime);
-    } else if (_activeBoost.startTime > _actionStartTime && boostEndTime < actionEndTime) {
-      boostedTime = _activeBoost.duration;
+    } else if (actionEndTime > _boostStartTime && boostEndTime >= actionEndTime) {
+      boostedTime = uint24(actionEndTime - _boostStartTime);
+    } else if (_boostStartTime > _actionStartTime && boostEndTime < actionEndTime) {
+      boostedTime = _boostDuration;
     } else {
       assert(false); // Should never happen
     }
@@ -555,7 +556,7 @@ library PlayersLibrary {
         (_isCombatSkill && activeBoost.boostType == BoostType.COMBAT_XP) ||
         (!_isCombatSkill && activeBoost.boostType == BoostType.NON_COMBAT_XP)
       ) {
-        uint boostedTime = getBoostedTime(_actionStartTime, _elapsedTime, activeBoost);
+        uint boostedTime = getBoostedTime(_actionStartTime, _elapsedTime, activeBoost.startTime, activeBoost.duration);
         boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoost.val) / (3600 * 100));
       }
     }
@@ -740,7 +741,7 @@ library PlayersLibrary {
     ItemNFT _itemNFT,
     uint16[2] calldata _handEquipmentTokenIds,
     CombatStats calldata _combatStats,
-    bool _isCombat,
+    bool isCombat,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (bool missingRequiredHandEquipment, CombatStats memory combatStats) {
     U256 iter = _handEquipmentTokenIds.length.asU256();
@@ -753,10 +754,10 @@ library PlayersLibrary {
         uint256 balance = getRealBalance(_from, handEquipmentTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
         if (balance == 0) {
           // Assume that if the player doesn't have the non-combat item that this action cannot be done
-          if (!_isCombat) {
+          if (!isCombat) {
             missingRequiredHandEquipment = true;
           }
-        } else if (_isCombat) {
+        } else if (isCombat) {
           // Update the combat stats
           Item memory item = _itemNFT.getItem(handEquipmentTokenId);
           _updateCombatStatsFromItem(combatStats, item);

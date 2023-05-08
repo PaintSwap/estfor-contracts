@@ -911,7 +911,7 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       const numHours = 2;
-      // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+      // Make sure it passes the next checkpoint so there are no issues running
       const {timestamp} = await ethers.provider.getBlock("latest");
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
@@ -1005,7 +1005,7 @@ describe("Non-Combat Actions", function () {
 
       const numHours = 4;
 
-      // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+      // Make sure it passes the next checkpoint so there are no issues running
       const {timestamp} = await ethers.provider.getBlock("latest");
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
@@ -1089,7 +1089,7 @@ describe("Non-Combat Actions", function () {
 
       const numHours = 2;
 
-      // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+      // Make sure it passes the next checkpoint so there are no issues running
       const {timestamp} = await ethers.provider.getBlock("latest");
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
@@ -1174,7 +1174,7 @@ describe("Non-Combat Actions", function () {
 
       const numHours = 2;
 
-      // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+      // Make sure it passes the next checkpoint so there are no issues running
       const {timestamp} = await ethers.provider.getBlock("latest");
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;

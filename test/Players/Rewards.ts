@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
+import NONE, {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
@@ -15,6 +15,7 @@ import {
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
+import {emptyCombatStats} from "@paintswap/estfor-definitions/types";
 
 const actionIsAvailable = true;
 
@@ -451,7 +452,7 @@ describe("Rewards", function () {
 
     const numHours = 5;
 
-    // Make sure it passes the next checkpoint so there are no issues running (TODO needed for this one?)
+    // Make sure it passes the next checkpoint so there are no issues running
     const {timestamp} = await ethers.provider.getBlock("latest");
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
@@ -801,6 +802,75 @@ describe("Rewards", function () {
       expect(balanceMap.get(itemTokenId)).to.be.lte(expectedTotal * 1.25 * 2); // Within 25% above
       ++i;
     }
+  });
+
+  it("PendingRandomRewards should be added each time an action is processed", async function () {
+    const {playerId, players, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+    const randomChance = 65535; // 100%
+    let tx = await world.addAction({
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.THIEVING,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+      combatStats: emptyCombatStats,
+    });
+    const actionId = await getActionId(tx);
+    const numHours = 5;
+
+    // Set it 2 hours before the next checkpoint so that we can cross the boundary
+    const {timestamp} = await ethers.provider.getBlock("latest");
+    const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+    const durationToNextCheckpoint = nextCheckpoint - timestamp - (2 * 3600 - 2);
+    await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+
+    tx = await world.requestRandomWords();
+    let requestId = getRequestId(tx);
+    expect(requestId).to.not.eq(0);
+    await mockOracleClient.fulfill(requestId, world.address);
+    const timespan = 3600 * numHours;
+
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+    await ethers.provider.send("evm_increaseTime", [3600 + 60]); // 1 hour 1 minute
+    await ethers.provider.send("evm_mine", []);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
+    expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(1); // Should have a roll
+    await players.connect(alice).processActions(playerId); // Continues the action
+    let pendingRandomRewards = await players.getPendingRandomRewards(playerId);
+    expect(pendingRandomRewards.length).to.eq(1);
+    expect(pendingRandomRewards[0].xpElapsedTime).to.eq(3600);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // Finished
+    await ethers.provider.send("evm_mine", []);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numHours - 1);
+    await players.connect(alice).processActions(playerId); // Finishes the action
+    pendingRandomRewards = await players.getPendingRandomRewards(playerId);
+    expect(pendingRandomRewards.length).to.eq(2); // Should now get the other pending random rewards
+    expect(pendingRandomRewards[1].xpElapsedTime).to.eq(timespan - 3600);
   });
 
   // Could be a part of world if there was bytecode space
