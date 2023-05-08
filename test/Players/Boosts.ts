@@ -269,6 +269,73 @@ describe("Boosts", function () {
     );
   });
 
+  // XP boost for 1 hour, no XP boost (uses gathering boost) for 6 hours, XP boost for 1 hour.
+  it("Any XP Boost, check multiple boost consumptions and period without XP boost", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const boostValue = 50;
+    const boostDuration = 7200;
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.GATHERING_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.GATHERING,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
+
+    const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...queuedActionWoodcutting, timespan: 3600 * 8};
+
+    await itemNFT.testMints(alice.address, [EstforConstants.XP_BOOST, EstforConstants.GATHERING_BOOST], [2, 2]);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    await players
+      .connect(alice)
+      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [3600]);
+
+    // Change to gathering boost
+    await players
+      .connect(alice)
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.GATHERING_BOOST,
+        NOW,
+        EstforTypes.ActionQueueStatus.APPEND
+      );
+    await ethers.provider.send("evm_increaseTime", [3600 * 6]);
+    // Back to XP boost
+    await players
+      .connect(alice)
+      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.APPEND);
+    await ethers.provider.send("evm_increaseTime", [3600]);
+    await players.connect(alice).processActions(playerId);
+
+    // 2 hours boosted XP, 6 hours not boosted in total
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(8 * 3600 + (2 * 3600 * boostValue) / 100);
+
+    // 2 hours gathering boost, check drops are as expected
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      Math.floor((8 * 3600 * rate) / (3600 * GUAR_MUL)) +
+        Math.floor((2 * 3600 * rate * boostValue) / (3600 * GUAR_MUL * 100))
+    );
+  });
+
   it("TODO, swap boost", async function () {
     // Check that they are minted/consumed as expected
   });

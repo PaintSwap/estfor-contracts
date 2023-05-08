@@ -527,7 +527,12 @@ library PlayersLibrary {
     uint boostEndTime = _boostStartTime + _boostDuration;
     bool boostFinishedBeforeActionStarted = _actionStartTime > boostEndTime;
     bool boostStartedAfterActionFinished = actionEndTime < _boostStartTime;
-    if (boostFinishedBeforeActionStarted || boostStartedAfterActionFinished) {
+    if (
+      boostFinishedBeforeActionStarted ||
+      boostStartedAfterActionFinished ||
+      _elapsedTime == 0 ||
+      actionEndTime == _boostStartTime
+    ) {
       // Boost was not active at all during this queued action
       boostedTime = 0;
     } else if (_actionStartTime >= _boostStartTime && actionEndTime >= boostEndTime) {
