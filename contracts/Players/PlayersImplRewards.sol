@@ -213,7 +213,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           pendingQueuedActionMetadata.died = true;
         }
       } else {
-        // Elapsed time is the time that we actually spent doing the action, not the time that has passed
         if (queuedAction.prevProcessedTime != 0) {
           // PrevXP
           bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;

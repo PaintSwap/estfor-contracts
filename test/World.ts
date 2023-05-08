@@ -431,5 +431,35 @@ describe("World", function () {
       action.randomRewards[0].itemTokenId = SHADOW_SCROLL;
       await expect(world.addAction(action)).to.not.be.reverted;
     });
+
+    it("Only combat can have both guaranteed and random rewards", async function () {
+      const {world} = await loadFixture(deployContracts);
+      const actionAvailable = false;
+      const action: ActionInput = {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 1 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.AIR_SCROLL, rate: 100}],
+        randomRewards: [{itemTokenId: EstforConstants.AIR_SCROLL, chance: 100, amount: 1}],
+        combatStats: EstforTypes.emptyCombatStats,
+      };
+
+      await expect(world.addAction(action)).to.be.revertedWithCustomError(
+        world,
+        "NonCombatCannotHaveBothGuaranteedAndRandomRewards"
+      );
+      action.info.skill = EstforTypes.Skill.COMBAT;
+      await expect(world.addAction(action)).to.not.be.reverted;
+    });
   });
 });

@@ -47,6 +47,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error ActionChoiceAlreadyExists();
   error OnlyCombatMultipleGuaranteedRewards();
   error NotAFactorOf3600();
+  error NonCombatCannotHaveBothGuaranteedAndRandomRewards();
 
   // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface public COORDINATOR;
@@ -395,6 +396,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     if (_action.info.skill == Skill.COMBAT) {
       actionCombatStats[_action.actionId] = _action.combatStats;
+    } else {
+      bool actionHasGuaranteedRewards = _action.guaranteedRewards.length != 0;
+      bool actionHasRandomRewards = _action.randomRewards.length != 0;
+      if (actionHasGuaranteedRewards && actionHasRandomRewards) {
+        revert NonCombatCannotHaveBothGuaranteedAndRandomRewards();
+      }
     }
   }
 
