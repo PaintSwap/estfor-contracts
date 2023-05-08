@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-/* solhint-disable no-global-import */
+// solhint-disable-next-line no-global-import
 import "./globals/players.sol";
-
-/* solhint-enable no-global-import */
 
 // This file contains methods for interacting with the item NFT, used to decrease implementation deployment bytecode code.
 library ItemNFTLibrary {

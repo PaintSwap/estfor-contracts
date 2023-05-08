@@ -12,12 +12,8 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-/* solhint-disable no-global-import */
-import "./globals/players.sol";
-import "./globals/items.sol";
-import "./globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "./globals/all.sol";
 
 interface Router {
   function swapExactETHForTokens(

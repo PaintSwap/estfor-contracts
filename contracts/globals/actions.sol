@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Skill, Attire, CombatStyle, CombatStats} from "./players.sol";
+import {Skill, Attire, CombatStyle, CombatStats} from "./misc.sol";
 import {GuaranteedReward, RandomReward} from "./rewards.sol";
 
 enum ActionQueueStatus {

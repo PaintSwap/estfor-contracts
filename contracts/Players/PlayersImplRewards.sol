@@ -5,14 +5,10 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
+import "../interfaces/IPlayers.sol";
 
-/* solhint-disable no-global-import */
-import "../globals/players.sol";
-import "../globals/items.sol";
-import "../globals/actions.sol";
-import "../globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "../globals/all.sol";
 
 contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPlayersRewardsDelegateView {
   using UnsafeMath for U256;

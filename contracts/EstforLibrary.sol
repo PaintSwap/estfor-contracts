@@ -9,12 +9,8 @@ import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProo
 
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
-/* solhint-disable no-global-import */
-import "./globals/players.sol";
-import "./globals/actions.sol";
-import "./globals/items.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "./globals/all.sol";
 
 // This file contains methods for interacting with generic functions like trimming strings, merkle proof whitelisting etc.
 library EstforLibrary {

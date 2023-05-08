@@ -14,14 +14,10 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
+import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayers.sol";
 
-/* solhint-disable no-global-import */
-import "../globals/players.sol";
-import "../globals/items.sol";
-import "../globals/actions.sol";
-import "../globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "../globals/all.sol";
 
 contract PlayersImplMisc is
   PlayersUpgradeableImplDummyBase,

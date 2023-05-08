@@ -12,13 +12,8 @@ import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 import {WorldLibrary} from "./WorldLibrary.sol";
 import {IQuests} from "./interfaces/IQuests.sol";
 
-/* solhint-disable no-global-import */
-import "./globals/players.sol";
-import "./globals/actions.sol";
-import "./globals/items.sol";
-import "./globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "./globals/all.sol";
 
 contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;

@@ -3,13 +3,8 @@ pragma solidity ^0.8.19;
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
-/* solhint-disable no-global-import */
-import "./globals/items.sol";
-import "./globals/players.sol";
-import "./globals/actions.sol";
-import "./globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "./globals/all.sol";
 
 // This file contains methods for interacting with the World, used to decrease implementation deployment bytecode code.
 library WorldLibrary {

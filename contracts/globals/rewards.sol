@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {BoostType, Equipment} from "./players.sol";
+import {BoostType, Equipment} from "./misc.sol";
 
 struct GuaranteedReward {
   uint16 itemTokenId;
@@ -62,3 +62,6 @@ uint constant MAX_RANDOM_REWARDS_PER_ACTION = 4;
 uint constant MAX_REWARDS_PER_ACTION = MAX_GUARANTEED_REWARDS_PER_ACTION + MAX_RANDOM_REWARDS_PER_ACTION;
 uint constant MAX_CONSUMED_PER_ACTION = 3;
 uint constant MAX_QUEST_REWARDS = 2;
+
+// 4 bytes for each threshold, starts at 500 xp in decimal
+bytes constant xpRewardBytes = hex"00000000000001F4000003E8000009C40000138800002710000075300000C350000186A00001D4C0000493E0000557300007A120000927C0000B71B0";

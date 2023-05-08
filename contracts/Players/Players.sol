@@ -15,15 +15,10 @@ import {Clans} from "../Clans/Clans.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
-import {IPlayers} from "../interfaces/IPlayers.sol";
+import {IPlayers, IPlayersMiscDelegateView} from "../interfaces/IPlayers.sol";
 
-/* solhint-disable no-global-import */
-import "../globals/players.sol";
-import "../globals/items.sol";
-import "../globals/actions.sol";
-import "../globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "../globals/all.sol";
 
 // Functions to help with delegatecall selectors
 interface IPlayerDelegate {

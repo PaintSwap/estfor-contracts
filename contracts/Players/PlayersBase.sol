@@ -9,14 +9,10 @@ import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
+import "../interfaces/IPlayers.sol";
 
-/* solhint-disable no-global-import */
-import "../globals/actions.sol";
-import "../globals/players.sol";
-import "../globals/items.sol";
-import "../globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "../globals/all.sol";
 
 abstract contract PlayersBase {
   using UnsafeMath for U256;
@@ -96,7 +92,7 @@ abstract contract PlayersBase {
   error CannotEquipTwoHandedAndOtherEquipment();
   error IncorrectRightHandEquipment(uint16 equippedItemTokenId);
   error IncorrectLeftHandEquipment(uint16 equippedItemTokenId);
-  error IncorrectEquippedItem();
+  error IncorrectEquippedItem(uint16 equippedItemTokenId);
   error NotABoostVial();
   error StartTimeTooFarInTheFuture();
   error UnsupportedRegenerateItem();

@@ -11,13 +11,8 @@ import {AdminAccess} from "../AdminAccess.sol";
 
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
-/* solhint-disable no-global-import */
-import "../globals/players.sol";
-import "../globals/items.sol";
-import "../globals/actions.sol";
-import "../globals/rewards.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "../globals/all.sol";
 
 contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
   using UnsafeMath for U256;
@@ -444,7 +439,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
         // Only combat actions can have no equipment
         // e.g smithing doesn't require anything equipped
         if (!_isCombat && _handItemTokenIdRangeMin != NONE && isRightHand) {
-          revert IncorrectEquippedItem();
+          revert IncorrectEquippedItem(equippedItemTokenId);
         }
       }
     }

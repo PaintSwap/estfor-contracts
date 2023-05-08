@@ -9,12 +9,8 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 
-/* solhint-disable no-global-import */
-import "../globals/players.sol";
-import "../globals/actions.sol";
-import "../globals/items.sol";
-
-/* solhint-enable no-global-import */
+// solhint-disable-next-line no-global-import
+import "../globals/all.sol";
 
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayersLibrary {
