@@ -878,6 +878,139 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
     });
 
+    it("In-progress combat updates (many)", async function () {
+      const {players, playerId, itemNFT, alice, world} = await loadFixture(playersFixture);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 1,
+        magic: 0,
+        range: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangeDefence: 0,
+        health: 36,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per monster
+      const numSpawned = 100 * SPAWN_MUL;
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testMints(
+        alice.address,
+        [
+          EstforConstants.TOTEM_STAFF,
+          EstforConstants.BRONZE_SHIELD,
+          EstforConstants.COOKED_MINNUS,
+          EstforConstants.AIR_SCROLL,
+          EstforConstants.SHADOW_SCROLL,
+        ],
+        [1, 1, 1000, 200, 100]
+      );
+
+      // Start with 5 magic
+      const scrollsConsumedRate = 100 * RATE_MUL; // per hour
+      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
+        skill: EstforTypes.Skill.MAGIC,
+        skillDiff: 5,
+        xpPerHour: 0,
+        minXP: 0,
+        rate: scrollsConsumedRate,
+        inputTokenId1: EstforConstants.SHADOW_SCROLL,
+        inputAmount1: 1,
+        inputTokenId2: EstforConstants.AIR_SCROLL,
+        inputAmount2: 2,
+        inputTokenId3: EstforConstants.NONE,
+        inputAmount3: 0,
+        outputTokenId: EstforConstants.NONE,
+        outputAmount: 0,
+        successPercent: 100,
+      });
+      const choiceId = await getActionChoiceId(tx);
+      const timespan = 3600;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.ATTACK,
+        choiceId,
+        regenerateId: EstforConstants.COOKED_MINNUS,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.AIR_SCROLL,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.SHADOW_SCROLL,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.TOTEM_STAFF,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.BRONZE_ARROW,
+          equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          healthRestored: 12,
+          tokenId: EstforConstants.COOKED_MINNUS,
+          equipPosition: EstforTypes.EquipPosition.FOOD,
+        },
+      ]);
+
+      // Should be killing 1 every 72 seconds.
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      const numLoops = queuedAction.timespan / 240;
+      expect(numLoops).to.not.eq(0);
+
+      for (let i = 0; i < numLoops; ++i) {
+        // Increase by random time
+        const randomTimespan = Math.floor(Math.random() * 240);
+        await ethers.provider.send("evm_increaseTime", [randomTimespan]);
+        await players.connect(alice).processActions(playerId);
+      }
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // This makes sure everything is used
+      await players.connect(alice).processActions(playerId);
+
+      // Use up all the scrolls
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(0);
+
+      // Killed 50 monsters (10% base boost)
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+        START_XP + Math.floor((queuedAction.timespan / 2) * 1.1)
+      );
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
+    });
+
     //    it("Defence", async function () {
     //   });
     it("No-Bonus XP", async function () {
