@@ -128,7 +128,6 @@ abstract contract PlayersBase {
   uint8 internal betaCombat;
   uint64 internal nextQueueId; // Global queued action id
   bool internal dailyRewardsEnabled;
-  /// @custom:oz-renamed-from isAlpha
   bool internal isBeta;
 
   mapping(uint playerId => PackedXP packedXP) internal xp_;

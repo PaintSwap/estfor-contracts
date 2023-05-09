@@ -28,6 +28,7 @@ contract PlayersImplMisc is
   using UnsafeMath for U256;
   using UnsafeMath for uint8;
   using UnsafeMath for uint16;
+  using UnsafeMath for uint24;
   using UnsafeMath for uint32;
   using UnsafeMath for uint40;
   using UnsafeMath for uint128;
@@ -295,16 +296,16 @@ contract PlayersImplMisc is
     }
   }
 
-  function processConsumablesViewStateTrans(
+  function _processConsumablesViewStateTrans(
     uint _playerId,
     uint _currentActionStartTime,
     uint _elapsedTime,
-    ActionChoice memory _actionChoice,
+    ActionChoice calldata _actionChoice,
     uint16 _regenerateId,
     uint16 _foodConsumed,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     uint16 baseInputItemsConsumedNum
-  ) public view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
+  ) private view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
     uint consumedEquipmentLength;
     if (_regenerateId != NONE && _foodConsumed != 0) {
@@ -375,18 +376,18 @@ contract PlayersImplMisc is
     }
   }
 
-  function processConsumablesViewImpl(
+  function _processConsumablesView(
     address _from,
     uint _playerId,
-    QueuedAction memory _queuedAction,
+    QueuedAction calldata _queuedAction,
     uint _currentActionStartTime,
     uint _elapsedTime,
-    CombatStats memory _combatStats,
-    ActionChoice memory _actionChoice,
+    CombatStats calldata _combatStats,
+    ActionChoice calldata _actionChoice,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
+    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed
   )
-    external
+    private
     view
     returns (
       Equipment[] memory consumedEquipment,
@@ -430,7 +431,7 @@ contract PlayersImplMisc is
       );
     }
 
-    (consumedEquipment, producedEquipment) = processConsumablesViewStateTrans(
+    (consumedEquipment, producedEquipment) = _processConsumablesViewStateTrans(
       _playerId,
       _currentActionStartTime,
       _elapsedTime,
@@ -440,6 +441,166 @@ contract PlayersImplMisc is
       _pendingQueuedActionProcessed,
       baseInputItemsConsumedNum
     );
+  }
+
+  function completeProcessConsumablesView(
+    address from,
+    uint _playerId,
+    QueuedAction calldata queuedAction,
+    ActionChoice calldata actionChoice,
+    CombatStats calldata combatStats,
+    uint elapsedTime,
+    uint startTime,
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates, // Memory as it is modified
+    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed
+  )
+    external
+    view
+    returns (
+      Equipment[] memory consumedEquipments,
+      Equipment memory producedEquipment,
+      uint xpElapsedTime,
+      bool died,
+      uint16 foodConsumed,
+      uint16 baseInputItemsConsumedNum
+    )
+  {
+    // Processed
+    uint prevProcessedTime = queuedAction.prevProcessedTime;
+    uint veryStartTime = startTime.sub(prevProcessedTime);
+
+    // Total used
+    if (prevProcessedTime > 0) {
+      uint16 currentActionProcessedFoodConsumed = players_[_playerId].currentActionProcessedFoodConsumed;
+      uint16 currentActionProcessedBaseInputItemsConsumedNum = players_[_playerId]
+        .currentActionProcessedBaseInputItemsConsumedNum;
+
+      (
+        Equipment[] memory prevConsumedEquipments,
+        Equipment memory prevProducedEquipment
+      ) = _processConsumablesViewStateTrans(
+          _playerId,
+          veryStartTime,
+          prevProcessedTime,
+          actionChoice,
+          queuedAction.regenerateId,
+          currentActionProcessedFoodConsumed,
+          _pendingQueuedActionProcessed,
+          currentActionProcessedBaseInputItemsConsumedNum
+        );
+
+      uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
+
+      // Copy existing pending
+      PendingQueuedActionEquipmentState
+        memory extendedPendingQueuedActionEquipmentState = pendingQueuedActionEquipmentStates[
+          pendingQueuedActionEquipmentStates.length - 1
+        ];
+
+      if (prevConsumedEquipments.length > 0) {
+        // Add to produced
+        extendedPendingQueuedActionEquipmentState.producedItemTokenIds = new uint[](prevConsumedEquipments.length);
+        extendedPendingQueuedActionEquipmentState.producedAmounts = new uint[](prevConsumedEquipments.length);
+        for (uint j = 0; j < prevConsumedEquipments.length; ++j) {
+          extendedPendingQueuedActionEquipmentState.producedItemTokenIds[j] = prevConsumedEquipments[j].itemTokenId;
+          extendedPendingQueuedActionEquipmentState.producedAmounts[j] = prevConsumedEquipments[j].amount;
+        }
+      }
+      if (prevProducedEquipment.itemTokenId != NONE) {
+        // Add to consumed
+        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds = new uint[](1);
+        extendedPendingQueuedActionEquipmentState.consumedAmounts = new uint[](1);
+        extendedPendingQueuedActionEquipmentState.consumedItemTokenIds[0] = prevProducedEquipment.itemTokenId;
+        extendedPendingQueuedActionEquipmentState.consumedAmounts[0] = prevProducedEquipment.amount;
+      }
+
+      Equipment[] memory __consumedEquipments;
+      (
+        __consumedEquipments,
+        producedEquipment,
+        xpElapsedTime,
+        died,
+        foodConsumed,
+        baseInputItemsConsumedNum
+      ) = _processConsumablesView(
+        from,
+        _playerId,
+        queuedAction,
+        veryStartTime,
+        elapsedTime + prevProcessedTime,
+        combatStats,
+        actionChoice,
+        pendingQueuedActionEquipmentStates,
+        _pendingQueuedActionProcessed
+      );
+      delete extendedPendingQueuedActionEquipmentState;
+
+      // Get the difference
+      consumedEquipments = new Equipment[](__consumedEquipments.length); // This should be greater than _consumedEquipments
+      uint consumedEquipmentsLength;
+      for (uint j = 0; j < __consumedEquipments.length; ++j) {
+        // Check if it exists in _consumedEquipments and if so, subtract the amount
+        bool nonZero = true;
+        for (uint k = 0; k < prevConsumedEquipments.length; ++k) {
+          if (__consumedEquipments[j].itemTokenId == prevConsumedEquipments[k].itemTokenId) {
+            __consumedEquipments[j].amount = uint24(
+              __consumedEquipments[j].amount.sub(prevConsumedEquipments[k].amount)
+            );
+            nonZero = __consumedEquipments[j].amount != 0;
+            break;
+          }
+        }
+        if (nonZero) {
+          consumedEquipments[consumedEquipmentsLength++] = __consumedEquipments[j];
+        }
+      }
+
+      assembly ("memory-safe") {
+        mstore(consumedEquipments, consumedEquipmentsLength)
+      }
+
+      // Do the same for outputEquipment, check if it exists and subtract amount
+      producedEquipment.amount = uint24(producedEquipment.amount.sub(prevProducedEquipment.amount));
+      if (producedEquipment.amount == 0) {
+        producedEquipment.itemTokenId = NONE;
+      }
+
+      if (xpElapsedTime >= prevXPElapsedTime) {
+        // Maybe died
+        xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
+      }
+      // This is scrolls, doesn't affect melee actually
+      if (baseInputItemsConsumedNum >= currentActionProcessedBaseInputItemsConsumedNum) {
+        baseInputItemsConsumedNum = uint16(
+          baseInputItemsConsumedNum.sub(currentActionProcessedBaseInputItemsConsumedNum)
+        );
+      }
+
+      if (foodConsumed >= currentActionProcessedFoodConsumed) {
+        foodConsumed = uint16(foodConsumed.sub(currentActionProcessedFoodConsumed));
+      } else {
+        foodConsumed = 0;
+      }
+    } else {
+      (
+        consumedEquipments,
+        producedEquipment,
+        xpElapsedTime,
+        died,
+        foodConsumed,
+        baseInputItemsConsumedNum
+      ) = _processConsumablesView(
+        from,
+        _playerId,
+        queuedAction,
+        veryStartTime,
+        elapsedTime + prevProcessedTime,
+        combatStats,
+        actionChoice,
+        pendingQueuedActionEquipmentStates,
+        _pendingQueuedActionProcessed
+      );
+    }
   }
 
   function mintedPlayer(

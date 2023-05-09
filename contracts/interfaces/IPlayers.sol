@@ -40,38 +40,27 @@ interface IPlayersMiscDelegateView {
     uint _playerId
   ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask);
 
-  function processConsumablesViewImpl(
+  function completeProcessConsumablesView(
     address from,
     uint playerId,
-    QueuedAction memory queuedAction,
-    uint currentActionStartTime,
-    uint elapsedTime,
+    QueuedAction calldata queuedAction,
+    ActionChoice calldata actionChoice,
     CombatStats memory combatStats,
-    ActionChoice memory actionChoice,
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
-    PendingQueuedActionProcessed memory pendingQueuedActionProcessed
+    uint elapsedTime,
+    uint startTime,
+    PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
+    PendingQueuedActionProcessed calldata pendingQueuedActionProcessed
   )
     external
     view
     returns (
-      Equipment[] memory consumedEquipment,
+      Equipment[] memory consumedEquipments,
       Equipment memory producedEquipment,
       uint xpElapsedTime,
       bool died,
       uint16 foodConsumed,
       uint16 baseInputItemsConsumedNum
     );
-
-  function processConsumablesViewStateTrans(
-    uint playerId,
-    uint currentActionStartTime,
-    uint elapsedTime,
-    ActionChoice memory actionChoice,
-    uint16 regenerateId,
-    uint16 foodConsumed,
-    PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
-    uint16 baseInputItemsConsumedNum
-  ) external view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment);
 }
 
 interface IPlayersMiscDelegate {

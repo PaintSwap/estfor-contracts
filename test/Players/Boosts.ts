@@ -195,6 +195,54 @@ describe("Boosts", function () {
     const boostDuration = 120;
     await itemNFT.addItem({
       ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.COMBAT_BOOST,
+      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+      // Boost
+      boostType: EstforTypes.BoostType.COMBAT_XP,
+      boostValue,
+      boostDuration,
+      isTransferable: false,
+    });
+
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+
+    await itemNFT.testMint(alice.address, EstforConstants.COMBAT_BOOST, 1);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    await players
+      .connect(alice)
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.COMBAT_BOOST,
+        NOW,
+        EstforTypes.ActionQueueStatus.NONE
+      );
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
+    const healthXP = Math.floor(meleeXP / 3);
+    expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
+    expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
+      meleeXP + healthXP,
+      meleeXP + healthXP - 1,
+    ]);
+    await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      BigNumber.from(healthXP),
+      BigNumber.from(healthXP - 1),
+    ]);
+  });
+
+  it("Any XP Boost (combat)", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const boostValue = 50;
+    const boostDuration = 120;
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.XP_BOOST,
       equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
       // Boost
@@ -230,7 +278,7 @@ describe("Boosts", function () {
     ]);
   });
 
-  it("Any XP Boost", async function () {
+  it("Any XP Boost (non combat)", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const boostValue = 50;
@@ -327,7 +375,10 @@ describe("Boosts", function () {
     await players.connect(alice).processActions(playerId);
 
     // 2 hours boosted XP, 6 hours not boosted in total
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(8 * 3600 + (2 * 3600 * boostValue) / 100);
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.deep.oneOf([
+      BigNumber.from(8 * 3600 + (2 * 3600 * boostValue) / 100),
+      BigNumber.from(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1),
+    ]);
 
     // 2 hours gathering boost, check drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(

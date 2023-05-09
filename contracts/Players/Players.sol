@@ -420,14 +420,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address implementation;
     if (selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector) {
       implementation = implRewards;
-    } else if (selector == IPlayersProcessActionsDelegateView.completeProcessConsumablesView.selector) {
-      implementation = implProcessActions;
     } else if (
       selector == IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyRewardsViewImpl.selector ||
-      selector == IPlayersMiscDelegateView.processConsumablesViewImpl.selector ||
-      selector == IPlayersMiscDelegateView.processConsumablesViewStateTrans.selector
+      selector == IPlayersMiscDelegateView.completeProcessConsumablesView.selector
     ) {
       implementation = implMisc;
     } else {

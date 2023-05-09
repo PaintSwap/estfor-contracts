@@ -29,15 +29,15 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState) {
     Player storage player = players_[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
-    pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length + 1);
+    pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length + 1); // reserve +1 for handling the previously processed in current action
     pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueue.length + 1);
 
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
-    pendingQueuedActionProcessed.skills = new Skill[](actionQueue.length * 2); // combat can have 2 skills (combat + health)
+    pendingQueuedActionProcessed.skills = new Skill[](actionQueue.length * 2); // combat can have xp rewarded in 2 skills (combat + health)
     pendingQueuedActionProcessed.xpGainedSkills = new uint32[](actionQueue.length * 2);
     uint pendingQueuedActionProcessedLength;
 
-    // This is used so that we can start the full XP calculation using the same stats as before
+    // This is done so that we can start the full XP calculation using the same stats as when the action was originally started
     PendingQueuedActionData memory currentActionProcessed = pendingQueuedActionProcessed.currentAction;
     currentActionProcessed.skill1 = player.currentActionProcessedSkill1;
     currentActionProcessed.xpGained1 = player.currentActionProcessedXPGained1;
@@ -1016,7 +1016,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(
-        IPlayersProcessActionsDelegateView.completeProcessConsumablesView.selector,
+        IPlayersMiscDelegateView.completeProcessConsumablesView.selector,
         _from,
         _playerId,
         _queuedAction,

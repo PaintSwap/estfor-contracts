@@ -208,30 +208,6 @@ interface IPlayersProcessActionsDelegate {
   function processActions(address from, uint playerId) external;
 }
 
-interface IPlayersProcessActionsDelegateView {
-  function completeProcessConsumablesView(
-    address from,
-    uint _playerId,
-    QueuedAction memory queuedAction,
-    ActionChoice memory actionChoice,
-    CombatStats memory combatStats,
-    uint elapsedTime,
-    uint startTime,
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
-    PendingQueuedActionProcessed memory pendingQueuedActionProcessed
-  )
-    external
-    view
-    returns (
-      Equipment[] memory consumedEquipments,
-      Equipment memory producedEquipment,
-      uint xpElapsedTime,
-      bool died,
-      uint16 foodConsumed,
-      uint16 baseInputItemsConsumedNum
-    );
-}
-
 struct FullAttireBonusInput {
   Skill skill;
   uint8 bonusXPPercent;
