@@ -803,6 +803,26 @@ describe("Players", function () {
       await expect(players.connect(alice).processActions(playerId)).to.not.be.reverted;
     });
 
+    it("0 timespan for an action is not allowed", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const queuedAction = {...basicWoodcuttingQueuedAction};
+      queuedAction.timespan = 0;
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "EmptyTimespan");
+    });
+
+    it("Should error when specifying choice id when it isn't required", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const queuedAction = {...basicWoodcuttingQueuedAction};
+      queuedAction.choiceId = EstforConstants.ACTIONCHOICE_COOKING_ANCHO;
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceIdNotRequired");
+    });
+
     it("Check timespan overflow", async function () {
       // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
@@ -812,8 +832,6 @@ describe("Players", function () {
       queuedAction.timespan = 24 * 3600;
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [5]);
-      await ethers.provider.send("evm_mine", []);
-
       await players.connect(alice).processActions(playerId);
       const actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue[0].timespan).gt(queuedAction.timespan - 10);

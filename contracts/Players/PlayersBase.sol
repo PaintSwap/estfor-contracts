@@ -99,6 +99,7 @@ abstract contract PlayersBase {
   error InvalidCombatStyle();
   error InvalidSkill();
   error ActionChoiceIdRequired();
+  error ActionChoiceIdNotRequired();
   error InvalidEquipPosition();
   error NoActionsToProcess();
   error NotAdminAndBeta();
@@ -106,6 +107,7 @@ abstract contract PlayersBase {
   error InvalidItemTokenId();
   error ItemDoesNotExist();
   error InvalidAmount();
+  error EmptyTimespan();
   error PlayerAlreadyActive();
   error TestInvalidXP();
 

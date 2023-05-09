@@ -223,6 +223,12 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
       if (actionChoice.skill == Skill.NONE) {
         revert InvalidSkill();
       }
+    } else if (_queuedAction.choiceId != NONE) {
+      revert ActionChoiceIdNotRequired();
+    }
+
+    if (_queuedAction.timespan == 0) {
+      revert EmptyTimespan();
     }
 
     {
