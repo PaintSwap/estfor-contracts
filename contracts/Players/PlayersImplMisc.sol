@@ -14,7 +14,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
-import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayers.sol";
+import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -203,12 +203,12 @@ contract PlayersImplMisc is
     if (uint(dailyRewardMask) != 0) {
       dailyRewardMasks[_playerId] = dailyRewardMask;
     }
-    if (rewardAmounts.length >= 1) {
+    if (rewardAmounts.length != 0) {
       itemNFT.mint(_from, rewardItemTokenIds[0], rewardAmounts[0]);
       emit DailyReward(_from, _playerId, rewardItemTokenIds[0], rewardAmounts[0]);
     }
 
-    if (rewardAmounts.length == 2) {
+    if (rewardAmounts.length > 1) {
       itemNFT.mint(_from, rewardItemTokenIds[1], rewardAmounts[1]);
       emit WeeklyReward(_from, _playerId, rewardItemTokenIds[1], rewardAmounts[1]);
     }
@@ -296,7 +296,7 @@ contract PlayersImplMisc is
     }
   }
 
-  function _processConsumablesViewStateTrans(
+  function _getConsumablesEquipment(
     uint _playerId,
     uint _currentActionStartTime,
     uint _elapsedTime,
@@ -431,7 +431,7 @@ contract PlayersImplMisc is
       );
     }
 
-    (consumedEquipment, producedEquipment) = _processConsumablesViewStateTrans(
+    (consumedEquipment, producedEquipment) = _getConsumablesEquipment(
       _playerId,
       _currentActionStartTime,
       _elapsedTime,
@@ -443,7 +443,7 @@ contract PlayersImplMisc is
     );
   }
 
-  function completeProcessConsumablesView(
+  function processConsumablesView(
     address from,
     uint _playerId,
     QueuedAction calldata queuedAction,
@@ -475,19 +475,16 @@ contract PlayersImplMisc is
       uint16 currentActionProcessedBaseInputItemsConsumedNum = players_[_playerId]
         .currentActionProcessedBaseInputItemsConsumedNum;
 
-      (
-        Equipment[] memory prevConsumedEquipments,
-        Equipment memory prevProducedEquipment
-      ) = _processConsumablesViewStateTrans(
-          _playerId,
-          veryStartTime,
-          prevProcessedTime,
-          actionChoice,
-          queuedAction.regenerateId,
-          currentActionProcessedFoodConsumed,
-          _pendingQueuedActionProcessed,
-          currentActionProcessedBaseInputItemsConsumedNum
-        );
+      (Equipment[] memory prevConsumedEquipments, Equipment memory prevProducedEquipment) = _getConsumablesEquipment(
+        _playerId,
+        veryStartTime,
+        prevProcessedTime,
+        actionChoice,
+        queuedAction.regenerateId,
+        currentActionProcessedFoodConsumed,
+        _pendingQueuedActionProcessed,
+        currentActionProcessedBaseInputItemsConsumedNum
+      );
 
       uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
 
@@ -578,8 +575,6 @@ contract PlayersImplMisc is
 
       if (foodConsumed >= currentActionProcessedFoodConsumed) {
         foodConsumed = uint16(foodConsumed.sub(currentActionProcessedFoodConsumed));
-      } else {
-        foodConsumed = 0;
       }
     } else {
       (

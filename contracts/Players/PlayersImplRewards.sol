@@ -5,7 +5,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
-import "../interfaces/IPlayers.sol";
+import {IPlayersRewardsDelegateView, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -155,7 +155,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
           died,
           foodConsumed,
           baseInputItemsConsumedNum
-        ) = _completeProcessConsumablesView(
+        ) = _processConsumablesView(
           from,
           _playerId,
           queuedAction,
@@ -991,7 +991,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     }
   }
 
-  function _completeProcessConsumablesView(
+  function _processConsumablesView(
     address _from,
     uint _playerId,
     QueuedAction memory _queuedAction,
@@ -1016,7 +1016,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(
-        IPlayersMiscDelegateView.completeProcessConsumablesView.selector,
+        IPlayersMiscDelegateView.processConsumablesView.selector,
         _from,
         _playerId,
         _queuedAction,

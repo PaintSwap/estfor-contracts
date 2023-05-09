@@ -192,22 +192,6 @@ struct PendingQueuedActionState {
   QuestState quests;
 }
 
-interface IPlayersRewardsDelegate {
-  function claimRandomRewards(uint playerId, PendingQueuedActionProcessed memory pendingQueuedActionProcessed) external;
-}
-
-// External view functions that are in other implementation files
-interface IPlayersRewardsDelegateView {
-  function pendingQueuedActionStateImpl(
-    address owner,
-    uint playerId
-  ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
-}
-
-interface IPlayersProcessActionsDelegate {
-  function processActions(address from, uint playerId) external;
-}
-
 struct FullAttireBonusInput {
   Skill skill;
   uint8 bonusXPPercent;

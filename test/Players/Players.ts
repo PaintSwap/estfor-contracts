@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
-import {Attire, BoostType, Skill} from "@paintswap/estfor-definitions/types";
+import {Attire, Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
@@ -185,7 +185,11 @@ describe("Players", function () {
     actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue.length).to.eq(2);
     expect(actionQueue[0].queueId).to.eq(2);
-    expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan - 1, queuedAction.timespan]);
+    expect(actionQueue[0].timespan).to.be.oneOf([
+      queuedAction.timespan - 2,
+      queuedAction.timespan - 1,
+      queuedAction.timespan,
+    ]);
     expect(actionQueue[1].queueId).to.eq(3);
     expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
   });

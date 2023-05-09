@@ -9,7 +9,7 @@ import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
-import "../interfaces/IPlayers.sol";
+import "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";

@@ -15,7 +15,8 @@ import {Clans} from "../Clans/Clans.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
-import {IPlayers, IPlayersMiscDelegateView} from "../interfaces/IPlayers.sol";
+import {IPlayers} from "../interfaces/IPlayers.sol";
+import {IPlayersMiscDelegateView, IPlayersRewardsDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -424,7 +425,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       selector == IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyRewardsViewImpl.selector ||
-      selector == IPlayersMiscDelegateView.completeProcessConsumablesView.selector
+      selector == IPlayersMiscDelegateView.processConsumablesView.selector
     ) {
       implementation = implMisc;
     } else {
