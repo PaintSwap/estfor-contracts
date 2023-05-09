@@ -120,7 +120,6 @@ library PlayersLibrary {
     return abi.encodePacked('{"trait_type":"', _traitType, '","value":');
   }
 
-  // Index not level, add one after (check for > max)
   function getLevel(uint _xp) public pure returns (uint16) {
     U256 low;
     U256 high = XP_BYTES.length.asU256().div(4);
@@ -422,7 +421,7 @@ library PlayersLibrary {
       combatElapsedTime = _elapsedTime;
     }
 
-    // Also check food
+    // Also check food consumed
     uint32 totalHealthLost = _dmg(
       _enemyCombatStats.melee,
       _combatStats.meleeDefence,
@@ -444,21 +443,45 @@ library PlayersLibrary {
       totalHealthLost = 0;
     }
 
+    (foodConsumed, numKilled, xpElapsedTime, died) = _getFoodConsumed(
+      _from,
+      _regenerateId,
+      respawnTime,
+      totalHealthLost,
+      xpElapsedTime,
+      numKilled,
+      _itemNFT,
+      _pendingQueuedActionEquipmentStates
+    );
+  }
+
+  function _getFoodConsumed(
+    address _from,
+    uint16 _regenerateId,
+    uint _respawnTime,
+    uint32 _totalHealthLost,
+    uint _xpElapsedTime,
+    uint _numKilled,
+    ItemNFT _itemNFT,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+  ) private view returns (uint16 foodConsumed, uint numKilled, uint xpElapsedTime, bool died) {
+    numKilled = _numKilled;
+    xpElapsedTime = _xpElapsedTime;
     uint healthRestored;
     if (_regenerateId != NONE) {
       Item memory item = _itemNFT.getItem(_regenerateId);
       healthRestored = item.healthRestored;
     }
 
-    if (healthRestored == 0 || totalHealthLost <= 0) {
+    if (healthRestored == 0 || _totalHealthLost <= 0) {
       // No food attached or didn't lose any health
-      died = totalHealthLost != 0;
+      died = _totalHealthLost != 0;
       if (died) {
         xpElapsedTime = 0;
       }
     } else {
       // Round up
-      uint _totalFoodRequired = Math.ceilDiv(uint32(totalHealthLost), healthRestored);
+      uint _totalFoodRequired = Math.ceilDiv(uint32(_totalHealthLost), healthRestored);
       // Can only consume a maximum of 65535 food
       if (_totalFoodRequired > type(uint16).max) {
         foodConsumed = type(uint16).max;
@@ -467,7 +490,7 @@ library PlayersLibrary {
         uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
         died = _totalFoodRequired > balance;
         if (died) {
-          foodConsumed = uint16(balance);
+          foodConsumed = uint16(balance > type(uint16).max ? type(uint16).max : balance);
         } else {
           foodConsumed = uint16(_totalFoodRequired);
         }
@@ -476,7 +499,7 @@ library PlayersLibrary {
       if (died) {
         // How many can we kill with the food we did consume
         numKilled = (numKilled * foodConsumed) / _totalFoodRequired;
-        xpElapsedTime = respawnTime * numKilled;
+        xpElapsedTime = _respawnTime * numKilled;
       }
     }
   }
@@ -587,8 +610,8 @@ library PlayersLibrary {
     uint[] calldata prevNewAmounts
   ) external pure returns (uint[] memory ids, uint[] memory amounts) {
     // Subtract previous rewards. If amount is zero after, replace with end
-    ids = newIds; // new uint[](newIds.length);
-    amounts = newAmounts; // uint[](newAmounts.length);
+    ids = newIds;
+    amounts = newAmounts;
     U256 prevNewIdsLength = prevNewIds.length.asU256();
     for (U256 jter; jter < prevNewIdsLength; jter = jter.inc()) {
       uint j = jter.asUint256();
