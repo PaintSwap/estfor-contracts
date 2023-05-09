@@ -84,6 +84,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   error ActivatingQuestAlreadyActivated();
   error RandomNotSupportedYet();
   error DependentQuestNotCompleted(uint16 dependentQuestId);
+  error RefundFailed();
 
   struct MinimumRequirement {
     Skill skill;
@@ -284,7 +285,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, _to, deadline);
     } else {
       uint amountOut = _minimumBrushExpected;
-      router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, _to, deadline);
+      uint[] memory amounts = router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, _to, deadline);
+      if (amounts[0] != 0) {
+        // Refund the rest
+        (bool success, ) = msg.sender.call{value: msg.value - amounts[0]}("");
+        if (!success) {
+          revert RefundFailed();
+        }
+      }
     }
   }
 
@@ -639,6 +647,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     delete allFixedQuests[_questId];
     emit RemoveQuest(_questId);
   }
+
+  receive() external payable {}
 
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
