@@ -571,6 +571,20 @@ describe("Clans", function () {
       return {...fixture, clans};
     }
 
+    it("Create upgraded clan", async function () {
+      const {clans, playerNFT, avatarId, bob, brush, discord, telegram, imageId} = await loadFixture(
+        upgradedClansFixture
+      );
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const brushAmount = (await clans.tiers(4)).price;
+      expect(brushAmount).to.eq(0);
+      await brush.mint(bob.address, 1000);
+      await brush.connect(bob).approve(clans.address, 1000);
+      await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, imageId, 2);
+      expect(await brush.balanceOf(bob.address)).to.eq(1000 - (await clans.tiers(2)).price.toNumber());
+    });
+
     it("Anyone can upgrade", async function () {
       const {clans, clanId, playerId, alice, brush} = await loadFixture(upgradedClansFixture);
 
@@ -615,6 +629,18 @@ describe("Clans", function () {
       await expect(clans.connect(bob).upgradeClan(clanId, bobPlayerId, 4)).to.be.revertedWithCustomError(
         clans,
         "TierDoesNotExist"
+      );
+    });
+
+    it("Cannot downgrade a clan", async function () {
+      const {clans, clanId, playerId, alice, brush} = await loadFixture(upgradedClansFixture);
+
+      await brush.mint(alice.address, 1000);
+      await brush.connect(alice).approve(clans.address, 1000);
+      await clans.connect(alice).upgradeClan(clanId, playerId, 2);
+      await expect(clans.connect(alice).upgradeClan(clanId, playerId, 1)).to.be.revertedWithCustomError(
+        clans,
+        "CannotDowngradeTier"
       );
     });
   });

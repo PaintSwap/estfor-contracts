@@ -211,7 +211,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     nextClanId = uint80(nextClanId.inc());
     Clan storage clan = clans[clanId];
     clan.owner = uint80(_playerId);
-    clan.tierId = _tierId;
+    clan.tierId = 1; // Updated later in _upgradeClan if it's > 1
     clan.imageId = _imageId;
     clan.memberCount = 1;
     clan.createdTimestamp = uint40(block.timestamp);
