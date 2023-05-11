@@ -1,7 +1,7 @@
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {ItemNFT, PlayerNFT, Shop, World} from "../../typechain-types";
+import {ItemNFT, PlayerNFT, Players, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 
 export const playersFixture = async function () {
@@ -144,7 +144,7 @@ export const playersFixture = async function () {
     libraries: {PlayersLibrary: playerLibrary.address},
   });
 
-  const players = await upgrades.deployProxy(
+  const players = (await upgrades.deployProxy(
     Players,
     [
       itemNFT.address,
@@ -163,7 +163,7 @@ export const playersFixture = async function () {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     }
-  );
+  )) as Players;
 
   const Bank = await ethers.getContractFactory("Bank");
   const bank = await Bank.deploy();

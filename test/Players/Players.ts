@@ -7,7 +7,8 @@ import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {emptyActionChoice, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {getXPFromLevel, setupBasicFiremaking, setupBasicWoodcutting} from "./utils";
+import {getXPFromLevel, setupBasicFiremaking, setupBasicFishing, setupBasicWoodcutting} from "./utils";
+import {Players} from "../../typechain-types";
 
 const actionIsAvailable = true;
 
@@ -698,6 +699,193 @@ describe("Players", function () {
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, minXP);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
+    });
+
+    describe("Missing required equipment right hand equipment", async function () {
+      async function expectRemovedCurrentAction(players: Players, playerId: BigNumber, now: number) {
+        expect((await players.players(playerId)).currentActionStartTime).to.eq(now);
+        expect((await players.players(playerId)).currentActionProcessedSkill1).to.eq(Skill.NONE);
+        expect((await players.players(playerId)).currentActionProcessedXPGained1).to.eq(0);
+        expect((await players.players(playerId)).currentActionProcessedSkill2).to.eq(Skill.NONE);
+        expect((await players.players(playerId)).currentActionProcessedXPGained2).to.eq(0);
+        expect((await players.players(playerId)).currentActionProcessedFoodConsumed).to.eq(0);
+        expect((await players.players(playerId)).currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
+      }
+
+      it("Progress first action, then no item, haven't started other actions", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
+        await ethers.provider.send("evm_increaseTime", [36]);
+        await players.connect(alice).processActions(playerId);
+        // Remove required item
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        // Almost finish
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 200]);
+        await ethers.provider.send("evm_mine", []);
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        await players.connect(alice).processActions(playerId);
+        // First action should be removed
+        let actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(2);
+        expect(actionQueue[0].queueId).to.eq(2);
+        expect(actionQueue[1].queueId).to.eq(3);
+        await expectRemovedCurrentAction(players, playerId, NOW + 1);
+        expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(36);
+        expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      });
+
+      it("Finish first action, then no item, haven't started other actions", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+        const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(
+            playerId,
+            [queuedActionFiremaking, queuedAction, queuedActionFishing],
+            EstforTypes.ActionQueueStatus.NONE
+          );
+        await players.connect(alice).processActions(playerId);
+
+        // Completely finish first one
+        await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan]);
+        await players.connect(alice).processActions(playerId);
+        // Remove required item
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        await players.connect(alice).processActions(playerId);
+        // Should remove that action
+        let actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(1);
+        expect(actionQueue[0].queueId).to.eq(3);
+        await expectRemovedCurrentAction(players, playerId, NOW + 1);
+        expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
+        expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      });
+
+      it("Finish first action, then no items for the other 2", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+        const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(
+            playerId,
+            [queuedActionFiremaking, queuedAction, queuedActionFishing],
+            EstforTypes.ActionQueueStatus.NONE
+          );
+        await players.connect(alice).processActions(playerId);
+
+        // Completely finish first one and go into the second one a bit
+        await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan + 1]);
+        await players.connect(alice).processActions(playerId);
+        // Remove required items
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.NET_STICK, 1, "0x");
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        await players.connect(alice).processActions(playerId);
+        // Should remove the second action only, the last one hasn't started yet
+        let actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(1);
+        expect(actionQueue[0].queueId).to.eq(3);
+        await expectRemovedCurrentAction(players, playerId, NOW + 1);
+        await players.connect(alice).processActions(playerId);
+        actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(0);
+        await expectRemovedCurrentAction(players, playerId, 0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
+        expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      });
+
+      it("Have no items, partial start the last action", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+        const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(
+            playerId,
+            [queuedActionFiremaking, queuedAction, queuedActionFishing],
+            EstforTypes.ActionQueueStatus.NONE
+          );
+        await players.connect(alice).processActions(playerId);
+
+        // Completely finish first one and go into the second one a bit
+        await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan + queuedAction.timespan + 1]);
+        // Remove required items
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.MAGIC_FIRE_STARTER, 1, "0x");
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.NET_STICK, 1, "0x");
+        await players.connect(alice).processActions(playerId);
+        // Should remove all actions
+        await players.connect(alice).processActions(playerId);
+        const actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(0);
+        await expectRemovedCurrentAction(players, playerId, 0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
+        expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      });
+      it("Have no items, finish all actions", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+        const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(
+            playerId,
+            [queuedActionFiremaking, queuedAction, queuedActionFishing],
+            EstforTypes.ActionQueueStatus.NONE
+          );
+        await players.connect(alice).processActions(playerId);
+
+        // Completely finish first one and go into the second one a bit
+        await ethers.provider.send("evm_increaseTime", [
+          queuedActionFiremaking.timespan + queuedAction.timespan + queuedActionFishing.timespan,
+        ]);
+        // Remove required items
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.MAGIC_FIRE_STARTER, 1, "0x");
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.NET_STICK, 1, "0x");
+        await players.connect(alice).processActions(playerId);
+        // Should remove all actions
+        await players.connect(alice).processActions(playerId);
+        const actionQueue = await players.getActionQueue(playerId);
+        expect(actionQueue.length).to.eq(0);
+        await expectRemovedCurrentAction(players, playerId, 0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
+        expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+        expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      });
     });
 
     it("Maxing out XP", async function () {

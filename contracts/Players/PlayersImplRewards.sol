@@ -82,6 +82,24 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       uint consumedLength;
 
       QueuedAction storage queuedAction = actionQueue[i];
+      uint32 pointsAccrued;
+      uint endTime = startTime + queuedAction.timespan;
+
+      uint elapsedTime = _getElapsedTime(startTime, endTime);
+      if (elapsedTime == 0) {
+        _addRemainingSkill(
+          pendingQueuedActionState.remainingQueuedActions,
+          queuedAction,
+          queuedAction.timespan,
+          0,
+          0,
+          remainingQueuedActionsLength
+        );
+        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
+        startTime += queuedAction.timespan;
+        continue;
+      }
+
       CombatStats memory combatStats;
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       if (isCombat) {
@@ -106,23 +124,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       );
 
       if (missingRequiredHandEquipment) {
-        continue;
-      }
-
-      uint32 pointsAccrued;
-      uint endTime = startTime + queuedAction.timespan;
-
-      uint elapsedTime = _getElapsedTime(startTime, endTime);
-      if (elapsedTime == 0) {
-        _addRemainingSkill(
-          pendingQueuedActionState.remainingQueuedActions,
-          queuedAction,
-          queuedAction.timespan,
-          0,
-          0,
-          remainingQueuedActionsLength
-        );
-        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
+        if (i == 0) {
+          // Clear the state and make sure the next queued action can finish
+          clearActionProcessed(currentActionProcessed);
+        }
+        startTime += queuedAction.timespan;
         continue;
       }
       ++pendingQueuedActionStateLength;
@@ -343,53 +349,6 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
         }
       }
 
-      if (!fullyFinished) {
-        // Add the remainder if this action is not fully consumed
-        uint remainingTimespan = queuedAction.timespan - elapsedTime;
-        _addRemainingSkill(
-          pendingQueuedActionState.remainingQueuedActions,
-          queuedAction,
-          remainingTimespan,
-          elapsedTime,
-          xpElapsedTime,
-          remainingQueuedActionsLength
-        );
-        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
-
-        if (i == 0) {
-          // Append it (or set it absolutely if unset)
-          currentActionProcessed.skill1 = skill;
-          currentActionProcessed.xpGained1 += uint24(pointsAccrued);
-          if (hasCombatXP) {
-            currentActionProcessed.skill2 = Skill.HEALTH;
-            currentActionProcessed.xpGained2 += uint24(healthPointsGained);
-          }
-
-          currentActionProcessed.foodConsumed += foodConsumed;
-          currentActionProcessed.baseInputItemsConsumedNum += baseInputItemsConsumedNum;
-        } else {
-          // Set it absolutely, this is a fresh "first action"
-          currentActionProcessed.skill1 = skill;
-          currentActionProcessed.xpGained1 = uint24(pointsAccrued);
-          if (hasCombatXP) {
-            currentActionProcessed.skill2 = Skill.HEALTH;
-            currentActionProcessed.xpGained2 = uint24(healthPointsGained);
-          } else {
-            currentActionProcessed.skill2 = Skill.NONE;
-            currentActionProcessed.xpGained2 = 0;
-          }
-          currentActionProcessed.foodConsumed = foodConsumed;
-          currentActionProcessed.baseInputItemsConsumedNum = baseInputItemsConsumedNum;
-        }
-      } else {
-        // Clear it
-        currentActionProcessed.skill1 = Skill.NONE;
-        currentActionProcessed.xpGained1 = 0;
-        currentActionProcessed.skill2 = Skill.NONE;
-        currentActionProcessed.xpGained2 = 0;
-        currentActionProcessed.foodConsumed = 0;
-        currentActionProcessed.baseInputItemsConsumedNum = 0;
-      }
       // Include loot
       {
         uint8 bonusRewardsPercent = fullAttireBonus[skill].bonusRewardsPercent;
@@ -434,6 +393,48 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
             producedLength = producedLength.inc();
           }
         }
+      }
+
+      if (!fullyFinished) {
+        // Add the remainder if this action is not fully consumed
+        uint remainingTimespan = queuedAction.timespan - elapsedTime;
+        _addRemainingSkill(
+          pendingQueuedActionState.remainingQueuedActions,
+          queuedAction,
+          remainingTimespan,
+          elapsedTime,
+          xpElapsedTime,
+          remainingQueuedActionsLength
+        );
+        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
+
+        if (i == 0) {
+          // Append it (or set it absolutely if unset)
+          currentActionProcessed.skill1 = skill;
+          currentActionProcessed.xpGained1 += uint24(pointsAccrued);
+          if (hasCombatXP) {
+            currentActionProcessed.skill2 = Skill.HEALTH;
+            currentActionProcessed.xpGained2 += uint24(healthPointsGained);
+          }
+
+          currentActionProcessed.foodConsumed += foodConsumed;
+          currentActionProcessed.baseInputItemsConsumedNum += baseInputItemsConsumedNum;
+        } else {
+          // Set it absolutely, this is a fresh "first action"
+          currentActionProcessed.skill1 = skill;
+          currentActionProcessed.xpGained1 = uint24(pointsAccrued);
+          if (hasCombatXP) {
+            currentActionProcessed.skill2 = Skill.HEALTH;
+            currentActionProcessed.xpGained2 = uint24(healthPointsGained);
+          } else {
+            currentActionProcessed.skill2 = Skill.NONE;
+            currentActionProcessed.xpGained2 = 0;
+          }
+          currentActionProcessed.foodConsumed = foodConsumed;
+          currentActionProcessed.baseInputItemsConsumedNum = baseInputItemsConsumedNum;
+        }
+      } else {
+        clearActionProcessed(currentActionProcessed);
       }
 
       // Total XP gained
@@ -1040,6 +1041,16 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     // Get bonus health points from avatar starting skills
     uint bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(players_[_playerId], Skill.HEALTH);
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
+  }
+
+  function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private pure {
+    // Clear it
+    currentActionProcessed.skill1 = Skill.NONE;
+    currentActionProcessed.xpGained1 = 0;
+    currentActionProcessed.skill2 = Skill.NONE;
+    currentActionProcessed.xpGained2 = 0;
+    currentActionProcessed.foodConsumed = 0;
+    currentActionProcessed.baseInputItemsConsumedNum = 0;
   }
 
   function _dailyRewardsView(

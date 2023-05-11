@@ -12,10 +12,15 @@ import {
   RATE_MUL,
   SPAWN_MUL,
 } from "../utils";
+import {
+  ACTION_FIREMAKING_ITEM,
+  ACTION_FISHING_MINNUS,
+  ACTION_WOODCUTTING_LOG,
+} from "@paintswap/estfor-definitions/constants";
 
 export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: World, rate = 100 * GUAR_MUL) {
   const tx = await world.addAction({
-    actionId: 1,
+    actionId: ACTION_WOODCUTTING_LOG,
     info: {
       skill: EstforTypes.Skill.WOODCUTTING,
       xpPerHour: 3600,
@@ -55,12 +60,55 @@ export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: Wo
   return {queuedAction, rate};
 };
 
-export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: World, minXP: number) {
+export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World) {
+  const rate = 100 * GUAR_MUL; // per hour
+  const tx = await world.addAction({
+    actionId: ACTION_FISHING_MINNUS,
+    info: {
+      skill: EstforTypes.Skill.FISHING,
+      xpPerHour: 3600,
+      minXP: 0,
+      isDynamic: false,
+      numSpawned: 0,
+      handItemTokenIdRangeMin: EstforConstants.FISHING_BASE,
+      handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      successPercent: 100,
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MINNUS, rate}],
+    randomRewards: [],
+    combatStats: EstforTypes.emptyCombatStats,
+  });
+  const actionId = await getActionId(tx);
+
+  const timespan = 3600;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NET_STICK,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+  };
+
+  await itemNFT.addItem({
+    ...EstforTypes.defaultInputItem,
+    tokenId: EstforConstants.NET_STICK,
+    equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+  });
+
+  return {queuedAction, rate};
+};
+
+export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: World, minXP: number = 0) {
   const [owner, alice] = await ethers.getSigners();
 
   const rate = 100 * RATE_MUL; // per hour
   let tx = await world.addAction({
-    actionId: 1,
+    actionId: ACTION_FIREMAKING_ITEM,
     info: {
       skill: EstforTypes.Skill.FIREMAKING,
       xpPerHour: 0,

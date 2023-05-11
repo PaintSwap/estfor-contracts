@@ -148,7 +148,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
         amounts[j] = pastRandomRewardInfo[j].amount;
         queueIds[j] = pastRandomRewardInfo[j].queueId;
 
-        if (pastRandomRewardInfo[j].numRemoved != 0) {
+        if (
+          pastRandomRewardInfo[j].numRemoved != 0 &&
+          pendingRandomRewards[_playerId].length >= pastRandomRewardInfo[j].numRemoved
+        ) {
           // Shift the remaining rewards to the front of the array
           U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(pastRandomRewardInfo[j].numRemoved);
           for (U256 iter; iter < bounds; iter = iter.inc()) {
