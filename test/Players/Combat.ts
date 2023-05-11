@@ -1227,6 +1227,60 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100);
     });
 
+    it("currentAction in-progress actions", async function () {
+      const {playerId, players, alice, itemNFT, queuedAction, startXP} = await loadFixture(playersFixtureMagic);
+      await loadFixture(playersFixtureMagic);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await ethers.provider.send("evm_mine", []);
+      let {timestamp: NOW} = await ethers.provider.getBlock("latest");
+      await players.connect(alice).processActions(playerId);
+      const xpGained = Math.floor((queuedAction.timespan / 2) * 1.1);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+
+      let player = await players.players(playerId);
+      expect(player.currentActionStartTime).to.eq(NOW + 1);
+      expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
+      expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
+      expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
+      expect(player.currentActionProcessedXPGained2).to.eq(queuedAction.timespan / 2 / 3);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(1);
+      expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(5);
+      // Do a bit more
+      await ethers.provider.send("evm_increaseTime", [10]);
+      await ethers.provider.send("evm_mine", []);
+      ({timestamp: NOW} = await ethers.provider.getBlock("latest"));
+      await players.connect(alice).processActions(playerId);
+      player = await players.players(playerId);
+      expect(player.currentActionStartTime).to.eq(NOW + 1);
+      expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
+      expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
+      expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
+      expect(player.currentActionProcessedXPGained2).to.eq(queuedAction.timespan / 2 / 3);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(1);
+      expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(5);
+
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 1);
+
+      // Check that scrolls are consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(200 - 10);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 5);
+
+      // Finish action should be zeroed out
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      player = await players.players(playerId);
+      expect(player.currentActionStartTime).to.eq(0);
+      expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
+      expect(player.currentActionProcessedXPGained1).to.eq(0);
+      expect(player.currentActionProcessedSkill2).to.eq(Skill.NONE);
+      expect(player.currentActionProcessedXPGained2).to.eq(0);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(0);
+      expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
+    });
+
     it("Add multi actionChoice", async function () {
       const {playerId, players, alice, world, queuedAction: magicQueuedAction} = await loadFixture(playersFixtureMagic);
 

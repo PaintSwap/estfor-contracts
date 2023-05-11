@@ -703,13 +703,14 @@ describe("Players", function () {
 
     describe("Missing required equipment right hand equipment", async function () {
       async function expectRemovedCurrentAction(players: Players, playerId: BigNumber, now: number) {
-        expect((await players.players(playerId)).currentActionStartTime).to.eq(now);
-        expect((await players.players(playerId)).currentActionProcessedSkill1).to.eq(Skill.NONE);
-        expect((await players.players(playerId)).currentActionProcessedXPGained1).to.eq(0);
-        expect((await players.players(playerId)).currentActionProcessedSkill2).to.eq(Skill.NONE);
-        expect((await players.players(playerId)).currentActionProcessedXPGained2).to.eq(0);
-        expect((await players.players(playerId)).currentActionProcessedFoodConsumed).to.eq(0);
-        expect((await players.players(playerId)).currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
+        const player = await players.players(playerId);
+        expect(player.currentActionStartTime).to.eq(now);
+        expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
+        expect(player.currentActionProcessedXPGained1).to.eq(0);
+        expect(player.currentActionProcessedSkill2).to.eq(Skill.NONE);
+        expect(player.currentActionProcessedXPGained2).to.eq(0);
+        expect(player.currentActionProcessedFoodConsumed).to.eq(0);
+        expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
       }
 
       it("Progress first action, then no item, haven't started other actions", async function () {
@@ -886,6 +887,28 @@ describe("Players", function () {
         expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
         expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
       });
+    });
+
+    it("currentAction in-progress actions", async function () {
+      const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+      const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [(queuedAction.timespan * 10) / rate]); // Just do 1 of the action
+      await ethers.provider.send("evm_mine", []);
+      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+      await players.connect(alice).processActions(playerId);
+      const player = await players.players(playerId);
+      expect(player.currentActionStartTime).to.eq(NOW + 1);
+      expect(player.currentActionProcessedSkill1).to.eq(Skill.WOODCUTTING);
+      expect(player.currentActionProcessedXPGained1).to.eq((queuedAction.timespan * 10) / rate);
+      expect(player.currentActionProcessedSkill2).to.eq(Skill.NONE);
+      expect(player.currentActionProcessedXPGained2).to.eq(0);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(0);
+      expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
     });
 
     it("Maxing out XP", async function () {
