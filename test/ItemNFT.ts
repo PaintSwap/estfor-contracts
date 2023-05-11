@@ -181,7 +181,7 @@ describe("ItemNFT", function () {
   it("name & symbol", async function () {
     const {itemNFT, world, shop, royaltyReceiver, adminAccess} = await loadFixture(deployContracts);
     expect(await itemNFT.name()).to.be.eq("Estfor Items (Beta)");
-    expect(await itemNFT.symbol()).to.be.eq("EK_IA");
+    expect(await itemNFT.symbol()).to.be.eq("EK_IB");
 
     const isBeta = false;
     const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");

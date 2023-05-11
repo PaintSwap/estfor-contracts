@@ -323,7 +323,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function symbol() external view returns (string memory) {
-    return string(abi.encodePacked("EK_I", isBeta ? "A" : ""));
+    return string(abi.encodePacked("EK_I", isBeta ? "B" : ""));
   }
 
   // Or make it constants and redeploy the contracts
