@@ -264,12 +264,23 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (playerQuest.questId != QUEST_PURSE_STRINGS) {
       revert InvalidActiveQuest();
     }
-    buyBrush(_to, _minimumBrushBack, _useExactETH);
+    uint[] memory amounts = buyBrush(_to, _minimumBrushBack, _useExactETH);
+    if (amounts[0] != 0) {
+      // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
+      (success, ) = _from.call{value: msg.value - amounts[0]}("");
+      if (!success) {
+        revert RefundFailed();
+      }
+    }
     _questCompleted(_from, _playerId, playerQuest.questId);
     success = true;
   }
 
-  function buyBrush(address _to, uint _minimumBrushExpected, bool _useExactETH) public payable {
+  function buyBrush(
+    address _to,
+    uint _minimumBrushExpected,
+    bool _useExactETH
+  ) public payable returns (uint[] memory amounts) {
     if (msg.value == 0) {
       revert InvalidFTMAmount();
     }
@@ -282,12 +293,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
     if (_useExactETH) {
       uint amountOutMin = _minimumBrushExpected;
-      router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, _to, deadline);
+      amounts = router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, _to, deadline);
     } else {
       uint amountOut = _minimumBrushExpected;
-      uint[] memory amounts = router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, _to, deadline);
-      if (amounts[0] != 0) {
-        // Refund the rest
+      amounts = router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, _to, deadline);
+      if (amounts[0] != 0 && msg.sender != address(players)) {
+        // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
         (bool success, ) = msg.sender.call{value: msg.value - amounts[0]}("");
         if (!success) {
           revert RefundFailed();
