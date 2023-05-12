@@ -87,7 +87,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
 
       uint elapsedTime = _getElapsedTime(startTime, endTime);
       if (elapsedTime == 0) {
-        _addRemainingSkill(
+        _addRemainingQueuedAction(
           pendingQueuedActionState.remainingQueuedActions,
           queuedAction,
           queuedAction.timespan,
@@ -398,7 +398,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       if (!fullyFinished) {
         // Add the remainder if this action is not fully consumed
         uint remainingTimespan = queuedAction.timespan - elapsedTime;
-        _addRemainingSkill(
+        _addRemainingQueuedAction(
           pendingQueuedActionState.remainingQueuedActions,
           queuedAction,
           remainingTimespan,
@@ -509,10 +509,12 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     // Past Random Rewards
     // We don't want to add any extra levels gained during this processing for past rewards.
     PendingQueuedActionProcessed memory emptyPendingQueuedActionProcessed;
-    (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
-      _playerId,
-      emptyPendingQueuedActionProcessed
-    );
+    (
+      uint[] memory ids,
+      uint[] memory amounts,
+      uint[] memory queueIds,
+      uint numPastRandomRewardInstancesToRemove
+    ) = _claimableRandomRewards(_playerId, emptyPendingQueuedActionProcessed);
     U256 idsLength = ids.length.asU256();
     pendingQueuedActionState.producedPastRandomRewards = new PastRandomRewardInfo[](ids.length);
     for (U256 iter; iter < idsLength; iter = iter.inc()) {
@@ -520,10 +522,11 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       pendingQueuedActionState.producedPastRandomRewards[i] = PastRandomRewardInfo(
         uint64(queueIds[i]),
         uint16(ids[i]),
-        uint24(amounts[i]),
-        numRemoved
+        uint24(amounts[i])
       );
     }
+
+    pendingQueuedActionState.numPastRandomRewardInstancesToRemove = numPastRandomRewardInstancesToRemove;
 
     assembly ("memory-safe") {
       mstore(actionIds, actionIdsLength)
@@ -560,24 +563,13 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
   ) external {
     address from = msg.sender;
-    (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) = _claimableRandomRewards(
-      _playerId,
-      _pendingQueuedActionProcessed
-    );
-    if (numRemoved != 0) {
-      // Shift the remaining rewards to the front of the array
-      U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(numRemoved);
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][i + numRemoved];
-      }
-      for (U256 iter = numRemoved.asU256(); iter.neq(0); iter = iter.dec()) {
-        pendingRandomRewards[_playerId].pop();
-      }
-
-      itemNFT.mintBatch(from, ids, amounts);
-      emit PendingRandomRewardsClaimed(from, _playerId, numRemoved, ids, amounts, queueIds);
-    }
+    (
+      uint[] memory ids,
+      uint[] memory amounts,
+      uint[] memory queueIds,
+      uint numPastRandomRewardInstancesToRemove
+    ) = _claimableRandomRewards(_playerId, _pendingQueuedActionProcessed);
+    _processClaimableRewards(from, _playerId, ids, amounts, queueIds, numPastRandomRewardInstancesToRemove);
   }
 
   function _getRewards(
@@ -672,7 +664,16 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
   function _claimableRandomRewards(
     uint _playerId,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
-  ) private view returns (uint[] memory ids, uint[] memory amounts, uint[] memory queueIds, uint numRemoved) {
+  )
+    private
+    view
+    returns (
+      uint[] memory ids,
+      uint[] memory amounts,
+      uint[] memory queueIds,
+      uint numPastRandomRewardInstancesToRemove
+    )
+  {
     PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[_playerId];
     U256 pendingRandomRewardsLength = _pendingRandomRewards.length.asU256();
     ids = new uint[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
@@ -712,7 +713,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       );
 
       if (processedAny) {
-        numRemoved = numRemoved.inc();
+        numPastRandomRewardInstancesToRemove = numPastRandomRewardInstancesToRemove.inc();
       }
 
       if (oldLength != length) {
@@ -773,7 +774,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     );
   }
 
-  function _addRemainingSkill(
+  function _addRemainingQueuedAction(
     QueuedAction[] memory _remainingQueuedActions,
     QueuedAction storage _queuedAction,
     uint _timespan,

@@ -138,43 +138,24 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
 
     // Oracle loot from past random rewards
     if (pendingQueuedActionState.producedPastRandomRewards.length > 0) {
-      PastRandomRewardInfo[] memory pastRandomRewardInfo = pendingQueuedActionState.producedPastRandomRewards;
+      PastRandomRewardInfo[] memory producedPastRandomRewards = pendingQueuedActionState.producedPastRandomRewards;
 
-      uint[] memory itemTokenIds = new uint[](pastRandomRewardInfo.length);
-      uint[] memory amounts = new uint[](pastRandomRewardInfo.length);
-      uint[] memory queueIds = new uint[](pastRandomRewardInfo.length);
-      for (uint j = 0; j < pastRandomRewardInfo.length; ++j) {
-        itemTokenIds[j] = pastRandomRewardInfo[j].itemTokenId;
-        amounts[j] = pastRandomRewardInfo[j].amount;
-        queueIds[j] = pastRandomRewardInfo[j].queueId;
-
-        if (
-          pastRandomRewardInfo[j].numRemoved != 0 &&
-          pendingRandomRewards[_playerId].length >= pastRandomRewardInfo[j].numRemoved
-        ) {
-          // Shift the remaining rewards to the front of the array
-          U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(pastRandomRewardInfo[j].numRemoved);
-          for (U256 iter; iter < bounds; iter = iter.inc()) {
-            uint k = iter.asUint256();
-            pendingRandomRewards[_playerId][k] = pendingRandomRewards[_playerId][
-              k + pastRandomRewardInfo[j].numRemoved
-            ];
-          }
-          for (U256 iter = pastRandomRewardInfo[j].numRemoved.asU256(); iter.neq(0); iter = iter.dec()) {
-            pendingRandomRewards[_playerId].pop();
-          }
-
-          itemNFT.mintBatch(_from, itemTokenIds, amounts);
-          emit PendingRandomRewardsClaimed(
-            _from,
-            _playerId,
-            pastRandomRewardInfo[j].numRemoved,
-            itemTokenIds,
-            amounts,
-            queueIds
-          );
-        }
+      uint[] memory itemTokenIds = new uint[](producedPastRandomRewards.length);
+      uint[] memory amounts = new uint[](producedPastRandomRewards.length);
+      uint[] memory queueIds = new uint[](producedPastRandomRewards.length);
+      for (uint j = 0; j < producedPastRandomRewards.length; ++j) {
+        itemTokenIds[j] = producedPastRandomRewards[j].itemTokenId;
+        amounts[j] = producedPastRandomRewards[j].amount;
+        queueIds[j] = producedPastRandomRewards[j].queueId;
       }
+      _processClaimableRewards(
+        _from,
+        _playerId,
+        itemTokenIds,
+        amounts,
+        queueIds,
+        pendingQueuedActionState.numPastRandomRewardInstancesToRemove
+      );
     }
 
     // Quests

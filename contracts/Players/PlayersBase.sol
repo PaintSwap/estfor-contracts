@@ -332,6 +332,42 @@ abstract contract PlayersBase {
     _player.currentActionProcessedBaseInputItemsConsumedNum = _currentActionProcessed.baseInputItemsConsumedNum;
   }
 
+  function _processClaimableRewards(
+    address _from,
+    uint _playerId,
+    uint[] memory itemTokenIds,
+    uint[] memory amounts,
+    uint[] memory queueIds,
+    uint numPastRandomRewardInstancesToRemove
+  ) internal {
+    if (numPastRandomRewardInstancesToRemove != 0) {
+      if (numPastRandomRewardInstancesToRemove == pendingRandomRewards[_playerId].length) {
+        delete pendingRandomRewards[_playerId];
+      } else {
+        // Shift the remaining rewards to the front of the array
+        U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(numPastRandomRewardInstancesToRemove);
+        for (U256 iter; iter < bounds; iter = iter.inc()) {
+          uint i = iter.asUint256();
+          pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][
+            i + numPastRandomRewardInstancesToRemove
+          ];
+        }
+        for (U256 iter = numPastRandomRewardInstancesToRemove.asU256(); iter.neq(0); iter = iter.dec()) {
+          pendingRandomRewards[_playerId].pop();
+        }
+      }
+      itemNFT.mintBatch(_from, itemTokenIds, amounts);
+      emit PendingRandomRewardsClaimed(
+        _from,
+        _playerId,
+        numPastRandomRewardInstancesToRemove,
+        itemTokenIds,
+        amounts,
+        queueIds
+      );
+    }
+  }
+
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {
     bool success;
     (success, returndata) = target.delegatecall(data);

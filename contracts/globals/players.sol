@@ -126,7 +126,6 @@ struct PastRandomRewardInfo {
   uint64 queueId;
   uint16 itemTokenId;
   uint24 amount;
-  uint numRemoved;
 }
 
 struct PendingQueuedActionEquipmentState {
@@ -190,6 +189,7 @@ struct PendingQueuedActionState {
   uint[] dailyRewardAmounts;
   bytes32 dailyRewardMask;
   QuestState quests;
+  uint numPastRandomRewardInstancesToRemove;
 }
 
 struct FullAttireBonusInput {

@@ -465,13 +465,14 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
   function clearEverything(address _from, uint _playerId) public {
     _processActions(_from, _playerId);
     // Ensure player info is cleared
-    players_[_playerId].currentActionStartTime = 0;
-    players_[_playerId].currentActionProcessedSkill1 = Skill.NONE;
-    players_[_playerId].currentActionProcessedXPGained1 = 0;
-    players_[_playerId].currentActionProcessedSkill2 = Skill.NONE;
-    players_[_playerId].currentActionProcessedXPGained2 = 0;
-    players_[_playerId].currentActionProcessedFoodConsumed = 0;
-    players_[_playerId].currentActionProcessedBaseInputItemsConsumedNum = 0;
+    Player storage player = players_[_playerId];
+    player.currentActionStartTime = 0;
+    player.currentActionProcessedSkill1 = Skill.NONE;
+    player.currentActionProcessedXPGained1 = 0;
+    player.currentActionProcessedSkill2 = Skill.NONE;
+    player.currentActionProcessedXPGained2 = 0;
+    player.currentActionProcessedFoodConsumed = 0;
+    player.currentActionProcessedBaseInputItemsConsumedNum = 0;
 
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);
