@@ -36,6 +36,13 @@ export const verifyContracts = async (addresses: string[]) => {
   console.log("Verified all contracts");
 };
 
+export const verifyContract = async (address: string, constructorArguments: any[]) => {
+  return run("verify:verify", {
+    address,
+    constructorArguments,
+  });
+};
+
 export const isDevNetwork = (network: Network): boolean => {
   return network.chainId == 31337 || network.chainId == 1337;
 };

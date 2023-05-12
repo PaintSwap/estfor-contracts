@@ -19,7 +19,7 @@ import {
   BANK_PROXY_ADDRESS,
   BANK_FACTORY_ADDRESS,
 } from "./contractAddresses";
-import {verifyContracts} from "./utils";
+import {verifyContract, verifyContracts} from "./utils";
 
 async function main() {
   const addresses = [
@@ -35,7 +35,6 @@ async function main() {
     CLANS_ADDRESS,
     BANK_ADDRESS,
     BANK_REGISTRY_ADDRESS,
-    BANK_PROXY_ADDRESS,
     BANK_FACTORY_ADDRESS,
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
     PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
@@ -45,6 +44,8 @@ async function main() {
   ];
 
   await verifyContracts(addresses);
+
+  await verifyContract(BANK_PROXY_ADDRESS, [BANK_REGISTRY_ADDRESS]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
