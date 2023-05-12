@@ -544,21 +544,21 @@ library PlayersLibrary {
   ) public pure returns (uint24 boostedTime) {
     uint actionEndTime = _actionStartTime + _elapsedTime;
     uint boostEndTime = _boostStartTime + _boostDuration;
-    bool boostFinishedBeforeActionStarted = _actionStartTime > boostEndTime;
-    bool boostStartedAfterActionFinished = actionEndTime < _boostStartTime;
-    if (
-      boostFinishedBeforeActionStarted ||
-      boostStartedAfterActionFinished ||
-      _elapsedTime == 0 ||
-      actionEndTime == _boostStartTime
-    ) {
+    bool boostFinishedBeforeOrOnActionStarted = _actionStartTime >= boostEndTime;
+    bool boostStartedAfterOrOnActionFinished = actionEndTime <= _boostStartTime;
+    uint24 actionDuration = uint24(actionEndTime - _actionStartTime);
+    if (boostFinishedBeforeOrOnActionStarted || boostStartedAfterOrOnActionFinished || _elapsedTime == 0) {
       // Boost was not active at all during this queued action
       boostedTime = 0;
-    } else if (_actionStartTime >= _boostStartTime && actionEndTime >= boostEndTime) {
+    } else if (_boostStartTime <= _actionStartTime && boostEndTime >= actionEndTime) {
+      boostedTime = actionDuration;
+    } else if (_boostStartTime < _actionStartTime && boostEndTime < actionEndTime) {
       boostedTime = uint24(boostEndTime - _actionStartTime);
-    } else if (actionEndTime > _boostStartTime && boostEndTime >= actionEndTime) {
+    } else if (_boostStartTime > _actionStartTime && boostEndTime > actionEndTime) {
       boostedTime = uint24(actionEndTime - _boostStartTime);
-    } else if (_boostStartTime > _actionStartTime && boostEndTime < actionEndTime) {
+    } else if (_boostStartTime > _actionStartTime && boostEndTime <= actionEndTime) {
+      boostedTime = _boostDuration;
+    } else if (_boostStartTime == _actionStartTime && boostEndTime <= actionEndTime) {
       boostedTime = _boostDuration;
     } else {
       assert(false); // Should never happen
