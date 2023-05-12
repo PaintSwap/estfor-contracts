@@ -584,92 +584,201 @@ describe("Non-Combat Actions", function () {
     expect(await players.xp(playerId, EstforTypes.Skill.MINING)).to.eq(queuedAction.timespan);
   });
 
-  it("Smithing", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const rate = 100 * RATE_MUL; // per hour
+  describe("Smithing", function () {
+    it("Smith single item", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * RATE_MUL; // per hour
 
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.SMITHING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
+
+      // Ores go in, bars come out
+      tx = await world.addActionChoice(actionId, 1, {
         skill: EstforTypes.Skill.SMITHING,
-        xpPerHour: 0,
+        skillDiff: 0,
+        xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
+        rate,
+        inputTokenId1: EstforConstants.MITHRIL_ORE,
+        inputAmount1: 1,
+        inputTokenId2: EstforConstants.COAL_ORE,
+        inputAmount2: 2,
+        inputTokenId3: EstforConstants.NONE,
+        inputAmount3: 0,
+        outputTokenId: EstforConstants.MITHRIL_BAR,
+        outputAmount: 1,
         successPercent: 100,
-      },
-      guaranteedRewards: [],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
-    const actionId = await getActionId(tx);
+      });
+      const choiceId = await getActionChoiceId(tx);
 
-    // Ores go in, bars come out
-    tx = await world.addActionChoice(actionId, 1, {
-      skill: EstforTypes.Skill.SMITHING,
-      skillDiff: 0,
-      xpPerHour: 3600,
-      minXP: 0,
-      rate,
-      inputTokenId1: EstforConstants.MITHRIL_ORE,
-      inputAmount1: 1,
-      inputTokenId2: EstforConstants.COAL_ORE,
-      inputAmount2: 2,
-      inputTokenId3: EstforConstants.NONE,
-      inputAmount3: 0,
-      outputTokenId: EstforConstants.MITHRIL_BAR,
-      outputAmount: 1,
-      successPercent: 100,
-    });
-    const choiceId = await getActionChoiceId(tx);
+      const timespan = 3600;
 
-    const timespan = 3600;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
 
-    const queuedAction: EstforTypes.QueuedActionInput = {
-      attire: EstforTypes.noAttire,
-      actionId,
-      combatStyle: EstforTypes.CombatStyle.NONE,
-      choiceId,
-      regenerateId: EstforConstants.NONE,
-      timespan,
-      rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
-    };
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.COAL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      });
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.COAL_ORE,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-    });
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.MITHRIL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      });
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.MITHRIL_ORE,
-      equipPosition: EstforTypes.EquipPosition.AUX,
+      await itemNFT.testMint(alice.address, EstforConstants.COAL_ORE, 255);
+      await itemNFT.testMint(alice.address, EstforConstants.MITHRIL_ORE, 255);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
+
+      // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
+        Math.floor((timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COAL_ORE)).to.eq(
+        255 - Math.floor((timespan * rate) / (3600 * RATE_MUL)) * 2
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ORE)).to.eq(
+        255 - Math.floor((timespan * rate) / (3600 * RATE_MUL))
+      );
     });
 
-    await itemNFT.testMint(alice.address, EstforConstants.COAL_ORE, 255);
-    await itemNFT.testMint(alice.address, EstforConstants.MITHRIL_ORE, 255);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    it("Smith multiple queued items", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const rate = 100 * RATE_MUL; // per hour
 
-    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-    await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.SMITHING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+      const actionId = await getActionId(tx);
 
-    // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
-      Math.floor((timespan * rate) / (3600 * RATE_MUL))
-    );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COAL_ORE)).to.eq(
-      255 - Math.floor((timespan * rate) / (3600 * RATE_MUL)) * 2
-    );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ORE)).to.eq(
-      255 - Math.floor((timespan * rate) / (3600 * RATE_MUL))
-    );
+      // Ores go in, bars come out
+      tx = await world.addActionChoice(actionId, 1, {
+        skill: EstforTypes.Skill.SMITHING,
+        skillDiff: 0,
+        xpPerHour: 3600,
+        minXP: 0,
+        rate,
+        inputTokenId1: EstforConstants.MITHRIL_ORE,
+        inputAmount1: 1,
+        inputTokenId2: EstforConstants.COAL_ORE,
+        inputAmount2: 2,
+        inputTokenId3: EstforConstants.NONE,
+        inputAmount3: 0,
+        outputTokenId: EstforConstants.MITHRIL_BAR,
+        outputAmount: 1,
+        successPercent: 100,
+      });
+      const choiceId = await getActionChoiceId(tx);
+      tx = await world.addActionChoice(actionId, 2, {
+        skill: EstforTypes.Skill.SMITHING,
+        skillDiff: 0,
+        xpPerHour: 7200,
+        minXP: 0,
+        rate,
+        inputTokenId1: EstforConstants.MITHRIL_ORE,
+        inputAmount1: 1,
+        inputTokenId2: EstforConstants.COAL_ORE,
+        inputAmount2: 2,
+        inputTokenId3: EstforConstants.NONE,
+        inputAmount3: 0,
+        outputTokenId: EstforConstants.MITHRIL_BAR,
+        outputAmount: 1,
+        successPercent: 100,
+      });
+      const choiceId1 = await getActionChoiceId(tx);
+      const timespan = 3600;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.COAL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      });
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.MITHRIL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      });
+
+      await itemNFT.testMints(alice.address, [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE], [1000, 1000]);
+      const queuedAction1 = {...queuedAction, choiceId: choiceId1};
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction, queuedAction1], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedAction1.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.SMITHING)).to.eq(
+        queuedAction.timespan + queuedAction1.timespan * 2
+      ); // 2nd queued action has double the xp
+
+      // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
+        Math.floor((timespan * 2 * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COAL_ORE)).to.eq(
+        1000 - Math.floor((timespan * 2 * rate) / (3600 * RATE_MUL)) * 2
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ORE)).to.eq(
+        1000 - Math.floor((timespan * 2 * rate) / (3600 * RATE_MUL))
+      );
+    });
   });
 
   describe("Cooking", function () {
@@ -787,7 +896,7 @@ describe("Non-Combat Actions", function () {
       // Check pending rewards, also add a boost, make sure it is 0
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      const randomChanceFraction = Math.floor(99.9 / 100); // 99.9% chance
+      const randomChanceFraction = 0; // 0% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
 
       const xpPerHour = 2;
@@ -1288,6 +1397,81 @@ describe("Non-Combat Actions", function () {
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
       // Have 2 queued actions so twice as much
       expect(balance).to.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
+    });
+
+    it("successPercent not 100", async function () {
+      // Check pending rewards, also add a boost, make sure it is 0
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      const randomChanceFraction = 99 / 100; // 99% chance
+      const randomChance = Math.floor(65536 * randomChanceFraction);
+      const successPercent = 99;
+
+      const xpPerHour = 2;
+      let tx = await world.addAction({
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: false,
+          successPercent,
+        },
+        guaranteedRewards: [],
+        randomRewards: [
+          {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1},
+          {itemTokenId: EstforConstants.BRONZE_HELMET, chance: randomChance, amount: 1},
+        ],
+        combatStats: EstforTypes.emptyCombatStats,
+      });
+
+      const actionId = await getActionId(tx);
+      const numHours = 5;
+
+      const timespan = 3600 * numHours;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      // Make sure it passes the next checkpoint so there are no issues running
+      const {timestamp} = await ethers.provider.getBlock("latest");
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
+      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [3600]);
+      await players.connect(alice).processActions(playerId);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      let requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      await players.connect(alice).processActions(playerId);
+
+      // Should get at least 4 minted
+      const expectedTotal = Math.floor(randomChanceFraction * numHours * (successPercent / 100));
+      expect(expectedTotal).to.be.greaterThan(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.be.greaterThanOrEqual(
+        expectedTotal
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_HELMET)).to.be.greaterThanOrEqual(
+        expectedTotal
+      );
     });
   });
 
