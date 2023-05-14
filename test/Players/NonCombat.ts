@@ -811,7 +811,7 @@ describe("Non-Combat Actions", function () {
       const minLevel = 65;
       const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
-      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90), false);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -840,7 +840,7 @@ describe("Non-Combat Actions", function () {
       const minLevel = 65;
       const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
-      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90), false);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -873,7 +873,7 @@ describe("Non-Combat Actions", function () {
       const minLevel = 65;
       const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
-      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90), false);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 

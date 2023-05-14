@@ -329,7 +329,11 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
     }
   }
 
-  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp) external {
+  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp, bool _force) external {
+    if (!_force && players_[_playerId].actionQueue.length != 0) {
+      revert HasQueuedActions();
+    }
+
     // Make sure it isn't less XP
     uint oldPoints = PlayersLibrary.readXP(_skill, xp_[_playerId]);
     if (_xp < oldPoints) {

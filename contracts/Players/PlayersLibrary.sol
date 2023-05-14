@@ -747,9 +747,11 @@ library PlayersLibrary {
       xp -= _pendingQueuedActionProcessed.currentAction.xpGained1;
     } else if (_pendingQueuedActionProcessed.currentAction.skill2 == _skill) {
       xp -= _pendingQueuedActionProcessed.currentAction.xpGained2;
+    } else if (_pendingQueuedActionProcessed.currentAction.skill3 == _skill) {
+      xp -= _pendingQueuedActionProcessed.currentAction.xpGained3;
     }
 
-    // Add any new xp gained from previous actions completed in the queue. For instance
+    // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
     // battling monsters may increase your level so you are stronger for a later queued action.
     for (uint i; i < _pendingQueuedActionProcessed.skills.length; ++i) {
       if (_pendingQueuedActionProcessed.skills[i] == _skill) {

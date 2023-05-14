@@ -43,6 +43,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     currentActionProcessed.xpGained1 = player.currentActionProcessedXPGained1;
     currentActionProcessed.skill2 = player.currentActionProcessedSkill2;
     currentActionProcessed.xpGained2 = player.currentActionProcessedXPGained2;
+    currentActionProcessed.skill3 = player.currentActionProcessedSkill3;
+    currentActionProcessed.xpGained3 = player.currentActionProcessedXPGained3;
     currentActionProcessed.foodConsumed = player.currentActionProcessedFoodConsumed;
     currentActionProcessed.baseInputItemsConsumedNum = player.currentActionProcessedBaseInputItemsConsumedNum;
 
@@ -65,6 +67,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     U256 bounds = actionQueue.length.asU256();
     uint pendingQueuedActionStateLength;
     uint startTime = players_[_playerId].currentActionStartTime;
+    Skill firstRemainingActionSkill; // Can be Skill.COMBAT
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
@@ -143,6 +146,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
         queuedAction.actionId
       );
+      firstRemainingActionSkill = actionSkill;
       bool actionHasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
       ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
@@ -493,9 +497,22 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       questState.activeQuestInfo
     ) = quests.processQuestsView(_playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
 
-    // Total XP gained
     for (uint i = 0; i < questState.xpGainedSkills.length; ++i) {
       totalXPGained += questState.xpGainedSkills[i];
+
+      if (remainingQueuedActionsLength > 0) {
+        Skill questSkill = questState.skills[i];
+        uint24 xpGainedSkill = uint24(questState.xpGainedSkills[i]);
+        if (currentActionProcessed.skill1 == questSkill) {
+          currentActionProcessed.xpGained1 += xpGainedSkill;
+        } else if (currentActionProcessed.skill2 == questSkill) {
+          currentActionProcessed.xpGained2 += xpGainedSkill;
+        } else if (firstRemainingActionSkill == Skill.COMBAT && questSkill == Skill.DEFENCE) {
+          // Special case for combat where you are training attack
+          currentActionProcessed.skill3 = questSkill;
+          currentActionProcessed.xpGained3 += xpGainedSkill;
+        }
+      }
     }
 
     // XPRewards
@@ -1050,6 +1067,8 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     currentActionProcessed.xpGained1 = 0;
     currentActionProcessed.skill2 = Skill.NONE;
     currentActionProcessed.xpGained2 = 0;
+    currentActionProcessed.skill3 = Skill.NONE;
+    currentActionProcessed.xpGained3 = 0;
     currentActionProcessed.foodConsumed = 0;
     currentActionProcessed.baseInputItemsConsumedNum = 0;
   }

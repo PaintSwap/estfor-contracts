@@ -38,7 +38,8 @@ struct Player {
   Skill skillBoosted1; // The skill that is boosted
   Skill skillBoosted2; // The second skill that is boosted
   uint56 totalXP;
-  uint8 version; // Not used currently
+  Skill currentActionProcessedSkill3;
+  uint24 currentActionProcessedXPGained3;
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
   string name; // Raw name
@@ -149,8 +150,10 @@ struct PendingQueuedActionData {
   // The amount of XP that the queued action has already gained
   Skill skill1;
   uint24 xpGained1;
-  Skill skill2;
+  Skill skill2; // Most likely health
   uint24 xpGained2;
+  Skill skill3; // Could come
+  uint24 xpGained3;
   // How much food is consumed in the current action so far
   uint16 foodConsumed;
   // How many base consumables are consumed in the current action so far
@@ -161,7 +164,7 @@ struct PendingQueuedActionProcessed {
   // XP gained during this session
   Skill[] skills;
   uint32[] xpGainedSkills;
-  // Data for the current action which has been previously processed
+  // Data for the current action which has been previously processed, this is used to store on the Player
   PendingQueuedActionData currentAction;
 }
 

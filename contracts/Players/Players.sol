@@ -43,13 +43,13 @@ interface IPlayerDelegate {
     uint[] calldata startingAmounts
   ) external;
 
-  function clearEverything(address from, uint playerId) external;
+  function clearEverything(address from, uint playerId, bool processTheTransactions) external;
 
   function setActivePlayer(address from, uint playerId) external;
 
   function unequipBoostVial(uint playerId) external;
 
-  function testModifyXP(address from, uint playerId, Skill skill, uint56 xp) external;
+  function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
 
   function initialize(
     ItemNFT itemNFT,
@@ -73,6 +73,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   error InvalidSelector();
   error GameIsPaused();
+  error NotBeta();
 
   modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
     if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -84,6 +85,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   modifier isOwnerOfPlayerMod(uint playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
       revert NotOwnerOfPlayer();
+    }
+    _;
+  }
+
+  modifier isBetaMod() {
+    if (!isBeta) {
+      revert NotBeta();
     }
     _;
   }
@@ -264,7 +272,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _from The owner of the player being transferred
   /// @param _playerId The id of the player being transferred
   function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
-    _clearEverything(_from, _playerId);
+    _clearEverything(_from, _playerId, true);
     // If it was the active player, then clear it
     uint existingActivePlayerId = activePlayer_[_from];
     if (existingActivePlayerId == _playerId) {
@@ -273,8 +281,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
   }
 
-  function _clearEverything(address _from, uint _playerId) private {
-    _delegatecall(implQueueActions, abi.encodeWithSelector(IPlayerDelegate.clearEverything.selector, _from, _playerId));
+  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) isBetaMod {
+    address from = msg.sender;
+    bool isEmergency = true;
+    _clearEverything(from, _playerId, !isEmergency);
+  }
+
+  function _clearEverything(address _from, uint _playerId, bool _processTheActions) private {
+    _delegatecall(
+      implQueueActions,
+      abi.encodeWithSelector(IPlayerDelegate.clearEverything.selector, _from, _playerId, _processTheActions)
+    );
   }
 
   function _startActions(
@@ -407,10 +424,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses));
   }
 
-  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp) external isAdminAndBeta {
+  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp, bool _force) external isAdminAndBeta {
     _delegatecall(
       implProcessActions,
-      abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp)
+      abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp, _force)
     );
   }
 

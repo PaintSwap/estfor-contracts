@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {COOKED_MINNUS} from "@paintswap/estfor-definitions/constants";
+import {COOKED_MINNUS, QUEST_SUPPLY_RUN} from "@paintswap/estfor-definitions/constants";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
@@ -19,6 +19,8 @@ import {
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
+import {allActions} from "../../scripts/data/actions";
+import {Quest, allQuests, defaultMinRequirements} from "../../scripts/data/quests";
 
 const actionIsAvailable = true;
 
@@ -30,7 +32,7 @@ describe("Combat Actions", function () {
       const fixture = await loadFixture(playersFixture);
       const {itemNFT, world} = fixture;
 
-      const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, rate, numSpawned, choiceId} = await setupBasicMeleeCombat(itemNFT, world);
 
       return {
         ...fixture,
@@ -39,6 +41,7 @@ describe("Combat Actions", function () {
         rate,
         numSpawned,
         world,
+        choiceId,
       };
     }
 
@@ -563,6 +566,308 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance.sub(Math.pow(2, 16) - 1)
       );
+    });
+
+    // Fix for user issue Snarf
+    it("Take into account defence quest XP reward", async function () {
+      const {playerId, players, alice, world, itemNFT, choiceId, quests} = await loadFixture(playersFixtureMelee);
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        healthRestored: 2,
+        tokenId: EstforConstants.COOKED_BLEKK,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+      });
+
+      const natuowAction = allActions.find(
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
+      ) as EstforTypes.ActionInput;
+      await world.addAction(natuowAction);
+
+      const grogAction = allActions.find(
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
+      ) as EstforTypes.ActionInput;
+      await world.addAction(grogAction);
+
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_BLEKK, 10000);
+
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId: EstforConstants.ACTION_COMBAT_NATUOW,
+        combatStyle: EstforTypes.CombatStyle.ATTACK,
+        choiceId,
+        regenerateId: EstforConstants.COOKED_BLEKK,
+        timespan: 86400,
+        rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [5518]);
+      await players.connect(alice).processActions(playerId);
+
+      await ethers.provider.send("evm_increaseTime", [27869]);
+
+      const boostValue = 10;
+      const boostDuration = 86400;
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      });
+      await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      await ethers.provider.send("evm_increaseTime", [120]);
+      await players
+        .connect(alice)
+        .startActionsExtra(
+          playerId,
+          [],
+          EstforConstants.XP_BOOST,
+          0,
+          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
+        );
+      await ethers.provider.send("evm_increaseTime", [240]);
+
+      const queuedActionGrog: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId: EstforConstants.ACTION_COMBAT_GROG_TOAD,
+        combatStyle: EstforTypes.CombatStyle.DEFENCE,
+        choiceId,
+        regenerateId: EstforConstants.COOKED_BLEKK,
+        timespan: 32400,
+        rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      // Activate a quest
+      const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+      const quest = {
+        ...quest1,
+        actionId1: queuedAction.actionId,
+        actionNum1: 5,
+        burnItemTokenId: EstforConstants.NATUOW_HIDE,
+        burnAmount: 5,
+      };
+      await quests.addQuests([quest], [false], [defaultMinRequirements]);
+      const questId = quest.questId;
+      await players.connect(alice).activateQuest(playerId, questId);
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedActionGrog], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+      await ethers.provider.send("evm_increaseTime", [41700]);
+
+      await players.connect(alice).processActions(playerId);
+
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250);
+
+      let player = await players.players(playerId);
+      expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
+      expect(player.currentActionProcessedXPGained1).to.eq(1145);
+      expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
+      expect(player.currentActionProcessedXPGained2).to.eq(381);
+      expect(player.currentActionProcessedSkill3).to.eq(Skill.DEFENCE);
+      expect(player.currentActionProcessedXPGained3).to.eq(250);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(1886);
+      expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
+
+      // Before it would fail here
+      await players.connect(alice).processActions(playerId);
+    });
+
+    it("currentActionProcessedSkill for all 1/2/3", async function () {
+      const {playerId, players, alice, world, itemNFT, choiceId, quests} = await loadFixture(playersFixtureMelee);
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        healthRestored: 2,
+        tokenId: EstforConstants.COOKED_BLEKK,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+      });
+
+      const natuowAction = allActions.find(
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
+      ) as EstforTypes.ActionInput;
+      await world.addAction(natuowAction);
+
+      const grogAction = allActions.find(
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
+      ) as EstforTypes.ActionInput;
+      await world.addAction(grogAction);
+
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_BLEKK, 10000);
+
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId: EstforConstants.ACTION_COMBAT_NATUOW,
+        combatStyle: EstforTypes.CombatStyle.ATTACK,
+        choiceId,
+        regenerateId: EstforConstants.COOKED_BLEKK,
+        timespan: 86400,
+        rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [5518]);
+      await players.connect(alice).processActions(playerId);
+
+      await ethers.provider.send("evm_increaseTime", [27869]);
+
+      const boostValue = 10;
+      const boostDuration = 86400;
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      });
+      await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      await ethers.provider.send("evm_increaseTime", [120]);
+      await players
+        .connect(alice)
+        .startActionsExtra(
+          playerId,
+          [],
+          EstforConstants.XP_BOOST,
+          0,
+          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
+        );
+      await ethers.provider.send("evm_increaseTime", [240]);
+
+      const queuedActionGrog: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId: EstforConstants.ACTION_COMBAT_GROG_TOAD,
+        combatStyle: EstforTypes.CombatStyle.DEFENCE,
+        choiceId,
+        regenerateId: EstforConstants.COOKED_BLEKK,
+        timespan: 32400,
+        rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      // Activate a quest
+      const _quest = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+      const quest = {
+        ..._quest,
+        actionId1: queuedAction.actionId,
+        actionNum1: 5,
+        burnItemTokenId: EstforConstants.NATUOW_HIDE,
+        burnAmount: 5,
+      };
+      const questMelee = {
+        ...quest,
+        skillReward: Skill.MELEE,
+        questId: QUEST_SUPPLY_RUN + 1,
+      };
+      const questHealth = {
+        ...quest,
+        skillReward: Skill.HEALTH,
+        questId: QUEST_SUPPLY_RUN + 2,
+      };
+      const questMagic = {
+        ...quest,
+        skillReward: Skill.MAGIC,
+        questId: QUEST_SUPPLY_RUN + 3,
+      };
+      const questWoodcutting = {
+        ...quest,
+        skillReward: Skill.WOODCUTTING,
+        questId: QUEST_SUPPLY_RUN + 4,
+      };
+      await quests.addQuests(
+        [quest, questMelee, questMagic, questWoodcutting, questHealth],
+        [false, false, false, false, false],
+        [
+          defaultMinRequirements,
+          defaultMinRequirements,
+          defaultMinRequirements,
+          defaultMinRequirements,
+          defaultMinRequirements,
+        ]
+      );
+      const questId = quest.questId;
+      await players.connect(alice).activateQuest(playerId, questId);
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedActionGrog], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+
+      await ethers.provider.send("evm_increaseTime", [8000]);
+      await players.connect(alice).activateQuest(playerId, questId + 1);
+      await ethers.provider.send("evm_increaseTime", [8000]);
+      await players.connect(alice).activateQuest(playerId, questId + 2);
+      await ethers.provider.send("evm_increaseTime", [8000]);
+      await players.connect(alice).activateQuest(playerId, questId + 3);
+      await ethers.provider.send("evm_increaseTime", [8000]);
+      await players.connect(alice).activateQuest(playerId, questId + 4);
+      await ethers.provider.send("evm_increaseTime", [9700]); // So that it totals 41700 like the other test
+      await players.connect(alice).processActions(playerId);
+
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(START_XP + 250);
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(250);
+      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(1145 + 250);
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(381 + 250);
+
+      let player = await players.players(playerId);
+      expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
+      expect(player.currentActionProcessedXPGained1).to.eq(1145 + 250);
+      expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
+      expect(player.currentActionProcessedXPGained2).to.eq(381 + 250);
+      expect(player.currentActionProcessedSkill3).to.eq(Skill.DEFENCE);
+      expect(player.currentActionProcessedXPGained3).to.eq(250);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(1886);
+      expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
+
+      await players.connect(alice).processActions(playerId);
+    });
+
+    it("Emergency clearEverything", async function () {
+      const {playerId, players, alice, world, itemNFT, choiceId, quests} = await loadFixture(playersFixtureMelee);
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        healthRestored: 2,
+        tokenId: EstforConstants.COOKED_BLEKK,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+      });
+
+      const natuowAction = allActions.find(
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
+      ) as EstforTypes.ActionInput;
+      await world.addAction(natuowAction);
+
+      await itemNFT.testMint(alice.address, EstforConstants.COOKED_BLEKK, 10000);
+
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId: EstforConstants.ACTION_COMBAT_NATUOW,
+        combatStyle: EstforTypes.CombatStyle.ATTACK,
+        choiceId,
+        regenerateId: EstforConstants.COOKED_BLEKK,
+        timespan: 86400,
+        rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [73318]);
+      await players.connect(alice).processActions(playerId);
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.DEFENCE, 250, true);
+      await ethers.provider.send("evm_increaseTime", [240]);
+      await expect(players.connect(alice).processActions(playerId)).to.be.reverted;
+      await expect(players.connect(alice).clearEverything(playerId)).to.not.be.reverted;
+      expect((await players.getActionQueue(playerId)).length).to.eq(0);
     });
 
     it("Check random rewards", async function () {
@@ -1245,6 +1550,8 @@ describe("Combat Actions", function () {
       expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
       expect(player.currentActionProcessedXPGained2).to.eq(queuedAction.timespan / 2 / 3);
+      expect(player.currentActionProcessedSkill3).to.eq(0);
+      expect(player.currentActionProcessedXPGained3).to.eq(0);
       expect(player.currentActionProcessedFoodConsumed).to.eq(1);
       expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(5);
       // Do a bit more

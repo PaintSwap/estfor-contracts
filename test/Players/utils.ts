@@ -261,7 +261,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     equipPosition: EstforTypes.EquipPosition.FOOD,
   });
 
-  return {queuedAction, rate, numSpawned};
+  return {queuedAction, rate, numSpawned, choiceId};
 };
 
 export const setupBasicCooking = async function (

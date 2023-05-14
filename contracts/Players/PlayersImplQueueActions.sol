@@ -80,13 +80,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     ) {
       _setPrevPlayerState(player, currentActionProcessed);
     } else {
-      // clear it
-      player.currentActionProcessedSkill1 = Skill.NONE;
-      player.currentActionProcessedXPGained1 = 0;
-      player.currentActionProcessedSkill2 = Skill.NONE;
-      player.currentActionProcessedXPGained2 = 0;
-      player.currentActionProcessedFoodConsumed = 0;
-      player.currentActionProcessedBaseInputItemsConsumedNum = 0;
+      _clearCurrentActionProcessed(_playerId);
     }
 
     uint prevEndTime = block.timestamp.add(totalTimespan);
@@ -458,21 +452,30 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     _setActionQueue(_from, _playerId, queuedActions, attire, startTime);
   }
 
-  // Consumes all the actions in the queue up to this time.
-  // Unequips everything which is just emitting an event
-  // Mints the boost vial if it hasn't been consumed at all yet
-  // Removes all the actions from the queue
-  function clearEverything(address _from, uint _playerId) public {
-    _processActions(_from, _playerId);
-    // Ensure player info is cleared
+  function _clearCurrentActionProcessed(uint _playerId) private {
     Player storage player = players_[_playerId];
-    player.currentActionStartTime = 0;
     player.currentActionProcessedSkill1 = Skill.NONE;
     player.currentActionProcessedXPGained1 = 0;
     player.currentActionProcessedSkill2 = Skill.NONE;
     player.currentActionProcessedXPGained2 = 0;
+    player.currentActionProcessedSkill3 = Skill.NONE;
+    player.currentActionProcessedXPGained3 = 0;
     player.currentActionProcessedFoodConsumed = 0;
     player.currentActionProcessedBaseInputItemsConsumedNum = 0;
+  }
+
+  // Consumes all the actions in the queue up to this time.
+  // Unequips everything which is just emitting an event
+  // Mints the boost vial if it hasn't been consumed at all yet
+  // Removes all the actions from the queue
+  function clearEverything(address _from, uint _playerId, bool _processTheActions) public {
+    if (_processTheActions) {
+      _processActions(_from, _playerId);
+    }
+    // Ensure player info is cleared
+    _clearCurrentActionProcessed(_playerId);
+    Player storage player = players_[_playerId];
+    player.currentActionStartTime = 0;
 
     emit ClearAll(_from, _playerId);
     _clearActionQueue(_from, _playerId);
@@ -494,7 +497,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
     }
     if (existingActivePlayerId != 0) {
       // If there is an existing active player, unequip all items
-      clearEverything(_from, existingActivePlayerId);
+      clearEverything(_from, existingActivePlayerId, true);
     }
     emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
   }

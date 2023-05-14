@@ -165,14 +165,14 @@ describe("Rewards", function () {
       await players.addXPThresholdRewards([{xpThreshold: 1000, rewards: rewards1}]);
 
       // Test max level works
-      await expect(players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, 2070952))
+      await expect(players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, 2070952, false))
         .to.emit(players, "AddXP")
         .withArgs(alice.address, playerId, EstforTypes.Skill.MELEE, 2070952)
         .and.to.emit(players, "ClaimedXPThresholdRewards")
         .withArgs(alice.address, playerId, [EstforConstants.BRONZE_BAR, EstforConstants.BRONZE_HELMET], [3, 4]);
       expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
 
-      await expect(players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, 2080952))
+      await expect(players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, 2080952, false))
         .to.emit(players, "AddXP")
         .withArgs(alice.address, playerId, EstforTypes.Skill.MELEE, 10000)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");

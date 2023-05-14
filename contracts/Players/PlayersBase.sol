@@ -110,6 +110,7 @@ abstract contract PlayersBase {
   error EmptyTimespan();
   error PlayerAlreadyActive();
   error TestInvalidXP();
+  error HasQueuedActions();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -328,6 +329,8 @@ abstract contract PlayersBase {
     _player.currentActionProcessedXPGained1 = _currentActionProcessed.xpGained1;
     _player.currentActionProcessedSkill2 = _currentActionProcessed.skill2;
     _player.currentActionProcessedXPGained2 = _currentActionProcessed.xpGained2;
+    _player.currentActionProcessedSkill3 = _currentActionProcessed.skill3;
+    _player.currentActionProcessedXPGained3 = _currentActionProcessed.xpGained3;
     _player.currentActionProcessedFoodConsumed = _currentActionProcessed.foodConsumed;
     _player.currentActionProcessedBaseInputItemsConsumedNum = _currentActionProcessed.baseInputItemsConsumedNum;
   }
