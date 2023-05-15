@@ -157,7 +157,7 @@ contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase
 
     playerBoost.startTime = _startTime;
     playerBoost.duration = item.boostDuration;
-    playerBoost.val = item.boostValue;
+    playerBoost.value = item.boostValue;
     playerBoost.boostType = item.boostType;
     playerBoost.itemTokenId = _itemTokenId;
 

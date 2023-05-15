@@ -273,9 +273,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
       if (!hasRandomWord) {
         PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
         BoostType boostType;
-        uint16 boostValue;
-        uint24 boostDuration;
         uint40 boostStartTime;
+        uint16 boostItemTokenId;
         if (activeBoost.boostType == BoostType.GATHERING) {
           uint24 boostedTime = PlayersLibrary.getBoostedTime(
             _skillStartTime,
@@ -285,9 +284,8 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
           );
           if (boostedTime != 0) {
             boostType = activeBoost.boostType;
-            boostValue = activeBoost.val;
+            boostItemTokenId = activeBoost.itemTokenId;
             boostStartTime = activeBoost.startTime;
-            boostDuration = activeBoost.duration;
           }
         }
 
@@ -309,10 +307,10 @@ contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBa
             queueId: _queueId,
             startTime: _skillStartTime,
             xpElapsedTime: uint24(_xpElapsedTime),
+            elapsedTime: _elapsedTime,
             boostType: boostType,
-            boostValue: boostValue,
+            boostItemTokenId: boostItemTokenId,
             boostStartTime: boostStartTime,
-            boostDuration: boostDuration,
             fullAttireBonusRewardsPercent: fullAttireBonusRewardsPercent
           })
         );

@@ -247,7 +247,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return (royaltyReceiver, amount);
   }
 
-  function _getItem(uint16 _tokenId) private view returns (Item memory) {
+  function _getItem(uint16 _tokenId) private view returns (Item storage) {
     if (!exists(_tokenId)) {
       revert ItemDoesNotExist(_tokenId);
     }
@@ -312,6 +312,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     ItemNFTLibrary.setItem(_item, items[_item.tokenId]);
     item = items[_item.tokenId];
     tokenURIs[_item.tokenId] = _item.metadataURI;
+  }
+
+  function getBoostInfo(uint16 _tokenId) external view returns (uint16 boostValue, uint24 boostDuration) {
+    Item storage item = _getItem(_tokenId);
+    return (item.boostValue, item.boostDuration);
   }
 
   function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {

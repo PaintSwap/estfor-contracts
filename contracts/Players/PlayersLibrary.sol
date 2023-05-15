@@ -568,11 +568,11 @@ library PlayersLibrary {
   function _extraXPFromBoost(
     bool _isCombatSkill,
     uint _actionStartTime,
-    uint _elapsedTime,
+    uint _xpElapsedTime,
     uint24 _xpPerHour,
     PlayerBoostInfo storage activeBoost
   ) private view returns (uint32 boostPointsAccrued) {
-    if (activeBoost.itemTokenId != NONE && activeBoost.startTime < block.timestamp) {
+    if (activeBoost.itemTokenId != NONE && activeBoost.startTime < block.timestamp && _xpElapsedTime != 0) {
       // A boost is active
       BoostType boostType = activeBoost.boostType;
       if (
@@ -580,8 +580,13 @@ library PlayersLibrary {
         (_isCombatSkill && activeBoost.boostType == BoostType.COMBAT_XP) ||
         (!_isCombatSkill && activeBoost.boostType == BoostType.NON_COMBAT_XP)
       ) {
-        uint boostedTime = getBoostedTime(_actionStartTime, _elapsedTime, activeBoost.startTime, activeBoost.duration);
-        boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoost.val) / (3600 * 100));
+        uint boostedTime = getBoostedTime(
+          _actionStartTime,
+          _xpElapsedTime,
+          activeBoost.startTime,
+          activeBoost.duration
+        );
+        boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoost.value) / (3600 * 100));
       }
     }
   }
@@ -603,13 +608,13 @@ library PlayersLibrary {
     }
   }
 
-  function normalizeRewards(
+  function subtractMatchingRewards(
     uint[] calldata newIds,
     uint[] calldata newAmounts,
     uint[] calldata prevNewIds,
     uint[] calldata prevNewAmounts
   ) external pure returns (uint[] memory ids, uint[] memory amounts) {
-    // Subtract previous rewards. If amount is zero after, replace with end
+    // Subtract previous rewards. If amount is zero after, replace with end and reduce the array size
     ids = newIds;
     amounts = newAmounts;
     U256 prevNewIdsLength = prevNewIds.length.asU256();

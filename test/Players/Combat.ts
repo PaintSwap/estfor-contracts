@@ -871,8 +871,9 @@ describe("Combat Actions", function () {
     });
 
     it("Check random rewards", async function () {
-      const {playerId, players, world, itemNFT, alice, queuedAction, rate, numSpawned, mockOracleClient} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, world, itemNFT, alice, queuedAction, numSpawned, mockOracleClient} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -896,9 +897,11 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) - 2),
         BigNumber.from(numSpawned / (SPAWN_MUL * 2) - 1),
         BigNumber.from(numSpawned / (SPAWN_MUL * 2)),
         BigNumber.from(numSpawned / (SPAWN_MUL * 2) + 1),
+        BigNumber.from(numSpawned / (SPAWN_MUL * 2) + 2),
       ]); // Roughly 1/2 of the time
     });
 

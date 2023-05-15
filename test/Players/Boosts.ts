@@ -122,7 +122,7 @@ describe("Boosts", function () {
       );
     });
 
-    it("Boost end finish inbetween action start and end", async function () {
+    it("Boost end finishes in-between action start and end", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const boostValue = 50;
@@ -150,7 +150,7 @@ describe("Boosts", function () {
       await players
         .connect(alice)
         .startActions(playerId, [queuedActionFinishAfterBoost], EstforTypes.ActionQueueStatus.NONE);
-      await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired in action end
+      await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired inside action
       await ethers.provider.send("evm_mine", []);
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(

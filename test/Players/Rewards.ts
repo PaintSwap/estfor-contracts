@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import NONE, {BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
+import NONE, {ACTION_THIEVING_CHILD, BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
@@ -951,5 +951,64 @@ describe("Rewards", function () {
     // Confirm 0 XP but got wood
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.be.gt(0);
+  });
+
+  it("Check past random rewards which are claimed the following day don't cause issues with (many)", async function () {
+    const {playerId, players, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+    const randomChance = 32000; // 50%
+    let tx = await world.addAction({
+      actionId: ACTION_THIEVING_CHILD,
+      info: {
+        skill: EstforTypes.Skill.THIEVING,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: actionIsAvailable,
+        actionChoiceRequired: false,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [{itemTokenId: EstforConstants.LOG, chance: randomChance, amount: 255}],
+      combatStats: emptyCombatStats,
+    });
+    const actionId = await getActionId(tx);
+
+    const numHours = 3;
+    const timespan = numHours * 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    let requestId = getRequestId(await world.requestRandomWords());
+    await mockOracleClient.fulfill(requestId, world.address);
+
+    // Try many times as we are relying on random chance
+    for (let i = 0; i < 20; ++i) {
+      // Start the following day to keep things organised
+      const {timestamp} = await ethers.provider.getBlock("latest");
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400 * 2;
+      const durationToNextCheckpoint = nextCheckpoint - timestamp - (3 * 3600 + 10 + Math.floor(Math.random() * 10)); // 3 hours before the next checkpoint
+      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+      let requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [7200 + 4]);
+      await players.connect(alice).processActions(playerId); // Continues the action
+      await ethers.provider.send("evm_increaseTime", [12 * 3600]); // Go to tomorrow
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId); // Continues the action
+    }
   });
 });

@@ -299,7 +299,7 @@ contract PlayersImplMisc is
   function _getConsumablesEquipment(
     uint _playerId,
     uint _currentActionStartTime,
-    uint _elapsedTime,
+    uint _xpElapsedTime,
     ActionChoice calldata _actionChoice,
     uint16 _regenerateId,
     uint16 _foodConsumed,
@@ -354,16 +354,18 @@ contract PlayersImplMisc is
         (uint(baseInputItemsConsumedNum) * _actionChoice.outputAmount * successPercent) / 100
       );
 
-      // Check for any gathering boosts
-      PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
-      uint boostedTime = PlayersLibrary.getBoostedTime(
-        _currentActionStartTime,
-        _elapsedTime,
-        activeBoost.startTime,
-        activeBoost.duration
-      );
-      if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-        numProduced += uint16((boostedTime * numProduced * activeBoost.val) / (3600 * 100));
+      if (_xpElapsedTime != 0) {
+        // Check for any gathering boosts
+        PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
+        uint boostedTime = PlayersLibrary.getBoostedTime(
+          _currentActionStartTime,
+          _xpElapsedTime,
+          activeBoost.startTime,
+          activeBoost.duration
+        );
+        if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
+          numProduced += uint16((boostedTime * numProduced * activeBoost.value) / (_xpElapsedTime * 100));
+        }
       }
 
       if (numProduced != 0) {
@@ -434,7 +436,7 @@ contract PlayersImplMisc is
     (consumedEquipment, producedEquipment) = _getConsumablesEquipment(
       _playerId,
       _currentActionStartTime,
-      _elapsedTime,
+      xpElapsedTime,
       _actionChoice,
       _queuedAction.regenerateId,
       foodConsumed,
@@ -468,6 +470,7 @@ contract PlayersImplMisc is
     // Processed
     uint prevProcessedTime = queuedAction.prevProcessedTime;
     uint veryStartTime = startTime.sub(prevProcessedTime);
+    uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
 
     // Total used
     if (prevProcessedTime > 0) {
@@ -478,15 +481,13 @@ contract PlayersImplMisc is
       (Equipment[] memory prevConsumedEquipments, Equipment memory prevProducedEquipment) = _getConsumablesEquipment(
         _playerId,
         veryStartTime,
-        prevProcessedTime,
+        prevXPElapsedTime,
         actionChoice,
         queuedAction.regenerateId,
         currentActionProcessedFoodConsumed,
         _pendingQueuedActionProcessed,
         currentActionProcessedBaseInputItemsConsumedNum
       );
-
-      uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
 
       // Copy existing pending
       PendingQueuedActionEquipmentState

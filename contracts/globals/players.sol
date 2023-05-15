@@ -72,7 +72,7 @@ struct Item {
 struct PlayerBoostInfo {
   uint40 startTime;
   uint24 duration;
-  uint16 val;
+  uint16 value;
   uint16 itemTokenId; // Get the effect of it
   BoostType boostType;
 }
