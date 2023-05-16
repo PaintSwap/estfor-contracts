@@ -166,22 +166,19 @@ export const playersFixture = async function () {
   )) as Players;
 
   const Bank = await ethers.getContractFactory("Bank");
-  const bank = await Bank.deploy();
+  const bank = await upgrades.deployBeacon(Bank);
 
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = await upgrades.deployProxy(
     BankRegistry,
-    [bank.address, itemNFT.address, playerNFT.address, clans.address, players.address],
+    [itemNFT.address, playerNFT.address, clans.address, players.address],
     {
       kind: "uups",
     }
   );
 
-  const BankProxy = await ethers.getContractFactory("BankProxy");
-  const bankProxy = await BankProxy.deploy(bankRegistry.address);
-
   const BankFactory = await ethers.getContractFactory("BankFactory");
-  const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
+  const bankFactory = await upgrades.deployProxy(BankFactory, [bankRegistry.address, bank.address], {
     kind: "uups",
   });
 

@@ -9,7 +9,8 @@ import {IClans} from "../interfaces/IClans.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
-  address public bankImpl;
+  /// @custom:oz-renamed-from bankImpl
+  address public dummy;
   IERC1155 public itemNFT;
   IERC1155 public playerNFT;
   IClans public clans;
@@ -20,24 +21,19 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(
-    address _bankImpl,
-    IERC1155 _itemNFT,
-    IERC1155 _playerNFT,
-    IClans _clans,
-    IPlayers _players
-  ) public initializer {
+  function initialize(IERC1155 _itemNFT, IERC1155 _playerNFT, IClans _clans, IPlayers _players) public initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
-    bankImpl = _bankImpl;
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
     clans = _clans;
     players = _players;
   }
 
+  // This is only to allow upgrading the bank implementation of beta clans created
+  // in the first week which did not use the beacon proxy setup, used the now deleted BankProxy.sol
   function setBankImpl(address _bankImpl) external onlyOwner {
-    bankImpl = _bankImpl;
+    dummy = _bankImpl;
   }
 
   // solhint-disable-next-line no-empty-blocks

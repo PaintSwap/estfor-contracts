@@ -222,7 +222,7 @@ async function main() {
   console.log(`clans = "${clans.address.toLowerCase()}"`);
 
   const Bank = await ethers.getContractFactory("Bank");
-  const bank = await Bank.deploy();
+  const bank = await upgrades.deployBeacon(Bank);
   await bank.deployed();
   console.log(`bank = "${bank.address.toLowerCase()}"`);
 
@@ -290,7 +290,7 @@ async function main() {
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = await upgrades.deployProxy(
     BankRegistry,
-    [bank.address, itemNFT.address, playerNFT.address, clans.address, players.address],
+    [itemNFT.address, playerNFT.address, clans.address, players.address],
     {
       kind: "uups",
     }
@@ -298,13 +298,8 @@ async function main() {
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
 
-  const BankProxy = await ethers.getContractFactory("BankProxy");
-  const bankProxy = await BankProxy.deploy(bankRegistry.address);
-  await bankProxy.deployed();
-  console.log(`bankProxy = "${bankProxy.address.toLowerCase()}"`);
-
   const BankFactory = await ethers.getContractFactory("BankFactory");
-  const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bankProxy.address], {
+  const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bank.address], {
     kind: "uups",
   })) as BankFactory;
   await bankFactory.deployed();
@@ -328,7 +323,6 @@ async function main() {
         clans.address,
         bank.address,
         bankRegistry.address,
-        bankProxy.address,
         bankFactory.address,
       ];
       console.log("Verifying contracts...");

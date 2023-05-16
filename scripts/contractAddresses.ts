@@ -34,7 +34,7 @@ if (isBeta) {
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
-  bank = "0x804636b4ce117478f84744d3b340d98d3a138bd0";
+  bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
   playersLibrary = "0xc882b01a057ac60ffaa4af59ad3b1e58888eb810";
   playersImplQueueActions = "0x21576b3a10a1ee66695b99d0c420053e3ea67ff1";
   playersImplProcessActions = "0x5c541142356cab68f9ac2745271aec5b4d985c09";
@@ -59,7 +59,6 @@ if (isBeta) {
   clans = "";
   bank = "";
   bankRegistry = "";
-  bankProxy = "";
   bankFactory = "";
   playersLibrary = "";
   playersImplQueueActions = "";
@@ -81,7 +80,7 @@ export const QUESTS_ADDRESS = quests;
 export const CLANS_ADDRESS = clans;
 export const BANK_ADDRESS = bank;
 export const BANK_REGISTRY_ADDRESS = bankRegistry;
-export const BANK_PROXY_ADDRESS = bankProxy;
+export const BANK_PROXY_ADDRESS = bankProxy; // Only used for old beta clans
 export const BANK_FACTORY_ADDRESS = bankFactory;
 
 export const ESTFOR_LIBRARY_ADDRESS = estforLibrary;

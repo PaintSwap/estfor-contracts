@@ -64,7 +64,7 @@ PlayerNFT [0xde70e49756322afdf7714d3aca963abcb4547b8d](https://ftmscan.com/addre
 Quests [0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9](https://ftmscan.com/address/0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9)
 
 Clans [0xd35410f526db135f09bb8e2bb066c8a63135d812](https://ftmscan.com/address/0xd35410f526db135f09bb8e2bb066c8a63135d812)  
-Bank Impl [0x804636b4ce117478f84744d3b340d98d3a138bd0](https://ftmscan.com/address/0x804636b4ce117478f84744d3b340d98d3a138bd0)
+Bank Beacon [0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e](https://ftmscan.com/address/0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e)
 
 PlayersLibrary [0xc882b01a057ac60ffaa4af59ad3b1e58888eb810](https://ftmscan.com/address/0xc882b01a057ac60ffaa4af59ad3b1e58888eb810)  
 PlayersImplQueueActions [0x21576b3a10a1ee66695b99d0c420053e3ea67ff1](https://ftmscan.com/address/0x21576b3a10a1ee66695b99d0c420053e3ea67ff1)  

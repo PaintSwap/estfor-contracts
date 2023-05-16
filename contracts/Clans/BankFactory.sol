@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
-import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IBank} from "../interfaces/IBank.sol";
@@ -19,7 +19,8 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   mapping(uint clanId => address bank) public bankAddress;
   // Keeps track of which vault addresses have been created here
   mapping(address => bool) public createdHere;
-  address public bankUpgradeableProxy;
+  /// @custom:oz-renamed-from bankUpgradeableProxy
+  address public bankBeacon;
   address public bankRegistry;
 
   modifier onlyClans() {
@@ -34,11 +35,11 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     _disableInitializers();
   }
 
-  function initialize(address _bankRegistry, address _bankUpgradeableProxy) external initializer {
+  function initialize(address _bankRegistry, address _bankBeacon) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
     bankRegistry = _bankRegistry;
-    bankUpgradeableProxy = _bankUpgradeableProxy;
+    bankBeacon = _bankBeacon;
   }
 
   function createBank(address _from, uint _clanId) external onlyClans returns (address) {
@@ -46,13 +47,19 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
       revert BankAlreadyCreated();
     }
 
-    // Create new Bank contract with EIP 1167
-    address bankContractClone = Clones.clone(bankUpgradeableProxy);
-    IBank(bankContractClone).initialize(_clanId, bankRegistry);
-    createdHere[bankContractClone] = true;
-    bankAddress[_clanId] = bankContractClone;
-    emit BankContractCreated(_from, _clanId, bankContractClone);
-    return bankContractClone;
+    // Create new Bank contract with EIP 1167 beacon proxy
+    BeaconProxy proxy = new BeaconProxy(
+      bankBeacon,
+      abi.encodeWithSelector(IBank.initialize.selector, _clanId, bankRegistry)
+    );
+    createdHere[address(proxy)] = true;
+    bankAddress[_clanId] = address(proxy);
+    emit BankContractCreated(_from, _clanId, address(proxy));
+    return address(proxy);
+  }
+
+  function setBeacon(address _bankBeacon) external onlyOwner {
+    bankBeacon = _bankBeacon;
   }
 
   // solhint-disable-next-line no-empty-blocks

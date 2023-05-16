@@ -16,7 +16,6 @@ import {
   CLANS_ADDRESS,
   BANK_ADDRESS,
   BANK_REGISTRY_ADDRESS,
-  BANK_PROXY_ADDRESS,
   BANK_FACTORY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContract, verifyContracts} from "./utils";
@@ -44,8 +43,6 @@ async function main() {
   ];
 
   await verifyContracts(addresses);
-
-  await verifyContract(BANK_PROXY_ADDRESS, [BANK_REGISTRY_ADDRESS]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
