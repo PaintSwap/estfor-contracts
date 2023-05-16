@@ -1,3 +1,4 @@
+import {upgrades} from "hardhat";
 import {
   ADMIN_ACCESS_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -18,7 +19,7 @@ import {
   BANK_REGISTRY_ADDRESS,
   BANK_FACTORY_ADDRESS,
 } from "./contractAddresses";
-import {verifyContract, verifyContracts} from "./utils";
+import {verifyContracts} from "./utils";
 
 async function main() {
   const addresses = [
@@ -33,6 +34,7 @@ async function main() {
     QUESTS_ADDRESS,
     CLANS_ADDRESS,
     BANK_ADDRESS,
+    await upgrades.beacon.getImplementationAddress(BANK_ADDRESS),
     BANK_REGISTRY_ADDRESS,
     BANK_FACTORY_ADDRESS,
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
