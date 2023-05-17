@@ -41,31 +41,31 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.SHADOW_SCROLL,
-    price: ethers.utils.parseEther("0.05"),
+    price: ethers.utils.parseEther("0.01"),
   },
   {
     tokenId: EstforConstants.NATURE_SCROLL,
-    price: ethers.utils.parseEther("0.05"),
+    price: ethers.utils.parseEther("0.01"),
   },
   {
     tokenId: EstforConstants.AQUA_SCROLL,
-    price: ethers.utils.parseEther("0.10"),
+    price: ethers.utils.parseEther("0.02"),
   },
   {
     tokenId: EstforConstants.HELL_SCROLL,
-    price: ethers.utils.parseEther("0.10"),
+    price: ethers.utils.parseEther("0.02"),
   },
   {
     tokenId: EstforConstants.AIR_SCROLL,
-    price: ethers.utils.parseEther("0.25"),
+    price: ethers.utils.parseEther("0.05"),
   },
   {
     tokenId: EstforConstants.BARRAGE_SCROLL,
-    price: ethers.utils.parseEther("0.5"),
+    price: ethers.utils.parseEther("0.1"),
   },
   {
     tokenId: EstforConstants.FREEZE_SCROLL,
-    price: ethers.utils.parseEther("0.5"),
+    price: ethers.utils.parseEther("0.1"),
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
