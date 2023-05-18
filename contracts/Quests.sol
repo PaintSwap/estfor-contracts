@@ -456,7 +456,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     uint _burnedAmountOwned
   ) private view returns (uint amountBurned) {
     // Handle quest that burns and requires actions to be done at the same time
-    uint burnRemainingAmount = _quest.burnAmount - _playerQuest.burnCompletedAmount;
+    uint burnRemainingAmount = _quest.burnAmount > _playerQuest.burnCompletedAmount
+      ? _quest.burnAmount - _playerQuest.burnCompletedAmount
+      : 0;
     amountBurned = Math.min(burnRemainingAmount, _burnedAmountOwned);
     if (amountBurned != 0) {
       _playerQuest.burnCompletedAmount += uint16(amountBurned);
@@ -488,7 +490,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
       if (quest.actionId1 == _actionIds[i]) {
-        uint remainingAmount = quest.actionNum1 - _playerQuest.actionCompletedNum1;
+        uint remainingAmount = quest.actionNum1 > _playerQuest.actionCompletedNum1
+          ? quest.actionNum1 - _playerQuest.actionCompletedNum1
+          : 0;
         uint amount = Math.min(remainingAmount, _actionAmounts[i]);
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
           amount = Math.min(_burnedAmountOwned, amount);
@@ -503,7 +507,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
       if (quest.actionChoiceId == _choiceIds[i]) {
-        uint remainingAmount = quest.actionChoiceNum - _playerQuest.actionChoiceCompletedNum;
+        uint remainingAmount = quest.actionChoiceNum > _playerQuest.actionChoiceCompletedNum
+          ? quest.actionChoiceNum - _playerQuest.actionChoiceCompletedNum
+          : 0;
         uint amount = Math.min(remainingAmount, _choiceAmounts[i]);
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
           amount = Math.min(_burnedAmountOwned, amount);

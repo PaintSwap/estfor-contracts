@@ -1,6 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions";
 import {
+  ACTION_WOODCUTTING_LOG,
   COOKED_MINNUS,
   QUEST_ALMS_POOR,
   QUEST_HIDDEN_BOUNTY,
@@ -15,7 +16,7 @@ import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat, setupBasicWoodcutting} from "./Players/utils";
-import {emptyActionChoice, getActionChoiceId, getActionId, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
+import {emptyActionChoice, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -177,6 +178,52 @@ describe("Quests", function () {
         "QuestDoesntExist"
       );
     });
+
+    it("Lowering amounts where amount completed is already above should not cause underflows (actionNum1)", async function () {
+      const {alice, playerId, quests, players, itemNFT, world} = await loadFixture(playersFixture);
+      // Check that this is not marked as completed automatically
+      const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+      const quest = {
+        questId: 1,
+        dependentQuestId: 0,
+        actionId1: ACTION_WOODCUTTING_LOG,
+        actionNum1: rate / GUAR_MUL,
+        actionId2: NONE,
+        actionNum2: 0,
+        actionChoiceId: 0,
+        actionChoiceNum: 0,
+        skillReward: Skill.NONE,
+        skillXPGained: 0,
+        rewardItemTokenId1: NONE,
+        rewardAmount1: 0,
+        rewardItemTokenId2: NONE,
+        rewardAmount2: 0,
+        burnItemTokenId: NONE,
+        burnAmount: 0,
+        requireActionsCompletedBeforeBurning: false,
+      };
+
+      await quests.addQuests([quest], [false], [defaultMinRequirements]);
+      const questId = quest.questId;
+      await players.connect(alice).activateQuest(playerId, questId);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [1800]);
+      await players.connect(alice).processActions(playerId);
+
+      quest.actionNum1 = rate / (GUAR_MUL * 4);
+      await quests.editQuest(quest, defaultMinRequirements);
+      await ethers.provider.send("evm_increaseTime", [1800]); // Finish
+      await ethers.provider.send("evm_mine", []);
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.quests.questsCompleted.length).is.eq(1);
+
+      await expect(players.connect(alice).processActions(playerId)).to.not.be.reverted;
+    });
+
+    it("TODO - Lowering amounts where amount completed is already above should not cause underflows (actionNum2)", async function () {});
+    it("TODO - Lowering amounts where amount completed is already above should not cause underflows (actionChoiceNum1)", async function () {});
+    it("TODO - Lowering amounts where amount completed is already above should not cause underflows (burnAmount)", async function () {});
   });
 
   describe("Set new oracle random words", function () {
