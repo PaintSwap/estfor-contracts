@@ -832,7 +832,7 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
     });
 
-    it("Emergency clearEverything", async function () {
+    it("clearEverything", async function () {
       const {playerId, players, alice, world, itemNFT, choiceId, quests} = await loadFixture(playersFixtureMelee);
 
       await itemNFT.addItem({
@@ -865,7 +865,6 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.DEFENCE, 250, true);
       await ethers.provider.send("evm_increaseTime", [240]);
-      await expect(players.connect(alice).processActions(playerId)).to.be.reverted;
       await expect(players.connect(alice).clearEverything(playerId)).to.not.be.reverted;
       expect((await players.getActionQueue(playerId)).length).to.eq(0);
     });

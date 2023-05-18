@@ -541,9 +541,13 @@ contract PlayersImplMisc is
         bool nonZero = true;
         for (uint k = 0; k < prevConsumedEquipments.length; ++k) {
           if (__consumedEquipments[j].itemTokenId == prevConsumedEquipments[k].itemTokenId) {
-            __consumedEquipments[j].amount = uint24(
-              __consumedEquipments[j].amount.sub(prevConsumedEquipments[k].amount)
-            );
+            if (__consumedEquipments[j].amount >= prevConsumedEquipments[k].amount) {
+              __consumedEquipments[j].amount = uint24(
+                __consumedEquipments[j].amount.sub(prevConsumedEquipments[k].amount)
+              );
+            } else {
+              __consumedEquipments[j].amount = 0;
+            }
             nonZero = __consumedEquipments[j].amount != 0;
             break;
           }
@@ -558,7 +562,11 @@ contract PlayersImplMisc is
       }
 
       // Do the same for outputEquipment, check if it exists and subtract amount
-      producedEquipment.amount = uint24(producedEquipment.amount.sub(prevProducedEquipment.amount));
+      if (producedEquipment.amount >= prevProducedEquipment.amount) {
+        producedEquipment.amount = uint24(producedEquipment.amount.sub(prevProducedEquipment.amount));
+      } else {
+        producedEquipment.amount = 0;
+      }
       if (producedEquipment.amount == 0) {
         producedEquipment.itemTokenId = NONE;
       }
@@ -572,11 +580,13 @@ contract PlayersImplMisc is
         baseInputItemsConsumedNum = uint16(
           baseInputItemsConsumedNum.sub(currentActionProcessedBaseInputItemsConsumedNum)
         );
+      } else {
+        baseInputItemsConsumedNum = 0;
       }
 
       if (foodConsumed >= currentActionProcessedFoodConsumed) {
         foodConsumed = uint16(foodConsumed.sub(currentActionProcessedFoodConsumed));
-      } else if (currentActionProcessedFoodConsumed > 0) {
+      } else {
         // Could be lower if combat equation changes later
         foodConsumed = 0;
       }
