@@ -9,7 +9,7 @@ describe("EstforLibrary", function () {
     return {playersLibrary};
   }
 
-  it("GetLevel", async () => {
+  it("getLevel", async () => {
     const {playersLibrary} = await loadFixture(deployContracts);
     expect(await playersLibrary.getLevel(0)).to.eq(1);
     expect(await playersLibrary.getLevel(1035475)).to.eq(98); // 1 below 99
@@ -19,10 +19,10 @@ describe("EstforLibrary", function () {
     expect(await playersLibrary.getLevel(1209796)).to.eq(100); // Above 100
   });
 
-  it("GetBoostedTime", async () => {
+  it("getBoostedTime", async () => {
     const {playersLibrary} = await loadFixture(deployContracts);
 
-    // action start, elapsed, boost start, boost duration
+    // Order of getBoostedTime: action start, elapsed, boost start, boost duration
 
     // action start == boost start and same duration
     expect(await playersLibrary.getBoostedTime(0, 10, 0, 10)).to.eq(10); // boost start == action start, boost end == action end. (boost duration)
@@ -60,5 +60,93 @@ describe("EstforLibrary", function () {
     if boost start < action start, boost end < action end. // (boost end - action start)
     if (boost start > action start, boost end > action end). //(action end - boost start)
 */
+  });
+
+  it("dmg", async () => {
+    const {playersLibrary} = await loadFixture(deployContracts);
+
+    const alphaCombat = 1;
+    const betaCombat = 1;
+    let elapsedTime = 60;
+
+    let attack = 10;
+    let defence = 0;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(30);
+
+    attack = 10;
+    defence = 5;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(25);
+
+    attack = 10;
+    defence = 10;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(20);
+
+    attack = 10;
+    defence = 15;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(15);
+
+    attack = 10;
+    defence = 20;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(10);
+
+    attack = 10;
+    defence = 25;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(5);
+
+    attack = 10;
+    defence = 28;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(2);
+
+    attack = 10;
+    defence = 29;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(1);
+
+    // Limited to 1dmg/min
+    attack = 10;
+    defence = 30;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(1);
+
+    attack = 10;
+    defence = 31;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(1);
+
+    attack = 10;
+    defence = 100;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(1);
+
+    attack = 20;
+    defence = 10;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(50);
+
+    attack = 10;
+    defence = -5;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(35);
+
+    attack = 10;
+    defence = -10;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(40);
+
+    // A higher negative defence has no effect
+    attack = 10;
+    defence = -15;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(40);
+
+    // A much higher negative defence has no effect
+    attack = 10;
+    defence = -100;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(40);
+
+    // Having no attack should do no damage despite having a negative defence
+    attack = 0;
+    defence = -10;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(0);
+
+    attack = 0;
+    defence = 0;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(0);
+
+    attack = 0;
+    defence = 10;
+    expect(await playersLibrary.dmg(attack, defence, alphaCombat, betaCombat, elapsedTime)).to.eq(0);
   });
 });

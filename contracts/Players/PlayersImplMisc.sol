@@ -576,6 +576,9 @@ contract PlayersImplMisc is
 
       if (foodConsumed >= currentActionProcessedFoodConsumed) {
         foodConsumed = uint16(foodConsumed.sub(currentActionProcessedFoodConsumed));
+      } else {
+        // Could be lower if combat equation changes later
+        foodConsumed = 0;
       }
     } else {
       (

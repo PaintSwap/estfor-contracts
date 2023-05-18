@@ -71,7 +71,7 @@ describe("Combat Actions", function () {
       );
 
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 2);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 1);
       // Only no 0 id items produced
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NONE)).to.eq(0);
     });
@@ -117,7 +117,7 @@ describe("Combat Actions", function () {
         Math.floor((queuedAction.timespan * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 2);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 1);
     });
 
     it("No defence equipment", async function () {
@@ -155,7 +155,7 @@ describe("Combat Actions", function () {
       );
 
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 3);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 2);
     });
 
     it("Don't kill anything", async function () {
@@ -205,7 +205,7 @@ describe("Combat Actions", function () {
       );
 
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 2);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 1);
     });
 
     it("Equip shield", async function () {
@@ -258,7 +258,7 @@ describe("Combat Actions", function () {
       );
 
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 2);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 1);
     });
 
     it("Check multi-loot drops", async function () {
@@ -434,7 +434,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
-      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(10);
+      expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(5);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Killed none
     });
 
@@ -673,7 +673,7 @@ describe("Combat Actions", function () {
       expect(player.currentActionProcessedXPGained2).to.eq(381);
       expect(player.currentActionProcessedSkill3).to.eq(Skill.DEFENCE);
       expect(player.currentActionProcessedXPGained3).to.eq(250);
-      expect(player.currentActionProcessedFoodConsumed).to.eq(1886);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(1257);
       expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
 
       // Before it would fail here
@@ -826,7 +826,7 @@ describe("Combat Actions", function () {
       expect(player.currentActionProcessedXPGained2).to.eq(381 + 250);
       expect(player.currentActionProcessedSkill3).to.eq(Skill.DEFENCE);
       expect(player.currentActionProcessedXPGained3).to.eq(250);
-      expect(player.currentActionProcessedFoodConsumed).to.eq(1886);
+      expect(player.currentActionProcessedFoodConsumed).to.eq(1257);
       expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
 
       await players.connect(alice).processActions(playerId);
@@ -1455,7 +1455,7 @@ describe("Combat Actions", function () {
       );
 
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 5);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 4);
 
       // Check that scrolls are consumed
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(200 - 20);
@@ -1514,6 +1514,37 @@ describe("Combat Actions", function () {
         .not.be.reverted;
     });
 
+    it("Large negative magic defence should not have a big effect against low combat enemies ", async function () {
+      const {
+        playerId,
+        players,
+        alice,
+        itemNFT,
+        queuedAction: magicQueuedAction,
+      } = await loadFixture(playersFixtureMagic);
+
+      await itemNFT.addItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.IRON_GAUNTLETS,
+        equipPosition: EstforTypes.EquipPosition.ARMS,
+        combatStats: {...EstforTypes.emptyCombatStats, magicDefence: -10000},
+      });
+
+      const queuedAction = {
+        ...magicQueuedAction,
+        attire: {...magicQueuedAction.attire, arms: EstforConstants.IRON_GAUNTLETS},
+        timespan: 24 * 3600,
+      };
+
+      await itemNFT.testMint(alice.address, EstforConstants.IRON_GAUNTLETS, 1);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      // Confirm you aren't dead
+      expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
+    });
+
     it("No scrolls equipped during processing action", async function () {
       const {playerId, players, itemNFT, alice, queuedAction, startXP} = await loadFixture(playersFixtureMagic);
 
@@ -1528,7 +1559,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       // Check food is consumed
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 45);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 40);
 
       // Check that no scrolls are consumed
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(0);
@@ -1875,8 +1906,8 @@ describe("Combat Actions", function () {
 
     await players.connect(alice).processActions(playerId);
     // Should die, but still get skill points & loot for the ones you did kill. Also food should be consumed
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(1188);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(198000);
+    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(1332);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(222000);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
 
     // Have no food, should not show any in consumed

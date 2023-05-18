@@ -271,20 +271,27 @@ library PlayersLibrary {
     return a > b ? a : b;
   }
 
-  function _dmg(
+  function dmg(
     int attack,
     int defence,
     uint8 _alphaCombat,
     uint8 _betaCombat,
     uint _elapsedTime
-  ) private pure returns (uint32) {
+  ) public pure returns (uint32) {
+    if (attack == 0) {
+      return 0;
+    }
+    // Negative defence is capped at the negative of the attack value.
+    // So attack of 10 and defence of -15 is the same as attack -10.
+    if (defence < 0) {
+      defence = _max(-attack, defence);
+    }
+    // Formula is max(1, a(atk) + b(2 * atk - def))
+    // Always do at least 1 damage per minute (assuming attack is positive)
     return
-      // Formula is max(1, a(atk) + b(2 * atk - def))
-      // Always do at least 1 damage per minute
       uint32(
         int32(
-          (_max(1, int128(attack) * int8(_alphaCombat) + (attack * 2 - defence) * int8(_betaCombat)) *
-            int(_elapsedTime)) / 60
+          (_max(1, attack * int8(_alphaCombat) + (attack * 2 - defence) * int8(_betaCombat)) * int(_elapsedTime)) / 60
         )
       );
   }
@@ -329,7 +336,7 @@ library PlayersLibrary {
     }
   }
 
-  function _getDmg(
+  function _getDmgDealtByPlayer(
     ActionChoice calldata _actionChoice,
     CombatStats memory _combatStats,
     CombatStats calldata _enemyCombatStats,
@@ -338,10 +345,10 @@ library PlayersLibrary {
     uint _elapsedTime
   ) private pure returns (uint32 dmgDealt) {
     if (_actionChoice.skill == Skill.MELEE) {
-      dmgDealt = _dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
+      dmgDealt = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
     } else if (_actionChoice.skill == Skill.MAGIC) {
       _combatStats.magic += _actionChoice.skillDiff; // Extra/Reduced magic damage
-      dmgDealt = _dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
+      dmgDealt = dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
     }
   }
 
@@ -371,7 +378,14 @@ library PlayersLibrary {
   {
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
     uint respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
-    uint32 dmgDealt = _getDmg(_actionChoice, _combatStats, _enemyCombatStats, _alphaCombat, _betaCombat, respawnTime);
+    uint32 dmgDealt = _getDmgDealtByPlayer(
+      _actionChoice,
+      _combatStats,
+      _enemyCombatStats,
+      _alphaCombat,
+      _betaCombat,
+      respawnTime
+    );
 
     uint numKilled;
     bool canKillAll = dmgDealt > uint16(_enemyCombatStats.health);
@@ -422,14 +436,14 @@ library PlayersLibrary {
     }
 
     // Also check food consumed
-    uint32 totalHealthLost = _dmg(
+    uint32 totalHealthLost = dmg(
       _enemyCombatStats.melee,
       _combatStats.meleeDefence,
       _alphaCombat,
       _betaCombat,
       combatElapsedTime
     );
-    totalHealthLost += _dmg(
+    totalHealthLost += dmg(
       _enemyCombatStats.magic,
       _combatStats.magicDefence,
       _alphaCombat,
