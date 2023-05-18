@@ -498,6 +498,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
           amount = Math.min(_burnedAmountOwned, amount);
           amount = _addToBurn(quest, _playerQuest, amount);
           amountBurned += amount;
+
+          if (
+            amount == 0 &&
+            _playerQuest.burnCompletedAmount >= quest.burnAmount &&
+            _playerQuest.actionCompletedNum1 < quest.actionNum1
+          ) {
+            // Needed in case the quest is changed later where the amount to burn has already been exceeded
+            _playerQuest.actionCompletedNum1 = _playerQuest.burnCompletedAmount;
+          }
         }
         _playerQuest.actionCompletedNum1 += uint16(amount);
       }
@@ -515,6 +524,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
           amount = Math.min(_burnedAmountOwned, amount);
           amount = _addToBurn(quest, _playerQuest, amount);
           amountBurned += amount;
+
+          if (
+            amount == 0 &&
+            _playerQuest.burnCompletedAmount >= quest.burnAmount &&
+            _playerQuest.actionChoiceCompletedNum < quest.actionChoiceNum
+          ) {
+            // Needed in case the quest is changed later where the amount to burn has already been exceeded
+            _playerQuest.actionChoiceCompletedNum = _playerQuest.burnCompletedAmount;
+          }
         }
         _playerQuest.actionChoiceCompletedNum += uint16(amount);
       }
