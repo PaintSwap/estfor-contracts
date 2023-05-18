@@ -283,9 +283,8 @@ library PlayersLibrary {
     }
     // Negative defence is capped at the negative of the attack value.
     // So attack of 10 and defence of -15 is the same as attack -10.
-    if (defence < 0) {
-      defence = _max(-attack, defence);
-    }
+    defence = _max(-attack, defence);
+
     // Formula is max(1, a(atk) + b(2 * atk - def))
     // Always do at least 1 damage per minute (assuming attack is positive)
     return
