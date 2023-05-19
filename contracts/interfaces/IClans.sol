@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 interface IClans {
   function canWithdraw(uint _clanId, uint _playerId) external view returns (bool);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import {Skill, Attire, CombatStyle, CombatStats} from "./misc.sol";
 import {GuaranteedReward, RandomReward} from "./rewards.sol";

@@ -8,7 +8,7 @@ All the smart contract code for the Estfor Kingdom RPG game on the Fantom Blockc
 
 Make sure `yarn` is installed (or replace with equivalent npm instructions)
 
-These contracts use hardhat and require solidity 0.8.19 at minimum.
+These contracts use hardhat and require solidity 0.8.20 at minimum.
 
 Install dependencies:
 
