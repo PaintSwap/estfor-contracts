@@ -136,7 +136,8 @@ library EstforLibrary {
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
       bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
-      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit) {
+      bool isPlus = char == 0x2B; // "+"
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isPlus) {
         return false;
       }
     }

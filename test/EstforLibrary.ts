@@ -2,14 +2,15 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 
-describe("EstforLibrary", function () {
+describe.only("EstforLibrary", function () {
   async function deployContracts() {
     const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
     const estforLibrary = await EstforLibrary.deploy();
     const upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
     const digits = "0123456789";
-    return {estforLibrary, upperCaseLetters, lowerCaseLetters, digits};
+    const telegramSymbols = "+";
+    return {estforLibrary, upperCaseLetters, lowerCaseLetters, digits, telegramSymbols};
   }
 
   it("Trim string", async () => {
@@ -54,11 +55,13 @@ describe("EstforLibrary", function () {
   });
 
   it("Validate telegram handle", async () => {
-    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits} = await loadFixture(deployContracts);
-    const allowedCharacters = upperCaseLetters + lowerCaseLetters + digits;
+    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits, telegramSymbols} = await loadFixture(
+      deployContracts
+    );
+    const allowedCharacters = upperCaseLetters + lowerCaseLetters + digits + telegramSymbols;
     expect(await estforLibrary.containsValidTelegramCharacters(allowedCharacters)).to.be.true;
 
-    const nonAllowedCharacters = "@!#$%^&*()+={}[]|;\"'<>,/?`~ _-.";
+    const nonAllowedCharacters = "@!#$%^&*()={}[]|;\"'<>,/?`~ _-.";
     for (const char of nonAllowedCharacters) {
       expect(await estforLibrary.containsValidTelegramCharacters(char)).to.be.false;
     }
