@@ -15,6 +15,8 @@ import "./globals/items.sol";
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   using UnsafeMath for U256;
+  using UnsafeMath for uint40;
+  using UnsafeMath for uint80;
   using UnsafeMath for uint256;
 
   event AddShopItem(ShopItem shopItem);
@@ -48,8 +50,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   uint public constant SELLING_CUTOFF_DURATION = 2 days;
 
   struct TokenAllocation {
-    uint128 allocationRemaining;
-    uint checkpointTimestamp; // 00:00 UTC
+    uint80 allocationRemaining;
+    uint80 price;
+    uint40 checkpointTimestamp; // 00:00 UTC
   }
 
   mapping(uint tokenId => TokenAllocation) public tokenAllocations;
@@ -71,16 +74,27 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     dev = _dev;
   }
 
-  function liquidatePrice(uint16 _tokenId) public view returns (uint price) {
-    uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / itemNFT.numUniqueItems();
+  function _liquidatePrice(uint16 _tokenId, uint _totalBrushPerItem) private view returns (uint80 price) {
+    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
+    if ((block.timestamp / 1 days) * 1 days > tokenAllocation.checkpointTimestamp.add(1 days)) {
+      if (totalOfThisItem > 0) {
+        price = uint80(_totalBrushPerItem / totalOfThisItem);
+      }
+    } else {
+      price = uint80(tokenAllocation.price);
+    }
+
     if (totalOfThisItem < 100) {
       // Needs to have a minimum of an item before any can be sold.
       price = 0;
-    } else {
-      price = totalBrushForItem / totalOfThisItem;
     }
+  }
+
+  function liquidatePrice(uint16 _tokenId) public view returns (uint80 price) {
+    uint totalBrush = brush.balanceOf(address(this));
+    uint totalBrushForItem = totalBrush / itemNFT.numUniqueItems();
+    return _liquidatePrice(_tokenId, totalBrushForItem);
   }
 
   function liquidatePrices(uint16[] calldata _tokenIds) external view returns (uint[] memory prices) {
@@ -96,13 +110,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
-      uint totalOfThisItem = itemNFT.itemBalances(_tokenIds[i]);
-      if (totalOfThisItem < 100) {
-        // Need to be a minimum of an item before any can be sold.
-        prices[i] = 0;
-      } else {
-        prices[i] = totalBrushForItem / totalOfThisItem;
-      }
+      prices[i] = _liquidatePrice(_tokenIds[i], totalBrushForItem);
     }
   }
 
@@ -174,9 +182,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     uint allocationRemaining;
     if ((block.timestamp / 1 days) * 1 days > tokenAllocation.checkpointTimestamp.add(1 days)) {
       // New day, reset max allocation that can be sold
-      allocationRemaining = uint128(brush.balanceOf(address(this)) / itemNFT.numUniqueItems());
-      tokenAllocation.allocationRemaining = uint128(allocationRemaining);
-      tokenAllocation.checkpointTimestamp = block.timestamp.div(1 days).mul(1 days);
+      allocationRemaining = uint80(brush.balanceOf(address(this)) / itemNFT.numUniqueItems());
+      tokenAllocation.price = _liquidatePrice(uint16(_tokenId), allocationRemaining);
+      // Make sure allocation/checkpoint is set after the price as _liquidatePrices will use the previous values
+      tokenAllocation.allocationRemaining = uint80(allocationRemaining);
+      tokenAllocation.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
       emit NewAllocation(uint16(_tokenId), allocationRemaining);
     } else {
       allocationRemaining = tokenAllocation.allocationRemaining;
@@ -186,7 +196,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     if (allocationRemaining < totalSold) {
       revert NotEnoughAllocationRemaining(_tokenId, totalSold, allocationRemaining);
     }
-    tokenAllocation.allocationRemaining = uint128(allocationRemaining - totalSold);
+    tokenAllocation.allocationRemaining = uint80(allocationRemaining - totalSold);
     itemNFT.burn(msg.sender, _tokenId, _quantity);
   }
 

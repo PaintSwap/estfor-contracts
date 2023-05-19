@@ -394,17 +394,26 @@ describe("Shop", function () {
     );
     expect((await shop.tokenAllocations(EstforConstants.BARRAGE_SCROLL)).allocationRemaining).to.eq(0); // shouldn't have changed
 
-    // Sell all, should be no allocation left
-    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 998, 0);
+    const tokenPrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
+    expect(tokenPrice).to.be.gt(0);
+
+    // Sell all but 1, should be minimal allocation left
+    await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 997, 0)).to.not.emit(shop, "NewAllocation");
     tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
-    const allocationRemaining = 250250250250500;
-    expect((await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD)).allocationRemaining).to.eq(allocationRemaining);
+    let allocationRemaining = tokenPrice.mul(2);
+    expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining);
+
+    // Not enough to have a price
+    expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.be.eq(0);
+    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
+    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
+    expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining); // Remains unchanged
+
     // Mint some, should fail to sell any as allocation is used up
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 999);
-    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
-    await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 2, 0))
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 100);
+    await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 3, 0))
       .to.be.revertedWithCustomError(shop, "NotEnoughAllocationRemaining")
-      .withArgs(EstforConstants.BRONZE_SHIELD, 500250250250250, allocationRemaining);
+      .withArgs(EstforConstants.BRONZE_SHIELD, tokenPrice.mul(3), allocationRemaining);
   });
 
   it("Remove shop item", async function () {
