@@ -77,7 +77,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   function _liquidatePrice(uint16 _tokenId, uint _totalBrushPerItem) private view returns (uint80 price) {
     TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
-    if ((block.timestamp / 1 days) * 1 days > tokenAllocation.checkpointTimestamp.add(1 days)) {
+    if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
       if (totalOfThisItem > 0) {
         price = uint80(_totalBrushPerItem / totalOfThisItem);
       }
@@ -166,40 +166,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
-  function _sell(uint _tokenId, uint _quantity, uint _sellPrice) private {
-    uint price = shopItems[_tokenId];
-    if (price != 0 && price < _sellPrice) {
-      revert LiquidatePriceIsHigherThanShop(_tokenId);
-    }
-
-    // 48 hour period of no selling for an item
-    if (itemNFT.timestampFirstMint(_tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
-      revert SellingTooQuicklyAfterItemIntroduction();
-    }
-
-    // Check if tokenAllocation checkpoint is older than 24 hours
-    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
-    uint allocationRemaining;
-    if ((block.timestamp / 1 days) * 1 days > tokenAllocation.checkpointTimestamp.add(1 days)) {
-      // New day, reset max allocation that can be sold
-      allocationRemaining = uint80(brush.balanceOf(address(this)) / itemNFT.numUniqueItems());
-      tokenAllocation.price = _liquidatePrice(uint16(_tokenId), allocationRemaining);
-      // Make sure allocation/checkpoint is set after the price as _liquidatePrices will use the previous values
-      tokenAllocation.allocationRemaining = uint80(allocationRemaining);
-      tokenAllocation.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
-      emit NewAllocation(uint16(_tokenId), allocationRemaining);
-    } else {
-      allocationRemaining = tokenAllocation.allocationRemaining;
-    }
-
-    uint totalSold = _quantity * _sellPrice;
-    if (allocationRemaining < totalSold) {
-      revert NotEnoughAllocationRemaining(_tokenId, totalSold, allocationRemaining);
-    }
-    tokenAllocation.allocationRemaining = uint80(allocationRemaining - totalSold);
-    itemNFT.burn(msg.sender, _tokenId, _quantity);
-  }
-
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
     uint price = liquidatePrice(_tokenId);
     uint totalBrush = price * _quantity;
@@ -236,6 +202,38 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
+  function _sell(uint _tokenId, uint _quantity, uint _sellPrice) private {
+    uint price = shopItems[_tokenId];
+    if (price != 0 && price < _sellPrice) {
+      revert LiquidatePriceIsHigherThanShop(_tokenId);
+    }
+
+    // 48 hour period of no selling for an item
+    if (itemNFT.timestampFirstMint(_tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
+      revert SellingTooQuicklyAfterItemIntroduction();
+    }
+
+    // Check if tokenAllocation checkpoint is older than 24 hours
+    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
+    uint allocationRemaining;
+    if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
+      // New day, reset max allocation can be sold
+      allocationRemaining = uint80(brush.balanceOf(address(this)) / itemNFT.numUniqueItems());
+      tokenAllocation.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
+      tokenAllocation.price = uint80(_sellPrice);
+      emit NewAllocation(uint16(_tokenId), allocationRemaining);
+    } else {
+      allocationRemaining = tokenAllocation.allocationRemaining;
+    }
+
+    uint totalSold = _quantity * _sellPrice;
+    if (allocationRemaining < totalSold) {
+      revert NotEnoughAllocationRemaining(_tokenId, totalSold, allocationRemaining);
+    }
+    tokenAllocation.allocationRemaining = uint80(allocationRemaining - totalSold);
+    itemNFT.burn(msg.sender, _tokenId, _quantity);
+  }
+
   function _addBuyableItem(ShopItem calldata _shopItem) private {
     // Check item exists
     if (!itemNFT.exists(_shopItem.tokenId)) {
@@ -248,6 +246,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert PriceCannotBeZero();
     }
     shopItems[_shopItem.tokenId] = _shopItem.price;
+  }
+
+  function _hasNewDailyData(uint checkpointTimestamp) private view returns (bool) {
+    return (block.timestamp / 1 days) * 1 days >= checkpointTimestamp.add(1 days);
   }
 
   // Spend brush to buy some things from the shop

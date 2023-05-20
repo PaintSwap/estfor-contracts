@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 
-describe.only("EstforLibrary", function () {
+describe("EstforLibrary", function () {
   async function deployContracts() {
     const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
     const estforLibrary = await EstforLibrary.deploy();

@@ -416,6 +416,66 @@ describe("Shop", function () {
       .withArgs(EstforConstants.BRONZE_SHIELD, tokenPrice.mul(3), allocationRemaining);
   });
 
+  it("Allocation resets after 00:00 UTC", async function () {
+    const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
+    await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 1000);
+    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
+
+    // Give the contract some brush to assign to the items
+    const totalBrush = ethers.utils.parseEther("1");
+    await brush.mint(shop.address, totalBrush);
+
+    let tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    expect(tokenAllocation.allocationRemaining).to.eq(0);
+    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    expect(tokenAllocation.allocationRemaining).to.eq(
+      ethers.utils.parseEther("0.5").sub(ethers.utils.parseEther("0.5").div(1000))
+    );
+    expect(tokenAllocation.checkpointTimestamp).to.eq(Math.floor(NOW / 86400) * 86400);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
+    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
+    const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
+    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    expect(tokenAllocation.checkpointTimestamp).to.eq(Math.floor(NOW1 / 86400) * 86400);
+    expect(tokenAllocation.allocationRemaining).to.eq(
+      ethers.utils.parseEther("0.5").sub(ethers.utils.parseEther("0.75").div(1000))
+    );
+  });
+
+  it("Price should be constant through the day", async function () {
+    const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
+    await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 1000);
+    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
+
+    // Give the contract some brush to assign to the items
+    const totalBrush = ethers.utils.parseEther("1");
+    await brush.mint(shop.address, totalBrush);
+
+    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
+    let liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
+    expect(liquidatePrice).to.be.eq(ethers.utils.parseEther("0.5").div(1000));
+    // Is same price
+    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 500, 0);
+    liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
+    expect(liquidatePrice).to.be.eq(ethers.utils.parseEther("0.5").div(1000));
+    // Now changes in a new day
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
+    liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
+    const newPrice = "751002004008016";
+    expect(liquidatePrice).to.be.eq(newPrice);
+    await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 300, 0);
+    liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
+    expect(liquidatePrice).to.be.eq(newPrice);
+  });
+
   it("Remove shop item", async function () {
     const {shop} = await loadFixture(deployContracts);
     const price = 500;
