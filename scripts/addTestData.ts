@@ -162,7 +162,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Approve brush");
 
-  tx = await shop.buy(EstforConstants.MAGIC_FIRE_STARTER, 1);
+  tx = await shop.buy(owner.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
   await tx.wait();
   console.log("Buy from shop");
 
