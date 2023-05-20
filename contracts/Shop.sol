@@ -23,8 +23,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event AddShopItems(ShopItem[] shopItems);
   event EditShopItems(ShopItem[] shopItems);
   event RemoveShopItem(uint16 tokenId);
-  event Buy(address buyer, uint tokenId, uint quantity, uint price);
-  event BuyBatch(address buyer, uint[] tokenIds, uint[] quantities, uint[] prices);
+  event Buy(address buyer, address to, uint tokenId, uint quantity, uint price);
+  event BuyBatch(address buyer, address to, uint[] tokenIds, uint[] quantities, uint[] prices);
   event Sell(address seller, uint tokenId, uint quantity, uint price);
   event SellBatch(address seller, uint[] tokenIds, uint[] quantities, uint[] prices);
   event NewAllocation(uint16 tokenId, uint allocation);
@@ -115,7 +115,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   }
 
   // Buy simple items and XP boosts using brush
-  function buy(uint16 _tokenId, uint _quantity) external {
+  function buy(address _to, uint16 _tokenId, uint _quantity) external {
     uint price = shopItems[_tokenId];
     if (price == 0) {
       revert ItemCannotBeBought();
@@ -129,11 +129,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     // Burn 1 quarter
     brush.burn(quarterCost);
 
-    itemNFT.mint(msg.sender, _tokenId, _quantity);
-    emit Buy(msg.sender, _tokenId, _quantity, price);
+    itemNFT.mint(_to, _tokenId, _quantity);
+    emit Buy(msg.sender, _to, _tokenId, _quantity, price);
   }
 
-  function buyBatch(uint[] calldata _tokenIds, uint[] calldata _quantities) external {
+  function buyBatch(address _to, uint[] calldata _tokenIds, uint[] calldata _quantities) external {
     U256 iter = _tokenIds.length.asU256();
     if (iter.eq(0)) {
       revert LengthEmpty();
@@ -162,8 +162,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     // Burn 1 quarter
     brush.burn(quarterCost);
 
-    itemNFT.mintBatch(msg.sender, _tokenIds, _quantities);
-    emit BuyBatch(msg.sender, _tokenIds, _quantities, prices);
+    itemNFT.mintBatch(_to, _tokenIds, _quantities);
+    emit BuyBatch(msg.sender, _to, _tokenIds, _quantities, prices);
   }
 
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {

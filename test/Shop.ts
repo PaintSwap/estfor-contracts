@@ -106,6 +106,7 @@ describe("Shop", function () {
       brush,
       owner,
       alice,
+      bob,
       sellingCutoffDuration,
     };
   };
@@ -202,13 +203,13 @@ describe("Shop", function () {
 
     const quantityBought = 2;
     // Hasn't approved brush yet
-    await expect(shop.connect(alice).buy(EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
+    await expect(shop.connect(alice).buy(alice.address, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
 
     await brush.mint(alice.address, 1000);
     await brush.connect(alice).approve(shop.address, 1000);
-    await expect(shop.connect(alice).buy(EstforConstants.BRONZE_SHIELD, quantityBought))
+    await expect(shop.connect(alice).buy(alice.address, EstforConstants.BRONZE_SHIELD, quantityBought))
       .to.emit(shop, "Buy")
-      .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
+      .withArgs(alice.address, alice.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
   });
 
@@ -219,11 +220,61 @@ describe("Shop", function () {
 
     await brush.mint(alice.address, 900);
     await brush.connect(alice).approve(shop.address, 900);
-    await expect(shop.connect(alice).buyBatch([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2]))
+    await expect(
+      shop
+        .connect(alice)
+        .buyBatch(alice.address, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2])
+    )
       .to.emit(shop, "BuyBatch")
-      .withArgs(alice.address, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2], [500, 200]);
+      .withArgs(
+        alice.address,
+        alice.address,
+        [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
+        [1, 2],
+        [500, 200]
+      );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD)).to.eq(1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(2);
+  });
+
+  it("Gift", async function () {
+    const {itemNFT, shop, brush, alice, bob} = await loadFixture(deployContracts);
+    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
+
+    const quantityBought = 2;
+    // Hasn't approved brush yet
+    await expect(shop.connect(alice).buy(bob.address, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
+
+    await brush.mint(alice.address, 1000);
+    await brush.connect(alice).approve(shop.address, 1000);
+    await expect(shop.connect(alice).buy(bob.address, EstforConstants.BRONZE_SHIELD, quantityBought))
+      .to.emit(shop, "Buy")
+      .withArgs(alice.address, bob.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
+  });
+
+  it("Gift batch", async function () {
+    const {itemNFT, shop, brush, alice, bob} = await loadFixture(deployContracts);
+    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
+    await shop.addBuyableItem({tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200});
+
+    await brush.mint(alice.address, 900);
+    await brush.connect(alice).approve(shop.address, 900);
+    await expect(
+      shop
+        .connect(alice)
+        .buyBatch(bob.address, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2])
+    )
+      .to.emit(shop, "BuyBatch")
+      .withArgs(
+        alice.address,
+        bob.address,
+        [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
+        [1, 2],
+        [500, 200]
+      );
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SHIELD)).to.eq(1);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(2);
   });
 
   it("Sell", async function () {
@@ -442,9 +493,7 @@ describe("Shop", function () {
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
     tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
     expect(tokenAllocation.checkpointTimestamp).to.eq(Math.floor(NOW1 / 86400) * 86400);
-    expect(tokenAllocation.allocationRemaining).to.eq(
-      ethers.utils.parseEther("0.5").sub(ethers.utils.parseEther("0.75").div(1000))
-    );
+    expect(tokenAllocation.allocationRemaining).to.eq("499249749749749750");
   });
 
   it("Price should be constant through the day", async function () {
