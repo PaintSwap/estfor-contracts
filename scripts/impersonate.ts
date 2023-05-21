@@ -7,6 +7,8 @@ import {
   PLAYERS_IMPL_REWARDS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
+  QUESTS_ADDRESS,
+  SHOP_ADDRESS,
 } from "./contractAddresses";
 import {EstforTypes} from "@paintswap/estfor-definitions";
 
@@ -20,7 +22,7 @@ async function main() {
   const playerLibrary = await PlayersLibrary.deploy();
 
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  const player = await ethers.getImpersonatedSigner("0xa801864d0D24686B15682261aa05D4e1e6e5BD94");
+  const player = await ethers.getImpersonatedSigner("0xa0b7db258deff2b09de48e98d010d1bfe0e8157f");
 
   // Set the implementations
   let Players = await ethers.getContractFactory("Players", {
@@ -70,7 +72,7 @@ async function main() {
     );
   await tx.wait();
 
-  const playerId = 3;
+  const playerId = 103;
 
   // PlayerNFT
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
@@ -85,19 +87,21 @@ async function main() {
     unsafeAllow: ["external-library-linking"],
   });
 
-  console.log(await players.xp(playerId, EstforTypes.Skill.COOKING));
-  console.log(await players.packedXP(playerId));
+  // Quests
+  let Quests = await ethers.getContractFactory("Quests");
+  Quests = Quests.connect(owner);
+  const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
+    kind: "uups",
+  });
 
-  // Test max level works
-  const uri = await playerNFT.uri(playerId);
-  const metadata = JSON.parse(Buffer.from(uri.split(";base64,")[1], "base64").toString());
-  console.log(metadata.attributes[2].value);
+  let Shop = await ethers.getContractFactory("Shop");
+  Shop = Shop.connect(owner);
+  const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
+    kind: "uups",
+  });
 
-  //  console.log(await playerNFT.uri()pendingQueuedActionState(player.address, playerId));
-  /*
-  // Do action
-  await players.connect(player).processActions(playerId);
-  console.log(await players.getActionQueue(playerId)); */
+  const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
+  console.log(pendingQueuedActionState.equipmentStates);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
