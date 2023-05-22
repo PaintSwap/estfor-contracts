@@ -25,6 +25,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   event AddItem(Item item, uint16 tokenId, string name);
   event AddItems(Item[] items, uint16[] tokenIds, string[] names);
   event EditItem(Item item, uint16 tokenId, string name);
+  event EditItems(Item[] items, uint16[] tokenIds, string[] names);
 
   error IdTooHigh();
   error ItemNotTransferable();
@@ -358,7 +359,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     emit AddItems(_items, tokenIds, names);
   }
 
-  function editItem(InputItem calldata _inputItem) external onlyOwner {
+  function _editItem(InputItem calldata _inputItem) private returns (Item storage item) {
     if (!exists(_inputItem.tokenId)) {
       revert ItemDoesNotExist(_inputItem.tokenId);
     }
@@ -368,8 +369,26 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     ) {
       revert EquipmentPositionShouldNotChange();
     }
-    Item storage item = _setItem(_inputItem);
+    item = _setItem(_inputItem);
+  }
+
+  function editItem(InputItem calldata _inputItem) external onlyOwner {
+    Item storage item = _editItem(_inputItem);
     emit EditItem(item, _inputItem.tokenId, _inputItem.name);
+  }
+
+  function editItems(InputItem[] calldata _inputItems) external onlyOwner {
+    Item[] memory items = new Item[](_inputItems.length);
+    uint16[] memory tokenIds = new uint16[](_inputItems.length);
+    string[] memory names = new string[](_inputItems.length);
+
+    for (uint i = 0; i < _inputItems.length; ++i) {
+      items[i] = _editItem(_inputItems[i]);
+      tokenIds[i] = _inputItems[i].tokenId;
+      names[i] = _inputItems[i].name;
+    }
+
+    emit EditItems(items, tokenIds, names);
   }
 
   function setPlayers(address _players) external onlyOwner {

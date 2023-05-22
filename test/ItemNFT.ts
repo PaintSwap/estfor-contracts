@@ -118,7 +118,50 @@ describe("ItemNFT", function () {
 
   it("editItem", async function () {
     const {itemNFT} = await loadFixture(deployContracts);
-    // TODO
+    await itemNFT.addItem({
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+    });
+
+    // Change equipPosition should fail
+    await expect(
+      itemNFT.editItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
+      })
+    ).to.be.revertedWithCustomError(itemNFT, "EquipmentPositionShouldNotChange");
+
+    await expect(
+      itemNFT.editItem({
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_ARMOR,
+        equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
+      })
+    ).to.be.revertedWithCustomError(itemNFT, "ItemDoesNotExist");
+
+    await itemNFT.editItem({
+      ...EstforTypes.defaultInputItem,
+      minXP: 100,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+    });
+
+    let item = await itemNFT.getItem(EstforConstants.BRONZE_AXE);
+    expect(item.minXP).to.be.eq(100);
+
+    await itemNFT.editItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        minXP: 200,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
+
+    item = await itemNFT.getItem(EstforConstants.BRONZE_AXE);
+    expect(item.minXP).to.be.eq(200);
   });
 
   it("Transferable NFT", async function () {

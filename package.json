@@ -71,7 +71,7 @@
     "deployImpls": "npx hardhat run scripts/deployImpls.ts",
     "deployTestData": "npx hardhat run scripts/deployTestData.ts",
     "addItem": "npx hardhat run scripts/addItem.ts",
-    "editItem": "npx hardhat run scripts/editItem.ts",
+    "editItems": "npx hardhat run scripts/editItems.ts",
     "mintAllItems": "npx hardhat run scripts/mintAllItems.ts",
     "addShopItem": "npx hardhat run scripts/addShopItem.ts",
     "editShopItems": "npx hardhat run scripts/editShopItems.ts",
