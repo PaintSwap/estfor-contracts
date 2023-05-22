@@ -80,6 +80,7 @@
     "addAdmin": "npx hardhat run scripts/addAdmin.ts",
     "setMerkleRoot": "npx hardhat run scripts/setMerkleTreeWhitelist.ts",
     "editQuest": "npx hardhat run scripts/editQuest.ts",
+    "editActions": "npx hardhat run scripts/editActions.ts",
     "editActionChoice": "npx hardhat run scripts/editActionChoice.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",
