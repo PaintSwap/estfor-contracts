@@ -1396,7 +1396,7 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
     },
-    guaranteedRewards: [{itemTokenId: EstforConstants.WILLOW_LOG, rate: 10 * 10}],
+    guaranteedRewards: [{itemTokenId: EstforConstants.WILLOW_LOG, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.MITHRIL_AXE, chance: 3320, amount: 1},
       {itemTokenId: EstforConstants.MASTER_BODY, chance: 8, amount: 1},
@@ -1508,7 +1508,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.BLUECANAR, chance: 1328, amount: 1},
+      {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 1328, amount: 2},
       {itemTokenId: EstforConstants.BARK_CHUNK, chance: 664, amount: 1},
     ],
     combatStats: {
@@ -1563,7 +1563,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 664, amount: 1},
+      {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 664, amount: 2},
       {itemTokenId: EstforConstants.LOSSUTH_TEETH, chance: 664, amount: 1},
     ],
     combatStats: {
@@ -1592,7 +1592,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 6640, amount: 1},
+      {itemTokenId: EstforConstants.BLUECANAR, chance: 6640, amount: 2},
       {itemTokenId: EstforConstants.RUFARUM, chance: 1328, amount: 1},
     ],
     combatStats: {
@@ -1624,7 +1624,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.FEATHER, rate: 3 * 10},
     ],
     randomRewards: [
-      {itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 1328, amount: 1},
+      {itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 2},
       {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 664, amount: 1},
     ],
     combatStats: {
@@ -1680,7 +1680,7 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
     },
-    guaranteedRewards: [{itemTokenId: EstforConstants.REDWOOD_LOG, rate: 5 * 10}],
+    guaranteedRewards: [{itemTokenId: EstforConstants.REDWOOD_LOG, rate: 2 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 3320, amount: 1},
       {itemTokenId: EstforConstants.ADAMANTINE_AXE, chance: 3000, amount: 1},
@@ -1715,7 +1715,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.IRON_ORE, rate: 1 * 10},
       {itemTokenId: EstforConstants.FEATHER, rate: 2 * 10},
     ],
-    randomRewards: [{itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 1328, amount: 2}],
     combatStats: {
       melee: 100,
       magic: 30,

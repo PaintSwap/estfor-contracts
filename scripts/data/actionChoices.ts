@@ -1887,7 +1887,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
     skillDiff: 0,
-    rate: 1 * 1000,
+    rate: 10 * 1000,
     xpPerHour: 100,
     minXP: 0,
     inputTokenId1: EstforConstants.NATUOW_HIDE,
