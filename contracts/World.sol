@@ -29,6 +29,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event RemoveDynamicActions(uint16[] actionIds);
   event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
+  event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
+  event EditActionChoices(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoice[] choices);
   event NewDailyRewards(Equipment[8] dailyRewards);
   error RandomWordsCannotBeUpdatedYet();
   error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
@@ -45,6 +47,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error LengthMismatch();
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
+  error ActionChoiceDoesNotExist();
   error OnlyCombatMultipleGuaranteedRewards();
   error NotAFactorOf3600();
   error NonCombatCannotHaveBothGuaranteedAndRandomRewards();
@@ -139,38 +142,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       );
       fulfillRandomWords(requestId, _randomWords);
     }
-  }
-
-  function _getDailyReward(uint256 _day) private view returns (uint itemTokenId, uint amount) {
-    itemTokenId = uint((dailyRewards & ((bytes32(hex"ffff0000") >> (_day * 32)))) >> ((7 - _day) * 32 + 16));
-    amount = uint((dailyRewards & ((bytes32(hex"0000ffff") >> (_day * 32)))) >> ((7 - _day) * 32));
-  }
-
-  function _getUpdatedDailyReward(
-    uint _index,
-    Equipment memory _equipment,
-    bytes32 _rewards
-  ) private pure returns (bytes32) {
-    bytes32 rewardItemTokenId;
-    bytes32 rewardAmount;
-    assembly ("memory-safe") {
-      rewardItemTokenId := mload(_equipment)
-      rewardAmount := mload(add(_equipment, 32))
-    }
-
-    _rewards = _rewards | (rewardItemTokenId << ((7 - _index) * 32 + 16));
-    _rewards = _rewards | (rewardAmount << ((7 - _index) * 32));
-    return _rewards;
-  }
-
-  function _storeDailyRewards(Equipment[8] memory equipments) private {
-    bytes32 rewards;
-    U256 bounds = equipments.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      rewards = _getUpdatedDailyReward(i, equipments[i], rewards);
-    }
-    dailyRewards = rewards;
   }
 
   function canRequestRandomWord() external view returns (bool) {
@@ -363,52 +334,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return (actionRewards[_actionId], actions[_actionId].skill, actions[_actionId].numSpawned);
   }
 
-  function _setAction(Action calldata _action) private {
-    if (_action.actionId == 0) {
-      revert ActionIdZeroNotAllowed();
-    }
-    if (_action.info.handItemTokenIdRangeMin > _action.info.handItemTokenIdRangeMax) {
-      revert MinCannotBeGreaterThanMax();
-    }
-
-    if (_action.info.skill != Skill.COMBAT && _action.guaranteedRewards.length > 1) {
-      revert OnlyCombatMultipleGuaranteedRewards();
-    }
-
-    if (_action.info.numSpawned > 0) {
-      // Combat
-      if ((3600 * SPAWN_MUL) % _action.info.numSpawned != 0) {
-        revert NotAFactorOf3600();
-      }
-    } else if (_action.guaranteedRewards.length != 0) {
-      // Non-combat guaranteed rewards
-      if ((3600 * GUAR_MUL) % _action.guaranteedRewards[0].rate != 0) {
-        revert NotAFactorOf3600();
-      }
-    }
-
-    actions[_action.actionId] = _action.info;
-
-    // Set the rewards
-    ActionRewards storage actionReward = actionRewards[_action.actionId];
-    WorldLibrary.setActionGuaranteedRewards(_action, actionReward);
-    WorldLibrary.setActionRandomRewards(_action, actionReward);
-
-    if (_action.info.skill == Skill.COMBAT) {
-      actionCombatStats[_action.actionId] = _action.combatStats;
-    } else {
-      bool actionHasGuaranteedRewards = _action.guaranteedRewards.length != 0;
-      bool actionHasRandomRewards = _action.randomRewards.length != 0;
-      if (actionHasGuaranteedRewards && actionHasRandomRewards) {
-        revert NonCombatCannotHaveBothGuaranteedAndRandomRewards();
-      }
-    }
-  }
-
-  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
-  }
-
   function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
     if (_numTickets <= 16) {
       // 32 bytes
@@ -453,6 +378,106 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _setAction(_action);
   }
 
+  function _getDailyReward(uint256 _day) private view returns (uint itemTokenId, uint amount) {
+    itemTokenId = uint((dailyRewards & ((bytes32(hex"ffff0000") >> (_day * 32)))) >> ((7 - _day) * 32 + 16));
+    amount = uint((dailyRewards & ((bytes32(hex"0000ffff") >> (_day * 32)))) >> ((7 - _day) * 32));
+  }
+
+  function _getUpdatedDailyReward(
+    uint _index,
+    Equipment memory _equipment,
+    bytes32 _rewards
+  ) private pure returns (bytes32) {
+    bytes32 rewardItemTokenId;
+    bytes32 rewardAmount;
+    assembly ("memory-safe") {
+      rewardItemTokenId := mload(_equipment)
+      rewardAmount := mload(add(_equipment, 32))
+    }
+
+    _rewards = _rewards | (rewardItemTokenId << ((7 - _index) * 32 + 16));
+    _rewards = _rewards | (rewardAmount << ((7 - _index) * 32));
+    return _rewards;
+  }
+
+  function _storeDailyRewards(Equipment[8] memory equipments) private {
+    bytes32 rewards;
+    U256 bounds = equipments.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      rewards = _getUpdatedDailyReward(i, equipments[i], rewards);
+    }
+    dailyRewards = rewards;
+  }
+
+  function _setAction(Action calldata _action) private {
+    if (_action.actionId == 0) {
+      revert ActionIdZeroNotAllowed();
+    }
+    if (_action.info.handItemTokenIdRangeMin > _action.info.handItemTokenIdRangeMax) {
+      revert MinCannotBeGreaterThanMax();
+    }
+
+    if (_action.info.skill != Skill.COMBAT && _action.guaranteedRewards.length > 1) {
+      revert OnlyCombatMultipleGuaranteedRewards();
+    }
+
+    if (_action.info.numSpawned > 0) {
+      // Combat
+      if ((3600 * SPAWN_MUL) % _action.info.numSpawned != 0) {
+        revert NotAFactorOf3600();
+      }
+    } else if (_action.guaranteedRewards.length != 0) {
+      // Non-combat guaranteed rewards
+      if ((3600 * GUAR_MUL) % _action.guaranteedRewards[0].rate != 0) {
+        revert NotAFactorOf3600();
+      }
+    }
+
+    actions[_action.actionId] = _action.info;
+
+    // Set the rewards
+    ActionRewards storage actionReward = actionRewards[_action.actionId];
+    WorldLibrary.setActionGuaranteedRewards(_action, actionReward);
+    WorldLibrary.setActionRandomRewards(_action, actionReward);
+
+    if (_action.info.skill == Skill.COMBAT) {
+      actionCombatStats[_action.actionId] = _action.combatStats;
+    } else {
+      bool actionHasGuaranteedRewards = _action.guaranteedRewards.length != 0;
+      bool actionHasRandomRewards = _action.randomRewards.length != 0;
+      if (actionHasGuaranteedRewards && actionHasRandomRewards) {
+        revert NonCombatCannotHaveBothGuaranteedAndRandomRewards();
+      }
+    }
+  }
+
+  function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
+    if (_actionChoiceId == 0) {
+      revert ActionChoiceIdZeroNotAllowed();
+    }
+    if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
+      revert ActionChoiceAlreadyExists();
+    }
+    WorldLibrary.checkActionChoice(_actionChoice);
+
+    actionChoices[_actionId][_actionChoiceId] = _actionChoice;
+  }
+
+  function _editActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
+    if (actionChoices[_actionId][_actionChoiceId].skill == Skill.NONE) {
+      revert ActionChoiceDoesNotExist();
+    }
+
+    WorldLibrary.checkActionChoice(_actionChoice);
+
+    actionChoices[_actionId][_actionChoiceId] = _actionChoice;
+  }
+
+  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
+  }
+
   function addAction(Action calldata _action) external onlyOwner {
     _addAction(_action);
     emit AddAction(_action);
@@ -476,18 +501,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       _setAction(_actions[i]);
     }
     emit EditActions(_actions);
-  }
-
-  function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
-    if (_actionChoiceId == 0) {
-      revert ActionChoiceIdZeroNotAllowed();
-    }
-    if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
-      revert ActionChoiceAlreadyExists();
-    }
-    WorldLibrary.checkActionChoice(_actionChoice);
-
-    actionChoices[_actionId][_actionChoiceId] = _actionChoice;
   }
 
   // actionId of 0 means it is not tied to a specific action (combat)
@@ -529,6 +542,29 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
         _addActionChoice(actionId, _actionChoiceIds[i][j], _actionChoices[i][j]);
       }
     }
+  }
+
+  function editActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) external {
+    _editActionChoice(_actionId, _actionChoiceId, _actionChoice);
+    emit EditActionChoice(_actionId, _actionChoiceId, _actionChoice);
+  }
+
+  function editActionChoices(
+    uint16[] calldata _actionIds,
+    uint16[] calldata _actionChoiceIds,
+    ActionChoice[] calldata _actionChoices
+  ) external {
+    if (_actionIds.length == 0) {
+      revert NoActionChoices();
+    }
+
+    U256 actionIdsLength = _actionIds.length.asU256();
+    for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
+      uint16 i = iter.asUint16();
+      _editActionChoice(_actionIds[i], _actionChoiceIds[i], _actionChoices[i]);
+    }
+
+    emit EditActionChoices(_actionIds, _actionChoiceIds, _actionChoices);
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {

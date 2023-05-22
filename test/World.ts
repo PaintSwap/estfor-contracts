@@ -255,6 +255,49 @@ describe("World", function () {
         })
       ).to.be.reverted;
     });
+
+    it("Edit", async function () {
+      const {world} = await loadFixture(deployContracts);
+
+      const choiceId = 1;
+      await world.addActionChoice(EstforConstants.NONE, choiceId, {
+        skill: EstforTypes.Skill.MAGIC,
+        skillDiff: 2,
+        xpPerHour: 0,
+        minXP: 0,
+        rate: 1 * RATE_MUL,
+        inputTokenId1: EstforConstants.AIR_SCROLL,
+        inputAmount1: 1,
+        inputTokenId2: EstforConstants.NONE,
+        inputAmount2: 0,
+        inputTokenId3: EstforConstants.NONE,
+        inputAmount3: 0,
+        outputTokenId: EstforConstants.NONE,
+        outputAmount: 0,
+        successPercent: 100,
+      });
+
+      await world.editActionChoice(EstforConstants.NONE, choiceId, {
+        skill: EstforTypes.Skill.MAGIC,
+        skillDiff: 2,
+        xpPerHour: 0,
+        minXP: 0,
+        rate: 1 * RATE_MUL,
+        inputTokenId1: EstforConstants.AIR_SCROLL,
+        inputAmount1: 2,
+        inputTokenId2: EstforConstants.NONE,
+        inputAmount2: 0,
+        inputTokenId3: EstforConstants.NONE,
+        inputAmount3: 0,
+        outputTokenId: EstforConstants.NONE,
+        outputAmount: 0,
+        successPercent: 100,
+      });
+
+      const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
+      expect(actionChoice.inputAmount1).to.eq(2);
+      expect((await world.getActionChoice(EstforConstants.NONE, 2)).skill).to.eq(EstforTypes.Skill.NONE);
+    });
   });
 
   describe("ActionRewards", function () {

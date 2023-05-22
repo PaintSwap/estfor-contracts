@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {PlayersLibrary, EstforLibrary} from "../typechain-types";
+import {PlayersLibrary, EstforLibrary, WorldLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -10,6 +10,8 @@ import {
   SHOP_ADDRESS,
   CLANS_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
+  WORLD_ADDRESS,
+  WORLD_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -86,6 +88,7 @@ async function main() {
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
   await verifyContracts([itemNFT.address]);
+
   // Shop
   const Shop = await ethers.getContractFactory("Shop");
   const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
@@ -94,6 +97,7 @@ async function main() {
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
   await verifyContracts([shop.address]);
+
   // Quests
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
@@ -102,6 +106,7 @@ async function main() {
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
   await verifyContracts([quests.address]);
+
   // Clan
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
@@ -112,7 +117,30 @@ async function main() {
   });
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
-  await verifyContracts([playerNFT.address, itemNFT.address, players.address]);
+  await verifyContracts([clans.address]);
+
+  // World
+  const newWorldLibrary = false;
+  const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
+  let worldLibrary: WorldLibrary;
+  if (newWorldLibrary) {
+    worldLibrary = await WorldLibrary.deploy();
+    await worldLibrary.deployed();
+  } else {
+    worldLibrary = await WorldLibrary.attach(WORLD_LIBRARY_ADDRESS);
+  }
+  console.log(`worldLibrary = "${worldLibrary.address.toLowerCase()}"`);
+
+  const World = await ethers.getContractFactory("World", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
+  const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
+  await world.deployed();
+  console.log(`world = "${world.address.toLowerCase()}"`);
+  await verifyContracts([world.address]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
