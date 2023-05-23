@@ -1567,7 +1567,6 @@ describe("Combat Actions", function () {
 
     it("currentAction in-progress actions", async function () {
       const {playerId, players, alice, itemNFT, queuedAction, startXP} = await loadFixture(playersFixtureMagic);
-      await loadFixture(playersFixtureMagic);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
@@ -1619,6 +1618,85 @@ describe("Combat Actions", function () {
       expect(player.currentActionProcessedXPGained2).to.eq(0);
       expect(player.currentActionProcessedFoodConsumed).to.eq(0);
       expect(player.currentActionProcessedBaseInputItemsConsumedNum).to.eq(0);
+    });
+
+    it("In-progress update have scrolls, then don't have enough, then have enough", async function () {
+      const {playerId, players, alice, itemNFT, queuedAction, startXP, dropRate, numSpawned} = await loadFixture(
+        playersFixtureMagic
+      );
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
+      await players.connect(alice).processActions(playerId);
+
+      // Check that scrolls are consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(200 - 4);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 2);
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 1);
+
+      // Burn remaining scrolls except 2 set
+      await itemNFT.connect(alice).burn(alice.address, EstforConstants.SHADOW_SCROLL, 100 - 5);
+
+      // Check the drops are as expected
+      // Can only kill 2 of them which is why XP is / 5 here
+      console.log(Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)));
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+
+      let xpGained = Math.floor((queuedAction.timespan / 5) * 1.1);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.processedData.currentAction.foodConsumed).to.eq(1);
+      await itemNFT.connect(alice).burn(alice.address, EstforConstants.SHADOW_SCROLL, 2);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.processedData.currentAction.foodConsumed).to.eq(20); // Don't kill them all but in combat for the whole time
+
+      await players.connect(alice).processActions(playerId);
+      // Check that 1 set of scrolls is consumed, and only get 1 kill
+
+      // Check food is consumed for the whole combat
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 20);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 1
+      );
+
+      xpGained += Math.floor((queuedAction.timespan / 5) * 0.5 * 1.1); // Kill 1 more
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+
+      // Now have enough scrolls
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
+      await itemNFT.connect(alice).testMint(alice.address, EstforConstants.SHADOW_SCROLL, 100);
+      await players.connect(alice).processActions(playerId);
+
+      // Check no more food is consumed as this is an excess
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 20);
+      // Kill 4 more
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 5
+      );
+
+      xpGained += Math.floor((queuedAction.timespan / 5) * 2 * 1.1); // Kill 4 more
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+
+      // Finish it off
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
+      await players.connect(alice).processActions(playerId);
+
+      // Check no more food is consumed as this is an excess
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 20);
+      // Kill all
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((queuedAction.timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+
+      xpGained = Math.floor(queuedAction.timespan * 1.1);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
     });
 
     it("Add multi actionChoice", async function () {

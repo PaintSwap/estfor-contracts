@@ -425,7 +425,10 @@ library PlayersLibrary {
       );
 
       if (baseInputItemsConsumedNum > maxRequiredRatio) {
-        xpElapsedTime = 0;
+        // How many can we kill with the consumeables we do have
+        numKilled = (numKilled * maxRequiredRatio) / baseInputItemsConsumedNum;
+        xpElapsedTime = respawnTime * numKilled;
+
         combatElapsedTime = _elapsedTime;
         baseInputItemsConsumedNum = uint16(maxRequiredRatio);
       }

@@ -788,8 +788,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
       bool processedAny;
       uint numTickets = isCombat ? monstersKilled : pendingRandomReward.xpElapsedTime / 3600;
 
-      // TODO: Update later to pendingRandomReward.elapsedTime
-      uint elapsedTime = pendingRandomReward.xpElapsedTime;
+      uint elapsedTime = pendingRandomReward.elapsedTime;
 
       (length, processedAny) = _appendRandomRewards(
         _playerId,
@@ -1133,7 +1132,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
   }
 
-  function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private pure {
+  function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private view {
     // Clear it
     currentActionProcessed.skill1 = Skill.NONE;
     currentActionProcessed.xpGained1 = 0;
