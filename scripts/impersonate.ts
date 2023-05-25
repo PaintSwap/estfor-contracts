@@ -1,5 +1,7 @@
 import {ethers, upgrades} from "hardhat";
 import {
+  ITEM_NFT_ADDRESS,
+  ITEM_NFT_LIBRARY_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_IMPL_MISC_ADDRESS,
   PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
@@ -9,8 +11,8 @@ import {
   PLAYER_NFT_ADDRESS,
   QUESTS_ADDRESS,
   SHOP_ADDRESS,
+  WORLD_ADDRESS,
 } from "./contractAddresses";
-import {EstforTypes} from "@paintswap/estfor-definitions";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -22,7 +24,7 @@ async function main() {
   const playerLibrary = await PlayersLibrary.deploy();
 
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  const player = await ethers.getImpersonatedSigner("0xa0b7db258deff2b09de48e98d010d1bfe0e8157f");
+  const player = await ethers.getImpersonatedSigner("0x6dc225f7f21acb842761b8df52ae46208705c942");
 
   // Set the implementations
   let Players = await ethers.getContractFactory("Players", {
@@ -72,7 +74,7 @@ async function main() {
     );
   await tx.wait();
 
-  const playerId = 103;
+  const playerId = 158;
 
   // PlayerNFT
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
@@ -100,8 +102,24 @@ async function main() {
     kind: "uups",
   });
 
+  // Create the world
+  const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
+  const worldLibrary = await WorldLibrary.deploy();
+  console.log(`worldLibrary = "${worldLibrary.address.toLowerCase()}"`);
+
+  let World = await ethers.getContractFactory("World", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
+  World = World.connect(owner);
+  const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
+
   const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
-  console.log(pendingQueuedActionState.equipmentStates);
+  console.log(pendingQueuedActionState);
+
+  console.log(await world.getMultipleFullRandomWords(1684672498));
 }
 
 // We recommend this pattern to be able to use async/await everywhere
