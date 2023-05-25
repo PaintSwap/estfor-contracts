@@ -1713,6 +1713,59 @@ describe("Non-Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(1);
     });
 
+    it("In-progress update have enough, then don't have enough, then have enough", async function () {
+      // Only get XP for the ones you did complete
+      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
+      const queuedAction = {...queuedActionCrafting, timespan: 3600 * 3};
+
+      await itemNFT.testMints(alice.address, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [200, 10]);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [900]);
+      await players.connect(alice).processActions(playerId);
+      let xpGained = 0;
+      expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
+      // Shouldn't use any resources as only 1 is made per hour.
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(200);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(10);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(0);
+
+      await ethers.provider.send("evm_increaseTime", [1800]);
+      await players.connect(alice).processActions(playerId);
+      xpGained = 0;
+      expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(200);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(10);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(0);
+
+      // Enough time has passed to make 1
+      await ethers.provider.send("evm_increaseTime", [1800]);
+      await players.connect(alice).processActions(playerId);
+      xpGained = 3600;
+      expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(200 - 20);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(10 - 1);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(1);
+
+      await itemNFT.connect(alice).burn(alice.address, EstforConstants.SAPPHIRE, 180);
+      // Don't have enough to make any
+      await ethers.provider.send("evm_increaseTime", [3600]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
+
+      await itemNFT.connect(alice).testMint(alice.address, EstforConstants.SAPPHIRE, 180);
+      // Don't have enough to make any
+      await ethers.provider.send("evm_increaseTime", [3600]);
+      await players.connect(alice).processActions(playerId);
+      xpGained = 3600 * 3;
+      expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(200 - 20 * 3);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ROPE)).to.eq(10 - 3);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(3);
+    });
+
     it("Don't have any of both, id1 or id2", async function () {
       const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
       const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
