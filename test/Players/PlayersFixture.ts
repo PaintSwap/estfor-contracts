@@ -189,6 +189,7 @@ export const playersFixture = async function () {
   await quests.setPlayers(players.address);
   await clans.setPlayers(players.address);
 
+  await itemNFT.setBankFactory(bankFactory.address);
   await clans.setBankFactory(bankFactory.address);
 
   const avatarId = 1;

@@ -10,6 +10,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IBankFactory} from "./interfaces/IBankFactory.sol";
 import {World} from "./World.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
@@ -61,6 +62,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(uint itemId => Item item) private items;
 
   AdminAccess private adminAccess;
+  IBankFactory private bankFactory;
 
   modifier onlyPlayersOrShop() {
     if (_msgSender() != players && _msgSender() != shop) {
@@ -269,14 +271,20 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
-  function _checkIsTransferable(uint[] memory _ids) private view {
+  function _checkIsTransferable(address _from, uint[] memory _ids) private view {
     U256 iter = _ids.length.asU256();
+    bool anyNonTransferable;
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
       if (exists(_ids[i]) && !items[_ids[i]].isTransferable) {
-        revert ItemNotTransferable();
+        anyNonTransferable = true;
       }
+    }
+
+    if (anyNonTransferable && (address(bankFactory) == address(0) || !bankFactory.createdHere(_from))) {
+      // Check if this is from a bank, that's the only place it's allowed to withdraw non-transferable items
+      revert ItemNotTransferable();
     }
   }
 
@@ -297,7 +305,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     if (isBurnt) {
       _removeAnyBurntFromTotal(_ids, _amounts);
     } else {
-      _checkIsTransferable(_ids);
+      _checkIsTransferable(_from, _ids);
     }
     if (players == address(0)) {
       if (block.chainid != 31337) {
@@ -393,6 +401,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function setPlayers(address _players) external onlyOwner {
     players = _players;
+  }
+
+  function setBankFactory(IBankFactory _bankFactory) external onlyOwner {
+    bankFactory = _bankFactory;
   }
 
   function setBaseURI(string calldata _baseURI) external onlyOwner {

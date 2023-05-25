@@ -5,7 +5,7 @@ import {ethers, upgrades} from "hardhat";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
-    const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
+    const [owner, alice, dev] = await ethers.getSigners();
 
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const brush = await MockBrushToken.deploy();
@@ -192,7 +192,7 @@ describe("ItemNFT", function () {
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
     await expect(
       itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x")
-    ).to.be.reverted;
+    ).to.be.revertedWithCustomError(itemNFT, "ItemNotTransferable");
 
     // Allow it to be burnt
     await expect(itemNFT.connect(alice).burn(EstforConstants.BRONZE_AXE, 1));

@@ -1132,7 +1132,7 @@ contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPl
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
   }
 
-  function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private view {
+  function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private pure {
     // Clear it
     currentActionProcessed.skill1 = Skill.NONE;
     currentActionProcessed.xpGained1 = 0;

@@ -129,6 +129,7 @@ describe("PlayerNFT", function () {
       avatarId,
       quests,
       clans,
+      bankFactory,
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
@@ -180,6 +181,7 @@ describe("PlayerNFT", function () {
     );
 
     await itemNFT.setPlayers(players.address);
+    await itemNFT.setBankFactory(bankFactory.address);
     await playerNFTNotBeta.setPlayers(players.address);
     await playerNFTNotBeta.setAvatars(avatarId, [avatarInfo]);
 

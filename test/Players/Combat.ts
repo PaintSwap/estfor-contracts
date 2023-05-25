@@ -1640,7 +1640,6 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       // Can only kill 2 of them which is why XP is / 5 here
-      console.log(Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)));
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
         Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );

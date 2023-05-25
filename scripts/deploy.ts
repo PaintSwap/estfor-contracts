@@ -354,6 +354,9 @@ async function main() {
   tx = await clans.setBankFactory(bankFactory.address);
   await tx.wait();
   console.log("clans setBankFactory");
+  tx = await itemNFT.setBankFactory(bankFactory.address);
+  await tx.wait();
+  console.log("itemNFT setBankFactory");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
