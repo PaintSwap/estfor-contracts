@@ -115,10 +115,20 @@ describe("Clans", function () {
         clans.connect(bob).createClan(bobPlayerId, anotherName, discordInvalid, telegram, imageId, tierId)
       ).to.be.revertedWithCustomError(clans, "DiscordTooShort");
 
-      const telegramInvalid = "uhh$£";
+      discordInvalid = "01234567890123456789012345";
+      await expect(
+        clans.connect(bob).createClan(bobPlayerId, anotherName, discordInvalid, telegram, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "DiscordTooLong");
+
+      let telegramInvalid = "uhh$£";
       await expect(
         clans.connect(bob).createClan(bobPlayerId, anotherName, discord, telegramInvalid, imageId, tierId)
       ).to.be.revertedWithCustomError(clans, "TelegramInvalidCharacters");
+
+      telegramInvalid = "01234567890123456789012345";
+      await expect(
+        clans.connect(bob).createClan(bobPlayerId, anotherName, discord, telegramInvalid, imageId, tierId)
+      ).to.be.revertedWithCustomError(clans, "TelegramTooLong");
     });
 
     it("Allowed to create a clan with empty discord", async () => {

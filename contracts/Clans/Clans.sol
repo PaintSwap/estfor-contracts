@@ -550,7 +550,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _checkSocials(string calldata _discord, string calldata _telegram) private pure {
     uint discordLength = bytes(_discord).length;
-    if (discordLength > 12) {
+    if (discordLength > 25) {
       revert DiscordTooLong();
     }
 
@@ -563,7 +563,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     uint telegramLength = bytes(_telegram).length;
-    if (telegramLength > 20) {
+    if (telegramLength > 25) {
       revert TelegramTooLong();
     }
 
