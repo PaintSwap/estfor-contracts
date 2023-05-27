@@ -93,7 +93,7 @@ export const allActionChoiceIdsCooking: number[] = [
 export const allActionChoiceIdsMelee: number[] = [EstforConstants.ACTIONCHOICE_MELEE_MONSTER];
 export const allActionChoiceIdsMagic: number[] = [
   EstforConstants.ACTIONCHOICE_MAGIC_SHADOW_BLAST,
-  EstforConstants.ACTIONCHOICE_MAGIC_NATURES_FURU,
+  EstforConstants.ACTIONCHOICE_MAGIC_NATURES_FURY,
   EstforConstants.ACTIONCHOICE_MAGIC_DEATH_WAVE,
   EstforConstants.ACTIONCHOICE_MAGIC_VORTEX,
   EstforConstants.ACTIONCHOICE_MAGIC_MYSTIC_BLAST,
