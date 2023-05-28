@@ -814,21 +814,11 @@ library PlayersLibrary {
   }
 
   function _updateCombatStatsFromItem(CombatStats memory _combatStats, Item memory _item) private pure {
-    if (_item.melee != 0) {
-      _combatStats.melee += _item.melee;
-    }
-    if (_item.magic != 0) {
-      _combatStats.magic += _item.magic;
-    }
-    if (_item.meleeDefence != 0) {
-      _combatStats.meleeDefence += _item.meleeDefence;
-    }
-    if (_item.magicDefence != 0) {
-      _combatStats.magicDefence += _item.magicDefence;
-    }
-    if (_item.health != 0) {
-      _combatStats.health += _item.health;
-    }
+    _combatStats.melee += _item.melee;
+    _combatStats.magic += _item.magic;
+    _combatStats.meleeDefence += _item.meleeDefence;
+    _combatStats.magicDefence += _item.magicDefence;
+    _combatStats.health += _item.health;
   }
 
   function getBonusAvatarXPPercent(Player storage _player, Skill _skill) public view returns (uint8 bonusPercent) {
