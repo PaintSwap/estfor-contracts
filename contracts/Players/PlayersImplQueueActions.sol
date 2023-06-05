@@ -3,7 +3,8 @@ pragma solidity ^0.8.20;
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
-import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
+import {PlayersImplBase} from "./PlayersImplBase.sol";
+import {PlayersBase} from "./PlayersBase.sol";
 
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -14,7 +15,7 @@ import {PlayersLibrary} from "./PlayersLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplQueueActions is PlayersUpgradeableImplDummyBase, PlayersBase {
+contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint16;
   using UnsafeMath for uint32;

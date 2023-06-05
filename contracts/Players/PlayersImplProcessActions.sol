@@ -3,14 +3,15 @@ pragma solidity ^0.8.20;
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
-import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
+import {PlayersImplBase} from "./PlayersImplBase.sol";
+import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelegate} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplProcessActions is PlayersUpgradeableImplDummyBase, PlayersBase {
+contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint8;
   using UnsafeMath for uint16;

@@ -3,14 +3,15 @@ pragma solidity ^0.8.20;
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
+import {PlayersImplBase} from "./PlayersImplBase.sol";
+import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplRewards is PlayersUpgradeableImplDummyBase, PlayersBase, IPlayersRewardsDelegateView {
+contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDelegateView {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
   using UnsafeMath for uint40;

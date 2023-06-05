@@ -5,7 +5,8 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
-import {PlayersUpgradeableImplDummyBase, PlayersBase} from "./PlayersImplBase.sol";
+import {PlayersImplBase} from "./PlayersImplBase.sol";
+import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
@@ -19,12 +20,7 @@ import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPla
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplMisc is
-  PlayersUpgradeableImplDummyBase,
-  PlayersBase,
-  IPlayersMiscDelegate,
-  IPlayersMiscDelegateView
-{
+contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, IPlayersMiscDelegateView {
   using UnsafeMath for U256;
   using UnsafeMath for uint8;
   using UnsafeMath for uint16;
@@ -36,15 +32,11 @@ contract PlayersImplMisc is
 
   error CannotCallInitializerOnImplementation();
 
+  address immutable _this;
+
   constructor() {
     _checkStartSlot();
-
-    // Effectively the same as __disableInitializer
-    uint max = type(uint8).max;
-    assembly ("memory-safe") {
-      // Set initialized
-      sstore(0, max)
-    }
+    _this = address(this);
   }
 
   // === XP Threshold rewards ===
@@ -227,14 +219,7 @@ contract PlayersImplMisc is
     address _implMisc,
     bool _isBeta
   ) external {
-    // Check that this isn't called on this contract (implementation) directly.
-    // Slot 0 on the Players contract is initializable
-    uint val;
-    assembly ("memory-safe") {
-      val := sload(0)
-    }
-
-    if (val == type(uint8).max) {
+    if (address(this) == _this) {
       revert CannotCallInitializerOnImplementation();
     }
 
