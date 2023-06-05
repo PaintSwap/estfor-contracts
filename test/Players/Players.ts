@@ -1051,7 +1051,6 @@ describe("Players", function () {
     });
 
     it("Base XP boost", async function () {
-      // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
       const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const avatarId = 2;
@@ -1079,7 +1078,6 @@ describe("Players", function () {
     });
 
     it("Base XP boost, 2 skills", async function () {
-      // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
       const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const avatarId = 2;
@@ -1107,7 +1105,6 @@ describe("Players", function () {
     });
 
     it("Revert if trying to initialize QueueActionImpl", async function () {
-      // This test was added to check for a bug where the timespan was > 65535 but cast to uint16
       const {playersImplMisc} = await loadFixture(playersFixture);
 
       await expect(

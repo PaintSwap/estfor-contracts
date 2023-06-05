@@ -48,18 +48,13 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     }
 
     // Create new Bank contract with EIP 1167 beacon proxy
-    BeaconProxy proxy = new BeaconProxy(
-      bankBeacon,
-      abi.encodeWithSelector(IBank.initialize.selector, _clanId, bankRegistry)
+    address proxy = address(
+      new BeaconProxy(bankBeacon, abi.encodeWithSelector(IBank.initialize.selector, _clanId, bankRegistry))
     );
-    createdHere[address(proxy)] = true;
-    bankAddress[_clanId] = address(proxy);
-    emit BankContractCreated(_from, _clanId, address(proxy));
-    return address(proxy);
-  }
-
-  function setBeacon(address _bankBeacon) external onlyOwner {
-    bankBeacon = _bankBeacon;
+    createdHere[proxy] = true;
+    bankAddress[_clanId] = proxy;
+    emit BankContractCreated(_from, _clanId, proxy);
+    return proxy;
   }
 
   // solhint-disable-next-line no-empty-blocks
