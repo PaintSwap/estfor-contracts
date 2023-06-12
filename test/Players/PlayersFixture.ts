@@ -51,7 +51,7 @@ export const playersFixture = async function () {
 
   const admins = [owner.address, alice.address];
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
-  const adminAccess = await upgrades.deployProxy(AdminAccess, [admins], {
+  const adminAccess = await upgrades.deployProxy(AdminAccess, [admins, admins], {
     kind: "uups",
   });
   await adminAccess.deployed();

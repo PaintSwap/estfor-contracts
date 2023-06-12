@@ -6,15 +6,36 @@ describe("AdminAccess", function () {
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
-    const adminAccess = await upgrades.deployProxy(AdminAccess, [[]]);
+    const adminAccess = await upgrades.deployProxy(AdminAccess, [[], []]);
     return {adminAccess, AdminAccess, owner, alice};
   }
 
   it("Initialize admins on construction", async () => {
     const {AdminAccess, owner, alice} = await loadFixture(deployContracts);
-    const adminAccess = await upgrades.deployProxy(AdminAccess, [[owner.address, alice.address]]);
+    const adminAccess = await upgrades.deployProxy(AdminAccess, [[owner.address, alice.address], [alice.address]]);
     expect(await adminAccess.isAdmin(owner.address)).to.be.true;
     expect(await adminAccess.isAdmin(alice.address)).to.be.true;
+
+    expect(await adminAccess.isPromotionalAdmin(alice.address)).to.be.true;
+    expect(await adminAccess.isPromotionalAdmin(owner.address)).to.be.false;
+  });
+
+  describe("addPromotionalAdmins", () => {
+    it("Add multiple admins", async () => {
+      const {adminAccess, owner, alice} = await loadFixture(deployContracts);
+      await adminAccess.addPromotionalAdmins([owner.address, alice.address]);
+      expect(await adminAccess.isPromotionalAdmin(owner.address)).to.be.true;
+      expect(await adminAccess.isPromotionalAdmin(alice.address)).to.be.true;
+      expect(await adminAccess.isAdmin(adminAccess.address)).to.be.false;
+    });
+
+    it("Revert if not called by owner", async () => {
+      const {adminAccess, owner, alice} = await loadFixture(deployContracts);
+      await expect(adminAccess.connect(alice).addPromotionalAdmins([owner.address])).to.be.revertedWithCustomError(
+        adminAccess,
+        "CallerIsNotOwner"
+      );
+    });
   });
 
   describe("addAdmins", () => {

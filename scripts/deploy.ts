@@ -133,8 +133,9 @@ async function main() {
     admins.push(owner.address);
   }
 
+  const promotionalAdmin = "0xe9fb52d7611e502d93af381ac493981b42d91974";
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
-  const adminAccess = await upgrades.deployProxy(AdminAccess, [admins], {
+  const adminAccess = await upgrades.deployProxy(AdminAccess, [admins, promotionalAdmin], {
     kind: "uups",
   });
   await adminAccess.deployed();

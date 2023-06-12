@@ -11,16 +11,18 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for uint256;
 
   mapping(address admin => bool isAdmin) private admins;
+  mapping(address admin => bool isAdmin) private promotionalAdmins;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(address[] calldata _admins) public initializer {
+  function initialize(address[] calldata _admins, address[] calldata _promotionalAdmins) public initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
     _updateAdmins(_admins, true);
+    _updatePromotionalAdmins(_promotionalAdmins, true);
   }
 
   function addAdmins(address[] calldata _admins) external onlyOwner {
@@ -35,8 +37,8 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
     _updateAdmin(_admin, false);
   }
 
-  function isAdmin(address _admin) external view returns (bool) {
-    return admins[_admin];
+  function addPromotionalAdmins(address[] calldata _admins) external onlyOwner {
+    _updatePromotionalAdmins(_admins, true);
   }
 
   function _updateAdmins(address[] calldata _admins, bool _isAdmin) internal {
@@ -46,8 +48,23 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
+  function _updatePromotionalAdmins(address[] calldata _promotionalAdmins, bool _isAdmin) internal {
+    U256 bounds = _promotionalAdmins.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      promotionalAdmins[_promotionalAdmins[iter.asUint256()]] = _isAdmin;
+    }
+  }
+
   function _updateAdmin(address _admin, bool _isAdmin) internal {
     admins[_admin] = _isAdmin;
+  }
+
+  function isAdmin(address _admin) external view returns (bool) {
+    return admins[_admin];
+  }
+
+  function isPromotionalAdmin(address _admin) external view returns (bool) {
+    return promotionalAdmins[_admin];
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -50,8 +50,9 @@ describe("ItemNFT", function () {
     await royaltyReceiver.deployed();
 
     const admins = [owner.address, alice.address];
+    const promotionalAdmins = [alice.address];
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
-    const adminAccess = await upgrades.deployProxy(AdminAccess, [admins], {
+    const adminAccess = await upgrades.deployProxy(AdminAccess, [admins, promotionalAdmins], {
       kind: "uups",
     });
     await adminAccess.deployed();
@@ -199,7 +200,7 @@ describe("ItemNFT", function () {
   });
 
   it("numUniqueItems", async function () {
-    const {itemNFT, alice, owner} = await loadFixture(deployContracts);
+    const {itemNFT, alice} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT.numUniqueItems()).to.be.eq(1);
@@ -219,6 +220,32 @@ describe("ItemNFT", function () {
     expect(await itemNFT.numUniqueItems()).to.be.eq(0);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_ARMOR, 1);
     expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+  });
+
+  it("promotional mint", async function () {
+    const {itemNFT, alice, owner} = await loadFixture(deployContracts);
+
+    await itemNFT.connect(alice).mintPromotionalPack(alice.address);
+    await expect(itemNFT.connect(alice).mintPromotionalPack(alice.address)).to.be.revertedWithCustomError(
+      itemNFT,
+      "PromotionAlreadyClaimed"
+    );
+
+    // Check that only promotional admins can mint
+    await expect(itemNFT.mintPromotionalPack(owner.address)).to.be.revertedWithCustomError(
+      itemNFT,
+      "NotPromotionalAdmin"
+    );
+
+    const balances = await itemNFT.balanceOfs(alice.address, [
+      EstforConstants.XP_BOOST,
+      EstforConstants.SKILL_BOOST,
+      EstforConstants.COOKED_FEOLA,
+      EstforConstants.SHADOW_SCROLL,
+      EstforConstants.SECRET_EGG_2,
+    ]);
+
+    expect(balances).to.deep.eq([5, 3, 200, 300, 1]);
   });
 
   it("name & symbol", async function () {

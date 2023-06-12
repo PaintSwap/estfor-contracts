@@ -40,6 +40,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
   error NotAdminAndBeta();
+  error NotPromotionalAdmin();
+  error PromotionAlreadyClaimed();
+
+  struct UserInfo {
+    bool starterPromotionClaimed;
+  }
 
   World private world;
   bool private isBeta;
@@ -64,6 +70,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   AdminAccess private adminAccess;
   IBankFactory private bankFactory;
 
+  mapping(address user => UserInfo) public userInfo;
+
   modifier onlyPlayersOrShop() {
     if (_msgSender() != players && _msgSender() != shop) {
       revert NotPlayersOrShop();
@@ -74,6 +82,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   modifier isAdminAndBeta() {
     if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
       revert NotAdminAndBeta();
+    }
+    _;
+  }
+
+  modifier onlyPromotionalAdmin() {
+    if (!adminAccess.isPromotionalAdmin(_msgSender())) {
+      revert NotPromotionalAdmin();
     }
     _;
   }
@@ -103,12 +118,35 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     isBeta = _isBeta;
   }
 
+  // This is a pack for partnered promotions
+  function mintPromotionalPack(address _to) external onlyPromotionalAdmin {
+    if (userInfo[_to].starterPromotionClaimed) {
+      revert PromotionAlreadyClaimed();
+    }
+
+    uint[] memory ids = new uint[](5);
+    uint[] memory amounts = new uint256[](5);
+    ids[0] = XP_BOOST; // 5x XP Boost
+    amounts[0] = 5;
+    ids[1] = SKILL_BOOST; // 3x Skill Boost
+    amounts[1] = 3;
+    ids[2] = COOKED_FEOLA; // 200x Cooked Feola
+    amounts[2] = 200;
+    ids[3] = SHADOW_SCROLL; // 300x Shadow Scrolls
+    amounts[3] = 300;
+    ids[4] = SECRET_EGG_2; // 1x Special Egg
+    amounts[4] = 1;
+    userInfo[_to].starterPromotionClaimed = true;
+
+    _mintBatchItems(_to, ids, amounts);
+  }
+
   // Can't use Item[] array unfortunately as they don't support array casts
-  function mintBatch(address _to, uint[] calldata _ids, uint256[] calldata _amounts) external onlyPlayersOrShop {
+  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external onlyPlayersOrShop {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
-  function uri(uint256 _tokenId) public view virtual override returns (string memory) {
+  function uri(uint _tokenId) public view virtual override returns (string memory) {
     if (!exists(_tokenId)) {
       revert ItemDoesNotExist(uint16(_tokenId));
     }
@@ -194,7 +232,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _mint(_to, uint(_tokenId), _amount, "");
   }
 
-  function _mintBatchItems(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) internal {
+  function _mintBatchItems(address _to, uint[] memory _tokenIds, uint[] memory _amounts) internal {
     U256 numNewItems;
     U256 tokenIdsLength = _tokenIds.length.asU256();
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
@@ -386,17 +424,17 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function editItems(InputItem[] calldata _inputItems) external onlyOwner {
-    Item[] memory items = new Item[](_inputItems.length);
+    Item[] memory _items = new Item[](_inputItems.length);
     uint16[] memory tokenIds = new uint16[](_inputItems.length);
     string[] memory names = new string[](_inputItems.length);
 
     for (uint i = 0; i < _inputItems.length; ++i) {
-      items[i] = _editItem(_inputItems[i]);
+      _items[i] = _editItem(_inputItems[i]);
       tokenIds[i] = _inputItems[i].tokenId;
       names[i] = _inputItems[i].name;
     }
 
-    emit EditItems(items, tokenIds, names);
+    emit EditItems(_items, tokenIds, names);
   }
 
   function setPlayers(address _players) external onlyOwner {

@@ -332,9 +332,11 @@ uint16 constant FREEZE_SCROLL = SCROLL_BASE + 6;
 uint16 constant ANCIENT_SCROLL = SCROLL_BASE + 7;
 uint16 constant SCROLL_MAX = SCROLL_BASE + 255;
 
-// Free interval
-uint16 constant NOT_USED_BASE = 12544;
-uint16 constant NOT_USED_MAX = 12799;
+// Eggs
+uint16 constant EGG_BASE = 12544;
+uint16 constant SECRET_EGG_1 = EGG_BASE;
+uint16 constant SECRET_EGG_2 = EGG_BASE + 1;
+uint16 constant EGG_MAX = 12799;
 
 // Boosts
 uint16 constant BOOST_BASE = 12800;
