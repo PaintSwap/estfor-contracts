@@ -560,7 +560,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         // Maybe died
         xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
       }
-      // This is scrolls, doesn't affect melee actually
+      // These are scrolls/arrows, doesn't affect melee
       if (baseInputItemsConsumedNum >= currentActionProcessedBaseInputItemsConsumedNum) {
         baseInputItemsConsumedNum = uint16(
           baseInputItemsConsumedNum.sub(currentActionProcessedBaseInputItemsConsumedNum)
@@ -572,7 +572,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       if (foodConsumed >= currentActionProcessedFoodConsumed) {
         foodConsumed = uint16(foodConsumed.sub(currentActionProcessedFoodConsumed));
       } else {
-        // Could be lower if combat equation changes later
+        // Could be lower if combat equation or items change later
         foodConsumed = 0;
       }
     } else {
