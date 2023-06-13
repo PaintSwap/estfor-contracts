@@ -85,6 +85,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   error RandomNotSupportedYet();
   error DependentQuestNotCompleted(uint16 dependentQuestId);
   error RefundFailed();
+  error InvalidMinimumRequirement();
 
   struct MinimumRequirement {
     Skill skill;
@@ -169,6 +170,16 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     if (quest.dependentQuestId != 0) {
       if (!questsCompleted[_playerId].get(quest.dependentQuestId)) {
         revert DependentQuestNotCompleted(quest.dependentQuestId);
+      }
+    }
+
+    for (uint i = 0; i < minimumRequirements[_questId].length; ++i) {
+      MinimumRequirement storage minimumRequirement = minimumRequirements[_questId][i];
+      if (minimumRequirement.skill != Skill.NONE) {
+        uint xp = players.xp(_playerId, minimumRequirement.skill);
+        if (xp < minimumRequirement.xp) {
+          revert InvalidMinimumRequirement();
+        }
       }
     }
 

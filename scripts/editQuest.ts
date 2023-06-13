@@ -1,7 +1,7 @@
 import {ethers} from "hardhat";
 import {QUESTS_ADDRESS} from "./contractAddresses";
 import {Quest, allQuests, defaultMinRequirements} from "./data/quests";
-import {QUEST_SUPPLY_RUN} from "@paintswap/estfor-definitions/constants";
+import {QUEST_PURSE_STRINGS} from "@paintswap/estfor-definitions/constants";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -13,7 +13,7 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await Quests.attach(QUESTS_ADDRESS);
 
-  const quest = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+  const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as Quest;
   const tx = await quests.editQuest(quest, defaultMinRequirements);
   await tx.wait();
 }

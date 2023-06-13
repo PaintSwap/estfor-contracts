@@ -298,6 +298,37 @@ describe("Quests", function () {
     });
   });
 
+  describe("Minimum requirements", function () {
+    it("1 minimum requirement", async function () {
+      const {alice, playerId, quests, players} = await loadFixture(questsFixture);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as Quest;
+      await quests.addQuests(
+        [quest],
+        [false],
+        [
+          [
+            {skill: Skill.HEALTH, xp: 3000},
+            {skill: Skill.NONE, xp: 0},
+            {skill: Skill.NONE, xp: 0},
+          ],
+        ]
+      );
+      const questId = quest.questId;
+      await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
+        quests,
+        "InvalidMinimumRequirement"
+      );
+
+      await players.connect(alice).testModifyXP(alice.address, playerId, Skill.HEALTH, 2999, true);
+      await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
+        quests,
+        "InvalidMinimumRequirement"
+      );
+      await players.connect(alice).testModifyXP(alice.address, playerId, Skill.HEALTH, 3000, true);
+      await players.connect(alice).activateQuest(playerId, questId);
+    });
+  });
+
   it("Cooked food giving away quest", async function () {
     const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
 
