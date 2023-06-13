@@ -26,43 +26,9 @@ describe("Rewards", function () {
     it("Single", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
-
-      const rate = 100 * GUAR_MUL; // per hour
-      const tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.WOODCUTTING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
-          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: false,
-          successPercent: 100,
-        },
-        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
-
-      const actionId = await getActionId(tx);
-      const queuedAction: EstforTypes.QueuedActionInput = {
-        attire: EstforTypes.noAttire,
-        actionId,
-        combatStyle: EstforTypes.CombatStyle.NONE,
-        choiceId: EstforConstants.NONE,
-        regenerateId: EstforConstants.NONE,
-        timespan: 500,
-        rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
-      };
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+      const queuedAction = {...queuedActionWoodcutting};
+      queuedAction.timespan = 500;
 
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
       await expect(players.addXPThresholdRewards([{xpThreshold: 499, rewards}])).to.be.revertedWithCustomError(
@@ -177,6 +143,43 @@ describe("Rewards", function () {
         .withArgs(alice.address, playerId, EstforTypes.Skill.MELEE, 10000)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");
       expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.equal(2080952);
+    });
+
+    // This was for a reported bug by doughbender where multiple actions were giving the same xp rewards triggering
+    it("Check that multiple actions only give 1 set of xp rewards", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+      const queuedAction = {...queuedActionWoodcutting};
+      queuedAction.timespan = 250;
+
+      const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
+      await expect(players.addXPThresholdRewards([{xpThreshold: 499, rewards}])).to.be.revertedWithCustomError(
+        players,
+        "XPThresholdNotFound"
+      );
+      await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [50]);
+      await ethers.provider.send("evm_mine", []);
+
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
+      await players.connect(alice).processActions(playerId);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
+      await ethers.provider.send("evm_increaseTime", [450]);
+      await ethers.provider.send("evm_mine", []);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
+      expect(pendingQueuedActionState.xpRewardItemTokenIds.length).is.eq(1);
+      expect(pendingQueuedActionState.xpRewardItemTokenIds[0]).is.eq(EstforConstants.BRONZE_BAR);
+      expect(pendingQueuedActionState.xpRewardAmounts[0]).is.eq(3);
+
+      await players.connect(alice).processActions(playerId);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
     });
   });
 

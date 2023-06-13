@@ -113,19 +113,6 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       if (actionMetadata.xpGained != 0) {
         uint previousTotalXP = player.totalXP;
         uint newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
-        if (pendingQueuedActionState.xpRewardItemTokenIds.length > 0) {
-          itemNFT.mintBatch(
-            _from,
-            pendingQueuedActionState.xpRewardItemTokenIds,
-            pendingQueuedActionState.xpRewardAmounts
-          );
-          emit ClaimedXPThresholdRewards(
-            _from,
-            _playerId,
-            pendingQueuedActionState.xpRewardItemTokenIds,
-            pendingQueuedActionState.xpRewardAmounts
-          );
-        }
         player.totalXP = uint56(newTotalXP);
       }
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
@@ -135,6 +122,17 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         emit ActionPartiallyFinished(_from, _playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
       }
       startTime += actionMetadata.elapsedTime;
+    }
+
+    // XP rewards
+    if (pendingQueuedActionState.xpRewardItemTokenIds.length > 0) {
+      itemNFT.mintBatch(_from, pendingQueuedActionState.xpRewardItemTokenIds, pendingQueuedActionState.xpRewardAmounts);
+      emit ClaimedXPThresholdRewards(
+        _from,
+        _playerId,
+        pendingQueuedActionState.xpRewardItemTokenIds,
+        pendingQueuedActionState.xpRewardAmounts
+      );
     }
 
     // Oracle loot from past random rewards
