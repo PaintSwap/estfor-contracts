@@ -629,6 +629,7 @@ describe("Combat Actions", function () {
           [],
           EstforConstants.XP_BOOST,
           0,
+          0,
           EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
         );
       await ethers.provider.send("evm_increaseTime", [240]);
@@ -739,6 +740,7 @@ describe("Combat Actions", function () {
           playerId,
           [],
           EstforConstants.XP_BOOST,
+          0,
           0,
           EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
         );

@@ -935,5 +935,19 @@ describe("Quests", function () {
       );
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
     });
+
+    it("Activate quest through startActionsExtra", async function () {
+      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
+        questsFixture
+      );
+
+      await quests.addQuests([firemakingQuest], [false], [defaultMinRequirements]);
+      const questId = firemakingQuest.questId;
+      expect((await quests.activeQuests(playerId)).questId).to.eq(0);
+      await players
+        .connect(alice)
+        .startActionsExtra(playerId, [queuedAction], NONE, 0, questId, EstforTypes.ActionQueueStatus.NONE);
+      expect((await quests.activeQuests(playerId)).questId).to.eq(questId);
+    });
   });
 });

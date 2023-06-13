@@ -34,7 +34,14 @@ describe("Boosts", function () {
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
-      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.XP_BOOST,
+        NOW,
+        0,
+        EstforTypes.ActionQueueStatus.NONE
+      );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -70,7 +77,14 @@ describe("Boosts", function () {
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
-      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.XP_BOOST,
+        NOW,
+        0,
+        EstforTypes.ActionQueueStatus.NONE
+      );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -107,7 +121,14 @@ describe("Boosts", function () {
       const {timestamp: NOW} = await ethers.provider.getBlock("latest");
       await players
         .connect(alice)
-        .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+        .startActionsExtra(
+          playerId,
+          [queuedAction],
+          EstforConstants.XP_BOOST,
+          NOW,
+          0,
+          EstforTypes.ActionQueueStatus.NONE
+        );
       await ethers.provider.send("evm_increaseTime", [86400]);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [86400]); // boost has expired
@@ -145,7 +166,14 @@ describe("Boosts", function () {
       const {timestamp: NOW} = await ethers.provider.getBlock("latest");
       await players
         .connect(alice)
-        .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+        .startActionsExtra(
+          playerId,
+          [queuedAction],
+          EstforConstants.XP_BOOST,
+          NOW,
+          0,
+          EstforTypes.ActionQueueStatus.NONE
+        );
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players
         .connect(alice)
@@ -179,7 +207,14 @@ describe("Boosts", function () {
       const {timestamp: NOW} = await ethers.provider.getBlock("latest");
       await players
         .connect(alice)
-        .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+        .startActionsExtra(
+          playerId,
+          [queuedAction],
+          EstforConstants.XP_BOOST,
+          NOW,
+          0,
+          EstforTypes.ActionQueueStatus.NONE
+        );
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
       expect((await players.activeBoosts(playerId)).itemTokenId).to.not.eq(NONE);
@@ -215,6 +250,7 @@ describe("Boosts", function () {
         [queuedAction],
         EstforConstants.COMBAT_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.NONE
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -258,7 +294,14 @@ describe("Boosts", function () {
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
-      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.XP_BOOST,
+        NOW,
+        0,
+        EstforTypes.ActionQueueStatus.NONE
+      );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -300,7 +343,14 @@ describe("Boosts", function () {
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
-      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.XP_BOOST,
+        NOW,
+        0,
+        EstforTypes.ActionQueueStatus.NONE
+      );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -353,7 +403,14 @@ describe("Boosts", function () {
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await players
       .connect(alice)
-      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.NONE);
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.XP_BOOST,
+        NOW,
+        0,
+        EstforTypes.ActionQueueStatus.NONE
+      );
     await ethers.provider.send("evm_increaseTime", [3600]);
 
     // Change to gathering boost
@@ -364,13 +421,21 @@ describe("Boosts", function () {
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.APPEND
       );
     await ethers.provider.send("evm_increaseTime", [3600 * 6]);
     // Back to XP boost
     await players
       .connect(alice)
-      .startActionsExtra(playerId, [queuedAction], EstforConstants.XP_BOOST, NOW, EstforTypes.ActionQueueStatus.APPEND);
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.XP_BOOST,
+        NOW,
+        0,
+        EstforTypes.ActionQueueStatus.APPEND
+      );
     await ethers.provider.send("evm_increaseTime", [3600]);
     await players.connect(alice).processActions(playerId);
 
@@ -422,6 +487,7 @@ describe("Boosts", function () {
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
@@ -466,6 +532,7 @@ describe("Boosts", function () {
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.NONE
       );
 
@@ -564,6 +631,7 @@ describe("Boosts", function () {
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
@@ -662,6 +730,7 @@ describe("Boosts", function () {
         [queuedAction, queuedAction, queuedAction],
         EstforConstants.GATHERING_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
@@ -708,6 +777,7 @@ describe("Boosts", function () {
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
@@ -792,6 +862,7 @@ describe("Boosts", function () {
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
         NOW,
+        0,
         EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);

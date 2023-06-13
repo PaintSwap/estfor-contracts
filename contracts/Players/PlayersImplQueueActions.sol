@@ -31,6 +31,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QueuedActionInput[] memory _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
+    uint _questId,
     ActionQueueStatus _queueStatus
   ) external {
     address from = msg.sender;
@@ -128,6 +129,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     assert(totalTimespan <= MAX_TIME_); // Should never happen
     nextQueueId = queueId.asUint64();
+
+    if (_questId != 0) {
+      quests.activateQuest(_playerId, _questId);
+    }
 
     if (_boostItemTokenId != NONE) {
       consumeBoost(from, _playerId, _boostItemTokenId, _boostStartTime);

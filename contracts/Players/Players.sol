@@ -28,6 +28,7 @@ interface IPlayerDelegate {
     QueuedActionInput[] calldata queuedActions,
     uint16 boostItemTokenId,
     uint40 boostStartTime,
+    uint questId,
     ActionQueueStatus queueStatus
   ) external;
 
@@ -155,7 +156,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     QueuedActionInput[] calldata _queuedActions,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    _startActions(_playerId, _queuedActions, NONE, uint40(block.timestamp), _queueStatus);
+    _startActions(_playerId, _queuedActions, NONE, uint40(block.timestamp), 0, _queueStatus);
   }
 
   /// @notice Start actions for a player
@@ -170,9 +171,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime, // Not used yet (always current time)
+    uint _questId,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _queueStatus);
+    _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _questId, _queueStatus);
   }
 
   function _processActions(uint _playerId) private {
@@ -299,6 +301,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     QueuedActionInput[] memory _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
+    uint _questId,
     ActionQueueStatus _queueStatus
   ) private {
     _delegatecall(
@@ -309,6 +312,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _queuedActions,
         _boostItemTokenId,
         _boostStartTime,
+        _questId,
         _queueStatus
       )
     );

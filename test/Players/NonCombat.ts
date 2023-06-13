@@ -970,6 +970,7 @@ describe("Non-Combat Actions", function () {
           [queuedAction],
           EstforConstants.SKILL_BOOST,
           0,
+          0,
           EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3 * 3600]);
