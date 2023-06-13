@@ -125,7 +125,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
 
     uint[] memory ids = new uint[](5);
-    uint[] memory amounts = new uint256[](5);
+    uint[] memory amounts = new uint[](5);
     ids[0] = XP_BOOST; // 5x XP Boost
     amounts[0] = 5;
     ids[1] = SKILL_BOOST; // 3x Skill Boost
@@ -245,16 +245,16 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _mintBatch(_to, _tokenIds, _amounts, "");
   }
 
-  function mint(address _to, uint _tokenId, uint256 _amount) external onlyPlayersOrShop {
+  function mint(address _to, uint _tokenId, uint _amount) external onlyPlayersOrShop {
     _mintItem(_to, _tokenId, _amount);
   }
 
   /**
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
-  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
+  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint[] memory batchBalances) {
     U256 iter = _ids.length.asU256();
-    batchBalances = new uint256[](iter.asUint256());
+    batchBalances = new uint[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
@@ -281,10 +281,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function royaltyInfo(
-    uint256 /*_tokenId*/,
-    uint256 _salePrice
-  ) external view override returns (address receiver, uint256 royaltyAmount) {
-    uint256 amount = (_salePrice * royaltyFee) / 1000;
+    uint /*_tokenId*/,
+    uint _salePrice
+  ) external view override returns (address receiver, uint royaltyAmount) {
+    uint amount = (_salePrice * royaltyFee) / 1000;
     return (royaltyReceiver, amount);
   }
 

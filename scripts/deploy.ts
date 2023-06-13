@@ -35,8 +35,7 @@ import {
 } from "./data/actionChoiceIds";
 import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
-import {whitelistedAdmins, whitelistedSnapshot} from "@paintswap/estfor-definitions/constants";
-import {MerkleTreeWhitelist} from "./MerkleTreeWhitelist";
+import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
@@ -371,16 +370,6 @@ async function main() {
   tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
   await tx.wait();
   console.log("Add avatars");
-
-  if (isBeta) {
-    // Calculate the merkle root
-    const treeWhitelist = new MerkleTreeWhitelist(whitelistedSnapshot);
-    const root = treeWhitelist.getRoot();
-    // Set the merkle root on the nft contract
-    tx = await playerNFT.setMerkleRoot(root);
-    await tx.wait();
-    console.log("Set merkle root");
-  }
 
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();

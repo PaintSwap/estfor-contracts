@@ -5,14 +5,13 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-// This file contains methods for interacting with generic functions like trimming strings, merkle proof whitelisting etc.
+// This file contains methods for interacting with generic functions like trimming strings, lowercase etc.
 library EstforLibrary {
   using UnsafeMath for U256;
   using UnsafeMath for uint;
@@ -157,13 +156,5 @@ library EstforLibrary {
       }
     }
     return string(lowerStr);
-  }
-
-  function merkleProofVerify(
-    bytes32[] calldata _proof,
-    bytes32 _merkleRoot,
-    bytes32 _leaf
-  ) external pure returns (bool) {
-    return MerkleProof.verify(_proof, _merkleRoot, _leaf);
   }
 }

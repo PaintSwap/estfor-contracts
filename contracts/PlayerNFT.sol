@@ -60,9 +60,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   address private dev;
 
-  bytes32 private merkleRoot; // For airdrop
-  mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist;
-  uint public constant MAX_BETA_WHITELIST = 3;
+  bytes32 private merkleRoot; // Unused now (was for alpha/beta whitelisting)
+  mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist; // Unused now
   AdminAccess private adminAccess;
 
   modifier isOwnerOfPlayer(uint playerId) {
@@ -82,13 +81,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   modifier isAdmin() {
     if (!adminAccess.isAdmin(_msgSender())) {
       revert NotAdmin();
-    }
-    _;
-  }
-
-  modifier isAdminOrMain() {
-    if (!adminAccess.isAdmin(_msgSender()) && !isBeta) {
-      revert NotAdminOrLive();
     }
     _;
   }
@@ -174,16 +166,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
   }
 
-  // Minting whitelist for the beta
-  function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
-    merkleRoot = _merkleRoot;
-  }
-
-  function checkInWhitelist(bytes32[] calldata _proof) public view returns (bool whitelisted) {
-    bytes32 leaf = keccak256(abi.encodePacked(_msgSender()));
-    return EstforLibrary.merkleProofVerify(_proof, merkleRoot, leaf);
-  }
-
   function _mintPlayer(uint _avatarId, string calldata _name, bool _makeActive) private {
     address from = _msgSender();
     uint playerId = nextPlayerId;
@@ -195,20 +177,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _setTokenIdToAvatar(playerId, _avatarId);
   }
 
-  // Costs nothing to mint, only gas
-  function mintWhitelist(uint _avatarId, string calldata _name, bool _makeActive, bytes32[] calldata _proof) external {
-    if (!checkInWhitelist(_proof)) {
-      revert NotInWhitelist();
-    }
-    uint _numMintedFromWhitelist = numMintedFromWhitelist[_msgSender()];
-    if (_numMintedFromWhitelist.inc() > MAX_BETA_WHITELIST) {
-      revert MintedMoreThanAllowed();
-    }
-    numMintedFromWhitelist[_msgSender()] = _numMintedFromWhitelist.inc();
-    _mintPlayer(_avatarId, _name, _makeActive);
-  }
-
-  function mint(uint _avatarId, string calldata _name, bool _makeActive) external isAdminOrMain {
+  function mint(uint _avatarId, string calldata _name, bool _makeActive) external {
     _mintPlayer(_avatarId, _name, _makeActive);
   }
 
