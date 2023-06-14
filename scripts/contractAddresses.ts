@@ -39,7 +39,7 @@ if (isBeta) {
   playersImplQueueActions = "0x21576b3a10a1ee66695b99d0c420053e3ea67ff1";
   playersImplProcessActions = "0x5c541142356cab68f9ac2745271aec5b4d985c09";
   playersImplRewards = "0xc3fac773250d941be4082677caa018ab6c5cbd62";
-  playersImplMisc = "0x80f3c91914484d39937692b12168d85e68bcc463";
+  playersImplMisc = "0x5a3c72a2c4f55c45ad0d19bb222796b90dc4d25a";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";

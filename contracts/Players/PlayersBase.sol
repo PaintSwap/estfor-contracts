@@ -115,6 +115,7 @@ abstract contract PlayersBase {
   error NoActionsToProcess();
   error NotAdminAndBeta();
   error XPThresholdNotFound();
+  error XPThresholdAlreadyExists();
   error InvalidItemTokenId();
   error ItemDoesNotExist();
   error InvalidAmount();

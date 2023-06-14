@@ -83,6 +83,10 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         revert XPThresholdNotFound();
       }
 
+      if (xpRewardThresholds[xpThresholdReward.xpThreshold].length > 0) {
+        revert XPThresholdAlreadyExists();
+      }
+
       U256 bounds = xpThresholdReward.rewards.length.asU256();
       for (U256 jIter; jIter < bounds; jIter = jIter.inc()) {
         uint j = jIter.asUint256();

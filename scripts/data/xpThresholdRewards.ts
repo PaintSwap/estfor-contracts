@@ -1,6 +1,6 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 
-type XPThresholdReward = {
+export type XPThresholdReward = {
   xpThreshold: number;
   rewards: EstforTypes.Equipment[];
 };
@@ -129,6 +129,87 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
       {
         itemTokenId: EstforConstants.LOSSUTH_SCALE,
         amount: 5,
+      },
+    ],
+  },
+  {
+    xpThreshold: 900000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.TITANIUM_BAR,
+        amount: 1200,
+      },
+    ],
+  },
+  {
+    xpThreshold: 1000000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.NATURE_SCROLL,
+        amount: 5000,
+      },
+    ],
+  },
+  {
+    xpThreshold: 1200000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.WHITE_DEATH_SPORE,
+        amount: 100,
+      },
+    ],
+  },
+  {
+    xpThreshold: 1500000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.COOKED_DOUBTFISH,
+        amount: 250,
+      },
+    ],
+  },
+  {
+    xpThreshold: 1800000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.COOKED_ROSEFIN,
+        amount: 500,
+      },
+    ],
+  },
+  {
+    xpThreshold: 2000000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.XP_BOOST,
+        amount: 10,
+      },
+    ],
+  },
+  {
+    xpThreshold: 2500000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.SKILL_BOOST,
+        amount: 10,
+      },
+    ],
+  },
+  {
+    xpThreshold: 2700000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.ABSENCE_BOOST,
+        amount: 10,
+      },
+    ],
+  },
+  {
+    xpThreshold: 3000000,
+    rewards: [
+      {
+        itemTokenId: EstforConstants.COMBAT_BOOST,
+        amount: 10,
       },
     ],
   },

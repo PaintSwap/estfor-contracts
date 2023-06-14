@@ -122,6 +122,16 @@ describe("Rewards", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_HELMET)).to.eq(4);
     });
 
+    it("Adding to same XP reward should fail", async function () {
+      const {players} = await loadFixture(playersFixture);
+      const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
+      await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
+      await expect(players.addXPThresholdRewards([{xpThreshold: 500, rewards}])).to.be.revertedWithCustomError(
+        players,
+        "XPThresholdAlreadyExists"
+      );
+    });
+
     it("testModifyXP rewards", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
 
