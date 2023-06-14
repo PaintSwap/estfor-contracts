@@ -1,8 +1,9 @@
-import {EstforTypes} from "@paintswap/estfor-definitions";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {defaultInputItem, EquipPosition} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {allItems} from "./data/items";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -14,24 +15,9 @@ async function main() {
   // Create NFT contract which contains all items
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
-
-  const item: EstforTypes.InputItem = {
-    ...defaultInputItem,
-    tokenId: BRONZE_SHIELD,
-    combatStats: {
-      melee: 0,
-      magic: 0,
-      range: 0,
-      meleeDefence: 1,
-      magicDefence: 0,
-      rangeDefence: 1,
-      health: 0,
-    },
-    equipPosition: EquipPosition.LEFT_HAND,
-    metadataURI: "someIPFSURI.json",
-  };
-
-  await itemNFT.addItem(item);
+  const item = allItems.find((item) => item.tokenId === EstforConstants.SECRET_EGG_1) as EstforTypes.InputItem;
+  const item1 = allItems.find((item) => item.tokenId === EstforConstants.SECRET_EGG_2) as EstforTypes.InputItem;
+  await itemNFT.addItems([item, item1]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
