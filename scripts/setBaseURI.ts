@@ -10,7 +10,7 @@ async function main() {
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
-  await itemNFT.setBaseURI("ipfs://QmbeAfkwtN6noryKLwzhA3JzsDd67FXuS4RCLfyugUowEP/");
+  await itemNFT.setBaseURI("ipfs://Qmax4XM1MWDLTMYj1iShJ43EnAqN8kR6p1ubKkKd5n4c6x/");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
