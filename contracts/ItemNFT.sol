@@ -40,12 +40,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
   error NotAdminAndBeta();
-  error NotPromotionalAdmin();
-  error PromotionAlreadyClaimed();
-
-  struct UserInfo {
-    bool starterPromotionClaimed;
-  }
 
   World private world;
   bool private isBeta;
@@ -70,8 +64,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   AdminAccess private adminAccess;
   IBankFactory private bankFactory;
 
-  mapping(address user => UserInfo) public userInfo;
-
   modifier onlyPlayersOrShop() {
     if (_msgSender() != players && _msgSender() != shop) {
       revert NotPlayersOrShop();
@@ -82,13 +74,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   modifier isAdminAndBeta() {
     if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
       revert NotAdminAndBeta();
-    }
-    _;
-  }
-
-  modifier onlyPromotionalAdmin() {
-    if (!adminAccess.isPromotionalAdmin(_msgSender())) {
-      revert NotPromotionalAdmin();
     }
     _;
   }
@@ -116,29 +101,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
-  }
-
-  // This is a pack for partnered promotions
-  function mintPromotionalPack(address _to) external onlyPromotionalAdmin {
-    if (userInfo[_to].starterPromotionClaimed) {
-      revert PromotionAlreadyClaimed();
-    }
-
-    uint[] memory ids = new uint[](5);
-    uint[] memory amounts = new uint[](5);
-    ids[0] = XP_BOOST; // 5x XP Boost
-    amounts[0] = 5;
-    ids[1] = SKILL_BOOST; // 3x Skill Boost
-    amounts[1] = 3;
-    ids[2] = COOKED_FEOLA; // 200x Cooked Feola
-    amounts[2] = 200;
-    ids[3] = SHADOW_SCROLL; // 300x Shadow Scrolls
-    amounts[3] = 300;
-    ids[4] = SECRET_EGG_2; // 1x Special Egg
-    amounts[4] = 1;
-    userInfo[_to].starterPromotionClaimed = true;
-
-    _mintBatchItems(_to, ids, amounts);
   }
 
   // Can't use Item[] array unfortunately as they don't support array casts

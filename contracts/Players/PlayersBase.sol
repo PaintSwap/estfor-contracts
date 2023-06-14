@@ -57,11 +57,22 @@ abstract contract PlayersBase {
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
+  event PromotionRedeemed(address indexed to, Promotion promotion, string redeemCode);
 
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
     uint8 bonusRewardsPercent; // 3 = 3%
     uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
+  }
+
+  struct UserInfo {
+    bool starterPromotionClaimed;
+    bytes8 redeemCodeStarterPromotion;
+  }
+
+  enum Promotion {
+    NONE,
+    STARTER
   }
 
   error NotOwnerOfPlayer();
@@ -111,6 +122,9 @@ abstract contract PlayersBase {
   error PlayerAlreadyActive();
   error TestInvalidXP();
   error HasQueuedActions();
+  error PromotionAlreadyClaimed();
+  error NoActivePlayerFound();
+  error InvalidRedeemCode();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -158,6 +172,8 @@ abstract contract PlayersBase {
   mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
   Quests internal quests;
   Clans internal clans;
+
+  mapping(address user => UserInfo) internal userInfo_;
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {

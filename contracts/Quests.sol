@@ -102,6 +102,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   address private world;
   IPlayers private players;
   uint40 public randomQuestId;
+  uint16 public numTotalQuests;
   mapping(uint questId => Quest quest) public allFixedQuests;
   mapping(uint playerId => BitMaps.BitMap) private questsCompleted;
   mapping(uint playerId => PlayerQuest playerQuest) public activeQuests;
@@ -114,7 +115,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
   Quest private previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
   Quest private randomQuest; // Same for everyone
   Router private router;
-  address private buyPath1;
+  address private buyPath1; // For buying brush
   address private buyPath2;
 
   modifier onlyWorld() {
@@ -649,6 +650,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     players = _players;
   }
 
+  function dummySetNumTotalQuests(uint16 _numTotalQuests) external onlyOwner {
+    numTotalQuests = _numTotalQuests;
+  }
+
   function addQuests(
     Quest[] calldata _quests,
     bool[] calldata _isRandom,
@@ -666,6 +671,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
       uint i = iter.asUint256();
       _addQuest(_quests[i], _isRandom[i], _minimumRequirements[i]);
     }
+    numTotalQuests += uint16(_quests.length);
   }
 
   function editQuest(Quest calldata _quest, MinimumRequirement[3] calldata _minimumRequirements) external onlyOwner {
@@ -692,6 +698,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
     delete allFixedQuests[_questId];
     emit RemoveQuest(_questId);
+    --numTotalQuests;
   }
 
   receive() external payable {}

@@ -52,6 +52,8 @@ interface IPlayerDelegate {
 
   function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
 
+  function mintPromotionalPack(address to, string calldata redeemCode) external;
+
   function initialize(
     ItemNFT itemNFT,
     PlayerNFT playerNFT,
@@ -75,6 +77,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   error InvalidSelector();
   error GameIsPaused();
   error NotBeta();
+  error NotPromotionalAdmin();
 
   modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
     if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -100,6 +103,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   modifier gameNotPaused() {
     if (gamePaused) {
       revert GameIsPaused();
+    }
+    _;
+  }
+
+  modifier onlyPromotionalAdmin() {
+    if (!adminAccess.isPromotionalAdmin(_msgSender())) {
+      revert NotPromotionalAdmin();
     }
     _;
   }
@@ -202,6 +212,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @notice Process actions for a player up to the current block timestamp
   function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _processActions(_playerId);
+  }
+
+  function mintPromotionalPack(address _to, string calldata _redeemCode) external onlyPromotionalAdmin {
+    _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.mintPromotionalPack.selector, _to, _redeemCode));
   }
 
   // Callback after minting a player

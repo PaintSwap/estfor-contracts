@@ -622,4 +622,37 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     // Mint starting equipment
     itemNFT.mintBatch(_from, _startingItemTokenIds, _startingAmounts);
   }
+
+  // This is a pack for partnered promotions
+  function mintPromotionalPack(address _to, string calldata _redeemCode) external {
+    if (userInfo_[_to].starterPromotionClaimed) {
+      revert PromotionAlreadyClaimed();
+    }
+
+    if (activePlayer_[_to] == 0) {
+      revert NoActivePlayerFound();
+    }
+
+    if (bytes(_redeemCode).length != 16) {
+      revert InvalidRedeemCode();
+    }
+
+    uint[] memory ids = new uint[](5);
+    uint[] memory amounts = new uint[](5);
+    ids[0] = XP_BOOST; // 5x XP Boost
+    amounts[0] = 5;
+    ids[1] = SKILL_BOOST; // 3x Skill Boost
+    amounts[1] = 3;
+    ids[2] = COOKED_FEOLA; // 200x Cooked Feola
+    amounts[2] = 200;
+    ids[3] = SHADOW_SCROLL; // 300x Shadow Scrolls
+    amounts[3] = 300;
+    ids[4] = SECRET_EGG_2; // 1x Special Egg
+    amounts[4] = 1;
+    userInfo_[_to].starterPromotionClaimed = true;
+    userInfo_[_to].redeemCodeStarterPromotion = bytes8(bytes(_redeemCode));
+
+    itemNFT.mintBatch(_to, ids, amounts);
+    emit PromotionRedeemed(_to, Promotion.STARTER, _redeemCode);
+  }
 }

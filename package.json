@@ -78,6 +78,7 @@
     "editClanTiers": "npx hardhat run scripts/editClanTiers.ts",
     "addAdmin": "npx hardhat run scripts/addAdmin.ts",
     "addAdminPromotional": "npx hardhat run scripts/addAdminPromotional.ts",
+    "addQuests": "npx hardhat run scripts/addQuests.ts",
     "editQuest": "npx hardhat run scripts/editQuest.ts",
     "editActions": "npx hardhat run scripts/editActions.ts",
     "editActionChoice": "npx hardhat run scripts/editActionChoice.ts",
