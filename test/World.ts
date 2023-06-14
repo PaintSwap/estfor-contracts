@@ -294,9 +294,34 @@ describe("World", function () {
         successPercent: 100,
       });
 
-      const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
+      let actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
       expect(actionChoice.inputAmount1).to.eq(2);
       expect((await world.getActionChoice(EstforConstants.NONE, 2)).skill).to.eq(EstforTypes.Skill.NONE);
+
+      await world.editActionChoices(
+        [EstforConstants.NONE],
+        [choiceId],
+        [
+          {
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            xpPerHour: 0,
+            minXP: 0,
+            rate: 1 * RATE_MUL,
+            inputTokenId1: EstforConstants.AIR_SCROLL,
+            inputAmount1: 10,
+            inputTokenId2: EstforConstants.NONE,
+            inputAmount2: 0,
+            inputTokenId3: EstforConstants.NONE,
+            inputAmount3: 0,
+            outputTokenId: EstforConstants.NONE,
+            outputAmount: 0,
+            successPercent: 100,
+          },
+        ]
+      );
+      actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
+      expect(actionChoice.inputAmount1).to.eq(10);
     });
   });
 

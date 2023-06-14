@@ -2,6 +2,7 @@ import {ethers} from "hardhat";
 import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./contractAddresses";
 import {allActions} from "./data/actions";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {Skill} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -13,6 +14,14 @@ async function main() {
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
   const world = await World.attach(WORLD_ADDRESS);
 
+  const actions = await allActions.filter(
+    (action) => action.info.skill === Skill.THIEVING || action.info.skill === Skill.FISHING
+  );
+
+  const tx = await world.editActions(actions);
+  await tx.wait();
+
+  /*
   const actions = await allActions.filter(
     (action) =>
       action.actionId === EstforConstants.ACTION_COMBAT_GRAND_TREE_IMP ||
@@ -29,7 +38,7 @@ async function main() {
   } else {
     const tx = await world.editActions(actions);
     await tx.wait();
-  }
+  } */
 }
 
 main().catch((error) => {

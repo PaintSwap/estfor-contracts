@@ -81,7 +81,7 @@
     "addQuests": "npx hardhat run scripts/addQuests.ts",
     "editQuests": "npx hardhat run scripts/editQuests.ts",
     "editActions": "npx hardhat run scripts/editActions.ts",
-    "editActionChoice": "npx hardhat run scripts/editActionChoice.ts",
+    "editActionChoices": "npx hardhat run scripts/editActionChoices.ts",
     "addXPThresholdRewards": "npx hardhat run scripts/addXPThresholdRewards.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",
