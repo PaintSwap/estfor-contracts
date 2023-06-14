@@ -9,7 +9,6 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
-import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
 import {World} from "./World.sol";
 import {AdminAccess} from "./AdminAccess.sol";

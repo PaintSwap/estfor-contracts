@@ -408,6 +408,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return activeBoosts_[_playerId];
   }
 
+  function userInfo(address _user) external view returns (UserInfo memory) {
+    return userInfo_[_user];
+  }
+
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(
