@@ -674,7 +674,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     numTotalQuests += uint16(_quests.length);
   }
 
-  function editQuest(Quest calldata _quest, MinimumRequirement[3] calldata _minimumRequirements) external onlyOwner {
+  function editQuest(Quest calldata _quest, MinimumRequirement[3] calldata _minimumRequirements) public onlyOwner {
     _checkQuest(_quest);
 
     minimumRequirements[_quest.questId] = _minimumRequirements;
@@ -685,6 +685,16 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
 
     allFixedQuests[_quest.questId] = _quest;
     emit EditQuest(_quest, _minimumRequirements);
+  }
+
+  // TODO: Use an EditQuests event
+  function editQuests(
+    Quest[] calldata _quests,
+    MinimumRequirement[3][] calldata _minimumRequirements
+  ) external onlyOwner {
+    for (uint i = 0; i < _quests.length; ++i) {
+      editQuest(_quests[i], _minimumRequirements[i]);
+    }
   }
 
   function removeQuest(uint _questId) external onlyOwner {
