@@ -222,6 +222,24 @@ describe("ItemNFT", function () {
     expect(await itemNFT.numUniqueItems()).to.be.eq(1);
   });
 
+  it("airdrop", async function () {
+    // Only owner can do it
+    const {itemNFT, owner, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.airdrop([owner.address, alice.address], EstforConstants.BRONZE_AXE, [1, 2]);
+
+    expect(await itemNFT.balanceOf(owner.address, EstforConstants.BRONZE_AXE)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(2);
+
+    await itemNFT.airdrop([alice.address], EstforConstants.BRONZE_AXE, [3]);
+    expect(await itemNFT.balanceOf(owner.address, EstforConstants.BRONZE_AXE)).to.eq(1); // Unchanged
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(5);
+
+    await expect(
+      itemNFT.connect(alice).airdrop([alice.address], EstforConstants.BRONZE_AXE, [3])
+    ).to.be.revertedWithCustomError(itemNFT, "CallerIsNotOwner");
+  });
+
   it("name & symbol", async function () {
     const {itemNFT, world, shop, royaltyReceiver, adminAccess} = await loadFixture(deployContracts);
     expect(await itemNFT.name()).to.be.eq("Estfor Items (Beta)");

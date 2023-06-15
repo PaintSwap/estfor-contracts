@@ -39,6 +39,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error ERC1155ReceiverNotApproved();
   error NotPlayersOrShop();
   error NotAdminAndBeta();
+  error LengthMismatch();
 
   World private world;
   bool private isBeta;
@@ -419,5 +420,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isAdminAndBeta {
     _mintBatchItems(_to, _tokenIds, _amounts);
+  }
+
+  function airdrop(address[] calldata _tos, uint _tokenId, uint[] calldata _amounts) external onlyOwner {
+    if (_tos.length != _amounts.length) {
+      revert LengthMismatch();
+    }
+    for (uint i = 0; i < _tos.length; ++i) {
+      _mintItem(_tos[i], _tokenId, _amounts[i]);
+    }
   }
 }
