@@ -15,7 +15,7 @@ async function main() {
 
   const tokenId = EstforConstants.SECRET_EGG_1;
   const chunkSize = 100;
-  for (let i = 100; i < addresses.length; i += chunkSize) {
+  for (let i = 0; i < addresses.length; i += chunkSize) {
     const accounts: string[] = [];
     const amounts: number[] = [];
     const chunk = addresses.slice(i, i + chunkSize);
