@@ -633,7 +633,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       revert PromotionAlreadyClaimed();
     }
 
-    if (activePlayer_[_to] == 0) {
+    uint playerId = activePlayer_[_to];
+    if (playerId == 0) {
       revert NoActivePlayerFound();
     }
 
@@ -657,6 +658,6 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     userInfo_[_to].redeemCodeStarterPromotion = bytes8(bytes(_redeemCode));
 
     itemNFT.mintBatch(_to, ids, amounts);
-    emit PromotionRedeemed(_to, Promotion.STARTER, _redeemCode);
+    emit PromotionRedeemed(_to, playerId, Promotion.STARTER, _redeemCode, ids, amounts);
   }
 }

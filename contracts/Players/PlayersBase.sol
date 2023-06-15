@@ -57,7 +57,14 @@ abstract contract PlayersBase {
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
-  event PromotionRedeemed(address indexed to, Promotion promotion, string redeemCode);
+  event PromotionRedeemed(
+    address indexed to,
+    uint playerId,
+    Promotion promotion,
+    string redeemCode,
+    uint[] itemTokenIds,
+    uint[] amounts
+  );
 
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
