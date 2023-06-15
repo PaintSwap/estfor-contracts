@@ -650,10 +650,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     players = _players;
   }
 
-  function dummySetNumTotalQuests(uint16 _numTotalQuests) external onlyOwner {
-    numTotalQuests = _numTotalQuests;
-  }
-
   function addQuests(
     Quest[] calldata _quests,
     bool[] calldata _isRandom,

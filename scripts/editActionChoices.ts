@@ -31,11 +31,9 @@ async function main() {
     await tx.wait();
   }
 */
-  const tx = await world.editActionChoices(
-    [EstforConstants.ACTION_COOKING_ITEM],
-    allActionChoiceIdsCooking,
-    allActionChoicesCooking
-  );
+
+  const actionIds = allActionChoiceIdsCooking.map(() => EstforConstants.ACTION_COOKING_ITEM);
+  const tx = await world.editActionChoices(actionIds, allActionChoiceIdsCooking, allActionChoicesCooking);
   await tx.wait();
 }
 

@@ -30,7 +30,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
   event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
-  event EditActionChoices(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoice[] choices);
+  event EditActionChoices_(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoice[] choices);
   event NewDailyRewards(Equipment[8] dailyRewards);
   error RandomWordsCannotBeUpdatedYet();
   error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
@@ -557,6 +557,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (_actionIds.length == 0) {
       revert NoActionChoices();
     }
+    if (_actionIds.length != _actionChoiceIds.length) {
+      revert LengthMismatch();
+    }
+    if (_actionIds.length != _actionChoices.length) {
+      revert LengthMismatch();
+    }
 
     U256 actionIdsLength = _actionIds.length.asU256();
     for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
@@ -564,7 +570,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       _editActionChoice(_actionIds[i], _actionChoiceIds[i], _actionChoices[i]);
     }
 
-    emit EditActionChoices(_actionIds, _actionChoiceIds, _actionChoices);
+    emit EditActionChoices_(_actionIds, _actionChoiceIds, _actionChoices);
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
