@@ -17,15 +17,6 @@ async function main() {
 
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
   console.log("bankImplAddress", bankImplAddress);
-
-  // if is beta, then upgrade
-  const isBeta = process.env.IS_BETA == "true";
-  if (isBeta) {
-    const BankRegistry = await ethers.getContractFactory("BankRegistry");
-    const bankRegistry = BankRegistry.attach(BANK_REGISTRY_ADDRESS);
-    await bankRegistry.setBankImpl(bankImplAddress);
-    console.log("Upgraded beta bank implementation in registry");
-  }
   await verifyContracts([bankImplAddress]);
 }
 

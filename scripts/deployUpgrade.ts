@@ -12,6 +12,8 @@ import {
   ESTFOR_LIBRARY_ADDRESS,
   WORLD_ADDRESS,
   WORLD_LIBRARY_ADDRESS,
+  BANK_FACTORY_ADDRESS,
+  ADMIN_ACCESS_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -141,6 +143,14 @@ async function main() {
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
   await verifyContracts([world.address]);
+
+  // AdminAccess
+  const AdminAccess = await ethers.getContractFactory("AdminAccess");
+  const adminAccess = await upgrades.upgradeProxy(ADMIN_ACCESS_ADDRESS, AdminAccess, {
+    kind: "uups",
+  });
+  await adminAccess.deployed();
+  await verifyContracts([adminAccess.address]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
