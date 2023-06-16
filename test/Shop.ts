@@ -3,6 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
+import {allDailyRewards} from "../scripts/data/dailyRwards";
 
 describe("Shop", function () {
   const deployContracts = async function () {
@@ -28,7 +29,7 @@ describe("Shop", function () {
     const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
     const worldLibrary = await WorldLibrary.deploy();
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId, allDailyRewards], {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     });

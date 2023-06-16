@@ -4,7 +4,8 @@ import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
 import {ActionInput} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {getActionId, RATE_MUL, SPAWN_MUL} from "./utils";
+import {getActionId, getRequestId, RATE_MUL, SPAWN_MUL} from "./utils";
+import {allDailyRewards} from "../scripts/data/dailyRwards";
 
 describe("World", function () {
   const deployContracts = async function () {
@@ -27,7 +28,7 @@ describe("World", function () {
     const worldLibrary = await WorldLibrary.deploy();
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId, allDailyRewards], {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     });
@@ -149,6 +150,50 @@ describe("World", function () {
         expect(multipleWords[i][1]).to.not.eq(0);
         expect(multipleWords[i][2]).to.not.eq(0);
       }
+    });
+
+    it("Test new random rewards", async function () {
+      const {world, mockOracleClient} = await loadFixture(deployContracts);
+
+      const oneDay = 24 * 3600;
+      const oneWeek = oneDay * 7;
+      let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      let timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay) + 1; // Start next monday
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      let dailyRewards = await world.dailyRewards();
+
+      // Keep requesting
+      let error = false;
+      while (!error) {
+        try {
+          const tx = await world.requestRandomWords();
+          let requestId = getRequestId(tx);
+          await mockOracleClient.fulfill(requestId, world.address);
+        } catch {
+          error = true;
+        }
+      }
+
+      // Do another week check that the dailyRewards are different
+      expect(await world.dailyRewards()).to.not.eql(dailyRewards);
+      dailyRewards = await world.dailyRewards();
+      ({timestamp: currentTimestamp} = await ethers.provider.getBlock("latest"));
+      timestamp = currentTimestamp + oneWeek; // Start next monday
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+      error = false;
+      while (!error) {
+        try {
+          const tx = await world.requestRandomWords();
+          let requestId = getRequestId(tx);
+          await mockOracleClient.fulfill(requestId, world.address);
+        } catch {
+          error = true;
+        }
+      }
+
+      expect(await world.dailyRewards()).to.not.eql(dailyRewards);
+      dailyRewards = await world.dailyRewards();
     });
   });
 

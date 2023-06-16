@@ -51,6 +51,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error OnlyCombatMultipleGuaranteedRewards();
   error NotAFactorOf3600();
   error NonCombatCannotHaveBothGuaranteedAndRandomRewards();
+  error InvalidDay();
+  error InvalidReward();
+
+  struct DailyReward {
+    Equipment reward;
+    uint8 day;
+  }
 
   // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface public COORDINATOR;
@@ -93,12 +100,18 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   IQuests private quests;
 
+  mapping(uint index => Equipment[]) public dailyRewardsToBeAdded;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
+  function initialize(
+    VRFCoordinatorV2Interface _coordinator,
+    uint64 _subscriptionId,
+    DailyReward[] calldata _dailyRewards
+  ) public initializer {
     __VRFConsumerBaseV2_init(address(_coordinator));
     __Ownable_init();
     __UUPSUpgradeable_init();
@@ -142,6 +155,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       );
       fulfillRandomWords(requestId, _randomWords);
     }
+
+    addDailyRewards(_dailyRewards);
   }
 
   function canRequestRandomWord() external view returns (bool) {
@@ -206,20 +221,35 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // Are we at the threshold for a new week
     if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
-      // Issue new daily rewards based on the new random words (TODO)
+      // Issue new daily rewards based on the new random words
+
+      uint randomWord = random[0];
       Equipment[8] memory rewards = [
-        Equipment(COPPER_ORE, 100),
-        Equipment(COAL_ORE, 200),
-        Equipment(RUBY, 100),
-        Equipment(MITHRIL_BAR, 200),
-        Equipment(COOKED_BOWFISH, 100),
-        Equipment(LEAF_FRAGMENTS, 20),
-        Equipment(HELL_SCROLL, 300),
-        Equipment(XP_BOOST, 1)
+        dailyRewardsToBeAdded[0][randomWord % dailyRewardsToBeAdded[0].length],
+        dailyRewardsToBeAdded[1][(randomWord >> (1 * 8)) % dailyRewardsToBeAdded[1].length],
+        dailyRewardsToBeAdded[2][(randomWord >> (2 * 8)) % dailyRewardsToBeAdded[2].length],
+        dailyRewardsToBeAdded[3][(randomWord >> (3 * 8)) % dailyRewardsToBeAdded[3].length],
+        dailyRewardsToBeAdded[4][(randomWord >> (4 * 8)) % dailyRewardsToBeAdded[4].length],
+        dailyRewardsToBeAdded[5][(randomWord >> (5 * 8)) % dailyRewardsToBeAdded[5].length],
+        dailyRewardsToBeAdded[6][(randomWord >> (6 * 8)) % dailyRewardsToBeAdded[6].length],
+        dailyRewardsToBeAdded[7][(randomWord >> (7 * 8)) % dailyRewardsToBeAdded[7].length]
       ];
       _storeDailyRewards(rewards);
       emit NewDailyRewards(rewards);
       weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
+    }
+  }
+
+  function addDailyRewards(DailyReward[] calldata _dailyRewards) public {
+    for (uint i = 0; i < _dailyRewards.length; ++i) {
+      if (_dailyRewards[i].day > 7) {
+        revert InvalidDay();
+      }
+      if (_dailyRewards[i].reward.itemTokenId == 0) {
+        revert InvalidReward();
+      }
+
+      dailyRewardsToBeAdded[_dailyRewards[i].day].push(_dailyRewards[i].reward);
     }
   }
 

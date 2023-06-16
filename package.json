@@ -83,6 +83,7 @@
     "editActions": "npx hardhat run scripts/editActions.ts",
     "editActionChoices": "npx hardhat run scripts/editActionChoices.ts",
     "addXPThresholdRewards": "npx hardhat run scripts/addXPThresholdRewards.ts",
+    "addDailyRewards": "npx hardhat run scripts/addDailyRewards.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",
     "impersonate": "npx hardhat run scripts/impersonate.ts",

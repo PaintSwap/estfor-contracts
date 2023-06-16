@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
+import {allDailyRewards} from "../scripts/data/dailyRwards";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
@@ -26,7 +27,7 @@ describe("ItemNFT", function () {
     const worldLibrary = await WorldLibrary.deploy();
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId, allDailyRewards], {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     });
