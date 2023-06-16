@@ -218,6 +218,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.mintPromotionalPack.selector, _to, _redeemCode));
   }
 
+  function testClearPromotionalPack(address _toClear) external isAdminAndBeta {
+    delete userInfo_[_toClear];
+  }
+
   // Callback after minting a player
   function mintedPlayer(
     address _from,
