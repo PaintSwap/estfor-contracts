@@ -21,7 +21,7 @@ async function main() {
     const chunk = addresses.slice(i, i + chunkSize);
     chunk.forEach((address, j) => {
       accounts.push(address);
-      amounts.push(quantities[j]);
+      amounts.push(quantities[i + j]);
     });
 
     const tx = await itemNFT.airdrop(accounts, tokenId, amounts);
