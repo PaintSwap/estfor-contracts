@@ -44,6 +44,8 @@ interface IPlayersMiscDelegate {
 
 interface IPlayersProcessActionsDelegate {
   function processActions(address from, uint playerId) external;
+
+  function processActionsAndSetState(uint playerId) external;
 }
 
 interface IPlayersRewardsDelegate {

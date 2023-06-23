@@ -10,6 +10,7 @@ import {
   MockWrappedFantom,
   PlayerNFT,
   Players,
+  Promotions,
   Quests,
   Shop,
 } from "../typechain-types";
@@ -201,6 +202,17 @@ async function main() {
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
+  const Promotions = await ethers.getContractFactory("Promotions");
+  const promotions = (await upgrades.deployProxy(
+    Promotions,
+    [adminAccess.address, itemNFT.address, playerNFT.address, isBeta],
+    {
+      kind: "uups",
+    }
+  )) as Promotions;
+  await promotions.deployed();
+  console.log(`promotions = "${promotions.address.toLowerCase()}"`);
+
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
@@ -358,6 +370,10 @@ async function main() {
   tx = await itemNFT.setBankFactory(bankFactory.address);
   await tx.wait();
   console.log("itemNFT setBankFactory");
+
+  tx = await itemNFT.setPromotions(promotions.address);
+  await tx.wait();
+  console.log("itemNFT setPromotions");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();

@@ -16,7 +16,7 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IPlayersMiscDelegateView, IPlayersRewardsDelegateView} from "../interfaces/IPlayersDelegates.sol";
+import {IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersProcessActionsDelegate} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -52,7 +52,7 @@ interface IPlayerDelegate {
 
   function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
 
-  function mintPromotionalPack(address to, string calldata redeemCode) external;
+  function buyBrushQuest(address to, uint playerId, uint questId, bool useExactETH) external;
 
   function initialize(
     ItemNFT itemNFT,
@@ -77,7 +77,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   error InvalidSelector();
   error GameIsPaused();
   error NotBeta();
-  error NotPromotionalAdmin();
 
   modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
     if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -103,13 +102,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   modifier gameNotPaused() {
     if (gamePaused) {
       revert GameIsPaused();
-    }
-    _;
-  }
-
-  modifier onlyPromotionalAdmin() {
-    if (!adminAccess.isPromotionalAdmin(_msgSender())) {
-      revert NotPromotionalAdmin();
     }
     _;
   }
@@ -187,39 +179,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _startActions(_playerId, _queuedActions, _boostItemTokenId, uint40(block.timestamp), _questId, _queueStatus);
   }
 
-  function _processActions(uint _playerId) private {
-    (
-      QueuedAction[] memory remainingQueuedActions,
-      PendingQueuedActionData memory currentActionProcessed
-    ) = _processActions(msg.sender, _playerId);
-
-    Player storage player = players_[_playerId];
-    if (remainingQueuedActions.length != 0) {
-      player.currentActionStartTime = uint40(block.timestamp);
-    } else {
-      player.currentActionStartTime = 0;
-    }
-    _setPrevPlayerState(player, currentActionProcessed);
-
-    Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
-    for (uint i = 0; i < remainingQueuedActions.length; ++i) {
-      remainingAttire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
-    }
-
-    _setActionQueue(msg.sender, _playerId, remainingQueuedActions, remainingAttire, block.timestamp);
-  }
-
   /// @notice Process actions for a player up to the current block timestamp
   function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    _processActions(_playerId);
-  }
-
-  function mintPromotionalPack(address _to, string calldata _redeemCode) external onlyPromotionalAdmin {
-    _delegatecall(implMisc, abi.encodeWithSelector(IPlayerDelegate.mintPromotionalPack.selector, _to, _redeemCode));
-  }
-
-  function testClearPromotionalPack(address _toClear) external isAdminAndBeta {
-    delete userInfo_[_toClear];
+    _processActionsAndSetState(_playerId);
   }
 
   // Callback after minting a player
@@ -248,24 +210,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
+  // This is a special type of quest.
   function buyBrushQuest(
     address _to,
     uint _playerId,
     uint _questId,
     bool _useExactETH
   ) external payable isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    // This is a one off quest
-    bool success = quests.buyBrushQuest{value: msg.value}(msg.sender, _to, _playerId, _questId, _useExactETH);
-    if (success) {
-      // Mint reward, just hardcoding for gas saving
-      uint[] memory rewardItemTokenIds = new uint[](1);
-      rewardItemTokenIds[0] = GATHERING_BOOST;
-      uint[] memory rewardAmounts = new uint[](1);
-      rewardAmounts[0] = 1;
-      uint[] memory empty;
-      itemNFT.mint(msg.sender, rewardItemTokenIds[0], rewardAmounts[0]);
-      emit QuestRewardConsumes(msg.sender, _playerId, rewardItemTokenIds, rewardAmounts, empty, empty);
-    }
+    _delegatecall(
+      implMisc,
+      abi.encodeWithSelector(IPlayerDelegate.buyBrushQuest.selector, _to, _playerId, _questId, _useExactETH)
+    );
   }
 
   function activateQuest(
@@ -273,14 +228,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint questId
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length != 0) {
-      _processActions(_playerId);
+      _processActionsAndSetState(_playerId);
     }
     quests.activateQuest(_playerId, questId);
   }
 
   function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length != 0) {
-      _processActions(_playerId);
+      _processActionsAndSetState(_playerId);
     }
     // Quest may hve been completed as a result of this so don't bother trying to deactivate it
     if (quests.getActiveQuestId(_playerId) != 0) {
@@ -333,6 +288,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _questId,
         _queueStatus
       )
+    );
+  }
+
+  function _processActionsAndSetState(uint _playerId) private {
+    _delegatecall(
+      implProcessActions,
+      abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActionsAndSetState.selector, _playerId)
     );
   }
 
@@ -406,14 +368,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function players(uint _playerId) external view returns (Player memory) {
     return players_[_playerId];
-  }
-
-  function activeBoosts(uint _playerId) external view returns (PlayerBoostInfo memory) {
-    return activeBoosts_[_playerId];
-  }
-
-  function userInfo(address _user) external view returns (UserInfo memory) {
-    return userInfo_[_user];
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

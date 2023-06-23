@@ -26,11 +26,33 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _checkStartSlot();
   }
 
+  function processActionsAndSetState(uint _playerId) external {
+    (
+      QueuedAction[] memory remainingQueuedActions,
+      PendingQueuedActionData memory currentActionProcessed
+    ) = processActions(msg.sender, _playerId);
+
+    Player storage player = players_[_playerId];
+    if (remainingQueuedActions.length != 0) {
+      player.currentActionStartTime = uint40(block.timestamp);
+    } else {
+      player.currentActionStartTime = 0;
+    }
+    _setPrevPlayerState(player, currentActionProcessed);
+
+    Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
+    for (uint i = 0; i < remainingQueuedActions.length; ++i) {
+      remainingAttire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
+    }
+
+    _setActionQueue(msg.sender, _playerId, remainingQueuedActions, remainingAttire, block.timestamp);
+  }
+
   function processActions(
     address _from,
     uint _playerId
   )
-    external
+    public
     returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
   {
     Player storage player = players_[_playerId];

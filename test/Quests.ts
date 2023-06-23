@@ -279,7 +279,9 @@ describe("Quests", function () {
       expect((await quests.activeQuests(playerId)).questId).to.be.eq(0);
 
       // Check the rewards are as expected
-      expect(await itemNFT.balanceOf(alice.address, quest.rewardItemTokenId1)).to.eq(quest.rewardAmount1);
+      expect(quest.rewardItemTokenId1).to.eq(0);
+      expect(quest.skillXPGained).to.not.eq(0);
+      expect(await players.xp(playerId, quest.skillReward)).to.eq(quest.skillXPGained);
     });
 
     it("Check that quest is not completed after an action", async function () {

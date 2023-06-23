@@ -1024,36 +1024,4 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId); // Continues the action
     }
   });
-
-  it("promotional mint", async function () {
-    const {itemNFT, players, owner, alice, bob} = await loadFixture(playersFixture);
-
-    const redeemCode = "1111111111111111";
-    await expect(players.mintPromotionalPack(alice.address, "11231")).to.be.revertedWithCustomError(
-      players,
-      "InvalidRedeemCode"
-    );
-
-    // Check that only promotional admins can mint
-    await expect(players.connect(bob).mintPromotionalPack(owner.address, redeemCode)).to.be.revertedWithCustomError(
-      players,
-      "NotPromotionalAdmin"
-    );
-
-    await players.mintPromotionalPack(alice.address, redeemCode);
-    await expect(players.mintPromotionalPack(alice.address, redeemCode)).to.be.revertedWithCustomError(
-      players,
-      "PromotionAlreadyClaimed"
-    );
-
-    const balances = await itemNFT.balanceOfs(alice.address, [
-      EstforConstants.XP_BOOST,
-      EstforConstants.SKILL_BOOST,
-      EstforConstants.COOKED_FEOLA,
-      EstforConstants.SHADOW_SCROLL,
-      EstforConstants.SECRET_EGG_2,
-    ]);
-
-    expect(balances).to.deep.eq([5, 3, 200, 300, 1]);
-  });
 });

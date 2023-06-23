@@ -1,7 +1,7 @@
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {ItemNFT, PlayerNFT, Players, Shop, World} from "../../typechain-types";
+import {ItemNFT, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allDailyRewards} from "../../scripts/data/dailyRwards";
 
@@ -100,6 +100,16 @@ export const playersFixture = async function () {
     }
   )) as PlayerNFT;
 
+  const Promotions = await ethers.getContractFactory("Promotions");
+  const promotions = (await upgrades.deployProxy(
+    Promotions,
+    [adminAccess.address, itemNFT.address, playerNFT.address, isBeta],
+    {
+      kind: "uups",
+    }
+  )) as Promotions;
+  await promotions.deployed();
+
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
@@ -193,6 +203,8 @@ export const playersFixture = async function () {
   await itemNFT.setBankFactory(bankFactory.address);
   await clans.setBankFactory(bankFactory.address);
 
+  await itemNFT.setPromotions(promotions.address);
+
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
     name: "Name goes here",
@@ -242,5 +254,6 @@ export const playersFixture = async function () {
     bankRegistry,
     bankFactory,
     estforLibrary,
+    promotions,
   };
 };

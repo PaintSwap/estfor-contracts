@@ -63,9 +63,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   AdminAccess private adminAccess;
   IBankFactory private bankFactory;
+  address private promotions;
 
-  modifier onlyPlayersOrShop() {
-    if (_msgSender() != players && _msgSender() != shop) {
+  modifier onlyPlayersOrShopOrPromotions() {
+    if (_msgSender() != players && _msgSender() != shop && _msgSender() != promotions) {
       revert NotPlayersOrShop();
     }
     _;
@@ -104,7 +105,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   // Can't use Item[] array unfortunately as they don't support array casts
-  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external onlyPlayersOrShop {
+  function mintBatch(
+    address _to,
+    uint[] calldata _ids,
+    uint[] calldata _amounts
+  ) external onlyPlayersOrShopOrPromotions {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
@@ -207,7 +212,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _mintBatch(_to, _tokenIds, _amounts, "");
   }
 
-  function mint(address _to, uint _tokenId, uint _amount) external onlyPlayersOrShop {
+  function mint(address _to, uint _tokenId, uint _amount) external onlyPlayersOrShopOrPromotions {
     _mintItem(_to, _tokenId, _amount);
   }
 
@@ -225,20 +230,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external {
-    if (
-      _from != _msgSender() && !isApprovedForAll(_from, _msgSender()) && players != _msgSender() && shop != _msgSender()
-    ) {
-      revert ERC1155ReceiverNotApproved();
-    }
+    _checkBurn(_from);
     _burnBatch(_from, _tokenIds, _amounts);
   }
 
   function burn(address _from, uint _tokenId, uint _amount) external {
-    if (
-      _from != _msgSender() && !isApprovedForAll(_from, _msgSender()) && players != _msgSender() && shop != _msgSender()
-    ) {
-      revert ERC1155ReceiverNotApproved();
-    }
+    _checkBurn(_from);
     _burn(_from, _tokenId, _amount);
   }
 
@@ -323,6 +320,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     tokenURIs[_item.tokenId] = _item.metadataURI;
   }
 
+  function _checkBurn(address _from) private view {
+    if (
+      _from != _msgSender() && !isApprovedForAll(_from, _msgSender()) && players != _msgSender() && shop != _msgSender()
+    ) {
+      revert ERC1155ReceiverNotApproved();
+    }
+  }
+
   function getBoostInfo(uint16 _tokenId) external view returns (uint16 boostValue, uint24 boostDuration) {
     Item storage item = _getItem(_tokenId);
     return (item.boostValue, item.boostDuration);
@@ -405,6 +410,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function setBankFactory(IBankFactory _bankFactory) external onlyOwner {
     bankFactory = _bankFactory;
+  }
+
+  function setPromotions(address _promotions) external onlyOwner {
+    promotions = _promotions;
   }
 
   function setBaseURI(string calldata _baseURI) external onlyOwner {

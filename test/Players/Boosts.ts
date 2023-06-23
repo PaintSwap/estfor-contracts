@@ -216,10 +216,15 @@ describe("Boosts", function () {
           EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [120]);
-      await ethers.provider.send("evm_mine", []);
-      expect((await players.activeBoosts(playerId)).itemTokenId).to.not.eq(NONE);
+      const slot = 253;
+      const encoding = ethers.utils.defaultAbiCoder.encode(["uint256", "uint256"], [playerId, slot]);
+      const hash = ethers.utils.keccak256(encoding);
+      let boostInfoStorage = await ethers.provider.getStorageAt(players.address, hash);
+      expect(boostInfoStorage).to.not.eq(ethers.utils.hexZeroPad("0x0", 32));
+
       await players.connect(alice).processActions(playerId);
-      expect((await players.activeBoosts(playerId)).itemTokenId).to.eq(NONE);
+      boostInfoStorage = await ethers.provider.getStorageAt(players.address, hash);
+      expect(boostInfoStorage).to.eq(ethers.utils.hexZeroPad("0x0", 32));
     });
   });
 
