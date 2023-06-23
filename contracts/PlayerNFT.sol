@@ -24,7 +24,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   event NewPlayer(uint playerId, uint avatarId, string name);
   event EditPlayer(uint playerId, string newName);
   event EditNameCost(uint newCost);
-
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
   error NotOwnerOfPlayer();

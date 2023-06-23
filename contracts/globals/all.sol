@@ -6,3 +6,4 @@ import "./items.sol";
 import "./misc.sol";
 import "./players.sol";
 import "./rewards.sol";
+import "./quests.sol";

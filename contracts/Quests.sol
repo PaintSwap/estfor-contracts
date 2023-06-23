@@ -92,8 +92,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     uint64 xp;
   }
 
-  uint constant QUEST_PURSE_STRINGS = 5; // MAKE SURE THIS MATCHES definitions
-
   struct PlayerQuestInfo {
     uint32 numFixedQuestsCompleted;
     uint32 numRandomQuestsCompleted;
@@ -568,23 +566,30 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
     }
 
     if (questCompleted) {
-      // length can be 0, 1 or 2
-      uint mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
-      mintLength += (quest.rewardItemTokenId2 == NONE ? 0 : 1);
-
-      itemTokenIds = new uint[](mintLength);
-      amounts = new uint[](mintLength);
-      if (quest.rewardItemTokenId1 != NONE) {
-        itemTokenIds[0] = quest.rewardItemTokenId1;
-        amounts[0] = quest.rewardAmount1;
-      }
-      if (quest.rewardItemTokenId2 != NONE) {
-        itemTokenIds[1] = quest.rewardItemTokenId2;
-        amounts[1] = quest.rewardAmount2;
-      }
-      skillGained = quest.skillReward;
-      xpGained = quest.skillXPGained;
+      (itemTokenIds, amounts, skillGained, xpGained) = getQuestCompletedRewards(_playerQuest.questId);
     }
+  }
+
+  function getQuestCompletedRewards(
+    uint _questId
+  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, Skill skillGained, uint32 xpGained) {
+    Quest storage quest = allFixedQuests[_questId];
+    // length can be 0, 1 or 2
+    uint mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
+    mintLength += (quest.rewardItemTokenId2 == NONE ? 0 : 1);
+
+    itemTokenIds = new uint[](mintLength);
+    amounts = new uint[](mintLength);
+    if (quest.rewardItemTokenId1 != NONE) {
+      itemTokenIds[0] = quest.rewardItemTokenId1;
+      amounts[0] = quest.rewardAmount1;
+    }
+    if (quest.rewardItemTokenId2 != NONE) {
+      itemTokenIds[1] = quest.rewardItemTokenId2;
+      amounts[1] = quest.rewardAmount2;
+    }
+    skillGained = quest.skillReward;
+    xpGained = quest.skillXPGained;
   }
 
   function _checkQuest(Quest calldata _quest) private pure {
