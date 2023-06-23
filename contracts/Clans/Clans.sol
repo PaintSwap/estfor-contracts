@@ -23,10 +23,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event ClanCreated(uint clanId, uint playerId, string[] clanInfo, uint imageId, uint tierId);
   event SetClanRank(uint clanId, uint playerId, ClanRank clan);
   event InviteSent(uint clanId, uint playerId, uint fromPlayerId);
+  event InvitesSent(uint clanId, uint[] playerIds, uint fromPlayerId);
   event InviteAccepted(uint clanId, uint playerId);
   event MemberLeft(uint clanId, uint playerId);
   event JoinRequestSent(uint clanId, uint playerId);
   event JoinRequestAccepted(uint clanId, uint playerId, uint acceptedByPlayerId);
+  event JoinRequestsAccepted(uint clanId, uint[] playerIds, uint acceptedByPlayerId);
   event JoinRequestRemoved(uint clanId, uint playerId);
   event ClanOwnershipTransferred(uint clanId, uint playerId);
   event AddTiers(Tier[] tiers);
@@ -327,8 +329,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     for (uint i = 0; i < _memberPlayerIds.length; ++i) {
       _inviteMember(_clanId, _memberPlayerIds[i]);
-      emit InviteSent(_clanId, _memberPlayerIds[i], _playerId);
     }
+    emit InvitesSent(_clanId, _memberPlayerIds, _playerId);
   }
 
   function acceptInvite(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
@@ -427,8 +429,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     for (uint i = 0; i < _newMemberPlayedIds.length; ++i) {
       _acceptJoinRequest(_clanId, _newMemberPlayedIds[i]);
-      emit JoinRequestAccepted(_clanId, _newMemberPlayedIds[i], _playerId);
     }
+
+    emit JoinRequestsAccepted(_clanId, _newMemberPlayedIds, _playerId);
   }
 
   function changeRank(
