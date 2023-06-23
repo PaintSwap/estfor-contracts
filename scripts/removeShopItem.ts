@@ -15,8 +15,6 @@ async function main() {
   await shop.removeItem(TITANIUM_FISHING_ROD);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

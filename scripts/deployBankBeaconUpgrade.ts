@@ -1,8 +1,7 @@
 import {ethers, upgrades} from "hardhat";
-import {BANK_REGISTRY_ADDRESS, BANK_ADDRESS} from "./contractAddresses";
+import {BANK_ADDRESS} from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
-// Just to test that verifying the bank contract after an upgrade works ok
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Deploying upgradeable contracts with the account: ${owner.address}`);
@@ -20,8 +19,6 @@ async function main() {
   await verifyContracts([bankImplAddress]);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

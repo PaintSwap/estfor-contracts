@@ -13,8 +13,6 @@ async function main() {
   await itemNFT.setBaseURI("ipfs://Qmax4XM1MWDLTMYj1iShJ43EnAqN8kR6p1ubKkKd5n4c6x/");
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

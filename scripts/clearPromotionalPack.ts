@@ -14,8 +14,6 @@ async function main() {
   await promotions.testClearPromotionalPack("0xa801864d0D24686B15682261aa05D4e1e6e5BD94");
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

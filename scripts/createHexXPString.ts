@@ -21,8 +21,6 @@ const main = async () => {
   console.log(`XP_THRESHOLD_REWARDS: "${XP_THRESHOLD_REWARDS.toUpperCase()}"`);
 };
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
