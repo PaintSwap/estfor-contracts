@@ -289,25 +289,46 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit InvitesDeletedByClan(_clanId, _invitedPlayerIds, _playerId);
   }
 
+  function _inviteMember(uint _clanId, uint _member) private {
+    Clan storage clan = clans[_clanId];
+    if (clan.inviteRequests[_member]) {
+      revert AlreadySentInvite();
+    }
+
+    clan.inviteRequests[_member] = true;
+  }
+
   function inviteMember(
     uint _clanId,
     uint _member,
     uint _playerId
   ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
     Clan storage clan = clans[_clanId];
-
     Tier storage tier = tiers[clan.tierId];
-
     if (clan.memberCount >= tier.maxMemberCapacity) {
       revert ClanIsFull();
     }
 
-    if (clan.inviteRequests[_member]) {
-      revert AlreadySentInvite();
+    _inviteMember(_clanId, _member);
+
+    emit InviteSent(_clanId, _member, _playerId);
+  }
+
+  function inviteMembers(
+    uint _clanId,
+    uint[] calldata _memberPlayerIds,
+    uint _playerId
+  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
+    Clan storage clan = clans[_clanId];
+    Tier storage tier = tiers[clan.tierId];
+    if (clan.memberCount + _memberPlayerIds.length > tier.maxMemberCapacity) {
+      revert ClanIsFull();
     }
 
-    clan.inviteRequests[_member] = true;
-    emit InviteSent(_clanId, _member, _playerId);
+    for (uint i = 0; i < _memberPlayerIds.length; ++i) {
+      _inviteMember(_clanId, _memberPlayerIds[i]);
+      emit InviteSent(_clanId, _memberPlayerIds[i], _playerId);
+    }
   }
 
   function acceptInvite(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
@@ -363,31 +384,51 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit JoinRequestRemoved(_clanId, _playerId);
   }
 
-  function acceptJoinRequest(
-    uint _clanId,
-    uint _member,
-    uint _playerId
-  ) public isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
+  function _acceptJoinRequest(uint _clanId, uint _newMemberPlayedId) private {
     Clan storage clan = clans[_clanId];
-    PlayerInfo storage player = playerInfo[_member];
+    clan.inviteRequests[_newMemberPlayedId] = false;
+    clan.memberCount = uint16(clan.memberCount.inc());
 
+    PlayerInfo storage player = playerInfo[_newMemberPlayedId];
     if (player.requestedClanId != _clanId) {
       revert NoJoinRequest();
     }
+    player.clanId = uint32(_clanId);
+    player.requestedClanId = 0;
+    player.rank = ClanRank.COMMONER;
+  }
 
+  function acceptJoinRequest(
+    uint _clanId,
+    uint _newMemberPlayedId,
+    uint _playerId
+  ) public isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
+    Clan storage clan = clans[_clanId];
     Tier storage tier = tiers[clan.tierId];
     if (clan.memberCount >= tier.maxMemberCapacity) {
       revert ClanIsFull();
     }
 
-    clan.inviteRequests[_member] = false;
-    clan.memberCount = uint16(clan.memberCount.inc());
+    _acceptJoinRequest(_clanId, _newMemberPlayedId);
 
-    player.clanId = uint32(_clanId);
-    player.requestedClanId = 0;
-    player.rank = ClanRank.COMMONER;
+    emit JoinRequestAccepted(_clanId, _newMemberPlayedId, _playerId);
+  }
 
-    emit JoinRequestAccepted(_clanId, _member, _playerId);
+  function acceptJoinRequests(
+    uint _clanId,
+    uint[] calldata _newMemberPlayedIds,
+    uint _playerId
+  ) public isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
+    Clan storage clan = clans[_clanId];
+    Tier storage tier = tiers[clan.tierId];
+    if (clan.memberCount + _newMemberPlayedIds.length > tier.maxMemberCapacity) {
+      revert ClanIsFull();
+    }
+
+    for (uint i = 0; i < _newMemberPlayedIds.length; ++i) {
+      _acceptJoinRequest(_clanId, _newMemberPlayedIds[i]);
+      emit JoinRequestAccepted(_clanId, _newMemberPlayedIds[i], _playerId);
+    }
   }
 
   function changeRank(
@@ -395,7 +436,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint _memberId,
     ClanRank _rank,
     uint _playerId
-  ) external isOwnerOfPlayer(_playerId) isMemberOfClan(_clanId, _memberId) {
+  ) public isOwnerOfPlayer(_playerId) isMemberOfClan(_clanId, _memberId) {
     ClanRank currentMemberRank = playerInfo[_memberId].rank;
     ClanRank callerRank = playerInfo[_playerId].rank;
     bool changingSelf = _memberId == _playerId;
@@ -434,6 +475,17 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     } else {
       // Promoting
       _updateRank(_clanId, _memberId, _rank, _playerId);
+    }
+  }
+
+  function changeRanks(
+    uint _clanId,
+    uint[] calldata _memberIds,
+    ClanRank[] calldata _ranks,
+    uint _playerId
+  ) external isOwnerOfPlayer(_playerId) {
+    for (uint i = 0; i < _memberIds.length; ++i) {
+      changeRank(_clanId, _memberIds[i], _ranks[i], _playerId);
     }
   }
 

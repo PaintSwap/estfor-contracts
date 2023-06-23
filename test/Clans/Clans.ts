@@ -228,6 +228,22 @@ describe("Clans", function () {
       expect(newPlayer.requestedClanId).to.eq(0);
     });
 
+    it("Invite muliple players to a clan", async () => {
+      const {clans, playerId, alice, bob, charlie, dev, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+      const devPlayerId = await createPlayer(playerNFT, avatarId, dev, "dev", true);
+
+      await expect(
+        clans.connect(alice).inviteMembers(clanId, [bobPlayerId, charliePlayerId, devPlayerId], playerId)
+      ).to.be.revertedWithCustomError(clans, "ClanIsFull");
+      await clans.connect(alice).inviteMembers(clanId, [bobPlayerId, charliePlayerId], playerId);
+      expect(await clans.hasInviteRequest(clanId, bobPlayerId)).to.be.true;
+      expect(await clans.hasInviteRequest(clanId, charliePlayerId)).to.be.true;
+      expect(await clans.hasInviteRequest(clanId, playerId)).to.be.false; // sanity check
+      expect(await clans.hasInviteRequest(clanId, devPlayerId)).to.be.false; // sanity check
+    });
+
     it("Cannot accept an invite that does not exist", async () => {
       const {clans, bob, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
@@ -303,6 +319,33 @@ describe("Clans", function () {
         .to.emit(clans, "InvitesDeletedByClan")
         .withArgs(clanId, [charliePlayerId], bobPlayerId);
       expect(await clans.hasInviteRequest(clanId, charliePlayerId)).to.be.false;
+    });
+  });
+
+  describe("Join requests", () => {
+    it("Accept multiple join requests", async () => {
+      const {clans, playerId, alice, bob, charlie, dev, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
+
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+      await clans.connect(charlie).requestToJoin(clanId, charliePlayerId);
+
+      const devPlayerId = await createPlayer(playerNFT, avatarId, dev, "dev", true);
+      await clans.connect(dev).requestToJoin(clanId, devPlayerId);
+
+      await expect(
+        clans.connect(alice).acceptJoinRequests(clanId, [bobPlayerId, charliePlayerId, devPlayerId], playerId)
+      ).to.be.revertedWithCustomError(clans, "ClanIsFull");
+
+      await expect(
+        clans.acceptJoinRequests(clanId, [bobPlayerId, charliePlayerId, devPlayerId], playerId)
+      ).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayerAndActive");
+
+      await clans.connect(alice).acceptJoinRequests(clanId, [bobPlayerId, charliePlayerId], playerId);
+      expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
+      expect(await clans.isClanMember(clanId, charliePlayerId)).to.be.true;
+      expect(await clans.isClanMember(clanId, devPlayerId)).to.be.false;
     });
   });
 
@@ -460,6 +503,9 @@ describe("Clans", function () {
       clans,
       "ClanIsFull"
     );
+    await expect(
+      clans.connect(alice).acceptJoinRequests(clanId, [bobPlayerId], playerId)
+    ).to.be.revertedWithCustomError(clans, "ClanIsFull");
   });
 
   it("Check getClanName is case sensitive", async function () {
@@ -482,7 +528,7 @@ describe("Clans", function () {
       await clans.connect(alice).renounceOwnershipTo(clanId, bobPlayerId, ClanRank.COMMONER);
 
       // Leader should now be a commoner
-      const oldLeaderPlayerInfo = await clans.connect(alice).playerInfo(playerId);
+      const oldLeaderPlayerInfo = await clans.playerInfo(playerId);
       expect(oldLeaderPlayerInfo.rank).to.eq(ClanRank.COMMONER);
       expect(oldLeaderPlayerInfo.clanId).to.eq(clanId);
 
@@ -511,6 +557,27 @@ describe("Clans", function () {
     const {clans, playerId, alice, clanId} = await loadFixture(clanFixture);
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.COMMONER, playerId);
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
+  });
+
+  it("changeRanks", async function () {
+    const {clans, playerId, alice, bob, charlie, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+    await clans.connect(alice).inviteMembers(clanId, [bobPlayerId, charliePlayerId], playerId);
+
+    await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+    await clans.connect(charlie).acceptInvite(clanId, charliePlayerId);
+
+    await clans
+      .connect(alice)
+      .changeRanks(clanId, [bobPlayerId, charliePlayerId], [ClanRank.SCOUT, ClanRank.TREASURER], playerId);
+
+    const bobPlayerInfo = await clans.playerInfo(bobPlayerId);
+    expect(bobPlayerInfo.rank).to.eq(ClanRank.SCOUT);
+
+    const charliePlayerInfo = await clans.playerInfo(charliePlayerId);
+    expect(charliePlayerInfo.rank).to.eq(ClanRank.TREASURER);
   });
 
   it("Claim ownership of clan with no leader", async function () {
