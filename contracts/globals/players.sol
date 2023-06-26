@@ -184,12 +184,12 @@ struct PendingQueuedActionState {
   PendingQueuedActionEquipmentState[] equipmentStates;
   PendingQueuedActionMetadata[] actionMetadatas;
   QueuedAction[] remainingQueuedActions;
-  PendingQueuedActionProcessed processedData;
   PastRandomRewardInfo[] producedPastRandomRewards;
   uint[] xpRewardItemTokenIds;
   uint[] xpRewardAmounts;
   uint[] dailyRewardItemTokenIds;
   uint[] dailyRewardAmounts;
+  PendingQueuedActionProcessed processedData;
   bytes32 dailyRewardMask;
   QuestState quests;
   uint numPastRandomRewardInstancesToRemove;

@@ -1955,18 +1955,19 @@ describe("Combat Actions", function () {
       leftHandEquipmentTokenId: EstforConstants.NONE,
     };
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_SWORD,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      healthRestored: 1,
-      tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_SWORD,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        healthRestored: 1,
+        tokenId: EstforConstants.COOKED_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+      },
+    ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -2054,20 +2055,21 @@ describe("Combat Actions", function () {
       leftHandEquipmentTokenId: EstforConstants.NONE,
     };
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_SWORD,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      metadataURI: "someIPFSURI.json",
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      healthRestored: 1,
-      tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-      metadataURI: "someIPFSURI.json",
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_SWORD,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        metadataURI: "someIPFSURI.json",
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        healthRestored: 1,
+        tokenId: EstforConstants.COOKED_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+        metadataURI: "someIPFSURI.json",
+      },
+    ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 

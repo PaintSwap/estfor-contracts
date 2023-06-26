@@ -215,17 +215,18 @@ describe("Non-Combat Actions", function () {
       leftHandEquipmentTokenId: EstforConstants.NONE,
     };
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.LOG,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.MAGIC_FIRE_STARTER,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.LOG,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+    ]);
 
     const mintAmount = 5;
     await itemNFT.testMint(alice.address, EstforConstants.LOG, mintAmount); // Mint less than will be used
@@ -641,17 +642,18 @@ describe("Non-Combat Actions", function () {
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.COAL_ORE,
-        equipPosition: EstforTypes.EquipPosition.AUX,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.MITHRIL_ORE,
-        equipPosition: EstforTypes.EquipPosition.AUX,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.COAL_ORE,
+          equipPosition: EstforTypes.EquipPosition.AUX,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.MITHRIL_ORE,
+          equipPosition: EstforTypes.EquipPosition.AUX,
+        },
+      ]);
 
       await itemNFT.testMint(alice.address, EstforConstants.COAL_ORE, 255);
       await itemNFT.testMint(alice.address, EstforConstants.MITHRIL_ORE, 255);
@@ -744,17 +746,18 @@ describe("Non-Combat Actions", function () {
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.COAL_ORE,
-        equipPosition: EstforTypes.EquipPosition.AUX,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.MITHRIL_ORE,
-        equipPosition: EstforTypes.EquipPosition.AUX,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.COAL_ORE,
+          equipPosition: EstforTypes.EquipPosition.AUX,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.MITHRIL_ORE,
+          equipPosition: EstforTypes.EquipPosition.AUX,
+        },
+      ]);
 
       await itemNFT.testMints(alice.address, [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE], [1000, 1000]);
       const queuedAction1 = {...queuedAction, choiceId: choiceId1};
@@ -937,28 +940,28 @@ describe("Non-Combat Actions", function () {
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_HELMET,
-        equipPosition: EstforTypes.EquipPosition.HEAD,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_ARROW,
-        equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-      });
-
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.SKILL_BOOST,
-        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-        // Boost
-        boostType: EstforTypes.BoostType.GATHERING,
-        boostValue: 10,
-        boostDuration: 3600 * 24,
-        isTransferable: false,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.BRONZE_HELMET,
+          equipPosition: EstforTypes.EquipPosition.HEAD,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.BRONZE_ARROW,
+          equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+        },
+        {
+          ...EstforTypes.defaultInputItem,
+          tokenId: EstforConstants.SKILL_BOOST,
+          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.GATHERING,
+          boostValue: 10,
+          boostDuration: 3600 * 24,
+          isTransferable: false,
+        },
+      ]);
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
 
@@ -1079,6 +1082,7 @@ describe("Non-Combat Actions", function () {
       requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       await players.connect(alice).processActions(playerId);
       // Should get the loot (Should get rewards if waiting until the next day to claim)
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);

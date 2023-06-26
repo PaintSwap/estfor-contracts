@@ -362,6 +362,8 @@ abstract contract PlayersBase {
           pendingRandomRewards[_playerId].pop();
         }
       }
+    }
+    if (itemTokenIds.length > 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
       emit PendingRandomRewardsClaimed(
         _from,

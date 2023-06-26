@@ -494,34 +494,34 @@ describe("Rewards", function () {
       leftHandEquipmentTokenId: EstforConstants.NONE,
     };
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      combatStats: {
-        ...EstforTypes.emptyCombatStats,
-        melee: 50,
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        combatStats: {
+          ...EstforTypes.emptyCombatStats,
+          melee: 50,
+        },
+        tokenId: EstforConstants.BRONZE_SWORD,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       },
-      tokenId: EstforConstants.BRONZE_SWORD,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      combatStats: bronzeHelmetStats,
-      tokenId: EstforConstants.BRONZE_HELMET,
-      equipPosition: EstforTypes.EquipPosition.HEAD,
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_ARROW,
-      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      healthRestored: 12,
-      tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-    });
+      {
+        ...EstforTypes.defaultInputItem,
+        combatStats: bronzeHelmetStats,
+        tokenId: EstforConstants.BRONZE_HELMET,
+        equipPosition: EstforTypes.EquipPosition.HEAD,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_ARROW,
+        equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        healthRestored: 12,
+        tokenId: EstforConstants.COOKED_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+      },
+    ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -537,7 +537,8 @@ describe("Rewards", function () {
     await mockOracleClient.fulfill(requestId, world.address);
 
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
+    expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.gt(0);
 
     await players.connect(alice).processActions(playerId);
 
@@ -551,17 +552,18 @@ describe("Rewards", function () {
 
     this.timeout(100000); // 100 seconds, this test can take a while on CI
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_ARROW,
-      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_ARROW,
+        equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+      },
+    ]);
 
     const randomChanceFraction = 50.0 / 100; // 50% chance
     const randomChance = Math.floor(65535 * randomChanceFraction);
@@ -679,17 +681,18 @@ describe("Rewards", function () {
 
     this.timeout(100000); // 100 seconds, this test can take a while on CI
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
-
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_ARROW,
-      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+      {
+        ...EstforTypes.defaultInputItem,
+        tokenId: EstforConstants.BRONZE_ARROW,
+        equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+      },
+    ]);
 
     const randomChanceFractions = [80.0 / 100, 50.0 / 100, 50.0 / 100, 20.0 / 100]; // 80%, 50%, 50%, 20%
     const randomChance = Math.floor(65535 * randomChanceFractions[0]);

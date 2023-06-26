@@ -158,17 +158,18 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-    equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-  });
-
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.LOG,
-    equipPosition: EstforTypes.EquipPosition.AUX,
-  });
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.MAGIC_FIRE_STARTER,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+    },
+    {
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.LOG,
+      equipPosition: EstforTypes.EquipPosition.AUX,
+    },
+  ]);
 
   await itemNFT.testMint(alice.address, EstforConstants.LOG, 5000);
 
@@ -231,35 +232,34 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    combatStats: {
-      ...EstforTypes.emptyCombatStats,
-      melee: 5,
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultInputItem,
+      combatStats: {
+        ...EstforTypes.emptyCombatStats,
+        melee: 5,
+      },
+      tokenId: EstforConstants.BRONZE_SWORD,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
     },
-    tokenId: EstforConstants.BRONZE_SWORD,
-    equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-  });
-
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    combatStats: bronzeHelmetStats,
-    tokenId: EstforConstants.BRONZE_HELMET,
-    equipPosition: EstforTypes.EquipPosition.HEAD,
-  });
-
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.BRONZE_ARROW,
-    equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
-  });
-
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    healthRestored: 12,
-    tokenId: EstforConstants.COOKED_MINNUS,
-    equipPosition: EstforTypes.EquipPosition.FOOD,
-  });
+    {
+      ...EstforTypes.defaultInputItem,
+      combatStats: bronzeHelmetStats,
+      tokenId: EstforConstants.BRONZE_HELMET,
+      equipPosition: EstforTypes.EquipPosition.HEAD,
+    },
+    {
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.BRONZE_ARROW,
+      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+    },
+    {
+      ...EstforTypes.defaultInputItem,
+      healthRestored: 12,
+      tokenId: EstforConstants.COOKED_MINNUS,
+      equipPosition: EstforTypes.EquipPosition.FOOD,
+    },
+  ]);
 
   return {queuedAction, rate, numSpawned, choiceId};
 };
@@ -325,18 +325,19 @@ export const setupBasicCooking = async function (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.RAW_MINNUS,
-    equipPosition: EstforTypes.EquipPosition.AUX,
-  });
-
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    healthRestored: 1,
-    tokenId: EstforConstants.COOKED_MINNUS,
-    equipPosition: EstforTypes.EquipPosition.FOOD,
-  });
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.RAW_MINNUS,
+      equipPosition: EstforTypes.EquipPosition.AUX,
+    },
+    {
+      ...EstforTypes.defaultInputItem,
+      healthRestored: 1,
+      tokenId: EstforConstants.COOKED_MINNUS,
+      equipPosition: EstforTypes.EquipPosition.FOOD,
+    },
+  ]);
 
   await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
 
@@ -400,17 +401,18 @@ export const setupBasicCrafting = async function (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.SAPPHIRE,
-    equipPosition: EstforTypes.EquipPosition.NONE,
-  });
-
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.ROPE,
-    equipPosition: EstforTypes.EquipPosition.NONE,
-  });
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.SAPPHIRE,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+    {
+      ...EstforTypes.defaultInputItem,
+      tokenId: EstforConstants.ROPE,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+  ]);
 
   return {queuedAction, rate, choiceId};
 };
