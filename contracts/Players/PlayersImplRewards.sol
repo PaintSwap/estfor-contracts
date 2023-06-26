@@ -7,7 +7,6 @@ import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
-import "../debug/console.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";

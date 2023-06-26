@@ -142,34 +142,37 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint _playerId
   ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
     uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
-    uint streakStartIndex = streakStart.div(1 weeks);
-    bytes32 mask = dailyRewardMasks[_playerId];
-    uint16 lastRewardStartIndex = uint16(uint256(mask));
-    if (lastRewardStartIndex < streakStartIndex) {
-      mask = bytes32(streakStartIndex); // Reset the mask
-    }
+    bool hasRandomWordLastSunday = world.lastRandomWordsUpdatedTime() >= streakStart;
+    if (hasRandomWordLastSunday) {
+      uint streakStartIndex = streakStart.div(1 weeks);
+      bytes32 mask = dailyRewardMasks[_playerId];
+      uint16 lastRewardStartIndex = uint16(uint256(mask));
+      if (lastRewardStartIndex < streakStartIndex) {
+        mask = bytes32(streakStartIndex); // Reset the mask
+      }
 
-    uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
+      uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
 
-    // Claim daily reward
-    if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
-      (uint itemTokenId, uint amount) = world.getDailyReward();
-      if (itemTokenId != NONE) {
-        // Add clan member boost to daily reward (if applicable)
-        uint clanTierMembership = clans.getClanTierMembership(_playerId);
-        amount += (amount * clanTierMembership) / 10; // +10% extra for each clan tier
+      // Claim daily reward
+      if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
+        (uint itemTokenId, uint amount) = world.getDailyReward();
+        if (itemTokenId != NONE) {
+          // Add clan member boost to daily reward (if applicable)
+          uint clanTierMembership = clans.getClanTierMembership(_playerId);
+          amount += (amount * clanTierMembership) / 10; // +10% extra for each clan tier
 
-        dailyRewardMask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
-        bool canClaimWeeklyRewards = uint(dailyRewardMask >> (25 * 8)) == 2 ** (7 * 8) - 1;
-        uint length = canClaimWeeklyRewards ? 2 : 1;
-        itemTokenIds = new uint[](length);
-        amounts = new uint[](length);
-        itemTokenIds[0] = itemTokenId;
-        amounts[0] = amount;
+          dailyRewardMask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
+          bool canClaimWeeklyRewards = uint(dailyRewardMask >> (25 * 8)) == 2 ** (7 * 8) - 1;
+          uint length = canClaimWeeklyRewards ? 2 : 1;
+          itemTokenIds = new uint[](length);
+          amounts = new uint[](length);
+          itemTokenIds[0] = itemTokenId;
+          amounts[0] = amount;
 
-        // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
-        if (canClaimWeeklyRewards) {
-          (itemTokenIds[1], amounts[1]) = world.getWeeklyReward();
+          // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
+          if (canClaimWeeklyRewards) {
+            (itemTokenIds[1], amounts[1]) = world.getWeeklyReward();
+          }
         }
       }
     }

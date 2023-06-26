@@ -195,7 +195,7 @@ describe("Rewards", function () {
 
   describe("Daily Rewards", function () {
     it("Daily & weekly reward on starting actions", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       players.setDailyRewardsEnabled(true);
 
@@ -206,19 +206,34 @@ describe("Rewards", function () {
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 5 * oneDay); // Start next tuesday
 
+      const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
+
+      let tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
-      let balanceBeforeWeeklyReward = await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST);
+      for (let i = 0; i < numDays; ++i) {
+        tx = await world.requestRandomWords();
+        await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      }
 
-      const equipments = [
-        {itemTokenId: EstforConstants.COPPER_ORE, amount: 100},
-        {itemTokenId: EstforConstants.COAL_ORE, amount: 200},
-        {itemTokenId: EstforConstants.RUBY, amount: 100},
-        {itemTokenId: EstforConstants.MITHRIL_BAR, amount: 200},
-        {itemTokenId: EstforConstants.COOKED_BOWFISH, amount: 100},
-        {itemTokenId: EstforConstants.LEAF_FRAGMENTS, amount: 20},
-        {itemTokenId: EstforConstants.HELL_SCROLL, amount: 300},
-      ];
+      // Get the new equipments for the next week
+      let equipments = [];
+      let dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+
+      for (let c = 0; c < dailyRewards.length - 8; c += 8) {
+        equipments.push({
+          itemTokenId: parseInt(dailyRewards.slice(c, c + 4), 16),
+          amount: parseInt(dailyRewards.slice(c + 4, c + 8), 16),
+        });
+      }
+      let weeklyEquipment = {
+        itemTokenId: parseInt(dailyRewards.slice(56, 60), 16),
+        amount: parseInt(dailyRewards.slice(60, 64), 16),
+      };
+
+      let balanceBeforeWeeklyReward = await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId);
 
       let beforeBalances = await itemNFT.balanceOfs(
         alice.address,
@@ -228,6 +243,8 @@ describe("Rewards", function () {
       for (let i = 0; i < 4; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+        tx = await world.requestRandomWords();
+        await mockOracleClient.fulfill(getRequestId(tx), world.address);
       }
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -243,7 +260,7 @@ describe("Rewards", function () {
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, true, true, true, true, true, false]);
 
       // Last day of the week. This isn't a full week so shouldn't get weekly rewards, but still get daily rewards
-      let balanceAfterWeeklyReward = await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST);
+      let balanceAfterWeeklyReward = await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId);
       expect(balanceBeforeWeeklyReward).to.eq(balanceAfterWeeklyReward);
       let prevBalanceDailyReward = await itemNFT.balanceOf(
         alice.address,
@@ -251,6 +268,8 @@ describe("Rewards", function () {
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
+      tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
 
       const pendingQueuedActionState = await players.connect(alice).pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.dailyRewardItemTokenIds.length).to.eq(1);
@@ -260,7 +279,7 @@ describe("Rewards", function () {
       );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-      expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST));
+      expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId));
       let balanceAfterDailyReward = await itemNFT.balanceOf(
         alice.address,
         equipments[equipments.length - 1].itemTokenId
@@ -274,8 +293,24 @@ describe("Rewards", function () {
       // Next one should start the next round
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
+      tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
 
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, false, false, false, false, false, false]);
+
+      equipments = [];
+      dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      for (let c = 0; c < dailyRewards.length - 8; c += 8) {
+        equipments.push({
+          itemTokenId: parseInt(dailyRewards.slice(c, c + 4), 16),
+          amount: parseInt(dailyRewards.slice(c + 4, c + 8), 16),
+        });
+      }
+
+      weeklyEquipment = {
+        itemTokenId: parseInt(dailyRewards.slice(56, 60), 16),
+        amount: parseInt(dailyRewards.slice(60, 64), 16),
+      };
 
       beforeBalances = await itemNFT.balanceOfs(
         alice.address,
@@ -286,6 +321,8 @@ describe("Rewards", function () {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         if (i != 6) {
           await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+          const tx = await world.requestRandomWords();
+          await mockOracleClient.fulfill(getRequestId(tx), world.address);
         }
       }
 
@@ -301,13 +338,13 @@ describe("Rewards", function () {
       }
 
       // Also check extra week streak reward
-      expect(balanceAfterWeeklyReward.toNumber() + 1).to.eq(
-        await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)
+      expect(balanceAfterWeeklyReward.toNumber() + weeklyEquipment.amount).to.eq(
+        await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId)
       );
     });
 
     it("Only 1 claim", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       players.setDailyRewardsEnabled(true);
 
@@ -318,9 +355,23 @@ describe("Rewards", function () {
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
 
+      let tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
-      const equipment = {itemTokenId: EstforConstants.COPPER_ORE, amount: 100};
+      const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
+      for (let i = 0; i < numDays; ++i) {
+        tx = await world.requestRandomWords();
+        await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      }
+
+      // Get the new equipments for the next week
+      let dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      let equipment = {
+        itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
+        amount: parseInt(dailyRewards.slice(4, 8), 16),
+      };
+
       let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       let balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
@@ -334,7 +385,7 @@ describe("Rewards", function () {
     });
 
     it("Update on process actions", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       players.setDailyRewardsEnabled(true);
 
@@ -345,7 +396,15 @@ describe("Rewards", function () {
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
 
+      let tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
+      for (let i = 0; i < numDays; ++i) {
+        tx = await world.requestRandomWords();
+        await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      }
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
@@ -354,8 +413,54 @@ describe("Rewards", function () {
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
     });
 
+    it("Can only get Monday's reward if the oracle has been called", async function () {
+      // So that people can't get last Monday's daily reward
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      players.setDailyRewardsEnabled(true);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+      const oneDay = 24 * 3600;
+      const oneWeek = oneDay * 7;
+      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
+
+      const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
+
+      let tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      // Request all up to the last day
+      for (let i = 0; i < numDays - 1; ++i) {
+        tx = await world.requestRandomWords();
+        await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      }
+
+      // Get the new equipments for the next week
+      let dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      let mondayEquipment = {
+        itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
+        amount: parseInt(dailyRewards.slice(4, 8), 16),
+      };
+
+      let balanceBeforeMondayReward = await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      // Do not get Monday reward yet
+      expect(balanceBeforeMondayReward).eq(await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId));
+
+      tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      await players.connect(alice).processActions(playerId);
+      expect(balanceBeforeMondayReward.add(mondayEquipment.amount)).eq(
+        await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId)
+      );
+    });
+
     it("Clan tier bonus reward upgrades", async function () {
-      const {playerId, players, itemNFT, world, alice, clans} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, clans, mockOracleClient} = await loadFixture(playersFixture);
 
       // Be a member of a clan
       await clans.addTiers([
@@ -382,21 +487,42 @@ describe("Rewards", function () {
       await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
       players.setDailyRewardsEnabled(true);
-      let baseEquipment = {itemTokenId: EstforConstants.COPPER_ORE, amount: 100};
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
+
+      const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
+
+      let tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      for (let i = 0; i < numDays; ++i) {
+        tx = await world.requestRandomWords();
+        await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      }
+
+      const equipments = [];
+      const dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      for (let c = 0; c < dailyRewards.length - 8; c += 8) {
+        equipments.push({
+          itemTokenId: parseInt(dailyRewards.slice(c, c + 4), 16),
+          amount: parseInt(dailyRewards.slice(c + 4, c + 8), 16),
+        });
+      }
+
+      let baseEquipment = equipments[0];
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
-      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(110);
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(baseEquipment.amount * 1.1);
 
       // Next day
-      baseEquipment = {itemTokenId: EstforConstants.COAL_ORE, amount: 200};
+      baseEquipment = equipments[1];
 
       const clanId = 1;
       tierId = 2;
@@ -406,7 +532,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
 
-      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(240); // get 20% boost
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(baseEquipment.amount * 1.2); // get 20% boost
     });
 
     it("Test rewards in new week", async function () {
