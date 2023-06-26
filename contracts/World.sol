@@ -452,7 +452,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       revert OnlyCombatMultipleGuaranteedRewards();
     }
 
-    if (_action.info.numSpawned > 0) {
+    if (_action.info.numSpawned != 0) {
       // Combat
       if ((3600 * SPAWN_MUL) % _action.info.numSpawned != 0) {
         revert NotAFactorOf3600();

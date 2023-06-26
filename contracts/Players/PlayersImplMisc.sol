@@ -81,7 +81,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         revert XPThresholdNotFound();
       }
 
-      if (xpRewardThresholds[xpThresholdReward.xpThreshold].length > 0) {
+      if (xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0) {
         revert XPThresholdAlreadyExists();
       }
 
@@ -136,7 +136,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       );
   }
 
-  // === XP Threshold rewards ===
+  // === End XP Threshold rewards ===
 
   function dailyRewardsViewImpl(
     uint _playerId
@@ -460,7 +460,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
 
     // Total used
-    if (prevProcessedTime > 0) {
+    if (prevProcessedTime != 0) {
       uint16 currentActionProcessedFoodConsumed = players_[_playerId].currentActionProcessedFoodConsumed;
       uint16 currentActionProcessedBaseInputItemsConsumedNum = players_[_playerId]
         .currentActionProcessedBaseInputItemsConsumedNum;
@@ -482,7 +482,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           pendingQueuedActionEquipmentStates.length - 1
         ];
 
-      if (prevConsumedEquipments.length > 0) {
+      if (prevConsumedEquipments.length != 0) {
         // Add to produced
         extendedPendingQueuedActionEquipmentState.producedItemTokenIds = new uint[](prevConsumedEquipments.length);
         extendedPendingQueuedActionEquipmentState.producedAmounts = new uint[](prevConsumedEquipments.length);
@@ -632,7 +632,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       (uint[] memory itemTokenIds, uint[] memory amounts, Skill skillGained, uint32 xpGained) = quests
         .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
 
-      if (itemTokenIds.length > 0) {
+      if (itemTokenIds.length != 0) {
         // Not handled currently
         revert InvalidReward();
       }

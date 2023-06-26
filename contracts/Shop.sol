@@ -78,7 +78,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
     if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
-      if (totalOfThisItem > 0) {
+      if (totalOfThisItem != 0) {
         price = uint80(_totalBrushPerItem / totalOfThisItem);
       }
     } else {

@@ -193,7 +193,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function _mintItem(address _to, uint _tokenId, uint _amount) internal {
     uint newlyMintedItems = _premint(_tokenId, _amount);
-    if (newlyMintedItems > 0) {
+    if (newlyMintedItems != 0) {
       numUniqueItems = uint16(numUniqueItems.inc());
     }
     _mint(_to, uint(_tokenId), _amount, "");

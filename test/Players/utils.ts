@@ -427,7 +427,7 @@ export function checkPendingQueuedActionState(
   expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
   expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
   expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(consumed.length);
-  if (consumed.length > 0) {
+  if (consumed.length != 0) {
     expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(consumed[0].itemTokenId);
     expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(consumed[0].amount);
     if (consumed.length > 1) {
@@ -437,7 +437,7 @@ export function checkPendingQueuedActionState(
   }
 
   expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(produced.length);
-  if (produced.length > 0) {
+  if (produced.length != 0) {
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(produced[0].itemTokenId);
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(produced[0].amount);
     if (produced.length > 1) {

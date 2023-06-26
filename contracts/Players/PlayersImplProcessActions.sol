@@ -81,7 +81,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       PendingQueuedActionEquipmentState memory equipmentState = pendingQueuedActionState.equipmentStates[i];
       PendingQueuedActionMetadata memory actionMetadata = pendingQueuedActionState.actionMetadatas[i];
 
-      if (equipmentState.consumedItemTokenIds.length > 0) {
+      if (equipmentState.consumedItemTokenIds.length != 0) {
         itemNFT.burnBatch(_from, equipmentState.consumedItemTokenIds, equipmentState.consumedAmounts);
         emit Consumes(
           _from,
@@ -91,7 +91,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
           equipmentState.consumedAmounts
         );
       }
-      if (equipmentState.producedItemTokenIds.length > 0) {
+      if (equipmentState.producedItemTokenIds.length != 0) {
         itemNFT.mintBatch(_from, equipmentState.producedItemTokenIds, equipmentState.producedAmounts);
         emit Rewards(
           _from,
@@ -147,7 +147,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     // XP rewards
-    if (pendingQueuedActionState.xpRewardItemTokenIds.length > 0) {
+    if (pendingQueuedActionState.xpRewardItemTokenIds.length != 0) {
       itemNFT.mintBatch(_from, pendingQueuedActionState.xpRewardItemTokenIds, pendingQueuedActionState.xpRewardAmounts);
       emit ClaimedXPThresholdRewards(
         _from,
@@ -158,7 +158,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     // Oracle loot from past random rewards
-    if (pendingQueuedActionState.producedPastRandomRewards.length > 0) {
+    if (pendingQueuedActionState.producedPastRandomRewards.length != 0) {
       PastRandomRewardInfo[] memory producedPastRandomRewards = pendingQueuedActionState.producedPastRandomRewards;
 
       uint[] memory itemTokenIds = new uint[](producedPastRandomRewards.length);
@@ -182,11 +182,11 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Quests
     QuestState memory questState = pendingQueuedActionState.quests;
     quests.processQuests(_from, _playerId, questState.activeQuestInfo, questState.questsCompleted);
-    if (questState.consumedItemTokenIds.length > 0 || questState.rewardItemTokenIds.length > 0) {
-      if (questState.consumedItemTokenIds.length > 0) {
+    if (questState.consumedItemTokenIds.length != 0 || questState.rewardItemTokenIds.length != 0) {
+      if (questState.consumedItemTokenIds.length != 0) {
         itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
       }
-      if (questState.rewardItemTokenIds.length > 0) {
+      if (questState.rewardItemTokenIds.length != 0) {
         itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
       }
       emit QuestRewardConsumes(
@@ -210,7 +210,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     // Daily/weekly rewards
-    if (pendingQueuedActionState.dailyRewardItemTokenIds.length > 0) {
+    if (pendingQueuedActionState.dailyRewardItemTokenIds.length != 0) {
       itemNFT.mintBatch(
         _from,
         pendingQueuedActionState.dailyRewardItemTokenIds,

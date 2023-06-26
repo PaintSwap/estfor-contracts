@@ -609,7 +609,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert DiscordTooLong();
     }
 
-    if (discordLength > 0 && discordLength < 4) {
+    if (discordLength != 0 && discordLength < 4) {
       revert DiscordTooShort();
     }
 

@@ -336,7 +336,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         pendingQueuedActionState.equipmentStates
       );
 
-      if (prevProcessedTime > 0) {
+      if (prevProcessedTime != 0) {
         (prevPointsAccrued, prevPointsAccruedExclBaseBoost) = _getPointsAccrued(
           from,
           _playerId,
@@ -534,7 +534,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     for (uint i = 0; i < questState.xpGainedSkills.length; ++i) {
       totalXPGained += questState.xpGainedSkills[i];
 
-      if (remainingQueuedActionsLength > 0) {
+      if (remainingQueuedActionsLength != 0) {
         Skill questSkill = questState.skills[i];
         uint24 xpGainedSkill = uint24(questState.xpGainedSkills[i]);
         if (currentActionProcessed.skill1 == questSkill) {
@@ -642,7 +642,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     // Previously accumulated
     uint[] memory prevNewIds;
     uint[] memory prevNewAmounts;
-    if (_prevXPElapsedTime > 0) {
+    if (_prevXPElapsedTime != 0) {
       uint prevLength;
       uint16 monstersKilled = uint16((numSpawnedPerHour * _prevXPElapsedTime) / (SPAWN_MUL * 3600));
 
@@ -658,7 +658,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     }
 
     // Subtract any rewards that were already claimed
-    if (prevNewIds.length > 0) {
+    if (prevNewIds.length != 0) {
       (ids, amounts) = PlayersLibrary.subtractMatchingRewards(ids, amounts, prevNewIds, prevNewAmounts);
     }
 

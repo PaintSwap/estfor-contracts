@@ -234,7 +234,7 @@ abstract contract PlayersBase {
       }
     }
 
-    if (same && player.actionQueue.length == _queuedActions.length && _queuedActions.length > 0) {
+    if (same && player.actionQueue.length == _queuedActions.length && _queuedActions.length != 0) {
       player.actionQueue[0] = _queuedActions[0];
     } else {
       // Replace everything
@@ -363,7 +363,7 @@ abstract contract PlayersBase {
         }
       }
     }
-    if (itemTokenIds.length > 0) {
+    if (itemTokenIds.length != 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
       emit PendingRandomRewardsClaimed(
         _from,
