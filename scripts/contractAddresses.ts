@@ -38,10 +38,10 @@ if (isBeta) {
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
   playersLibrary = "0x462e6d4500f1e701651d20a251bb59f22fe49e16";
-  playersImplQueueActions = "0xec9fae12752bdeafe9477a456d0a48215c332a3c";
-  playersImplProcessActions = "0x16993d3a832b8f9db8e659d86ba9b1375d8701ab";
-  playersImplRewards = "0x357f45ce5078b5057677983e7817d21b2899a3cf";
-  playersImplMisc = "0x57de85c040b6ae5dc1c645e4a044226ba8ee63f1";
+  playersImplQueueActions = "0xd4273883c16fdc07d94680d935aba9e823abbd71";
+  playersImplProcessActions = "0x6b24091d1c2f539b133334aaaaa22e78092fd3e1";
+  playersImplRewards = "0xd906ef76ac60d36217ed2af02b28283d18ec4140";
+  playersImplMisc = "0x30efa8616cf6e565a504f19ae5f6314a51435faa";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";
