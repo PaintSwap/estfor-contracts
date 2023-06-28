@@ -36,6 +36,16 @@ interface IPlayersMiscDelegateView {
       uint16 foodConsumed,
       uint16 baseInputItemsConsumedNum
     );
+
+  function getRandomRewards(
+    uint playerId,
+    uint40 skillStartTime,
+    uint elapsedTime,
+    uint numTickets,
+    ActionRewards memory actionRewards,
+    uint8 successPercent,
+    uint8 fullAttireBonusRewardsPercent
+  ) external view returns (uint[] memory ids, uint[] memory amounts, bool hasRandomWord);
 }
 
 interface IPlayersMiscDelegate {

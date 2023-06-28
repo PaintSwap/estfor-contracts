@@ -370,6 +370,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return players_[_playerId];
   }
 
+  function RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF() external pure returns (uint) {
+    return RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_;
+  }
+
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(
@@ -422,7 +426,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       selector == IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyRewardsViewImpl.selector ||
-      selector == IPlayersMiscDelegateView.processConsumablesView.selector
+      selector == IPlayersMiscDelegateView.processConsumablesView.selector ||
+      selector == IPlayersMiscDelegateView.getRandomRewards.selector
     ) {
       implementation = implMisc;
     } else {
