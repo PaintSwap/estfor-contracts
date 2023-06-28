@@ -10,13 +10,13 @@ import {
   QUEST_TWO_BIRDS,
   SKILL_BOOST,
 } from "@paintswap/estfor-definitions/constants";
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat, setupBasicWoodcutting} from "./Players/utils";
-import {emptyActionChoice, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
+import {getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -461,7 +461,7 @@ describe("Quests", function () {
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -476,7 +476,7 @@ describe("Quests", function () {
     const actionId = await getActionId(tx);
 
     tx = await world.addActionChoice(EstforConstants.NONE, 2, {
-      ...emptyActionChoice,
+      ...defaultActionChoice,
       skill: EstforTypes.Skill.MELEE,
     });
     const timespan = 3600;
@@ -541,7 +541,7 @@ describe("Quests", function () {
         skill: EstforTypes.Skill.THIEVING,
         xpPerHour,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.NONE,
         handItemTokenIdRangeMax: EstforConstants.NONE,

@@ -10,9 +10,7 @@ enum ActionQueueStatus {
   KEEP_LAST_IN_PROGRESS
 }
 
-// The user chooses these
 struct QueuedActionInput {
-  // Keep this first
   Attire attire;
   uint16 actionId;
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
@@ -37,7 +35,7 @@ struct QueuedAction {
   bool isValid; // If we still have the item, TODO: Not used yet
 }
 
-// This is only used as an input arg
+// This is only used as an input arg (and events)
 struct Action {
   uint16 actionId;
   ActionInfo info;
@@ -49,7 +47,7 @@ struct Action {
 struct ActionInfo {
   Skill skill;
   bool isAvailable;
-  bool isDynamic;
+  uint8 worldLocation; // 0 is the main starting world
   bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint24 xpPerHour;
   uint32 minXP;

@@ -6,7 +6,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -32,7 +32,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -58,7 +58,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 65,
       numSpawned: 0 * 1000,
@@ -84,7 +84,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 130,
       numSpawned: 0 * 1000,
@@ -110,7 +110,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 290,
       numSpawned: 0 * 1000,
@@ -136,7 +136,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 360,
       numSpawned: 0 * 1000,
@@ -162,7 +162,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 480,
       numSpawned: 0 * 1000,
@@ -188,7 +188,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 570,
       numSpawned: 0 * 1000,
@@ -214,7 +214,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 680,
       numSpawned: 0 * 1000,
@@ -240,7 +240,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -266,7 +266,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 35,
       numSpawned: 0 * 1000,
@@ -292,7 +292,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -318,7 +318,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 100,
       numSpawned: 0 * 1000,
@@ -344,7 +344,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 120,
       numSpawned: 0 * 1000,
@@ -370,7 +370,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 240,
       numSpawned: 0 * 1000,
@@ -396,7 +396,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 300,
       numSpawned: 0 * 1000,
@@ -422,7 +422,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 350,
       numSpawned: 0 * 1000,
@@ -448,7 +448,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 400,
       numSpawned: 0 * 1000,
@@ -474,7 +474,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 470,
       numSpawned: 0 * 1000,
@@ -500,7 +500,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 540,
       numSpawned: 0 * 1000,
@@ -526,7 +526,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 650,
       numSpawned: 0 * 1000,
@@ -552,7 +552,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 800,
       numSpawned: 0 * 1000,
@@ -578,7 +578,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 900,
       numSpawned: 0 * 1000,
@@ -604,7 +604,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 1000,
       numSpawned: 0 * 1000,
@@ -630,7 +630,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FIREMAKING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -656,7 +656,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.SMITHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -682,7 +682,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COOKING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -708,7 +708,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -734,7 +734,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 35,
       numSpawned: 0 * 1000,
@@ -760,7 +760,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -786,7 +786,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 70,
       numSpawned: 0 * 1000,
@@ -812,7 +812,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 140,
       numSpawned: 0 * 1000,
@@ -838,7 +838,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 160,
       numSpawned: 0 * 1000,
@@ -864,7 +864,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 240,
       numSpawned: 0 * 1000,
@@ -890,7 +890,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 260,
       numSpawned: 0 * 1000,
@@ -916,7 +916,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 300,
       numSpawned: 0 * 1000,
@@ -942,7 +942,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 370,
       numSpawned: 0 * 1000,
@@ -968,7 +968,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 400,
       numSpawned: 0 * 1000,
@@ -994,7 +994,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 440,
       numSpawned: 0 * 1000,
@@ -1020,7 +1020,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 500,
       numSpawned: 0 * 1000,
@@ -1046,7 +1046,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 550,
       numSpawned: 0 * 1000,
@@ -1072,7 +1072,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 650,
       numSpawned: 0 * 1000,
@@ -1098,7 +1098,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 700,
       numSpawned: 0 * 1000,
@@ -1124,7 +1124,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 780,
       numSpawned: 0 * 1000,
@@ -1150,7 +1150,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 830,
       numSpawned: 0 * 1000,
@@ -1176,7 +1176,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 880,
       numSpawned: 0 * 1000,
@@ -1202,7 +1202,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 900,
       numSpawned: 0 * 1000,
@@ -1228,7 +1228,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 100,
       numSpawned: 100 * 1000,
@@ -1257,7 +1257,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 120,
       numSpawned: 100 * 1000,
@@ -1283,7 +1283,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 150,
       numSpawned: 100 * 1000,
@@ -1309,7 +1309,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 150,
       numSpawned: 100 * 1000,
@@ -1335,7 +1335,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 200,
       numSpawned: 100 * 1000,
@@ -1361,7 +1361,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 200,
       numSpawned: 75 * 1000,
@@ -1387,7 +1387,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -1416,7 +1416,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -1442,7 +1442,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -1471,7 +1471,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -1497,7 +1497,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 350,
       numSpawned: 75 * 1000,
@@ -1526,7 +1526,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 350,
       numSpawned: 50 * 1000,
@@ -1552,7 +1552,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 350,
       numSpawned: 50 * 1000,
@@ -1581,7 +1581,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 450,
       numSpawned: 50 * 1000,
@@ -1610,7 +1610,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 450,
       numSpawned: 50 * 1000,
@@ -1642,7 +1642,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 500,
       numSpawned: 50 * 1000,
@@ -1671,7 +1671,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 500,
       numSpawned: 50 * 1000,
@@ -1701,7 +1701,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 600,
       numSpawned: 50 * 1000,
@@ -1731,7 +1731,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 600,
       numSpawned: 50 * 1000,
@@ -1757,7 +1757,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 1000,
       numSpawned: 10 * 1000,
@@ -1790,7 +1790,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 2000,
       numSpawned: 10 * 1000,
@@ -1823,7 +1823,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.CRAFTING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -1849,7 +1849,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -1878,7 +1878,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 65,
       numSpawned: 0 * 1000,
@@ -1907,7 +1907,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 80,
       numSpawned: 0 * 1000,
@@ -1936,7 +1936,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -1962,7 +1962,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 55,
       numSpawned: 0 * 1000,
@@ -1991,7 +1991,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 120,
       numSpawned: 0 * 1000,
@@ -2017,7 +2017,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 200,
       numSpawned: 0 * 1000,
@@ -2047,7 +2047,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 280,
       numSpawned: 0 * 1000,
@@ -2077,7 +2077,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 300,
       numSpawned: 0 * 1000,
@@ -2107,7 +2107,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 100,
       numSpawned: 0 * 1000,
@@ -2136,7 +2136,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 350,
       numSpawned: 0 * 1000,
@@ -2166,7 +2166,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 450,
       numSpawned: 0 * 1000,
@@ -2192,7 +2192,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 500,
       numSpawned: 0 * 1000,
@@ -2222,7 +2222,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 400,
       numSpawned: 0 * 1000,
@@ -2251,7 +2251,7 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
+      worldLocation: 0,
       actionChoiceRequired: false,
       xpPerHour: 1000,
       numSpawned: 0 * 1000,

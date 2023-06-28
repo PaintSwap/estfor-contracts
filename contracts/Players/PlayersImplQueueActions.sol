@@ -194,7 +194,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       uint16 handItemTokenIdRangeMin,
       uint16 handItemTokenIdRangeMax,
       bool actionChoiceRequired,
-      Skill skill,
+      Skill actionSkill,
       uint32 actionMinXP,
       bool actionAvailable
     ) = world.getPermissibleItemsForAction(actionId);
@@ -203,10 +203,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       revert ActionNotAvailable();
     }
 
-    bool isCombat = skill == Skill.COMBAT;
-    if (!isCombat && PlayersLibrary.readXP(skill, xp_[_playerId]) < actionMinXP) {
+    if (actionMinXP > 0 && PlayersLibrary.readXP(actionSkill, xp_[_playerId]) < actionMinXP) {
       revert ActionMinimumXPNotReached();
     }
+
+    bool isCombat = actionSkill == Skill.COMBAT;
 
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
@@ -222,6 +223,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       if (actionChoice.skill == Skill.NONE) {
         revert InvalidSkill();
+      }
+
+      // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
+      if (actionSkill == Skill.TRAVELLING) {
+        if (_queuedAction.timespan != (RATE_MUL * 3600) / actionChoice.rate) {
+          revert InvalidTravellingTimespan();
+        }
       }
     } else if (_queuedAction.choiceId != NONE) {
       revert ActionChoiceIdNotRequired();

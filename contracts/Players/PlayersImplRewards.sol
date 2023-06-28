@@ -30,6 +30,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState) {
     Player storage player = players_[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
+    pendingQueuedActionState.worldLocation = player.worldLocation;
     pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length + 1); // reserve +1 for handling the previously processed in current action
     pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueue.length + 1);
 
@@ -94,7 +95,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     U256 bounds = actionQueue.length.asU256();
     uint pendingQueuedActionStateLength;
     uint startTime = players_[_playerId].currentActionStartTime;
-    Skill firstRemainingActionSkill; // Can be Skill.COMBAT
+    Skill firstRemainingActionSkill; // Can be Skill.COMBAT or Skill.TRAVELLING
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
@@ -111,8 +112,12 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint32 pointsAccrued;
       uint endTime = startTime + queuedAction.timespan;
 
+      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour, uint8 worldLocation) = world
+        .getRewardsHelper(queuedAction.actionId);
+
       uint elapsedTime = _getElapsedTime(startTime, endTime);
-      if (elapsedTime == 0) {
+      bool correctWorldLocation = worldLocation == pendingQueuedActionState.worldLocation;
+      if (elapsedTime == 0 || !correctWorldLocation) {
         _addRemainingQueuedAction(
           pendingQueuedActionState.remainingQueuedActions,
           queuedAction,
@@ -126,6 +131,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         continue;
       }
 
+      // Also need to check the starting location is valid
       CombatStats memory combatStats;
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       if (isCombat) {
@@ -166,9 +172,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       // Create some items if necessary (smithing ores to bars for instance)
       bool fullyFinished = elapsedTime >= queuedAction.timespan;
       bool died;
-      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
-        queuedAction.actionId
-      );
       firstRemainingActionSkill = actionSkill;
       bool actionHasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
       ActionChoice memory actionChoice;
@@ -199,7 +202,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           pendingQueuedActionState.equipmentStates,
           pendingQueuedActionState.processedData
         );
-
         uint numChoicesCompleted;
         if (actionSkill == Skill.COOKING) {
           numChoicesCompleted = producedEquipment.amount; // Assume we want amount cooked
@@ -244,6 +246,11 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
         if (died) {
           pendingQueuedActionMetadata.died = true;
+        }
+
+        if (fullyFinished && actionSkill == Skill.TRAVELLING) {
+          // Get the new world location
+          pendingQueuedActionState.worldLocation = uint8(actionChoice.outputAmount);
         }
       } else {
         if (queuedAction.prevProcessedTime != 0) {
@@ -612,7 +619,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     view
     returns (uint[] memory ids, uint[] memory amounts, uint[] memory randomIds, uint[] memory randomAmounts)
   {
-    (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(_actionId);
+    (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour, ) = world.getRewardsHelper(
+      _actionId
+    );
     bool isCombat = actionSkill == Skill.COMBAT;
 
     uint16 monstersKilledFull = uint16(
@@ -784,7 +793,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       PendingRandomReward storage pendingRandomReward = _pendingRandomRewards[i];
-      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour) = world.getRewardsHelper(
+      (ActionRewards memory actionRewards, Skill actionSkill, uint numSpawnedPerHour, ) = world.getRewardsHelper(
         pendingRandomReward.actionId
       );
       bool isCombat = actionSkill == Skill.COMBAT;

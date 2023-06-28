@@ -40,6 +40,7 @@ struct Player {
   uint56 totalXP;
   Skill currentActionProcessedSkill3;
   uint24 currentActionProcessedXPGained3;
+  uint8 worldLocation; // 0 is the main starting world
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
   string name; // Raw name
@@ -114,6 +115,8 @@ struct PackedXP {
   // Next slot
   uint40 cooking;
   uint40 firemaking;
+  uint40 agility;
+  uint40 alchemy;
 }
 
 struct AvatarInfo {
@@ -193,6 +196,7 @@ struct PendingQueuedActionState {
   bytes32 dailyRewardMask;
   QuestState quests;
   uint numPastRandomRewardInstancesToRemove;
+  uint8 worldLocation;
 }
 
 struct FullAttireBonusInput {

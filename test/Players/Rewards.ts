@@ -5,7 +5,6 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
   bronzeHelmetStats,
-  emptyActionChoice,
   getActionChoiceId,
   getActionId,
   getRequestId,
@@ -15,7 +14,7 @@ import {
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
-import {emptyCombatStats} from "@paintswap/estfor-definitions/types";
+import {defaultActionChoice, emptyCombatStats} from "@paintswap/estfor-definitions/types";
 
 const actionIsAvailable = true;
 
@@ -74,7 +73,7 @@ describe("Rewards", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -565,7 +564,7 @@ describe("Rewards", function () {
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -580,7 +579,7 @@ describe("Rewards", function () {
     const actionId = await getActionId(tx);
 
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-      ...emptyActionChoice,
+      ...defaultActionChoice,
       skill: EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);
@@ -700,7 +699,7 @@ describe("Rewards", function () {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -832,7 +831,7 @@ describe("Rewards", function () {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -956,7 +955,7 @@ describe("Rewards", function () {
         skill: EstforTypes.Skill.THIEVING,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.NONE,
         handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -1048,7 +1047,7 @@ describe("Rewards", function () {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 0,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -1105,7 +1104,7 @@ describe("Rewards", function () {
         skill: EstforTypes.Skill.THIEVING,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.NONE,
         handItemTokenIdRangeMax: EstforConstants.NONE,

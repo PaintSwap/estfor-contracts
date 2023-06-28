@@ -1,17 +1,9 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {Equipment} from "@paintswap/estfor-definitions/types";
+import {Equipment, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {ItemNFT, World} from "../../typechain-types";
-import {
-  bronzeHelmetStats,
-  emptyActionChoice,
-  getActionChoiceId,
-  getActionId,
-  GUAR_MUL,
-  RATE_MUL,
-  SPAWN_MUL,
-} from "../utils";
+import {bronzeHelmetStats, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL} from "../utils";
 import {
   ACTION_FIREMAKING_ITEM,
   ACTION_FISHING_MINNUS,
@@ -25,7 +17,7 @@ export const setupBasicWoodcutting = async function (itemNFT: ItemNFT, world: Wo
       skill: EstforTypes.Skill.WOODCUTTING,
       xpPerHour: 3600,
       minXP: 0,
-      isDynamic: false,
+      worldLocation: 0,
       numSpawned: 0,
       handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -68,7 +60,7 @@ export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World)
       skill: EstforTypes.Skill.FISHING,
       xpPerHour: 3600,
       minXP: 0,
-      isDynamic: false,
+      worldLocation: 0,
       numSpawned: 0,
       handItemTokenIdRangeMin: EstforConstants.FISHING_BASE,
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
@@ -113,7 +105,7 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
       skill: EstforTypes.Skill.FIREMAKING,
       xpPerHour: 0,
       minXP: 0,
-      isDynamic: false,
+      worldLocation: 0,
       numSpawned: 0,
       handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
       handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
@@ -129,20 +121,13 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
 
   // Logs go in, nothing comes out
   tx = await world.addActionChoice(actionId, 1, {
+    ...defaultActionChoice,
     skill: EstforTypes.Skill.FIREMAKING,
-    skillDiff: 0,
     xpPerHour: 3600,
     minXP,
     rate,
     inputTokenId1: EstforConstants.LOG,
     inputAmount1: 1,
-    inputTokenId2: EstforConstants.NONE,
-    inputAmount2: 0,
-    inputTokenId3: EstforConstants.NONE,
-    inputAmount3: 0,
-    outputTokenId: EstforConstants.NONE,
-    outputAmount: 0,
-    successPercent: 100,
   });
   const choiceId = await getActionChoiceId(tx);
 
@@ -197,7 +182,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
       skill: EstforTypes.Skill.COMBAT,
       xpPerHour: 3600,
       minXP: 0,
-      isDynamic: false,
+      worldLocation: 0,
       numSpawned,
       handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -212,7 +197,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   const actionId = await getActionId(tx);
 
   tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-    ...emptyActionChoice,
+    ...defaultActionChoice,
     skill: EstforTypes.Skill.MELEE,
   });
   const choiceId = await getActionChoiceId(tx);
@@ -280,7 +265,7 @@ export const setupBasicCooking = async function (
       skill: EstforTypes.Skill.COOKING,
       xpPerHour: 0,
       minXP: 0,
-      isDynamic: false,
+      worldLocation: 0,
       numSpawned: 0,
       handItemTokenIdRangeMin: EstforConstants.NONE,
       handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -296,17 +281,13 @@ export const setupBasicCooking = async function (
 
   // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
   tx = await world.addActionChoice(actionId, 1, {
+    ...defaultActionChoice,
     skill: EstforTypes.Skill.COOKING,
-    skillDiff: 0,
     xpPerHour: 3600,
     minXP: getXPFromLevel(minLevel),
     rate,
     inputTokenId1: EstforConstants.RAW_MINNUS,
     inputAmount1: 1,
-    inputTokenId2: EstforConstants.NONE,
-    inputAmount2: 0,
-    inputTokenId3: EstforConstants.NONE,
-    inputAmount3: 0,
     outputTokenId: EstforConstants.COOKED_MINNUS,
     outputAmount: 1,
     successPercent,
@@ -356,7 +337,7 @@ export const setupBasicCrafting = async function (
       skill: EstforTypes.Skill.CRAFTING,
       xpPerHour: 0,
       minXP: 0,
-      isDynamic: false,
+      worldLocation: 0,
       numSpawned: 0,
       handItemTokenIdRangeMin: EstforConstants.NONE,
       handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -372,20 +353,16 @@ export const setupBasicCrafting = async function (
 
   // Logs go in, nothing comes out
   tx = await world.addActionChoice(actionId, 1, {
+    ...defaultActionChoice,
     skill: EstforTypes.Skill.CRAFTING,
-    skillDiff: 0,
     xpPerHour: 3600,
-    minXP: 0,
     rate,
     inputTokenId1: EstforConstants.ROPE,
     inputAmount1: 1,
     inputTokenId2: EstforConstants.SAPPHIRE,
     inputAmount2: 20,
-    inputTokenId3: EstforConstants.NONE,
-    inputAmount3: 0,
     outputTokenId: EstforConstants.SAPPHIRE_AMULET,
     outputAmount,
-    successPercent: 100,
   });
   const choiceId = await getActionChoiceId(tx);
 
@@ -415,6 +392,56 @@ export const setupBasicCrafting = async function (
   ]);
 
   return {queuedAction, rate, choiceId};
+};
+
+export const setupTravelling = async function (world: World, rate = 0.125 * RATE_MUL, from = 0, to = 1) {
+  const ACTION_TRAVEL_0 = 1000;
+  let tx = await world.addAction({
+    actionId: ACTION_TRAVEL_0,
+    info: {
+      skill: EstforTypes.Skill.TRAVELLING,
+      xpPerHour: 0,
+      minXP: 0,
+      worldLocation: 0,
+      numSpawned: 0,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      isAvailable: true,
+      actionChoiceRequired: true,
+      successPercent: 100,
+    },
+    guaranteedRewards: [],
+    randomRewards: [],
+    combatStats: EstforTypes.emptyCombatStats,
+  });
+  const actionId = await getActionId(tx);
+  const ACTIONCHOICE_WALK_TO_1 = 1;
+  // Walking from location 0 to 1
+  tx = await world.addActionChoice(actionId, ACTIONCHOICE_WALK_TO_1, {
+    ...defaultActionChoice,
+    skill: EstforTypes.Skill.AGILITY,
+    xpPerHour: 3600,
+    inputTokenId1: EstforConstants.NONE,
+    inputAmount1: from, // World location start
+    outputTokenId: EstforConstants.NONE,
+    outputAmount: to, // World location end
+    rate,
+  });
+  const choiceId = await getActionChoiceId(tx);
+
+  const timespan = (3600 * RATE_MUL) / rate;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+  };
+
+  return {queuedAction};
 };
 
 export function checkPendingQueuedActionState(

@@ -1,5 +1,4 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {ActionChoiceInput} from "@paintswap/estfor-definitions/types";
 import {ContractTransaction} from "ethers";
 
 export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
@@ -42,23 +41,6 @@ export const bronzeHelmetStats: EstforTypes.CombatStats = {
   magicDefence: 0,
   rangeDefence: 1,
   health: 1,
-};
-
-export const emptyActionChoice: ActionChoiceInput = {
-  skill: EstforTypes.Skill.NONE,
-  skillDiff: 0,
-  rate: 0,
-  xpPerHour: 0,
-  minXP: 0,
-  inputTokenId1: EstforConstants.NONE,
-  inputAmount1: 0,
-  inputTokenId2: EstforConstants.NONE,
-  inputAmount2: 0,
-  inputTokenId3: EstforConstants.NONE,
-  inputAmount3: 0,
-  outputTokenId: EstforConstants.NONE,
-  outputAmount: 0,
-  successPercent: 100,
 };
 
 // Should match the PlayersBase contract constants

@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
-import {ActionInput} from "@paintswap/estfor-definitions/types";
+import {ActionInput, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId, getRequestId, RATE_MUL, SPAWN_MUL} from "./utils";
@@ -207,7 +207,7 @@ describe("World", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -228,7 +228,7 @@ describe("World", function () {
             skill: EstforTypes.Skill.COMBAT,
             xpPerHour: 20,
             minXP: 0,
-            isDynamic: false,
+            worldLocation: 0,
             numSpawned: 1 * SPAWN_MUL,
             handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -256,7 +256,7 @@ describe("World", function () {
             skill: EstforTypes.Skill.COMBAT,
             xpPerHour: 3600,
             minXP: 0,
-            isDynamic: true,
+            worldLocation: 0,
             numSpawned: 1 * SPAWN_MUL,
             handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -269,7 +269,6 @@ describe("World", function () {
           combatStats: EstforTypes.emptyCombatStats,
         },
       ]);
-      await expect(world.setAvailable(actionId, false)).to.be.reverted;
     });
 
     it("Dynamic actions", async function () {
@@ -283,20 +282,13 @@ describe("World", function () {
       const choiceId = 0;
       await expect(
         world.addActionChoice(EstforConstants.NONE, choiceId, {
+          ...defaultActionChoice,
           skill: EstforTypes.Skill.MAGIC,
           skillDiff: 2,
-          xpPerHour: 0,
           minXP: 0,
           rate: 1 * RATE_MUL,
           inputTokenId1: EstforConstants.AIR_SCROLL,
           inputAmount1: 1,
-          inputTokenId2: EstforConstants.NONE,
-          inputAmount2: 0,
-          inputTokenId3: EstforConstants.NONE,
-          inputAmount3: 0,
-          outputTokenId: EstforConstants.NONE,
-          outputAmount: 0,
-          successPercent: 100,
         })
       ).to.be.reverted;
     });
@@ -306,6 +298,7 @@ describe("World", function () {
 
       const choiceId = 1;
       await world.addActionChoice(EstforConstants.NONE, choiceId, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
         skillDiff: 2,
         xpPerHour: 0,
@@ -313,30 +306,15 @@ describe("World", function () {
         rate: 1 * RATE_MUL,
         inputTokenId1: EstforConstants.AIR_SCROLL,
         inputAmount1: 1,
-        inputTokenId2: EstforConstants.NONE,
-        inputAmount2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
-        successPercent: 100,
       });
 
       await world.editActionChoice(EstforConstants.NONE, choiceId, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
         skillDiff: 2,
-        xpPerHour: 0,
-        minXP: 0,
         rate: 1 * RATE_MUL,
         inputTokenId1: EstforConstants.AIR_SCROLL,
         inputAmount1: 2,
-        inputTokenId2: EstforConstants.NONE,
-        inputAmount2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
-        successPercent: 100,
       });
 
       let actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
@@ -348,20 +326,12 @@ describe("World", function () {
         [choiceId],
         [
           {
+            ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
             skillDiff: 2,
-            xpPerHour: 0,
-            minXP: 0,
             rate: 1 * RATE_MUL,
             inputTokenId1: EstforConstants.AIR_SCROLL,
             inputAmount1: 10,
-            inputTokenId2: EstforConstants.NONE,
-            inputAmount2: 0,
-            inputTokenId3: EstforConstants.NONE,
-            inputAmount3: 0,
-            outputTokenId: EstforConstants.NONE,
-            outputAmount: 0,
-            successPercent: 100,
           },
         ]
       );
@@ -380,7 +350,7 @@ describe("World", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -424,7 +394,7 @@ describe("World", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -457,7 +427,7 @@ describe("World", function () {
           skill: EstforTypes.Skill.COOKING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -488,7 +458,7 @@ describe("World", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -524,7 +494,7 @@ describe("World", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -554,7 +524,7 @@ describe("World", function () {
           skill: EstforTypes.Skill.COOKING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,

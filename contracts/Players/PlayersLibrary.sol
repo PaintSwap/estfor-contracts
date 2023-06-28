@@ -659,7 +659,7 @@ library PlayersLibrary {
   }
 
   function readXP(Skill _skill, PackedXP storage _packedXP) internal view returns (uint) {
-    if (_skill == Skill.COMBAT) {
+    if (_skill == Skill.COMBAT || _skill == Skill.TRAVELLING) {
       revert InvalidXPSkill();
     }
     if (_skill == Skill.NONE) {

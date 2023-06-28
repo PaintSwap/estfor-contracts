@@ -360,8 +360,15 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return (actions[_actionId].successPercent, actions[_actionId].minXP);
   }
 
-  function getRewardsHelper(uint16 _actionId) external view returns (ActionRewards memory, Skill, uint) {
-    return (actionRewards[_actionId], actions[_actionId].skill, actions[_actionId].numSpawned);
+  function getRewardsHelper(
+    uint16 _actionId
+  ) external view returns (ActionRewards memory, Skill skill, uint numSpanwed, uint8 worldLocation) {
+    return (
+      actionRewards[_actionId],
+      actions[_actionId].skill,
+      actions[_actionId].numSpawned,
+      actions[_actionId].worldLocation
+    );
   }
 
   function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
@@ -399,9 +406,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _addAction(Action calldata _action) private {
-    if (_action.info.isDynamic) {
-      revert DynamicActionsCannotBeAdded();
-    }
     if (actions[_action.actionId].skill != Skill.NONE) {
       revert ActionAlreadyExists();
     }
@@ -606,9 +610,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
     if (actions[_actionId].skill == Skill.NONE) {
       revert ActionDoesNotExist();
-    }
-    if (actions[_actionId].isDynamic) {
-      revert DynamicActionsCannotBeSet();
     }
     actions[_actionId].isAvailable = _isAvailable;
     emit SetAvailableAction(_actionId, _isAvailable);

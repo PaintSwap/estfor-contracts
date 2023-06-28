@@ -98,6 +98,7 @@ abstract contract PlayersBase {
   error UnsupportedRegenerateItem();
   error InvalidCombatStyle();
   error InvalidSkill();
+  error InvalidTravellingTimespan();
   error ActionChoiceIdRequired();
   error ActionChoiceIdNotRequired();
   error InvalidEquipPosition();

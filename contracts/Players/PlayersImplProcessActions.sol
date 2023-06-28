@@ -243,6 +243,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       delete activeBoosts_[_playerId];
       emit BoostFinished(_playerId);
     }
+
+    player.worldLocation = pendingQueuedActionState.worldLocation;
   }
 
   function _processActionsFinished(

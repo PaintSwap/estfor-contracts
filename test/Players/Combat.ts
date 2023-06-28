@@ -1,13 +1,12 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {COOKED_MINNUS, QUEST_SUPPLY_RUN} from "@paintswap/estfor-definitions/constants";
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {
-  emptyActionChoice,
   getActionChoiceId,
   getActionChoiceIds,
   getActionId,
@@ -293,7 +292,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -348,7 +347,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -403,7 +402,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -465,7 +464,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -524,7 +523,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -996,7 +995,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1024,20 +1023,14 @@ describe("Combat Actions", function () {
 
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
         skillDiff: 2,
-        xpPerHour: 0,
-        minXP: 0,
         rate: scrollsConsumedRate,
         inputTokenId1: EstforConstants.SHADOW_SCROLL,
         inputAmount1: 1,
         inputTokenId2: EstforConstants.AIR_SCROLL,
         inputAmount2: 2,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
-        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
@@ -1157,7 +1150,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1186,20 +1179,14 @@ describe("Combat Actions", function () {
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
         skillDiff: 5,
-        xpPerHour: 0,
-        minXP: 0,
         rate: scrollsConsumedRate,
         inputTokenId1: EstforConstants.SHADOW_SCROLL,
         inputAmount1: 1,
         inputTokenId2: EstforConstants.AIR_SCROLL,
         inputAmount2: 2,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
-        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
@@ -1310,7 +1297,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1339,20 +1326,14 @@ describe("Combat Actions", function () {
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
       tx = await world.addActionChoice(EstforConstants.NONE, 1, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
         skillDiff: 5,
-        xpPerHour: 0,
-        minXP: 0,
         rate: scrollsConsumedRate,
         inputTokenId1: EstforConstants.SHADOW_SCROLL,
         inputAmount1: 1,
         inputTokenId2: EstforConstants.AIR_SCROLL,
         inputAmount2: 2,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
-        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
@@ -1713,36 +1694,24 @@ describe("Combat Actions", function () {
         [
           [
             {
+              ...defaultActionChoice,
               skill: EstforTypes.Skill.MAGIC,
               skillDiff: 2,
-              xpPerHour: 0,
-              minXP: 0,
               rate: scrollsConsumedRate,
               inputTokenId1: EstforConstants.AIR_SCROLL,
               inputAmount1: 1,
               inputTokenId2: EstforConstants.SHADOW_SCROLL,
               inputAmount2: 1,
-              inputTokenId3: EstforConstants.NONE,
-              inputAmount3: 0,
-              outputTokenId: EstforConstants.NONE,
-              outputAmount: 0,
-              successPercent: 100,
             },
             {
+              ...defaultActionChoice,
               skill: EstforTypes.Skill.MAGIC,
               skillDiff: 2,
-              xpPerHour: 0,
-              minXP: 0,
               rate: scrollsConsumedRate,
               inputTokenId1: EstforConstants.SHADOW_SCROLL,
               inputAmount1: 1,
               inputTokenId2: EstforConstants.AIR_SCROLL,
               inputAmount2: 3,
-              inputTokenId3: EstforConstants.NONE,
-              inputAmount3: 0,
-              outputTokenId: EstforConstants.NONE,
-              outputAmount: 0,
-              successPercent: 100,
             },
           ],
         ]
@@ -1787,7 +1756,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1857,7 +1826,7 @@ describe("Combat Actions", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1911,7 +1880,7 @@ describe("Combat Actions", function () {
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 100 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1940,7 +1909,7 @@ describe("Combat Actions", function () {
 
     const timespan = 3600 * 3; // 3 hours
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-      ...emptyActionChoice,
+      ...defaultActionChoice,
       skill: EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);
@@ -2021,7 +1990,7 @@ describe("Combat Actions", function () {
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 100 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -2040,7 +2009,7 @@ describe("Combat Actions", function () {
     await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 2);
     const timespan = 3600 * 3; // 3 hours
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-      ...emptyActionChoice,
+      ...defaultActionChoice,
       skill: EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);

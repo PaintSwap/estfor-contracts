@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {getActionChoiceId, getActionId, getRequestId, GUAR_MUL, RATE_MUL} from "../utils";
@@ -53,7 +53,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -170,7 +170,7 @@ describe("Non-Combat Actions", function () {
         skill: EstforTypes.Skill.FIREMAKING,
         xpPerHour: 0,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
         handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
@@ -186,20 +186,12 @@ describe("Non-Combat Actions", function () {
 
     // Logs go in, nothing comes out
     tx = await world.addActionChoice(actionId, 1, {
+      ...defaultActionChoice,
       skill: EstforTypes.Skill.FIREMAKING,
-      skillDiff: 0,
       xpPerHour: 3600,
-      minXP: 0,
       rate,
       inputTokenId1: EstforConstants.LOG,
       inputAmount1: 1,
-      inputTokenId2: EstforConstants.NONE,
-      inputAmount2: 0,
-      inputTokenId3: EstforConstants.NONE,
-      inputAmount3: 0,
-      outputTokenId: EstforConstants.NONE,
-      outputAmount: 0,
-      successPercent: 100,
     });
     const choiceId = await getActionChoiceId(tx);
 
@@ -254,7 +246,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -293,7 +285,7 @@ describe("Non-Combat Actions", function () {
         skill: EstforTypes.Skill.FIREMAKING,
         xpPerHour: 0,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
         handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
@@ -310,20 +302,12 @@ describe("Non-Combat Actions", function () {
     // Logs go in, nothing comes out
     const firemakingRate = 1200 * RATE_MUL; // per hour
     tx = await world.addActionChoice(actionId, 1, {
+      ...defaultActionChoice,
       skill: EstforTypes.Skill.FIREMAKING,
-      skillDiff: 0,
       xpPerHour: 3600,
-      minXP: 0,
       rate: firemakingRate,
       inputTokenId1: EstforConstants.LOG,
       inputAmount1: 1,
-      inputTokenId2: EstforConstants.NONE,
-      inputAmount2: 0,
-      inputTokenId3: EstforConstants.NONE,
-      inputAmount3: 0,
-      outputTokenId: EstforConstants.NONE,
-      outputAmount: 0,
-      successPercent: 100,
     });
     const choiceId = await getActionChoiceId(tx);
 
@@ -408,7 +392,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -447,7 +431,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
           handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
@@ -463,20 +447,12 @@ describe("Non-Combat Actions", function () {
 
       // Logs go in, nothing comes out
       tx = await world.addActionChoice(actionId, 1, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.FIREMAKING,
-        skillDiff: 0,
         xpPerHour: 3600,
-        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
         inputAmount1: 1,
-        inputTokenId2: EstforConstants.NONE,
-        inputAmount2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
-        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
 
@@ -540,7 +516,7 @@ describe("Non-Combat Actions", function () {
         skill: EstforTypes.Skill.MINING,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.BRONZE_PICKAXE,
         handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
@@ -596,7 +572,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.SMITHING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -612,20 +588,16 @@ describe("Non-Combat Actions", function () {
 
       // Ores go in, bars come out
       tx = await world.addActionChoice(actionId, 1, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.SMITHING,
-        skillDiff: 0,
         xpPerHour: 3600,
-        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.MITHRIL_ORE,
         inputAmount1: 1,
         inputTokenId2: EstforConstants.COAL_ORE,
         inputAmount2: 2,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
         outputTokenId: EstforConstants.MITHRIL_BAR,
         outputAmount: 1,
-        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
 
@@ -685,7 +657,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.SMITHING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -701,37 +673,29 @@ describe("Non-Combat Actions", function () {
 
       // Ores go in, bars come out
       tx = await world.addActionChoice(actionId, 1, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.SMITHING,
-        skillDiff: 0,
         xpPerHour: 3600,
-        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.MITHRIL_ORE,
         inputAmount1: 1,
         inputTokenId2: EstforConstants.COAL_ORE,
         inputAmount2: 2,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
         outputTokenId: EstforConstants.MITHRIL_BAR,
         outputAmount: 1,
-        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
       tx = await world.addActionChoice(actionId, 2, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.SMITHING,
-        skillDiff: 0,
         xpPerHour: 7200,
-        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.MITHRIL_ORE,
         inputAmount1: 1,
         inputTokenId2: EstforConstants.COAL_ORE,
         inputAmount2: 2,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
         outputTokenId: EstforConstants.MITHRIL_BAR,
         outputAmount: 1,
-        successPercent: 100,
       });
       const choiceId1 = await getActionChoiceId(tx);
       const timespan = 3600;
@@ -909,7 +873,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.THIEVING,
           xpPerHour,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -1008,7 +972,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.THIEVING,
           xpPerHour,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -1102,7 +1066,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.THIEVING,
           xpPerHour,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -1186,7 +1150,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.THIEVING,
           xpPerHour,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -1271,7 +1235,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.THIEVING,
           xpPerHour,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -1419,7 +1383,7 @@ describe("Non-Combat Actions", function () {
           skill: EstforTypes.Skill.THIEVING,
           xpPerHour,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -1996,7 +1960,7 @@ describe("Non-Combat Actions", function () {
         skill: EstforTypes.Skill.WOODCUTTING,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
         handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,

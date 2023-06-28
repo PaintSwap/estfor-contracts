@@ -1,13 +1,13 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
-import {Attire, Skill} from "@paintswap/estfor-definitions/types";
+import {Attire, Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {emptyActionChoice, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
+import {getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {getXPFromLevel, setupBasicFiremaking, setupBasicFishing, setupBasicWoodcutting} from "./utils";
+import {getXPFromLevel, setupBasicFiremaking, setupBasicFishing, setupBasicWoodcutting, setupTravelling} from "./utils";
 import {Players} from "../../typechain-types";
 
 const actionIsAvailable = true;
@@ -105,7 +105,7 @@ describe("Players", function () {
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
-        isDynamic: false,
+        worldLocation: 0,
         numSpawned: 1 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -120,7 +120,7 @@ describe("Players", function () {
     const actionId = await getActionId(tx);
 
     tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-      ...emptyActionChoice,
+      ...defaultActionChoice,
       skill: EstforTypes.Skill.MELEE,
     });
     const choiceId = await getActionChoiceId(tx);
@@ -364,7 +364,7 @@ describe("Players", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: getXPFromLevel(70),
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -435,20 +435,14 @@ describe("Players", function () {
         // Logs go in, oak logs come out suprisingly!
         const outputAmount = 2;
         const tx = await world.addActionChoice(actionId, 2, {
+          ...defaultActionChoice,
           skill: EstforTypes.Skill.FIREMAKING,
-          skillDiff: 0,
           xpPerHour: 3600,
-          minXP: 0,
           rate,
           inputTokenId1: EstforConstants.LOG,
           inputAmount1: 1,
-          inputTokenId2: EstforConstants.NONE,
-          inputAmount2: 0,
-          inputTokenId3: EstforConstants.NONE,
-          inputAmount3: 0,
           outputTokenId: EstforConstants.OAK_LOG,
           outputAmount,
-          successPercent: 100,
         });
         const choiceId = await getActionChoiceId(tx);
         const queuedAction = {...queuedActionFiremaking};
@@ -478,7 +472,7 @@ describe("Players", function () {
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
           handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
@@ -494,20 +488,12 @@ describe("Players", function () {
 
       // Logs go in, nothing comes out
       tx = await world.addActionChoice(actionId, 1, {
+        ...defaultActionChoice,
         skill: EstforTypes.Skill.FIREMAKING,
-        skillDiff: 0,
         xpPerHour: 3600,
-        minXP: 0,
         rate,
         inputTokenId1: EstforConstants.LOG,
         inputAmount1: 1,
-        inputTokenId2: EstforConstants.NONE,
-        inputAmount2: 0,
-        inputTokenId3: EstforConstants.NONE,
-        inputAmount3: 0,
-        outputTokenId: EstforConstants.NONE,
-        outputAmount: 0,
-        successPercent: 100,
       });
       const choiceId = await getActionChoiceId(tx);
 
@@ -654,7 +640,7 @@ describe("Players", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -922,7 +908,7 @@ describe("Players", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 16000000, // 16MM
           minXP: 0,
-          isDynamic: false,
+          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -1131,6 +1117,43 @@ describe("Players", function () {
       await expect(
         players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, 100, false)
       ).to.be.revertedWithCustomError(players, "HasQueuedActions");
+    });
+
+    it("Travelling", async function () {
+      const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);
+
+      const queuedActionInvalidTimespan = {...queuedAction, timespan: 1800};
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedActionInvalidTimespan], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "InvalidTravellingTimespan");
+
+      // Travel from 0 to 1
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.worldLocation).to.eq(1);
+      await players.connect(alice).processActions(playerId);
+      expect((await players.players(playerId)).worldLocation).to.eq(1);
+      // Should earn agility xp
+      expect(await players.xp(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
+
+      // Trying to travel from 0 to 1 should do nothing and earn no xp. Should be allowed to queue but it does nothing
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      expect(await players.xp(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
+
+      // Can process an action that is intended for area 1 only
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+
+      // Confirm a starting area skill cannot be used in a different area
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedActionWoodcutting.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     });
   });
 });
