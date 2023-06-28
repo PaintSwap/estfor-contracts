@@ -12,7 +12,7 @@ export const getRequestId = async (tx: ContractTransaction): Promise<number> => 
 export const getActionId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddAction";
+    return x.event == "AddActionV2";
   })[0].args;
   return event?.action.actionId;
 };

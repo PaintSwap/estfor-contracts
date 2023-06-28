@@ -21,9 +21,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
   event RequestFulfilled(uint requestId, uint[3] randomWords);
-  event AddAction(Action action);
-  event AddActions(Action[] actions);
-  event EditActions(Action[] actions);
+  event AddActionV2(Action action);
+  event AddActionsV2(Action[] actions);
+  event EditActionsV2(Action[] actions);
+  event AddAction(ActionV1 action);
+  event AddActions(ActionV1[] actions);
+  event EditActions(ActionV1[] actions);
   event SetAvailableAction(uint16 actionId, bool available);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
@@ -406,6 +409,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _addAction(Action calldata _action) private {
+    if (_action.info.isDynamic) {
+      revert DynamicActionsCannotBeAdded();
+    }
     if (actions[_action.actionId].skill != Skill.NONE) {
       revert ActionAlreadyExists();
     }
@@ -514,7 +520,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function addAction(Action calldata _action) external onlyOwner {
     _addAction(_action);
-    emit AddAction(_action);
+    emit AddActionV2(_action);
   }
 
   function addActions(Action[] calldata _actions) external onlyOwner {
@@ -524,7 +530,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       uint16 i = iter.asUint16();
       _addAction(_actions[i]);
     }
-    emit AddActions(_actions);
+    emit AddActionsV2(_actions);
   }
 
   function editActions(Action[] calldata _actions) external onlyOwner {
@@ -534,7 +540,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       }
       _setAction(_actions[i]);
     }
-    emit EditActions(_actions);
+    emit EditActionsV2(_actions);
   }
 
   // actionId of 0 means it is not tied to a specific action (combat)
@@ -610,6 +616,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {
     if (actions[_actionId].skill == Skill.NONE) {
       revert ActionDoesNotExist();
+    }
+    if (actions[_actionId].isDynamic) {
+      revert DynamicActionsCannotBeSet();
     }
     actions[_actionId].isAvailable = _isAvailable;
     emit SetAvailableAction(_actionId, _isAvailable);

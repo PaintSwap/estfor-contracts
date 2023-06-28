@@ -44,10 +44,32 @@ struct Action {
   CombatStats combatStats;
 }
 
+struct ActionV1 {
+  uint16 actionId;
+  ActionInfoV1 info;
+  GuaranteedReward[] guaranteedRewards;
+  RandomReward[] randomRewards;
+  CombatStats combatStats;
+}
+
 struct ActionInfo {
   Skill skill;
   bool isAvailable;
+  bool isDynamic;
+  bool actionChoiceRequired; // If true, then the user must choose an action choice
+  uint24 xpPerHour;
+  uint32 minXP;
+  uint24 numSpawned; // Mostly for combat, capped respawn rate for xp/drops. Per hour, base 10000
+  uint16 handItemTokenIdRangeMin; // Inclusive
+  uint16 handItemTokenIdRangeMax; // Inclusive
+  uint8 successPercent; // 0-100
   uint8 worldLocation; // 0 is the main starting world
+}
+
+struct ActionInfoV1 {
+  Skill skill;
+  bool isAvailable;
+  bool isDynamic;
   bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint24 xpPerHour;
   uint32 minXP;
