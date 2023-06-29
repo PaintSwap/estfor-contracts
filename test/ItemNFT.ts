@@ -200,27 +200,27 @@ describe("ItemNFT", function () {
     await expect(itemNFT.connect(alice).burn(EstforConstants.BRONZE_AXE, 1));
   });
 
-  it("numUniqueItems", async function () {
+  it("totalSupply", async function () {
     const {itemNFT, alice} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_ARMOR, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(2);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
     await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(2);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
     await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(2);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
     await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
     await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_ARMOR, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(0);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(0);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_ARMOR, 1);
-    expect(await itemNFT.numUniqueItems()).to.be.eq(1);
+    expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
   });
 
   it("airdrop", async function () {

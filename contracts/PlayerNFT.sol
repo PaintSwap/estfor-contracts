@@ -19,7 +19,7 @@ import "./globals/all.sol";
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
   using UnsafeMath for U256;
-  using UnsafeMath for uint256;
+  using UnsafeMath for uint;
 
   event NewPlayer(uint playerId, uint avatarId, string name);
   event EditPlayer(uint playerId, string newName);
@@ -187,8 +187,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     playerIdToAvatar[_playerId] = _avatarId;
   }
 
-  function uri(uint256 _playerId) public view virtual override returns (string memory) {
-    if (!_exists(_playerId)) {
+  function uri(uint _playerId) public view virtual override returns (string memory) {
+    if (!exists(_playerId)) {
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
     AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
@@ -200,8 +200,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     address /*operator*/,
     address from,
     address to,
-    uint256[] memory ids,
-    uint256[] memory amounts,
+    uint[] memory ids,
+    uint[] memory amounts,
     bytes memory /*data*/
   ) internal virtual override {
     if (from == address(0) || amounts.length == 0 || from == to) {
@@ -227,8 +227,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
    * Tokens can be managed by their owner or approved accounts via {setApprovalForAll}.
    *
    */
-  function _exists(uint256 _playerId) private view returns (bool) {
-    return playerIdToAvatar[_playerId] != 0;
+  function exists(uint _tokenId) public view returns (bool) {
+    return playerIdToAvatar[_tokenId] != 0;
+  }
+
+  function totalSupply(uint _tokenId) external view returns (uint) {
+    return exists(_tokenId) ? 1 : 0;
   }
 
   function editName(uint _playerId, string calldata _newName) external isOwnerOfPlayer(_playerId) {
@@ -250,9 +254,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   /**
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
-  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
+  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint[] memory batchBalances) {
     U256 iter = _ids.length.asU256();
-    batchBalances = new uint256[](iter.asUint256());
+    batchBalances = new uint[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
       uint i = iter.asUint256();
@@ -268,10 +272,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function royaltyInfo(
-    uint256 /*_tokenId*/,
-    uint256 _salePrice
-  ) external view override returns (address receiver, uint256 royaltyAmount) {
-    uint256 amount = (_salePrice * royaltyFee) / 1000;
+    uint /*_tokenId*/,
+    uint _salePrice
+  ) external view override returns (address receiver, uint royaltyAmount) {
+    uint amount = (_salePrice * royaltyFee) / 1000;
     return (royaltyReceiver, amount);
   }
 

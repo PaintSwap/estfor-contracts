@@ -226,7 +226,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
-      if (actionSkill == Skill.TRAVELLING) {
+      if (actionSkill == Skill.TRAVELING) {
         if (_queuedAction.timespan != (RATE_MUL * 3600) / actionChoice.rate) {
           revert InvalidTravellingTimespan();
         }

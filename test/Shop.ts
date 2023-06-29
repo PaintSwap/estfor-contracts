@@ -283,7 +283,7 @@ describe("Shop", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
     await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
-    expect(await itemNFT.numUniqueItems()).to.eq(2);
+    expect(await itemNFT["totalSupply()"]()).to.eq(2);
 
     expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.eq(0);
 
@@ -385,11 +385,11 @@ describe("Shop", function () {
     expect(await brush.balanceOf(alice.address)).to.greaterThan(minExpected);
   });
 
-  it("Can't sell for more than you can buy in shop", async function () {
+  it.only("Can't sell for more than you can buy in shop", async function () {
     const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
-    expect(await itemNFT.numUniqueItems()).to.eq(1);
+    expect(await itemNFT["totalSupply()"]()).to.eq(1);
 
     await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 1});
 

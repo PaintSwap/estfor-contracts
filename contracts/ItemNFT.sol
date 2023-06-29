@@ -51,7 +51,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   address private players;
   address private shop;
-  uint16 public numUniqueItems;
+  uint16 private totalSupplyAll_;
 
   // Royalties
   address private royaltyReceiver;
@@ -124,6 +124,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return items[_tokenId].exists;
   }
 
+  function totalSupply(uint _tokenId) external view returns (uint) {
+    return itemBalances[_tokenId];
+  }
+
+  function totalSupply() external view returns (uint) {
+    return totalSupplyAll_;
+  }
+
   function getItem(uint16 _tokenId) external view returns (Item memory) {
     return _getItem(_tokenId);
   }
@@ -194,7 +202,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function _mintItem(address _to, uint _tokenId, uint _amount) internal {
     uint newlyMintedItems = _premint(_tokenId, _amount);
     if (newlyMintedItems != 0) {
-      numUniqueItems = uint16(numUniqueItems.inc());
+      totalSupplyAll_ = uint16(totalSupplyAll_.inc());
     }
     _mint(_to, uint(_tokenId), _amount, "");
   }
@@ -207,7 +215,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       numNewItems = numNewItems.add(_premint(_tokenIds[i], _amounts[i]));
     }
     if (numNewItems.neq(0)) {
-      numUniqueItems = uint16(numUniqueItems.add(numNewItems.asUint16()));
+      totalSupplyAll_ = uint16(totalSupplyAll_.add(numNewItems.asUint16()));
     }
     _mintBatch(_to, _tokenIds, _amounts, "");
   }
@@ -262,7 +270,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       uint i = iter.asUint256();
       uint newBalance = itemBalances[_ids[i]] - _amounts[i];
       if (newBalance == 0) {
-        numUniqueItems = uint16(numUniqueItems.dec());
+        totalSupplyAll_ = uint16(totalSupplyAll_.dec());
       }
       itemBalances[_ids[i]] = newBalance;
     }

@@ -93,7 +93,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function liquidatePrice(uint16 _tokenId) public view returns (uint80 price) {
     uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / itemNFT.numUniqueItems();
+    uint totalBrushForItem = totalBrush / itemNFT.totalSupply();
     return _liquidatePrice(_tokenId, totalBrushForItem);
   }
 
@@ -104,7 +104,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
 
     uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / itemNFT.numUniqueItems();
+    uint totalBrushForItem = totalBrush / itemNFT.totalSupply();
 
     prices = new uint[](iter.asUint256());
     while (iter.neq(0)) {
@@ -218,7 +218,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     uint allocationRemaining;
     if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
       // New day, reset max allocation can be sold
-      allocationRemaining = uint80(brush.balanceOf(address(this)) / itemNFT.numUniqueItems());
+      allocationRemaining = uint80(brush.balanceOf(address(this)) / itemNFT.totalSupply());
       tokenAllocation.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
       tokenAllocation.price = uint80(_sellPrice);
       emit NewAllocation(uint16(_tokenId), allocationRemaining);

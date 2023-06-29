@@ -95,7 +95,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     U256 bounds = actionQueue.length.asU256();
     uint pendingQueuedActionStateLength;
     uint startTime = players_[_playerId].currentActionStartTime;
-    Skill firstRemainingActionSkill; // Can be Skill.COMBAT or Skill.TRAVELLING
+    Skill firstRemainingActionSkill; // Can be Skill.COMBAT or Skill.TRAVELING
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
@@ -248,7 +248,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           pendingQueuedActionMetadata.died = true;
         }
 
-        if (fullyFinished && actionSkill == Skill.TRAVELLING) {
+        if (fullyFinished && actionSkill == Skill.TRAVELING) {
           // Get the new world location
           pendingQueuedActionState.worldLocation = uint8(actionChoice.outputAmount);
         }

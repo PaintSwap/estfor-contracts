@@ -405,7 +405,7 @@ export const setupTravelling = async function (world: World, rate = 0.125 * RATE
   let tx = await world.addAction({
     actionId: ACTION_TRAVEL_0,
     info: {
-      skill: EstforTypes.Skill.TRAVELLING,
+      skill: EstforTypes.Skill.TRAVELING,
       xpPerHour: 0,
       minXP: 0,
       isDynamic: false,

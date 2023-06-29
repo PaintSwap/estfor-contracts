@@ -55,7 +55,7 @@ enum Skill {
   RESERVED18,
   RESERVED19,
   RESERVED20,
-  TRAVELLING // Helper Skill for travelling
+  TRAVELING // Helper Skill for travelling
 }
 
 struct Attire {
