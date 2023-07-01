@@ -12,7 +12,6 @@ import {
   ESTFOR_LIBRARY_ADDRESS,
   WORLD_ADDRESS,
   WORLD_LIBRARY_ADDRESS,
-  BANK_FACTORY_ADDRESS,
   ADMIN_ACCESS_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
@@ -56,7 +55,6 @@ async function main() {
   });
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
-  await verifyContracts([players.address]);
 
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -68,7 +66,6 @@ async function main() {
   });
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
-  await verifyContracts([playerNFT.address]);
 
   // ItemNFT
   const newItemNFTLibrary = false;
@@ -89,7 +86,6 @@ async function main() {
   });
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
-  await verifyContracts([itemNFT.address]);
 
   // Shop
   const Shop = await ethers.getContractFactory("Shop");
@@ -98,8 +94,6 @@ async function main() {
   });
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
-  await verifyContracts([shop.address]);
-
   // Quests
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
@@ -107,7 +101,6 @@ async function main() {
   });
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
-  await verifyContracts([quests.address]);
 
   // Clan
   const Clans = await ethers.getContractFactory("Clans", {
@@ -119,7 +112,6 @@ async function main() {
   });
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
-  await verifyContracts([clans.address]);
 
   // World
   const newWorldLibrary = false;
@@ -142,7 +134,6 @@ async function main() {
   });
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
-  await verifyContracts([world.address]);
 
   // AdminAccess
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
@@ -150,6 +141,14 @@ async function main() {
     kind: "uups",
   });
   await adminAccess.deployed();
+
+  await verifyContracts([players.address]);
+  await verifyContracts([playerNFT.address]);
+  await verifyContracts([itemNFT.address]);
+  await verifyContracts([shop.address]);
+  await verifyContracts([quests.address]);
+  await verifyContracts([clans.address]);
+  await verifyContracts([world.address]);
   await verifyContracts([adminAccess.address]);
 }
 
