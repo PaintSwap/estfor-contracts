@@ -385,7 +385,7 @@ describe("Shop", function () {
     expect(await brush.balanceOf(alice.address)).to.greaterThan(minExpected);
   });
 
-  it.only("Can't sell for more than you can buy in shop", async function () {
+  it("Can't sell for more than you can buy in shop", async function () {
     const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
