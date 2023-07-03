@@ -1267,7 +1267,6 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 3);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-      await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       // Use up all the scrolls
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(0);

@@ -267,7 +267,6 @@ describe("Rewards", function () {
         equipments[equipments.length - 1].itemTokenId
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await ethers.provider.send("evm_mine", []);
       tx = await world.requestRandomWords();
       await mockOracleClient.fulfill(getRequestId(tx), world.address);
 
@@ -292,7 +291,6 @@ describe("Rewards", function () {
 
       // Next one should start the next round
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await ethers.provider.send("evm_mine", []);
       tx = await world.requestRandomWords();
       await mockOracleClient.fulfill(getRequestId(tx), world.address);
 

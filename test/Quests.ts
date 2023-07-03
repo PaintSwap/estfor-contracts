@@ -695,7 +695,6 @@ describe("Quests", function () {
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
-    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
 
     await expect(players.connect(alice).activateQuest(playerId, anotherQuestId)).to.not.be.reverted;

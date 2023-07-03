@@ -1946,7 +1946,6 @@ describe("Non-Combat Actions", function () {
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [(queuedAction.timespan / 4) * 3]);
-    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);

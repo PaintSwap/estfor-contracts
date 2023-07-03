@@ -489,7 +489,6 @@ describe("Shop", function () {
     );
     expect(tokenAllocation.checkpointTimestamp).to.eq(Math.floor(NOW / 86400) * 86400);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
     await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
     tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
