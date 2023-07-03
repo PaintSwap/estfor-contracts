@@ -7,6 +7,7 @@ import {
   QUEST_HIDDEN_BOUNTY,
   QUEST_PURSE_STRINGS,
   QUEST_SUPPLY_RUN,
+  QUEST_TOWN_COOKOUT,
   QUEST_TWO_BIRDS,
   SKILL_BOOST,
 } from "@paintswap/estfor-definitions/constants";
@@ -15,7 +16,14 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
-import {setupBasicCooking, setupBasicFiremaking, setupBasicMeleeCombat, setupBasicWoodcutting} from "./Players/utils";
+import {
+  setupBasicCooking,
+  setupBasicCrafting,
+  setupBasicFiremaking,
+  setupBasicFishing,
+  setupBasicMeleeCombat,
+  setupBasicWoodcutting,
+} from "./Players/utils";
 import {getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
 
 export async function questsFixture() {
@@ -665,6 +673,58 @@ describe("Quests", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
       (rate * numSpawned) / (10 * SPAWN_MUL) - 5
     );
+  });
+
+  it("Fishing quest where fish get burnt and there is (cooking in-between)", async function () {
+    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(playersFixture);
+
+    const {queuedAction: queuedActionFishing, rate} = await setupBasicFishing(itemNFT, world);
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction: queuedActionCooking} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    const quest1 = allQuests.find((q) => q.questId === QUEST_TOWN_COOKOUT) as Quest;
+    const quest = {
+      ...quest1,
+      actionId1: queuedActionFishing.actionId,
+      actionNum1: (rate * 2) / GUAR_MUL,
+      burnItemTokenId: EstforConstants.RAW_MINNUS,
+      burnAmount: (rate * 2) / GUAR_MUL,
+    };
+
+    await quests.addQuests([quest], [false], [defaultMinRequirements]);
+    const questId = quest.questId;
+    await players.connect(alice).activateQuest(playerId, questId);
+
+    await itemNFT
+      .connect(alice)
+      .burn(
+        alice.address,
+        EstforConstants.RAW_MINNUS,
+        await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)
+      );
+
+    await players
+      .connect(alice)
+      .startActions(
+        playerId,
+        [queuedActionFishing, queuedActionCooking, queuedActionFishing],
+        EstforTypes.ActionQueueStatus.NONE
+      );
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await players.connect(alice).processActions(playerId);
+
+    // Check quest progress
+    const activeQuest = await quests.activeQuests(playerId);
+    expect(activeQuest.actionCompletedNum1).to.eq(rate / GUAR_MUL);
+    expect(activeQuest.burnCompletedAmount).to.eq(rate / GUAR_MUL);
+  });
+
+  it("ActionChoice which burns", async function () {
+    // TODO same as "Fishing quest where fish get burnt" above but using actionChoices
+    // Smith bar
+    // Use bar to smith something else
+    // Smith bar
   });
 
   it("Dependent quest", async function () {

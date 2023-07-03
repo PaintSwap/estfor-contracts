@@ -253,6 +253,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           pendingQueuedActionState.worldLocation = uint8(actionChoice.outputAmount);
         }
       } else {
+        // No action choice
         if (queuedAction.prevProcessedTime != 0) {
           // PrevXP
           bool hasGuaranteedRewards = actionRewards.guaranteedRewardTokenId1 != NONE;

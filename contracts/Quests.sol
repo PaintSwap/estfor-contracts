@@ -506,6 +506,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         uint amount = Math.min(remainingAmount, _actionAmounts[i]);
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
           amount = Math.min(_burnedAmountOwned, amount);
+          _burnedAmountOwned -= amount;
           amount = _addToBurn(quest, _playerQuest, amount);
           amountBurned += amount;
 
@@ -532,6 +533,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
         uint amount = Math.min(remainingAmount, _choiceAmounts[i]);
         if (quest.burnItemTokenId != NONE && quest.requireActionsCompletedBeforeBurning) {
           amount = Math.min(_burnedAmountOwned, amount);
+          _burnedAmountOwned -= amount;
           amount = _addToBurn(quest, _playerQuest, amount);
           amountBurned += amount;
 
