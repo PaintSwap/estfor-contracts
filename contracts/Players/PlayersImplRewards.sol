@@ -454,25 +454,29 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
         if (i == 0) {
           // Append it (or set it absolutely if unset)
-          currentActionProcessed.skill1 = skill;
-          currentActionProcessed.xpGained1 += uint24(pointsAccrued);
-          if (hasCombatXP) {
-            currentActionProcessed.skill2 = Skill.HEALTH;
-            currentActionProcessed.xpGained2 += uint24(healthPointsGained);
+          if (pointsAccrued > 0) {
+            currentActionProcessed.skill1 = skill;
+            currentActionProcessed.xpGained1 += uint24(pointsAccrued);
+            if (hasCombatXP) {
+              currentActionProcessed.skill2 = Skill.HEALTH;
+              currentActionProcessed.xpGained2 += uint24(healthPointsGained);
+            }
           }
 
           currentActionProcessed.foodConsumed += foodConsumed;
           currentActionProcessed.baseInputItemsConsumedNum += baseInputItemsConsumedNum;
         } else {
           // Set it absolutely, this is a fresh "first action"
-          currentActionProcessed.skill1 = skill;
-          currentActionProcessed.xpGained1 = uint24(pointsAccrued);
-          if (hasCombatXP) {
-            currentActionProcessed.skill2 = Skill.HEALTH;
-            currentActionProcessed.xpGained2 = uint24(healthPointsGained);
-          } else {
-            currentActionProcessed.skill2 = Skill.NONE;
-            currentActionProcessed.xpGained2 = 0;
+          if (pointsAccrued > 0) {
+            currentActionProcessed.skill1 = skill;
+            currentActionProcessed.xpGained1 = uint24(pointsAccrued);
+            if (hasCombatXP) {
+              currentActionProcessed.skill2 = Skill.HEALTH;
+              currentActionProcessed.xpGained2 = uint24(healthPointsGained);
+            } else {
+              currentActionProcessed.skill2 = Skill.NONE;
+              currentActionProcessed.xpGained2 = 0;
+            }
           }
           currentActionProcessed.foodConsumed = foodConsumed;
           currentActionProcessed.baseInputItemsConsumedNum = baseInputItemsConsumedNum;

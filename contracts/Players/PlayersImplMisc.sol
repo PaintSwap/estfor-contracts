@@ -564,6 +564,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       if (xpElapsedTime >= prevXPElapsedTime) {
         // Maybe died
         xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
+      } else {
+        xpElapsedTime = 0;
       }
       // These are scrolls/arrows, doesn't affect melee
       if (baseInputItemsConsumedNum >= currentActionProcessedBaseInputItemsConsumedNum) {

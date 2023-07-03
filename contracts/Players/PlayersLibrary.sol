@@ -271,52 +271,71 @@ library PlayersLibrary {
     return a > b ? a : b;
   }
 
+  function _dmgPerMinute(int _attack, int _defence, uint8 _alphaCombat, uint8 _betaCombat) private pure returns (uint) {
+    if (_attack == 0) {
+      return 0;
+    }
+    // Negative defence is capped at the negative of the attack value.
+    // So an attack of 10 and defence of -15 is the same as attack -10.
+    _defence = _max(-_attack, _defence);
+    return uint(_max(1, int128(_attack) * int8(_alphaCombat) + (_attack * 2 - _defence) * int8(_betaCombat)));
+  }
+
   function dmg(
-    int attack,
-    int defence,
+    int _attack,
+    int _defence,
     uint8 _alphaCombat,
     uint8 _betaCombat,
     uint _elapsedTime
   ) public pure returns (uint32) {
-    if (attack == 0) {
-      return 0;
-    }
-    // Negative defence is capped at the negative of the attack value.
-    // So attack of 10 and defence of -15 is the same as attack -10.
-    defence = _max(-attack, defence);
+    return uint32((_dmgPerMinute(_attack, _defence, _alphaCombat, _betaCombat) * _elapsedTime) / 60);
+  }
 
-    // Formula is max(1, a(atk) + b(2 * atk - def))
-    // Always do at least 1 damage per minute (assuming attack is positive)
-    return
-      uint32(
-        int32(
-          (_max(1, attack * int8(_alphaCombat) + (attack * 2 - defence) * int8(_betaCombat)) * int(_elapsedTime)) / 60
-        )
-      );
+  function _fullDmg(
+    CombatStats calldata _combatStats,
+    CombatStats memory _enemyCombatStats,
+    uint8 _alphaCombat,
+    uint8 _betaCombat,
+    uint _elapsedTime
+  ) private pure returns (uint32 fullDmg) {
+    fullDmg = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
+    fullDmg += dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
   }
 
   function _timeToKill(
-    int attack,
-    int defence,
+    int _attack,
+    int _defence,
     uint8 _alphaCombat,
     uint8 _betaCombat,
     int16 _enemyHealth
   ) private pure returns (uint) {
     // Formula is max(1, a(atk) + b(2 * atk - def))
     // Always do at least 1 damage per minute
-    uint dmgPerMinute = uint(_max(1, int128(attack) * int8(_alphaCombat) + (attack * 2 - defence) * int8(_betaCombat)));
+    uint dmgPerMinute = _dmgPerMinute(_attack, _defence, _alphaCombat, _betaCombat);
     return Math.ceilDiv(uint(uint16(_enemyHealth)) * 60, dmgPerMinute);
   }
 
+  function _timeToKillPlayer(
+    CombatStats memory _combatStats,
+    CombatStats memory _enemyCombatStats,
+    uint8 _alphaCombat,
+    uint8 _betaCombat,
+    int _health
+  ) private pure returns (uint) {
+    uint dmgPerMinute = _dmgPerMinute(_enemyCombatStats.melee, _combatStats.meleeDefence, _alphaCombat, _betaCombat);
+    dmgPerMinute += _dmgPerMinute(_enemyCombatStats.magic, _combatStats.magicDefence, _alphaCombat, _betaCombat);
+    return Math.ceilDiv(uint(_health) * 60, dmgPerMinute);
+  }
+
   function _getTimeToKill(
-    ActionChoice memory _actionChoice,
+    Skill _skill,
     CombatStats memory _combatStats,
     CombatStats memory _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
     int16 _enemyHealth
   ) private pure returns (uint timeToKill) {
-    if (_actionChoice.skill == Skill.MELEE) {
+    if (_skill == Skill.MELEE) {
       timeToKill = _timeToKill(
         _combatStats.melee,
         _enemyCombatStats.meleeDefence,
@@ -324,7 +343,7 @@ library PlayersLibrary {
         _betaCombat,
         _enemyHealth
       );
-    } else if (_actionChoice.skill == Skill.MAGIC) {
+    } else if (_skill == Skill.MAGIC) {
       timeToKill = _timeToKill(
         _combatStats.magic,
         _enemyCombatStats.magicDefence,
@@ -386,6 +405,24 @@ library PlayersLibrary {
       respawnTime
     );
 
+    uint combatTimePerKill = _getTimeToKill(
+      _actionChoice.skill,
+      _combatStats,
+      _enemyCombatStats,
+      _alphaCombat,
+      _betaCombat,
+      _enemyCombatStats.health
+    );
+
+    // Steps for this:
+    // 1 - Work out best case scenario for how many we can kill in the elapsed time assuming we have enough food and consumables
+    // 2 - Now work out how many we can kill in the combat time based on how many consumables we actually have
+    // 3 - Now work out how many we can kill in the elapsed time based on how much food we actually have and adjust combat time
+    // 3.5 - If not enough food (i.e died) then backtrack the scrolls.
+
+    // Time spent in comabt with the enemies that were killed, needed in case foodConsumed gets maxed out
+    uint combatElapsedTimeKilling;
+    // Step 1 - Best case scenario how many we can kill
     uint numKilled;
     bool canKillAll = dmgDealt > uint16(_enemyCombatStats.health);
     if (canKillAll) {
@@ -393,21 +430,18 @@ library PlayersLibrary {
       numKilled = (_elapsedTime * numSpawnedPerHour) / (3600 * SPAWN_MUL);
       uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
       combatElapsedTime = combatTimePerEnemy * numKilled;
+      combatElapsedTimeKilling = combatElapsedTime;
+      // Add remainder combat time to current monster you are fighting
+      combatElapsedTime += Math.min(combatTimePerEnemy, _elapsedTime - respawnTime * numKilled);
     } else {
-      uint combatTimePerKill = _getTimeToKill(
-        _actionChoice,
-        _combatStats,
-        _enemyCombatStats,
-        _alphaCombat,
-        _betaCombat,
-        _enemyCombatStats.health
-      );
       numKilled = _elapsedTime / combatTimePerKill;
-      combatElapsedTime = _elapsedTime; // How much time was spent in combat
+      combatElapsedTimeKilling = combatTimePerKill * numKilled;
+      combatElapsedTime = _elapsedTime;
     }
 
     xpElapsedTime = respawnTime * numKilled;
 
+    // Step 2 - Work out how many consumables are used
     // Check how many to consume, and also adjust xpElapsedTime if they don't have enough consumables
     baseInputItemsConsumedNum = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * RATE_MUL));
     if (_actionChoice.rate != 0) {
@@ -425,33 +459,31 @@ library PlayersLibrary {
       );
 
       if (baseInputItemsConsumedNum > maxRequiredRatio) {
-        // How many can we kill with the consumeables we do have
+        // How many can we kill with the consumables we do have
         numKilled = (numKilled * maxRequiredRatio) / baseInputItemsConsumedNum;
         xpElapsedTime = respawnTime * numKilled;
 
-        combatElapsedTime = _elapsedTime;
+        if (canKillAll) {
+          uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
+          combatElapsedTime = combatTimePerEnemy * numKilled;
+          combatElapsedTimeKilling = combatElapsedTime;
+          combatElapsedTime += _elapsedTime - (respawnTime * numKilled); // Plus fighting the one you haven't killed
+        } else {
+          // In combat the entire time
+          combatElapsedTime = _elapsedTime;
+          combatElapsedTimeKilling = combatTimePerKill * numKilled;
+        }
         baseInputItemsConsumedNum = uint16(maxRequiredRatio);
       }
     } else if (_actionChoice.rate != 0) {
+      // Requires input items but we don't have any. In combat the entire time getting rekt
       xpElapsedTime = 0;
       combatElapsedTime = _elapsedTime;
     }
 
-    // Also check food consumed
-    uint32 totalHealthLost = dmg(
-      _enemyCombatStats.melee,
-      _combatStats.meleeDefence,
-      _alphaCombat,
-      _betaCombat,
-      combatElapsedTime
-    );
-    totalHealthLost += dmg(
-      _enemyCombatStats.magic,
-      _combatStats.magicDefence,
-      _alphaCombat,
-      _betaCombat,
-      combatElapsedTime
-    );
+    // Step 3 - Work out how much food is needed. If you die then work out how many consumables you actually used as in combat you died before you could cast more.
+    uint32 totalHealthLost = _fullDmg(_enemyCombatStats, _combatStats, _alphaCombat, _betaCombat, combatElapsedTime);
+
     if (int32(totalHealthLost) > _combatStats.health) {
       // Take away our health points from the total dealt
       totalHealthLost -= uint16(int16(_max(0, _combatStats.health)));
@@ -459,30 +491,85 @@ library PlayersLibrary {
       totalHealthLost = 0;
     }
 
-    (foodConsumed, numKilled, xpElapsedTime, died) = _getFoodConsumed(
+    uint32 totalHealthLostOnlyKilled = _fullDmg(
+      _enemyCombatStats,
+      _combatStats,
+      _alphaCombat,
+      _betaCombat,
+      combatElapsedTimeKilling
+    );
+
+    if (int32(totalHealthLostOnlyKilled) > _combatStats.health) {
+      // Take away our health points from the total dealt
+      totalHealthLostOnlyKilled -= uint16(int16(_max(0, _combatStats.health)));
+    } else {
+      totalHealthLostOnlyKilled = 0;
+    }
+
+    uint totalFoodRequiredKilling;
+    (foodConsumed, totalFoodRequiredKilling, died) = _getFoodConsumed(
       _from,
       _regenerateId,
-      respawnTime,
       totalHealthLost,
-      xpElapsedTime,
-      numKilled,
+      totalHealthLostOnlyKilled,
       _itemNFT,
       _pendingQueuedActionEquipmentStates
     );
+
+    // Didn't have enough food to survive the best case combat scenario
+    if (died) {
+      uint healthRestored;
+      if (_regenerateId != NONE) {
+        Item memory item = _itemNFT.getItem(_regenerateId);
+        healthRestored = item.healthRestored;
+      }
+
+      uint totalHealth = uint16(_combatStats.health) + foodConsumed * healthRestored;
+      // How much combat time is required to kill the player
+      combatElapsedTime = _timeToKillPlayer(
+        _combatStats,
+        _enemyCombatStats,
+        _alphaCombat,
+        _betaCombat,
+        int(totalHealth)
+      );
+
+      if (healthRestored == 0 || totalHealthLost <= 0) {
+        // No food attached or didn't lose any health
+
+        if (canKillAll) {
+          uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
+          numKilled = combatElapsedTime / combatTimePerEnemy;
+        } else {
+          // In combat the entire time
+          numKilled = combatElapsedTime / combatTimePerKill;
+        }
+      } else {
+        // How many can we kill with the food we did consume
+        if (totalFoodRequiredKilling > 0) {
+          numKilled = (numKilled * foodConsumed) / totalFoodRequiredKilling;
+        } else {
+          numKilled = 0;
+        }
+      }
+      xpElapsedTime = respawnTime * numKilled;
+
+      // Step 3.5 - Wasn't enough food, so work out how many consumables we actually used
+      baseInputItemsConsumedNum = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * RATE_MUL));
+      if (_actionChoice.rate != 0) {
+        baseInputItemsConsumedNum = uint16(Math.max(numKilled, baseInputItemsConsumedNum));
+      }
+    }
   }
 
   function _getFoodConsumed(
     address _from,
     uint16 _regenerateId,
-    uint _respawnTime,
     uint32 _totalHealthLost,
-    uint _xpElapsedTime,
-    uint _numKilled,
+    uint32 _totalHealthLostKilling,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) private view returns (uint16 foodConsumed, uint numKilled, uint xpElapsedTime, bool died) {
-    numKilled = _numKilled;
-    xpElapsedTime = _xpElapsedTime;
+  ) private view returns (uint16 foodConsumed, uint totalFoodRequiredKilling, bool died) {
     uint healthRestored;
     if (_regenerateId != NONE) {
       Item memory item = _itemNFT.getItem(_regenerateId);
@@ -491,31 +578,23 @@ library PlayersLibrary {
 
     if (healthRestored == 0 || _totalHealthLost <= 0) {
       // No food attached or didn't lose any health
-      died = _totalHealthLost != 0;
-      if (died) {
-        xpElapsedTime = 0;
-      }
+      died = _totalHealthLost > 0;
     } else {
       // Round up
-      uint _totalFoodRequired = Math.ceilDiv(uint32(_totalHealthLost), healthRestored);
+      uint totalFoodRequired = Math.ceilDiv(uint32(_totalHealthLost), healthRestored);
+      totalFoodRequiredKilling = Math.ceilDiv(uint32(_totalHealthLostKilling), healthRestored);
       // Can only consume a maximum of 65535 food
-      if (_totalFoodRequired > type(uint16).max) {
+      if (totalFoodRequired > type(uint16).max) {
         foodConsumed = type(uint16).max;
         died = true;
       } else {
         uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
-        died = _totalFoodRequired > balance;
+        died = totalFoodRequired > balance;
         if (died) {
           foodConsumed = uint16(balance > type(uint16).max ? type(uint16).max : balance);
         } else {
-          foodConsumed = uint16(_totalFoodRequired);
+          foodConsumed = uint16(totalFoodRequired);
         }
-      }
-
-      if (died) {
-        // How many can we kill with the food we did consume
-        numKilled = (numKilled * foodConsumed) / _totalFoodRequired;
-        xpElapsedTime = _respawnTime * numKilled;
       }
     }
   }
