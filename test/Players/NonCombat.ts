@@ -923,7 +923,7 @@ describe("Non-Combat Actions", function () {
         {
           ...EstforTypes.defaultInputItem,
           tokenId: EstforConstants.BRONZE_ARROW,
-          equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+          equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
         {
           ...EstforTypes.defaultInputItem,

@@ -20,7 +20,7 @@ enum EquipPosition {
   LEFT_HAND,
   RIGHT_HAND,
   BOTH_HANDS,
-  ARROW_SATCHEL,
+  QUIVER,
   MAGIC_BAG,
   FOOD,
   AUX, // wood, seeds  etc..
@@ -85,6 +85,25 @@ struct ActionChoice {
   uint32 minXP; // Min XP in the skill to be able to do this action choice
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
+  uint24 xpPerHour;
+  uint16 inputTokenId1;
+  uint8 inputAmount1;
+  uint16 inputTokenId2;
+  uint8 inputAmount2;
+  uint16 inputTokenId3;
+  uint8 inputAmount3;
+  uint16 outputTokenId;
+  uint8 outputAmount;
+  uint8 successPercent; // 0-100
+  uint16 handItemTokenIdRangeMin; // Inclusive
+  uint16 handItemTokenIdRangeMax; // Inclusive
+}
+
+struct ActionChoiceV1 {
+  Skill skill;
+  uint32 minXP;
+  int16 skillDiff;
+  uint24 rate;
   uint24 xpPerHour;
   uint16 inputTokenId1;
   uint8 inputAmount1;

@@ -30,10 +30,14 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event SetAvailableAction(uint16 actionId, bool available);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
-  event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
-  event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
-  event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
-  event EditActionChoices_(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoice[] choices);
+  event AddActionChoiceV2(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
+  event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
+  event EditActionChoiceV2(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
+  event EditActionChoicesV2(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoice[] choices);
+  event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
+  event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
+  event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
+  event EditActionChoices_(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
   event NewDailyRewards(Equipment[8] dailyRewards);
   error RandomWordsCannotBeUpdatedYet();
   error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
@@ -550,7 +554,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     ActionChoice calldata _actionChoice
   ) external onlyOwner {
     _addActionChoice(_actionId, _actionChoiceId, _actionChoice);
-    emit AddActionChoice(_actionId, _actionChoiceId, _actionChoice);
+    emit AddActionChoiceV2(_actionId, _actionChoiceId, _actionChoice);
   }
 
   function addBulkActionChoices(
@@ -569,7 +573,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
-      emit AddActionChoices(actionId, _actionChoiceIds[i], _actionChoices[i]);
+      emit AddActionChoicesV2(actionId, _actionChoiceIds[i], _actionChoices[i]);
 
       U256 actionChoiceLength = _actionChoices[i].length.asU256();
 
@@ -586,7 +590,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function editActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) external {
     _editActionChoice(_actionId, _actionChoiceId, _actionChoice);
-    emit EditActionChoice(_actionId, _actionChoiceId, _actionChoice);
+    emit EditActionChoiceV2(_actionId, _actionChoiceId, _actionChoice);
   }
 
   function editActionChoices(
@@ -610,7 +614,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       _editActionChoice(_actionIds[i], _actionChoiceIds[i], _actionChoices[i]);
     }
 
-    emit EditActionChoices_(_actionIds, _actionChoiceIds, _actionChoices);
+    emit EditActionChoicesV2(_actionIds, _actionChoiceIds, _actionChoices);
   }
 
   function setAvailable(uint16 _actionId, bool _isAvailable) external onlyOwner {

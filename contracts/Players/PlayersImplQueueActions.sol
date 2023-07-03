@@ -279,44 +279,18 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       [_queuedAction.leftHandEquipmentTokenId, _queuedAction.rightHandEquipmentTokenId],
       handItemTokenIdRangeMin,
       handItemTokenIdRangeMax,
-      isCombat
+      isCombat,
+      actionChoice
     );
 
-    _checkActionConsumables(_playerId, _queuedAction, actionChoice);
+    _checkFood(_playerId, _queuedAction);
   }
 
-  function _checkActionConsumables(
-    uint _playerId,
-    QueuedActionInput memory _queuedAction,
-    ActionChoice memory actionChoice
-  ) private view {
-    if (_queuedAction.choiceId != NONE) {
-      // Get all items for this
-      uint16[] memory itemTokenIds = new uint16[](4);
-      uint itemLength;
-
-      if (_queuedAction.regenerateId != NONE) {
-        itemTokenIds[itemLength] = _queuedAction.regenerateId;
-        itemLength = itemLength.inc();
-        (Skill skill, uint32 minXP, ) = itemNFT.getEquipPositionAndMinRequirement(itemTokenIds[itemLength.dec()]);
-        if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
-          revert ConsumableMinimumXPNotReached();
-        }
-      }
-      if (actionChoice.inputTokenId1 != NONE) {
-        itemTokenIds[itemLength] = actionChoice.inputTokenId1;
-        itemLength = itemLength.inc();
-      }
-      if (actionChoice.inputTokenId2 != NONE) {
-        itemTokenIds[itemLength] = actionChoice.inputTokenId2;
-        itemLength = itemLength.inc();
-      }
-      if (actionChoice.inputTokenId3 != NONE) {
-        itemTokenIds[itemLength] = actionChoice.inputTokenId3;
-        itemLength = itemLength.inc();
-      }
-      assembly ("memory-safe") {
-        mstore(itemTokenIds, itemLength)
+  function _checkFood(uint _playerId, QueuedActionInput memory _queuedAction) private view {
+    if (_queuedAction.regenerateId != NONE) {
+      (Skill skill, uint32 minXP, ) = itemNFT.getEquipPositionAndMinRequirement(_queuedAction.regenerateId);
+      if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
+        revert ConsumableMinimumXPNotReached();
       }
     }
   }
@@ -408,7 +382,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint16[2] memory _equippedItemTokenIds, // left, right
     uint16 _handItemTokenIdRangeMin,
     uint16 _handItemTokenIdRangeMax,
-    bool _isCombat
+    bool _isCombat,
+    ActionChoice memory _actionChoice
   ) private view {
     U256 iter = _equippedItemTokenIds.length.asU256();
     bool twoHanded;
@@ -421,6 +396,14 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         if (
           _handItemTokenIdRangeMin != NONE &&
           (equippedItemTokenId < _handItemTokenIdRangeMin || equippedItemTokenId > _handItemTokenIdRangeMax)
+        ) {
+          revert InvalidHandEquipment(equippedItemTokenId);
+        }
+
+        if (
+          _actionChoice.handItemTokenIdRangeMin != NONE &&
+          (equippedItemTokenId < _actionChoice.handItemTokenIdRangeMin ||
+            equippedItemTokenId > _actionChoice.handItemTokenIdRangeMax)
         ) {
           revert InvalidHandEquipment(equippedItemTokenId);
         }
@@ -450,9 +433,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
           }
         }
       } else {
-        // Only combat actions can have no equipment
+        // Only combat actions can have no equipment unless the actionChoice specifies that it requires it
         // e.g smithing doesn't require anything equipped
-        if (!_isCombat && _handItemTokenIdRangeMin != NONE && isRightHand) {
+        if (
+          ((!_isCombat && _handItemTokenIdRangeMin != NONE) || _actionChoice.handItemTokenIdRangeMin != NONE) &&
+          isRightHand
+        ) {
           revert IncorrectEquippedItem(equippedItemTokenId);
         }
       }

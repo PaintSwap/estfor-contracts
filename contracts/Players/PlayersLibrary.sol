@@ -868,7 +868,8 @@ library PlayersLibrary {
     uint16[2] calldata _handEquipmentTokenIds,
     CombatStats calldata _combatStats,
     bool isCombat,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    ActionChoice calldata _actionChoice
   ) external view returns (bool missingRequiredHandEquipment, CombatStats memory combatStats) {
     U256 iter = _handEquipmentTokenIds.length.asU256();
     combatStats = _combatStats;
@@ -879,8 +880,8 @@ library PlayersLibrary {
       if (handEquipmentTokenId != NONE) {
         uint256 balance = getRealBalance(_from, handEquipmentTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
         if (balance == 0) {
-          // Assume that if the player doesn't have the non-combat item that this action cannot be done
-          if (!isCombat) {
+          // Assume that if the player doesn't have the non-combat item that this action cannot be done or if the action choice required it (e.g range bows)
+          if (!isCombat || _actionChoice.handItemTokenIdRangeMin != NONE) {
             missingRequiredHandEquipment = true;
           }
         } else if (isCombat) {

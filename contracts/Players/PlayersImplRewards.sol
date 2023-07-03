@@ -145,6 +145,11 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         );
       }
 
+      ActionChoice memory actionChoice;
+      if (queuedAction.choiceId != 0) {
+        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+      }
+
       bool missingRequiredHandEquipment;
       (missingRequiredHandEquipment, combatStats) = PlayersLibrary.updateStatsFromHandEquipment(
         from,
@@ -152,7 +157,8 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
-        pendingQueuedActionState.equipmentStates
+        pendingQueuedActionState.equipmentStates,
+        actionChoice
       );
 
       if (missingRequiredHandEquipment) {
@@ -174,14 +180,11 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       bool died;
       firstRemainingActionSkill = actionSkill;
       bool actionHasRandomRewards = actionRewards.randomRewardTokenId1 != NONE;
-      ActionChoice memory actionChoice;
       uint xpElapsedTime = elapsedTime;
       uint prevXPElapsedTime = queuedAction.prevProcessedXPTime;
       uint16 foodConsumed;
       uint16 baseInputItemsConsumedNum;
       if (queuedAction.choiceId != 0) {
-        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
-
         Equipment[] memory consumedEquipments;
         Equipment memory producedEquipment;
         (

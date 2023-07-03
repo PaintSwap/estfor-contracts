@@ -240,7 +240,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     {
       ...EstforTypes.defaultInputItem,
       tokenId: EstforConstants.BRONZE_ARROW,
-      equipPosition: EstforTypes.EquipPosition.ARROW_SATCHEL,
+      equipPosition: EstforTypes.EquipPosition.QUIVER,
     },
     {
       ...EstforTypes.defaultInputItem,
