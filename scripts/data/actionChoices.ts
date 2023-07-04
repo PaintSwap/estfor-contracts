@@ -17,6 +17,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -33,6 +36,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -49,6 +55,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -65,6 +74,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -81,6 +93,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -97,6 +112,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -113,6 +131,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -129,6 +150,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.FIREMAKING,
@@ -145,6 +169,9 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
 ];
 export const allActionChoicesSmithing: ActionChoiceInput[] = [
@@ -163,6 +190,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_BAR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -179,6 +209,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_BAR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -195,6 +228,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_BAR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -211,6 +247,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_BAR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -227,6 +266,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_BAR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -243,6 +285,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_BAR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -259,6 +304,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_BAR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -275,6 +323,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -291,6 +342,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -307,6 +361,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -323,6 +380,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -339,6 +399,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -355,6 +418,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -371,6 +437,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -387,6 +456,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -403,6 +475,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -419,6 +494,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -435,6 +513,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -451,6 +532,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -467,6 +551,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -483,6 +570,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -499,6 +589,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -515,6 +608,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -531,6 +627,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -547,6 +646,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -563,6 +665,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -579,6 +684,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -595,6 +703,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -611,6 +722,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -627,6 +741,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -643,6 +760,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -659,6 +779,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -675,6 +798,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -691,6 +817,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -707,6 +836,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -723,6 +855,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -739,6 +874,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -755,6 +893,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -771,6 +912,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -787,6 +931,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -803,6 +950,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -819,6 +969,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -835,6 +988,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -851,6 +1007,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -867,6 +1026,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -883,6 +1045,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -899,6 +1064,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -915,6 +1083,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -931,6 +1102,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -947,6 +1121,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -963,6 +1140,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -979,6 +1159,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -995,6 +1178,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -1011,6 +1197,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -1027,6 +1216,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.SMITHING,
@@ -1043,6 +1235,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
 ];
 export const allActionChoicesCooking: ActionChoiceInput[] = [
@@ -1061,6 +1256,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_MINNUS,
     outputAmount: 1,
     successPercent: 60,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1077,6 +1275,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_BLEKK,
     outputAmount: 1,
     successPercent: 50,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1093,6 +1294,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_SKRIMP,
     outputAmount: 1,
     successPercent: 50,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1109,6 +1313,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_FEOLA,
     outputAmount: 1,
     successPercent: 50,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1125,6 +1332,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ANCHO,
     outputAmount: 1,
     successPercent: 50,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1141,6 +1351,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_TROUT,
     outputAmount: 1,
     successPercent: 50,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1157,6 +1370,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ROJJA,
     outputAmount: 1,
     successPercent: 40,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1173,6 +1389,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_BOWFISH,
     outputAmount: 1,
     successPercent: 40,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1189,6 +1408,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_GOLDFISH,
     outputAmount: 1,
     successPercent: 40,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1205,6 +1427,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_MYSTY_BLUE,
     outputAmount: 1,
     successPercent: 40,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1221,6 +1446,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_FLITFISH,
     outputAmount: 1,
     successPercent: 40,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1237,6 +1465,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_RAZORFISH,
     outputAmount: 1,
     successPercent: 40,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1253,6 +1484,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_QUAFFER,
     outputAmount: 1,
     successPercent: 35,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1269,6 +1503,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ROXA,
     outputAmount: 1,
     successPercent: 35,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1285,6 +1522,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_AZACUDDA,
     outputAmount: 1,
     successPercent: 35,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1301,6 +1541,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_STONECLAW,
     outputAmount: 1,
     successPercent: 35,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1317,6 +1560,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_CRUSKAN,
     outputAmount: 1,
     successPercent: 30,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1333,6 +1579,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_CHODFISH,
     outputAmount: 1,
     successPercent: 30,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1349,6 +1598,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_DOUBTFISH,
     outputAmount: 1,
     successPercent: 30,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.COOKING,
@@ -1365,6 +1617,9 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ROSEFIN,
     outputAmount: 1,
     successPercent: 20,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
 ];
 export const allActionChoicesMelee: ActionChoiceInput[] = [
@@ -1383,6 +1638,9 @@ export const allActionChoicesMelee: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
 ];
 export const allActionChoicesMagic: ActionChoiceInput[] = [
@@ -1401,6 +1659,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1417,6 +1678,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1433,6 +1697,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1449,6 +1716,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1465,6 +1735,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1481,6 +1754,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1497,6 +1773,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1513,6 +1792,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1529,6 +1811,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1545,6 +1830,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.MAGIC,
@@ -1561,6 +1849,9 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
 ];
 export const allActionChoicesCrafting: ActionChoiceInput[] = [
@@ -1579,6 +1870,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SAPPHIRE_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1595,6 +1889,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.EMERALD_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1611,6 +1908,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUBY_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1627,6 +1927,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AMETHYST_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1643,6 +1946,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DIAMOND_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1659,6 +1965,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DRAGONSTONE_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1675,6 +1984,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1691,6 +2003,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1707,6 +2022,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1723,6 +2041,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1739,6 +2060,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1755,6 +2079,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1771,6 +2098,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1787,6 +2117,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_AXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1803,6 +2136,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_AXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1819,6 +2155,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_AXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1835,6 +2174,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_AXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1851,6 +2193,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_AXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1867,6 +2212,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_AXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1883,6 +2231,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_AXE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1899,6 +2250,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_LEATHER,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1915,6 +2269,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONEMEAL,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1931,6 +2288,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONEMEAL,
     outputAmount: 5,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1947,6 +2307,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONEMEAL,
     outputAmount: 10,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1963,6 +2326,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ROPE,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1979,6 +2345,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ACORN_PATCH,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -1995,6 +2364,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_PATCH,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2011,6 +2383,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2027,6 +2402,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2043,6 +2421,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2059,6 +2440,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2075,6 +2459,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2091,6 +2478,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_HAT,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2107,6 +2497,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2123,6 +2516,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2139,6 +2535,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2155,6 +2554,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2171,6 +2573,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_MASK,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2187,6 +2592,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2203,6 +2611,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2219,6 +2630,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2235,6 +2649,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2251,6 +2668,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TOTEM_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2267,6 +2687,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SAPPHIRE_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2283,6 +2706,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.EMERALD_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2299,6 +2725,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUBY_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2315,6 +2744,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AMETHYST_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2331,6 +2763,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DIAMOND_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2347,6 +2782,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_HAT,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2363,6 +2801,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2379,6 +2820,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2395,6 +2839,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2411,6 +2858,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2427,6 +2877,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2443,6 +2896,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2459,6 +2915,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2475,6 +2934,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2491,6 +2953,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2507,6 +2972,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_HAT,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2523,6 +2991,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2539,6 +3010,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2555,6 +3029,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2571,6 +3048,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2587,6 +3067,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2603,6 +3086,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2619,6 +3105,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2635,6 +3124,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2651,6 +3143,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2667,6 +3162,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2683,6 +3181,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_BODY,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2699,6 +3200,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2715,6 +3219,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
   {
     skill: Skill.CRAFTING,
@@ -2731,5 +3238,8 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
   },
 ];

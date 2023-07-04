@@ -20,6 +20,7 @@ library WorldLibrary {
   error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
   error NotAFactorOf3600();
+  error PackedDataAlwaysZeroForNow();
 
   function checkActionChoice(ActionChoice calldata _actionChoice) external pure {
     if (_actionChoice.inputTokenId1 != NONE && _actionChoice.inputAmount1 == 0) {
@@ -57,6 +58,10 @@ library WorldLibrary {
       if ((3600 * RATE_MUL) % _actionChoice.rate != 0) {
         revert NotAFactorOf3600();
       }
+    }
+
+    if (_actionChoice.packedData != 0x0) {
+      revert PackedDataAlwaysZeroForNow();
     }
   }
 

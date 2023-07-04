@@ -14,7 +14,7 @@ library ItemNFTLibrary {
     }
     _item.equipPosition = _inputItem.equipPosition;
     _item.isTransferable = _inputItem.isTransferable;
-    _item.exists = true;
+    _item.packedData = bytes1(uint8(0x1)); // Exists
 
     if (hasCombat) {
       // Combat stats

@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
-import {Attire, Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
+import {Attire, Skill, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
@@ -102,11 +102,11 @@ describe("Players", function () {
     let tx = await world.addAction({
       actionId: 1,
       info: {
+        ...defaultActionInfo,
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        worldLocation: 0,
         numSpawned: 1 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -362,11 +362,11 @@ describe("Players", function () {
       const tx = await world.addAction({
         actionId: 1,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: getXPFromLevel(70),
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -471,11 +471,11 @@ describe("Players", function () {
       let tx = await world.addAction({
         actionId: 1,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
           handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
@@ -640,11 +640,11 @@ describe("Players", function () {
       const tx = await world.addAction({
         actionId: 1,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -909,11 +909,11 @@ describe("Players", function () {
       const tx = await world.addAction({
         actionId: 1,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 16000000, // 16MM
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -1140,7 +1140,7 @@ describe("Players", function () {
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.worldLocation).to.eq(1);
       await players.connect(alice).processActions(playerId);
-      expect((await players.players(playerId)).worldLocation).to.eq(1);
+      expect((await players.players(playerId)).packedData).to.eq("0x01");
       // Should earn agility xp
       expect(await players.xp(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
 

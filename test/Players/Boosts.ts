@@ -6,7 +6,7 @@ import {ethers} from "hardhat";
 import {GUAR_MUL, RATE_MUL, getActionId, getRequestId} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking} from "./utils";
-import {noAttire} from "@paintswap/estfor-definitions/types";
+import {defaultActionInfo, noAttire} from "@paintswap/estfor-definitions/types";
 
 describe("Boosts", function () {
   this.retries(3);
@@ -579,11 +579,11 @@ describe("Boosts", function () {
     let tx = await world.addAction({
       actionId: 1,
       info: {
+        ...defaultActionInfo,
         skill: EstforTypes.Skill.THIEVING,
         xpPerHour,
         minXP: 0,
         isDynamic: false,
-        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.NONE,
         handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -681,11 +681,11 @@ describe("Boosts", function () {
     let tx = await world.addAction({
       actionId: 1,
       info: {
+        ...defaultActionInfo,
         skill: EstforTypes.Skill.THIEVING,
         xpPerHour,
         minXP: 0,
         isDynamic: false,
-        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.NONE,
         handItemTokenIdRangeMax: EstforConstants.NONE,
@@ -812,11 +812,11 @@ describe("Boosts", function () {
     let tx = await world.addAction({
       actionId: 1,
       info: {
+        ...defaultActionInfo,
         skill: EstforTypes.Skill.THIEVING,
         xpPerHour,
         minXP: 0,
         isDynamic: false,
-        worldLocation: 0,
         numSpawned: 0,
         handItemTokenIdRangeMin: EstforConstants.NONE,
         handItemTokenIdRangeMax: EstforConstants.NONE,

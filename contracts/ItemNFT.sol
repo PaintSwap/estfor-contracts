@@ -121,7 +121,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function exists(uint _tokenId) public view returns (bool) {
-    return items[_tokenId].exists;
+    return items[_tokenId].packedData != 0;
   }
 
   function totalSupply(uint _tokenId) external view returns (uint) {

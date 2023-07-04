@@ -30,7 +30,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState) {
     Player storage player = players_[_playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
-    pendingQueuedActionState.worldLocation = player.worldLocation;
+    pendingQueuedActionState.worldLocation = uint8(player.packedData & bytes1(uint8(0x0F)));
     pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length + 1); // reserve +1 for handling the previously processed in current action
     pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueue.length + 1);
 

@@ -30,10 +30,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event SetAvailableAction(uint16 actionId, bool available);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
-  event AddActionChoiceV2(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
-  event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoice[] choices);
-  event EditActionChoiceV2(uint16 actionId, uint16 actionChoiceId, ActionChoice choice);
-  event EditActionChoicesV2(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoice[] choices);
+  event AddActionChoiceV2(uint16 actionId, uint16 actionChoiceId, ActionChoiceInput choice);
+  event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
+  event EditActionChoiceV2(uint16 actionId, uint16 actionChoiceId, ActionChoiceInput choice);
+  event EditActionChoicesV2(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
   event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
@@ -496,19 +496,19 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
+  function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice memory _packedActionChoice) private {
     if (_actionChoiceId == 0) {
       revert ActionChoiceIdZeroNotAllowed();
     }
     if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
       revert ActionChoiceAlreadyExists();
     }
-    WorldLibrary.checkActionChoice(_actionChoice);
+    WorldLibrary.checkActionChoice(_packedActionChoice);
 
-    actionChoices[_actionId][_actionChoiceId] = _actionChoice;
+    actionChoices[_actionId][_actionChoiceId] = _packedActionChoice;
   }
 
-  function _editActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) private {
+  function _editActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice memory _actionChoice) private {
     if (actionChoices[_actionId][_actionChoiceId].skill == Skill.NONE) {
       revert ActionChoiceDoesNotExist();
     }
@@ -520,6 +520,32 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
+  }
+
+  function _packActionChoice(
+    ActionChoiceInput calldata _actionChoice
+  ) private pure returns (ActionChoice memory actionChoice) {
+    bytes1 packedData = bytes1(uint8(_actionChoice.isFullModeOnly ? 1 : 0 << 7));
+
+    actionChoice = ActionChoice({
+      skill: _actionChoice.skill,
+      minXP: _actionChoice.minXP,
+      skillDiff: _actionChoice.skillDiff,
+      rate: _actionChoice.rate,
+      xpPerHour: _actionChoice.xpPerHour,
+      inputTokenId1: _actionChoice.inputTokenId1,
+      inputAmount1: _actionChoice.inputAmount1,
+      inputTokenId2: _actionChoice.inputTokenId2,
+      inputAmount2: _actionChoice.inputAmount2,
+      inputTokenId3: _actionChoice.inputTokenId3,
+      inputAmount3: _actionChoice.inputAmount3,
+      outputTokenId: _actionChoice.outputTokenId,
+      outputAmount: _actionChoice.outputAmount,
+      successPercent: _actionChoice.successPercent,
+      handItemTokenIdRangeMin: _actionChoice.handItemTokenIdRangeMin,
+      handItemTokenIdRangeMax: _actionChoice.handItemTokenIdRangeMax,
+      packedData: packedData
+    });
   }
 
   function addAction(Action calldata _action) external onlyOwner {
@@ -551,16 +577,16 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function addActionChoice(
     uint16 _actionId,
     uint16 _actionChoiceId,
-    ActionChoice calldata _actionChoice
+    ActionChoiceInput calldata _actionChoice
   ) external onlyOwner {
-    _addActionChoice(_actionId, _actionChoiceId, _actionChoice);
+    _addActionChoice(_actionId, _actionChoiceId, _packActionChoice(_actionChoice));
     emit AddActionChoiceV2(_actionId, _actionChoiceId, _actionChoice);
   }
 
   function addBulkActionChoices(
     uint16[] calldata _actionIds,
     uint16[][] calldata _actionChoiceIds,
-    ActionChoice[][] calldata _actionChoices
+    ActionChoiceInput[][] calldata _actionChoices
   ) external onlyOwner {
     if (_actionIds.length != _actionChoices.length) {
       revert LengthMismatch();
@@ -583,20 +609,24 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
       for (U256 jter; jter < actionChoiceLength; jter = jter.inc()) {
         uint16 j = jter.asUint16();
-        _addActionChoice(actionId, _actionChoiceIds[i][j], _actionChoices[i][j]);
+        _addActionChoice(actionId, _actionChoiceIds[i][j], _packActionChoice(_actionChoices[i][j]));
       }
     }
   }
 
-  function editActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice calldata _actionChoice) external {
-    _editActionChoice(_actionId, _actionChoiceId, _actionChoice);
+  function editActionChoice(
+    uint16 _actionId,
+    uint16 _actionChoiceId,
+    ActionChoiceInput calldata _actionChoice
+  ) external {
+    _editActionChoice(_actionId, _actionChoiceId, _packActionChoice(_actionChoice));
     emit EditActionChoiceV2(_actionId, _actionChoiceId, _actionChoice);
   }
 
   function editActionChoices(
     uint16[] calldata _actionIds,
     uint16[] calldata _actionChoiceIds,
-    ActionChoice[] calldata _actionChoices
+    ActionChoiceInput[] calldata _actionChoices
   ) external {
     if (_actionIds.length == 0) {
       revert NoActionChoices();
@@ -611,7 +641,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     U256 actionIdsLength = _actionIds.length.asU256();
     for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
       uint16 i = iter.asUint16();
-      _editActionChoice(_actionIds[i], _actionChoiceIds[i], _actionChoices[i]);
+      _editActionChoice(_actionIds[i], _actionChoiceIds[i], _packActionChoice(_actionChoices[i]));
     }
 
     emit EditActionChoicesV2(_actionIds, _actionChoiceIds, _actionChoices);

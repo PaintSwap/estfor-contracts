@@ -64,6 +64,7 @@ struct ActionInfo {
   uint16 handItemTokenIdRangeMax; // Inclusive
   uint8 successPercent; // 0-100
   uint8 worldLocation; // 0 is the main starting world
+  bool isFullModeOnly;
 }
 
 struct ActionInfoV1 {

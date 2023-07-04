@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {COOKED_MINNUS, QUEST_SUPPLY_RUN} from "@paintswap/estfor-definitions/constants";
-import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
+import {Skill, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
@@ -289,11 +289,11 @@ describe("Combat Actions", function () {
       let tx = await world.addAction({
         actionId: 2,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -345,11 +345,11 @@ describe("Combat Actions", function () {
       let tx = await world.addAction({
         actionId: 2,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -401,11 +401,11 @@ describe("Combat Actions", function () {
       let tx = await world.addAction({
         actionId: 2,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -465,11 +465,11 @@ describe("Combat Actions", function () {
       await world.addAction({
         actionId: 2,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -525,11 +525,11 @@ describe("Combat Actions", function () {
       await world.addAction({
         actionId: 2,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -997,11 +997,11 @@ describe("Combat Actions", function () {
       let tx = await world.addAction({
         actionId: 1,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1153,11 +1153,11 @@ describe("Combat Actions", function () {
       let tx = await world.addAction({
         actionId: 1,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1297,11 +1297,11 @@ describe("Combat Actions", function () {
       let tx = await world.addAction({
         actionId: 1,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1757,11 +1757,11 @@ describe("Combat Actions", function () {
       await world.addAction({
         actionId: 2,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1827,11 +1827,11 @@ describe("Combat Actions", function () {
       await world.addAction({
         actionId: 2,
         info: {
+          ...defaultActionInfo,
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
-          worldLocation: 0,
           numSpawned: 100 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -1921,11 +1921,11 @@ describe("Combat Actions", function () {
     let tx = await world.addAction({
       actionId: 1,
       info: {
+        ...defaultActionInfo,
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        worldLocation: 0,
         numSpawned: 100 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -2032,11 +2032,11 @@ describe("Combat Actions", function () {
     let tx = await world.addAction({
       actionId: 1,
       info: {
+        ...defaultActionInfo,
         skill: EstforTypes.Skill.COMBAT,
         xpPerHour: 3600,
         minXP: 0,
         isDynamic: false,
-        worldLocation: 0,
         numSpawned: 100 * SPAWN_MUL,
         handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,

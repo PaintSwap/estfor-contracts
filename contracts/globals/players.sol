@@ -40,7 +40,7 @@ struct Player {
   uint56 totalXP;
   Skill currentActionProcessedSkill3;
   uint24 currentActionProcessedXPGained3;
-  uint8 worldLocation; // 0 is the main starting world
+  bytes1 packedData; // Contains worldLocation in first 128 bits (0 is the main starting world), and full mode unlocked in the upper most bit (neither not used yet)
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
   string name; // Raw name
@@ -48,7 +48,7 @@ struct Player {
 
 struct Item {
   EquipPosition equipPosition;
-  bool exists;
+  bytes1 packedData; // First bit is (exists) upper most bit is full mode
   // Can it be transferred?
   bool isTransferable;
   // Food
@@ -80,6 +80,26 @@ struct PlayerBoostInfo {
 
 // This is effectively a ratio to produce 1 of outputTokenId.
 // Fixed based available actions that can be undertaken for an action
+struct ActionChoiceInput {
+  Skill skill; // Skill that this action choice is related to
+  uint32 minXP; // Min XP in the skill to be able to do this action choice
+  int16 skillDiff; // How much the skill is increased/decreased by this action choice
+  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
+  uint24 xpPerHour;
+  uint16 inputTokenId1;
+  uint8 inputAmount1;
+  uint16 inputTokenId2;
+  uint8 inputAmount2;
+  uint16 inputTokenId3;
+  uint8 inputAmount3;
+  uint16 outputTokenId;
+  uint8 outputAmount;
+  uint8 successPercent; // 0-100
+  uint16 handItemTokenIdRangeMin; // Inclusive
+  uint16 handItemTokenIdRangeMax; // Inclusive
+  bool isFullModeOnly;
+}
+
 struct ActionChoice {
   Skill skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
@@ -97,6 +117,7 @@ struct ActionChoice {
   uint8 successPercent; // 0-100
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
+  bytes1 packedData; // Allow packing other things in here if necessary (fullMode)
 }
 
 struct ActionChoiceV1 {
@@ -259,8 +280,8 @@ struct InputItem {
   CombatStats combatStats;
   uint16 tokenId;
   EquipPosition equipPosition;
-  // Can it be transferred?
   bool isTransferable;
+  bool isFullModeOnly;
   // Minimum requirements in this skill
   Skill skill;
   uint32 minXP;
