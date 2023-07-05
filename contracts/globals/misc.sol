@@ -19,7 +19,7 @@ enum Skill {
   NONE,
   COMBAT, // This is a helper which incorporates all combat skills, attack <-> magic, defence, health etc
   MELEE,
-  RANGE,
+  RANGED,
   MAGIC,
   DEFENCE,
   HEALTH,
@@ -34,7 +34,7 @@ enum Skill {
   FIREMAKING,
   AGILITY,
   ALCHEMY,
-  RESERVED0,
+  FLETCHING,
   RESERVED1,
   RESERVED2,
   RESERVED3,
