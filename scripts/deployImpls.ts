@@ -24,10 +24,11 @@ async function main() {
   if (newPlayersLibrary) {
     playerLibrary = await PlayersLibrary.deploy();
     await playerLibrary.deployed();
-    console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
+    await verifyContracts([playerLibrary.address]);
   } else {
     playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
+  console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playerLibrary.address},
