@@ -463,32 +463,42 @@ describe("Quests", function () {
     };
 
     const numSpawned = 100 * SPAWN_MUL;
-    let tx = await world.addAction({
-      actionId: 2,
-      info: {
-        skill: EstforTypes.Skill.COMBAT,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        worldLocation: 0,
-        isFullModeOnly: false,
-        numSpawned,
-        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-        isAvailable: true,
-        actionChoiceRequired: true,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: true,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
       },
-      guaranteedRewards: [],
-      randomRewards: [],
-      combatStats: monsterCombatStats,
-    });
+    ]);
     const actionId = await getActionId(tx);
 
-    tx = await world.addActionChoice(EstforConstants.NONE, 2, {
-      ...defaultActionChoice,
-      skill: EstforTypes.Skill.MELEE,
-    });
+    tx = await world.addBulkActionChoices(
+      [EstforConstants.NONE],
+      [[2]],
+      [
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
+        ],
+      ]
+    );
     const timespan = 3600;
     const queuedActionMelee: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
@@ -545,26 +555,28 @@ describe("Quests", function () {
     const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(questsFixture);
 
     const xpPerHour = 2;
-    let tx = await world.addAction({
-      actionId: 2,
-      info: {
-        skill: EstforTypes.Skill.THIEVING,
-        xpPerHour,
-        minXP: 0,
-        isDynamic: false,
-        worldLocation: 0,
-        isFullModeOnly: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: true,
-        actionChoiceRequired: false,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 2,
+        info: {
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
       },
-      guaranteedRewards: [],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
+    ]);
 
     const actionId = await getActionId(tx);
     const numHours = 24;

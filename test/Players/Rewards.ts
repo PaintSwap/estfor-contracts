@@ -67,26 +67,28 @@ describe("Rewards", function () {
 
       const rate = 100 * GUAR_MUL; // per hour
 
-      const tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.WOODCUTTING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
-          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      const tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.WOODCUTTING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
 
       const actionId = await getActionId(tx);
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -200,8 +202,6 @@ describe("Rewards", function () {
 
       players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
-
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
@@ -221,13 +221,20 @@ describe("Rewards", function () {
 
       // Get the new equipments for the next week
       let equipments = [];
-      let dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      let dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
 
+      let equipmentCache = new Map<number, number>();
       for (let c = 0; c < dailyRewards.length - 8; c += 8) {
+        const itemTokenId = parseInt(dailyRewards.slice(c, c + 4), 16);
+        const amount = parseInt(dailyRewards.slice(c + 4, c + 8), 16);
         equipments.push({
-          itemTokenId: parseInt(dailyRewards.slice(c, c + 4), 16),
-          amount: parseInt(dailyRewards.slice(c + 4, c + 8), 16),
+          itemTokenId,
+          amount,
         });
+        // Skip the first and last one
+        if (c != 0 && c < 6 * 8) {
+          equipmentCache.set(itemTokenId, (equipmentCache.get(itemTokenId) || 0) + amount);
+        }
       }
       let weeklyEquipment = {
         itemTokenId: parseInt(dailyRewards.slice(56, 60), 16),
@@ -240,6 +247,8 @@ describe("Rewards", function () {
         alice.address,
         equipments.map((equipment) => equipment.itemTokenId)
       );
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
 
       for (let i = 0; i < 4; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -255,7 +264,9 @@ describe("Rewards", function () {
       );
 
       for (let i = 1; i < 6; ++i) {
-        expect(afterBalances[i]).to.eq(beforeBalances[i].toNumber() + equipments[i].amount);
+        expect(afterBalances[i]).to.eq(
+          beforeBalances[i].toNumber() + (equipmentCache.get(equipments[i].itemTokenId) || 0)
+        );
       }
 
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, true, true, true, true, true, false]);
@@ -274,8 +285,9 @@ describe("Rewards", function () {
       const pendingQueuedActionState = await players.connect(alice).pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.dailyRewardItemTokenIds.length).to.eq(1);
       expect(pendingQueuedActionState.dailyRewardItemTokenIds[0]).to.eq(equipments[equipments.length - 1].itemTokenId);
-      expect(pendingQueuedActionState.dailyRewardAmounts[0]).to.eq(
-        prevBalanceDailyReward.toNumber() + equipments[equipments.length - 1].amount
+
+      expect(equipmentCache.get(equipments[equipments.length - 1].itemTokenId) || 0).to.eq(
+        prevBalanceDailyReward.toNumber()
       );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -298,12 +310,18 @@ describe("Rewards", function () {
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, false, false, false, false, false, false]);
 
       equipments = [];
-      dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
+      equipmentCache = new Map<number, number>();
       for (let c = 0; c < dailyRewards.length - 8; c += 8) {
+        const itemTokenId = parseInt(dailyRewards.slice(c, c + 4), 16);
+        const amount = parseInt(dailyRewards.slice(c + 4, c + 8), 16);
         equipments.push({
-          itemTokenId: parseInt(dailyRewards.slice(c, c + 4), 16),
-          amount: parseInt(dailyRewards.slice(c + 4, c + 8), 16),
+          itemTokenId,
+          amount,
         });
+        if (c < 8 * 8) {
+          equipmentCache.set(itemTokenId, (equipmentCache.get(itemTokenId) || 0) + amount);
+        }
       }
 
       weeklyEquipment = {
@@ -333,7 +351,9 @@ describe("Rewards", function () {
       );
 
       for (let i = 0; i < 7; ++i) {
-        expect(beforeBalances[i].toNumber() + equipments[i].amount).to.eq(afterBalances[i]);
+        expect(beforeBalances[i].toNumber() + (equipmentCache.get(equipments[i].itemTokenId) || 0)).to.eq(
+          afterBalances[i]
+        );
       }
 
       // Also check extra week streak reward
@@ -347,7 +367,7 @@ describe("Rewards", function () {
 
       players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -365,7 +385,7 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      let dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
       let equipment = {
         itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
         amount: parseInt(dailyRewards.slice(4, 8), 16),
@@ -439,7 +459,7 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
+      let dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
       let mondayEquipment = {
         itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
         amount: parseInt(dailyRewards.slice(4, 8), 16),
@@ -487,7 +507,7 @@ describe("Rewards", function () {
 
       players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
@@ -506,16 +526,17 @@ describe("Rewards", function () {
       }
 
       const equipments = [];
-      const dailyRewards = (await world.dailyRewards()).substring(2); // Remove 0x
-      for (let c = 0; c < dailyRewards.length - 8; c += 8) {
+      const dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
+      for (let c = 0; c < 2 * 8; c += 8) {
+        const itemTokenId = parseInt(dailyRewards.slice(c, c + 4), 16);
+        const amount = parseInt(dailyRewards.slice(c + 4, c + 8), 16);
         equipments.push({
-          itemTokenId: parseInt(dailyRewards.slice(c, c + 4), 16),
-          amount: parseInt(dailyRewards.slice(c + 4, c + 8), 16),
+          itemTokenId,
+          amount,
         });
       }
 
       let baseEquipment = equipments[0];
-
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
       expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(baseEquipment.amount * 1.1);
@@ -531,11 +552,67 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
 
-      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(baseEquipment.amount * 1.2); // get 20% boost
+      // If you manage to get the same tokenId then add that as well
+      let expectedAmount = baseEquipment.amount * 1.2; // get 20% boost
+      if (equipments[0].itemTokenId == equipments[1].itemTokenId) {
+        expectedAmount += equipments[0].amount * 1.1;
+      }
+
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(expectedAmount);
     });
 
     it("Test rewards in new week", async function () {
       // TODO
+    });
+
+    it("Tiered rewards", async function () {
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      players.setDailyRewardsEnabled(true);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
+
+      const oneDay = 24 * 3600;
+      const oneWeek = oneDay * 7;
+      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
+
+      let tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
+      for (let i = 0; i < numDays; ++i) {
+        tx = await world.requestRandomWords();
+        await mockOracleClient.fulfill(getRequestId(tx), world.address);
+      }
+
+      // Get the new equipments for the next week
+      let dailyRewards = (await world.activeDailyAndWeeklyRewards(3)).substring(2); // Remove 0x
+      let equipment = {
+        itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
+        amount: parseInt(dailyRewards.slice(4, 8), 16),
+      };
+
+      // Double check it is different to the other tiers
+      let dailyRewardsTier1 = (await world.activeDailyAndWeeklyRewards(1)).substring(2);
+      let dailyRewardsTier2 = (await world.activeDailyAndWeeklyRewards(2)).substring(2);
+      expect(equipment.itemTokenId).to.not.eq(parseInt(dailyRewardsTier1.slice(0, 4), 16));
+      expect(equipment.itemTokenId).to.not.eq(parseInt(dailyRewardsTier2.slice(0, 4), 16));
+
+      const tier3Start = 25001;
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, tier3Start, false);
+
+      let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      let balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      expect(balanceAfter).to.eq(balanceBefore.toNumber() + equipment.amount);
+
+      // Start again, shouldn't get any more rewards
+      balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      expect(balanceAfter).to.eq(balanceBefore);
     });
   });
 
@@ -565,26 +642,28 @@ describe("Rewards", function () {
       const randomChanceFraction = 50.0 / 100; // 50% chance
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.WOODCUTTING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
-          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.WOODCUTTING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
 
       const actionId = await getActionId(tx);
       const numHours = 5;
@@ -699,31 +778,33 @@ describe("Rewards", function () {
       const randomChance2 = Math.floor(65535 * randomChanceFractions[2]);
       const randomChance3 = Math.floor(65535 * randomChanceFractions[3]);
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.WOODCUTTING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
-          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.WOODCUTTING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [
+            {itemTokenId: EstforConstants.BRONZE_BAR, chance: randomChance, amount: 1},
+            {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance1, amount: 1},
+            {itemTokenId: EstforConstants.BRONZE_TASSETS, chance: randomChance2, amount: 1},
+            {itemTokenId: EstforConstants.BRONZE_GAUNTLETS, chance: randomChance3, amount: 1},
+          ],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [
-          {itemTokenId: EstforConstants.BRONZE_BAR, chance: randomChance, amount: 1},
-          {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance1, amount: 1},
-          {itemTokenId: EstforConstants.BRONZE_TASSETS, chance: randomChance2, amount: 1},
-          {itemTokenId: EstforConstants.BRONZE_GAUNTLETS, chance: randomChance3, amount: 1},
-        ],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
 
       const actionId = await getActionId(tx);
       const numHours = 2;
@@ -827,26 +908,28 @@ describe("Rewards", function () {
       const {playerId, players, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       const randomChance = 65535; // 100%
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.THIEVING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.NONE,
-          handItemTokenIdRangeMax: EstforConstants.NONE,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.THIEVING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.NONE,
+            handItemTokenIdRangeMax: EstforConstants.NONE,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+          combatStats: emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-        combatStats: emptyCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
       const numHours = 5;
 
@@ -920,26 +1003,28 @@ describe("Rewards", function () {
       const {playerId, players, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       const randomChance = 32000; // 50%
-      let tx = await world.addAction({
-        actionId: ACTION_THIEVING_CHILD,
-        info: {
-          skill: EstforTypes.Skill.THIEVING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.NONE,
-          handItemTokenIdRangeMax: EstforConstants.NONE,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: ACTION_THIEVING_CHILD,
+          info: {
+            skill: EstforTypes.Skill.THIEVING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.NONE,
+            handItemTokenIdRangeMax: EstforConstants.NONE,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.LOG, chance: randomChance, amount: 255}],
+          combatStats: emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [{itemTokenId: EstforConstants.LOG, chance: randomChance, amount: 255}],
-        combatStats: emptyCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       const numHours = 3;
@@ -992,32 +1077,42 @@ describe("Rewards", function () {
 
       const randomChance = 65535; // 100%
       const numSpawned = 100 * SPAWN_MUL;
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MELEE,
-      });
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MELEE,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
       await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
       await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
@@ -1130,32 +1225,42 @@ describe("Rewards", function () {
       const fractionChancePerRoll =
         ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65355;
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MELEE,
-      });
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MELEE,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
       await itemNFT.testMints(
         alice.address,
@@ -1270,32 +1375,42 @@ describe("Rewards", function () {
       const numHours = 23;
       // 240 unique tickets 3600 * 23 = 82800 / 240 = 345. Should give 2.5% ((345 * 5) / 65355) chance of each roll hitting and there are 240 rolls.
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MELEE,
-      });
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MELEE,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
       await itemNFT.testMints(
         alice.address,
@@ -1404,32 +1519,42 @@ describe("Rewards", function () {
       const fractionChancePerRoll =
         ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65355;
 
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MELEE,
-      });
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MELEE,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
       await itemNFT.testMints(
         alice.address,
@@ -1524,26 +1649,28 @@ describe("Rewards", function () {
     const {playerId, players, alice, world, itemNFT} = await loadFixture(playersFixture);
 
     const rate = 3600 * GUAR_MUL; // per hour
-    const tx = await world.addAction({
-      actionId: 1,
-      info: {
-        skill: EstforTypes.Skill.WOODCUTTING,
-        xpPerHour: 0,
-        minXP: 0,
-        isDynamic: false,
-        worldLocation: 0,
-        isFullModeOnly: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
-        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-        isAvailable: true,
-        actionChoiceRequired: false,
-        successPercent: 100,
+    const tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.WOODCUTTING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
       },
-      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
+    ]);
     const actionId = getActionId(tx);
 
     const queuedAction: EstforTypes.QueuedActionInput = {

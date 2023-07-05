@@ -5,7 +5,7 @@ import {ActionInput, defaultActionChoice} from "@paintswap/estfor-definitions/ty
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId, getRequestId, RATE_MUL, SPAWN_MUL} from "./utils";
-import {allDailyRewards} from "../scripts/data/dailyRwards";
+import {allDailyRewards, allWeeklyRewards} from "../scripts/data/dailyRewards";
 
 describe("World", function () {
   const deployContracts = async function () {
@@ -28,10 +28,14 @@ describe("World", function () {
     const worldLibrary = await WorldLibrary.deploy();
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId, allDailyRewards], {
-      kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
-    });
+    const world = await upgrades.deployProxy(
+      World,
+      [mockOracleClient.address, subscriptionId, allDailyRewards, allWeeklyRewards],
+      {
+        kind: "uups",
+        unsafeAllow: ["delegatecall", "external-library-linking"],
+      }
+    );
 
     const minRandomWordsUpdateTime = await world.MIN_RANDOM_WORDS_UPDATE_TIME();
 
@@ -161,7 +165,7 @@ describe("World", function () {
       let timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay) + 1; // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
-      let dailyRewards = await world.dailyRewards();
+      let dailyRewards = await world.activeDailyAndWeeklyRewards(1);
 
       // Keep requesting
       let error = false;
@@ -176,8 +180,8 @@ describe("World", function () {
       }
 
       // Do another week check that the dailyRewards are different
-      expect(await world.dailyRewards()).to.not.eql(dailyRewards);
-      dailyRewards = await world.dailyRewards();
+      expect(await world.activeDailyAndWeeklyRewards(1)).to.not.eql(dailyRewards);
+      dailyRewards = await world.activeDailyAndWeeklyRewards(1);
       ({timestamp: currentTimestamp} = await ethers.provider.getBlock("latest"));
       timestamp = currentTimestamp + oneWeek; // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
@@ -192,8 +196,8 @@ describe("World", function () {
         }
       }
 
-      expect(await world.dailyRewards()).to.not.eql(dailyRewards);
-      dailyRewards = await world.dailyRewards();
+      expect(await world.activeDailyAndWeeklyRewards(1)).to.not.eql(dailyRewards);
+      dailyRewards = await world.activeDailyAndWeeklyRewards(1);
     });
   });
 
@@ -201,45 +205,39 @@ describe("World", function () {
     it("Add/Edit/Delete normal", async function () {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 1 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+
+      const actionInfo = {
+        skill: EstforTypes.Skill.COMBAT,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        worldLocation: 0,
+        isFullModeOnly: false,
+        numSpawned: 1 * SPAWN_MUL,
+        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+        isAvailable: actionAvailable,
+        actionChoiceRequired: true,
+        successPercent: 100,
+      };
+
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: actionInfo,
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
       expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
+
+      actionInfo.xpPerHour = 20;
       await world.editActions([
         {
           actionId,
-          info: {
-            skill: EstforTypes.Skill.COMBAT,
-            xpPerHour: 20,
-            minXP: 0,
-            isDynamic: false,
-            worldLocation: 0,
-            isFullModeOnly: false,
-            numSpawned: 1 * SPAWN_MUL,
-            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-            isAvailable: actionAvailable,
-            actionChoiceRequired: true,
-            successPercent: 100,
-          },
+          info: actionInfo,
           guaranteedRewards: [],
           randomRewards: [],
           combatStats: EstforTypes.emptyCombatStats,
@@ -247,34 +245,28 @@ describe("World", function () {
       ]);
       expect((await world.actions(actionId)).xpPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
-      await world.setAvailable(actionId, true);
-      expect((await world.actions(actionId)).isAvailable).to.be.true;
-      await world.setAvailable(actionId, false);
-      expect((await world.actions(actionId)).isAvailable).to.be.false;
-
-      // Set available on an action that is dynamic (this should be random only)
+      actionInfo.isAvailable = true;
       await world.editActions([
         {
           actionId,
-          info: {
-            skill: EstforTypes.Skill.COMBAT,
-            xpPerHour: 3600,
-            minXP: 0,
-            isDynamic: false,
-            worldLocation: 0,
-            isFullModeOnly: false,
-            numSpawned: 1 * SPAWN_MUL,
-            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-            isAvailable: actionAvailable,
-            actionChoiceRequired: true,
-            successPercent: 100,
-          },
+          info: actionInfo,
           guaranteedRewards: [],
           randomRewards: [],
           combatStats: EstforTypes.emptyCombatStats,
         },
       ]);
+      expect((await world.actions(actionId)).isAvailable).to.be.true;
+      actionInfo.isAvailable = false;
+      await world.editActions([
+        {
+          actionId,
+          info: actionInfo,
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
+        },
+      ]);
+      expect((await world.actions(actionId)).isAvailable).to.be.false;
     });
 
     it("Dynamic actions", async function () {
@@ -287,15 +279,23 @@ describe("World", function () {
       const {world} = await loadFixture(deployContracts);
       const choiceId = 0;
       await expect(
-        world.addActionChoice(EstforConstants.NONE, choiceId, {
-          ...defaultActionChoice,
-          skill: EstforTypes.Skill.MAGIC,
-          skillDiff: 2,
-          minXP: 0,
-          rate: 1 * RATE_MUL,
-          inputTokenId1: EstforConstants.AIR_SCROLL,
-          inputAmount1: 1,
-        })
+        world.addBulkActionChoices(
+          [EstforConstants.NONE],
+          [[choiceId]],
+          [
+            [
+              {
+                ...defaultActionChoice,
+                skill: EstforTypes.Skill.MAGIC,
+                skillDiff: 2,
+                minXP: 0,
+                rate: 1 * RATE_MUL,
+                inputTokenId1: EstforConstants.AIR_SCROLL,
+                inputAmount1: 1,
+              },
+            ],
+          ]
+        )
       ).to.be.reverted;
     });
 
@@ -303,25 +303,39 @@ describe("World", function () {
       const {world} = await loadFixture(deployContracts);
 
       const choiceId = 1;
-      await world.addActionChoice(EstforConstants.NONE, choiceId, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 2,
-        xpPerHour: 0,
-        minXP: 0,
-        rate: 1 * RATE_MUL,
-        inputTokenId1: EstforConstants.AIR_SCROLL,
-        inputAmount1: 1,
-      });
+      await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[choiceId]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MAGIC,
+              skillDiff: 2,
+              xpPerHour: 0,
+              minXP: 0,
+              rate: 1 * RATE_MUL,
+              inputTokenId1: EstforConstants.AIR_SCROLL,
+              inputAmount1: 1,
+            },
+          ],
+        ]
+      );
 
-      await world.editActionChoice(EstforConstants.NONE, choiceId, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 2,
-        rate: 1 * RATE_MUL,
-        inputTokenId1: EstforConstants.AIR_SCROLL,
-        inputAmount1: 2,
-      });
+      await world.editActionChoices(
+        [EstforConstants.NONE],
+        [choiceId],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            rate: 1 * RATE_MUL,
+            inputTokenId1: EstforConstants.AIR_SCROLL,
+            inputAmount1: 2,
+          },
+        ]
+      );
 
       let actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
       expect(actionChoice.inputAmount1).to.eq(2);
@@ -375,22 +389,22 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
         "GuaranteedRewardsMustBeInOrder"
       );
       action.guaranteedRewards[0].rate = 50;
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
         "GuaranteedRewardsMustBeInOrder"
       );
       action.guaranteedRewards[1].rate = 150;
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
         "GuaranteedRewardsMustBeInOrder"
       );
       action.guaranteedRewards[2].rate = 150;
-      await expect(world.addAction(action)).to.not.be.reverted;
+      await expect(world.addActions([action])).to.not.be.reverted;
     });
 
     it("Guaranteed reward duplicates not allowed", async function () {
@@ -420,12 +434,12 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
         "GuaranteedRewardsNoDuplicates"
       );
       action.guaranteedRewards[0].itemTokenId = SHADOW_SCROLL;
-      await expect(world.addAction(action)).to.not.be.reverted;
+      await expect(world.addActions([action])).to.not.be.reverted;
     });
 
     it("Only multiple guaranteed rewards allowed for combat", async function () {
@@ -455,10 +469,13 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(world, "OnlyCombatMultipleGuaranteedRewards");
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
+        world,
+        "OnlyCombatMultipleGuaranteedRewards"
+      );
 
       action.info.skill = EstforTypes.Skill.COMBAT;
-      await expect(world.addAction(action)).to.not.be.reverted;
+      await expect(world.addActions([action])).to.not.be.reverted;
     });
 
     it("Random reward order", async function () {
@@ -490,13 +507,22 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardsMustBeInOrder");
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
+        worldLibrary,
+        "RandomRewardsMustBeInOrder"
+      );
       action.randomRewards[0].chance = 300;
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardsMustBeInOrder");
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
+        worldLibrary,
+        "RandomRewardsMustBeInOrder"
+      );
       action.randomRewards[1].chance = 250;
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardsMustBeInOrder");
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
+        worldLibrary,
+        "RandomRewardsMustBeInOrder"
+      );
       action.randomRewards[2].chance = 225;
-      await expect(world.addAction(action)).to.not.be.reverted;
+      await expect(world.addActions([action])).to.not.be.reverted;
     });
 
     it("Random reward duplicate not allowed", async function () {
@@ -526,9 +552,9 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(worldLibrary, "RandomRewardNoDuplicates");
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(worldLibrary, "RandomRewardNoDuplicates");
       action.randomRewards[0].itemTokenId = SHADOW_SCROLL;
-      await expect(world.addAction(action)).to.not.be.reverted;
+      await expect(world.addActions([action])).to.not.be.reverted;
     });
 
     it("Only combat can have both guaranteed and random rewards", async function () {
@@ -555,12 +581,12 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
-      await expect(world.addAction(action)).to.be.revertedWithCustomError(
+      await expect(world.addActions([action])).to.be.revertedWithCustomError(
         world,
         "NonCombatCannotHaveBothGuaranteedAndRandomRewards"
       );
       action.info.skill = EstforTypes.Skill.COMBAT;
-      await expect(world.addAction(action)).to.not.be.reverted;
+      await expect(world.addActions([action])).to.not.be.reverted;
     });
   });
 });

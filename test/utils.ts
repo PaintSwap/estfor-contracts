@@ -12,17 +12,17 @@ export const getRequestId = async (tx: ContractTransaction): Promise<number> => 
 export const getActionId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionV2";
+    return x.event == "AddActionsV2";
   })[0].args;
-  return event?.action.actionId;
+  return event?.actions[0].actionId;
 };
 
 export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionChoiceV2";
+    return x.event == "AddActionChoicesV2";
   })[0].args;
-  return event?.actionChoiceId;
+  return event?.actionChoiceIds[0];
 };
 
 export const getActionChoiceIds = async (tx: ContractTransaction): Promise<number[]> => {

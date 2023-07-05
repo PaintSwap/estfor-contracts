@@ -286,25 +286,27 @@ describe("Combat Actions", function () {
       };
 
       const numSpawned = 10 * SPAWN_MUL;
-      let tx = await world.addAction({
-        actionId: 2,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       const queuedAction = {...meleeQueuedAction};
@@ -342,25 +344,27 @@ describe("Combat Actions", function () {
       };
 
       const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
-      let tx = await world.addAction({
-        actionId: 2,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       const queuedAction = {...meleeQueuedAction};
@@ -398,25 +402,27 @@ describe("Combat Actions", function () {
       };
 
       const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
-      let tx = await world.addAction({
-        actionId: 2,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       const queuedAction = {...meleeQueuedAction};
@@ -462,25 +468,27 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addAction({
-        actionId: 2,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 100 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 100 * SPAWN_MUL,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
 
       const queuedAction = {...meleeQueuedAction};
       queuedAction.actionId = 2;
@@ -522,25 +530,27 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addAction({
-        actionId: 2,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 100 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 100 * SPAWN_MUL,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
 
       const queuedAction = {...meleeQueuedAction};
       queuedAction.actionId = 2;
@@ -586,12 +596,12 @@ describe("Combat Actions", function () {
       const natuowAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
-      await world.addAction(natuowAction);
+      await world.addActions([natuowAction]);
 
       const grogAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
       ) as EstforTypes.ActionInput;
-      await world.addAction(grogAction);
+      await world.addActions([grogAction]);
 
       await itemNFT.testMint(alice.address, EstforConstants.COOKED_BLEKK, 10000);
 
@@ -698,12 +708,12 @@ describe("Combat Actions", function () {
       const natuowAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
-      await world.addAction(natuowAction);
+      await world.addActions([natuowAction]);
 
       const grogAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
       ) as EstforTypes.ActionInput;
-      await world.addAction(grogAction);
+      await world.addActions([grogAction]);
 
       await itemNFT.testMint(alice.address, EstforConstants.COOKED_BLEKK, 10000);
 
@@ -851,7 +861,7 @@ describe("Combat Actions", function () {
       const natuowAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
-      await world.addAction(natuowAction);
+      await world.addActions([natuowAction]);
 
       await itemNFT.testMint(alice.address, EstforConstants.COOKED_BLEKK, 10000);
 
@@ -994,25 +1004,27 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 10 * SPAWN_MUL;
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       await itemNFT.testMints(
@@ -1028,16 +1040,24 @@ describe("Combat Actions", function () {
       );
 
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 2,
-        rate: scrollsConsumedRate,
-        inputTokenId1: EstforConstants.SHADOW_SCROLL,
-        inputAmount1: 1,
-        inputTokenId2: EstforConstants.AIR_SCROLL,
-        inputAmount2: 2,
-      });
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MAGIC,
+              skillDiff: 2,
+              rate: scrollsConsumedRate,
+              inputTokenId1: EstforConstants.SHADOW_SCROLL,
+              inputAmount1: 1,
+              inputTokenId2: EstforConstants.AIR_SCROLL,
+              inputAmount2: 2,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1150,25 +1170,27 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 100 * SPAWN_MUL;
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       await itemNFT.testMints(
@@ -1185,16 +1207,24 @@ describe("Combat Actions", function () {
 
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 5,
-        rate: scrollsConsumedRate,
-        inputTokenId1: EstforConstants.SHADOW_SCROLL,
-        inputAmount1: 1,
-        inputTokenId2: EstforConstants.AIR_SCROLL,
-        inputAmount2: 2,
-      });
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MAGIC,
+              skillDiff: 5,
+              rate: scrollsConsumedRate,
+              inputTokenId1: EstforConstants.SHADOW_SCROLL,
+              inputAmount1: 1,
+              inputTokenId2: EstforConstants.AIR_SCROLL,
+              inputAmount2: 2,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1294,25 +1324,27 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 100 * SPAWN_MUL;
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       await itemNFT.testMints(
@@ -1329,16 +1361,24 @@ describe("Combat Actions", function () {
 
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
-      tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 5,
-        rate: scrollsConsumedRate,
-        inputTokenId1: EstforConstants.SHADOW_SCROLL,
-        inputAmount1: 1,
-        inputTokenId2: EstforConstants.AIR_SCROLL,
-        inputAmount2: 2,
-      });
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MAGIC,
+              skillDiff: 5,
+              rate: scrollsConsumedRate,
+              inputTokenId1: EstforConstants.SHADOW_SCROLL,
+              inputAmount1: 1,
+              inputTokenId2: EstforConstants.AIR_SCROLL,
+              inputAmount2: 2,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1754,25 +1794,27 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addAction({
-        actionId: 2,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 100 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 100 * SPAWN_MUL,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
 
       const queuedAction = {...magicQueuedAction};
       queuedAction.actionId = 2;
@@ -1824,25 +1866,27 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addAction({
-        actionId: 2,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 100 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 100 * SPAWN_MUL,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
-        randomRewards: [],
-        combatStats: monsterCombatStats,
-      });
+      ]);
 
       const queuedAction = {...magicQueuedAction};
       queuedAction.actionId = 2;
@@ -1918,25 +1962,27 @@ describe("Combat Actions", function () {
     };
 
     const rate = 6000 * GUAR_MUL; // per kill
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
-        ...defaultActionInfo,
-        skill: EstforTypes.Skill.COMBAT,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 100 * SPAWN_MUL,
-        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 100 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
       },
-      guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
-      randomRewards: [],
-      combatStats: monsterCombatStats,
-    });
+    ]);
     const actionId = await getActionId(tx);
 
     const foodNum = 100;
@@ -1953,10 +1999,18 @@ describe("Combat Actions", function () {
     });
 
     const timespan = 3600 * 3; // 3 hours
-    tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-      ...defaultActionChoice,
-      skill: EstforTypes.Skill.MELEE,
-    });
+    tx = await world.addBulkActionChoices(
+      [EstforConstants.NONE],
+      [[1]],
+      [
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
+        ],
+      ]
+    );
     const choiceId = await getActionChoiceId(tx);
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -2029,35 +2083,45 @@ describe("Combat Actions", function () {
     };
 
     const rate = 1 * GUAR_MUL; // per hour
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
-        ...defaultActionInfo,
-        skill: EstforTypes.Skill.COMBAT,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 100 * SPAWN_MUL,
-        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 100 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
       },
-      guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
-      randomRewards: [],
-      combatStats: monsterCombatStats,
-    });
+    ]);
     const actionId = await getActionId(tx);
 
     const foodNum = 2;
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
     await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 2);
     const timespan = 3600 * 3; // 3 hours
-    tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-      ...defaultActionChoice,
-      skill: EstforTypes.Skill.MELEE,
-    });
+    tx = await world.addBulkActionChoices(
+      [EstforConstants.NONE],
+      [[1]],
+      [
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
+        ],
+      ]
+    );
     const choiceId = await getActionChoiceId(tx);
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,

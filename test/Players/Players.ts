@@ -99,31 +99,41 @@ describe("Players", function () {
   it("Attire equipPositions", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
-        ...defaultActionInfo,
-        skill: EstforTypes.Skill.COMBAT,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 1 * SPAWN_MUL,
-        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-        isAvailable: actionIsAvailable,
-        actionChoiceRequired: true,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 1 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
       },
-      guaranteedRewards: [],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
+    ]);
     const actionId = await getActionId(tx);
 
-    tx = await world.addActionChoice(EstforConstants.NONE, 1, {
-      ...defaultActionChoice,
-      skill: EstforTypes.Skill.MELEE,
-    });
+    tx = await world.addBulkActionChoices(
+      [EstforConstants.NONE],
+      [[1]],
+      [
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
+        ],
+      ]
+    );
     const choiceId = await getActionChoiceId(tx);
     const timespan = 3600;
 
@@ -359,25 +369,27 @@ describe("Players", function () {
     it("Action", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * GUAR_MUL; // per hour
-      const tx = await world.addAction({
-        actionId: 1,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.WOODCUTTING,
-          xpPerHour: 3600,
-          minXP: getXPFromLevel(70),
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
-          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-          isAvailable: true,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      const tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.WOODCUTTING,
+            xpPerHour: 3600,
+            minXP: getXPFromLevel(70),
+            isDynamic: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            isAvailable: true,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       const timespan = 3600;
@@ -436,16 +448,24 @@ describe("Players", function () {
 
         // Logs go in, oak logs come out suprisingly!
         const outputAmount = 2;
-        const tx = await world.addActionChoice(actionId, 2, {
-          ...defaultActionChoice,
-          skill: EstforTypes.Skill.FIREMAKING,
-          xpPerHour: 3600,
-          rate,
-          inputTokenId1: EstforConstants.LOG,
-          inputAmount1: 1,
-          outputTokenId: EstforConstants.OAK_LOG,
-          outputAmount,
-        });
+        const tx = await world.addBulkActionChoices(
+          [actionId],
+          [[2]],
+          [
+            [
+              {
+                ...defaultActionChoice,
+                skill: EstforTypes.Skill.FIREMAKING,
+                xpPerHour: 3600,
+                rate,
+                inputTokenId1: EstforConstants.LOG,
+                inputAmount1: 1,
+                outputTokenId: EstforConstants.OAK_LOG,
+                outputAmount,
+              },
+            ],
+          ]
+        );
         const choiceId = await getActionChoiceId(tx);
         const queuedAction = {...queuedActionFiremaking};
         queuedAction.choiceId = choiceId;
@@ -468,36 +488,46 @@ describe("Players", function () {
     it("Consumables (food)", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * RATE_MUL; // per hour
-      let tx = await world.addAction({
-        actionId: 1,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.FIREMAKING,
-          xpPerHour: 0,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
-          handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
-          isAvailable: actionIsAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 0,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
+            handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       // Logs go in, nothing comes out
-      tx = await world.addActionChoice(actionId, 1, {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.FIREMAKING,
-        xpPerHour: 3600,
-        rate,
-        inputTokenId1: EstforConstants.LOG,
-        inputAmount1: 1,
-      });
+      tx = await world.addBulkActionChoices(
+        [actionId],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.FIREMAKING,
+              xpPerHour: 3600,
+              rate,
+              inputTokenId1: EstforConstants.LOG,
+              inputAmount1: 1,
+            },
+          ],
+        ]
+      );
       const choiceId = await getActionChoiceId(tx);
 
       const timespan = 3600;
@@ -637,25 +667,27 @@ describe("Players", function () {
     it("Left/Right equipment", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * GUAR_MUL; // per hour
-      const tx = await world.addAction({
-        actionId: 1,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.WOODCUTTING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
-          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-          isAvailable: true,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      const tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.WOODCUTTING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            isAvailable: true,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       const timespan = 3600;
@@ -906,25 +938,27 @@ describe("Players", function () {
     it("Maxing out XP", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const rate = 100 * GUAR_MUL; // per hour
-      const tx = await world.addAction({
-        actionId: 1,
-        info: {
-          ...defaultActionInfo,
-          skill: EstforTypes.Skill.WOODCUTTING,
-          xpPerHour: 16000000, // 16MM
-          minXP: 0,
-          isDynamic: false,
-          numSpawned: 0,
-          handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
-          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-          isAvailable: true,
-          actionChoiceRequired: false,
-          successPercent: 100,
+      const tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.WOODCUTTING,
+            xpPerHour: 16000000, // 16MM
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            isAvailable: true,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
         },
-        guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      });
+      ]);
       const actionId = await getActionId(tx);
 
       const timespan = 3600 * 24;

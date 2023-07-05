@@ -576,25 +576,27 @@ describe("Boosts", function () {
     const randomChance = 65535;
     const xpPerHour = 50;
     const amount = 100;
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
-        ...defaultActionInfo,
-        skill: EstforTypes.Skill.THIEVING,
-        xpPerHour,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: true,
-        actionChoiceRequired: false,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
+        combatStats: EstforTypes.emptyCombatStats,
       },
-      guaranteedRewards: [],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
+    ]);
 
     const actionId = await getActionId(tx);
 
@@ -678,25 +680,27 @@ describe("Boosts", function () {
     const randomChance = 65535;
     const xpPerHour = 50;
     const amount = 100;
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
-        ...defaultActionInfo,
-        skill: EstforTypes.Skill.THIEVING,
-        xpPerHour,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: true,
-        actionChoiceRequired: false,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
+        combatStats: EstforTypes.emptyCombatStats,
       },
-      guaranteedRewards: [],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
+    ]);
 
     const actionId = await getActionId(tx);
 
@@ -809,25 +813,27 @@ describe("Boosts", function () {
     const randomChance = 65535;
     const xpPerHour = 50;
     const amount = 100;
-    let tx = await world.addAction({
-      actionId: 1,
-      info: {
-        ...defaultActionInfo,
-        skill: EstforTypes.Skill.THIEVING,
-        xpPerHour,
-        minXP: 0,
-        isDynamic: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.NONE,
-        handItemTokenIdRangeMax: EstforConstants.NONE,
-        isAvailable: true,
-        actionChoiceRequired: false,
-        successPercent: 100,
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.THIEVING,
+          xpPerHour,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
+        combatStats: EstforTypes.emptyCombatStats,
       },
-      guaranteedRewards: [],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
-      combatStats: EstforTypes.emptyCombatStats,
-    });
+    ]);
 
     const actionId = await getActionId(tx);
 

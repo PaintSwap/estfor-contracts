@@ -3,7 +3,7 @@ import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {ItemNFT, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
-import {allDailyRewards} from "../../scripts/data/dailyRwards";
+import {allDailyRewards, allWeeklyRewards} from "../../scripts/data/dailyRewards";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
@@ -27,10 +27,14 @@ export const playersFixture = async function () {
   const worldLibrary = await WorldLibrary.deploy();
   const subscriptionId = 2;
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-  const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId, allDailyRewards], {
-    kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"],
-  })) as World;
+  const world = (await upgrades.deployProxy(
+    World,
+    [mockOracleClient.address, subscriptionId, allDailyRewards, allWeeklyRewards],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    }
+  )) as World;
 
   const Shop = await ethers.getContractFactory("Shop");
   const shop = (await upgrades.deployProxy(Shop, [brush.address, dev.address], {

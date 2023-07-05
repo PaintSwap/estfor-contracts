@@ -513,4 +513,45 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     itemNFT.mint(from, activeBoosts_[_playerId].itemTokenId, 1);
     emit UnconsumeBoostVial(from, _playerId);
   }
+
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
+    U256 bounds = _fullAttireBonuses.length.asU256();
+    for (U256 iter; iter < bounds; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
+
+      if (_fullAttireBonus.skill == Skill.NONE) {
+        revert InvalidSkill();
+      }
+      EquipPosition[5] memory expectedEquipPositions = [
+        EquipPosition.HEAD,
+        EquipPosition.BODY,
+        EquipPosition.ARMS,
+        EquipPosition.LEGS,
+        EquipPosition.FEET
+      ];
+      U256 jbounds = expectedEquipPositions.length.asU256();
+      for (U256 jter; jter < jbounds; jter = jter.inc()) {
+        uint j = jter.asUint256();
+        if (_fullAttireBonus.itemTokenIds[j] == NONE) {
+          revert InvalidItemTokenId();
+        }
+        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[j]).equipPosition != expectedEquipPositions[j]) {
+          revert InvalidEquipPosition();
+        }
+      }
+
+      fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
+        _fullAttireBonus.bonusXPPercent,
+        _fullAttireBonus.bonusRewardsPercent,
+        _fullAttireBonus.itemTokenIds
+      );
+      emit AddFullAttireBonus(
+        _fullAttireBonus.skill,
+        _fullAttireBonus.itemTokenIds,
+        _fullAttireBonus.bonusXPPercent,
+        _fullAttireBonus.bonusRewardsPercent
+      );
+    }
+  }
 }

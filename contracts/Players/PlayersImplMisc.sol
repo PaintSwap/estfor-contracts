@@ -153,9 +153,23 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
       uint maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
 
-      // Claim daily reward
+      // Claim daily/weekly reward
       if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
-        (uint itemTokenId, uint amount) = world.getDailyReward();
+        uint totalXP = players_[_playerId].totalXP;
+        uint playerTier;
+
+        // Work out the tier
+        if (totalXP >= TIER_4_DAILY_REWARD_START_XP) {
+          playerTier = 4;
+        } else if (totalXP >= TIER_3_DAILY_REWARD_START_XP) {
+          playerTier = 3;
+        } else if (totalXP >= TIER_2_DAILY_REWARD_START_XP) {
+          playerTier = 2;
+        } else {
+          playerTier = 1;
+        }
+
+        (uint itemTokenId, uint amount) = world.getDailyReward(playerTier);
         if (itemTokenId != NONE) {
           // Add clan member boost to daily reward (if applicable)
           uint clanTierMembership = clans.getClanTierMembership(_playerId);
@@ -171,7 +185,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
           // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
           if (canClaimWeeklyRewards) {
-            (itemTokenIds[1], amounts[1]) = world.getWeeklyReward();
+            (itemTokenIds[1], amounts[1]) = world.getWeeklyReward(playerTier);
           }
         }
       }
@@ -243,47 +257,6 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     alphaCombat = 1;
     betaCombat = 1;
     isBeta = _isBeta;
-  }
-
-  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
-    U256 bounds = _fullAttireBonuses.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
-
-      if (_fullAttireBonus.skill == Skill.NONE) {
-        revert InvalidSkill();
-      }
-      EquipPosition[5] memory expectedEquipPositions = [
-        EquipPosition.HEAD,
-        EquipPosition.BODY,
-        EquipPosition.ARMS,
-        EquipPosition.LEGS,
-        EquipPosition.FEET
-      ];
-      U256 jbounds = expectedEquipPositions.length.asU256();
-      for (U256 jter; jter < jbounds; jter = jter.inc()) {
-        uint j = jter.asUint256();
-        if (_fullAttireBonus.itemTokenIds[j] == NONE) {
-          revert InvalidItemTokenId();
-        }
-        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[j]).equipPosition != expectedEquipPositions[j]) {
-          revert InvalidEquipPosition();
-        }
-      }
-
-      fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent,
-        _fullAttireBonus.itemTokenIds
-      );
-      emit AddFullAttireBonus(
-        _fullAttireBonus.skill,
-        _fullAttireBonus.itemTokenIds,
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent
-      );
-    }
   }
 
   function _getConsumablesEquipment(
