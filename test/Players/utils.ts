@@ -52,11 +52,13 @@ export const setupBasicWoodcutting = async function (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.BRONZE_AXE,
-    equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-  });
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.BRONZE_AXE,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+    },
+  ]);
 
   return {queuedAction, rate};
 };
@@ -99,11 +101,13 @@ export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World)
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  await itemNFT.addItem({
-    ...EstforTypes.defaultInputItem,
-    tokenId: EstforConstants.NET_STICK,
-    equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-  });
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.NET_STICK,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+    },
+  ]);
 
   return {queuedAction, rate};
 };
@@ -170,12 +174,12 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
 
   await itemNFT.addItems([
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.MAGIC_FIRE_STARTER,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
     },
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.LOG,
       equipPosition: EstforTypes.EquipPosition.AUX,
     },
@@ -192,10 +196,10 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   const monsterCombatStats: EstforTypes.CombatStats = {
     melee: 1,
     magic: 0,
-    range: 0,
+    ranged: 0,
     meleeDefence: 0,
     magicDefence: 0,
-    rangeDefence: 0,
+    rangedDefence: 0,
     health: 20,
   };
 
@@ -256,7 +260,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
 
   await itemNFT.addItems([
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       combatStats: {
         ...EstforTypes.emptyCombatStats,
         melee: 5,
@@ -265,18 +269,18 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
     },
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       combatStats: bronzeHelmetStats,
       tokenId: EstforConstants.BRONZE_HELMET,
       equipPosition: EstforTypes.EquipPosition.HEAD,
     },
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.BRONZE_ARROW,
       equipPosition: EstforTypes.EquipPosition.QUIVER,
     },
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       healthRestored: 12,
       tokenId: EstforConstants.COOKED_MINNUS,
       equipPosition: EstforTypes.EquipPosition.FOOD,
@@ -357,12 +361,12 @@ export const setupBasicCooking = async function (
 
   await itemNFT.addItems([
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.RAW_MINNUS,
       equipPosition: EstforTypes.EquipPosition.AUX,
     },
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       healthRestored: 1,
       tokenId: EstforConstants.COOKED_MINNUS,
       equipPosition: EstforTypes.EquipPosition.FOOD,
@@ -441,12 +445,12 @@ export const setupBasicCrafting = async function (
 
   await itemNFT.addItems([
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.SAPPHIRE,
       equipPosition: EstforTypes.EquipPosition.NONE,
     },
     {
-      ...EstforTypes.defaultInputItem,
+      ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.ROPE,
       equipPosition: EstforTypes.EquipPosition.NONE,
     },

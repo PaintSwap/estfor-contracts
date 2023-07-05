@@ -36,10 +36,10 @@ export const getActionChoiceIds = async (tx: ContractTransaction): Promise<numbe
 export const bronzeHelmetStats: EstforTypes.CombatStats = {
   melee: 1,
   magic: 0,
-  range: 0,
+  ranged: 0,
   meleeDefence: 4,
   magicDefence: 0,
-  rangeDefence: 1,
+  rangedDefence: 1,
   health: 1,
 };
 

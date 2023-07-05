@@ -455,10 +455,10 @@ describe("Quests", function () {
     const monsterCombatStats: EstforTypes.CombatStats = {
       melee: 100,
       magic: 0,
-      range: 0,
+      ranged: 0,
       meleeDefence: 0,
       magicDefence: 0,
-      rangeDefence: 0,
+      rangedDefence: 0,
       health: 1000,
     };
 

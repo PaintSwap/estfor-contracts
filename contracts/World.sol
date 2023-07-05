@@ -43,7 +43,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error ActionIdZeroNotAllowed();
   error MinCannotBeGreaterThanMax();
   error DynamicActionsCannotBeAdded();
-  error ActionAlreadyExists();
+  error ActionAlreadyExists(uint16 actionId);
   error ActionDoesNotExist();
   error ActionChoiceIdZeroNotAllowed();
   error DynamicActionsCannotBeSet();
@@ -395,7 +395,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       revert DynamicActionsCannotBeAdded();
     }
     if (actions[_action.actionId].skill != Skill.NONE) {
-      revert ActionAlreadyExists();
+      revert ActionAlreadyExists(_action.actionId);
     }
     _setAction(_action);
   }

@@ -788,10 +788,10 @@
     proper-lockfile "^4.1.1"
     solidity-ast "^0.4.15"
 
-"@paintswap/estfor-definitions@^0.2.18":
-  version "0.2.18"
-  resolved "https://registry.yarnpkg.com/@paintswap/estfor-definitions/-/estfor-definitions-0.2.18.tgz#66ece7b72f2a351fe874b41798ff347272b32dc9"
-  integrity sha512-ml7lqDPgJOk0YcnrbeEpsCCYklRSllTOdVyf/gkcLoDpgbizeF9JxYoHlBkIM+K8pmlbPIU2FqY9P0qAVaaFWA==
+"@paintswap/estfor-definitions@^0.2.24":
+  version "0.2.24"
+  resolved "https://registry.yarnpkg.com/@paintswap/estfor-definitions/-/estfor-definitions-0.2.24.tgz#84f7a0c9cf15ae49e35331cc0a8a8f15498590e9"
+  integrity sha512-KiJROHSwU0qRyB7ZixNApVKHKUXNtA/96iPp2H5r1/Xr/+ZdHHX6zq2s5jK7X38N9RkSVc6VuBY9Atc00YZXsQ==
   dependencies:
     assemblyscript "0.19.10"
 

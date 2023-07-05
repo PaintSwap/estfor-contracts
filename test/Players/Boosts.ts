@@ -16,16 +16,18 @@ describe("Boosts", function () {
 
     const boostValue = 10;
     const boostDuration = 3300;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.XP_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.NON_COMBAT_XP,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -59,16 +61,18 @@ describe("Boosts", function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.XP_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.NON_COMBAT_XP,
-      boostValue,
-      boostDuration: 7200,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+        boostValue,
+        boostDuration: 7200,
+        isTransferable: false,
+      },
+    ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -104,16 +108,18 @@ describe("Boosts", function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const boostValue = 50;
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.XP_BOOST,
-        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-        // Boost
-        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
-        boostValue,
-        boostDuration: 86400,
-        isTransferable: false,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.XP_BOOST,
+          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+          boostValue,
+          boostDuration: 86400,
+          isTransferable: false,
+        },
+      ]);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -147,16 +153,18 @@ describe("Boosts", function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const boostValue = 50;
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.XP_BOOST,
-        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-        // Boost
-        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
-        boostValue,
-        boostDuration: 86400,
-        isTransferable: false,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.XP_BOOST,
+          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+          boostValue,
+          boostDuration: 86400,
+          isTransferable: false,
+        },
+      ]);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       const queuedActionFinishAfterBoost = {...queuedAction};
@@ -190,16 +198,18 @@ describe("Boosts", function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const boostValue = 50;
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.XP_BOOST,
-        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-        // Boost
-        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
-        boostValue,
-        boostDuration: 100,
-        isTransferable: false,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.XP_BOOST,
+          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+          boostValue,
+          boostDuration: 100,
+          isTransferable: false,
+        },
+      ]);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -233,16 +243,18 @@ describe("Boosts", function () {
 
     const boostValue = 50;
     const boostDuration = 120;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.COMBAT_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.COMBAT_XP,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.COMBAT_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.COMBAT_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
@@ -258,6 +270,7 @@ describe("Boosts", function () {
         0,
         EstforTypes.ActionQueueStatus.NONE
       );
+
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -282,16 +295,18 @@ describe("Boosts", function () {
 
     const boostValue = 50;
     const boostDuration = 120;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.XP_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.ANY_XP,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
@@ -331,16 +346,18 @@ describe("Boosts", function () {
 
     const boostValue = 50;
     const boostDuration = 120;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.XP_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.ANY_XP,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -380,7 +397,7 @@ describe("Boosts", function () {
     const boostDuration = 7200;
     await itemNFT.addItems([
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.XP_BOOST,
         equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
         // Boost
@@ -390,7 +407,7 @@ describe("Boosts", function () {
         isTransferable: false,
       },
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.GATHERING_BOOST,
         equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
         // Boost
@@ -470,16 +487,18 @@ describe("Boosts", function () {
 
     const boostValue = 10;
     const boostDuration = 3600;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.GATHERING_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.GATHERING,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.GATHERING_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.GATHERING,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
@@ -514,16 +533,18 @@ describe("Boosts", function () {
 
     const boostValue = 10;
     const boostDuration = 3600;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.GATHERING_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.GATHERING,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.GATHERING_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.GATHERING,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const successPercent = 50;
     const minLevel = 1;
@@ -562,16 +583,18 @@ describe("Boosts", function () {
 
     const boostValue = 10;
     const boostDuration = 3600;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.GATHERING_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.GATHERING,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.GATHERING_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.GATHERING,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const randomChance = 65535;
     const xpPerHour = 50;
@@ -666,16 +689,18 @@ describe("Boosts", function () {
 
     const boostValue = 10;
     const boostDuration = 12600; // 3 hour 30 mins
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.GATHERING_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.GATHERING,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.GATHERING_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.GATHERING,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const randomChance = 65535;
     const xpPerHour = 50;
@@ -799,16 +824,18 @@ describe("Boosts", function () {
 
     const boostValue = 10;
     const boostDuration = 3600;
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.GATHERING_BOOST,
-      equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-      // Boost
-      boostType: EstforTypes.BoostType.GATHERING,
-      boostValue,
-      boostDuration,
-      isTransferable: false,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.GATHERING_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.GATHERING,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
 
     const randomChance = 65535;
     const xpPerHour = 50;

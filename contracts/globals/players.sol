@@ -48,7 +48,7 @@ struct Player {
 
 struct Item {
   EquipPosition equipPosition;
-  bytes1 packedData; // First bit is (exists) upper most bit is full mode
+  bytes1 packedData; // 0x1 exists, upper most bit is full mode
   // Can it be transferred?
   bool isTransferable;
   // Food
@@ -66,6 +66,44 @@ struct Item {
   int16 rangedDefence;
   int16 health;
   // Minimum requirements in this skill to use this item (can be NONE)
+  Skill skill;
+  uint32 minXP;
+}
+
+struct ItemV1 {
+  EquipPosition equipPosition;
+  bool exists;
+  bool isTransferable;
+  uint16 healthRestored;
+  BoostType boostType;
+  uint16 boostValue;
+  uint24 boostDuration;
+  int16 melee;
+  int16 magic;
+  int16 ranged;
+  int16 meleeDefence;
+  int16 magicDefence;
+  int16 rangedDefence;
+  int16 health;
+  Skill skill;
+  uint32 minXP;
+}
+
+struct ItemOutput {
+  EquipPosition equipPosition;
+  bool isFullModeOnly;
+  bool isTransferable;
+  uint16 healthRestored;
+  BoostType boostType;
+  uint16 boostValue;
+  uint24 boostDuration;
+  int16 melee;
+  int16 magic;
+  int16 ranged;
+  int16 meleeDefence;
+  int16 magicDefence;
+  int16 rangedDefence;
+  int16 health;
   Skill skill;
   uint32 minXP;
 }
@@ -276,7 +314,7 @@ struct PlayerQuest {
 }
 
 // Contains everything you need to create an item
-struct InputItem {
+struct ItemInput {
   CombatStats combatStats;
   uint16 tokenId;
   EquipPosition equipPosition;

@@ -73,12 +73,12 @@ struct CombatStats {
   // From skill points
   int16 melee;
   int16 magic;
-  int16 range;
+  int16 ranged;
   int16 health;
   // These include equipment
   int16 meleeDefence;
   int16 magicDefence;
-  int16 rangeDefence;
+  int16 rangedDefence;
 }
 
 enum CombatStyle {

@@ -152,12 +152,14 @@ describe("Bank", function () {
       bankFixture
     );
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.SKILL_BOOST,
-      isTransferable: false, // Cannot be transferred
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.SKILL_BOOST,
+        isTransferable: false, // Cannot be transferred
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
 
     // Confirm item cannot be transferred normally
     await itemNFT.testMint(alice.address, EstforConstants.SKILL_BOOST, 1);

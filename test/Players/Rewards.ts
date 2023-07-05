@@ -59,11 +59,13 @@ describe("Rewards", function () {
     it("Multiple", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
 
       const rate = 100 * GUAR_MUL; // per hour
 
@@ -628,12 +630,12 @@ describe("Rewards", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
@@ -761,12 +763,12 @@ describe("Rewards", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
@@ -1068,10 +1070,10 @@ describe("Rewards", function () {
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
         magic: 0,
-        range: 0,
+        ranged: 0,
         meleeDefence: 0,
         magicDefence: 0,
-        rangeDefence: 0,
+        rangedDefence: 0,
         health: 1,
       };
 
@@ -1152,7 +1154,7 @@ describe("Rewards", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
             melee: 50,
@@ -1161,18 +1163,18 @@ describe("Rewards", function () {
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: bronzeHelmetStats,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
           equipPosition: EstforTypes.EquipPosition.FOOD,
@@ -1208,10 +1210,10 @@ describe("Rewards", function () {
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
         magic: 0,
-        range: 0,
+        ranged: 0,
         meleeDefence: 0,
         magicDefence: 0,
-        rangeDefence: 0,
+        rangedDefence: 0,
         health: 1,
       };
 
@@ -1298,7 +1300,7 @@ describe("Rewards", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
             melee: 50,
@@ -1307,18 +1309,18 @@ describe("Rewards", function () {
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: bronzeHelmetStats,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
           equipPosition: EstforTypes.EquipPosition.FOOD,
@@ -1362,10 +1364,10 @@ describe("Rewards", function () {
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
         magic: 0,
-        range: 0,
+        ranged: 0,
         meleeDefence: 0,
         magicDefence: 0,
-        rangeDefence: 0,
+        rangedDefence: 0,
         health: 1,
       };
 
@@ -1448,7 +1450,7 @@ describe("Rewards", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
             melee: 50,
@@ -1457,18 +1459,18 @@ describe("Rewards", function () {
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: bronzeHelmetStats,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
           equipPosition: EstforTypes.EquipPosition.FOOD,
@@ -1504,10 +1506,10 @@ describe("Rewards", function () {
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
         magic: 0,
-        range: 0,
+        ranged: 0,
         meleeDefence: 0,
         magicDefence: 0,
-        rangeDefence: 0,
+        rangedDefence: 0,
         health: 1,
       };
 
@@ -1592,7 +1594,7 @@ describe("Rewards", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
             melee: 50,
@@ -1601,18 +1603,18 @@ describe("Rewards", function () {
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           combatStats: bronzeHelmetStats,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
           equipPosition: EstforTypes.EquipPosition.FOOD,
@@ -1684,11 +1686,13 @@ describe("Rewards", function () {
       leftHandEquipmentTokenId: EstforConstants.NONE,
     };
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [3600]);

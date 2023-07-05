@@ -82,22 +82,22 @@ describe("Shop", function () {
 
     await itemNFT.addItems([
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_SHIELD,
         equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
       },
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_SWORD,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       },
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.RAW_MINNUS,
         equipPosition: EstforTypes.EquipPosition.FOOD,
       },
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.SAPPHIRE_AMULET,
         equipPosition: EstforTypes.EquipPosition.NECK,
       },

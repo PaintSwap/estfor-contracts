@@ -74,32 +74,32 @@ describe("Non-Combat Actions", function () {
       const timespan = 3600;
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_MASK,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_BODY,
           equipPosition: EstforTypes.EquipPosition.BODY,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_BRACERS,
           equipPosition: EstforTypes.EquipPosition.ARMS,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_TROUSERS,
           equipPosition: EstforTypes.EquipPosition.LEGS,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_BOOTS,
           equipPosition: EstforTypes.EquipPosition.FEET,
         },
@@ -225,12 +225,12 @@ describe("Non-Combat Actions", function () {
 
     await itemNFT.addItems([
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       },
       {
-        ...EstforTypes.defaultInputItem,
+        ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.LOG,
         equipPosition: EstforTypes.EquipPosition.AUX,
       },
@@ -279,11 +279,13 @@ describe("Non-Combat Actions", function () {
         },
       ]);
       const actionId = await getActionId(tx);
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
       const timespan = 7200 + 10;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -344,11 +346,13 @@ describe("Non-Combat Actions", function () {
     const choiceId = await getActionChoiceId(tx);
 
     await itemNFT.testMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.MAGIC_FIRE_STARTER,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
     const timespan = 3600;
 
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -364,11 +368,13 @@ describe("Non-Combat Actions", function () {
 
     queuedActions.push(queuedAction);
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.LOG,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.LOG,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+    ]);
 
     await players.connect(alice).startActions(playerId, [queuedActions[0]], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [10]);
@@ -441,11 +447,13 @@ describe("Non-Combat Actions", function () {
         },
       ]);
       const actionId = await getActionId(tx);
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
       const timespan = 7200;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -505,11 +513,13 @@ describe("Non-Combat Actions", function () {
       const choiceId = await getActionChoiceId(tx);
 
       await itemNFT.testMint(alice.address, EstforConstants.MAGIC_FIRE_STARTER, 1);
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.MAGIC_FIRE_STARTER,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
       const timespan = 3600;
 
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -526,11 +536,13 @@ describe("Non-Combat Actions", function () {
       queuedActions.push(queuedAction);
     }
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.LOG,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.LOG,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+    ]);
 
     // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
     /*    await expect(
@@ -595,11 +607,13 @@ describe("Non-Combat Actions", function () {
       leftHandEquipmentTokenId: EstforConstants.NONE,
     };
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_PICKAXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_PICKAXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -680,12 +694,12 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.COAL_ORE,
           equipPosition: EstforTypes.EquipPosition.AUX,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.MITHRIL_ORE,
           equipPosition: EstforTypes.EquipPosition.AUX,
         },
@@ -796,12 +810,12 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.COAL_ORE,
           equipPosition: EstforTypes.EquipPosition.AUX,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.MITHRIL_ORE,
           equipPosition: EstforTypes.EquipPosition.AUX,
         },
@@ -994,17 +1008,17 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
           equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.SKILL_BOOST,
           equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
           // Boost
@@ -1405,27 +1419,27 @@ describe("Non-Combat Actions", function () {
       );
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_HOOD,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_BODY,
           equipPosition: EstforTypes.EquipPosition.BODY,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_BRACERS,
           equipPosition: EstforTypes.EquipPosition.ARMS,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_TASSETS,
           equipPosition: EstforTypes.EquipPosition.LEGS,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_BOOTS,
           equipPosition: EstforTypes.EquipPosition.FEET,
         },
@@ -2054,11 +2068,13 @@ describe("Non-Combat Actions", function () {
 
   it("Low rate action (more than 1 hour needed)", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
 
     const rate = 0.1 * GUAR_MUL; // 0.1 per hour
     const tx = await world.addActions([
@@ -2110,11 +2126,13 @@ describe("Non-Combat Actions", function () {
     const {queuedAction: basicWoodcuttingAction} = await setupBasicWoodcutting(itemNFT, world);
     const queuedAction = {...basicWoodcuttingAction};
     (queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_PICKAXE), // Incorrect
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        tokenId: EstforConstants.BRONZE_PICKAXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_PICKAXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)

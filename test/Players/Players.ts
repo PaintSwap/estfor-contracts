@@ -148,12 +148,14 @@ describe("Players", function () {
       leftHandEquipmentTokenId: EstforConstants.NONE,
     };
 
-    await itemNFT.addItem({
-      ...EstforTypes.defaultInputItem,
-      tokenId: EstforConstants.BRONZE_GAUNTLETS,
-      combatStats: EstforTypes.emptyCombatStats,
-      equipPosition: EstforTypes.EquipPosition.ARMS,
-    });
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_GAUNTLETS,
+        combatStats: EstforTypes.emptyCombatStats,
+        equipPosition: EstforTypes.EquipPosition.ARMS,
+      },
+    ]);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
 
     await expect(
@@ -404,12 +406,14 @@ describe("Players", function () {
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        minXP: 0,
-        tokenId: EstforConstants.ORICHALCUM_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          minXP: 0,
+          tokenId: EstforConstants.ORICHALCUM_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
 
       await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
 
@@ -545,17 +549,17 @@ describe("Players", function () {
       const minXP = getXPFromLevel(70);
       await itemNFT.addItems([
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.MAGIC_FIRE_STARTER,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.LOG,
           equipPosition: EstforTypes.EquipPosition.AUX,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           skill: EstforTypes.Skill.HEALTH,
           minXP,
           healthRestored: 12,
@@ -601,42 +605,42 @@ describe("Players", function () {
 
       const attireEquipped = [
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           skill: EstforTypes.Skill.DEFENCE,
           minXP,
           tokenId: EstforConstants.BRONZE_HELMET,
           equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           skill: EstforTypes.Skill.MELEE,
           minXP,
           tokenId: EstforConstants.AMETHYST_AMULET,
           equipPosition: EstforTypes.EquipPosition.NECK,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           skill: EstforTypes.Skill.FIREMAKING,
           minXP,
           tokenId: EstforConstants.BRONZE_ARMOR,
           equipPosition: EstforTypes.EquipPosition.BODY,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           skill: EstforTypes.Skill.MAGIC,
           minXP,
           tokenId: EstforConstants.BRONZE_GAUNTLETS,
           equipPosition: EstforTypes.EquipPosition.ARMS,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           skill: EstforTypes.Skill.COOKING,
           minXP,
           tokenId: EstforConstants.BRONZE_TASSETS,
           equipPosition: EstforTypes.EquipPosition.LEGS,
         },
         {
-          ...EstforTypes.defaultInputItem,
+          ...EstforTypes.defaultItemInput,
           skill: EstforTypes.Skill.CRAFTING,
           minXP,
           tokenId: EstforConstants.BRONZE_BOOTS,
@@ -703,13 +707,15 @@ describe("Players", function () {
       };
 
       const minXP = getXPFromLevel(70);
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        skill: EstforTypes.Skill.WOODCUTTING,
-        minXP,
-        tokenId: EstforConstants.ORICHALCUM_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          skill: EstforTypes.Skill.WOODCUTTING,
+          minXP,
+          tokenId: EstforConstants.ORICHALCUM_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
 
       await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
 
@@ -976,13 +982,15 @@ describe("Players", function () {
       const minXP = getXPFromLevel(98);
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, minXP, false);
 
-      await itemNFT.addItem({
-        ...EstforTypes.defaultInputItem,
-        skill: EstforTypes.Skill.WOODCUTTING,
-        minXP,
-        tokenId: EstforConstants.ORICHALCUM_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      });
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          skill: EstforTypes.Skill.WOODCUTTING,
+          minXP,
+          tokenId: EstforConstants.ORICHALCUM_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ]);
 
       await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
 

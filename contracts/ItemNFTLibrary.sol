@@ -6,7 +6,7 @@ import "./globals/players.sol";
 
 // This file contains methods for interacting with the item NFT, used to decrease implementation deployment bytecode code.
 library ItemNFTLibrary {
-  function setItem(InputItem calldata _inputItem, Item storage _item) external {
+  function setItem(ItemInput calldata _inputItem, Item storage _item) external {
     bool hasCombat;
     CombatStats calldata _combatStats = _inputItem.combatStats;
     assembly ("memory-safe") {
@@ -20,10 +20,10 @@ library ItemNFTLibrary {
       // Combat stats
       _item.melee = _inputItem.combatStats.melee;
       _item.magic = _inputItem.combatStats.magic;
-      _item.ranged = _inputItem.combatStats.range;
+      _item.ranged = _inputItem.combatStats.ranged;
       _item.meleeDefence = _inputItem.combatStats.meleeDefence;
       _item.magicDefence = _inputItem.combatStats.magicDefence;
-      _item.rangedDefence = _inputItem.combatStats.rangeDefence;
+      _item.rangedDefence = _inputItem.combatStats.rangedDefence;
       _item.health = _inputItem.combatStats.health;
     }
 

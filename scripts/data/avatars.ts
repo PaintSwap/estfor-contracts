@@ -50,7 +50,7 @@ export const avatarInfos: AvatarInfo[] = [
     description:
       "Wolfgang Companion is a fierce ranger, skilled in trapping as well as archery. With a strong sense of justice, she will always defend the weak and innocent.",
     imageURI: "7.jpg",
-    startSkills: [Skill.RANGE, Skill.NONE],
+    startSkills: [Skill.RANGED, Skill.NONE],
   },
   {
     name: "Slaying Doggo",
