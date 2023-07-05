@@ -60,10 +60,10 @@ struct Item {
   // Combat stats
   int16 melee;
   int16 magic;
-  int16 range;
+  int16 ranged;
   int16 meleeDefence;
   int16 magicDefence;
-  int16 rangeDefence;
+  int16 rangedDefence;
   int16 health;
   // Minimum requirements in this skill to use this item (can be NONE)
   Skill skill;
