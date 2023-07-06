@@ -155,7 +155,7 @@ struct ActionChoice {
   uint8 successPercent; // 0-100
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
-  bytes1 packedData; // Allow packing other things in here if necessary (fullMode)
+  bytes1 packedData; // FullMode
 }
 
 struct ActionChoiceV1 {

@@ -222,27 +222,19 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let equipments = [];
-      let dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
-
+      let dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      let equipments = dailyRewards.slice(0, 7);
       let equipmentCache = new Map<number, number>();
-      for (let c = 0; c < dailyRewards.length - 8; c += 8) {
-        const itemTokenId = parseInt(dailyRewards.slice(c, c + 4), 16);
-        const amount = parseInt(dailyRewards.slice(c + 4, c + 8), 16);
-        equipments.push({
-          itemTokenId,
-          amount,
-        });
+      for (let i = 0; i < equipments.length; ++i) {
         // Skip the first and last one
-        if (c != 0 && c < 6 * 8) {
-          equipmentCache.set(itemTokenId, (equipmentCache.get(itemTokenId) || 0) + amount);
+        if (i != 0 && i < 6) {
+          equipmentCache.set(
+            equipments[i].itemTokenId,
+            (equipmentCache.get(equipments[i].itemTokenId) || 0) + equipments[i].amount
+          );
         }
       }
-      let weeklyEquipment = {
-        itemTokenId: parseInt(dailyRewards.slice(56, 60), 16),
-        amount: parseInt(dailyRewards.slice(60, 64), 16),
-      };
-
+      let weeklyEquipment = dailyRewards[7];
       let balanceBeforeWeeklyReward = await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId);
 
       let beforeBalances = await itemNFT.balanceOfs(
@@ -311,25 +303,17 @@ describe("Rewards", function () {
 
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, false, false, false, false, false, false]);
 
-      equipments = [];
-      dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
+      dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      equipments = dailyRewards.slice(0, 7);
       equipmentCache = new Map<number, number>();
-      for (let c = 0; c < dailyRewards.length - 8; c += 8) {
-        const itemTokenId = parseInt(dailyRewards.slice(c, c + 4), 16);
-        const amount = parseInt(dailyRewards.slice(c + 4, c + 8), 16);
-        equipments.push({
-          itemTokenId,
-          amount,
-        });
-        if (c < 8 * 8) {
-          equipmentCache.set(itemTokenId, (equipmentCache.get(itemTokenId) || 0) + amount);
-        }
+      for (let i = 0; i < equipments.length; ++i) {
+        equipmentCache.set(
+          equipments[i].itemTokenId,
+          (equipmentCache.get(equipments[i].itemTokenId) || 0) + equipments[i].amount
+        );
       }
 
-      weeklyEquipment = {
-        itemTokenId: parseInt(dailyRewards.slice(56, 60), 16),
-        amount: parseInt(dailyRewards.slice(60, 64), 16),
-      };
+      weeklyEquipment = dailyRewards[7];
 
       beforeBalances = await itemNFT.balanceOfs(
         alice.address,
@@ -387,11 +371,8 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
-      let equipment = {
-        itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
-        amount: parseInt(dailyRewards.slice(4, 8), 16),
-      };
+      let equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      let equipment = equipments[0];
 
       let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -461,11 +442,8 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
-      let mondayEquipment = {
-        itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
-        amount: parseInt(dailyRewards.slice(4, 8), 16),
-      };
+      let equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      let mondayEquipment = equipments[0];
 
       let balanceBeforeMondayReward = await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -527,16 +505,7 @@ describe("Rewards", function () {
         await mockOracleClient.fulfill(getRequestId(tx), world.address);
       }
 
-      const equipments = [];
-      const dailyRewards = (await world.activeDailyAndWeeklyRewards(1)).substring(2); // Remove 0x
-      for (let c = 0; c < 2 * 8; c += 8) {
-        const itemTokenId = parseInt(dailyRewards.slice(c, c + 4), 16);
-        const amount = parseInt(dailyRewards.slice(c + 4, c + 8), 16);
-        equipments.push({
-          itemTokenId,
-          amount,
-        });
-      }
+      const equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
 
       let baseEquipment = equipments[0];
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -590,30 +559,26 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let dailyRewards = (await world.activeDailyAndWeeklyRewards(3)).substring(2); // Remove 0x
-      let equipment = {
-        itemTokenId: parseInt(dailyRewards.slice(0, 4), 16),
-        amount: parseInt(dailyRewards.slice(4, 8), 16),
-      };
+      let mondayEquipment = await world.getSpecificDailyReward(3, playerId, 0);
 
       // Double check it is different to the other tiers
-      let dailyRewardsTier1 = (await world.activeDailyAndWeeklyRewards(1)).substring(2);
-      let dailyRewardsTier2 = (await world.activeDailyAndWeeklyRewards(2)).substring(2);
-      expect(equipment.itemTokenId).to.not.eq(parseInt(dailyRewardsTier1.slice(0, 4), 16));
-      expect(equipment.itemTokenId).to.not.eq(parseInt(dailyRewardsTier2.slice(0, 4), 16));
+      let dailyRewardsTier1 = await world.getSpecificDailyReward(1, playerId, 0);
+      let dailyRewardsTier2 = await world.getSpecificDailyReward(2, playerId, 0);
+      expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1);
+      expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier2);
 
       const tier3Start = 25001;
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, tier3Start, false);
 
-      let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      let balanceBefore = await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-      let balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
-      expect(balanceAfter).to.eq(balanceBefore.toNumber() + equipment.amount);
+      let balanceAfter = await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId);
+      expect(balanceAfter).to.eq(balanceBefore.toNumber() + mondayEquipment.amount);
 
       // Start again, shouldn't get any more rewards
-      balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      balanceBefore = await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-      balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      balanceAfter = await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore);
     });
   });
@@ -1357,7 +1322,7 @@ describe("Rewards", function () {
       ); // 15% above
     });
 
-    // Might fail
+    // Might fail as relies on random chance
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit once", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 

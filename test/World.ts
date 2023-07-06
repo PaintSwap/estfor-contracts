@@ -159,13 +159,15 @@ describe("World", function () {
     it("Test new random rewards", async function () {
       const {world, mockOracleClient} = await loadFixture(deployContracts);
 
+      const playerId = 1;
+
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
       let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       let timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay) + 1; // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
-      let dailyRewards = await world.activeDailyAndWeeklyRewards(1);
+      let dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
 
       // Keep requesting
       let error = false;
@@ -180,8 +182,8 @@ describe("World", function () {
       }
 
       // Do another week check that the dailyRewards are different
-      expect(await world.activeDailyAndWeeklyRewards(1)).to.not.eql(dailyRewards);
-      dailyRewards = await world.activeDailyAndWeeklyRewards(1);
+      expect(await world.getActiveDailyAndWeeklyRewards(1, playerId)).to.not.eql(dailyRewards);
+      dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
       ({timestamp: currentTimestamp} = await ethers.provider.getBlock("latest"));
       timestamp = currentTimestamp + oneWeek; // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
@@ -196,8 +198,38 @@ describe("World", function () {
         }
       }
 
-      expect(await world.activeDailyAndWeeklyRewards(1)).to.not.eql(dailyRewards);
-      dailyRewards = await world.activeDailyAndWeeklyRewards(1);
+      expect(await world.getActiveDailyAndWeeklyRewards(1, playerId)).to.not.eql(dailyRewards);
+      dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+    });
+
+    it("Tiered random rewards", async function () {
+      const {world, mockOracleClient} = await loadFixture(deployContracts);
+
+      const playerId = 1;
+      const oneDay = 24 * 3600;
+      const oneWeek = oneDay * 7;
+      let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      let timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay) + 1; // Start next monday
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      // Keep requesting
+      while (true) {
+        try {
+          const tx = await world.requestRandomWords();
+          await mockOracleClient.fulfill(getRequestId(tx), world.address);
+        } catch {
+          break;
+        }
+      }
+
+      let dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      let dailyRewards1 = await world.getActiveDailyAndWeeklyRewards(1, playerId + 1);
+      let dailyRewards2 = await world.getActiveDailyAndWeeklyRewards(1, playerId + 2);
+
+      // Check that the dailyRewards are different
+      expect(dailyRewards).to.not.eql(dailyRewards1);
+      expect(dailyRewards).to.not.eql(dailyRewards2);
+      expect(dailyRewards1).to.not.eql(dailyRewards2);
     });
   });
 

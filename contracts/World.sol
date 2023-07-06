@@ -23,18 +23,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event RequestFulfilled(uint requestId, uint[3] randomWords);
   event AddActionsV2(Action[] actions);
   event EditActionsV2(Action[] actions);
-  event AddAction(ActionV1 action); // Just for ABI reasons
-  event AddActions(ActionV1[] actions);
-  event EditActions(ActionV1[] actions);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
   event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event EditActionChoicesV2(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
-  event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice); // Just for ABI reasons
+
+  // Legacy, just for ABI reasons
+  event AddAction(ActionV1 action);
+  event AddActions(ActionV1[] actions);
+  event EditActions(ActionV1[] actions);
+  event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
   event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
   event EditActionChoices_(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
-  event NewDailyRewards(uint tier, Equipment[8] dailyRewards);
+
   error RandomWordsCannotBeUpdatedYet();
   error CanOnlyRequestAfterTheNextCheckpoint(uint currentTime, uint checkpoint);
   error RequestAlreadyFulfilled();
@@ -55,6 +57,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error NotAFactorOf3600();
   error NonCombatCannotHaveBothGuaranteedAndRandomRewards();
   error InvalidReward();
+  error TooManyRewardsInPool();
 
   // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface private COORDINATOR;
@@ -68,6 +71,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint40 public lastRandomWordsUpdatedTime;
   uint40 private startTime;
   uint40 private weeklyRewardCheckpoint;
+  bytes8 private thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
   // For a list of available gas lanes on each network, this is 10000gwei
@@ -88,7 +92,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint16[] private lastAddedDynamicActions;
   uint private lastDynamicUpdatedTime;
 
-  mapping(uint tier => bytes32) public activeDailyAndWeeklyRewards; // Effectively stores Equipment[8] which is packed, first 7 are daily, last one is weekly reward
+  uint dummy; // Not clean
 
   mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private actionChoices;
   mapping(uint actionId => CombatStats combatStats) private actionCombatStats;
@@ -121,24 +125,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     lastRandomWordsUpdatedTime = startTime + 4 days;
     weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
 
-    // Issue new available daily rewards
-    Equipment[8] memory rewards = [
-      Equipment(COPPER_ORE, 100),
-      Equipment(COAL_ORE, 200),
-      Equipment(RUBY, 100),
-      Equipment(MITHRIL_BAR, 200),
-      Equipment(COOKED_BOWFISH, 100),
-      Equipment(LEAF_FRAGMENTS, 20),
-      Equipment(HELL_SCROLL, 300),
-      Equipment(XP_BOOST, 1)
-    ];
-
-    uint tier = 1;
-    _storeDailyRewards(tier, rewards);
-    emit NewDailyRewards(tier, rewards);
-    _storeDailyRewards(tier + 1, rewards);
-    emit NewDailyRewards(tier + 1, rewards);
-
     // Initialize 4 days worth of random words
     for (U256 iter; iter.lt(4); iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -157,6 +143,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       );
       fulfillRandomWords(requestId, _randomWords);
     }
+
+    thisWeeksRandomWordSegment = bytes8(uint64(randomWords[3][0]));
 
     for (uint i = 0; i < _dailyRewards.length; ++i) {
       setDailyRewardPool(i + 1, _dailyRewards[i]);
@@ -218,34 +206,43 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     // Are we at the threshold for a new week
     if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
       // Issue new daily rewards for each tier based on the new random words
-      uint randomWord = random[0];
-      for (uint tier = 1; tier <= 4; ++tier) {
-        Equipment[8] memory rewards = [
-          dailyRewardPool[tier][randomWord % dailyRewardPool[tier].length],
-          dailyRewardPool[tier][(randomWord >> (1 * 8)) % dailyRewardPool[tier].length],
-          dailyRewardPool[tier][(randomWord >> (2 * 8)) % dailyRewardPool[tier].length],
-          dailyRewardPool[tier][(randomWord >> (3 * 8)) % dailyRewardPool[tier].length],
-          dailyRewardPool[tier][(randomWord >> (4 * 8)) % dailyRewardPool[tier].length],
-          dailyRewardPool[tier][(randomWord >> (5 * 8)) % dailyRewardPool[tier].length],
-          dailyRewardPool[tier][(randomWord >> (6 * 8)) % dailyRewardPool[tier].length],
-          weeklyRewardPool[tier][(randomWord >> (7 * 8)) % weeklyRewardPool[tier].length]
-        ];
-        _storeDailyRewards(tier, rewards);
-        emit NewDailyRewards(tier, rewards);
-      }
+      thisWeeksRandomWordSegment = bytes8(uint64(random[0]));
 
       weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
     }
   }
 
-  function getDailyReward(uint _tier) external view returns (uint itemTokenId, uint amount) {
-    uint checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
-    uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
-    (itemTokenId, amount) = _getDailyOrWeeklyReward(_tier, day);
+  function getWeeklyReward(uint _tier, uint _playerId) public view returns (uint16 itemTokenId, uint24 amount) {
+    uint day = 7;
+    uint index = _getRewardIndex(_playerId, day, weeklyRewardPool[_tier].length);
+    Equipment storage equipment = weeklyRewardPool[_tier][index];
+    return (equipment.itemTokenId, equipment.amount);
   }
 
-  function getWeeklyReward(uint _tier) external view returns (uint itemTokenId, uint amount) {
-    (itemTokenId, amount) = _getDailyOrWeeklyReward(_tier, 7);
+  function getSpecificDailyReward(
+    uint _tier,
+    uint _playerId,
+    uint _day
+  ) public view returns (uint16 itemTokenId, uint24 amount) {
+    uint index = _getRewardIndex(_playerId, _day, dailyRewardPool[_tier].length);
+    Equipment storage equipment = dailyRewardPool[_tier][index];
+    return (equipment.itemTokenId, equipment.amount);
+  }
+
+  function getDailyReward(uint _tier, uint _playerId) external view returns (uint itemTokenId, uint amount) {
+    uint checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
+    uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
+    return getSpecificDailyReward(_tier, _playerId, day);
+  }
+
+  function getActiveDailyAndWeeklyRewards(
+    uint _tier,
+    uint _playerId
+  ) external view returns (Equipment[8] memory rewards) {
+    for (uint i; i < 7; ++i) {
+      (rewards[i].itemTokenId, rewards[i].amount) = getSpecificDailyReward(_tier, _playerId, i);
+    }
+    (rewards[7].itemTokenId, rewards[7].amount) = getWeeklyReward(_tier, _playerId);
   }
 
   function _getRandomWordOffset(uint _timestamp) private view returns (int) {
@@ -400,40 +397,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _setAction(_action);
   }
 
-  function _getDailyOrWeeklyReward(uint _tier, uint _day) private view returns (uint itemTokenId, uint amount) {
-    itemTokenId = uint(
-      (activeDailyAndWeeklyRewards[_tier] & ((bytes32(hex"ffff0000") >> (_day * 32)))) >> ((7 - _day) * 32 + 16)
-    );
-    amount = uint(
-      (activeDailyAndWeeklyRewards[_tier] & ((bytes32(hex"0000ffff") >> (_day * 32)))) >> ((7 - _day) * 32)
-    );
-  }
-
-  function _getUpdatedDailyReward(
-    uint _index,
-    Equipment memory _equipment,
-    bytes32 _rewards
-  ) private pure returns (bytes32) {
-    bytes32 rewardItemTokenId;
-    bytes32 rewardAmount;
-    assembly ("memory-safe") {
-      rewardItemTokenId := mload(_equipment)
-      rewardAmount := mload(add(_equipment, 32))
-    }
-
-    _rewards = _rewards | (rewardItemTokenId << ((7 - _index) * 32 + 16));
-    _rewards = _rewards | (rewardAmount << ((7 - _index) * 32));
-    return _rewards;
-  }
-
-  function _storeDailyRewards(uint _tier, Equipment[8] memory equipments) private {
-    bytes32 rewards;
-    U256 bounds = equipments.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      rewards = _getUpdatedDailyReward(i, equipments[i], rewards);
-    }
-    activeDailyAndWeeklyRewards[_tier] = rewards;
+  function _getRewardIndex(uint _playerId, uint _day, uint _length) private view returns (uint) {
+    return uint((thisWeeksRandomWordSegment >> (_day * 8)) ^ bytes32(_playerId)) % _length;
   }
 
   function _setAction(Action calldata _action) private {
@@ -611,6 +576,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function setDailyRewardPool(uint _tier, Equipment[] calldata _dailyRewards) public onlyOwner {
+    if (_dailyRewards.length > 255) {
+      revert TooManyRewardsInPool();
+    }
     delete dailyRewardPool[_tier];
 
     for (uint i = 0; i < _dailyRewards.length; ++i) {
@@ -623,6 +591,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function setWeeklyRewardPool(uint _tier, Equipment[] calldata _weeklyRewards) public onlyOwner {
+    if (_weeklyRewards.length > 255) {
+      revert TooManyRewardsInPool();
+    }
+
     delete weeklyRewardPool[_tier];
 
     for (uint i = 0; i < _weeklyRewards.length; ++i) {

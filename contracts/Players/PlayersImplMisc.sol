@@ -169,7 +169,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           playerTier = 1;
         }
 
-        (uint itemTokenId, uint amount) = world.getDailyReward(playerTier);
+        (uint itemTokenId, uint amount) = world.getDailyReward(playerTier, _playerId);
         if (itemTokenId != NONE) {
           // Add clan member boost to daily reward (if applicable)
           uint clanTierMembership = clans.getClanTierMembership(_playerId);
@@ -185,7 +185,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
           // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
           if (canClaimWeeklyRewards) {
-            (itemTokenIds[1], amounts[1]) = world.getWeeklyReward(playerTier);
+            (itemTokenIds[1], amounts[1]) = world.getWeeklyReward(playerTier, _playerId);
           }
         }
       }
