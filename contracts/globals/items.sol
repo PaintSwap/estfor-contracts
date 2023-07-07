@@ -20,6 +20,12 @@ uint16 constant SORCERER_HAT = HEAD_BASE + 12;
 uint16 constant SEERS_HOOD = HEAD_BASE + 13;
 uint16 constant SHAMAN_HOOD = HEAD_BASE + 14;
 uint16 constant MASTER_HAT = HEAD_BASE + 15;
+uint16 constant AZURITE_COWL = HEAD_BASE + 16;
+uint16 constant HAUBERK_COWL = HEAD_BASE + 17;
+uint16 constant GARAGOS_COWL = HEAD_BASE + 18;
+uint16 constant ETERNAL_COWL = HEAD_BASE + 19;
+uint16 constant REAVER_COWL = HEAD_BASE + 20;
+uint16 constant SCORCHING_COWL = HEAD_BASE + 21;
 uint16 constant HEAD_MAX = HEAD_BASE + 254; // Inclusive
 // 257 - 511 (neck)
 uint16 constant NECK_BASE = 257;
@@ -49,6 +55,12 @@ uint16 constant SORCERER_BODY = BODY_BASE + 12;
 uint16 constant SEERS_BODY = BODY_BASE + 13;
 uint16 constant SHAMAN_BODY = BODY_BASE + 14;
 uint16 constant MASTER_BODY = BODY_BASE + 15;
+uint16 constant AZURITE_BODY = BODY_BASE + 16;
+uint16 constant HAUBERK_BODY = BODY_BASE + 17;
+uint16 constant GARAGOS_BODY = BODY_BASE + 18;
+uint16 constant ETERNAL_BODY = BODY_BASE + 19;
+uint16 constant REAVER_BODY = BODY_BASE + 20;
+uint16 constant SCORCHING_BODY = BODY_BASE + 21;
 uint16 constant BODY_MAX = BODY_BASE + 254;
 // 769 - 1023 (arms)
 uint16 constant ARMS_BASE = 769;
@@ -68,6 +80,12 @@ uint16 constant SORCERER_GAUNTLETS = ARMS_BASE + 12;
 uint16 constant SEERS_BRACERS = ARMS_BASE + 13;
 uint16 constant SHAMAN_GAUNTLETS = ARMS_BASE + 14;
 uint16 constant MASTER_BRACERS = ARMS_BASE + 15;
+uint16 constant AZURITE_BRACERS = ARMS_BASE + 16;
+uint16 constant HAUBERK_BRACERS = ARMS_BASE + 17;
+uint16 constant GARAGOS_BRACERS = ARMS_BASE + 18;
+uint16 constant ETERNAL_BRACERS = ARMS_BASE + 19;
+uint16 constant REAVER_BRACERS = ARMS_BASE + 20;
+uint16 constant SCORCHING_BRACERS = ARMS_BASE + 21;
 uint16 constant ARMS_MAX = ARMS_BASE + 254;
 // 1025 - 1279 (legs)
 uint16 constant LEGS_BASE = 1025;
@@ -87,6 +105,12 @@ uint16 constant SORCERER_TROUSERS = LEGS_BASE + 12;
 uint16 constant SEERS_TROUSERS = LEGS_BASE + 13;
 uint16 constant SHAMAN_TROUSERS = LEGS_BASE + 14;
 uint16 constant MASTER_TROUSERS = LEGS_BASE + 15;
+uint16 constant AZURITE_CHAPS = LEGS_BASE + 16;
+uint16 constant HAUBERK_CHAPS = LEGS_BASE + 17;
+uint16 constant GARAGOS_CHAPS = LEGS_BASE + 18;
+uint16 constant ETERNAL_CHAPS = LEGS_BASE + 19;
+uint16 constant REAVER_CHAPS = LEGS_BASE + 20;
+uint16 constant SCORCHING_CHAPS = LEGS_BASE + 21;
 uint16 constant LEGS_MAX = LEGS_BASE + 254;
 
 // 1281 - 1535 (feet)
@@ -107,10 +131,16 @@ uint16 constant SORCERER_BOOTS = FEET_BASE + 12;
 uint16 constant SEERS_BOOTS = FEET_BASE + 13;
 uint16 constant SHAMAN_BOOTS = FEET_BASE + 14;
 uint16 constant MASTER_BOOTS = FEET_BASE + 15;
-uint16 constant BOOTS_MAX = FEET_BASE + 254;
+uint16 constant AZURITE_BOOTS = FEET_BASE + 16;
+uint16 constant HAUBERK_BOOTS = FEET_BASE + 17;
+uint16 constant GARAGOS_BOOTS = FEET_BASE + 18;
+uint16 constant ETERNAL_BOOTS = FEET_BASE + 19;
+uint16 constant REAVER_BOOTS = FEET_BASE + 20;
+uint16 constant SCORCHING_BOOTS = FEET_BASE + 21;
+uint16 constant FEET_MAX = FEET_BASE + 254;
 
-// 1536 - 1791 spare(1)
-// 1792 - 2047 spare(2)
+// 1536 - 1791 coin
+// 1792 - 2047 spare(1)
 
 // Combat (right arm) (2048 - 2303)
 uint16 constant COMBAT_BASE = 2048;
@@ -136,6 +166,13 @@ uint16 constant DRAGONSTONE_STAFF = STAFF_BASE + 6;
 uint16 constant STAFF_MAX = STAFF_BASE + 49;
 // Ranged
 uint16 constant BOW_BASE = COMBAT_BASE + 100;
+uint16 constant BASIC_BOW = BOW_BASE;
+uint16 constant BONE_BOW = BOW_BASE + 1;
+uint16 constant EXPERT_BOW = BOW_BASE + 2;
+uint16 constant SPECTRAL_BOW = BOW_BASE + 3;
+uint16 constant ICY_BOW = BOW_BASE + 4;
+uint16 constant GLITTERING_BOW = BOW_BASE + 5;
+uint16 constant GODLY_BOW = BOW_BASE + 6;
 uint16 constant BOW_MAX = BOW_BASE + 49;
 // Shields (left arm)
 uint16 constant SHIELD_BASE = COMBAT_BASE + 150;
@@ -318,6 +355,12 @@ uint16 constant ORE_MAX = ORE_BASE + 255;
 // Arrows
 uint16 constant ARROW_BASE = 11776;
 uint16 constant BRONZE_ARROW = ARROW_BASE;
+uint16 constant IRON_ARROW = ARROW_BASE + 1;
+uint16 constant MITHRIL_ARROW = ARROW_BASE + 2;
+uint16 constant ADAMANITE_ARROW = ARROW_BASE + 3;
+uint16 constant RUNITE_ARROW = ARROW_BASE + 4;
+uint16 constant TITANIUM_ARROW = ARROW_BASE + 5;
+uint16 constant ORICHALCUM_ARROW = ARROW_BASE + 6;
 uint16 constant ARROW_MAX = ARROW_BASE + 255;
 
 // Scrolls
@@ -391,4 +434,20 @@ uint16 constant RUFARUM = MISC_BASE - 35;
 uint16 constant WHITE_DEATH_SPORE = MISC_BASE - 36;
 uint16 constant ENCHANTED_ACORN = MISC_BASE - 37;
 uint16 constant ACORN_PATCH = MISC_BASE - 38;
+uint16 constant PAPER = MISC_BASE - 39;
+uint16 constant ASH = MISC_BASE - 40;
+uint16 constant ARROW_SHAFT = MISC_BASE - 41;
+uint16 constant BRONZE_ARROW_HEAD = MISC_BASE - 42;
+uint16 constant IRON_ARROW_HEAD = MISC_BASE - 43;
+uint16 constant MITHRIL_ARROW_HEAD = MISC_BASE - 44;
+uint16 constant ADAMANITE_ARROW_HEAD = MISC_BASE - 45;
+uint16 constant RUNITE_ARROW_HEAD = MISC_BASE - 46;
+uint16 constant TITANIUM_ARROW_HEAD = MISC_BASE - 47;
+uint16 constant ORICHALCUM_ARROW_HEAD = MISC_BASE - 48;
+uint16 constant FLIXORA = MISC_BASE - 49;
+uint16 constant BECARA_GRASS = MISC_BASE - 50;
+uint16 constant HURA_ROOT = MISC_BASE - 51;
+uint16 constant RIGOB_CLOTH = MISC_BASE - 52;
+uint16 constant QUAVA_SILK = MISC_BASE - 53;
+
 uint16 constant MISC_MIN = 32768;

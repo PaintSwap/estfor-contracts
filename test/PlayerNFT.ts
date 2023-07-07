@@ -263,6 +263,7 @@ describe("PlayerNFT", function () {
       EstforConstants.NET_STICK,
       EstforConstants.BRONZE_PICKAXE,
       EstforConstants.TOTEM_STAFF,
+      EstforConstants.BASIC_BOW,
     ]);
     expect(balances).to.eql(balances.map(() => ethers.BigNumber.from("1")));
   });
