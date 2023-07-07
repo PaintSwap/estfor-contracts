@@ -14,7 +14,8 @@ export const setupBasicWoodcutting = async function (
   itemNFT: ItemNFT,
   world: World,
   rate = 100 * GUAR_MUL,
-  xpPerHour = 3600
+  xpPerHour = 3600,
+  rewards = EstforConstants.LOG
 ) {
   const tx = await world.addActions([
     {
@@ -33,7 +34,7 @@ export const setupBasicWoodcutting = async function (
         actionChoiceRequired: false,
         successPercent: 100,
       },
-      guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
+      guaranteedRewards: [{itemTokenId: rewards, rate}],
       randomRewards: [],
       combatStats: EstforTypes.emptyCombatStats,
     },

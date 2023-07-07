@@ -199,7 +199,7 @@ describe("Rewards", function () {
   });
 
   describe("Daily Rewards", function () {
-    it("Daily & weekly reward on starting actions", async function () {
+    it("Daily & weekly reward when starting an action", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       players.setDailyRewardsEnabled(true);
@@ -223,16 +223,13 @@ describe("Rewards", function () {
 
       // Get the new equipments for the next week
       let dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
-      let equipments = dailyRewards.slice(0, 7);
+      let equipments = dailyRewards.slice(1, 6); // skip first and last
       let equipmentCache = new Map<number, number>();
       for (let i = 0; i < equipments.length; ++i) {
-        // Skip the first and last one
-        if (i != 0 && i < 6) {
-          equipmentCache.set(
-            equipments[i].itemTokenId,
-            (equipmentCache.get(equipments[i].itemTokenId) || 0) + equipments[i].amount
-          );
-        }
+        equipmentCache.set(
+          equipments[i].itemTokenId,
+          (equipmentCache.get(equipments[i].itemTokenId) || 0) + equipments[i].amount
+        );
       }
       let weeklyEquipment = dailyRewards[7];
       let balanceBeforeWeeklyReward = await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId);
@@ -242,7 +239,14 @@ describe("Rewards", function () {
         equipments.map((equipment) => equipment.itemTokenId)
       );
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
+      // Change reward else it conflicts with tiered daily rewards
+      const {queuedAction} = await setupBasicWoodcutting(
+        itemNFT,
+        world,
+        100 * GUAR_MUL,
+        20,
+        EstforConstants.MAGICAL_LOG
+      );
 
       for (let i = 0; i < 4; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -257,7 +261,7 @@ describe("Rewards", function () {
         equipments.map((equipment) => equipment.itemTokenId)
       );
 
-      for (let i = 1; i < 6; ++i) {
+      for (let i = 0; i < 5; ++i) {
         expect(afterBalances[i]).to.eq(
           beforeBalances[i].toNumber() + (equipmentCache.get(equipments[i].itemTokenId) || 0)
         );
@@ -268,31 +272,25 @@ describe("Rewards", function () {
       // Last day of the week. This isn't a full week so shouldn't get weekly rewards, but still get daily rewards
       let balanceAfterWeeklyReward = await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId);
       expect(balanceBeforeWeeklyReward).to.eq(balanceAfterWeeklyReward);
-      let prevBalanceDailyReward = await itemNFT.balanceOf(
-        alice.address,
-        equipments[equipments.length - 1].itemTokenId
-      );
+      const sundayReward = dailyRewards[dailyRewards.length - 2];
+      let prevBalanceDailyReward = await itemNFT.balanceOf(alice.address, sundayReward.itemTokenId);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       tx = await world.requestRandomWords();
       await mockOracleClient.fulfill(getRequestId(tx), world.address);
-
+      // Check the last day of the week
       const pendingQueuedActionState = await players.connect(alice).pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.dailyRewardItemTokenIds.length).to.eq(1);
-      expect(pendingQueuedActionState.dailyRewardItemTokenIds[0]).to.eq(equipments[equipments.length - 1].itemTokenId);
+      expect(pendingQueuedActionState.dailyRewardItemTokenIds[0]).to.eq(sundayReward.itemTokenId);
 
-      expect(equipmentCache.get(equipments[equipments.length - 1].itemTokenId) || 0).to.eq(
-        prevBalanceDailyReward.toNumber()
+      equipmentCache.set(
+        sundayReward.itemTokenId,
+        (equipmentCache.get(sundayReward.itemTokenId) || 0) + sundayReward.amount
       );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId));
-      let balanceAfterDailyReward = await itemNFT.balanceOf(
-        alice.address,
-        equipments[equipments.length - 1].itemTokenId
-      );
-      expect(balanceAfterDailyReward).to.eq(
-        prevBalanceDailyReward.toNumber() + equipments[equipments.length - 1].amount
-      );
+      let balanceAfterDailyReward = await itemNFT.balanceOf(alice.address, sundayReward.itemTokenId);
+      expect(balanceAfterDailyReward).to.eq(prevBalanceDailyReward.toNumber() + sundayReward.amount);
 
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, true, true, true, true, true, true]);
 

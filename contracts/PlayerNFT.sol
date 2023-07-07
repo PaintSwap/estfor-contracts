@@ -118,21 +118,23 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function _mintStartingItems(address _from, uint _playerId, uint _avatarId, bool _makeActive) private {
     // Give the player some starting items
-    uint[] memory itemTokenIds = new uint[](6);
+    uint[] memory itemTokenIds = new uint[](7);
     itemTokenIds[0] = BRONZE_SWORD;
     itemTokenIds[1] = BRONZE_AXE;
     itemTokenIds[2] = MAGIC_FIRE_STARTER;
     itemTokenIds[3] = NET_STICK;
     itemTokenIds[4] = BRONZE_PICKAXE;
     itemTokenIds[5] = TOTEM_STAFF;
+    itemTokenIds[6] = BASIC_BOW;
 
-    uint[] memory amounts = new uint[](6);
+    uint[] memory amounts = new uint[](7);
     amounts[0] = 1;
     amounts[1] = 1;
     amounts[2] = 1;
     amounts[3] = 1;
     amounts[4] = 1;
     amounts[5] = 1;
+    amounts[6] = 1;
     players.mintedPlayer(_from, _playerId, avatars[_avatarId].startSkills, _makeActive, itemTokenIds, amounts);
   }
 
