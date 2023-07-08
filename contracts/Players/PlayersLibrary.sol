@@ -35,6 +35,7 @@ library PlayersLibrary {
     string calldata _clanName
   ) external view returns (string memory) {
     uint overallLevel = getLevel(readXP(Skill.MELEE, _packedXP)) +
+      getLevel(readXP(Skill.RANGED, _packedXP)) +
       getLevel(readXP(Skill.MAGIC, _packedXP)) +
       getLevel(readXP(Skill.DEFENCE, _packedXP)) +
       getLevel(readXP(Skill.HEALTH, _packedXP)) +
@@ -45,7 +46,9 @@ library PlayersLibrary {
       getLevel(readXP(Skill.THIEVING, _packedXP)) +
       getLevel(readXP(Skill.CRAFTING, _packedXP)) +
       getLevel(readXP(Skill.COOKING, _packedXP)) +
-      getLevel(readXP(Skill.FIREMAKING, _packedXP));
+      getLevel(readXP(Skill.FIREMAKING, _packedXP)) +
+      getLevel(readXP(Skill.ALCHEMY, _packedXP)) +
+      getLevel(readXP(Skill.FLETCHING, _packedXP));
 
     string memory attributes = string(
       abi.encodePacked(
@@ -54,6 +57,8 @@ library PlayersLibrary {
         _getTraitStringJSON("Clan", _clanName),
         ",",
         _getTraitNumberJSON("Melee level", getLevel(readXP(Skill.MELEE, _packedXP))),
+        ",",
+        _getTraitNumberJSON("Ranged level", getLevel(readXP(Skill.RANGED, _packedXP))),
         ",",
         _getTraitNumberJSON("Magic level", getLevel(readXP(Skill.MAGIC, _packedXP))),
         ",",
@@ -76,6 +81,10 @@ library PlayersLibrary {
         _getTraitNumberJSON("Cooking level", getLevel(readXP(Skill.COOKING, _packedXP))),
         ",",
         _getTraitNumberJSON("Firemaking level", getLevel(readXP(Skill.FIREMAKING, _packedXP))),
+        ",",
+        _getTraitNumberJSON("Alchemy level", getLevel(readXP(Skill.ALCHEMY, _packedXP))),
+        ",",
+        _getTraitNumberJSON("Fletching level", getLevel(readXP(Skill.FLETCHING, _packedXP))),
         ",",
         _getTraitNumberJSON("Total level", uint16(overallLevel))
       )
@@ -299,6 +308,7 @@ library PlayersLibrary {
     uint _elapsedTime
   ) private pure returns (uint32 fullDmg) {
     fullDmg = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
+    fullDmg += dmg(_combatStats.ranged, _enemyCombatStats.rangedDefence, _alphaCombat, _betaCombat, _elapsedTime);
     fullDmg += dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
   }
 
@@ -323,6 +333,7 @@ library PlayersLibrary {
     int _health
   ) private pure returns (uint) {
     uint dmgPerMinute = _dmgPerMinute(_enemyCombatStats.melee, _combatStats.meleeDefence, _alphaCombat, _betaCombat);
+    dmgPerMinute += _dmgPerMinute(_enemyCombatStats.ranged, _combatStats.rangedDefence, _alphaCombat, _betaCombat);
     dmgPerMinute += _dmgPerMinute(_enemyCombatStats.magic, _combatStats.magicDefence, _alphaCombat, _betaCombat);
     return Math.ceilDiv(uint(_health) * 60, dmgPerMinute);
   }
@@ -335,23 +346,22 @@ library PlayersLibrary {
     uint8 _betaCombat,
     int16 _enemyHealth
   ) private pure returns (uint timeToKill) {
+    int16 attack;
+    int16 defence;
     if (_skill == Skill.MELEE) {
-      timeToKill = _timeToKill(
-        _combatStats.melee,
-        _enemyCombatStats.meleeDefence,
-        _alphaCombat,
-        _betaCombat,
-        _enemyHealth
-      );
+      attack = _combatStats.melee;
+      defence = _enemyCombatStats.meleeDefence;
+    } else if (_skill == Skill.RANGED) {
+      attack = _combatStats.ranged;
+      defence = _enemyCombatStats.rangedDefence;
     } else if (_skill == Skill.MAGIC) {
-      timeToKill = _timeToKill(
-        _combatStats.magic,
-        _enemyCombatStats.magicDefence,
-        _alphaCombat,
-        _betaCombat,
-        _enemyHealth
-      );
+      attack = _combatStats.magic;
+      defence = _enemyCombatStats.magicDefence;
+    } else {
+      assert(false);
     }
+
+    timeToKill = _timeToKill(attack, defence, _alphaCombat, _betaCombat, _enemyHealth);
   }
 
   function _getDmgDealtByPlayer(
@@ -364,9 +374,14 @@ library PlayersLibrary {
   ) private pure returns (uint32 dmgDealt) {
     if (_actionChoice.skill == Skill.MELEE) {
       dmgDealt = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
+    } else if (_actionChoice.skill == Skill.RANGED) {
+      _combatStats.ranged += _actionChoice.skillDiff; // Extra/Reduced ranged damage
+      dmgDealt = dmg(_combatStats.ranged, _enemyCombatStats.rangedDefence, _alphaCombat, _betaCombat, _elapsedTime);
     } else if (_actionChoice.skill == Skill.MAGIC) {
       _combatStats.magic += _actionChoice.skillDiff; // Extra/Reduced magic damage
       dmgDealt = dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
+    } else {
+      assert(false);
     }
   }
 
@@ -768,6 +783,9 @@ library PlayersLibrary {
     combatStats.melee = int16(
       getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
     );
+    combatStats.ranged = int16(
+      getLevel(getAbsoluteActionStartXP(Skill.RANGED, _pendingQueuedActionProcessed, _packedXP))
+    );
     combatStats.magic = int16(
       getLevel(getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionProcessed, _packedXP))
     );
@@ -776,6 +794,7 @@ library PlayersLibrary {
     );
     uint16 defenceLevel = getLevel(getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionProcessed, _packedXP));
     combatStats.meleeDefence = int16(defenceLevel);
+    combatStats.rangedDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
 
     bool skipNeck;
@@ -895,8 +914,10 @@ library PlayersLibrary {
 
   function _updateCombatStatsFromItem(CombatStats memory _combatStats, Item memory _item) private pure {
     _combatStats.melee += _item.melee;
+    _combatStats.ranged += _item.ranged;
     _combatStats.magic += _item.magic;
     _combatStats.meleeDefence += _item.meleeDefence;
+    _combatStats.rangedDefence += _item.rangedDefence;
     _combatStats.magicDefence += _item.magicDefence;
     _combatStats.health += _item.health;
   }

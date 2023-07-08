@@ -19,11 +19,11 @@ library ItemNFTLibrary {
     if (hasCombat) {
       // Combat stats
       _item.melee = _inputItem.combatStats.melee;
-      _item.magic = _inputItem.combatStats.magic;
       _item.ranged = _inputItem.combatStats.ranged;
+      _item.magic = _inputItem.combatStats.magic;
       _item.meleeDefence = _inputItem.combatStats.meleeDefence;
-      _item.magicDefence = _inputItem.combatStats.magicDefence;
       _item.rangedDefence = _inputItem.combatStats.rangedDefence;
+      _item.magicDefence = _inputItem.combatStats.magicDefence;
       _item.health = _inputItem.combatStats.health;
     }
 

@@ -175,10 +175,10 @@ struct ActionChoiceV1 {
   uint8 successPercent; // 0-100
 }
 
-// Must be in the same order as Skill
+// Must be in the same order as Skill enum
 struct PackedXP {
   uint40 melee;
-  uint40 range;
+  uint40 ranged;
   uint40 magic;
   uint40 defence;
   uint40 health;
@@ -195,6 +195,7 @@ struct PackedXP {
   uint40 firemaking;
   uint40 agility;
   uint40 alchemy;
+  uint40 fletching;
 }
 
 struct AvatarInfo {

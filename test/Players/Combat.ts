@@ -1552,7 +1552,7 @@ describe("Combat Actions", function () {
         .not.be.reverted;
     });
 
-    it("Large negative magic defence should not have a big effect against low combat enemies ", async function () {
+    it("Large negative magic defence should not have a big effect against low combat enemies", async function () {
       const {
         playerId,
         players,
@@ -1794,7 +1794,6 @@ describe("Combat Actions", function () {
         world,
         queuedAction: magicQueuedAction,
         itemNFT,
-        startXP,
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -1960,6 +1959,400 @@ describe("Combat Actions", function () {
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       // No more should be consumed with more time
       expect(consumedAmount).to.eq(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]);
+    });
+
+    it("Enemy dealing magic damage", async function () {
+      const {
+        playerId,
+        players,
+        itemNFT,
+        alice,
+        timespan,
+        queuedAction: queuedActionMonster,
+        startXP,
+        world,
+      } = await loadFixture(playersFixtureMagic);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 0,
+        magic: 3,
+        ranged: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangedDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per monster
+      const numSpawned = 10 * SPAWN_MUL;
+      let tx = await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
+        },
+      ]);
+      const actionId = await getActionId(tx);
+      const queuedAction = {...queuedActionMonster, actionId};
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+        startXP + Math.floor(queuedAction.timespan * 1.1)
+      );
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+        // This shouldn't be boosted by magic boost
+        BigNumber.from(Math.floor(queuedAction.timespan / 3)),
+        BigNumber.from(Math.floor(queuedAction.timespan / 3) - 1),
+      ]);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 2);
+
+      // Use at least 1 scroll per monster
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(200 - 20);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 10);
+    });
+  });
+
+  // Range is a subset of magic for the most part so only tests for basic things should be required
+  describe("Ranged", function () {
+    async function playersFixtureRanged() {
+      const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const avatarId = 1;
+      const avatarInfo: AvatarInfo = {
+        name: "Name goes here",
+        description: "Hi I'm a description",
+        imageURI: "1234.png",
+        startSkills: [Skill.RANGED, Skill.NONE],
+      };
+      await playerNFT.setAvatars(avatarId, [avatarInfo]);
+
+      // Create player
+      const origName = "0xSamWitch1";
+      const makeActive = true;
+      const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 3,
+        magic: 0,
+        ranged: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangedDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per monster
+      const numSpawned = 10 * SPAWN_MUL;
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.NATURE_SCROLL, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
+        },
+      ]);
+      const actionId = await getActionId(tx);
+
+      await itemNFT.testMints(
+        alice.address,
+        [
+          EstforConstants.BRONZE_SHIELD,
+          EstforConstants.COOKED_MINNUS,
+          EstforConstants.BRONZE_ARROW,
+          EstforConstants.IRON_ARROW,
+        ],
+        [1, 1000, 200, 100]
+      );
+
+      const arrowsConsumedRate = 1 * RATE_MUL; // per hour
+      tx = await world.addBulkActionChoices(
+        [EstforConstants.NONE],
+        [[1]],
+        [
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.RANGED,
+              skillDiff: 2,
+              rate: arrowsConsumedRate,
+              inputTokenId1: EstforConstants.BRONZE_ARROW,
+              inputAmount1: 1,
+              handItemTokenIdRangeMin: EstforConstants.BASIC_BOW,
+              handItemTokenIdRangeMax: EstforConstants.BASIC_BOW,
+            },
+          ],
+        ]
+      );
+      const choiceId = await getActionChoiceId(tx);
+      const timespan = 3600;
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.ATTACK,
+        choiceId,
+        regenerateId: EstforConstants.COOKED_MINNUS,
+        timespan,
+        rightHandEquipmentTokenId: EstforConstants.BASIC_BOW,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_ARROW,
+          equipPosition: EstforTypes.EquipPosition.QUIVER,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.IRON_ARROW,
+          equipPosition: EstforTypes.EquipPosition.QUIVER,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BASIC_BOW,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_SHIELD,
+          equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.NATURE_SCROLL,
+          equipPosition: EstforTypes.EquipPosition.QUIVER,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          healthRestored: 12,
+          tokenId: EstforConstants.COOKED_MINNUS,
+          equipPosition: EstforTypes.EquipPosition.FOOD,
+        },
+      ]);
+
+      const startXP = START_XP;
+      return {
+        playerId,
+        players,
+        playerNFT,
+        itemNFT,
+        world,
+        alice,
+        timespan,
+        actionId,
+        dropRate,
+        queuedAction,
+        startXP,
+        numSpawned,
+      };
+    }
+
+    it("Attack", async function () {
+      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned} =
+        await loadFixture(playersFixtureRanged);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(
+        startXP + Math.floor(queuedAction.timespan * 1.1)
+      );
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+        // This shouldn't be boosted by range boost
+        BigNumber.from(Math.floor(queuedAction.timespan / 3)),
+        BigNumber.from(Math.floor(queuedAction.timespan / 3) - 1),
+      ]);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 2);
+
+      // Use at least 1 arrow per monster
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(200 - 10);
+    });
+
+    it("Check expected bow is required for the actionChoice", async function () {
+      // Bronze arrows can only be used with basic bow for instance
+      const {
+        playerId,
+        players,
+        itemNFT,
+        alice,
+        queuedAction: rangedQueuedAction,
+      } = await loadFixture(playersFixtureRanged);
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.GODLY_BOW,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+        },
+      ]);
+      await itemNFT.testMint(alice.address, EstforConstants.GODLY_BOW, 1);
+      const queuedAction = {...rangedQueuedAction};
+      queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW;
+
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
+    });
+
+    it("Remove bow after queuing, combat should be skipped", async function () {
+      const {playerId, players, itemNFT, alice, queuedAction, startXP} = await loadFixture(playersFixtureRanged);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await itemNFT.connect(alice).burn(alice.address, EstforConstants.BASIC_BOW, 2);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BASIC_BOW)).to.eq(0);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(startXP);
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(0);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+
+      // No arrows used
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(200);
+    });
+
+    it("No bow equipped, not allowed", async function () {
+      const {playerId, players, alice, queuedAction: rangedQueuedAction} = await loadFixture(playersFixtureRanged);
+
+      const queuedAction = {...rangedQueuedAction};
+      queuedAction.rightHandEquipmentTokenId = EstforConstants.NONE;
+
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "IncorrectEquippedItem");
+    });
+
+    it("Cannot equip shield with a bow", async function () {
+      const {playerId, players, alice, queuedAction: rangedQueuedAction} = await loadFixture(playersFixtureRanged);
+
+      const queuedAction = {...rangedQueuedAction};
+      queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
+
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
+      queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
+      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+        .not.be.reverted;
+    });
+
+    it("Enemy dealing ranged damage", async function () {
+      const {
+        playerId,
+        players,
+        itemNFT,
+        alice,
+        timespan,
+        queuedAction: queuedActionMonster,
+        startXP,
+        world,
+      } = await loadFixture(playersFixtureRanged);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 0,
+        magic: 0,
+        ranged: 3,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangedDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per monster
+      const numSpawned = 10 * SPAWN_MUL;
+      let tx = await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.NATURE_SCROLL, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
+        },
+      ]);
+      const actionId = await getActionId(tx);
+      const queuedAction = {...queuedActionMonster, actionId};
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(
+        startXP + Math.floor(queuedAction.timespan * 1.1)
+      );
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+        // This shouldn't be boosted by range boost
+        BigNumber.from(Math.floor(queuedAction.timespan / 3)),
+        BigNumber.from(Math.floor(queuedAction.timespan / 3) - 1),
+      ]);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 2);
+
+      // Use at least 1 arrow per monster
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(200 - 10);
     });
   });
 

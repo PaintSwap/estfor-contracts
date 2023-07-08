@@ -439,7 +439,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
           ((!_isCombat && _handItemTokenIdRangeMin != NONE) || _actionChoice.handItemTokenIdRangeMin != NONE) &&
           isRightHand
         ) {
-          revert IncorrectEquippedItem(equippedItemTokenId);
+          revert IncorrectEquippedItem();
         }
       }
     }

@@ -11,6 +11,7 @@ import {
   allActionChoiceIdsFiremaking,
   allActionChoiceIdsMagic,
   allActionChoiceIdsMelee,
+  allActionChoiceIdsRanged,
   allActionChoiceIdsSmithing,
 } from "../../scripts/data/actionChoiceIds";
 import {
@@ -19,6 +20,7 @@ import {
   allActionChoicesFiremaking,
   allActionChoicesMagic,
   allActionChoicesMelee,
+  allActionChoicesRanged,
   allActionChoicesSmithing,
 } from "../../scripts/data/actionChoices";
 import {avatarInfos} from "../../scripts/data/avatars";
@@ -73,6 +75,7 @@ describe("Fuzz testing", async function () {
         craftingActionId,
         genericCombatActionId,
         genericCombatActionId,
+        genericCombatActionId,
       ],
       [
         allActionChoiceIdsFiremaking,
@@ -81,6 +84,7 @@ describe("Fuzz testing", async function () {
         allActionChoiceIdsCrafting,
         allActionChoiceIdsMelee,
         allActionChoiceIdsMagic,
+        allActionChoiceIdsRanged,
       ],
       [
         allActionChoicesFiremaking,
@@ -89,6 +93,7 @@ describe("Fuzz testing", async function () {
         allActionChoicesCrafting,
         allActionChoicesMelee,
         allActionChoicesMagic,
+        allActionChoicesRanged,
       ]
     );
 
@@ -117,10 +122,15 @@ describe("Fuzz testing", async function () {
       let actionChoice = null;
       if (action.info.actionChoiceRequired) {
         if (isCombat) {
-          const choiceIds = [EstforConstants.NONE, ...allActionChoiceIdsMelee, ...allActionChoiceIdsMagic];
+          const choiceIds = [
+            EstforConstants.NONE,
+            ...allActionChoiceIdsMelee,
+            ...allActionChoiceIdsRanged,
+            ...allActionChoiceIdsMagic,
+          ];
           choiceId = choiceIds[Math.floor(Math.random() * choiceIds.length)];
           actionChoice = await world.getActionChoice(NONE, choiceId);
-          // Sometimes equip food (or scrolls if magic)
+          // Sometimes equip food (or scrolls/arrows if magic/ranged)
         } else {
           if (action.info.skill == EstforTypes.Skill.COOKING) {
             const index = Math.floor(Math.random() * allActionChoicesCooking.length);
@@ -232,9 +242,9 @@ describe("Fuzz testing", async function () {
         // Check if the first action has finished
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         const firstAction = (await players.getActionQueue(playerId))[0];
-        if ((await players.players(playerId).currentActionStartTime).add(firstAction.timespan).gte(NOW)) {
+        if ((await players.players(playerId)).currentActionStartTime + firstAction.timespan >= NOW) {
           await ethers.provider.send("evm_increaseTime", [
-            (await players.players(playerId).currentActionStartTime).add(firstAction.timespan).sub(NOW),
+            (await players.players(playerId)).currentActionStartTime + firstAction.timespan - NOW,
           ]);
         }
       }

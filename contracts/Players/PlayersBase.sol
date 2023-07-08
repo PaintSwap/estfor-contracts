@@ -92,7 +92,7 @@ abstract contract PlayersBase {
   error CannotEquipTwoHandedAndOtherEquipment();
   error IncorrectRightHandEquipment(uint16 equippedItemTokenId);
   error IncorrectLeftHandEquipment(uint16 equippedItemTokenId);
-  error IncorrectEquippedItem(uint16 equippedItemTokenId);
+  error IncorrectEquippedItem();
   error NotABoostVial();
   error StartTimeTooFarInTheFuture();
   error UnsupportedRegenerateItem();

@@ -25,6 +25,9 @@ import {
   allActionChoicesMagic,
   allActionChoicesMelee,
   allActionChoicesSmithing,
+  allActionChoicesRanged,
+  allActionChoicesAlchemy,
+  allActionChoicesFletching,
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsFiremaking,
@@ -33,6 +36,9 @@ import {
   allActionChoiceIdsMagic,
   allActionChoiceIdsMelee,
   allActionChoiceIdsSmithing,
+  allActionChoiceIdsRanged,
+  allActionChoiceIdsAlchemy,
+  allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
 import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
@@ -419,6 +425,8 @@ async function main() {
   const smithingActionId = EstforConstants.ACTION_SMITHING_ITEM;
   const cookingActionId = EstforConstants.ACTION_COOKING_ITEM;
   const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
+  const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM;
+  const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
   const genericCombatActionId = EstforConstants.NONE;
 
   tx = await world.addBulkActionChoices(
@@ -427,6 +435,9 @@ async function main() {
       smithingActionId,
       cookingActionId,
       craftingActionId,
+      fletchingActionId,
+      alchemyActionId,
+      genericCombatActionId,
       genericCombatActionId,
       genericCombatActionId,
     ],
@@ -435,7 +446,10 @@ async function main() {
       allActionChoiceIdsSmithing,
       allActionChoiceIdsCooking,
       allActionChoiceIdsCrafting,
+      allActionChoiceIdsFletching,
+      allActionChoiceIdsAlchemy,
       allActionChoiceIdsMelee,
+      allActionChoiceIdsRanged,
       allActionChoiceIdsMagic,
     ],
     [
@@ -443,7 +457,10 @@ async function main() {
       allActionChoicesSmithing,
       allActionChoicesCooking,
       allActionChoicesCrafting,
+      allActionChoicesFletching,
+      allActionChoicesAlchemy,
       allActionChoicesMelee,
+      allActionChoicesRanged,
       allActionChoicesMagic,
     ]
   );

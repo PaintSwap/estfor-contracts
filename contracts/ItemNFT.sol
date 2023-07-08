@@ -339,11 +339,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       boostValue: _item.boostValue,
       boostDuration: _item.boostDuration,
       melee: _item.combatStats.melee,
-      magic: _item.combatStats.magic,
       ranged: _item.combatStats.ranged,
+      magic: _item.combatStats.magic,
       meleeDefence: _item.combatStats.meleeDefence,
-      magicDefence: _item.combatStats.magicDefence,
       rangedDefence: _item.combatStats.rangedDefence,
+      magicDefence: _item.combatStats.magicDefence,
       health: _item.combatStats.health,
       skill: _item.skill,
       minXP: _item.minXP
