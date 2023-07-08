@@ -11,6 +11,8 @@ import {
   setupBasicCooking,
   setupBasicCrafting,
   checkPendingQueuedActionState,
+  setupBasicAlchemy,
+  setupBasicFletching,
 } from "./utils";
 
 const actionIsAvailable = true;
@@ -1566,7 +1568,7 @@ describe("Non-Combat Actions", function () {
     });
   });
 
-  describe("Crafting", async function () {
+  describe("Crafting", function () {
     const crafingFixture = async function () {
       const fixture = await loadFixture(playersFixture);
       return {...fixture};
@@ -2025,7 +2027,77 @@ describe("Non-Combat Actions", function () {
     });
   });
 
-  it("Set past max timespan ", async function () {
+  // Very similar to crafting
+  describe("Alchemy", function () {
+    it("Finish 1 item", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction, rate} = await setupBasicAlchemy(itemNFT, world);
+
+      const startingAmount = 200;
+      await itemNFT.testMints(
+        alice.address,
+        [EstforConstants.SHADOW_SCROLL, EstforConstants.NATURE_SCROLL, EstforConstants.PAPER],
+        [startingAmount, startingAmount, startingAmount]
+      );
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.ALCHEMY)).to.eq(queuedAction.timespan);
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.PAPER)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate * 2) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL)).to.eq(
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+    });
+  });
+
+  // Very similar to crafting
+  describe("Fletching", function () {
+    it("Finish 1 item", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction, rate} = await setupBasicFletching(itemNFT, world);
+
+      const startingAmount = 200;
+      await itemNFT.testMints(
+        alice.address,
+        [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
+        [startingAmount, startingAmount, startingAmount]
+      );
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.FLETCHING)).to.eq(queuedAction.timespan);
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW_HEAD)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ARROW_SHAFT)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.FEATHER)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate * 2) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+    });
+  });
+
+  it("Set past max timespan", async function () {
     const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(playersFixture);
 
     const {queuedAction: basicWoodcuttingQueuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);

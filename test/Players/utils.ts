@@ -460,6 +460,192 @@ export const setupBasicCrafting = async function (
   return {queuedAction, rate, choiceId};
 };
 
+export const setupBasicAlchemy = async function (
+  itemNFT: ItemNFT,
+  world: World,
+  rate = 1 * RATE_MUL,
+  outputAmount: number = 1
+) {
+  let tx = await world.addActions([
+    {
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.ALCHEMY,
+        xpPerHour: 0,
+        minXP: 0,
+        isDynamic: false,
+        worldLocation: 0,
+        isFullModeOnly: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: true,
+        actionChoiceRequired: true,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats,
+    },
+  ]);
+  const actionId = await getActionId(tx);
+
+  // Logs go in, nothing comes out
+  tx = await world.addBulkActionChoices(
+    [actionId],
+    [[1]],
+    [
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.ALCHEMY,
+          xpPerHour: 3600,
+          rate,
+          inputTokenId1: EstforConstants.SHADOW_SCROLL,
+          inputAmount1: 1,
+          inputTokenId2: EstforConstants.NATURE_SCROLL,
+          inputAmount2: 1,
+          inputTokenId3: EstforConstants.PAPER,
+          inputAmount3: 2,
+          outputTokenId: EstforConstants.ANCIENT_SCROLL,
+          outputAmount,
+        },
+      ],
+    ]
+  );
+  const choiceId = await getActionChoiceId(tx);
+
+  const timespan = 3600;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+  };
+
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.SHADOW_SCROLL,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.NATURE_SCROLL,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.PAPER,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.ANCIENT_SCROLL,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+  ]);
+
+  return {queuedAction, rate, choiceId};
+};
+
+export const setupBasicFletching = async function (
+  itemNFT: ItemNFT,
+  world: World,
+  rate = 1 * RATE_MUL,
+  outputAmount: number = 1
+) {
+  let tx = await world.addActions([
+    {
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.FLETCHING,
+        xpPerHour: 0,
+        minXP: 0,
+        isDynamic: false,
+        worldLocation: 0,
+        isFullModeOnly: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: true,
+        actionChoiceRequired: true,
+        successPercent: 100,
+      },
+      guaranteedRewards: [],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats,
+    },
+  ]);
+  const actionId = await getActionId(tx);
+
+  // Create Bronze arrows
+  tx = await world.addBulkActionChoices(
+    [actionId],
+    [[1]],
+    [
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.FLETCHING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenId1: EstforConstants.BRONZE_ARROW_HEAD,
+          inputAmount1: 1,
+          inputTokenId2: EstforConstants.ARROW_SHAFT,
+          inputAmount2: 1,
+          inputTokenId3: EstforConstants.FEATHER,
+          inputAmount3: 2,
+          outputTokenId: EstforConstants.BRONZE_ARROW,
+          outputAmount,
+        },
+      ],
+    ]
+  );
+  const choiceId = await getActionChoiceId(tx);
+
+  const timespan = 3600;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+  };
+
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.BRONZE_ARROW_HEAD,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.ARROW_SHAFT,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.FEATHER,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.BRONZE_ARROW,
+      equipPosition: EstforTypes.EquipPosition.NONE,
+    },
+  ]);
+
+  return {queuedAction, rate, choiceId};
+};
+
 export const setupTravelling = async function (world: World, rate = 0.125 * RATE_MUL, from = 0, to = 1) {
   const ACTION_TRAVEL_0 = 1000;
   let tx = await world.addActions([
