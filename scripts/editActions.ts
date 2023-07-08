@@ -15,7 +15,8 @@ async function main() {
   const world = await World.attach(WORLD_ADDRESS);
 
   const actions = await allActions.filter(
-    (action) => action.info.skill === Skill.THIEVING || action.info.skill === Skill.FISHING
+    (action) =>
+      action.info.skill === Skill.COMBAT || action.info.skill === Skill.FISHING || action.info.skill === Skill.MINING
   );
 
   const tx = await world.editActions(actions);

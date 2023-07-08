@@ -398,10 +398,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     if (!exists(_inputItem.tokenId)) {
       revert ItemDoesNotExist(_inputItem.tokenId);
     }
-    if (
-      items[_inputItem.tokenId].equipPosition != _inputItem.equipPosition &&
-      items[_inputItem.tokenId].equipPosition != EquipPosition.NONE
-    ) {
+    // Exception is going from BOTH_HANDS to RIGHT_HAND or RIGHT_HAND to BOTH_HANDS
+    EquipPosition oldPosition = items[_inputItem.tokenId].equipPosition;
+    EquipPosition newPosition = _inputItem.equipPosition;
+
+    bool isRightHandPositionSwap = (oldPosition == EquipPosition.RIGHT_HAND &&
+      newPosition == EquipPosition.BOTH_HANDS) ||
+      (oldPosition == EquipPosition.BOTH_HANDS && newPosition == EquipPosition.RIGHT_HAND);
+
+    if (oldPosition != newPosition && oldPosition != EquipPosition.NONE && !isRightHandPositionSwap) {
       revert EquipmentPositionShouldNotChange();
     }
     item = _setItem(_inputItem);

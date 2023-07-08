@@ -143,6 +143,26 @@ describe("ItemNFT", function () {
       ])
     ).to.be.revertedWithCustomError(itemNFT, "EquipmentPositionShouldNotChange");
 
+    // Unless going from right hand to both hands or both hands to right hand
+    await expect(
+      itemNFT.editItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_AXE,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+        },
+      ])
+    ).to.not.be.reverted;
+    await expect(
+      itemNFT.editItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+      ])
+    ).to.not.be.reverted;
+
     await expect(
       itemNFT.editItems([
         {

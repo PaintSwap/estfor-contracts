@@ -15,30 +15,30 @@ async function main() {
 
   const items = await allItems.filter(
     (item) =>
-      item.tokenId === EstforConstants.MAGE_HOOD ||
-      item.tokenId === EstforConstants.SEERS_HOOD ||
-      item.tokenId === EstforConstants.SHAMAN_HOOD ||
-      item.tokenId === EstforConstants.MASTER_HAT ||
-      item.tokenId === EstforConstants.SORCERER_BODY ||
-      item.tokenId === EstforConstants.SEERS_BODY ||
-      item.tokenId === EstforConstants.SHAMAN_BODY ||
-      item.tokenId === EstforConstants.MASTER_BODY ||
-      item.tokenId === EstforConstants.MAGE_TROUSERS ||
-      item.tokenId === EstforConstants.SORCERER_TROUSERS ||
-      item.tokenId === EstforConstants.SEERS_TROUSERS ||
-      item.tokenId === EstforConstants.SHAMAN_TROUSERS ||
-      item.tokenId === EstforConstants.MASTER_TROUSERS ||
-      item.tokenId === EstforConstants.MAGE_BRACERS ||
-      item.tokenId === EstforConstants.SORCERER_GAUNTLETS ||
-      item.tokenId === EstforConstants.SEERS_BRACERS ||
-      item.tokenId === EstforConstants.SHAMAN_GAUNTLETS ||
-      item.tokenId === EstforConstants.MASTER_BRACERS ||
-      item.tokenId === EstforConstants.SEERS_BOOTS
+      item.tokenId === EstforConstants.COOKED_BLEKK ||
+      item.tokenId === EstforConstants.COOKED_SKRIMP ||
+      item.tokenId === EstforConstants.COOKED_FEOLA ||
+      item.tokenId === EstforConstants.COOKED_ANCHO ||
+      item.tokenId === EstforConstants.COOKED_TROUT ||
+      item.tokenId === EstforConstants.COOKED_ROJJA ||
+      item.tokenId === EstforConstants.COOKED_BOWFISH ||
+      item.tokenId === EstforConstants.COOKED_MYSTY_BLUE ||
+      item.tokenId === EstforConstants.COOKED_FLITFISH ||
+      item.tokenId === EstforConstants.COOKED_RAZORFISH ||
+      item.tokenId === EstforConstants.COOKED_QUAFFER ||
+      item.tokenId === EstforConstants.COOKED_ROXA ||
+      item.tokenId === EstforConstants.COOKED_STONECLAW ||
+      item.tokenId === EstforConstants.COOKED_CRUSKAN ||
+      item.tokenId === EstforConstants.COOKED_CHODFISH ||
+      item.tokenId === EstforConstants.COOKED_DOUBTFISH ||
+      item.tokenId === EstforConstants.COOKED_ROSEFIN
   );
 
-  //  console.log(items);
-
-  await itemNFT.editItems(items);
+  if (items.length !== 17) {
+    console.log("Cannot find all items");
+  } else {
+    await itemNFT.editItems(items);
+  }
 }
 
 main().catch((error) => {
