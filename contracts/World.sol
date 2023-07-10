@@ -92,7 +92,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint16[] private lastAddedDynamicActions;
   uint private lastDynamicUpdatedTime;
 
-  uint dummy; // Not clean
+  /// @custom:oz-renamed-from dailyRewards
+  bytes32 dummy; // Not clean
 
   mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private actionChoices;
   mapping(uint actionId => CombatStats combatStats) private actionCombatStats;
