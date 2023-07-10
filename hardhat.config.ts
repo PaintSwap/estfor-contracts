@@ -13,6 +13,7 @@ import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
 import "hardhat-storage-layout";
 import "solidity-coverage";
+import {ethers} from "ethers";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -46,12 +47,12 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: 70000000000,
+      gasPrice: ethers.utils.parseUnits("400", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: 150000000000,
+      gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
     },
   },
   etherscan: {
