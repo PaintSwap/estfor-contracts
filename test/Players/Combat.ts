@@ -1920,6 +1920,70 @@ describe("Combat Actions", function () {
       );
     });
 
+    it("Die with food, and don't have enough scrolls to kill the ones you did kill", async function () {
+      const {
+        playerId,
+        players,
+        alice,
+        world,
+        queuedAction: magicQueuedAction,
+        itemNFT,
+        startXP,
+      } = await loadFixture(playersFixtureMagic);
+
+      const monsterCombatStats: EstforTypes.CombatStats = {
+        melee: 50,
+        magic: 0,
+        ranged: 0,
+        meleeDefence: 0,
+        magicDefence: 0,
+        rangedDefence: 0,
+        health: 5,
+      };
+
+      const dropRate = 1 * GUAR_MUL; // per hour
+      await world.addActions([
+        {
+          actionId: 2,
+          info: {
+            ...defaultActionInfo,
+            skill: EstforTypes.Skill.COMBAT,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            numSpawned: 100 * SPAWN_MUL,
+            handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+            handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: true,
+            successPercent: 100,
+          },
+          guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+          randomRewards: [],
+          combatStats: monsterCombatStats,
+        },
+      ]);
+
+      const queuedAction = {...magicQueuedAction};
+      queuedAction.actionId = 2;
+      queuedAction.timespan = 3600 * 2;
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await ethers.provider.send("evm_mine", []);
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      // Confirm you are dead
+      expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
+      await players.connect(alice).processActions(playerId);
+      // Died but still get some XP
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + 3960);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      // Use up everything
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(0);
+    });
+
     it("No food, check that scrolls are consumed immediately still and only for combat time expected", async function () {
       const {
         playerId,

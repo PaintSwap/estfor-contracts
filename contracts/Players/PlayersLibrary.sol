@@ -185,7 +185,11 @@ library PlayersLibrary {
       for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
         uint j = jIter.asUint256();
         if (pendingQueuedActionEquipmentState.consumedItemTokenIds[j] == _itemId) {
-          balance -= pendingQueuedActionEquipmentState.consumedAmounts[j];
+          if (balance >= pendingQueuedActionEquipmentState.consumedAmounts[j]) {
+            balance -= pendingQueuedActionEquipmentState.consumedAmounts[j];
+          } else {
+            balance = 0;
+          }
         }
       }
     }
@@ -462,10 +466,10 @@ library PlayersLibrary {
     if (_actionChoice.rate != 0) {
       baseInputItemsConsumedNum = uint16(Math.max(numKilled, baseInputItemsConsumedNum));
     }
-
+    uint maxRequiredBaseInputItemsConsumedRatio = baseInputItemsConsumedNum;
     if (baseInputItemsConsumedNum != 0) {
       // This checks the balances
-      uint maxRequiredRatio = _getMaxRequiredRatio(
+      maxRequiredBaseInputItemsConsumedRatio = _getMaxRequiredRatio(
         _from,
         _actionChoice,
         baseInputItemsConsumedNum,
@@ -473,9 +477,9 @@ library PlayersLibrary {
         _pendingQueuedActionEquipmentStates
       );
 
-      if (baseInputItemsConsumedNum > maxRequiredRatio) {
+      if (baseInputItemsConsumedNum > maxRequiredBaseInputItemsConsumedRatio) {
         // How many can we kill with the consumables we do have
-        numKilled = (numKilled * maxRequiredRatio) / baseInputItemsConsumedNum;
+        numKilled = (numKilled * maxRequiredBaseInputItemsConsumedRatio) / baseInputItemsConsumedNum;
         xpElapsedTime = respawnTime * numKilled;
 
         if (canKillAll) {
@@ -488,7 +492,7 @@ library PlayersLibrary {
           combatElapsedTime = _elapsedTime;
           combatElapsedTimeKilling = combatTimePerKill * numKilled;
         }
-        baseInputItemsConsumedNum = uint16(maxRequiredRatio);
+        baseInputItemsConsumedNum = uint16(maxRequiredBaseInputItemsConsumedRatio);
       }
     } else if (_actionChoice.rate != 0) {
       // Requires input items but we don't have any. In combat the entire time getting rekt
@@ -541,7 +545,7 @@ library PlayersLibrary {
 
       uint totalHealth = uint16(_combatStats.health) + foodConsumed * healthRestored;
       // How much combat time is required to kill the player
-      combatElapsedTime = _timeToKillPlayer(
+      uint killPlayerTime = _timeToKillPlayer(
         _combatStats,
         _enemyCombatStats,
         _alphaCombat,
@@ -549,6 +553,7 @@ library PlayersLibrary {
         int(totalHealth)
       );
 
+      combatElapsedTime = Math.min(combatElapsedTime, killPlayerTime); // Needed?
       if (healthRestored == 0 || totalHealthLost <= 0) {
         // No food attached or didn't lose any health
 
@@ -562,7 +567,9 @@ library PlayersLibrary {
       } else {
         // How many can we kill with the food we did consume
         if (totalFoodRequiredKilling > 0) {
-          numKilled = (numKilled * foodConsumed) / totalFoodRequiredKilling;
+          if (foodConsumed < totalFoodRequiredKilling) {
+            numKilled = (numKilled * foodConsumed) / totalFoodRequiredKilling;
+          }
         } else {
           numKilled = 0;
         }
