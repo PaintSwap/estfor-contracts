@@ -619,6 +619,89 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   // Random rewards
+
+  function getRandomRewards(
+    uint _playerId,
+    uint40 _skillStartTime,
+    uint _elapsedTime,
+    uint _numTickets,
+    ActionRewards memory _actionRewards,
+    uint8 _successPercent,
+    uint8 _fullAttireBonusRewardsPercent
+  ) external view returns (uint[] memory ids, uint[] memory amounts, bool hasRandomWord) {
+    ids = new uint[](MAX_RANDOM_REWARDS_PER_ACTION);
+    amounts = new uint[](MAX_RANDOM_REWARDS_PER_ACTION);
+    uint length;
+    RandomReward[] memory randomRewards = _setupRandomRewards(_actionRewards);
+
+    if (randomRewards.length != 0) {
+      uint skillEndTime = _skillStartTime.add(_elapsedTime);
+      hasRandomWord = world.hasRandomWord(skillEndTime);
+      if (hasRandomWord) {
+        uint numIterations = Math.min(MAX_UNIQUE_TICKETS_, _numTickets);
+
+        bytes memory randomBytes = world.getRandomBytes(numIterations, skillEndTime, _playerId);
+        uint multiplier = _numTickets / MAX_UNIQUE_TICKETS_;
+
+        // Cache some values for later
+        uint16[] memory extraChances = new uint16[](MAX_RANDOM_REWARDS_PER_ACTION);
+        uint16[] memory extraChancesExcess = new uint16[](MAX_RANDOM_REWARDS_PER_ACTION);
+        uint[] memory mintMultipliers = new uint[](MAX_RANDOM_REWARDS_PER_ACTION);
+        uint[] memory mintMultipliersExcess = new uint[](MAX_RANDOM_REWARDS_PER_ACTION);
+        U256 randomRewardsLength = randomRewards.length.asU256();
+        for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
+          uint j = iterJ.asUint256();
+          RandomReward memory randomReward = randomRewards[j];
+          mintMultipliers[j] = 1;
+          mintMultipliersExcess[j] = 1;
+          if (_numTickets > MAX_UNIQUE_TICKETS_) {
+            if (randomReward.chance < RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_) {
+              // Rare item, increase chance if there aren't enough unique tickets
+              extraChances[j] = uint16(randomReward.chance * multiplier);
+              extraChancesExcess[j] = uint16(randomReward.chance * (multiplier + 1));
+            } else {
+              mintMultipliers[j] = multiplier;
+              mintMultipliersExcess[j] = multiplier + 1;
+            }
+          }
+        }
+
+        uint remainder = _numTickets % MAX_UNIQUE_TICKETS_;
+        // The first set has an increased mint multiplier as the tickets spill over
+        length = _randomRewardsLoop(
+          0,
+          remainder,
+          extraChancesExcess,
+          mintMultipliersExcess,
+          ids,
+          amounts,
+          randomRewards,
+          _successPercent,
+          _fullAttireBonusRewardsPercent,
+          randomBytes
+        );
+        // The next set uses the base multiplier
+        uint otherLength = _randomRewardsLoop(
+          remainder,
+          numIterations,
+          extraChances,
+          mintMultipliers,
+          ids,
+          amounts,
+          randomRewards,
+          _successPercent,
+          _fullAttireBonusRewardsPercent,
+          randomBytes
+        );
+        length = Math.max(length, otherLength);
+      }
+    }
+    assembly ("memory-safe") {
+      mstore(ids, length)
+      mstore(amounts, length)
+    }
+  }
+
   function _setupRandomRewards(
     ActionRewards memory _rewards
   ) private pure returns (RandomReward[] memory randomRewards) {
@@ -667,106 +750,56 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     return uint16(_b[index] | (bytes2(_b[index.inc()]) >> 8));
   }
 
-  // hasRandomWord means there was pending reward we tried to get a reward from
-  function getRandomRewards(
-    uint _playerId,
-    uint40 _skillStartTime,
-    uint _elapsedTime,
-    uint _numTickets,
-    ActionRewards memory _actionRewards,
+  function _randomRewardsLoop(
+    uint _start,
+    uint _end,
+    uint16[] memory _extraChances,
+    uint[] memory _mintMultipliers,
+    uint[] memory _ids,
+    uint[] memory _amounts,
+    RandomReward[] memory _randomRewards,
     uint8 _successPercent,
-    uint8 _fullAttireBonusRewardsPercent
-  ) external view returns (uint[] memory ids, uint[] memory amounts, bool hasRandomWord) {
-    ids = new uint[](MAX_RANDOM_REWARDS_PER_ACTION);
-    amounts = new uint[](MAX_RANDOM_REWARDS_PER_ACTION);
-    uint length;
+    uint8 _fullAttireBonusRewardsPercent,
+    bytes memory randomBytes
+  ) private pure returns (uint length) {
+    U256 randomRewardsLength = _randomRewards.length.asU256();
+    for (U256 iter = _start.asU256(); iter.lt(_end); iter = iter.inc()) {
+      uint i = iter.asUint256();
+      uint operation = (uint(_getSlice(randomBytes, i)) * 100) / _successPercent;
 
-    RandomReward[] memory _randomRewards = _setupRandomRewards(_actionRewards);
+      // If there is above MAX_UNIQUE_TICKETS_ tickets we need to mint more if a ticket is hit unless it
+      // is a rare item in which case we just increase the change that it can get get
 
-    if (_randomRewards.length != 0) {
-      uint skillEndTime = _skillStartTime.add(_elapsedTime);
-      hasRandomWord = world.hasRandomWord(skillEndTime);
-      if (hasRandomWord) {
-        uint numIterations = Math.min(MAX_UNIQUE_TICKETS_, _numTickets);
+      // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
+      uint extraChance = (operation * _fullAttireBonusRewardsPercent) / 100;
+      if (operation > extraChance) {
+        operation -= extraChance;
+      } else {
+        operation = 1;
+      }
+      uint16 rand = uint16(Math.min(type(uint16).max, operation));
 
-        bytes memory randomBytes = world.getRandomBytes(numIterations, skillEndTime, _playerId);
-        for (U256 iter; iter.lt(numIterations); iter = iter.inc()) {
-          uint i = iter.asUint256();
-          uint operation = (uint(_getSlice(randomBytes, i)) * 100) / _successPercent;
+      for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
+        uint j = iterJ.asUint256();
+        RandomReward memory randomReward = _randomRewards[j];
 
-          // If there is above 240 tickets we need to mint more if a ticket is hit unless it
-          // is a rare item in which case we just increase the change that it can get get
-
-          // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
-          uint extraChance = (operation * _fullAttireBonusRewardsPercent) / 100;
-          if (operation > extraChance) {
-            operation -= extraChance;
-          } else {
-            operation = 1;
-          }
-          uint16 rand = uint16(Math.min(type(uint16).max, operation));
-
-          U256 randomRewardsLength = _randomRewards.length.asU256();
-          for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
-            uint j = iterJ.asUint256();
-            RandomReward memory randomReward = _randomRewards[j];
-
-            uint mintMultiplier = 1;
-            uint remainder = _numTickets % MAX_UNIQUE_TICKETS_;
-            uint16 updatedRand = rand;
-            if (_numTickets > MAX_UNIQUE_TICKETS_) {
-              uint multiplier = _numTickets / MAX_UNIQUE_TICKETS_;
-              if (randomReward.chance < RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_) {
-                // Rare item, increase chance if there aren't enough unique tickets
-                if (i < remainder) {
-                  ++multiplier;
-                }
-                uint16 extraChance = uint16(randomReward.chance * multiplier);
-                if (updatedRand > extraChance) {
-                  updatedRand -= extraChance;
-                } else {
-                  updatedRand = 1;
-                }
-              } else {
-                mintMultiplier = multiplier;
-                if (i < remainder) {
-                  mintMultiplier = mintMultiplier.inc();
-                }
-              }
-            }
-
-            if (updatedRand <= randomReward.chance) {
-              // This random reward's chance was hit, so add it
-              bool found;
-              U256 idsLength = length.asU256();
-              // Add this random item
-              for (U256 iterK; iterK < idsLength; iterK = iterK.inc()) {
-                uint k = iterK.asUint256();
-                if (randomReward.itemTokenId == ids[k]) {
-                  // This item exists so accumulate it with the existing value
-                  amounts[k] += randomReward.amount * mintMultiplier;
-                  found = true;
-                  break;
-                }
-              }
-
-              if (!found) {
-                // New item
-                ids[length] = randomReward.itemTokenId;
-                amounts[length] = randomReward.amount * mintMultiplier;
-                length = length.inc();
-              }
-            } else {
-              // A common one isn't found so a rarer one won't be.
-              break;
-            }
-          }
+        uint16 updatedRand = rand;
+        uint16 extraChance = _extraChances[j];
+        if (updatedRand > extraChance) {
+          updatedRand -= extraChance;
+        } else {
+          updatedRand = 1;
+        }
+        if (updatedRand <= randomReward.chance) {
+          // This random reward's chance was hit, so add it to the hits
+          _ids[j] = randomReward.itemTokenId;
+          _amounts[j] += randomReward.amount * _mintMultipliers[j];
+          length = j + 1;
+        } else {
+          // A common one isn't found so a rarer one won't be.
+          break;
         }
       }
-    }
-    assembly ("memory-safe") {
-      mstore(ids, length)
-      mstore(amounts, length)
     }
   }
 }

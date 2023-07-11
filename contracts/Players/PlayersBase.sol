@@ -120,7 +120,7 @@ abstract contract PlayersBase {
   uint internal constant START_XP_ = 374;
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
   uint internal constant MAX_SUCCESS_PERCENT_CHANCE_ = 90;
-  uint internal constant MAX_UNIQUE_TICKETS_ = 240;
+  uint internal constant MAX_UNIQUE_TICKETS_ = 64;
   uint internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1000;
 
   // *IMPORTANT* keep as the first non-constant state variable

@@ -1183,10 +1183,10 @@ describe("Rewards", function () {
       const cutoff = (await players.RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF()).toNumber();
 
       const randomChance = cutoff - 1; // Below 1000 triggers this
-      const numSpawned = 600 * SPAWN_MUL;
+      const numSpawned = 150 * SPAWN_MUL;
 
       const numHours = 23;
-      // 240 unique tickets 600 * 23 = 13800 / 240 = 57.5. Should give 57.5 * 999 = 56442.5 / 65355 chance of each roll hitting
+      // 64 unique tickets 150 * 23 = 3450 / 64 = 53.9. Should give 53.9 * 999 = 53846.1 / 65355 chance of each roll hitting
       const fractionChancePerRoll =
         ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65355;
 
@@ -1310,14 +1310,14 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       // Check output
-      expect(fractionChancePerRoll).to.be.gt(0.85);
+      expect(fractionChancePerRoll).to.be.gt(0.82);
       expect(fractionChancePerRoll).to.be.lt(0.9);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.gte(
-        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 0.85)
-      ); // 15% below
+        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 0.82)
+      ); // 18% below
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.lte(
-        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 1.15)
-      ); // 15% above
+        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 1.18)
+      ); // 18% above
     });
 
     // Might fail as relies on random chance
