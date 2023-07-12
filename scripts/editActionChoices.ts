@@ -44,24 +44,36 @@ async function main() {
   }
 */
   {
-    const actionIds = allActionChoiceIdsCrafting.map(() => EstforConstants.ACTION_CRAFTING_ITEM);
-    const tx = await world.editActionChoices(actionIds, allActionChoiceIdsCrafting, allActionChoicesCrafting);
+    const tx = await world.editActionChoices(
+      EstforConstants.ACTION_CRAFTING_ITEM,
+      allActionChoiceIdsCrafting,
+      allActionChoicesCrafting
+    );
     await tx.wait();
   }
   {
-    const actionIds = allActionChoiceIdsCooking.map(() => EstforConstants.ACTION_COOKING_ITEM);
-    const tx = await world.editActionChoices(actionIds, allActionChoiceIdsCooking, allActionChoicesCooking);
+    const tx = await world.editActionChoices(
+      EstforConstants.ACTION_COOKING_ITEM,
+      allActionChoiceIdsCooking,
+      allActionChoicesCooking
+    );
     await tx.wait();
   }
   {
-    const actionIds = allActionChoiceIdsSmithing.map(() => EstforConstants.ACTION_SMITHING_ITEM);
-    const tx = await world.editActionChoices(actionIds, allActionChoiceIdsSmithing, allActionChoicesSmithing);
+    const tx = await world.editActionChoices(
+      EstforConstants.ACTION_SMITHING_ITEM,
+      allActionChoiceIdsSmithing,
+      allActionChoicesSmithing
+    );
     await tx.wait();
   }
   // Makes ash
   {
-    const actionIds = allActionChoiceIdsFiremaking.map(() => EstforConstants.ACTION_FIREMAKING_ITEM);
-    const tx = await world.editActionChoices(actionIds, allActionChoiceIdsFiremaking, allActionChoicesFiremaking);
+    const tx = await world.editActionChoices(
+      EstforConstants.ACTION_FIREMAKING_ITEM,
+      allActionChoiceIdsFiremaking,
+      allActionChoicesFiremaking
+    );
     await tx.wait();
   }
 }

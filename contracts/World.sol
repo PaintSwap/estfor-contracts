@@ -26,7 +26,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
   event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
-  event EditActionChoicesV2(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
+  event EditActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
+  event RemoveActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds);
 
   // Legacy, just for ABI reasons
   event AddAction(ActionV1 action);
@@ -549,27 +550,37 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function editActionChoices(
-    uint16[] calldata _actionIds,
+    uint16 _actionId,
     uint16[] calldata _actionChoiceIds,
     ActionChoiceInput[] calldata _actionChoices
-  ) external {
-    if (_actionIds.length == 0) {
+  ) external onlyOwner {
+    if (_actionChoiceIds.length == 0) {
       revert NoActionChoices();
     }
-    if (_actionIds.length != _actionChoiceIds.length) {
-      revert LengthMismatch();
-    }
-    if (_actionIds.length != _actionChoices.length) {
+    if (_actionChoiceIds.length != _actionChoices.length) {
       revert LengthMismatch();
     }
 
-    U256 actionIdsLength = _actionIds.length.asU256();
+    U256 actionIdsLength = _actionChoiceIds.length.asU256();
     for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
       uint16 i = iter.asUint16();
-      _editActionChoice(_actionIds[i], _actionChoiceIds[i], _packActionChoice(_actionChoices[i]));
+      _editActionChoice(_actionId, _actionChoiceIds[i], _packActionChoice(_actionChoices[i]));
     }
 
-    emit EditActionChoicesV2(_actionIds, _actionChoiceIds, _actionChoices);
+    emit EditActionChoicesV2(_actionId, _actionChoiceIds, _actionChoices);
+  }
+
+  function removeActionChoices(uint16 _actionId, uint16[] calldata _actionChoiceIds) external onlyOwner {
+    if (_actionChoiceIds.length == 0) {
+      revert NoActionChoices();
+    }
+
+    U256 length = _actionChoiceIds.length.asU256();
+    for (U256 iter; iter < length; iter = iter.inc()) {
+      uint16 i = iter.asUint16();
+      delete actionChoices[_actionId][_actionChoiceIds[i]];
+    }
+    emit RemoveActionChoicesV2(_actionId, _actionChoiceIds);
   }
 
   function setQuests(IQuests _quests) external onlyOwner {

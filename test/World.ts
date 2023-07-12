@@ -355,7 +355,7 @@ describe("World", function () {
       );
 
       await world.editActionChoices(
-        [EstforConstants.NONE],
+        EstforConstants.NONE,
         [choiceId],
         [
           {
@@ -374,7 +374,7 @@ describe("World", function () {
       expect((await world.getActionChoice(EstforConstants.NONE, 2)).skill).to.eq(EstforTypes.Skill.NONE);
 
       await world.editActionChoices(
-        [EstforConstants.NONE],
+        EstforConstants.NONE,
         [choiceId],
         [
           {
