@@ -108,7 +108,7 @@ async function main() {
   const World = await ethers.getContractFactory("World", {
     libraries: {WorldLibrary: worldLibrary.address},
   });
-  const world = await upgrades.deployProxy(World, [oracle.address, subscriptionId, allDailyRewards, allWeeklyRewards], {
+  const world = await upgrades.deployProxy(World, [oracle.address, subscriptionId, [], []], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
@@ -417,6 +417,20 @@ async function main() {
   await tx.wait();
   console.log("Add full attire bonuses");
 
+  // Set up daily rewards
+  for (let i = 0; i < allDailyRewards.length; ++i) {
+    const tier = i + 1;
+    const tx = await world.setDailyRewardPool(tier, allDailyRewards[i]);
+    tx.wait();
+  }
+
+  // Set up weekly rewards
+  for (let i = 0; i < allWeeklyRewards.length; ++i) {
+    const tier = i + 1;
+    const tx = await world.setWeeklyRewardPool(tier, allWeeklyRewards[i]);
+    tx.wait();
+  }
+
   tx = await world.addActions(allActions);
   await tx.wait();
   console.log("Add actions");
@@ -430,43 +444,32 @@ async function main() {
   const genericCombatActionId = EstforConstants.NONE;
 
   tx = await world.addBulkActionChoices(
-    [
-      fireMakingActionId,
-      smithingActionId,
-      cookingActionId,
-      craftingActionId,
-      fletchingActionId,
-      alchemyActionId,
-      genericCombatActionId,
-      genericCombatActionId,
-      genericCombatActionId,
-    ],
-    [
-      allActionChoiceIdsFiremaking,
-      allActionChoiceIdsSmithing,
-      allActionChoiceIdsCooking,
-      allActionChoiceIdsCrafting,
-      allActionChoiceIdsFletching,
-      allActionChoiceIdsAlchemy,
-      allActionChoiceIdsMelee,
-      allActionChoiceIdsRanged,
-      allActionChoiceIdsMagic,
-    ],
-    [
-      allActionChoicesFiremaking,
-      allActionChoicesSmithing,
-      allActionChoicesCooking,
-      allActionChoicesCrafting,
-      allActionChoicesFletching,
-      allActionChoicesAlchemy,
-      allActionChoicesMelee,
-      allActionChoicesRanged,
-      allActionChoicesMagic,
-    ]
+    [fireMakingActionId, smithingActionId, cookingActionId, craftingActionId],
+    [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking, allActionChoiceIdsCrafting],
+    [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking, allActionChoicesCrafting]
   );
 
   await tx.wait();
-  console.log("Add action choices");
+  console.log("Add action choices1");
+
+  // Add new ones here
+  tx = await world.addBulkActionChoices(
+    [fletchingActionId, alchemyActionId],
+    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy],
+    [allActionChoicesFletching, allActionChoicesAlchemy]
+  );
+
+  await tx.wait();
+  console.log("Add action choices2");
+
+  tx = await world.addBulkActionChoices(
+    [genericCombatActionId, genericCombatActionId, genericCombatActionId],
+    [allActionChoiceIdsMelee, allActionChoiceIdsRanged, allActionChoiceIdsMagic],
+    [allActionChoicesMelee, allActionChoicesRanged, allActionChoicesMagic]
+  );
+
+  await tx.wait();
+  console.log("Add combat action choices");
 
   // Add shop items
   tx = await shop.addBuyableItems(isBeta ? allShopItemsBeta : allShopItems);
