@@ -79,30 +79,30 @@ interface IPlayerImpls {
   playersImplMisc: PlayersImplMisc;
 }
 
-export const deployPlayerImplementations = async (playersLibrary: PlayersLibrary): Promise<IPlayerImpls> => {
+export const deployPlayerImplementations = async (playersLibraryAddress: string): Promise<IPlayerImpls> => {
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: playersLibraryAddress},
   });
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
   console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
   await playersImplQueueActions.deployed();
 
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: playersLibraryAddress},
   });
   const playersImplProcessActions = await PlayersImplProcessActions.deploy();
   console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
   await playersImplProcessActions.deployed();
 
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: playersLibraryAddress},
   });
   const playersImplRewards = await PlayersImplRewards.deploy();
   console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
   await playersImplRewards.deployed();
 
   const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: playersLibraryAddress},
   });
   const playersImplMisc = await PlayersImplMisc.deploy();
   console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);

@@ -29,6 +29,7 @@ async function main() {
   if (newEstforLibrary) {
     estforLibrary = await EstforLibrary.deploy();
     await estforLibrary.deployed();
+    await verifyContracts([estforLibrary.address]);
   } else {
     estforLibrary = await EstforLibrary.attach(ESTFOR_LIBRARY_ADDRESS);
   }
@@ -37,17 +38,18 @@ async function main() {
   // Players
   const newPlayersLibrary = false;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  let playerLibrary: PlayersLibrary;
+  let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {
-    playerLibrary = await PlayersLibrary.deploy();
-    await playerLibrary.deployed();
+    playersLibrary = await PlayersLibrary.deploy();
+    await playersLibrary.deployed();
+    await verifyContracts([playersLibrary.address]);
   } else {
-    playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
+    playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
-  console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
+  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
   const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",

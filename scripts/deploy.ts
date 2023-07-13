@@ -253,7 +253,7 @@ async function main() {
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc} =
-    await deployPlayerImplementations(playersLibrary);
+    await deployPlayerImplementations(playersLibrary.address);
 
   const Players = await ethers.getContractFactory("Players", {
     libraries: {PlayersLibrary: playersLibrary.address},

@@ -8,7 +8,7 @@ import {
   PLAYERS_IMPL_REWARDS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
-import {verifyContracts} from "./utils";
+import {deployPlayerImplementations, verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -18,49 +18,24 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   // Players
-  const newPlayersLibrary = false;
+  const newPlayersLibrary = true;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  let playerLibrary: PlayersLibrary;
+  let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {
-    playerLibrary = await PlayersLibrary.deploy();
-    await playerLibrary.deployed();
-    await verifyContracts([playerLibrary.address]);
+    playersLibrary = await PlayersLibrary.deploy();
+    await playersLibrary.deployed();
+    await verifyContracts([playersLibrary.address]);
   } else {
-    playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
+    playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
-  console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
+  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplQueueActions = await PlayersImplQueueActions.deploy();
-  console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
-  await playersImplQueueActions.deployed();
-
-  const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplProcessActions = await PlayersImplProcessActions.deploy();
-  console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
-  await playersImplProcessActions.deployed();
-
-  const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplRewards = await PlayersImplRewards.deploy();
-  console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
-  await playersImplRewards.deployed();
-
-  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplMisc = await PlayersImplMisc.deploy();
-  console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
-  await playersImplMisc.deployed();
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc} =
+    await deployPlayerImplementations(playersLibrary.address);
 
   // Set the implementations
   const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
 
   /* Use these when keeping old implementations
