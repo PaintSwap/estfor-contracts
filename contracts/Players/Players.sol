@@ -34,6 +34,8 @@ interface IPlayerDelegate {
 
   function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdReward) external;
 
+  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdReward) external;
+
   function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
 
   function mintedPlayer(
@@ -392,6 +394,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(
       implMisc,
       abi.encodeWithSelector(IPlayerDelegate.addXPThresholdRewards.selector, _xpThresholdRewards)
+    );
+  }
+
+  function editXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
+    _delegatecall(
+      implMisc,
+      abi.encodeWithSelector(IPlayerDelegate.editXPThresholdRewards.selector, _xpThresholdRewards)
     );
   }
 

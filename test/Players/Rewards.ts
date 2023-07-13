@@ -137,6 +137,40 @@ describe("Rewards", function () {
       );
     });
 
+    it("Editing non-existent XP reward should fail", async function () {
+      const {players} = await loadFixture(playersFixture);
+      const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
+      await expect(players.editXPThresholdRewards([{xpThreshold: 500, rewards}])).to.be.revertedWithCustomError(
+        players,
+        "XPThresholdDoesNotExist"
+      );
+    });
+
+    it("Editing an existing XP reward should work", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      let rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
+      await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
+      rewards = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 10}];
+      await players.editXPThresholdRewards([{xpThreshold: 500, rewards}]);
+
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+      const queuedAction = {...queuedActionWoodcutting};
+      queuedAction.timespan = 500;
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [50]);
+      await players.connect(alice).processActions(playerId);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
+      await ethers.provider.send("evm_increaseTime", [450]);
+      await ethers.provider.send("evm_mine", []);
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.xpRewardItemTokenIds.length).is.eq(1);
+      expect(pendingQueuedActionState.xpRewardItemTokenIds[0]).is.eq(EstforConstants.BRONZE_BAR);
+      expect(pendingQueuedActionState.xpRewardAmounts[0]).is.eq(10);
+    });
+
     it("testModifyXP rewards", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
 
@@ -158,6 +192,13 @@ describe("Rewards", function () {
         .withArgs(alice.address, playerId, EstforTypes.Skill.MELEE, 10000)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");
       expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.equal(2080952);
+
+      // Check balance
+      await expect(players.testModifyXP(alice.address, playerId, EstforTypes.Skill.DEFENCE, 2070952, false))
+        .to.emit(players, "AddXP")
+        .withArgs(alice.address, playerId, EstforTypes.Skill.DEFENCE, 2070952)
+        .and.to.not.emit(players, "ClaimedXPThresholdRewards");
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.equal(2070952);
     });
 
     // This was for a reported bug by doughbender where multiple actions were giving the same xp rewards triggering

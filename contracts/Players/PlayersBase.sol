@@ -34,6 +34,7 @@ abstract contract PlayersBase {
     uint[] queueIds
   );
   event AdminAddThresholdReward(XPThresholdReward xpThresholdReward);
+  event AdminEditThresholdReward(XPThresholdReward xpThresholdReward);
 
   event BoostFinished(uint playerId);
 
@@ -106,6 +107,7 @@ abstract contract PlayersBase {
   error NotAdminAndBeta();
   error XPThresholdNotFound();
   error XPThresholdAlreadyExists();
+  error XPThresholdDoesNotExist();
   error InvalidItemTokenId();
   error ItemDoesNotExist();
   error InvalidAmount();

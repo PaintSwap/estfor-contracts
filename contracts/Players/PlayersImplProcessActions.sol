@@ -360,18 +360,18 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     // Make sure it isn't less XP
-    uint oldPoints = PlayersLibrary.readXP(_skill, xp_[_playerId]);
-    if (_xp < oldPoints) {
+    uint oldXP = PlayersLibrary.readXP(_skill, xp_[_playerId]);
+    if (_xp < oldXP) {
       revert TestInvalidXP();
     }
     if (playerNFT.balanceOf(_from, _playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
-    uint56 updatedPoints = uint56(_xp.sub(oldPoints));
-    _updateXP(_from, _playerId, _skill, updatedPoints);
-    uint56 newPoints = uint56(players_[_playerId].totalXP.add(updatedPoints));
-    _claimTotalXPThresholdRewards(_from, _playerId, oldPoints, newPoints);
-    players_[_playerId].totalXP = newPoints;
+    uint56 gainedXP = uint56(_xp.sub(oldXP));
+    _updateXP(_from, _playerId, _skill, gainedXP);
+    uint56 newTotalXP = uint56(players_[_playerId].totalXP.add(gainedXP));
+    _claimTotalXPThresholdRewards(_from, _playerId, players_[_playerId].totalXP, newTotalXP);
+    players_[_playerId].totalXP = newTotalXP;
   }
 
   function _handleDailyRewards(address _from, uint _playerId) private {

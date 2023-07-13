@@ -68,6 +68,19 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     }
   }
 
+  function _checkXPThresholdRewards(XPThresholdReward calldata _xpThresholdReward) private pure {
+    U256 bounds = _xpThresholdReward.rewards.length.asU256();
+    for (U256 jIter; jIter < bounds; jIter = jIter.inc()) {
+      uint j = jIter.asUint256();
+      if (_xpThresholdReward.rewards[j].itemTokenId == NONE) {
+        revert InvalidItemTokenId();
+      }
+      if (_xpThresholdReward.rewards[j].amount == 0) {
+        revert InvalidAmount();
+      }
+    }
+  }
+
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external {
     U256 iter = _xpThresholdRewards.length.asU256();
     while (iter.neq(0)) {
@@ -84,20 +97,24 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       if (xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0) {
         revert XPThresholdAlreadyExists();
       }
-
-      U256 bounds = xpThresholdReward.rewards.length.asU256();
-      for (U256 jIter; jIter < bounds; jIter = jIter.inc()) {
-        uint j = jIter.asUint256();
-        if (xpThresholdReward.rewards[j].itemTokenId == NONE) {
-          revert InvalidItemTokenId();
-        }
-        if (xpThresholdReward.rewards[j].amount == 0) {
-          revert InvalidAmount();
-        }
-      }
+      _checkXPThresholdRewards(xpThresholdReward);
 
       xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
       emit AdminAddThresholdReward(xpThresholdReward);
+    }
+  }
+
+  function editXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external {
+    U256 iter = _xpThresholdRewards.length.asU256();
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
+      if (xpRewardThresholds[xpThresholdReward.xpThreshold].length == 0) {
+        revert XPThresholdDoesNotExist();
+      }
+      _checkXPThresholdRewards(xpThresholdReward);
+      xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
+      emit AdminEditThresholdReward(xpThresholdReward);
     }
   }
 
