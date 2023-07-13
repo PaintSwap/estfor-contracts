@@ -5686,7 +5686,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       melee: 0,
       magic: 0,
-      ranged: 0,
+      ranged: 2,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -5709,7 +5709,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       melee: 0,
       magic: 0,
-      ranged: 0,
+      ranged: 4,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -5732,7 +5732,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       melee: 0,
       magic: 0,
-      ranged: 0,
+      ranged: 7,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -5755,7 +5755,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       melee: 0,
       magic: 0,
-      ranged: 0,
+      ranged: 12,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -5772,13 +5772,13 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_ARROW.json",
-    name: "Adamantie Arrow",
+    name: "Adamantine Arrow",
   },
   {
     combatStats: {
       melee: 0,
       magic: 0,
-      ranged: 0,
+      ranged: 14,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -5801,7 +5801,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       melee: 0,
       magic: 0,
-      ranged: 0,
+      ranged: 20,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -5824,7 +5824,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       melee: 0,
       magic: 0,
-      ranged: 0,
+      ranged: 25,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
