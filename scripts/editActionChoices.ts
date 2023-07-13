@@ -4,12 +4,14 @@ import {
   allActionChoicesCooking,
   allActionChoicesCrafting,
   allActionChoicesFiremaking,
+  allActionChoicesFletching,
   allActionChoicesSmithing,
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsCooking,
   allActionChoiceIdsCrafting,
   allActionChoiceIdsFiremaking,
+  allActionChoiceIdsFletching,
   allActionChoiceIdsSmithing,
 } from "./data/actionChoiceIds";
 import {EstforConstants} from "@paintswap/estfor-definitions";
@@ -25,24 +27,22 @@ async function main() {
   const world = await World.attach(WORLD_ADDRESS);
 
   // Single
-  //  const index = await allActionChoiceIdsCrafting;
-  //.findIndex(
-  //  (actionChoiceId) => actionChoiceId === EstforConstants.ACTIONCHOICE_CRAFTING_TOTEM_STAFF
-  //);
-
-  /*
+  /*  const index = await allActionChoiceIdsFletching.findIndex(
+    (actionChoiceId) => actionChoiceId === EstforConstants.ACTIONCHOICE_FLETCHING_BASIC_BOW
+  );
   if (index === -1) {
     console.error("ActionChoiceId not found");
   } else {
-    console.log("Updating ", allActionChoicesCrafting[index], " ", allActionChoiceIdsCrafting[index]);
-    const tx = await world.editActionChoices(
-      [EstforConstants.ACTION_CRAFTING_ITEM],
-      [allActionChoiceIdsCrafting[index]],
-      [allActionChoicesCrafting[index]]
-    );
-    await tx.wait();
-  }
-*/
+    {
+      const tx = await world.editActionChoices(
+        EstforConstants.ACTION_FLETCHING_ITEM,
+        [allActionChoiceIdsFletching[index]],
+        [allActionChoicesFletching[index]]
+      );
+      await tx.wait();
+    }
+  } */
+
   {
     const tx = await world.editActionChoices(
       EstforConstants.ACTION_CRAFTING_ITEM,

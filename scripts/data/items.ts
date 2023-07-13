@@ -5761,7 +5761,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.ADAMANITE_ARROW,
+    tokenId: EstforConstants.ADAMANTINE_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
     isFullModeOnly: false,
@@ -5771,7 +5771,7 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "ADAMANITE_ARROW.json",
+    metadataURI: "ADAMANTINE_ARROW.json",
     name: "Adamantie Arrow",
   },
   {
@@ -6014,7 +6014,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 1,
       health: 0,
     },
-    tokenId: EstforConstants.AZURITE_COWL,
+    tokenId: EstforConstants.AZAMITE_COWL,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
     isFullModeOnly: false,
@@ -6024,8 +6024,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "AZURITE_COWL.json",
-    name: "Azurite Cowl",
+    metadataURI: "AZAMITE_COWL.json",
+    name: "Azamite Cowl",
   },
   {
     combatStats: {
@@ -6037,7 +6037,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 1,
       health: 0,
     },
-    tokenId: EstforConstants.AZURITE_BODY,
+    tokenId: EstforConstants.AZAMITE_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
     isFullModeOnly: false,
@@ -6047,8 +6047,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "AZURITE_BODY.json",
-    name: "Azurite Body",
+    metadataURI: "AZAMITE_BODY.json",
+    name: "Azamite Body",
   },
   {
     combatStats: {
@@ -6060,7 +6060,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 2,
       health: 0,
     },
-    tokenId: EstforConstants.AZURITE_CHAPS,
+    tokenId: EstforConstants.AZAMITE_CHAPS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
     isFullModeOnly: false,
@@ -6070,8 +6070,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "AZURITE_CHAPS.json",
-    name: "Azurite Chaps",
+    metadataURI: "AZAMITE_CHAPS.json",
+    name: "Azamite Chaps",
   },
   {
     combatStats: {
@@ -6083,7 +6083,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 1,
       health: 0,
     },
-    tokenId: EstforConstants.AZURITE_BRACERS,
+    tokenId: EstforConstants.AZAMITE_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
     isFullModeOnly: false,
@@ -6093,8 +6093,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "AZURITE_BRACERS.json",
-    name: "Azurite Gloves",
+    metadataURI: "AZAMITE_BRACERS.json",
+    name: "Azamite Bracers",
   },
   {
     combatStats: {
@@ -6106,7 +6106,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 2,
       health: 1,
     },
-    tokenId: EstforConstants.AZURITE_BOOTS,
+    tokenId: EstforConstants.AZAMITE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
     isFullModeOnly: false,
@@ -6116,8 +6116,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "AZURITE_BOOTS.json",
-    name: "Azurite Boots",
+    metadataURI: "AZAMITE_BOOTS.json",
+    name: "Azamite Boots",
   },
   {
     combatStats: {
@@ -6209,7 +6209,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HAUBERK_BRACERS.json",
-    name: "Hauberk Gloves",
+    name: "Hauberk Bracers",
   },
   {
     combatStats: {
@@ -6324,7 +6324,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GARAGOS_BRACERS.json",
-    name: "Garagos Gloves",
+    name: "Garagos Bracers",
   },
   {
     combatStats: {
@@ -6439,7 +6439,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ETERNAL_BRACERS.json",
-    name: "Eternal Gloves",
+    name: "Eternal Bracers",
   },
   {
     combatStats: {
@@ -6554,7 +6554,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REAVER_BRACERS.json",
-    name: "Reaver Gloves",
+    name: "Reaver Bracers",
   },
   {
     combatStats: {
@@ -6669,7 +6669,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS.json",
-    name: "Scorching Gloves",
+    name: "Scorching Bracers",
   },
   {
     combatStats: {
@@ -6796,7 +6796,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.ADAMANITE_ARROW_HEAD,
+    tokenId: EstforConstants.ADAMANTINE_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: false,
@@ -6806,8 +6806,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "ADAMANITE_ARROW_HEAD.json",
-    name: "Adamantie Arrow Head",
+    metadataURI: "ADAMANTINE_ARROW_HEAD.json",
+    name: "Adamantine Arrow Head",
   },
   {
     combatStats: {
@@ -6991,6 +6991,6 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "QUAVA_SILK.json",
-    name: "Quva Silk",
+    name: "Quava Silk",
   },
 ];

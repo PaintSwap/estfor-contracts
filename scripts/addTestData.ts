@@ -54,6 +54,9 @@ export const addTestData = async (
   if (isDevNetwork(network)) {
     console.log("Increase time");
     await ethers.provider.send("evm_increaseTime", [10000]);
+  } else {
+    // Wait 1 minute till you get some
+    await new Promise((r) => setTimeout(r, 60 * 1000));
   }
 
   // Because of the speed multiplier, gas estimates may not be accurate as other things could be minted by the time the tx is executed,

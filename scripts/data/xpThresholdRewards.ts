@@ -199,7 +199,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 2700000,
     rewards: [
       {
-        itemTokenId: EstforConstants.ABSENCE_BOOST,
+        itemTokenId: EstforConstants.GATHERING_BOOST,
         amount: 10,
       },
     ],

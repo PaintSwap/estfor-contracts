@@ -20,7 +20,7 @@ async function main() {
       item.tokenId === EstforConstants.BRONZE_ARROW ||
       item.tokenId === EstforConstants.IRON_ARROW ||
       item.tokenId === EstforConstants.MITHRIL_ARROW ||
-      item.tokenId === EstforConstants.ADAMANITE_ARROW ||
+      item.tokenId === EstforConstants.ADAMANTINE_ARROW ||
       item.tokenId === EstforConstants.RUNITE_ARROW ||
       item.tokenId === EstforConstants.TITANIUM_ARROW ||
       item.tokenId === EstforConstants.ORICHALCUM_ARROW ||
@@ -31,11 +31,11 @@ async function main() {
       item.tokenId === EstforConstants.ICY_BOW ||
       item.tokenId === EstforConstants.GLITTERING_BOW ||
       item.tokenId === EstforConstants.GODLY_BOW ||
-      item.tokenId === EstforConstants.AZURITE_COWL ||
-      item.tokenId === EstforConstants.AZURITE_BODY ||
-      item.tokenId === EstforConstants.AZURITE_CHAPS ||
-      item.tokenId === EstforConstants.AZURITE_BRACERS ||
-      item.tokenId === EstforConstants.AZURITE_BOOTS ||
+      item.tokenId === EstforConstants.AZAMITE_COWL ||
+      item.tokenId === EstforConstants.AZAMITE_BODY ||
+      item.tokenId === EstforConstants.AZAMITE_CHAPS ||
+      item.tokenId === EstforConstants.AZAMITE_BRACERS ||
+      item.tokenId === EstforConstants.AZAMITE_BOOTS ||
       item.tokenId === EstforConstants.HAUBERK_COWL ||
       item.tokenId === EstforConstants.HAUBERK_BODY ||
       item.tokenId === EstforConstants.HAUBERK_CHAPS ||
@@ -65,7 +65,7 @@ async function main() {
       item.tokenId === EstforConstants.BRONZE_ARROW_HEAD ||
       item.tokenId === EstforConstants.IRON_ARROW_HEAD ||
       item.tokenId === EstforConstants.MITHRIL_ARROW_HEAD ||
-      item.tokenId === EstforConstants.ADAMANITE_ARROW_HEAD ||
+      item.tokenId === EstforConstants.ADAMANTINE_ARROW_HEAD ||
       item.tokenId === EstforConstants.RUNITE_ARROW_HEAD ||
       item.tokenId === EstforConstants.TITANIUM_ARROW_HEAD ||
       item.tokenId === EstforConstants.ORICHALCUM_ARROW_HEAD ||
