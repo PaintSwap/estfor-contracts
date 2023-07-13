@@ -133,30 +133,30 @@ export const playersFixture = async function () {
 
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playerLibrary = await PlayersLibrary.deploy();
+  const playersLibrary = await PlayersLibrary.deploy();
 
   const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
   const playersImplQueueActions = await PlayersImplQueueActions.deploy();
 
   const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
   const playersImplProcessActions = await PlayersImplProcessActions.deploy();
 
   const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
   const playersImplRewards = await PlayersImplRewards.deploy();
 
   const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
   const playersImplMisc = await PlayersImplMisc.deploy();
 
   const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
 
   const players = (await upgrades.deployProxy(

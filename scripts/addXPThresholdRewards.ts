@@ -10,9 +10,9 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playerLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
+  const playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
   const players = Players.attach(PLAYERS_ADDRESS);
 

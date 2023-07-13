@@ -10,7 +10,7 @@ async function main() {
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
-  await itemNFT.setBaseURI("ipfs://Qmax4XM1MWDLTMYj1iShJ43EnAqN8kR6p1ubKkKd5n4c6x/");
+  await itemNFT.setBaseURI("ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/");
 }
 
 main().catch((error) => {

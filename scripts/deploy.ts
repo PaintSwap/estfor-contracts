@@ -13,8 +13,9 @@ import {
   Promotions,
   Quests,
   Shop,
+  World,
 } from "../typechain-types";
-import {isDevNetwork, verifyContracts} from "./utils";
+import {deployPlayerImplementations, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
 
@@ -108,10 +109,10 @@ async function main() {
   const World = await ethers.getContractFactory("World", {
     libraries: {WorldLibrary: worldLibrary.address},
   });
-  const world = await upgrades.deployProxy(World, [oracle.address, subscriptionId, [], []], {
+  const world = (await upgrades.deployProxy(World, [oracle.address, subscriptionId, [], []], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-  });
+  })) as World;
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
 
@@ -153,7 +154,7 @@ async function main() {
   let editNameBrushPrice: BigNumber;
   const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
-    itemsUri = "ipfs://QmbeAfkwtN6noryKLwzhA3JzsDd67FXuS4RCLfyugUowEP/";
+    itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     imageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
   } else {
@@ -247,40 +248,15 @@ async function main() {
 
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playerLibrary = await PlayersLibrary.deploy();
-  await playerLibrary.deployed();
-  console.log(`playersLibrary = "${playerLibrary.address.toLowerCase()}"`);
+  const playersLibrary = await PlayersLibrary.deploy();
+  await playersLibrary.deployed();
+  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplQueueActions = await PlayersImplQueueActions.deploy();
-  await playersImplQueueActions.deployed();
-  console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
-
-  const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplProcessActions = await PlayersImplProcessActions.deploy();
-  await playersImplProcessActions.deployed();
-  console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
-
-  const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplRewards = await PlayersImplRewards.deploy();
-  await playersImplRewards.deployed();
-  console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
-
-  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playerLibrary.address},
-  });
-  const playersImplMisc = await PlayersImplMisc.deploy();
-  console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
-  await playersImplMisc.deployed();
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc} =
+    await deployPlayerImplementations(playersLibrary);
 
   const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playerLibrary.address},
+    libraries: {PlayersLibrary: playersLibrary.address},
   });
 
   const players = (await upgrades.deployProxy(
@@ -417,19 +393,7 @@ async function main() {
   await tx.wait();
   console.log("Add full attire bonuses");
 
-  // Set up daily rewards
-  for (let i = 0; i < allDailyRewards.length; ++i) {
-    const tier = i + 1;
-    const tx = await world.setDailyRewardPool(tier, allDailyRewards[i]);
-    tx.wait();
-  }
-
-  // Set up weekly rewards
-  for (let i = 0; i < allWeeklyRewards.length; ++i) {
-    const tier = i + 1;
-    const tx = await world.setWeeklyRewardPool(tier, allWeeklyRewards[i]);
-    tx.wait();
-  }
+  await setDailyAndWeeklyRewards(world);
 
   tx = await world.addActions(allActions);
   await tx.wait();
