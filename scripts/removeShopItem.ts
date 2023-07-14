@@ -1,6 +1,6 @@
-import {TITANIUM_FISHING_ROD} from "@paintswap/estfor-definitions/constants";
 import {ethers} from "hardhat";
 import {SHOP_ADDRESS} from "./contractAddresses";
+import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -9,10 +9,23 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
 
-  const Shop = await ethers.getContractFactory("Shop");
+  const Shop = (await ethers.getContractFactory("Shop")).connect(owner);
   const shop = Shop.attach(SHOP_ADDRESS);
 
-  await shop.removeItem(TITANIUM_FISHING_ROD);
+  // Remove all scrolls
+  const shopItems = [
+    EstforConstants.SHADOW_SCROLL,
+    EstforConstants.NATURE_SCROLL,
+    EstforConstants.AQUA_SCROLL,
+    EstforConstants.HELL_SCROLL,
+    EstforConstants.AIR_SCROLL,
+    EstforConstants.BARRAGE_SCROLL,
+  ];
+
+  for (const shopItem of shopItems) {
+    const tx = await shop.removeItem(shopItem);
+    await tx.wait();
+  }
 }
 
 main().catch((error) => {

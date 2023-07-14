@@ -11,7 +11,9 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
 
-  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
+  const World = (await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}})).connect(
+    owner
+  );
   const world = await World.attach(WORLD_ADDRESS);
 
   const actions = await allActions.filter(

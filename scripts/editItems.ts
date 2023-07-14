@@ -10,7 +10,9 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
 
-  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
+  const ItemNFT = (
+    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}})
+  ).connect(owner);
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
 
   const items = await allItems.filter(

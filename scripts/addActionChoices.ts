@@ -87,23 +87,25 @@ async function main() {
   const genericCombatActionId = EstforConstants.NONE;
 
   // New skills, range, fletching & alchemy
-  await world.addBulkActionChoices(
-    [craftingActionId, smithingActionId, fletchingActionId, alchemyActionId, genericCombatActionId],
-    [
-      newActionChoiceIdsCrafting,
-      newActionChoiceIdsSmithing,
-      allActionChoiceIdsFletching,
-      allActionChoiceIdsAlchemy,
-      allActionChoiceIdsRanged,
-    ],
-    [
-      newActionChoicesCrafting,
-      newActionChoicesSmithing,
-      allActionChoicesFletching,
-      allActionChoicesAlchemy,
-      allActionChoicesRanged,
-    ]
-  );
+  await world
+    .connect(owner)
+    .addBulkActionChoices(
+      [craftingActionId, smithingActionId, fletchingActionId, alchemyActionId, genericCombatActionId],
+      [
+        newActionChoiceIdsCrafting,
+        newActionChoiceIdsSmithing,
+        allActionChoiceIdsFletching,
+        allActionChoiceIdsAlchemy,
+        allActionChoiceIdsRanged,
+      ],
+      [
+        newActionChoicesCrafting,
+        newActionChoicesSmithing,
+        allActionChoicesFletching,
+        allActionChoicesAlchemy,
+        allActionChoicesRanged,
+      ]
+    );
 }
 
 main().catch((error) => {

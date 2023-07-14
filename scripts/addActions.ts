@@ -22,7 +22,7 @@ async function main() {
   if (actions.length !== 2) {
     console.log("Cannot find actions");
   } else {
-    await world.editActions(actions);
+    await world.connect(owner).addActions(actions);
   }
 }
 
