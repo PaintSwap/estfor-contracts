@@ -6099,8 +6099,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 1,
-      ranged: 0,
+      magic: 0,
+      ranged: 1,
       meleeDefence: -6,
       magicDefence: 3,
       rangedDefence: 2,
@@ -6122,8 +6122,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 1,
-      ranged: 0,
+      magic: 0,
+      ranged: 1,
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
@@ -6145,8 +6145,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 1,
-      ranged: 0,
+      magic: 0,
+      ranged: 1,
       meleeDefence: -4,
       magicDefence: 4,
       rangedDefence: 2,
@@ -6168,8 +6168,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 1,
-      ranged: 0,
+      magic: 0,
+      ranged: 1,
       meleeDefence: -8,
       magicDefence: 4,
       rangedDefence: 2,
@@ -6191,8 +6191,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 1,
-      ranged: 0,
+      magic: 0,
+      ranged: 1,
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
@@ -6214,8 +6214,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 1,
-      ranged: 0,
+      magic: 0,
+      ranged: 1,
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
@@ -6237,8 +6237,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
@@ -6260,8 +6260,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -8,
       magicDefence: 6,
       rangedDefence: 4,
@@ -6283,8 +6283,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -8,
       magicDefence: 8,
       rangedDefence: 4,
@@ -6306,8 +6306,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -8,
       magicDefence: 8,
       rangedDefence: 4,
@@ -6329,8 +6329,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -12,
       magicDefence: 8,
       rangedDefence: 8,
@@ -6352,8 +6352,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -8,
       magicDefence: 4,
       rangedDefence: 3,
@@ -6375,8 +6375,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -8,
       magicDefence: 8,
       rangedDefence: 4,
@@ -6398,8 +6398,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -16,
       magicDefence: 12,
       rangedDefence: 10,
@@ -6421,8 +6421,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -12,
       magicDefence: 10,
       rangedDefence: 6,
@@ -6444,8 +6444,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -12,
       magicDefence: 10,
       rangedDefence: 8,
@@ -6467,8 +6467,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -18,
       magicDefence: 10,
       rangedDefence: 8,
@@ -6490,8 +6490,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -16,
       magicDefence: 12,
       rangedDefence: 8,
@@ -6513,8 +6513,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -18,
       magicDefence: 16,
       rangedDefence: 12,
@@ -6536,8 +6536,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -20,
       magicDefence: 12,
       rangedDefence: 8,
@@ -6559,8 +6559,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -20,
       magicDefence: 12,
       rangedDefence: 12,
@@ -6582,8 +6582,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -18,
       magicDefence: 12,
       rangedDefence: 10,
@@ -6605,8 +6605,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -20,
       magicDefence: 16,
       rangedDefence: 10,
@@ -6628,8 +6628,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -20,
       magicDefence: 20,
       rangedDefence: 14,
@@ -6651,8 +6651,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -18,
       magicDefence: 16,
       rangedDefence: 10,
@@ -6674,8 +6674,8 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       melee: 0,
-      magic: 2,
-      ranged: 0,
+      magic: 0,
+      ranged: 2,
       meleeDefence: -22,
       magicDefence: 18,
       rangedDefence: 18,
