@@ -6,7 +6,7 @@ import {Skill} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit clan tiers using account: ${owner.address}`);
+  console.log(`Edit actions using account: ${owner.address}`);
 
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
