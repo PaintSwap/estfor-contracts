@@ -14,6 +14,7 @@ async function main() {
 
   // Remove all scrolls
   const shopItems = [
+    EstforConstants.FREEZE_SCROLL,
     EstforConstants.SHADOW_SCROLL,
     EstforConstants.NATURE_SCROLL,
     EstforConstants.AQUA_SCROLL,
