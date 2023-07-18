@@ -903,11 +903,102 @@ describe("Rewards", function () {
         const randomChanceFraction = randomChanceFractions[i];
         const expectedTotal = numRepeats * randomChanceFraction * numHours;
         // Have 2 queued actions so twice as much
+
+        console.log(itemTokenId, expectedTotal);
+
         expect(balanceMap.get(itemTokenId)).to.not.eq(expectedTotal * 2); // Very unlikely to be exact, but possible. This checks there is at least some randomness
         expect(balanceMap.get(itemTokenId)).to.be.gte(expectedTotal * 0.75 * 2); // Within 25% below
         expect(balanceMap.get(itemTokenId)).to.be.lte(expectedTotal * 1.25 * 2); // Within 25% above
         ++i;
       }
+    });
+
+    it("Multiple random rewards", async function () {
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      this.timeout(100000); // 100 seconds, this test can take a while on CI
+
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_AXE,
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.BRONZE_ARROW,
+          equipPosition: EstforTypes.EquipPosition.QUIVER,
+        },
+      ]);
+
+      const randomChanceFractions = [99.9 / 100, 10.0 / 100]; // 99.9%, 10%
+      const randomChance = Math.floor(65535 * randomChanceFractions[0]);
+      const randomChance1 = Math.floor(65535 * randomChanceFractions[1]);
+
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: {
+            skill: EstforTypes.Skill.WOODCUTTING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
+            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [
+            {itemTokenId: EstforConstants.BRONZE_BAR, chance: randomChance, amount: 1},
+            {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance1, amount: 1},
+          ],
+          combatStats: EstforTypes.emptyCombatStats,
+        },
+      ]);
+
+      const actionId = await getActionId(tx);
+      const numHours = 23;
+
+      // Make sure it passes the next checkpoint so there are no issues running
+      const {timestamp} = await ethers.provider.getBlock("latest");
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
+      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+
+      tx = await world.requestRandomWords();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      const queuedAction: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan: 3600 * numHours,
+        rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await ethers.provider.send("evm_mine", []);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.eq(2);
     });
 
     it("PendingRandomRewards should be added each time an action is processed", async function () {

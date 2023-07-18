@@ -778,7 +778,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint8 _successPercent,
     uint8 _fullAttireBonusRewardsPercent,
     bytes memory randomBytes
-  ) private pure returns (uint length) {
+  ) private view returns (uint length) {
     U256 randomRewardsLength = _randomRewards.length.asU256();
     for (U256 iter = _start.asU256(); iter.lt(_end); iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -788,11 +788,13 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       // is a rare item in which case we just increase the change that it can get get
 
       // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array
-      uint extraChance = (operation * _fullAttireBonusRewardsPercent) / 100;
-      if (operation > extraChance) {
-        operation -= extraChance;
-      } else {
-        operation = 1;
+      {
+        uint extraChance = (operation * _fullAttireBonusRewardsPercent) / 100;
+        if (operation > extraChance) {
+          operation -= extraChance;
+        } else {
+          operation = 1;
+        }
       }
       uint16 rand = uint16(Math.min(type(uint16).max, operation));
 
@@ -811,7 +813,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           // This random reward's chance was hit, so add it to the hits
           _ids[j] = randomReward.itemTokenId;
           _amounts[j] += randomReward.amount * _mintMultipliers[j];
-          length = j + 1;
+          length = Math.max(length, j + 1);
         } else {
           // A common one isn't found so a rarer one won't be.
           break;
