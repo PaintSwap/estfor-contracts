@@ -622,16 +622,19 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
   function buyBrushQuest(address _to, uint _playerId, uint _questId, bool _useExactETH) external payable {
     // This is a one off quest
-    bool success = quests.buyBrushQuest{value: msg.value}(msg.sender, _to, _playerId, _questId, _useExactETH);
-    if (success) {
-      (uint[] memory itemTokenIds, uint[] memory amounts, Skill skillGained, uint32 xpGained) = quests
-        .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
+    (uint[] memory itemTokenIds, uint[] memory amounts, Skill skillGained, uint32 xpGained) = quests
+      .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
+    // Must update before the call to buyBrushQuest so the indexer can remove the in-progress XP update
+    _updateXP(msg.sender, _playerId, skillGained, xpGained);
 
+    bool success = quests.buyBrushQuest{value: msg.value}(msg.sender, _to, _playerId, _questId, _useExactETH);
+    if (!success) {
+      revert BuyBrushFailed();
+    } else {
       if (itemTokenIds.length != 0) {
         // Not handled currently
         revert InvalidReward();
       }
-      _updateXP(msg.sender, _playerId, skillGained, xpGained);
     }
   }
 

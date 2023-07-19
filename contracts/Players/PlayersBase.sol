@@ -117,6 +117,7 @@ abstract contract PlayersBase {
   error HasQueuedActions();
   error CannotCallInitializerOnImplementation();
   error InvalidReward();
+  error BuyBrushFailed();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
