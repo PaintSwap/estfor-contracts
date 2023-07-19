@@ -778,7 +778,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint8 _successPercent,
     uint8 _fullAttireBonusRewardsPercent,
     bytes memory randomBytes
-  ) private view returns (uint length) {
+  ) private pure returns (uint length) {
     U256 randomRewardsLength = _randomRewards.length.asU256();
     for (U256 iter = _start.asU256(); iter.lt(_end); iter = iter.inc()) {
       uint i = iter.asUint256();

@@ -66,16 +66,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     remainingQueuedActions = pendingQueuedActionState.remainingQueuedActions;
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
     currentActionProcessed = pendingQueuedActionProcessed.currentAction;
-    // total xp is updated later
-    for (uint i; i < pendingQueuedActionProcessed.skills.length; ++i) {
-      _updateXP(
-        _from,
-        _playerId,
-        pendingQueuedActionProcessed.skills[i],
-        pendingQueuedActionProcessed.xpGainedSkills[i]
-      );
-    }
-
+    uint skillIndex;
     uint startTime = players_[_playerId].currentActionStartTime;
     for (uint i = 0; i < pendingQueuedActionState.equipmentStates.length; ++i) {
       PendingQueuedActionEquipmentState memory equipmentState = pendingQueuedActionState.equipmentStates[i];
@@ -133,9 +124,29 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       }
       // XP gained
       if (actionMetadata.xpGained != 0) {
-        uint previousTotalXP = player.totalXP;
-        uint newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
-        player.totalXP = uint56(newTotalXP);
+        {
+          uint previousTotalXP = player.totalXP;
+          uint newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
+          player.totalXP = uint56(newTotalXP);
+        }
+
+        // Keep reading until the xp expected is reached
+        uint xpGained;
+        for (uint j = skillIndex; j < pendingQueuedActionProcessed.skills.length; ++j) {
+          xpGained += pendingQueuedActionProcessed.xpGainedSkills[j];
+          if (xpGained <= actionMetadata.xpGained) {
+            // Map this to the current action
+            _updateXP(
+              _from,
+              _playerId,
+              pendingQueuedActionProcessed.skills[j],
+              pendingQueuedActionProcessed.xpGainedSkills[j]
+            );
+            skillIndex = j + 1;
+          } else {
+            break;
+          }
+        }
       }
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
