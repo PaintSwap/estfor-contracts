@@ -226,7 +226,7 @@ describe("World", function () {
       let dailyRewards1 = await world.getActiveDailyAndWeeklyRewards(1, playerId + 1);
       let dailyRewards2 = await world.getActiveDailyAndWeeklyRewards(1, playerId + 2);
 
-      // Check that the dailyRewards are different
+      // TODO: Check that incremental playerIds don't have rewards that have incremental indices in the reward pool tier
       expect(dailyRewards).to.not.eql(dailyRewards1);
       expect(dailyRewards).to.not.eql(dailyRewards2);
       expect(dailyRewards1).to.not.eql(dailyRewards2);

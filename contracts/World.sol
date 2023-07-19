@@ -400,7 +400,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _getRewardIndex(uint _playerId, uint _day, uint _length) private view returns (uint) {
-    return uint((thisWeeksRandomWordSegment >> (_day * 8)) ^ bytes32(_playerId)) % _length;
+    return uint(keccak256(abi.encodePacked(thisWeeksRandomWordSegment, _playerId)) >> (_day * 8)) % _length;
   }
 
   function _setAction(Action calldata _action) private {
