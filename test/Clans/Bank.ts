@@ -135,7 +135,7 @@ describe("Bank", function () {
     const balanceBefore = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD);
     await expect(bank.connect(alice).withdrawItems(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "WithdrawItems")
-      .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
+      .withArgs(alice.address, alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
     expect(balanceBefore.add(1)).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD));
 
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser", true);
@@ -145,6 +145,26 @@ describe("Bank", function () {
     await expect(
       bank.connect(owner).withdrawItems(alice.address, newPlayerId, [EstforConstants.BRONZE_SHIELD], [1])
     ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
+  });
+
+  it("Withdraw (Distribute) to someone else", async function () {
+    const {clans, playerId, alice, bob, clanName, discord, telegram, Bank, bankFactory, itemNFT} = await loadFixture(
+      bankFixture
+    );
+
+    // Send directly
+    const clanId = 1;
+    const clanBankAddress = ethers.utils.getContractAddress({
+      from: bankFactory.address,
+      nonce: clanId,
+    });
+    await clans.connect(alice).createClan(playerId, clanName, discord, telegram, 2, 1);
+    await itemNFT.testMint(clanBankAddress, EstforConstants.BRONZE_SHIELD, 1);
+
+    const bank = await Bank.attach(clanBankAddress);
+    await expect(bank.connect(alice).withdrawItems(bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
+      .to.emit(bank, "WithdrawItems")
+      .withArgs(alice.address, bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
   });
 
   it("Should be able to withdraw non-transferable boosts", async function () {
@@ -180,7 +200,7 @@ describe("Bank", function () {
     const bank = await Bank.attach(clanBankAddress);
     await expect(bank.connect(alice).withdrawItems(alice.address, playerId, [EstforConstants.SKILL_BOOST], [1]))
       .to.emit(bank, "WithdrawItems")
-      .withArgs(alice.address, playerId, [EstforConstants.SKILL_BOOST], [1]);
+      .withArgs(alice.address, alice.address, playerId, [EstforConstants.SKILL_BOOST], [1]);
   });
 
   it("Should be able to deposit and withdraw ftm", async function () {});
