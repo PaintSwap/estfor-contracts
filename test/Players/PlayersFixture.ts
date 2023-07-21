@@ -155,10 +155,12 @@ export const playersFixture = async function () {
   });
   const playersImplMisc = await PlayersImplMisc.deploy();
 
-  const Players = await ethers.getContractFactory("Players", {
+  const PlayersImplMisc1 = await ethers.getContractFactory("PlayersImplMisc1", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
+  const playersImplMisc1 = await PlayersImplMisc1.deploy();
 
+  const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.deployProxy(
     Players,
     [
@@ -172,6 +174,7 @@ export const playersFixture = async function () {
       playersImplProcessActions.address,
       playersImplRewards.address,
       playersImplMisc.address,
+      playersImplMisc1.address,
       isBeta,
     ],
     {
@@ -249,6 +252,7 @@ export const playersFixture = async function () {
     playersImplQueueActions,
     playersImplRewards,
     playersImplMisc,
+    playersImplMisc1,
     Players,
     avatarId,
     quests,

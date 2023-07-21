@@ -48,9 +48,7 @@ async function main() {
   }
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  });
+  const Players = await ethers.getContractFactory("Players");
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],

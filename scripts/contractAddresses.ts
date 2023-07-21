@@ -21,6 +21,7 @@ let playersImplQueueActions;
 let playersImplProcessActions;
 let playersImplRewards;
 let playersImplMisc;
+let playersImplMisc1;
 let players;
 
 if (isBeta) {
@@ -37,11 +38,12 @@ if (isBeta) {
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
-  playersLibrary = "0xf107841402724f6db176f286833b69c7f54cb8f8";
-  playersImplQueueActions = "0x26d75cc808805b1c53b709ee87d66231d51c85ec";
-  playersImplProcessActions = "0x04fd54fe9b927918547b1ccbb1db359d6860bf78";
-  playersImplRewards = "0x513ad77de7aed8c94d7803cbf09337571f832451";
-  playersImplMisc = "0xf8cbe0cb6e6e4da90ef3c674c3f48623dfd4fe5b";
+  playersLibrary = "0xfd3acea549f254c77c0b47be3cfdafa795995ec1";
+  playersImplQueueActions = "0xcf5eb0f59f1ac75a43ea6aac3fca5ea3ab61150e";
+  playersImplProcessActions = "0x0c1783c5e67b7b588bf9a521e6951c15e0952e28";
+  playersImplRewards = "0x8a5b0291924f3c372c80a59bc95c2ef42d34035a";
+  playersImplMisc = "0x36b19daacfe445b682a6a7f836cc84fcf168689b";
+  playersImplMisc1 = "0x7d5cf0bdcd000f5fb4b64bd28534491baa62ca61";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";
@@ -68,6 +70,7 @@ if (isBeta) {
   playersImplProcessActions = "";
   playersImplRewards = "";
   playersImplMisc = "";
+  playersImplMisc1 = "";
   players = "";
 }
 
@@ -94,6 +97,7 @@ export const PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS = playersImplQueueActions;
 export const PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS = playersImplProcessActions;
 export const PLAYERS_IMPL_REWARDS_ADDRESS = playersImplRewards;
 export const PLAYERS_IMPL_MISC_ADDRESS = playersImplMisc;
+export const PLAYERS_IMPL_MISC1_ADDRESS = playersImplMisc1;
 export const PLAYERS_ADDRESS = players;
 
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

@@ -23,16 +23,14 @@ async function main() {
   const playerId = 158;
 
   // Set the implementations
-  let Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  });
+  let Players = await ethers.getContractFactory("Players");
   Players = Players.connect(owner);
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
 
-  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc} =
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(playersLibrary.address);
 
   const tx = await players
@@ -41,7 +39,8 @@ async function main() {
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
-      playersImplMisc.address
+      playersImplMisc.address,
+      playersImplMisc1.address
     );
   await tx.wait();
 

@@ -3,6 +3,21 @@ pragma solidity ^0.8.20;
 
 import "../globals/all.sol";
 
+interface IPlayersMiscDelegate {
+  function handleDailyRewards(address from, uint playerId) external;
+}
+
+interface IPlayersProcessActionsDelegate {
+  function processActions(address from, uint playerId) external;
+
+  function processActionsAndSetState(uint playerId) external;
+}
+
+interface IPlayersRewardsDelegate {
+  function claimRandomRewards(uint playerId, PendingQueuedActionProcessed memory pendingQueuedActionProcessed) external;
+}
+
+// External view functions that are in other implementation files
 interface IPlayersMiscDelegateView {
   function claimableXPThresholdRewardsImpl(
     uint oldTotalXP,
@@ -48,24 +63,37 @@ interface IPlayersMiscDelegateView {
   ) external view returns (uint[] memory ids, uint[] memory amounts, bool hasRandomWord);
 }
 
-interface IPlayersMiscDelegate {
-  function handleDailyRewards(address from, uint playerId) external;
-}
-
-interface IPlayersProcessActionsDelegate {
-  function processActions(address from, uint playerId) external;
-
-  function processActionsAndSetState(uint playerId) external;
-}
-
-interface IPlayersRewardsDelegate {
-  function claimRandomRewards(uint playerId, PendingQueuedActionProcessed memory pendingQueuedActionProcessed) external;
-}
-
-// External view functions that are in other implementation files
 interface IPlayersRewardsDelegateView {
   function pendingQueuedActionStateImpl(
     address owner,
     uint playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
+}
+
+interface IPlayersQueuedActionsDelegateView {
+  function validateActionsImpl(
+    address owner,
+    uint playerId,
+    QueuedActionInput[] memory queuedActions
+  ) external view returns (bool[] memory successes, bytes[] memory reasons);
+
+  function checkAddToQueue(
+    address from,
+    uint playerId,
+    QueuedActionInput memory queuedAction,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
+    QuestState memory pendingQuestState
+  ) external view returns (bool setAttire);
+}
+
+interface IPlayersMisc1DelegateView {
+  function uri(
+    string calldata playerName,
+    string calldata avatarName,
+    string calldata avatarDescription,
+    string calldata imageURI,
+    bool isBeta,
+    uint playerId,
+    string calldata clanName
+  ) external view returns (string memory uri);
 }

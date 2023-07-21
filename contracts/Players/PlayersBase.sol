@@ -159,7 +159,7 @@ abstract contract PlayersBase {
   address internal implProcessActions;
   address internal implRewards;
   address internal implMisc;
-  address internal reserved1;
+  address internal implMisc1;
 
   AdminAccess internal adminAccess;
 
@@ -302,6 +302,18 @@ abstract contract PlayersBase {
       abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActions.selector, _from, _playerId)
     );
     return abi.decode(data, (QueuedAction[], PendingQueuedActionData));
+  }
+
+  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
+  function _pendingQueuedActionState(
+    address _owner,
+    uint _playerId
+  ) internal view returns (PendingQueuedActionState memory) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
+    );
+    return abi.decode(data, (PendingQueuedActionState));
   }
 
   function _claimableXPThresholdRewards(

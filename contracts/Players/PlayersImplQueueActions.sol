@@ -170,7 +170,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     emit ConsumeBoostVial(_from, _playerId, playerBoost);
   }
 
-  function _checkAddToQueue(QueuedActionInput memory _queuedAction) private view {
+  function checkAddToQueue(
+    address _from,
+    uint _playerId,
+    QueuedActionInput memory _queuedAction,
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    QuestState memory _pendingQuestState
+  ) public view returns (bool setAttire) {
     if (_queuedAction.attire.ring != NONE) {
       revert UnsupportedAttire();
     }
@@ -182,11 +188,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         revert UnsupportedRegenerateItem();
       }
     }
-  }
-
-  function _addToQueue(address _from, uint _playerId, QueuedActionInput memory _queuedAction, uint64 _queueId) private {
-    _checkAddToQueue(_queuedAction);
-    Player storage _player = players_[_playerId];
 
     uint16 actionId = _queuedAction.actionId;
 
@@ -203,7 +204,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       revert ActionNotAvailable();
     }
 
-    if (actionMinXP > 0 && PlayersLibrary.readXP(actionSkill, xp_[_playerId]) < actionMinXP) {
+    if (
+      actionMinXP > 0 &&
+      _getRealXP(actionSkill, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) < actionMinXP
+    ) {
       revert ActionMinimumXPNotReached();
     }
 
@@ -217,7 +221,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
 
-      if (PlayersLibrary.readXP(actionChoice.skill, xp_[_playerId]) < actionChoice.minXP) {
+      if (
+        _getRealXP(actionChoice.skill, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        actionChoice.minXP
+      ) {
         revert ActionChoiceMinimumXPNotReached();
       }
 
@@ -257,8 +264,54 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire.feet != NONE ||
       attire.ring != NONE
     ) {
+      _checkAttire(_from, _playerId, attire, _pendingQueuedActionProcessed, _pendingQuestState);
+      setAttire = true;
+    }
+
+    _checkHandEquipments(
+      _from,
+      _playerId,
+      [_queuedAction.leftHandEquipmentTokenId, _queuedAction.rightHandEquipmentTokenId],
+      handItemTokenIdRangeMin,
+      handItemTokenIdRangeMax,
+      isCombat,
+      actionChoice,
+      _pendingQueuedActionProcessed,
+      _pendingQuestState
+    );
+
+    _checkFood(_playerId, _queuedAction, _pendingQueuedActionProcessed, _pendingQuestState);
+  }
+
+  // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
+  function _getRealXP(
+    Skill _skill,
+    PackedXP storage _packedXP,
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    QuestState memory _questState
+  ) private view returns (uint xp) {
+    xp = PlayersLibrary.readXP(_skill, _packedXP);
+    // Add any pending XP from queued actions
+    for (uint i; i < _pendingQueuedActionProcessed.skills.length; ++i) {
+      if (_pendingQueuedActionProcessed.skills[i] == _skill) {
+        xp += _pendingQueuedActionProcessed.xpGainedSkills[i];
+      }
+    }
+
+    // Add any pending XP from quests
+    for (uint i; i < _questState.skills.length; ++i) {
+      if (_questState.skills[i] == _skill) {
+        xp += _questState.xpGainedSkills[i];
+      }
+    }
+  }
+
+  function _addToQueue(address _from, uint _playerId, QueuedActionInput memory _queuedAction, uint64 _queueId) private {
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed; // Empty
+    QuestState memory pendingQuestState; // Empty
+    bool setAttire = checkAddToQueue(_from, _playerId, _queuedAction, pendingQueuedActionProcessed, pendingQuestState);
+    if (setAttire) {
       attire_[_playerId][_queueId] = _queuedAction.attire;
-      _checkAttire(_from, _playerId, attire_[_playerId][_queueId]);
     }
 
     QueuedAction memory queuedAction;
@@ -271,31 +324,24 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     queuedAction.rightHandEquipmentTokenId = _queuedAction.rightHandEquipmentTokenId;
     queuedAction.leftHandEquipmentTokenId = _queuedAction.leftHandEquipmentTokenId;
     queuedAction.combatStyle = _queuedAction.combatStyle;
-    _player.actionQueue.push(queuedAction);
-
-    _checkHandEquipments(
-      _from,
-      _playerId,
-      [_queuedAction.leftHandEquipmentTokenId, _queuedAction.rightHandEquipmentTokenId],
-      handItemTokenIdRangeMin,
-      handItemTokenIdRangeMax,
-      isCombat,
-      actionChoice
-    );
-
-    _checkFood(_playerId, _queuedAction);
+    players_[_playerId].actionQueue.push(queuedAction);
   }
 
-  function _checkFood(uint _playerId, QueuedActionInput memory _queuedAction) private view {
+  function _checkFood(
+    uint _playerId,
+    QueuedActionInput memory _queuedAction,
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    QuestState memory _questState
+  ) private view {
     if (_queuedAction.regenerateId != NONE) {
       (Skill skill, uint32 minXP, ) = itemNFT.getEquipPositionAndMinRequirement(_queuedAction.regenerateId);
-      if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
+      if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
         revert ConsumableMinimumXPNotReached();
       }
     }
   }
 
-  function _checkEquipPosition(Attire storage _attire) private view {
+  function _checkEquipPosition(Attire memory _attire) private view {
     uint attireLength;
     uint16[] memory itemTokenIds = new uint16[](6);
     EquipPosition[] memory expectedEquipPositions = new EquipPosition[](6);
@@ -347,7 +393,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   }
 
   // Checks they have sufficient balance to equip the items, and minimum skill points
-  function _checkAttire(address _from, uint _playerId, Attire storage _attire) private view {
+  function _checkAttire(
+    address _from,
+    uint _playerId,
+    Attire memory _attire,
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    QuestState memory _questState
+  ) private view {
     // Check the user has these items
     _checkEquipPosition(_attire);
 
@@ -366,7 +418,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
-        if (PlayersLibrary.readXP(skills[i], xp_[_playerId]) < minXPs[i]) {
+        if (_getRealXP(skills[i], xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXPs[i]) {
           revert AttireMinimumXPNotReached();
         }
         if (balances[i] == 0) {
@@ -383,7 +435,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint16 _handItemTokenIdRangeMin,
     uint16 _handItemTokenIdRangeMax,
     bool _isCombat,
-    ActionChoice memory _actionChoice
+    ActionChoice memory _actionChoice,
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    QuestState memory _questState
   ) private view {
     U256 iter = _equippedItemTokenIds.length.asU256();
     bool twoHanded;
@@ -415,7 +469,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         (Skill skill, uint32 minXP, EquipPosition equipPosition) = itemNFT.getEquipPositionAndMinRequirement(
           equippedItemTokenId
         );
-        if (PlayersLibrary.readXP(skill, xp_[_playerId]) < minXP) {
+        if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
           revert ItemMinimumXPNotReached();
         }
         if (isRightHand) {
@@ -502,56 +556,29 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
   }
 
-  function unequipBoostVial(uint _playerId) external {
-    if (activeBoosts_[_playerId].boostType == BoostType.NONE) {
-      revert NoActiveBoost();
-    }
-    if (activeBoosts_[_playerId].startTime > block.timestamp) {
-      revert BoostTimeAlreadyStarted();
-    }
-    address from = msg.sender;
-    itemNFT.mint(from, activeBoosts_[_playerId].itemTokenId, 1);
-    emit UnconsumeBoostVial(from, _playerId);
-  }
+  function validateActionsImpl(
+    address owner,
+    uint _playerId,
+    QueuedActionInput[] memory _queuedActions
+  ) external view returns (bool[] memory successes, bytes[] memory reasons) {
+    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(owner, _playerId);
+    successes = new bool[](_queuedActions.length);
+    reasons = new bytes[](_queuedActions.length);
 
-  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
-    U256 bounds = _fullAttireBonuses.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
-
-      if (_fullAttireBonus.skill == Skill.NONE) {
-        revert InvalidSkill();
+    for (uint i; i < _queuedActions.length; ++i) {
+      try
+        this.checkAddToQueue(
+          owner,
+          _playerId,
+          _queuedActions[i],
+          pendingQueuedActionState.processedData,
+          pendingQueuedActionState.quests
+        )
+      {
+        successes[i] = true;
+      } catch (bytes memory _reason) {
+        reasons[i] = _reason;
       }
-      EquipPosition[5] memory expectedEquipPositions = [
-        EquipPosition.HEAD,
-        EquipPosition.BODY,
-        EquipPosition.ARMS,
-        EquipPosition.LEGS,
-        EquipPosition.FEET
-      ];
-      U256 jbounds = expectedEquipPositions.length.asU256();
-      for (U256 jter; jter < jbounds; jter = jter.inc()) {
-        uint j = jter.asUint256();
-        if (_fullAttireBonus.itemTokenIds[j] == NONE) {
-          revert InvalidItemTokenId();
-        }
-        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[j]).equipPosition != expectedEquipPositions[j]) {
-          revert InvalidEquipPosition();
-        }
-      }
-
-      fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent,
-        _fullAttireBonus.itemTokenIds
-      );
-      emit AddFullAttireBonus(
-        _fullAttireBonus.skill,
-        _fullAttireBonus.itemTokenIds,
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent
-      );
     }
   }
 }

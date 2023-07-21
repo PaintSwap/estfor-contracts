@@ -24,10 +24,7 @@ async function main() {
   const playerNFT = await PlayerNFT.attach(PLAYER_NFT_ADDRESS);
 
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  let playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
-  const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  });
+  const Players = await ethers.getContractFactory("Players");
   const players = await Players.attach(PLAYERS_ADDRESS);
 
   const Shop = await ethers.getContractFactory("Shop");

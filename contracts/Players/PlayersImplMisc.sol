@@ -9,10 +9,7 @@ import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
-import {PlayerNFT} from "../PlayerNFT.sol";
 import {World} from "../World.sol";
-import {ItemNFT} from "../ItemNFT.sol";
-import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
@@ -30,11 +27,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   using UnsafeMath for uint128;
   using UnsafeMath for uint256;
 
-  address immutable _this;
-
   constructor() {
     _checkStartSlot();
-    _this = address(this);
   }
 
   // === XP Threshold rewards ===
@@ -240,40 +234,6 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       itemNFT.mint(_from, rewardItemTokenIds[1], rewardAmounts[1]);
       emit WeeklyReward(_from, _playerId, rewardItemTokenIds[1], rewardAmounts[1]);
     }
-  }
-
-  function initialize(
-    ItemNFT _itemNFT,
-    PlayerNFT _playerNFT,
-    World _world,
-    AdminAccess _adminAccess,
-    Quests _quests,
-    Clans _clans,
-    address _implQueueActions,
-    address _implProcessActions,
-    address _implRewards,
-    address _implMisc,
-    bool _isBeta
-  ) external {
-    if (address(this) == _this) {
-      revert CannotCallInitializerOnImplementation();
-    }
-
-    itemNFT = _itemNFT;
-    playerNFT = _playerNFT;
-    world = _world;
-    adminAccess = _adminAccess;
-    quests = _quests;
-    clans = _clans;
-    implQueueActions = _implQueueActions;
-    implProcessActions = _implProcessActions;
-    implRewards = _implRewards;
-    implMisc = _implMisc;
-
-    nextQueueId = 1;
-    alphaCombat = 1;
-    betaCombat = 1;
-    isBeta = _isBeta;
   }
 
   function _getConsumablesEquipment(

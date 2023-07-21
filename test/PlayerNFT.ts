@@ -124,6 +124,7 @@ describe("PlayerNFT", function () {
       playersImplQueueActions,
       playersImplRewards,
       playersImplMisc,
+      playersImplMisc1,
       Players,
       avatarInfo,
       avatarId,
@@ -172,6 +173,7 @@ describe("PlayerNFT", function () {
         playersImplProcessActions.address,
         playersImplRewards.address,
         playersImplMisc.address,
+        playersImplMisc1.address,
         isBeta,
       ],
       {

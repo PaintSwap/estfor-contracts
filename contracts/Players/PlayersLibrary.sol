@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
@@ -14,120 +12,11 @@ import "../globals/all.sol";
 
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayersLibrary {
-  using Strings for uint32;
-  using Strings for uint256;
-  using Strings for bytes32;
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
 
   error InvalidXPSkill();
   error InvalidAction();
-
-  // Show all the player stats, return metadata json
-  function uri(
-    string calldata _playerName,
-    PackedXP storage _packedXP,
-    string calldata _avatarName,
-    string calldata _avatarDescription,
-    string calldata _imageURI,
-    bool _isBeta,
-    uint _playerId,
-    string calldata _clanName
-  ) external view returns (string memory) {
-    uint overallLevel = getLevel(readXP(Skill.MELEE, _packedXP)) +
-      getLevel(readXP(Skill.RANGED, _packedXP)) +
-      getLevel(readXP(Skill.MAGIC, _packedXP)) +
-      getLevel(readXP(Skill.DEFENCE, _packedXP)) +
-      getLevel(readXP(Skill.HEALTH, _packedXP)) +
-      getLevel(readXP(Skill.MINING, _packedXP)) +
-      getLevel(readXP(Skill.WOODCUTTING, _packedXP)) +
-      getLevel(readXP(Skill.FISHING, _packedXP)) +
-      getLevel(readXP(Skill.SMITHING, _packedXP)) +
-      getLevel(readXP(Skill.THIEVING, _packedXP)) +
-      getLevel(readXP(Skill.CRAFTING, _packedXP)) +
-      getLevel(readXP(Skill.COOKING, _packedXP)) +
-      getLevel(readXP(Skill.FIREMAKING, _packedXP)) +
-      getLevel(readXP(Skill.ALCHEMY, _packedXP)) +
-      getLevel(readXP(Skill.FLETCHING, _packedXP));
-
-    string memory attributes = string(
-      abi.encodePacked(
-        _getTraitStringJSON("Avatar", _avatarName),
-        ",",
-        _getTraitStringJSON("Clan", _clanName),
-        ",",
-        _getTraitNumberJSON("Melee level", getLevel(readXP(Skill.MELEE, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Ranged level", getLevel(readXP(Skill.RANGED, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Magic level", getLevel(readXP(Skill.MAGIC, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Defence level", getLevel(readXP(Skill.DEFENCE, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Health level", getLevel(readXP(Skill.HEALTH, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Mining level", getLevel(readXP(Skill.MINING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Woodcutting level", getLevel(readXP(Skill.WOODCUTTING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Fishing level", getLevel(readXP(Skill.FISHING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Smithing level", getLevel(readXP(Skill.SMITHING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Thieving level", getLevel(readXP(Skill.THIEVING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Crafting level", getLevel(readXP(Skill.CRAFTING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Cooking level", getLevel(readXP(Skill.COOKING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Firemaking level", getLevel(readXP(Skill.FIREMAKING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Alchemy level", getLevel(readXP(Skill.ALCHEMY, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Fletching level", getLevel(readXP(Skill.FLETCHING, _packedXP))),
-        ",",
-        _getTraitNumberJSON("Total level", uint16(overallLevel))
-      )
-    );
-
-    bytes memory fullName = abi.encodePacked(_playerName, " (", overallLevel.toString(), ")");
-    bytes memory externalURL = abi.encodePacked(
-      "https://",
-      _isBeta ? "beta." : "",
-      "estfor.com/game/journal/",
-      _playerId.toString()
-    );
-
-    string memory json = Base64.encode(
-      abi.encodePacked(
-        '{"name":"',
-        fullName,
-        '","description":"',
-        _avatarDescription,
-        '","attributes":[',
-        attributes,
-        '],"image":"',
-        _imageURI,
-        '", "external_url":"',
-        externalURL,
-        '"}'
-      )
-    );
-
-    return string(abi.encodePacked("data:application/json;base64,", json));
-  }
-
-  function _getTraitStringJSON(string memory _traitType, string memory _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), '"', _value, '"}');
-  }
-
-  function _getTraitNumberJSON(string memory _traitType, uint32 _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), _value.toString(), "}");
-  }
-
-  function _getTraitTypeJSON(string memory _traitType) private pure returns (bytes memory) {
-    return abi.encodePacked('{"trait_type":"', _traitType, '","value":');
-  }
 
   function getLevel(uint _xp) public pure returns (uint16) {
     U256 low;
@@ -822,6 +711,45 @@ library PlayersLibrary {
           _updateCombatStatsFromItem(combatStats, items[i]);
         }
       }
+    }
+  }
+
+  // 2 versions of getAttireWithBalance exist, 1 has storage attire and the other has calldata attire. This is to
+  // allow more versions of versions to accept storage attire.
+  function getAttireWithBalance(
+    address _from,
+    Attire calldata _attire,
+    ItemNFT _itemNFT,
+    bool _skipNeck,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+  ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
+    uint attireLength;
+    itemTokenIds = new uint16[](6);
+    if (_attire.head != NONE) {
+      itemTokenIds[attireLength++] = _attire.head;
+    }
+    if (_attire.neck != NONE && !_skipNeck) {
+      itemTokenIds[attireLength++] = _attire.neck;
+    }
+    if (_attire.body != NONE) {
+      itemTokenIds[attireLength++] = _attire.body;
+    }
+    if (_attire.arms != NONE) {
+      itemTokenIds[attireLength++] = _attire.arms;
+    }
+    if (_attire.legs != NONE) {
+      itemTokenIds[attireLength++] = _attire.legs;
+    }
+    if (_attire.feet != NONE) {
+      itemTokenIds[attireLength++] = _attire.feet;
+    }
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, attireLength)
+    }
+
+    if (attireLength != 0) {
+      balances = getRealBalances(_from, itemTokenIds, _itemNFT, _pendingQueuedActionEquipmentStates);
     }
   }
 

@@ -4,10 +4,10 @@ import {ethers, run} from "hardhat";
 import {
   PlayerNFT,
   PlayersImplMisc,
+  PlayersImplMisc1,
   PlayersImplProcessActions,
   PlayersImplQueueActions,
   PlayersImplRewards,
-  PlayersLibrary,
   World,
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
@@ -77,6 +77,7 @@ interface IPlayerImpls {
   playersImplProcessActions: PlayersImplProcessActions;
   playersImplRewards: PlayersImplRewards;
   playersImplMisc: PlayersImplMisc;
+  playersImplMisc1: PlayersImplMisc1;
 }
 
 export const deployPlayerImplementations = async (playersLibraryAddress: string): Promise<IPlayerImpls> => {
@@ -108,10 +109,18 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
   console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
   await playersImplMisc.deployed();
 
+  const PlayersImplMisc1 = await ethers.getContractFactory("PlayersImplMisc1", {
+    libraries: {PlayersLibrary: playersLibraryAddress},
+  });
+  const playersImplMisc1 = await PlayersImplMisc1.deploy();
+  console.log(`playersImplMisc1 = "${playersImplMisc1.address.toLowerCase()}"`);
+  await playersImplMisc1.deployed();
+
   return {
     playersImplQueueActions,
     playersImplProcessActions,
     playersImplRewards,
     playersImplMisc,
+    playersImplMisc1,
   };
 };

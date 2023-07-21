@@ -586,7 +586,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionState.dailyRewardMask
     ) = _dailyRewardsView(_playerId);
 
-    // Compact to fit the array
+    // Compact to fit the arrays
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), pendingQueuedActionStateLength)
       mstore(mload(add(pendingQueuedActionState, 32)), pendingQueuedActionStateLength)

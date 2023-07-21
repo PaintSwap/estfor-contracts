@@ -15,11 +15,7 @@ async function main() {
   const playersLibrary = await PlayersLibrary.deploy();
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const Players = (
-    await ethers.getContractFactory("Players", {
-      libraries: {PlayersLibrary: playersLibrary.address},
-    })
-  ).connect(owner);
+  const Players = (await ethers.getContractFactory("Players")).connect(owner);
   let players = Players.attach(PLAYERS_ADDRESS);
   await players.pauseGame(true);
   players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
@@ -30,13 +26,14 @@ async function main() {
   console.log("Deployed Players");
 
   // Update player impls
-  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc} =
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(playersLibrary.address);
   let tx = await players.setImpls(
     playersImplQueueActions.address,
     playersImplProcessActions.address,
     playersImplRewards.address,
-    playersImplMisc.address
+    playersImplMisc.address,
+    playersImplMisc1.address
   );
   await tx.wait();
   console.log("setImpls");
@@ -97,13 +94,7 @@ async function main() {
   // Airdrop bows to everyone with a player
 
   /* Unpause (but have PLAYERS_LIBRARY_ADDRESS)
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
-  const Players = (
-    await ethers.getContractFactory("Players", {
-      libraries: {PlayersLibrary: playersLibrary.address},
-    })
-  ).connect(owner);
+  const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = await Players.attach(PLAYERS_ADDRESS);
   await players.pauseGame(false);
   */

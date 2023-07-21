@@ -16,7 +16,7 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersProcessActionsDelegate} from "../interfaces/IPlayersDelegates.sol";
+import {IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -32,9 +32,9 @@ interface IPlayerDelegate {
     ActionQueueStatus queueStatus
   ) external;
 
-  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdReward) external;
+  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
 
-  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdReward) external;
+  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
 
@@ -49,8 +49,6 @@ interface IPlayerDelegate {
   function clearEverything(address from, uint playerId, bool processTheTransactions) external;
 
   function setActivePlayer(address from, uint playerId) external;
-
-  function unequipBoostVial(uint playerId) external;
 
   function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
 
@@ -67,6 +65,7 @@ interface IPlayerDelegate {
     address implProcessActions,
     address implRewards,
     address implMisc,
+    address implMisc1,
     bool isBeta
   ) external;
 }
@@ -125,6 +124,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address _implProcessActions,
     address _implRewards,
     address _implMisc,
+    address _implMisc1,
     bool _isBeta
   ) public initializer {
     __Ownable_init();
@@ -132,7 +132,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     __ReentrancyGuard_init();
 
     _delegatecall(
-      _implMisc,
+      _implMisc1,
       abi.encodeWithSelector(
         IPlayerDelegate.initialize.selector,
         _itemNFT,
@@ -145,6 +145,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _implProcessActions,
         _implRewards,
         _implMisc,
+        _implMisc1,
         _isBeta
       )
     );
@@ -316,6 +317,26 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bool[7]));
   }
 
+  /// @notice Validate if these actions can occur
+  /// @param _playerId Id for the player
+  /// @param _queuedActions Actions to queue
+  function validateActions(
+    address _owner,
+    uint _playerId,
+    QueuedActionInput[] calldata _queuedActions
+  ) external view returns (bool[] memory successes, bytes[] memory reasons) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersQueuedActionsDelegateView.validateActionsImpl.selector,
+        _owner,
+        _playerId,
+        _queuedActions
+      )
+    );
+    return abi.decode(data, (bool[], bytes[]));
+  }
+
   function isOwnerOfPlayerAndActive(address _from, uint _playerId) public view override returns (bool) {
     return playerNFT.balanceOf(_from, _playerId) == 1 && activePlayer_[_from] == _playerId;
   }
@@ -335,17 +356,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     string calldata _avatarDescription,
     string calldata imageURI
   ) external view override returns (string memory) {
-    return
-      PlayersLibrary.uri(
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersMisc1DelegateView.uri.selector,
         _name,
-        xp_[_playerId],
         _avatarName,
         _avatarDescription,
         imageURI,
         isBeta,
         _playerId,
         clans.getClanNameOfPlayer(_playerId)
-      );
+      )
+    );
+    return abi.decode(data, (string));
   }
 
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
@@ -382,12 +406,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address _implQueueActions,
     address _implProcessActions,
     address _implRewards,
-    address _implMisc
+    address _implMisc,
+    address _implMisc1
   ) external onlyOwner {
     implQueueActions = _implQueueActions;
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;
     implMisc = _implMisc;
+    implMisc1 = _implMisc1;
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
@@ -414,10 +440,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
-    _delegatecall(
-      implQueueActions,
-      abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses)
-    );
+    _delegatecall(implMisc1, abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses));
   }
 
   function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp, bool _force) external isAdminAndBeta {
@@ -442,6 +465,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       selector == IPlayersMiscDelegateView.getRandomRewards.selector
     ) {
       implementation = implMisc;
+    } else if (
+      selector == IPlayersQueuedActionsDelegateView.validateActionsImpl.selector ||
+      selector == IPlayersQueuedActionsDelegateView.checkAddToQueue.selector
+    ) {
+      implementation = implQueueActions;
+    } else if (selector == IPlayersMisc1DelegateView.uri.selector) {
+      implementation = implMisc1;
     } else {
       revert InvalidSelector();
     }

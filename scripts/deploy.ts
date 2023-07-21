@@ -252,12 +252,10 @@ async function main() {
   await playersLibrary.deployed();
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc} =
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(playersLibrary.address);
 
-  const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  });
+  const Players = await ethers.getContractFactory("Players");
 
   const players = (await upgrades.deployProxy(
     Players,
@@ -272,6 +270,7 @@ async function main() {
       playersImplProcessActions.address,
       playersImplRewards.address,
       playersImplMisc.address,
+      playersImplMisc1.address,
       isBeta,
     ],
     {
@@ -305,6 +304,12 @@ async function main() {
     try {
       const addresses = [
         players.address,
+        playersImplQueueActions.address,
+        playersImplProcessActions.address,
+        playersImplRewards.address,
+        playersImplMisc.address,
+        playersImplMisc1.address,
+        playersLibrary.address,
         estforLibrary.address,
         playerNFT.address,
         itemNFTLibrary.address,

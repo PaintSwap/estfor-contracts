@@ -3,6 +3,7 @@ import {PlayersLibrary} from "../typechain-types";
 import {
   PLAYERS_ADDRESS,
   PLAYERS_IMPL_MISC_ADDRESS,
+  PLAYERS_IMPL_MISC1_ADDRESS,
   PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
   PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
   PLAYERS_IMPL_REWARDS_ADDRESS,
@@ -18,7 +19,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   // Players
-  const newPlayersLibrary = true;
+  const newPlayersLibrary = false;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {
@@ -30,26 +31,26 @@ async function main() {
   }
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc} =
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(playersLibrary.address);
 
   // Set the implementations
-  const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  });
+  const Players = await ethers.getContractFactory("Players");
 
   /* Use these when keeping old implementations
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
     PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
     PLAYERS_IMPL_REWARDS_ADDRESS,
-    PLAYERS_IMPL_MISC_ADDRESS
+    PLAYERS_IMPL_MISC_ADDRESS,
+    PLAYERS_IMPL_MISC1_ADDRESS
   */
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
     playersImplQueueActions.address,
     playersImplProcessActions.address,
     playersImplRewards.address,
-    playersImplMisc.address
+    playersImplMisc.address,
+    playersImplMisc1.address
   );
   await tx.wait();
 
@@ -59,6 +60,7 @@ async function main() {
       playersImplProcessActions.address,
       playersImplRewards.address,
       playersImplMisc.address,
+      playersImplMisc1.address,
     ]);
   }
 }

@@ -388,16 +388,4 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   function _handleDailyRewards(address _from, uint _playerId) private {
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.handleDailyRewards.selector, _from, _playerId));
   }
-
-  // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
-  function _pendingQueuedActionState(
-    address _owner,
-    uint _playerId
-  ) private view returns (PendingQueuedActionState memory) {
-    bytes memory data = _staticcall(
-      address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
-    );
-    return abi.decode(data, (PendingQueuedActionState));
-  }
 }

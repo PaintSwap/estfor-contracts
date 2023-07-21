@@ -10,10 +10,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
-  const Players = await ethers.getContractFactory("Players", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  });
+  const Players = await ethers.getContractFactory("Players");
   const players = Players.attach(PLAYERS_ADDRESS);
 
   const thresholdRewards = allXPThresholdRewards.find((reward) => reward.xpThreshold === 2700000);
