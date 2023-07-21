@@ -68,6 +68,7 @@
     "deploy": "npx hardhat run scripts/deploy.ts",
     "deployUpgrade": "npx hardhat run scripts/deployUpgrade.ts",
     "deployImpls": "npx hardhat run scripts/deployImpls.ts",
+    "deployBankBeaconUpgrade": "npx hardhat run scripts/deployBankBeaconUpgrade.ts",
     "deployTestData": "npx hardhat run scripts/deployTestData.ts",
     "addItems": "npx hardhat run scripts/addItems.ts",
     "editItems": "npx hardhat run scripts/editItems.ts",
