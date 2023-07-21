@@ -104,6 +104,12 @@ export const playersFixture = async function () {
     }
   )) as PlayerNFT;
 
+  const Donation = await ethers.getContractFactory("Donation");
+  const donation = await upgrades.deployProxy(Donation, [brush.address, playerNFT.address, shop.address], {
+    kind: "uups",
+  });
+  await donation.deployed();
+
   const Promotions = await ethers.getContractFactory("Promotions");
   const promotions = (await upgrades.deployProxy(
     Promotions,
@@ -255,6 +261,8 @@ export const playersFixture = async function () {
     playersImplMisc1,
     Players,
     avatarId,
+    donation,
+    promotions,
     quests,
     clans,
     bank,
@@ -262,6 +270,5 @@ export const playersFixture = async function () {
     bankRegistry,
     bankFactory,
     estforLibrary,
-    promotions,
   };
 };

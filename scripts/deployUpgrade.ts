@@ -1,10 +1,9 @@
 import {ethers, upgrades} from "hardhat";
-import {PlayersLibrary, EstforLibrary, WorldLibrary} from "../typechain-types";
+import {EstforLibrary, WorldLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
-  PLAYERS_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
   QUESTS_ADDRESS,
   SHOP_ADDRESS,
@@ -13,6 +12,7 @@ import {
   WORLD_ADDRESS,
   WORLD_LIBRARY_ADDRESS,
   ADMIN_ACCESS_ADDRESS,
+  DONATION_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -36,18 +36,6 @@ async function main() {
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
 
   // Players
-  const newPlayersLibrary = false;
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  let playersLibrary: PlayersLibrary;
-  if (newPlayersLibrary) {
-    playersLibrary = await PlayersLibrary.deploy();
-    await playersLibrary.deployed();
-    await verifyContracts([playersLibrary.address]);
-  } else {
-    playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
-  }
-  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
-
   const Players = await ethers.getContractFactory("Players");
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
@@ -94,6 +82,14 @@ async function main() {
   });
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
+
+  const Donation = await ethers.getContractFactory("Donation");
+  const donation = await upgrades.upgradeProxy(DONATION_ADDRESS, Donation, {
+    kind: "uups",
+  });
+  await donation.deployed();
+  console.log(`donation = "${donation.address.toLowerCase()}"`);
+
   // Quests
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
@@ -150,6 +146,7 @@ async function main() {
   await verifyContracts([clans.address]);
   await verifyContracts([world.address]);
   await verifyContracts([adminAccess.address]);
+  await verifyContracts([donation.address]);
 }
 
 main().catch((error) => {

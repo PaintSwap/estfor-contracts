@@ -9,6 +9,7 @@ let itemNFTLibrary;
 let itemNFT;
 let estforLibrary;
 let playerNFT;
+let donation;
 let promotions;
 let quests;
 let clans;
@@ -34,6 +35,7 @@ if (isBeta) {
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
   estforLibrary = "0x9bcb040b6ffc0adcedda870f0a8e18e4278c72de";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
+  donation = "0x9c707b8f1df86e133f8fd603222de12092585eb8";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
@@ -59,6 +61,7 @@ if (isBeta) {
   itemNFT = "";
   estforLibrary = "";
   playerNFT = "";
+  donation = "";
   promotions = "";
   quests = "";
   clans = "";
@@ -82,6 +85,7 @@ export const ADMIN_ACCESS_ADDRESS = adminAccess;
 export const ITEM_NFT_LIBRARY_ADDRESS = itemNFTLibrary;
 export const ITEM_NFT_ADDRESS = itemNFT;
 
+export const DONATION_ADDRESS = donation;
 export const PROMOTIONS_ADDRESS = promotions;
 export const QUESTS_ADDRESS = quests;
 export const CLANS_ADDRESS = clans;

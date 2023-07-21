@@ -209,6 +209,13 @@ async function main() {
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
+  const Donation = await ethers.getContractFactory("Donation");
+  const donation = await upgrades.deployProxy(Donation, [brush.address, playerNFT.address, shop.address], {
+    kind: "uups",
+  });
+  await donation.deployed();
+  console.log(`donation = "${donation.address.toLowerCase()}"`);
+
   const Promotions = await ethers.getContractFactory("Promotions");
   const promotions = (await upgrades.deployProxy(
     Promotions,
@@ -312,6 +319,7 @@ async function main() {
         playersLibrary.address,
         estforLibrary.address,
         playerNFT.address,
+        donation.address,
         itemNFTLibrary.address,
         itemNFT.address,
         adminAccess.address,
