@@ -90,6 +90,7 @@
     "addDailyRewards": "npx hardhat run scripts/addDailyRewards.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",
+    "donate": "npx hardhat run scripts/donate.ts",
     "impersonate": "npx hardhat run scripts/impersonate.ts",
     "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",
     "pendingQueuedActionState": "npx hardhat run scripts/pendingQueuedActionState.ts",

@@ -62,6 +62,7 @@ ItemNFT [0x1dae89b469d15b0ded980007dfdc8e68c363203d](https://ftmscan.com/address
 EstforLibrary [0x9bcb040b6ffc0adcedda870f0a8e18e4278c72de](https://ftmscan.com/address/0x9bcb040b6ffc0adcedda870f0a8e18e4278c72de)  
 PlayerNFT [0xde70e49756322afdf7714d3aca963abcb4547b8d](https://ftmscan.com/address/0xde70e49756322afdf7714d3aca963abcb4547b8d)  
 Quests [0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9](https://ftmscan.com/address/0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9)
+Donation [0x9c707b8f1df86e133f8fd603222de12092585eb8](https://ftmscan.com/address/0x9c707b8f1df86e133f8fd603222de12092585eb8)
 
 Clans [0xd35410f526db135f09bb8e2bb066c8a63135d812](https://ftmscan.com/address/0xd35410f526db135f09bb8e2bb066c8a63135d812)  
 Bank Beacon [0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e](https://ftmscan.com/address/0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e)

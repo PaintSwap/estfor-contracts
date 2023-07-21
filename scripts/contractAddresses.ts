@@ -104,5 +104,6 @@ export const PLAYERS_IMPL_MISC_ADDRESS = playersImplMisc;
 export const PLAYERS_IMPL_MISC1_ADDRESS = playersImplMisc1;
 export const PLAYERS_ADDRESS = players;
 
+// Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";
 export const WFTM_ADDRESS = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
