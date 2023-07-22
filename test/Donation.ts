@@ -33,4 +33,16 @@ describe("Donation", function () {
       "NotOwnerOfPlayer"
     );
   });
+
+  it.only("Check userDonation amounts", async function () {
+    const {shop, donation, brush, alice, playerId} = await loadFixture(deployContracts);
+    const totalBrush = ethers.utils.parseEther("1");
+    await brush.mint(alice.address, totalBrush);
+    await brush.connect(alice).approve(donation.address, totalBrush);
+    await donation.connect(alice).donate(100, 0);
+    await donation.connect(alice).donate(100, playerId);
+    expect(await brush.balanceOf(alice.address)).to.eq(totalBrush.sub(200));
+    expect(await brush.balanceOf(shop.address)).to.eq(200);
+    expect(await donation.userDonations(alice.address)).to.eq(200);
+  });
 });

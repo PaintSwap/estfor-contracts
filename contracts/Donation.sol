@@ -16,6 +16,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable {
   IBrushToken public brush;
   PlayerNFT public playerNFT;
   address shop;
+  mapping(address user => uint totalDonated) public userDonations;
 
   modifier ownsPlayerOrEmpty(uint _playerId) {
     if (_playerId != 0 && playerNFT.balanceOf(msg.sender, _playerId) != 1) {
@@ -38,10 +39,14 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable {
     shop = _shop;
   }
 
+  // _playerId can be 0 to ignore it, otherwise sender must own it
   function donate(uint _amount, uint _playerId) external ownsPlayerOrEmpty(_playerId) {
     if (!brush.transferFrom(msg.sender, shop, _amount)) {
       revert NotEnoughBrush();
     }
+
+    userDonations[msg.sender] += _amount;
+
     uint rolls = 0; // TODO Update later
     emit Donate(msg.sender, _playerId, _amount, rolls);
   }
