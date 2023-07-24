@@ -586,6 +586,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionState.dailyRewardMask
     ) = _dailyRewardsView(_playerId);
 
+    // Any Lottery winnings
+    pendingQueuedActionState.lotteryWinner = donation.getUnclaimedLotteryWinnings(_playerId);
+
     // Compact to fit the arrays
     assembly ("memory-safe") {
       mstore(mload(pendingQueuedActionState), pendingQueuedActionStateLength)
@@ -884,6 +887,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       _xpElapsedTime,
       attire_[_playerId][_queuedAction.queueId],
       activeBoosts_[_playerId],
+      globalBoost,
       itemNFT,
       world,
       fullAttireBonus[_skill].bonusXPPercent,

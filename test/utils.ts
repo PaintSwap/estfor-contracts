@@ -1,4 +1,4 @@
-import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
+import {EstforTypes} from "@paintswap/estfor-definitions";
 import {ContractTransaction} from "ethers";
 
 export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
@@ -53,3 +53,4 @@ export const MAX_UNIQUE_TICKETS = 64;
 export const SPAWN_MUL = 1000;
 export const RATE_MUL = 1000;
 export const GUAR_MUL = 10;
+export const NO_DONATION_AMOUNT = 0;

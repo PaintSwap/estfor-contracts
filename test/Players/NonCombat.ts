@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionChoiceId, getActionId, getRequestId, GUAR_MUL, RATE_MUL} from "../utils";
+import {getActionChoiceId, getActionId, getRequestId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
   getXPFromLevel,
@@ -1042,6 +1042,7 @@ describe("Non-Combat Actions", function () {
           EstforConstants.SKILL_BOOST,
           0,
           0,
+          NO_DONATION_AMOUNT,
           EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3 * 3600]);

@@ -24,7 +24,9 @@ enum EquipPosition {
   MAGIC_BAG,
   FOOD,
   AUX, // wood, seeds  etc..
-  BOOST_VIAL
+  BOOST_VIAL,
+  EXTRA_BOOST_VIAL,
+  GLOBAL_BOOST_VIAL
 }
 
 struct Player {
@@ -114,6 +116,12 @@ struct PlayerBoostInfo {
   uint16 value;
   uint16 itemTokenId; // Get the effect of it
   BoostType boostType;
+  // Another boost slot
+  uint40 extraStartTime;
+  uint24 extraDuration;
+  uint16 extraValue;
+  uint16 extraItemTokenId;
+  BoostType extraBoostType;
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.
@@ -261,6 +269,15 @@ struct QuestState {
   uint32[] xpGainedSkills; // XP gained in these skills
 }
 
+struct LotteryWinnerInfo {
+  uint16 lotteryId;
+  uint24 raffleId;
+  uint16 itemTokenId;
+  uint16 amount;
+  bool instantConsume;
+  uint40 playerId;
+}
+
 struct PendingQueuedActionState {
   // These 2 are in sync. Separated to reduce gas/deployment costs as these are passed down many layers.
   PendingQueuedActionEquipmentState[] equipmentStates;
@@ -276,6 +293,7 @@ struct PendingQueuedActionState {
   QuestState quests;
   uint numPastRandomRewardInstancesToRemove;
   uint8 worldLocation;
+  LotteryWinnerInfo lotteryWinner;
 }
 
 struct FullAttireBonusInput {

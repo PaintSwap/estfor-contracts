@@ -105,9 +105,13 @@ export const playersFixture = async function () {
   )) as PlayerNFT;
 
   const Donation = await ethers.getContractFactory("Donation");
-  const donation = await upgrades.deployProxy(Donation, [brush.address, playerNFT.address, shop.address], {
-    kind: "uups",
-  });
+  const donation = await upgrades.deployProxy(
+    Donation,
+    [brush.address, playerNFT.address, shop.address, world.address, ethers.utils.parseEther("1000"), isBeta],
+    {
+      kind: "uups",
+    }
+  );
   await donation.deployed();
 
   const Promotions = await ethers.getContractFactory("Promotions");
@@ -176,6 +180,7 @@ export const playersFixture = async function () {
       adminAccess.address,
       quests.address,
       clans.address,
+      donation.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -207,11 +212,13 @@ export const playersFixture = async function () {
   });
 
   await world.setQuests(quests.address);
+  await world.setDonation(donation.address);
 
   await itemNFT.setPlayers(players.address);
   await playerNFT.setPlayers(players.address);
   await quests.setPlayers(players.address);
   await clans.setPlayers(players.address);
+  await donation.setPlayers(players.address);
 
   await itemNFT.setBankFactory(bankFactory.address);
   await clans.setBankFactory(bankFactory.address);

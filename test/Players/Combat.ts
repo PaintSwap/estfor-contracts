@@ -12,6 +12,7 @@ import {
   getActionId,
   getRequestId,
   GUAR_MUL,
+  NO_DONATION_AMOUNT,
   RATE_MUL,
   SPAWN_MUL,
   START_XP,
@@ -650,6 +651,7 @@ describe("Combat Actions", function () {
           EstforConstants.XP_BOOST,
           0,
           0,
+          NO_DONATION_AMOUNT,
           EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
         );
       await ethers.provider.send("evm_increaseTime", [240]);
@@ -766,6 +768,7 @@ describe("Combat Actions", function () {
           EstforConstants.XP_BOOST,
           0,
           0,
+          NO_DONATION_AMOUNT,
           EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
         );
       await ethers.provider.send("evm_increaseTime", [240]);

@@ -1251,6 +1251,7 @@ describe("Players", function () {
           ethers.constants.AddressZero,
           ethers.constants.AddressZero,
           ethers.constants.AddressZero,
+          ethers.constants.AddressZero,
           false
         )
       ).to.be.revertedWithCustomError(playersImplMisc1, "CannotCallInitializerOnImplementation");

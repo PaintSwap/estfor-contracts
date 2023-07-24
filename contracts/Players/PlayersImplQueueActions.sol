@@ -32,6 +32,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
     uint _questId,
+    uint _donationAmount,
     ActionQueueStatus _queueStatus
   ) external {
     address from = msg.sender;
@@ -135,11 +136,15 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     if (_boostItemTokenId != NONE) {
-      consumeBoost(from, _playerId, _boostItemTokenId, _boostStartTime);
+      _consumeBoost(from, _playerId, _boostItemTokenId, _boostStartTime);
+    }
+
+    if (_donationAmount != 0) {
+      _donate(from, _playerId, _donationAmount);
     }
   }
 
-  function consumeBoost(address _from, uint _playerId, uint16 _itemTokenId, uint40 _startTime) public {
+  function _consumeBoost(address _from, uint _playerId, uint16 _itemTokenId, uint40 _startTime) private {
     Item memory item = itemNFT.getItem(_itemTokenId);
     if (item.equipPosition != EquipPosition.BOOST_VIAL) {
       revert NotABoostVial();
@@ -152,13 +157,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     // Burn it
-    address from = msg.sender;
-    itemNFT.burn(from, _itemTokenId, 1);
+    itemNFT.burn(_from, _itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
     PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
-      itemNFT.mint(from, playerBoost.itemTokenId, 1);
+      itemNFT.mint(_from, playerBoost.itemTokenId, 1);
     }
 
     playerBoost.startTime = _startTime;
@@ -519,7 +523,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   }
 
   // Consumes all the actions in the queue up to this time.
-  // Unequips everything which is just emitting an event
   // Mints the boost vial if it hasn't been consumed at all yet
   // Removes all the actions from the queue
   function clearEverything(address _from, uint _playerId, bool _processTheActions) public {
@@ -540,20 +543,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       delete activeBoosts_[_playerId];
       itemNFT.mint(_from, itemTokenId, 1);
     }
-  }
-
-  function setActivePlayer(address _from, uint _playerId) external {
-    uint existingActivePlayerId = activePlayer_[_from];
-    // All attire and actions can be made for this player
-    activePlayer_[_from] = _playerId;
-    if (existingActivePlayerId == _playerId) {
-      revert PlayerAlreadyActive();
-    }
-    if (existingActivePlayerId != 0) {
-      // If there is an existing active player, unequip all items
-      clearEverything(_from, existingActivePlayerId, true);
-    }
-    emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
   }
 
   function validateActionsImpl(

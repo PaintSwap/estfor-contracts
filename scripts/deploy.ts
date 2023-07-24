@@ -152,16 +152,19 @@ async function main() {
   let itemsUri: string;
   let imageBaseUri: string;
   let editNameBrushPrice: BigNumber;
+  let startDonationThresholdRewardAmount: BigNumber;
   const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     imageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
+    startDonationThresholdRewardAmount = ethers.utils.parseEther("1000");
   } else {
     // live version
     itemsUri = "ipfs://TODO/";
     imageBaseUri = "ipfs://TODO/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
+    startDonationThresholdRewardAmount = ethers.utils.parseEther("100000");
   }
 
   // Create NFT contract which contains all items
@@ -210,9 +213,13 @@ async function main() {
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
   const Donation = await ethers.getContractFactory("Donation");
-  const donation = await upgrades.deployProxy(Donation, [brush.address, playerNFT.address, shop.address], {
-    kind: "uups",
-  });
+  const donation = await upgrades.deployProxy(
+    Donation,
+    [brush.address, playerNFT.address, shop.address, world.address, startDonationThresholdRewardAmount, isBeta],
+    {
+      kind: "uups",
+    }
+  );
   await donation.deployed();
   console.log(`donation = "${donation.address.toLowerCase()}"`);
 
@@ -273,6 +280,7 @@ async function main() {
       adminAccess.address,
       quests.address,
       clans.address,
+      donation.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -345,6 +353,8 @@ async function main() {
 
   tx = await world.setQuests(quests.address);
   await tx.wait();
+  tx = await world.setDonation(donation.address);
+  await tx.wait();
   console.log("world setQuests");
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
@@ -358,6 +368,9 @@ async function main() {
   tx = await clans.setPlayers(players.address);
   await tx.wait();
   console.log("clans setPlayers");
+  tx = await donation.setPlayers(players.address);
+  await tx.wait();
+  console.log("donation setPlayers");
 
   tx = await clans.setBankFactory(bankFactory.address);
   await tx.wait();
@@ -465,7 +478,7 @@ async function main() {
 
   // Add test data for the game
   if (isBeta) {
-    await addTestData(itemNFT, playerNFT, players, shop, brush, quests, clans, bankFactory);
+    await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory);
   }
 }
 

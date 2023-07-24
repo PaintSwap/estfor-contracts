@@ -2,7 +2,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {QUEST_BURN_BAN} from "@paintswap/estfor-definitions/constants";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
-import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Quests, Shop} from "../typechain-types";
+import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
 import {createPlayer, isDevNetwork} from "./utils";
 
 export const addTestData = async (
@@ -11,7 +11,6 @@ export const addTestData = async (
   players: Players,
   shop: Shop,
   brush: MockBrushToken,
-  quests: Quests,
   clans: Clans,
   bankFactory: BankFactory
 ) => {

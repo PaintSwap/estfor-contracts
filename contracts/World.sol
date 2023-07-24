@@ -10,7 +10,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
 
 import {WorldLibrary} from "./WorldLibrary.sol";
-import {IQuests} from "./interfaces/IQuests.sol";
+import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
@@ -101,10 +101,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   mapping(uint actionId => ActionRewards actionRewards) private actionRewards;
 
-  IQuests private quests;
+  IOracleRewardCB private quests;
 
   mapping(uint tier => Equipment[]) public dailyRewardPool;
   mapping(uint tier => Equipment[]) public weeklyRewardPool;
+
+  IOracleRewardCB private donation;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -202,6 +204,9 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     randomWords[_requestId] = random;
     if (address(quests) != address(0)) {
       quests.newOracleRandomWords(random);
+    }
+    if (address(donation) != address(0)) {
+      donation.newOracleRandomWords(random);
     }
     emit RequestFulfilled(_requestId, random);
 
@@ -583,8 +588,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit RemoveActionChoicesV2(_actionId, _actionChoiceIds);
   }
 
-  function setQuests(IQuests _quests) external onlyOwner {
+  function setQuests(IOracleRewardCB _quests) external onlyOwner {
     quests = _quests;
+  }
+
+  function setDonation(IOracleRewardCB _donation) external onlyOwner {
+    donation = _donation;
   }
 
   function setDailyRewardPool(uint _tier, Equipment[] calldata _dailyRewards) public onlyOwner {

@@ -56,13 +56,19 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
   {
     Player storage player = players_[_playerId];
+    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(_from, _playerId);
     if (player.actionQueue.length == 0) {
       // No actions remaining
       PendingQueuedActionProcessed memory emptyPendingQueuedActionProcessed;
-      _processActionsFinished(_from, _playerId, emptyPendingQueuedActionProcessed); // TODO: Could still use pendingQueuedActionState
+      _processActionsFinished(
+        _from,
+        _playerId,
+        emptyPendingQueuedActionProcessed,
+        pendingQueuedActionState.lotteryWinner
+      ); // TODO: Could still use pendingQueuedActionState
       return (remainingQueuedActions, emptyPendingQueuedActionProcessed.currentAction);
     }
-    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(_from, _playerId);
+
     remainingQueuedActions = pendingQueuedActionState.remainingQueuedActions;
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
     currentActionProcessed = pendingQueuedActionProcessed.currentAction;
@@ -248,12 +254,9 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       }
     }
 
-    // Clear boost if it has expired
-    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
-    if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
-      delete activeBoosts_[_playerId];
-      emit BoostFinished(_playerId);
-    }
+    _handleLotteryWinnings(_from, _playerId, pendingQueuedActionState.lotteryWinner);
+
+    _clearBoostsIfExpired(_playerId);
 
     bytes1 packedData = player.packedData;
     // Clear bottom half which holds the worldLocation
@@ -262,20 +265,87 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     player.packedData = packedData;
   }
 
+  function _clearBoostsIfExpired(uint _playerId) private {
+    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
+    if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
+      delete playerBoost.value;
+      delete playerBoost.startTime;
+      delete playerBoost.duration;
+      delete playerBoost.value;
+      delete playerBoost.itemTokenId;
+      delete playerBoost.boostType;
+      emit BoostFinished(_playerId);
+    }
+
+    if (
+      playerBoost.extraItemTokenId != NONE &&
+      playerBoost.extraStartTime.add(playerBoost.extraDuration) <= block.timestamp
+    ) {
+      delete playerBoost.extraValue;
+      delete playerBoost.extraStartTime;
+      delete playerBoost.extraDuration;
+      delete playerBoost.extraValue;
+      delete playerBoost.extraItemTokenId;
+      delete playerBoost.extraBoostType;
+      emit ExtraBoostFinished(_playerId);
+    }
+  }
+
+  function donate(address _from, uint _playerId, uint _amount) external {
+    (uint16 itemTokenId, uint16 globalItemTokenId) = donation.donate(_from, _playerId, _amount);
+    if (itemTokenId != NONE) {
+      _instantConsumeExtraOrGlobalBoost(_from, _playerId, itemTokenId, uint40(block.timestamp));
+    }
+    if (globalItemTokenId != NONE) {
+      _instantConsumeExtraOrGlobalBoost(_from, _playerId, globalItemTokenId, uint40(block.timestamp));
+    }
+  }
+
+  // There is no need to burn anything because it is implicitly minted/burned in the same transaction
+  function _instantConsumeExtraOrGlobalBoost(
+    address _from,
+    uint _playerId,
+    uint16 _itemTokenId,
+    uint40 _startTime
+  ) private {
+    Item memory item = itemNFT.getItem(_itemTokenId);
+    if (item.equipPosition != EquipPosition.EXTRA_BOOST_VIAL && item.equipPosition != EquipPosition.GLOBAL_BOOST_VIAL) {
+      revert NotABoostVial();
+    }
+    if (_startTime < block.timestamp) {
+      _startTime = uint40(block.timestamp);
+    }
+
+    if (item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL) {
+      PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
+      playerBoost.extraStartTime = _startTime;
+      playerBoost.extraDuration = item.boostDuration;
+      playerBoost.extraValue = item.boostValue;
+      playerBoost.extraBoostType = item.boostType;
+      playerBoost.extraItemTokenId = _itemTokenId;
+
+      emit ConsumeExtraBoostVial(_from, _playerId, playerBoost);
+    } else {
+      globalBoost.startTime = _startTime;
+      globalBoost.duration = item.boostDuration;
+      globalBoost.value = item.boostValue;
+      globalBoost.boostType = item.boostType;
+      globalBoost.itemTokenId = _itemTokenId;
+
+      emit ConsumeGlobalBoostVial(_from, _playerId, globalBoost);
+    }
+  }
+
   function _processActionsFinished(
     address _from,
     uint _playerId,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
+    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
+    LotteryWinnerInfo memory _lotteryWinner
   ) private {
     _claimRandomRewards(_playerId, _pendingQueuedActionProcessed);
     _handleDailyRewards(_from, _playerId);
-
-    // Clear boost if it has expired
-    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
-    if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
-      delete activeBoosts_[_playerId];
-      emit BoostFinished(_playerId);
-    }
+    _handleLotteryWinnings(_from, _playerId, _lotteryWinner);
+    _clearBoostsIfExpired(_playerId);
   }
 
   function _claimRandomRewards(
@@ -387,5 +457,19 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
   function _handleDailyRewards(address _from, uint _playerId) private {
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.handleDailyRewards.selector, _from, _playerId));
+  }
+
+  function _handleLotteryWinnings(address _from, uint _playerId, LotteryWinnerInfo memory _lotteryWinner) private {
+    // Check for lottery winners, TODO: currently just uses instant extra boost consumptions
+    if (_lotteryWinner.itemTokenId != 0) {
+      donation.claimedLotteryWinnings(_lotteryWinner.lotteryId);
+      emit ClaimedLotteryWinnings(
+        _lotteryWinner.lotteryId,
+        _lotteryWinner.raffleId,
+        _lotteryWinner.itemTokenId,
+        _lotteryWinner.amount
+      );
+      _instantConsumeExtraOrGlobalBoost(_from, _playerId, _lotteryWinner.itemTokenId, uint40(block.timestamp));
+    }
   }
 }

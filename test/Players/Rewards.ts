@@ -492,6 +492,9 @@ describe("Rewards", function () {
       tx = await world.requestRandomWords();
       await mockOracleClient.fulfill(getRequestId(tx), world.address);
       await players.connect(alice).processActions(playerId);
+
+      equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      mondayEquipment = equipments[0];
       expect(balanceBeforeMondayReward.add(mondayEquipment.amount)).eq(
         await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId)
       );
@@ -563,12 +566,12 @@ describe("Rewards", function () {
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
 
       // If you manage to get the same tokenId then add that as well
-      let expectedAmount = baseEquipment.amount * 1.2; // get 20% boost
+      let expectedAmount = Math.round(baseEquipment.amount * 1.2); // get 20% boost
       if (equipments[0].itemTokenId == equipments[1].itemTokenId) {
-        expectedAmount += equipments[0].amount * 1.1;
+        expectedAmount += Math.round(equipments[0].amount * 1.1);
       }
 
-      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(expectedAmount);
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.be.eq(expectedAmount);
     });
 
     it("Test rewards in new week", async function () {

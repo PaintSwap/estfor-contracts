@@ -11,6 +11,8 @@ interface IPlayersProcessActionsDelegate {
   function processActions(address from, uint playerId) external;
 
   function processActionsAndSetState(uint playerId) external;
+
+  function donate(address from, uint playerId, uint amount) external;
 }
 
 interface IPlayersRewardsDelegate {

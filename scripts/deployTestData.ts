@@ -32,16 +32,13 @@ async function main() {
   const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
   const brush = await MockBrushToken.attach(BRUSH_ADDRESS);
 
-  const Quests = await ethers.getContractFactory("Quests");
-  const quests = await Quests.attach(QUESTS_ADDRESS);
-
   const Clans = await ethers.getContractFactory("Clans", {libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS}});
   const clans = await Clans.attach(CLANS_ADDRESS);
 
   const BankFactory = await ethers.getContractFactory("BankFactory");
   const bankFactory = await BankFactory.attach(BANK_FACTORY_ADDRESS);
 
-  await addTestData(itemNFT, playerNFT, players, shop, brush, quests, clans, bankFactory);
+  await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory);
 }
 
 main().catch((error) => {

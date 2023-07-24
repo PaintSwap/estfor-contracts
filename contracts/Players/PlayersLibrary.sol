@@ -576,24 +576,87 @@ library PlayersLibrary {
     uint _actionStartTime,
     uint _xpElapsedTime,
     uint24 _xpPerHour,
-    PlayerBoostInfo storage activeBoost
+    BoostType boostType,
+    uint40 _boostStartTime,
+    uint24 _boostDuration,
+    uint16 _boostValue
+  ) private pure returns (uint32 boostPointsAccrued) {
+    if (
+      boostType == BoostType.ANY_XP ||
+      (_isCombatSkill && boostType == BoostType.COMBAT_XP) ||
+      (!_isCombatSkill && boostType == BoostType.NON_COMBAT_XP)
+    ) {
+      uint boostedTime = getBoostedTime(_actionStartTime, _xpElapsedTime, _boostStartTime, _boostDuration);
+      boostPointsAccrued = uint32((boostedTime * _xpPerHour * _boostValue) / (3600 * 100));
+    }
+  }
+
+  function _extraXPFromNormalBoost(
+    bool _isCombatSkill,
+    uint _actionStartTime,
+    uint _xpElapsedTime,
+    uint24 _xpPerHour,
+    PlayerBoostInfo storage _activeBoost
   ) private view returns (uint32 boostPointsAccrued) {
-    if (activeBoost.itemTokenId != NONE && activeBoost.startTime < block.timestamp && _xpElapsedTime != 0) {
+    if (_activeBoost.itemTokenId != NONE && _activeBoost.startTime < block.timestamp && _xpElapsedTime != 0) {
       // A boost is active
-      BoostType boostType = activeBoost.boostType;
-      if (
-        boostType == BoostType.ANY_XP ||
-        (_isCombatSkill && activeBoost.boostType == BoostType.COMBAT_XP) ||
-        (!_isCombatSkill && activeBoost.boostType == BoostType.NON_COMBAT_XP)
-      ) {
-        uint boostedTime = getBoostedTime(
+      return
+        _extraXPFromBoost(
+          _isCombatSkill,
           _actionStartTime,
           _xpElapsedTime,
-          activeBoost.startTime,
-          activeBoost.duration
+          _xpPerHour,
+          _activeBoost.boostType,
+          _activeBoost.startTime,
+          _activeBoost.duration,
+          _activeBoost.value
         );
-        boostPointsAccrued = uint32((boostedTime * _xpPerHour * activeBoost.value) / (3600 * 100));
-      }
+    }
+  }
+
+  function _extraXPFromExtraBoost(
+    bool _isCombatSkill,
+    uint _actionStartTime,
+    uint _xpElapsedTime,
+    uint24 _xpPerHour,
+    PlayerBoostInfo storage _activeBoost
+  ) private view returns (uint32 boostPointsAccrued) {
+    if (_activeBoost.extraItemTokenId != NONE && _activeBoost.extraStartTime < block.timestamp && _xpElapsedTime != 0) {
+      // An extra boost is active
+      return
+        _extraXPFromBoost(
+          _isCombatSkill,
+          _actionStartTime,
+          _xpElapsedTime,
+          _xpPerHour,
+          _activeBoost.extraBoostType,
+          _activeBoost.extraStartTime,
+          _activeBoost.extraDuration,
+          _activeBoost.extraValue
+        );
+    }
+  }
+
+  function _extraXPFromGlobalBoost(
+    bool _isCombatSkill,
+    uint _actionStartTime,
+    uint _xpElapsedTime,
+    uint24 _xpPerHour,
+    PlayerBoostInfo storage _globalBoost
+  ) private view returns (uint32 boostsPointsAccrued) {
+    if (_globalBoost.itemTokenId != NONE && _globalBoost.startTime < block.timestamp && _xpElapsedTime != 0) {
+      // A boost is active
+      return
+        _extraXPFromBoost(
+          _isCombatSkill,
+          _actionStartTime,
+          _xpElapsedTime,
+          _xpPerHour,
+          _globalBoost.boostType,
+          _globalBoost.startTime,
+          _globalBoost.duration,
+          _globalBoost.value
+        );
     }
   }
 
@@ -885,6 +948,7 @@ library PlayersLibrary {
     uint _xpElapsedTime,
     Attire storage _attire,
     PlayerBoostInfo storage _activeBoost,
+    PlayerBoostInfo storage _globalBoost,
     ItemNFT _itemNFT,
     World _world,
     uint8 _bonusAttirePercent,
@@ -894,7 +958,9 @@ library PlayersLibrary {
     bool _isCombatSkill = _queuedAction.combatStyle != CombatStyle.NONE;
     uint24 xpPerHour = _world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
-    pointsAccrued += _extraXPFromBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _activeBoost);
+    pointsAccrued += _extraXPFromNormalBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _activeBoost);
+    pointsAccrued += _extraXPFromExtraBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _activeBoost);
+    pointsAccrued += _extraXPFromGlobalBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _globalBoost);
     pointsAccrued += _extraXPFromFullAttire(
       _from,
       _attire,

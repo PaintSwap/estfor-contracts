@@ -391,6 +391,8 @@ uint16 constant ABSENCE_BOOST = BOOST_BASE + 4;
 uint16 constant PRAY_TO_THE_BEARDIE = BOOST_BASE + 5;
 uint16 constant GO_OUTSIDE = BOOST_BASE + 6;
 uint16 constant RAINING_RARES = BOOST_BASE + 7;
+uint16 constant EXTRA_XP_BOOST = BOOST_BASE + 8;
+uint16 constant EXTRA_HALF_XP_BOOST = BOOST_BASE + 9;
 uint16 constant BOOST_MAX = 13055;
 
 // MISC

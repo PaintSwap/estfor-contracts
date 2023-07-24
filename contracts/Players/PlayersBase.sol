@@ -8,6 +8,7 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
+import {Donation} from "../Donation.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import "../interfaces/IPlayersDelegates.sol";
 
@@ -22,7 +23,8 @@ abstract contract PlayersBase {
   event AddXP(address from, uint playerId, Skill skill, uint points);
   event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, Attire[] attire, uint startTime);
   event ConsumeBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
-  event UnconsumeBoostVial(address from, uint playerId);
+  event ConsumeExtraBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
+  event ConsumeGlobalBoostVial(address from, uint playerId, PlayerBoostInfo globalBoost);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
   event AddPendingRandomReward(address from, uint playerId, uint queueId, uint startTime, uint elapsed);
   event PendingRandomRewardsClaimed(
@@ -37,6 +39,7 @@ abstract contract PlayersBase {
   event AdminEditThresholdReward(XPThresholdReward xpThresholdReward);
 
   event BoostFinished(uint playerId);
+  event ExtraBoostFinished(uint playerId);
 
   // For logging
   event Died(address from, uint playerId, uint queueId);
@@ -58,6 +61,7 @@ abstract contract PlayersBase {
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
+  event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
 
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
@@ -118,6 +122,7 @@ abstract contract PlayersBase {
   error CannotCallInitializerOnImplementation();
   error InvalidReward();
   error BuyBrushFailed();
+  error NonInstanceConsumeNotSupportedYet();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -166,6 +171,10 @@ abstract contract PlayersBase {
   mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
   Quests internal quests;
   Clans internal clans;
+  Donation internal donation;
+  address internal reserved1;
+
+  PlayerBoostInfo internal globalBoost; // A boost shared by everyone
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {
@@ -314,6 +323,13 @@ abstract contract PlayersBase {
       abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
+  }
+
+  function _donate(address _from, uint _playerId, uint _amount) internal {
+    _delegatecall(
+      implProcessActions,
+      abi.encodeWithSelector(IPlayersProcessActionsDelegate.donate.selector, _from, _playerId, _amount)
+    );
   }
 
   function _claimableXPThresholdRewards(

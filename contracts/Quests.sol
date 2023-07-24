@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IQuests} from "./interfaces/IQuests.sol";
+import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
@@ -47,7 +47,7 @@ interface Router {
   ) external returns (uint[] memory amounts);
 }
 
-contract Quests is UUPSUpgradeable, OwnableUpgradeable, IQuests {
+contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   using UnsafeMath for uint256;
   using UnsafeMath for U256;
   using Math for uint256;

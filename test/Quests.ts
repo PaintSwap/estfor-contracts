@@ -18,13 +18,12 @@ import {allQuests, defaultMinRequirements, Quest} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {
   setupBasicCooking,
-  setupBasicCrafting,
   setupBasicFiremaking,
   setupBasicFishing,
   setupBasicMeleeCombat,
   setupBasicWoodcutting,
 } from "./Players/utils";
-import {getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
+import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -1023,7 +1022,15 @@ describe("Quests", function () {
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
       await players
         .connect(alice)
-        .startActionsExtra(playerId, [queuedAction], NONE, 0, questId, EstforTypes.ActionQueueStatus.NONE);
+        .startActionsExtra(
+          playerId,
+          [queuedAction],
+          NONE,
+          0,
+          questId,
+          NO_DONATION_AMOUNT,
+          EstforTypes.ActionQueueStatus.NONE
+        );
       expect((await quests.activeQuests(playerId)).questId).to.eq(questId);
     });
   });
