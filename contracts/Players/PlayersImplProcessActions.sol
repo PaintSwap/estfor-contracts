@@ -316,6 +316,14 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       _startTime = uint40(block.timestamp);
     }
 
+    BoostInfo memory boostInfo = BoostInfo({
+      startTime: _startTime,
+      duration: item.boostDuration,
+      value: item.boostValue,
+      boostType: item.boostType,
+      itemTokenId: _itemTokenId
+    });
+
     if (item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL) {
       PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
       playerBoost.extraStartTime = _startTime;
@@ -324,7 +332,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       playerBoost.extraBoostType = item.boostType;
       playerBoost.extraItemTokenId = _itemTokenId;
 
-      emit ConsumeExtraBoostVial(_from, _playerId, playerBoost);
+      emit ConsumeExtraBoostVial(_from, _playerId, boostInfo);
     } else {
       globalBoost.startTime = _startTime;
       globalBoost.duration = item.boostDuration;
@@ -332,7 +340,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       globalBoost.boostType = item.boostType;
       globalBoost.itemTokenId = _itemTokenId;
 
-      emit ConsumeGlobalBoostVial(_from, _playerId, globalBoost);
+      emit ConsumeGlobalBoostVial(_from, _playerId, boostInfo);
     }
   }
 
@@ -463,12 +471,6 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Check for lottery winners, TODO: currently just uses instant extra boost consumptions
     if (_lotteryWinner.itemTokenId != 0) {
       donation.claimedLotteryWinnings(_lotteryWinner.lotteryId);
-      emit ClaimedLotteryWinnings(
-        _lotteryWinner.lotteryId,
-        _lotteryWinner.raffleId,
-        _lotteryWinner.itemTokenId,
-        _lotteryWinner.amount
-      );
       _instantConsumeExtraOrGlobalBoost(_from, _playerId, _lotteryWinner.itemTokenId, uint40(block.timestamp));
     }
   }

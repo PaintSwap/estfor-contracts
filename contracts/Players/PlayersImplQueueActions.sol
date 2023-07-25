@@ -171,7 +171,17 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     playerBoost.boostType = item.boostType;
     playerBoost.itemTokenId = _itemTokenId;
 
-    emit ConsumeBoostVial(_from, _playerId, playerBoost);
+    emit ConsumeBoostVial(
+      _from,
+      _playerId,
+      BoostInfo({
+        startTime: _startTime,
+        duration: item.boostDuration,
+        value: item.boostValue,
+        boostType: item.boostType,
+        itemTokenId: _itemTokenId
+      })
+    );
   }
 
   function checkAddToQueue(

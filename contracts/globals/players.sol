@@ -110,6 +110,15 @@ struct ItemOutput {
   uint32 minXP;
 }
 
+// Used for events
+struct BoostInfo {
+  uint40 startTime;
+  uint24 duration;
+  uint16 value;
+  uint16 itemTokenId; // Get the effect of it
+  BoostType boostType;
+}
+
 struct PlayerBoostInfo {
   uint40 startTime;
   uint24 duration;

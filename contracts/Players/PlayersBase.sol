@@ -22,9 +22,9 @@ abstract contract PlayersBase {
   event ClearAll(address from, uint playerId);
   event AddXP(address from, uint playerId, Skill skill, uint points);
   event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, Attire[] attire, uint startTime);
-  event ConsumeBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
-  event ConsumeExtraBoostVial(address from, uint playerId, PlayerBoostInfo playerBoostInfo);
-  event ConsumeGlobalBoostVial(address from, uint playerId, PlayerBoostInfo globalBoost);
+  event ConsumeBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
+  event ConsumeExtraBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
+  event ConsumeGlobalBoostVial(address from, uint playerId, BoostInfo globalBoost);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
   event AddPendingRandomReward(address from, uint playerId, uint queueId, uint startTime, uint elapsed);
   event PendingRandomRewardsClaimed(
@@ -61,7 +61,6 @@ abstract contract PlayersBase {
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
-  event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
 
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
