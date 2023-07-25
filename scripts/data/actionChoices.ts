@@ -1285,7 +1285,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skillDiff: 0,
     rate: 200 * 1000,
     xpPerHour: 180,
-    minXP: 1938,
+    minXP: 3236,
     inputTokenId1: EstforConstants.MITHRIL_BAR,
     inputAmount1: 1,
     inputTokenId2: EstforConstants.NONE,
