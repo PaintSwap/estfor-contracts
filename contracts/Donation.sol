@@ -15,9 +15,10 @@ import {Equipment, EXTRA_XP_BOOST, EXTRA_HALF_XP_BOOST, PRAY_TO_THE_BEARDIE, Lot
 
 contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event Donate(address from, uint playerId, uint amount, uint lotteryId, uint raffleId);
-  event Winner(uint lotteryId, uint raffleId);
+  event WinnerAndNewLottery(uint lotteryId, uint raffleId, uint16 rewardItemTokenId, uint rewardAmount);
   event SetRaffleEntryCost(uint brushAmount);
   event NextDonationThreshold(uint amount, uint16 rewardItemTokenId);
+  event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
 
   error NotOwnerOfPlayer();
   error NotEnoughBrush();
@@ -30,21 +31,23 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   IBrushToken public brush;
   PlayerNFT public playerNFT;
-  // All these fit into 1 slot
   address shop;
-  uint16 public lastLotteryId;
-  uint24 public lastRaffleId; // Relative to each lottery
-  uint40 public lastOracleRandomWordTimestamp;
-  uint16 private raffleEntryCost; // In BRUSH ether (no wei decimals)
   mapping(uint lotteryId => BitMaps.BitMap) private playersEntered;
   mapping(uint lotteryId => mapping(uint raffleId => uint playerId)) public raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
   mapping(uint lotteryId => LotteryWinnerInfo winner) public winners;
   BitMaps.BitMap private claimedRewards;
   address private players;
+  address private world;
   uint16 public donationRewardItemTokenId;
   uint40 private totalDonated; // In BRUSH ether (no wei decimals)
   uint40 private nextThreshold; // In BRUSH ether (no wei decimals)
-  address private world;
+  uint16 public nextRewardItemTokenId;
+  uint16 public nextRewardAmount;
+  bool public instantConsume;
+  uint16 public lastLotteryId;
+  uint24 public lastRaffleId; // Relative to each lottery
+  uint40 public lastOracleRandomWordTimestamp;
+  uint16 private raffleEntryCost; // In BRUSH ether (no wei decimals)
   bool public isBeta;
   uint40[6] public lastUnclaimedWinners; // 1 storage slot to keep track of the last 3 winning playerId & lotteryId, stored as [playerId, lotteryId, playerId, lotteryId, playerId, lotteryId]
 
@@ -72,6 +75,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     PlayerNFT _playerNFT,
     address _shop,
     address _world,
+    uint _raffleEntryCost,
     uint _startThreshold,
     bool _isBeta
   ) public initializer {
@@ -83,13 +87,16 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     shop = _shop;
     world = _world;
 
-    raffleEntryCost = _isBeta ? 10 : 100;
+    raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
     donationRewardItemTokenId = EXTRA_HALF_XP_BOOST;
     nextThreshold = uint40(_startThreshold / 1 ether);
     isBeta = _isBeta;
+    nextRewardItemTokenId = EXTRA_XP_BOOST;
+    nextRewardAmount = 1;
 
-    emit SetRaffleEntryCost(raffleEntryCost);
+    emit SetRaffleEntryCost(_raffleEntryCost);
     emit NextDonationThreshold(nextThreshold, PRAY_TO_THE_BEARDIE);
+    emit WinnerAndNewLottery(0, 0, nextRewardItemTokenId, nextRewardAmount);
   }
 
   // _playerId can be 0 to ignore it, otherwise sender must own it
@@ -158,14 +165,15 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       winners[_lastLotteryId] = LotteryWinnerInfo({
         lotteryId: _lastLotteryId,
         raffleId: raffleIdWinner,
-        itemTokenId: EXTRA_XP_BOOST,
-        amount: 1,
-        instantConsume: true,
+        itemTokenId: nextRewardItemTokenId,
+        amount: nextRewardAmount,
+        instantConsume: instantConsume,
         playerId: uint40(raffleIdToPlayerId[_lastLotteryId][raffleIdWinner])
       });
 
       lastRaffleId = 0;
-      emit Winner(_lastLotteryId, raffleIdWinner);
+      // Currently not set as will be used: nextRewardItemTokenId, nextRewardAmount, instantConsume;
+      emit WinnerAndNewLottery(_lastLotteryId, raffleIdWinner, nextRewardItemTokenId, nextRewardAmount);
 
       // Add to the last 3 unclaimed winners queue
       bool added;
@@ -195,6 +203,14 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   function claimedLotteryWinnings(uint _lotteryId) external onlyPlayers {
+    LotteryWinnerInfo storage lotteryWinner = winners[_lotteryId];
+    emit ClaimedLotteryWinnings(
+      lotteryWinner.lotteryId,
+      lotteryWinner.raffleId,
+      lotteryWinner.itemTokenId,
+      lotteryWinner.amount
+    );
+
     delete winners[_lotteryId];
     claimedRewards.set(_lotteryId);
 
@@ -248,7 +264,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   function setRaffleEntryCost(uint _raffleEntryCost) external onlyOwner {
     raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
-    emit SetRaffleEntryCost(raffleEntryCost);
+    emit SetRaffleEntryCost(_raffleEntryCost);
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -107,7 +107,15 @@ export const playersFixture = async function () {
   const Donation = await ethers.getContractFactory("Donation");
   const donation = await upgrades.deployProxy(
     Donation,
-    [brush.address, playerNFT.address, shop.address, world.address, ethers.utils.parseEther("1000"), isBeta],
+    [
+      brush.address,
+      playerNFT.address,
+      shop.address,
+      world.address,
+      ethers.utils.parseEther("5"),
+      ethers.utils.parseEther("1000"),
+      isBeta,
+    ],
     {
       kind: "uups",
     }

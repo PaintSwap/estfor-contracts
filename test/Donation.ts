@@ -111,14 +111,14 @@ describe("Donation", function () {
     // Should be unclaimed
     expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
     await expect(players.connect(alice).processActions(playerId))
-      .to.emit(players, "ClaimedLotteryWinnings")
+      .to.emit(donation, "ClaimedLotteryWinnings")
       .withArgs(lotteryId, 1, EstforConstants.EXTRA_XP_BOOST, 1);
     expect(await donation.hasClaimedReward(lotteryId)).to.eq(true);
     lotteryId = await donation.lastLotteryId();
     expect(lotteryId).to.eq(2);
 
     // Cannot claim again
-    await expect(players.connect(alice).processActions(playerId)).to.not.emit(players, "ClaimedLotteryWinnings");
+    await expect(players.connect(alice).processActions(playerId)).to.not.emit(donation, "ClaimedLotteryWinnings");
   });
 
   it("Reach minimum to get a ticket", async function () {
