@@ -93,6 +93,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     isBeta = _isBeta;
     nextRewardItemTokenId = EXTRA_XP_BOOST;
     nextRewardAmount = 1;
+    lastLotteryId = 1;
 
     emit SetRaffleEntryCost(_raffleEntryCost);
     emit NextDonationThreshold(nextThreshold, PRAY_TO_THE_BEARDIE);
@@ -159,7 +160,15 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   function newOracleRandomWords(uint[3] calldata randomWords) external onlyWorld {
     uint16 _lastLotteryId = lastLotteryId;
-    if (lastRaffleId != 0) {
+
+    bool hasDonations = lastRaffleId != 0;
+    if (!hasDonations && _lastLotteryId == 1) {
+      // No raffle winner and this is the first one so do nothing as sometimes
+      // this callback can be called many times
+      return;
+    }
+
+    if (hasDonations) {
       // Decide the winner
       uint24 raffleIdWinner = uint24(randomWords[0] % lastRaffleId) + 1;
       winners[_lastLotteryId] = LotteryWinnerInfo({
@@ -195,6 +204,8 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         lastUnclaimedWinners[lastUnclaimedWinners.length - 2] = winners[_lastLotteryId].playerId;
         lastUnclaimedWinners[lastUnclaimedWinners.length - 1] = _lastLotteryId;
       }
+    } else {
+      emit WinnerAndNewLottery(_lastLotteryId, 0, nextRewardItemTokenId, nextRewardAmount);
     }
 
     // Start new lottery

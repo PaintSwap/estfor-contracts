@@ -144,9 +144,12 @@ describe("Donation", function () {
     );
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost));
+    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
 
     let lotteryId = await donation.lastLotteryId();
-    expect(lotteryId).to.eq(1);
+    expect(lotteryId).to.eq(2);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.be.revertedWithCustomError(
       donation,
       "OracleNotCalledYet"

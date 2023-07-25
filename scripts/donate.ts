@@ -21,6 +21,7 @@ async function main() {
   await tx.wait();
   const playerId = 1;
   await players.donate(playerId, raffleCost);
+  await players.donate(0, raffleCost.add(ethers.utils.parseEther("1")));
 }
 
 main().catch((error) => {
