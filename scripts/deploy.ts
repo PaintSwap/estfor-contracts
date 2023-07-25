@@ -152,18 +152,21 @@ async function main() {
   let itemsUri: string;
   let imageBaseUri: string;
   let editNameBrushPrice: BigNumber;
+  let raffleEntryCost: BigNumber;
   let startDonationThresholdRewardAmount: BigNumber;
   const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     imageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
+    raffleEntryCost = ethers.utils.parseEther("5");
     startDonationThresholdRewardAmount = ethers.utils.parseEther("1000");
   } else {
     // live version
     itemsUri = "ipfs://TODO/";
     imageBaseUri = "ipfs://TODO/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
+    raffleEntryCost = ethers.utils.parseEther("50");
     startDonationThresholdRewardAmount = ethers.utils.parseEther("100000");
   }
 
@@ -215,7 +218,15 @@ async function main() {
   const Donation = await ethers.getContractFactory("Donation");
   const donation = await upgrades.deployProxy(
     Donation,
-    [brush.address, playerNFT.address, shop.address, world.address, startDonationThresholdRewardAmount, isBeta],
+    [
+      brush.address,
+      playerNFT.address,
+      shop.address,
+      world.address,
+      raffleEntryCost,
+      startDonationThresholdRewardAmount,
+      isBeta,
+    ],
     {
       kind: "uups",
     }
