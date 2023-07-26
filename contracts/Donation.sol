@@ -156,9 +156,9 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
         clanId = clans.getClanId(_playerId);
         if (clanId != 0) {
-          // Add raffle donation amount only to the clan reward reward
+          // Add raffle donation amount only to the clan reward reward to prevent them reaching it too quickly
           uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
-          totalDonatedToClan += uint40(_amount / 1 ether);
+          totalDonatedToClan += raffleEntryCost;
 
           // Want to prevent members from leaving and entering with new players to boost it up more than the maximum possible
           uint16 numDonationsToday;

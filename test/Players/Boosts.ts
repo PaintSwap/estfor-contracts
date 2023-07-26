@@ -1,5 +1,5 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";

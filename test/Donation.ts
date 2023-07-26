@@ -398,9 +398,7 @@ describe("Donation", function () {
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
-    const raffleCost = await donation.getRaffleEntryCost();
-
-    await players.connect(alice).donate(playerId, raffleCost);
+    await players.connect(alice).donate(playerId, raffleEntryCost);
 
     await brush.mint(bob.address, totalBrush);
     await brush.connect(bob).approve(donation.address, totalBrush);
@@ -427,5 +425,29 @@ describe("Donation", function () {
     await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.not.be.reverted;
+  });
+
+  it("Check only raffle cost is added to the clans total donations", async function () {
+    const {donation, players, alice, playerId, raffleEntryCost, clans} = await loadFixture(deployContracts);
+
+    const clanId = 1;
+    await clans.addTiers([
+      {
+        id: clanId,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+
+    let tierId = 1;
+    const imageId = 1;
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+    await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
+    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+      raffleEntryCost
+    );
   });
 });
