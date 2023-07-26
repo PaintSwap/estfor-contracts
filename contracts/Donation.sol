@@ -35,8 +35,8 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   struct ClanInfo {
     uint40 totalDonated;
     uint40 lastThreshold;
+    uint40 numDonationsToday; // Ideally wanted this below and uint16 but kept hitting OZ upgrade issues...
     uint40 lastDonationTimestamp;
-    uint16 numDonationsToday;
   }
 
   using BitMaps for BitMaps.BitMap;
@@ -161,7 +161,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
           totalDonatedToClan += raffleEntryCost;
 
           // Want to prevent members from leaving and entering with new players to boost it up more than the maximum possible
-          uint16 numDonationsToday;
+          uint40 numDonationsToday;
           if ((block.timestamp / 1 days) * 1 days > clanDonationInfo[clanId].lastDonationTimestamp) {
             // New day
             clanDonationInfo[clanId].lastDonationTimestamp = uint40((block.timestamp / 1 days) * 1 days);
