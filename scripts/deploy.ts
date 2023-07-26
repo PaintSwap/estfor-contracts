@@ -153,21 +153,22 @@ async function main() {
   let imageBaseUri: string;
   let editNameBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
-  let startDonationThresholdRewardAmount: BigNumber;
+  let startGlobalDonationThresholdRewards: BigNumber;
+  let startClanDonationThresholdRewards = ethers.utils.parseEther("25000");
   const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     imageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
-    startDonationThresholdRewardAmount = ethers.utils.parseEther("1000");
+    startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
   } else {
     // live version
     itemsUri = "ipfs://TODO/";
     imageBaseUri = "ipfs://TODO/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
     raffleEntryCost = ethers.utils.parseEther("50");
-    startDonationThresholdRewardAmount = ethers.utils.parseEther("100000");
+    startGlobalDonationThresholdRewards = ethers.utils.parseEther("100000");
   }
 
   // Create NFT contract which contains all items
@@ -215,25 +216,6 @@ async function main() {
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
-  const Donation = await ethers.getContractFactory("Donation");
-  const donation = await upgrades.deployProxy(
-    Donation,
-    [
-      brush.address,
-      playerNFT.address,
-      shop.address,
-      world.address,
-      raffleEntryCost,
-      startDonationThresholdRewardAmount,
-      isBeta,
-    ],
-    {
-      kind: "uups",
-    }
-  );
-  await donation.deployed();
-  console.log(`donation = "${donation.address.toLowerCase()}"`);
-
   const Promotions = await ethers.getContractFactory("Promotions");
   const promotions = (await upgrades.deployProxy(
     Promotions,
@@ -265,6 +247,27 @@ async function main() {
   )) as Clans;
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
+
+  const Donation = await ethers.getContractFactory("Donation");
+  const donation = await upgrades.deployProxy(
+    Donation,
+    [
+      brush.address,
+      playerNFT.address,
+      shop.address,
+      world.address,
+      clans.address,
+      raffleEntryCost,
+      startGlobalDonationThresholdRewards,
+      startClanDonationThresholdRewards,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+    }
+  );
+  await donation.deployed();
+  console.log(`donation = "${donation.address.toLowerCase()}"`);
 
   const Bank = await ethers.getContractFactory("Bank");
   const bank = await upgrades.deployBeacon(Bank);

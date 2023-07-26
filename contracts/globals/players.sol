@@ -26,7 +26,8 @@ enum EquipPosition {
   AUX, // wood, seeds  etc..
   BOOST_VIAL,
   EXTRA_BOOST_VIAL,
-  GLOBAL_BOOST_VIAL
+  GLOBAL_BOOST_VIAL,
+  CLAN_BOOST_VIAL
 }
 
 struct Player {

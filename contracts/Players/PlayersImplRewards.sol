@@ -888,6 +888,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       attire_[_playerId][_queuedAction.queueId],
       activeBoosts_[_playerId],
       globalBoost,
+      clanBoosts[clans.getClanId(_playerId)],
       itemNFT,
       world,
       fullAttireBonus[_skill].bonusXPPercent,

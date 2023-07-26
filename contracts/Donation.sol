@@ -9,9 +9,10 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
+import {Clans} from "./Clans/Clans.sol";
 
 // solhint-disable-next-line no-global-import
-import {Equipment, EXTRA_XP_BOOST, EXTRA_HALF_XP_BOOST, PRAY_TO_THE_BEARDIE, LotteryWinnerInfo} from "./globals/all.sol";
+import {Equipment, EXTRA_XP_BOOST, EXTRA_HALF_XP_BOOST, PRAY_TO_THE_BEARDIE, CLAN_BOOST, LotteryWinnerInfo} from "./globals/all.sol";
 
 contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event Donate(address from, uint playerId, uint amount, uint lotteryId, uint raffleId);
@@ -19,6 +20,8 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event SetRaffleEntryCost(uint brushAmount);
   event NextDonationThreshold(uint amount, uint16 rewardItemTokenId);
   event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
+  event ClanDonationThreshold(uint thresholdIncrement, uint16 rewardItemTokenId);
+  event UpdateLastClanDonationThreshold(uint clanId, uint lastThreshold, uint16 rewardItemTokenId);
 
   error NotOwnerOfPlayer();
   error NotEnoughBrush();
@@ -26,6 +29,11 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error AlreadyEnteredRaffle();
   error OnlyPlayers();
   error OnlyWorld();
+
+  struct ClanInfo {
+    uint40 totalDonated;
+    uint40 lastThreshold;
+  }
 
   using BitMaps for BitMaps.BitMap;
 
@@ -38,9 +46,10 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   BitMaps.BitMap private claimedRewards;
   address private players;
   address private world;
+  // TODO later change the order of this to keep all the variables together
   uint16 public donationRewardItemTokenId;
   uint40 private totalDonated; // In BRUSH ether (no wei decimals)
-  uint40 private nextThreshold; // In BRUSH ether (no wei decimals)
+  uint40 private nextGlobalThreshold; // In BRUSH ether (no wei decimals)
   uint16 public nextRewardItemTokenId;
   uint16 public nextRewardAmount;
   bool public instantConsume;
@@ -50,6 +59,10 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint16 private raffleEntryCost; // In BRUSH ether (no wei decimals)
   bool public isBeta;
   uint40[6] public lastUnclaimedWinners; // 1 storage slot to keep track of the last 3 winning playerId & lotteryId, stored as [playerId, lotteryId, playerId, lotteryId, playerId, lotteryId]
+  mapping(uint clanId => ClanInfo clanInfo) public clanDonationInfo;
+  Clans private clans;
+  uint40 public startClanThreshold;
+  uint40 public clanThresholdIncrement;
 
   modifier onlyPlayers() {
     if (players != msg.sender) {
@@ -75,8 +88,10 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     PlayerNFT _playerNFT,
     address _shop,
     address _world,
+    Clans _clans,
     uint _raffleEntryCost,
-    uint _startThreshold,
+    uint _startGlobalThreshold,
+    uint _clanThresholdIncrement,
     bool _isBeta
   ) public initializer {
     __Ownable_init();
@@ -86,17 +101,20 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     playerNFT = _playerNFT;
     shop = _shop;
     world = _world;
+    clans = _clans;
 
     raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
     donationRewardItemTokenId = EXTRA_HALF_XP_BOOST;
-    nextThreshold = uint40(_startThreshold / 1 ether);
+    nextGlobalThreshold = uint40(_startGlobalThreshold / 1 ether);
     isBeta = _isBeta;
     nextRewardItemTokenId = EXTRA_XP_BOOST;
     nextRewardAmount = 1;
     lastLotteryId = 1;
+    clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
 
     emit SetRaffleEntryCost(_raffleEntryCost);
-    emit NextDonationThreshold(nextThreshold, PRAY_TO_THE_BEARDIE);
+    emit NextDonationThreshold(_startGlobalThreshold, PRAY_TO_THE_BEARDIE);
+    emit ClanDonationThreshold(_clanThresholdIncrement, CLAN_BOOST);
     emit WinnerAndNewLottery(0, 0, nextRewardItemTokenId, nextRewardAmount);
   }
 
@@ -106,7 +124,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     address _from,
     uint _playerId,
     uint _amount
-  ) external onlyPlayers returns (uint16 itemTokenId, uint16 globalItemTokenId) {
+  ) external onlyPlayers returns (uint16 itemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) {
     if (!brush.transferFrom(_from, shop, _amount)) {
       revert NotEnoughBrush();
     }
@@ -132,6 +150,25 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         playersEntered[_lastLotteryId].set(_playerId);
         isNonRaffleDonation = false;
         emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
+
+        // If they are in a clan then give a clan reward
+        clanId = clans.getClanId(_playerId);
+        if (clanId != 0) {
+          clanDonationInfo[clanId].totalDonated += uint40(_amount / 1 ether);
+
+          if (
+            clanDonationInfo[clanId].totalDonated >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)
+          ) {
+            // Give them a clan reward
+            clanItemTokenId = CLAN_BOOST;
+            clanDonationInfo[clanId].lastThreshold = clanDonationInfo[clanId].totalDonated;
+            emit UpdateLastClanDonationThreshold(
+              clanId,
+              uint(clanDonationInfo[clanId].lastThreshold) * 1 ether,
+              CLAN_BOOST
+            );
+          }
+        }
       }
     }
 
@@ -142,10 +179,10 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     totalDonated += uint40(_amount / 1 ether);
 
     // Is a donation threshold hit?
-    if (nextThreshold != 0 && totalDonated >= nextThreshold) {
+    if (nextGlobalThreshold != 0 && totalDonated >= nextGlobalThreshold) {
       globalItemTokenId = PRAY_TO_THE_BEARDIE;
-      nextThreshold = totalDonated + (isBeta ? 1000 : 100_000);
-      emit NextDonationThreshold(uint(nextThreshold) * 1 ether, PRAY_TO_THE_BEARDIE);
+      nextGlobalThreshold = totalDonated + (isBeta ? 1000 : 100_000);
+      emit NextDonationThreshold(uint(nextGlobalThreshold) * 1 ether, PRAY_TO_THE_BEARDIE);
     }
   }
 
@@ -253,8 +290,12 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     return uint(totalDonated) * 1 ether;
   }
 
-  function getNextThreshold() external view returns (uint) {
-    return uint(nextThreshold) * 1 ether;
+  function getNextGlobalThreshold() external view returns (uint) {
+    return uint(nextGlobalThreshold) * 1 ether;
+  }
+
+  function getNextClanThreshold(uint _clanId) external view returns (uint) {
+    return (uint(clanDonationInfo[_clanId].lastThreshold) + clanThresholdIncrement) * 1 ether;
   }
 
   function getRaffleEntryCost() external view returns (uint) {
@@ -276,6 +317,11 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   function setRaffleEntryCost(uint _raffleEntryCost) external onlyOwner {
     raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
     emit SetRaffleEntryCost(_raffleEntryCost);
+  }
+
+  function setClanThresholdIncrement(uint _clanThresholdIncrement) external onlyOwner {
+    clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
+    emit ClanDonationThreshold(_clanThresholdIncrement, CLAN_BOOST);
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -554,6 +554,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     return clans[playerInfo[_playerId].clanId].tierId;
   }
 
+  function getClanId(uint _playerId) external view returns (uint) {
+    return playerInfo[_playerId].clanId;
+  }
+
   function hasInviteRequest(uint _clanId, uint _playerId) external view returns (bool) {
     return clans[_clanId].inviteRequests[_playerId];
   }

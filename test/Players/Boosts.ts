@@ -7,6 +7,7 @@ import {GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, getActionId, getRequestId} from 
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking} from "./utils";
 import {defaultActionInfo, noAttire} from "@paintswap/estfor-definitions/types";
+import {createPlayer} from "../../scripts/utils";
 
 describe("Boosts", function () {
   this.retries(3);
@@ -495,10 +496,10 @@ describe("Boosts", function () {
     await brush.mint(alice.address, ethers.utils.parseEther("10000"));
     await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("10000"));
 
-    const nextThreshold = await donation.getNextThreshold();
-    expect(nextThreshold).to.be.gt(0);
+    const nextGlobalThreshold = await donation.getNextGlobalThreshold();
+    expect(nextGlobalThreshold).to.be.gt(0);
 
-    await players.connect(alice).donate(0, nextThreshold.sub(ethers.utils.parseEther("1")));
+    await players.connect(alice).donate(0, nextGlobalThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("2")))
       .to.emit(donation, "NextDonationThreshold")
       .withArgs(ethers.utils.parseEther("2001"), EstforConstants.PRAY_TO_THE_BEARDIE)
@@ -523,14 +524,134 @@ describe("Boosts", function () {
     ]);
   });
 
-  it("XP boost, extra XP boost & global XP Boost", async function () {
-    const {playerId, players, itemNFT, world, donation, brush, alice} = await loadFixture(playersFixture);
+  it("Clan XP Boost", async function () {
+    const {playerId, players, itemNFT, world, donation, clans, brush, alice, playerNFT, avatarId, bob} =
+      await loadFixture(playersFixture);
+
+    const boostDuration = 120;
+    const boostValue = 50;
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.CLAN_BOOST,
+        equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.EXTRA_HALF_XP_BOOST,
+        equipPosition: EstforTypes.EquipPosition.EXTRA_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue: 0,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
+
+    // Be a member of a clan
+    await clans.addTiers([
+      {
+        id: 1,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+      {
+        id: 2,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+
+    let tierId = 1;
+    const imageId = 1;
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    await players
+      .connect(alice)
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.NONE,
+        NOW,
+        0,
+        NO_DONATION_AMOUNT,
+        EstforTypes.ActionQueueStatus.NONE
+      );
+
+    // Currently only minted through donation thresholds
+    await brush.mint(alice.address, ethers.utils.parseEther("100000"));
+    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("100000"));
+
+    const clanId = 1;
+    const clanDonationInfo = await donation.clanDonationInfo(clanId);
+    expect(clanDonationInfo.totalDonated).to.be.eq(0);
+    expect(clanDonationInfo.lastThreshold).to.be.eq(0);
+
+    const raffleCost = await donation.getRaffleEntryCost();
+    expect(raffleCost).to.be.gt(0);
+
+    await donation.setClanThresholdIncrement(raffleCost.mul(2));
+
+    await expect(players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
+      donation,
+      "UpdateLastClanDonationThreshold"
+    );
+
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+    await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+    await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+
+    await brush.mint(bob.address, ethers.utils.parseEther("100000"));
+    await brush.connect(bob).approve(donation.address, ethers.utils.parseEther("100000"));
+
+    await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
+      .to.emit(donation, "UpdateLastClanDonationThreshold")
+      .withArgs(clanId, raffleCost.mul(2), EstforConstants.CLAN_BOOST)
+      .and.to.emit(players, "ConsumeClanBoostVial");
+
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
+    const healthXP = Math.floor(meleeXP / 3);
+    expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
+    expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
+      meleeXP + healthXP,
+      meleeXP + healthXP - 1,
+    ]);
+    await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      BigNumber.from(healthXP),
+      BigNumber.from(healthXP - 1),
+    ]);
+  });
+
+  it("Normal, extra, clan & global XP Boosts", async function () {
+    const {playerId, players, itemNFT, world, donation, clans, brush, alice} = await loadFixture(playersFixture);
 
     const boostDuration = 120;
     const boostValue1 = 20;
-    const boostValue2 = 25;
-    const boostValue3 = 5;
-    const boostValue = boostValue1 + boostValue2 + boostValue3; // total
+    const boostValue2 = 15;
+    const boostValue3 = 10;
+    const boostValue4 = 5;
+    const boostValue = boostValue1 + boostValue2 + boostValue3 + boostValue4; // total
+    expect(boostValue).to.eq(50);
 
     await itemNFT.addItems([
       {
@@ -563,7 +684,41 @@ describe("Boosts", function () {
         boostDuration,
         isTransferable: false,
       },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.CLAN_BOOST,
+        equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue: boostValue4,
+        boostDuration,
+        isTransferable: false,
+      },
     ]);
+
+    // Be a member of a clan
+    await clans.addTiers([
+      {
+        id: 1,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+      {
+        id: 2,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+
+    let tierId = 1;
+    const imageId = 1;
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
@@ -581,21 +736,31 @@ describe("Boosts", function () {
       );
 
     // Currently only minted through donation thresholds
-    await brush.mint(alice.address, ethers.utils.parseEther("10000"));
-    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("10000"));
+    await brush.mint(alice.address, ethers.utils.parseEther("100000"));
+    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("100000"));
 
-    const nextThreshold = await donation.getNextThreshold();
-    expect(nextThreshold).to.be.gt(0);
+    const clanId = 1;
+    //    const clanDonationInfo = await donation.clanDonationInfo(clanId);
+
+    const nextGlobalThreshold = await donation.getNextGlobalThreshold();
+    const nextClanThreshold = await donation.getNextClanThreshold(clanId);
+
+    const maxThreshold = nextClanThreshold.gt(nextGlobalThreshold) ? nextClanThreshold : nextGlobalThreshold;
+
     const raffleCost = await donation.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
-    await players.connect(alice).donate(0, nextThreshold.sub(ethers.utils.parseEther("1")));
+    await donation.setClanThresholdIncrement(raffleCost);
+
+    await players.connect(alice).donate(0, maxThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, raffleCost))
       .to.emit(donation, "NextDonationThreshold")
       .withArgs(
         ethers.utils.parseEther((2000 + Number(ethers.utils.formatEther(raffleCost)) - 1).toString()),
         EstforConstants.PRAY_TO_THE_BEARDIE
-      );
+      )
+      .and.to.emit(donation, "UpdateLastClanDonationThreshold")
+      .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOST);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);

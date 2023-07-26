@@ -25,6 +25,7 @@ abstract contract PlayersBase {
   event ConsumeBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
   event ConsumeExtraBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
   event ConsumeGlobalBoostVial(address from, uint playerId, BoostInfo globalBoost);
+  event ConsumeClanBoostVial(address from, uint playerId, uint clanId, BoostInfo clanBoost);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
   event AddPendingRandomReward(address from, uint playerId, uint queueId, uint startTime, uint elapsed);
   event PendingRandomRewardsClaimed(
@@ -174,6 +175,7 @@ abstract contract PlayersBase {
   address internal reserved1;
 
   PlayerBoostInfo internal globalBoost; // A boost shared by everyone
+  mapping(uint clanId => PlayerBoostInfo clanBoost) internal clanBoosts; // Clan specific boosts
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {

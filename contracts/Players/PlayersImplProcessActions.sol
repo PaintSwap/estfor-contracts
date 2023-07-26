@@ -292,24 +292,36 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function donate(address _from, uint _playerId, uint _amount) external {
-    (uint16 itemTokenId, uint16 globalItemTokenId) = donation.donate(_from, _playerId, _amount);
+    (uint16 itemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) = donation.donate(
+      _from,
+      _playerId,
+      _amount
+    );
     if (itemTokenId != NONE) {
-      _instantConsumeExtraOrGlobalBoost(_from, _playerId, itemTokenId, uint40(block.timestamp));
+      _instantConsumeSpecialBoost(_from, _playerId, itemTokenId, uint40(block.timestamp), clanId);
+    }
+    if (clanItemTokenId != NONE) {
+      _instantConsumeSpecialBoost(_from, _playerId, clanItemTokenId, uint40(block.timestamp), clanId);
     }
     if (globalItemTokenId != NONE) {
-      _instantConsumeExtraOrGlobalBoost(_from, _playerId, globalItemTokenId, uint40(block.timestamp));
+      _instantConsumeSpecialBoost(_from, _playerId, globalItemTokenId, uint40(block.timestamp), clanId);
     }
   }
 
   // There is no need to burn anything because it is implicitly minted/burned in the same transaction
-  function _instantConsumeExtraOrGlobalBoost(
+  function _instantConsumeSpecialBoost(
     address _from,
     uint _playerId,
     uint16 _itemTokenId,
-    uint40 _startTime
+    uint40 _startTime,
+    uint _clanId
   ) private {
     Item memory item = itemNFT.getItem(_itemTokenId);
-    if (item.equipPosition != EquipPosition.EXTRA_BOOST_VIAL && item.equipPosition != EquipPosition.GLOBAL_BOOST_VIAL) {
+    if (
+      item.equipPosition != EquipPosition.EXTRA_BOOST_VIAL &&
+      item.equipPosition != EquipPosition.GLOBAL_BOOST_VIAL &&
+      item.equipPosition != EquipPosition.CLAN_BOOST_VIAL
+    ) {
       revert NotABoostVial();
     }
     if (_startTime < block.timestamp) {
@@ -331,16 +343,21 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       playerBoost.extraValue = item.boostValue;
       playerBoost.extraBoostType = item.boostType;
       playerBoost.extraItemTokenId = _itemTokenId;
-
       emit ConsumeExtraBoostVial(_from, _playerId, boostInfo);
-    } else {
+    } else if (item.equipPosition == EquipPosition.GLOBAL_BOOST_VIAL) {
       globalBoost.startTime = _startTime;
       globalBoost.duration = item.boostDuration;
       globalBoost.value = item.boostValue;
       globalBoost.boostType = item.boostType;
       globalBoost.itemTokenId = _itemTokenId;
-
       emit ConsumeGlobalBoostVial(_from, _playerId, boostInfo);
+    } else {
+      clanBoosts[_clanId].startTime = _startTime;
+      clanBoosts[_clanId].duration = item.boostDuration;
+      clanBoosts[_clanId].value = item.boostValue;
+      clanBoosts[_clanId].boostType = item.boostType;
+      clanBoosts[_clanId].itemTokenId = _itemTokenId;
+      emit ConsumeClanBoostVial(_from, _playerId, _clanId, boostInfo);
     }
   }
 
@@ -471,7 +488,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Check for lottery winners, TODO: currently just uses instant extra boost consumptions
     if (_lotteryWinner.itemTokenId != 0) {
       donation.claimedLotteryWinnings(_lotteryWinner.lotteryId);
-      _instantConsumeExtraOrGlobalBoost(_from, _playerId, _lotteryWinner.itemTokenId, uint40(block.timestamp));
+      _instantConsumeSpecialBoost(_from, _playerId, _lotteryWinner.itemTokenId, uint40(block.timestamp), 0);
     }
   }
 }

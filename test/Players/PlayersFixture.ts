@@ -104,24 +104,6 @@ export const playersFixture = async function () {
     }
   )) as PlayerNFT;
 
-  const Donation = await ethers.getContractFactory("Donation");
-  const donation = await upgrades.deployProxy(
-    Donation,
-    [
-      brush.address,
-      playerNFT.address,
-      shop.address,
-      world.address,
-      ethers.utils.parseEther("5"),
-      ethers.utils.parseEther("1000"),
-      isBeta,
-    ],
-    {
-      kind: "uups",
-    }
-  );
-  await donation.deployed();
-
   const Promotions = await ethers.getContractFactory("Promotions");
   const promotions = (await upgrades.deployProxy(
     Promotions,
@@ -148,6 +130,26 @@ export const playersFixture = async function () {
       unsafeAllow: ["external-library-linking"],
     }
   );
+
+  const Donation = await ethers.getContractFactory("Donation");
+  const donation = await upgrades.deployProxy(
+    Donation,
+    [
+      brush.address,
+      playerNFT.address,
+      shop.address,
+      world.address,
+      clans.address,
+      ethers.utils.parseEther("5"),
+      ethers.utils.parseEther("1000"),
+      ethers.utils.parseEther("250"),
+      isBeta,
+    ],
+    {
+      kind: "uups",
+    }
+  );
+  await donation.deployed();
 
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");

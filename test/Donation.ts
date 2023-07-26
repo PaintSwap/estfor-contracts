@@ -58,6 +58,16 @@ describe("Donation", function () {
         boostDuration,
         isTransferable: false,
       },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.CLAN_BOOST,
+        equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue: 10,
+        boostDuration,
+        isTransferable: false,
+      },
     ]);
 
     const raffleEntryCost = await donation.getRaffleEntryCost();
@@ -173,7 +183,7 @@ describe("Donation", function () {
   it("Check threshold rewards", async function () {
     const {donation, players, alice, playerId} = await loadFixture(deployContracts);
 
-    const nextThreshold = await donation.getNextThreshold();
+    const nextThreshold = await donation.getNextGlobalThreshold();
     expect(nextThreshold).to.be.gt(0);
 
     await players.connect(alice).donate(0, nextThreshold.sub(ethers.utils.parseEther("2")));
@@ -187,7 +197,7 @@ describe("Donation", function () {
       .withArgs(ethers.utils.parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
-    expect(await donation.getNextThreshold()).to.eq(ethers.utils.parseEther("2000"));
+    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("2000"));
 
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1500")))
       .to.emit(donation, "NextDonationThreshold")
@@ -195,7 +205,7 @@ describe("Donation", function () {
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     // Donated 500 above the old threshold
-    expect(await donation.getNextThreshold()).to.eq(ethers.utils.parseEther("3500"));
+    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("3500"));
   });
 
   it("Check claiming previous claims works up to 3 other lotteries ago", async function () {
