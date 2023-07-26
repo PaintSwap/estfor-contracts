@@ -22,6 +22,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
   event ClanDonationThreshold(uint thresholdIncrement, uint16 rewardItemTokenId);
   event UpdateLastClanDonationThreshold(uint clanId, uint lastThreshold, uint16 rewardItemTokenId);
+  event NewClanDonationDay(uint clanId);
 
   error NotOwnerOfPlayer();
   error NotEnoughBrush();
@@ -29,10 +30,13 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error AlreadyEnteredRaffle();
   error OnlyPlayers();
   error OnlyWorld();
+  error MaxClanDonationsReached();
 
   struct ClanInfo {
     uint40 totalDonated;
     uint40 lastThreshold;
+    uint40 lastDonationTimestamp;
+    uint16 numDonationsToday;
   }
 
   using BitMaps for BitMaps.BitMap;
@@ -149,26 +153,45 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         itemTokenId = donationRewardItemTokenId;
         playersEntered[_lastLotteryId].set(_playerId);
         isNonRaffleDonation = false;
-        emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
 
-        // If they are in a clan then give a clan reward
         clanId = clans.getClanId(_playerId);
         if (clanId != 0) {
-          clanDonationInfo[clanId].totalDonated += uint40(_amount / 1 ether);
+          // Add raffle donation amount only to the clan reward reward
+          uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
+          totalDonatedToClan += uint40(_amount / 1 ether);
 
-          if (
-            clanDonationInfo[clanId].totalDonated >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)
-          ) {
-            // Give them a clan reward
+          // Want to prevent members from leaving and entering with new players to boost it up more than the maximum possible
+          uint16 numDonationsToday;
+          if ((block.timestamp / 1 days) * 1 days > clanDonationInfo[clanId].lastDonationTimestamp) {
+            // New day
+            clanDonationInfo[clanId].lastDonationTimestamp = uint40((block.timestamp / 1 days) * 1 days);
+            numDonationsToday = 1;
+            emit NewClanDonationDay(clanId);
+          } else {
+            numDonationsToday = clanDonationInfo[clanId].numDonationsToday + 1;
+          }
+
+          clanDonationInfo[clanId].numDonationsToday = numDonationsToday;
+
+          uint maxMemberCapacity = clans.maxMemberCapacity(clanId);
+          if (numDonationsToday > maxMemberCapacity) {
+            revert MaxClanDonationsReached();
+          }
+
+          if (totalDonatedToClan >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)) {
+            // Give the whole clan a reward
             clanItemTokenId = CLAN_BOOST;
-            clanDonationInfo[clanId].lastThreshold = clanDonationInfo[clanId].totalDonated;
+            clanDonationInfo[clanId].lastThreshold = totalDonatedToClan;
             emit UpdateLastClanDonationThreshold(
               clanId,
               uint(clanDonationInfo[clanId].lastThreshold) * 1 ether,
               CLAN_BOOST
             );
           }
+
+          clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
         }
+        emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
       }
     }
 

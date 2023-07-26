@@ -6,6 +6,7 @@ import {getRequestId} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
+import {ClanRank} from "@paintswap/estfor-definitions/types";
 
 describe("Donation", function () {
   async function deployContracts() {
@@ -21,7 +22,7 @@ describe("Donation", function () {
     let tx = await world.requestRandomWords();
     await mockOracleClient.fulfill(await getRequestId(tx), world.address);
 
-    const totalBrush = ethers.utils.parseEther("10000");
+    const totalBrush = ethers.utils.parseEther("100000");
     await brush.mint(alice.address, totalBrush);
     await brush.connect(alice).approve(donation.address, totalBrush);
 
@@ -361,5 +362,70 @@ describe("Donation", function () {
     const activeBoost = await players.activeBoost(playerId);
     expect(activeBoost.extraBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
     expect(activeBoost.extraValue).to.eq(5);
+  });
+
+  it("Number of clan donations is limited to the max capacity of the clan", async function () {
+    const {
+      donation,
+      players,
+      alice,
+      world,
+      mockOracleClient,
+      playerId,
+      raffleEntryCost,
+      brush,
+      clans,
+      playerNFT,
+      avatarId,
+      bob,
+      totalBrush,
+    } = await loadFixture(deployContracts);
+
+    // Be a member of a clan
+    const clanId = 1;
+    await clans.addTiers([
+      {
+        id: clanId,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+
+    let tierId = 1;
+    const imageId = 1;
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+
+    const raffleCost = await donation.getRaffleEntryCost();
+
+    await players.connect(alice).donate(playerId, raffleCost);
+
+    await brush.mint(bob.address, totalBrush);
+    await brush.connect(bob).approve(donation.address, totalBrush);
+
+    // Can do up to 2 more donations
+    for (let i = 0; i < 2; ++i) {
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob" + i, true);
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+      await players.connect(bob).donate(bobPlayerId, raffleEntryCost);
+      // Leave clan to free up space
+      await clans.connect(bob).changeRank(clanId, bobPlayerId, ClanRank.NONE, bobPlayerId);
+    }
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+    await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+    await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+    await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.be.revertedWithCustomError(
+      donation,
+      "MaxClanDonationsReached"
+    );
+
+    // Fresh day it should work
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+
+    await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.not.be.reverted;
   });
 });

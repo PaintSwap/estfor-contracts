@@ -563,14 +563,6 @@ describe("Boosts", function () {
         price: 0,
         minimumAge: 0,
       },
-      {
-        id: 2,
-        maxMemberCapacity: 3,
-        maxBankCapacity: 3,
-        maxImageId: 16,
-        price: 0,
-        minimumAge: 0,
-      },
     ]);
 
     let tierId = 1;
@@ -700,14 +692,6 @@ describe("Boosts", function () {
     await clans.addTiers([
       {
         id: 1,
-        maxMemberCapacity: 3,
-        maxBankCapacity: 3,
-        maxImageId: 16,
-        price: 0,
-        minimumAge: 0,
-      },
-      {
-        id: 2,
         maxMemberCapacity: 3,
         maxBankCapacity: 3,
         maxImageId: 16,
