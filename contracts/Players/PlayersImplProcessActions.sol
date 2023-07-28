@@ -352,11 +352,11 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       globalBoost.itemTokenId = _itemTokenId;
       emit ConsumeGlobalBoostVial(_from, _playerId, boostInfo);
     } else {
-      clanBoosts[_clanId].startTime = _startTime;
-      clanBoosts[_clanId].duration = item.boostDuration;
-      clanBoosts[_clanId].value = item.boostValue;
-      clanBoosts[_clanId].boostType = item.boostType;
-      clanBoosts[_clanId].itemTokenId = _itemTokenId;
+      clanBoosts_[_clanId].startTime = _startTime;
+      clanBoosts_[_clanId].duration = item.boostDuration;
+      clanBoosts_[_clanId].value = item.boostValue;
+      clanBoosts_[_clanId].boostType = item.boostType;
+      clanBoosts_[_clanId].itemTokenId = _itemTokenId;
       emit ConsumeClanBoostVial(_from, _playerId, _clanId, boostInfo);
     }
   }

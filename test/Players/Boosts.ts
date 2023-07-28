@@ -406,7 +406,7 @@ describe("Boosts", function () {
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.EXTRA_HALF_XP_BOOST,
+        tokenId: EstforConstants.LUCK_OF_THE_DRAW,
         equipPosition: EstforTypes.EquipPosition.EXTRA_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
@@ -438,7 +438,10 @@ describe("Boosts", function () {
     const raffleCost = await donation.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
-    expect(await players.connect(alice).donate(playerId, raffleCost)).to.not.emit(donation, "NextDonationThreshold");
+    expect(await players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
+      donation,
+      "NextGlobalDonationThreshold"
+    );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
@@ -501,8 +504,8 @@ describe("Boosts", function () {
 
     await players.connect(alice).donate(0, nextGlobalThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("2")))
-      .to.emit(donation, "NextDonationThreshold")
-      .withArgs(ethers.utils.parseEther("2001"), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .to.emit(donation, "NextGlobalDonationThreshold")
+      .withArgs(ethers.utils.parseEther("2001"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -533,7 +536,7 @@ describe("Boosts", function () {
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.CLAN_BOOST,
+        tokenId: EstforConstants.CLAN_BOOSTER,
         equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
@@ -543,7 +546,7 @@ describe("Boosts", function () {
       },
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.EXTRA_HALF_XP_BOOST,
+        tokenId: EstforConstants.LUCK_OF_THE_DRAW,
         equipPosition: EstforTypes.EquipPosition.EXTRA_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
@@ -600,7 +603,7 @@ describe("Boosts", function () {
 
     await expect(players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
       donation,
-      "UpdateLastClanDonationThreshold"
+      "LastClanDonationThreshold"
     );
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
@@ -611,8 +614,8 @@ describe("Boosts", function () {
     await brush.connect(bob).approve(donation.address, ethers.utils.parseEther("100000"));
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
-      .to.emit(donation, "UpdateLastClanDonationThreshold")
-      .withArgs(clanId, raffleCost.mul(2), EstforConstants.CLAN_BOOST)
+      .to.emit(donation, "LastClanDonationThreshold")
+      .withArgs(clanId, raffleCost.mul(2), EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -658,7 +661,7 @@ describe("Boosts", function () {
       },
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.EXTRA_HALF_XP_BOOST,
+        tokenId: EstforConstants.LUCK_OF_THE_DRAW,
         equipPosition: EstforTypes.EquipPosition.EXTRA_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
@@ -678,7 +681,7 @@ describe("Boosts", function () {
       },
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.CLAN_BOOST,
+        tokenId: EstforConstants.CLAN_BOOSTER,
         equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
@@ -738,13 +741,13 @@ describe("Boosts", function () {
 
     await players.connect(alice).donate(0, maxThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, raffleCost))
-      .to.emit(donation, "NextDonationThreshold")
+      .to.emit(donation, "NextGlobalDonationThreshold")
       .withArgs(
         ethers.utils.parseEther((2000 + Number(ethers.utils.formatEther(raffleCost)) - 1).toString()),
-        EstforConstants.PRAY_TO_THE_BEARDIE
+        EstforConstants.PRAY_TO_THE_BEARDIE_2
       )
-      .and.to.emit(donation, "UpdateLastClanDonationThreshold")
-      .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOST);
+      .and.to.emit(donation, "LastClanDonationThreshold")
+      .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);

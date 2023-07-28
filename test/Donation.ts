@@ -20,28 +20,27 @@ describe("Donation", function () {
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
     let tx = await world.requestRandomWords();
-    await mockOracleClient.fulfill(await getRequestId(tx), world.address);
+    await mockOracleClient.fulfill(getRequestId(tx), world.address);
 
     const totalBrush = ethers.utils.parseEther("100000");
     await brush.mint(alice.address, totalBrush);
     await brush.connect(alice).approve(donation.address, totalBrush);
 
-    const boostValue = 10;
     const boostDuration = 3600;
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.EXTRA_XP_BOOST,
+        tokenId: EstforConstants.LUCKY_POTION,
         equipPosition: EstforTypes.EquipPosition.EXTRA_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
-        boostValue,
+        boostValue: 10,
         boostDuration,
         isTransferable: false,
       },
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.EXTRA_HALF_XP_BOOST,
+        tokenId: EstforConstants.LUCK_OF_THE_DRAW,
         equipPosition: EstforTypes.EquipPosition.EXTRA_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
@@ -61,10 +60,50 @@ describe("Donation", function () {
       },
       {
         ...EstforTypes.defaultItemInput,
-        tokenId: EstforConstants.CLAN_BOOST,
+        tokenId: EstforConstants.PRAY_TO_THE_BEARDIE_2,
+        equipPosition: EstforTypes.EquipPosition.GLOBAL_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.COMBAT_XP,
+        boostValue: 10,
+        boostDuration,
+        isTransferable: false,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.PRAY_TO_THE_BEARDIE_3,
+        equipPosition: EstforTypes.EquipPosition.GLOBAL_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+        boostValue: 10,
+        boostDuration,
+        isTransferable: false,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.CLAN_BOOSTER,
         equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
         // Boost
         boostType: EstforTypes.BoostType.ANY_XP,
+        boostValue: 10,
+        boostDuration,
+        isTransferable: false,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.CLAN_BOOSTER_2,
+        equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.COMBAT_XP,
+        boostValue: 10,
+        boostDuration,
+        isTransferable: false,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.CLAN_BOOSTER_3,
+        equipPosition: EstforTypes.EquipPosition.CLAN_BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.NON_COMBAT_XP,
         boostValue: 10,
         boostDuration,
         isTransferable: false,
@@ -115,7 +154,7 @@ describe("Donation", function () {
     await players.connect(alice).donate(playerId, raffleEntryCost);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
     expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.true;
 
@@ -123,7 +162,7 @@ describe("Donation", function () {
     expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
     await expect(players.connect(alice).processActions(playerId))
       .to.emit(donation, "ClaimedLotteryWinnings")
-      .withArgs(lotteryId, 1, EstforConstants.EXTRA_XP_BOOST, 1);
+      .withArgs(lotteryId, 1, EstforConstants.LUCKY_POTION, 1);
     expect(await donation.hasClaimedReward(lotteryId)).to.eq(true);
     lotteryId = await donation.lastLotteryId();
     expect(lotteryId).to.eq(2);
@@ -156,7 +195,7 @@ describe("Donation", function () {
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost));
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
 
     let lotteryId = await donation.lastLotteryId();
@@ -165,7 +204,7 @@ describe("Donation", function () {
       donation,
       "OracleNotCalledYet"
     );
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.not.be.reverted;
   });
 
@@ -190,23 +229,97 @@ describe("Donation", function () {
     await players.connect(alice).donate(0, nextThreshold.sub(ethers.utils.parseEther("2")));
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1"))).to.not.emit(
       donation,
-      "NextDonationThreshold"
+      "NextGlobalDonationThreshold"
     );
 
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1").toString()))
-      .to.emit(donation, "NextDonationThreshold")
-      .withArgs(ethers.utils.parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .to.emit(donation, "NextGlobalDonationThreshold")
+      .withArgs(ethers.utils.parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("2000"));
 
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1500")))
-      .to.emit(donation, "NextDonationThreshold")
-      .withArgs(ethers.utils.parseEther("3500"), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .to.emit(donation, "NextGlobalDonationThreshold")
+      .withArgs(ethers.utils.parseEther("3500"), EstforConstants.PRAY_TO_THE_BEARDIE_3)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     // Donated 500 above the old threshold
     expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("3500"));
+
+    // Should go back to the start
+    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1000")))
+      .to.emit(donation, "NextGlobalDonationThreshold")
+      .withArgs(ethers.utils.parseEther("4500"), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .and.to.emit(players, "ConsumeGlobalBoostVial");
+  });
+
+  it("Check clan boost rotation", async function () {
+    const {
+      donation,
+      players,
+      alice,
+      world,
+      mockOracleClient,
+      playerId,
+      raffleEntryCost,
+      brush,
+      clans,
+      bob,
+      totalBrush,
+    } = await loadFixture(deployContracts);
+
+    // Be a member of a clan
+    const clanId = 1;
+    await clans.addTiers([
+      {
+        id: clanId,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+
+    let tierId = 1;
+    const imageId = 1;
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+
+    await brush.mint(bob.address, totalBrush);
+    await brush.connect(bob).approve(donation.address, totalBrush);
+
+    await donation.setClanThresholdIncrement(raffleEntryCost);
+
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost))
+      .to.emit(donation, "LastClanDonationThreshold")
+      .withArgs(clanId, raffleEntryCost, EstforConstants.CLAN_BOOSTER_2)
+      .and.to.emit(players, "ConsumeClanBoostVial");
+
+    expect((await players.activeBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost))
+      .to.emit(donation, "LastClanDonationThreshold")
+      .withArgs(clanId, raffleEntryCost.mul(2), EstforConstants.CLAN_BOOSTER_3)
+      .and.to.emit(players, "ConsumeClanBoostVial");
+
+    expect((await players.activeBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_2);
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost))
+      .to.emit(donation, "LastClanDonationThreshold")
+      .withArgs(clanId, raffleEntryCost.mul(3), EstforConstants.CLAN_BOOSTER)
+      .and.to.emit(players, "ConsumeClanBoostVial");
+
+    expect((await players.activeBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_3);
   });
 
   it("Check claiming previous claims works up to 3 other lotteries ago", async function () {
@@ -233,14 +346,14 @@ describe("Donation", function () {
     await brush.connect(owner).approve(donation.address, totalBrush);
     for (let i = 0; i < 3; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+      await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser" + i, false);
       await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     }
 
     // Should no longer be claimable
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
     expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
 
@@ -252,12 +365,12 @@ describe("Donation", function () {
     lotteryId = await donation.lastLotteryId();
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+      await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "should work now" + i, false);
       await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     }
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
     expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
     await players.connect(alice).processActions(playerId);
@@ -271,13 +384,13 @@ describe("Donation", function () {
     lotteryId = await donation.lastLotteryId();
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
     expect(await donation.lastUnclaimedWinners(4)).to.eq(playerId);
     expect(await donation.lastUnclaimedWinners(5)).to.eq(lotteryId);
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
     await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
     expect(await donation.lastUnclaimedWinners(2)).to.eq(playerId);
     expect(await donation.lastUnclaimedWinners(3)).to.eq(lotteryId);
 
@@ -302,11 +415,11 @@ describe("Donation", function () {
     await brush.connect(owner).approve(donation.address, totalBrush);
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+      await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
       await players.connect(alice).donate(playerId, raffleEntryCost);
     }
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
     expect(await donation.lastUnclaimedWinners(0)).to.eq(playerId);
     expect(await donation.lastUnclaimedWinners(1)).to.eq(lotteryId);
@@ -422,7 +535,7 @@ describe("Donation", function () {
 
     // Fresh day it should work
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(await getRequestId(await world.requestRandomWords()), world.address);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.not.be.reverted;
   });

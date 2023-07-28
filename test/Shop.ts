@@ -64,7 +64,6 @@ describe("Shop", function () {
     await adminAccess.deployed();
 
     const isBeta = true;
-    // Create NFT contract which contains all items
     const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
     const itemNFTLibrary = await ItemNFTLibrary.deploy();
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});

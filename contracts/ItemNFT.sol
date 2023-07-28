@@ -24,6 +24,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   event AddItemsV2(ItemOutput[] items, uint16[] tokenIds, string[] names);
   event EditItemsV2(ItemOutput[] items, uint16[] tokenIds, string[] names);
+  event RemoveItemsV2(uint16[] tokenIds);
 
   // Legacy for ABI
   event AddItem(ItemV1 item, uint16 tokenId, string name);
@@ -424,6 +425,20 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
 
     emit EditItemsV2(_items, tokenIds, names);
+  }
+
+  // This should be only used when an item is not in active use
+  // because it could mess up queued actions potentially
+  function removeItems(uint16[] calldata _itemTokenIds) external onlyOwner {
+    for (uint i = 0; i < _itemTokenIds.length; ++i) {
+      if (!exists(_itemTokenIds[i])) {
+        revert ItemDoesNotExist(_itemTokenIds[i]);
+      }
+      delete items[_itemTokenIds[i]];
+      delete tokenURIs[_itemTokenIds[i]];
+    }
+
+    emit RemoveItemsV2(_itemTokenIds);
   }
 
   function setPlayers(address _players) external onlyOwner {

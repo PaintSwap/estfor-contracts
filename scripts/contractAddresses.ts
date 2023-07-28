@@ -35,7 +35,7 @@ if (isBeta) {
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
   estforLibrary = "0x9bcb040b6ffc0adcedda870f0a8e18e4278c72de";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
-  donation = "0x1d59b8ee0f7632ca8ed2ca02a87a1e3565e3c4e5";
+  donation = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";

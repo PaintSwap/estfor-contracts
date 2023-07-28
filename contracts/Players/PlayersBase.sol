@@ -175,7 +175,7 @@ abstract contract PlayersBase {
   address internal reserved1;
 
   PlayerBoostInfo internal globalBoost; // A boost shared by everyone
-  mapping(uint clanId => PlayerBoostInfo clanBoost) internal clanBoosts; // Clan specific boosts
+  mapping(uint clanId => PlayerBoostInfo clanBoost) internal clanBoosts_; // Clan specific boosts
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {

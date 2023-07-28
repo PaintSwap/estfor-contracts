@@ -154,7 +154,7 @@ async function main() {
   let editNameBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
-  let startClanDonationThresholdRewards = ethers.utils.parseEther("25000");
+  let clanDonationThresholdRewardIncrement: BigNumber;
   const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
@@ -162,6 +162,7 @@ async function main() {
     editNameBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
+    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
   } else {
     // live version
     itemsUri = "ipfs://TODO/";
@@ -169,6 +170,7 @@ async function main() {
     editNameBrushPrice = ethers.utils.parseEther("1000");
     raffleEntryCost = ethers.utils.parseEther("50");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("100000");
+    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("10000");
   }
 
   // Create NFT contract which contains all items
@@ -259,7 +261,7 @@ async function main() {
       clans.address,
       raffleEntryCost,
       startGlobalDonationThresholdRewards,
-      startClanDonationThresholdRewards,
+      clanDonationThresholdRewardIncrement,
       isBeta,
     ],
     {
