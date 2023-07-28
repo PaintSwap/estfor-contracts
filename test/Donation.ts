@@ -211,13 +211,12 @@ describe("Donation", function () {
   it("Cannot donate to a raffle with playerId more than once a day", async function () {
     const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
-    await players.connect(alice).donate(playerId, raffleEntryCost);
-    await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.be.revertedWithCustomError(
-      donation,
-      "AlreadyEnteredRaffle"
-    );
-
-    // Wait until the next day
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost))
+      .to.emit(donation, "Donate")
+      .withArgs(alice.address, playerId, raffleEntryCost, 1, 1);
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost))
+      .to.emit(donation, "Donate")
+      .withArgs(alice.address, playerId, raffleEntryCost, 0, 0);
   });
 
   it("Check threshold rewards", async function () {

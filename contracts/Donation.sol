@@ -28,7 +28,6 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error NotOwnerOfPlayer();
   error NotEnoughBrush();
   error OracleNotCalledYet();
-  error AlreadyEnteredRaffle();
   error OnlyPlayers();
   error OnlyWorld();
 
@@ -141,16 +140,13 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
     if (_playerId != 0) {
       bool hasEnoughForRaffle = (_amount / 1 ether) >= raffleEntryCost;
-      if (hasEnoughForRaffle) {
-        uint _lastLotteryId = lastLotteryId;
+      uint _lastLotteryId = lastLotteryId;
+      bool hasEnteredAlready = playersEntered[_lastLotteryId].get(_playerId);
+
+      if (hasEnoughForRaffle && !hasEnteredAlready) {
         uint flooredTime = lastOracleRandomWordTimestamp;
         if (flooredTime != 0 && flooredTime < (block.timestamp / 1 days) * 1 days) {
           revert OracleNotCalledYet();
-        }
-
-        bool hasEnteredAlready = playersEntered[_lastLotteryId].get(_playerId);
-        if (hasEnteredAlready) {
-          revert AlreadyEnteredRaffle();
         }
 
         raffleIdToPlayerId[_lastLotteryId][++lastRaffleId] = _playerId;
