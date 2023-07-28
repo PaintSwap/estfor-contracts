@@ -16,6 +16,7 @@ import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_
 
 contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event Donate(address from, uint playerId, uint amount, uint lotteryId, uint raffleId);
+  event DonateToClan(address from, uint playerId, uint amount, uint clanId);
   event WinnerAndNewLottery(uint lotteryId, uint raffleId, uint16 rewardItemTokenId, uint rewardAmount);
   event SetRaffleEntryCost(uint brushAmount);
   event NextGlobalDonationThreshold(uint amount, uint16 rewardItemTokenId);
@@ -30,7 +31,6 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error AlreadyEnteredRaffle();
   error OnlyPlayers();
   error OnlyWorld();
-  error MaxClanDonationsReached();
 
   struct ClanInfo {
     uint40 totalDonated;
@@ -160,7 +160,8 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
         clanId = clans.getClanId(_playerId);
         if (clanId != 0) {
-          // Add raffle donation amount only to the clan reward reward to prevent them reaching it too quickly
+          // Add raffle donation amount only to the clan reward reward to prevent them reaching it too quickly.
+          // Note: Make sure no important state is set before the max donations check
           if (clanDonationInfo[clanId].nextReward == 0) {
             // First time this clan has been donated to
             clanDonationInfo[clanId].nextReward = clanBoostRewardItemTokenIds[0];
@@ -180,32 +181,35 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
             numDonationsToday = clanDonationInfo[clanId].numDonationsToday + 1;
           }
 
-          clanDonationInfo[clanId].numDonationsToday = numDonationsToday;
-
           uint maxMemberCapacity = clans.maxMemberCapacity(clanId);
-          if (numDonationsToday > maxMemberCapacity) {
-            revert MaxClanDonationsReached();
-          }
+          if (numDonationsToday <= maxMemberCapacity) {
+            clanDonationInfo[clanId].numDonationsToday = numDonationsToday;
 
-          if (totalDonatedToClan >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)) {
-            // Give the whole clan a reward
-            clanItemTokenId = clanDonationInfo[clanId].nextReward;
-            clanDonationInfo[clanId].lastThreshold = totalDonatedToClan;
+            if (totalDonatedToClan >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)) {
+              // Give the whole clan a reward
+              clanItemTokenId = clanDonationInfo[clanId].nextReward;
+              clanDonationInfo[clanId].lastThreshold = totalDonatedToClan;
 
-            // Cycle through them
-            uint16 nextReward;
-            if (clanItemTokenId == clanBoostRewardItemTokenIds[clanBoostRewardItemTokenIds.length - 1]) {
-              // Reached the end so start again
-              nextReward = clanBoostRewardItemTokenIds[0];
-            } else {
-              // They just happen to be id'ed sequentially. If this changes then this logic will need to change
-              nextReward = clanItemTokenId + 1;
+              // Cycle through them
+              uint16 nextReward;
+              if (clanItemTokenId == clanBoostRewardItemTokenIds[clanBoostRewardItemTokenIds.length - 1]) {
+                // Reached the end so start again
+                nextReward = clanBoostRewardItemTokenIds[0];
+              } else {
+                // They just happen to be id'ed sequentially. If this changes then this logic will need to change
+                nextReward = clanItemTokenId + 1;
+              }
+              emit LastClanDonationThreshold(
+                clanId,
+                uint(clanDonationInfo[clanId].lastThreshold) * 1 ether,
+                nextReward
+              );
+              clanDonationInfo[clanId].nextReward = nextReward;
             }
-            emit LastClanDonationThreshold(clanId, uint(clanDonationInfo[clanId].lastThreshold) * 1 ether, nextReward);
-            clanDonationInfo[clanId].nextReward = nextReward;
-          }
 
-          clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
+            clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
+            emit DonateToClan(_from, _playerId, uint(raffleEntryCost) * 1 ether, clanId);
+          }
         }
         emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
       }
@@ -270,7 +274,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       });
 
       lastRaffleId = 0;
-      // Currently not set as currently the same each time: nextRewardItemTokenId, nextRewardAmount, instantConsume;
+      // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId, nextRewardAmount, instantConsume;
       emit WinnerAndNewLottery(_lastLotteryId, raffleIdWinner, nextLotteryWinnerRewardItemTokenId, 1);
 
       // Add to the last 3 unclaimed winners queue
@@ -374,6 +378,12 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   function setClanThresholdIncrement(uint _clanThresholdIncrement) external onlyOwner {
     clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
     emit ClanDonationThreshold(_clanThresholdIncrement, clanBoostRewardItemTokenIds[0]);
+  }
+
+  function setNextGlobalDonationThreshold(uint _nextGlobalDonationThreshold) external onlyOwner {
+    nextGlobalThreshold = uint40(_nextGlobalDonationThreshold / 1 ether);
+
+    emit NextGlobalDonationThreshold(_nextGlobalDonationThreshold, nextGlobalRewardItemTokenId); // re-use current reward
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -8,7 +8,7 @@ import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 
-describe("Donation", function () {
+describe.only("Donation", function () {
   async function deployContracts() {
     const baseFixture = await loadFixture(playersFixture);
 
@@ -511,7 +511,9 @@ describe("Donation", function () {
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
-    await players.connect(alice).donate(playerId, raffleEntryCost);
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost.mul(2)))
+      .to.emit(donation, "DonateToClan")
+      .withArgs(alice.address, playerId, raffleEntryCost, clanId);
 
     await brush.mint(bob.address, totalBrush);
     await brush.connect(bob).approve(donation.address, totalBrush);
@@ -521,16 +523,25 @@ describe("Donation", function () {
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob" + i, true);
       await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
       await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
-      await players.connect(bob).donate(bobPlayerId, raffleEntryCost);
+      await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost))
+        .to.emit(donation, "DonateToClan")
+        .withArgs(bob.address, bobPlayerId, raffleEntryCost, clanId);
       // Leave clan to free up space
       await clans.connect(bob).changeRank(clanId, bobPlayerId, ClanRank.NONE, bobPlayerId);
     }
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
     await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
-    await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.be.revertedWithCustomError(
-      donation,
-      "MaxClanDonationsReached"
+
+    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+      raffleEntryCost.mul(3)
+    );
+
+    // Next donation will not go towards the clan
+    await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.not.emit(donation, "DonateToClan");
+
+    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+      raffleEntryCost.mul(3)
     );
 
     // Fresh day it should work
@@ -538,6 +549,10 @@ describe("Donation", function () {
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.not.be.reverted;
+    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+      raffleEntryCost.mul(4)
+    );
+    expect((await donation.clanDonationInfo(clanId)).numDonationsToday).to.eq(1);
   });
 
   it("Check only raffle cost is added to the clans total donations", async function () {
@@ -562,5 +577,13 @@ describe("Donation", function () {
     expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
       raffleEntryCost
     );
+  });
+
+  it.only("setNextGlobalDonationThreshold()", async function () {
+    const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
+
+    await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
+    await donation.setNextGlobalDonationThreshold(raffleEntryCost.mul(3));
+    expect(await donation.getNextGlobalThreshold()).to.eq(raffleEntryCost.mul(3));
   });
 });
