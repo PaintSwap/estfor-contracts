@@ -28,6 +28,7 @@ abstract contract PlayersBase {
   event ConsumeClanBoostVial(address from, uint playerId, uint clanId, BoostInfo clanBoost);
   event SetActivePlayer(address account, uint oldPlayerId, uint newPlayerId);
   event AddPendingRandomReward(address from, uint playerId, uint queueId, uint startTime, uint elapsed);
+  event AddPendingRandomRewardV2(address from, uint playerId, uint queueId, uint startTime, uint elapsed, uint rolls);
   event PendingRandomRewardsClaimed(
     address from,
     uint playerId,

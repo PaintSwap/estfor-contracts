@@ -8,7 +8,7 @@ import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 
-describe.only("Donation", function () {
+describe("Donation", function () {
   async function deployContracts() {
     const baseFixture = await loadFixture(playersFixture);
 
@@ -579,7 +579,7 @@ describe.only("Donation", function () {
     );
   });
 
-  it.only("setNextGlobalDonationThreshold()", async function () {
+  it("setNextGlobalDonationThreshold()", async function () {
     const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
     await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));

@@ -122,6 +122,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         actionMetadata.xpElapsedTime,
         attire_[_playerId][actionMetadata.queueId],
         skill,
+        actionMetadata.rolls,
         pendingQueuedActionState.equipmentStates
       );
 
@@ -398,6 +399,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint24 _xpElapsedTime,
     Attire storage _attire,
     Skill _skill,
+    uint _rolls,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
@@ -447,7 +449,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
             fullAttireBonusRewardsPercent: fullAttireBonusRewardsPercent
           })
         );
-        emit AddPendingRandomReward(_from, _playerId, _queueId, _skillStartTime, _xpElapsedTime);
+        emit AddPendingRandomRewardV2(_from, _playerId, _queueId, _skillStartTime, _xpElapsedTime, _rolls);
       }
     }
   }
