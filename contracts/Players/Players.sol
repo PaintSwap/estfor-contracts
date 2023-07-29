@@ -252,7 +252,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (players_[_playerId].actionQueue.length != 0) {
       _processActionsAndSetState(_playerId);
     }
-    quests.activateQuest(_playerId, questId);
+    quests.activateQuest(msg.sender, _playerId, questId);
   }
 
   function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {

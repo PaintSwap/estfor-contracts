@@ -58,10 +58,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event AddBaseRandomQuest(Quest quest, MinimumRequirement[3] minimumRequirements);
   event RemoveQuest(uint questId);
   event NewRandomQuest(Quest randomQuest, uint oldQuestId);
-  event ActivateNewQuest(uint playerId, uint questId);
+  event ActivateQuest(address from, uint playerId, uint questId);
   event DeactivateQuest(uint playerId, uint questId);
   event QuestCompleted(address from, uint playerId, uint questId);
   event UpdateQuestProgress(uint playerId, PlayerQuest playerQuest);
+
+  // Legacy for abi and old beta
+  event ActivateNewQuest(uint playerId, uint questId);
 
   error NotWorld();
   error NotOwnerOfPlayerAndActive();
@@ -154,7 +157,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     IERC20(buyPath2).approve(address(_router), type(uint256).max);
   }
 
-  function activateQuest(uint _playerId, uint _questId) external onlyPlayers {
+  function activateQuest(address _from, uint _playerId, uint _questId) external onlyPlayers {
     Quest storage quest = allFixedQuests[_questId];
     if (_questId == 0) {
       revert InvalidQuestId();
@@ -203,7 +206,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       playerQuest.isFixed = true;
       activeQuests[_playerId] = playerQuest;
     }
-    emit ActivateNewQuest(_playerId, _questId);
+    emit ActivateQuest(_from, _playerId, _questId);
   }
 
   function deactivateQuest(uint _playerId) external onlyPlayers {

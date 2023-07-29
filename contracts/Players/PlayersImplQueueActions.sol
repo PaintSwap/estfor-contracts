@@ -132,7 +132,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     nextQueueId = queueId.asUint64();
 
     if (_questId != 0) {
-      quests.activateQuest(_playerId, _questId);
+      quests.activateQuest(from, _playerId, _questId);
     }
 
     if (_boostItemTokenId != NONE) {
