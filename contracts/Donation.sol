@@ -43,7 +43,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   IBrushToken public brush;
   PlayerNFT public playerNFT;
-  address shop;
+  address public shop;
   mapping(uint lotteryId => BitMaps.BitMap) private playersEntered;
   mapping(uint lotteryId => mapping(uint raffleId => uint playerId)) public raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
   mapping(uint lotteryId => LotteryWinnerInfo winner) public winners;
@@ -56,7 +56,8 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint40 private nextGlobalThreshold; // In BRUSH ether (no wei decimals)
   uint16 public nextGlobalRewardItemTokenId;
   uint16 public nextLotteryWinnerRewardItemTokenId;
-  bool public instantConsume;
+  /// @custom:oz-renamed-from instantConsume
+  bool public nextLotteryWinnerRewardInstantConsume;
   uint16 public lastLotteryId;
   uint24 public lastRaffleId; // Relative to each lottery
   uint40 public lastOracleRandomWordTimestamp;
@@ -118,6 +119,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     lastLotteryId = 1;
     clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
     nextLotteryWinnerRewardItemTokenId = LUCKY_POTION;
+    nextLotteryWinnerRewardInstantConsume = true;
 
     emit SetRaffleEntryCost(_raffleEntryCost);
     emit NextGlobalDonationThreshold(_startGlobalThreshold, globalBoostRewardItemTokenIds[0]);
@@ -265,12 +267,12 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         raffleId: raffleIdWinner,
         itemTokenId: nextLotteryWinnerRewardItemTokenId,
         amount: 1,
-        instantConsume: instantConsume,
+        instantConsume: nextLotteryWinnerRewardInstantConsume,
         playerId: uint40(raffleIdToPlayerId[_lastLotteryId][raffleIdWinner])
       });
 
       lastRaffleId = 0;
-      // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId, nextRewardAmount, instantConsume;
+      // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId & nextLotteryWinnerRewardInstantConsume;
       emit WinnerAndNewLottery(_lastLotteryId, raffleIdWinner, nextLotteryWinnerRewardItemTokenId, 1);
 
       // Add to the last 3 unclaimed winners queue

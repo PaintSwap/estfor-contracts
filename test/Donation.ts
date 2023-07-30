@@ -160,6 +160,17 @@ describe("Donation", function () {
 
     // Should be unclaimed
     expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
+
+    // Check the winning structure is correct
+    const winnerInfo = await donation.winners(lotteryId);
+    expect(winnerInfo.lotteryId).to.eq(lotteryId);
+    expect(winnerInfo.raffleId).to.eq(1);
+    expect(winnerInfo.itemTokenId).to.eq(EstforConstants.LUCKY_POTION);
+    expect(winnerInfo.amount).to.eq(1);
+    expect(winnerInfo.instantConsume).to.be.true;
+    expect(winnerInfo.playerId).to.eq(playerId);
+
+    // Now claim it
     await expect(players.connect(alice).processActions(playerId))
       .to.emit(donation, "ClaimedLotteryWinnings")
       .withArgs(lotteryId, 1, EstforConstants.LUCKY_POTION, 1);
