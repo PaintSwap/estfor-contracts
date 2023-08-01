@@ -221,7 +221,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     player.clanId = uint32(clanId);
     player.rank = ClanRank.LEADER;
     if (player.requestedClanId != 0) {
-      removeJoinRequest(clanId, _playerId);
+      removeJoinRequest(player.requestedClanId, _playerId);
     }
 
     (string memory trimmedName, ) = _setName(clanId, _name);

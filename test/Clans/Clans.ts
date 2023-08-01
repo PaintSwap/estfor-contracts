@@ -166,7 +166,9 @@ describe("Clans", function () {
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(clanId);
 
-      await clans.connect(bob).createClan(bobPlayerId, clanName + "1", discord, telegram, imageId, tierId);
+      await expect(clans.connect(bob).createClan(bobPlayerId, clanName + "1", discord, telegram, imageId, tierId))
+        .to.emit(clans, "JoinRequestRemoved")
+        .withArgs(clanId, bobPlayerId);
 
       // Check that the player is created with the correct values
       newPlayer = await clans.playerInfo(bobPlayerId);
