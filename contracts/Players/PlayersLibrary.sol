@@ -465,10 +465,26 @@ library PlayersLibrary {
       }
       xpElapsedTime = respawnTime * numKilled;
 
-      // Step 3.5 - Wasn't enough food, so work out how many consumables we actually used
-      baseInputItemsConsumedNum = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * RATE_MUL));
+      // Step 3.5 - Wasn't enough food, so work out how many consumables we actually used.
       if (_actionChoice.rate != 0) {
+        baseInputItemsConsumedNum = uint16(Math.ceilDiv(combatElapsedTime * _actionChoice.rate, 3600 * RATE_MUL));
+        // Make sure we use at least 1 per kill
         baseInputItemsConsumedNum = uint16(Math.max(numKilled, baseInputItemsConsumedNum));
+
+        // Make sure we don't go above the maximum amount of consumables (scrolls/arrows) that we actually have
+        if (baseInputItemsConsumedNum > maxRequiredBaseInputItemsConsumedRatio) {
+          uint newMaxRequiredBaseInputItemsConsumedRatio = _getMaxRequiredRatio(
+            _from,
+            _actionChoice,
+            baseInputItemsConsumedNum,
+            _itemNFT,
+            _pendingQueuedActionEquipmentStates
+          );
+
+          baseInputItemsConsumedNum = uint16(
+            Math.min(baseInputItemsConsumedNum, newMaxRequiredBaseInputItemsConsumedRatio)
+          );
+        }
       }
     }
   }
