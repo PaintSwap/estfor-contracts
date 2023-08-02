@@ -167,7 +167,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
   }
 
-  function _mintPlayer(uint _avatarId, string calldata _name, bool _makeActive) private {
+  function mint(uint _avatarId, string calldata _name, bool _makeActive) external {
     address from = _msgSender();
     uint playerId = nextPlayerId;
     nextPlayerId = nextPlayerId.inc();
@@ -176,10 +176,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, _avatarId, _makeActive);
     _setTokenIdToAvatar(playerId, _avatarId);
-  }
-
-  function mint(uint _avatarId, string calldata _name, bool _makeActive) external {
-    _mintPlayer(_avatarId, _name, _makeActive);
   }
 
   function _setTokenIdToAvatar(uint _playerId, uint _avatarId) private {
