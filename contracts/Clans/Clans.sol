@@ -25,7 +25,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event InviteSent(uint clanId, uint playerId, uint fromPlayerId);
   event InvitesSent(uint clanId, uint[] playerIds, uint fromPlayerId);
   event InviteAccepted(uint clanId, uint playerId);
-  event MemberLeft(uint clanId, uint playerId);
+  event MemberLeftV2(uint clanId, uint playerId, uint removedByPlayerId);
   event JoinRequestSent(uint clanId, uint playerId);
   event JoinRequestAccepted(uint clanId, uint playerId, uint acceptedByPlayerId);
   event JoinRequestsAccepted(uint clanId, uint[] playerIds, uint acceptedByPlayerId);
@@ -41,6 +41,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event InvitesDeletedByPlayer(uint[] clanIds, uint playerId);
   event InvitesDeletedByClan(uint clanId, uint[] invitedPlayerIds, uint deletedInvitesPlayerId);
   event EditNameCost(uint newCost);
+
+  // legacy
+  event MemberLeft(uint clanId, uint playerId);
 
   error AlreadyInClan();
   error NotOwnerOfPlayer();
@@ -467,7 +470,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     if (isDemoting) {
       // Are they leaving?
       if (_rank == ClanRank.NONE) {
-        _removeFromClan(_clanId, _memberId);
+        _removeFromClan(_clanId, _memberId, _playerId);
       } else {
         // If owner is leaving their post then we need to update the owned state
         if (currentMemberRank == ClanRank.LEADER) {
@@ -511,7 +514,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       // Change old owner to new rank
       _updateRank(_clanId, oldOwnerId, _newRank, oldOwnerId);
     } else {
-      _removeFromClan(_clanId, oldOwnerId);
+      _removeFromClan(_clanId, oldOwnerId, oldOwnerId);
     }
     _claimOwnership(_clanId, _newOwner);
   }
@@ -665,7 +668,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanDestroyed(_clanId);
   }
 
-  function _removeFromClan(uint _clanId, uint _playerId) private {
+  function _removeFromClan(uint _clanId, uint _playerId, uint _removingPlayerId) private {
     Clan storage clan = clans[_clanId];
 
     if (clan.owner == _playerId) {
@@ -676,7 +679,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     if (clan.memberCount == 0) {
       _destroyClan(_clanId);
     } else {
-      emit MemberLeft(_clanId, _playerId);
+      emit MemberLeftV2(_clanId, _playerId, _removingPlayerId);
     }
     PlayerInfo storage player = playerInfo[_playerId];
     player.clanId = 0;
