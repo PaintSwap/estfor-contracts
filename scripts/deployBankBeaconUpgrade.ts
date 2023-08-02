@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {BANK_ADDRESS} from "./contractAddresses";
+import {BANK_ADDRESS, BANK_REGISTRY_ADDRESS} from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
 async function main() {
@@ -17,6 +17,14 @@ async function main() {
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
   console.log("bankImplAddress", bankImplAddress);
   await verifyContracts([bankImplAddress]);
+
+  const isBeta = process.env.IS_BETA == "true";
+  if (isBeta) {
+    // Also update the old first week's beta clans
+    const BankRegistry = await ethers.getContractFactory("BankRegistry");
+    const bankRegistry = await BankRegistry.attach(BANK_REGISTRY_ADDRESS);
+    await bankRegistry.setBankImpl(bankImplAddress);
+  }
 }
 
 main().catch((error) => {

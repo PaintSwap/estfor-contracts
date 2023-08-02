@@ -30,6 +30,12 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
     players = _players;
   }
 
+  // This is only to allow upgrading the bank implementation of old beta clans created.
+  // In the first week which did not use the beacon proxy setup, used the now deleted BankProxy.sol
+  function setBankImpl(address _bankImpl) external onlyOwner {
+    dummy = _bankImpl;
+  }
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

@@ -13,6 +13,7 @@ import {
   WORLD_LIBRARY_ADDRESS,
   ADMIN_ACCESS_ADDRESS,
   DONATION_ADDRESS,
+  BANK_REGISTRY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -109,6 +110,14 @@ async function main() {
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
 
+  // Bank Registry
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
+    kind: "uups",
+  });
+  await bankRegistry.deployed();
+  console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
+
   // World
   const newWorldLibrary = false;
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
@@ -146,7 +155,8 @@ async function main() {
   await verifyContracts([clans.address]);
   await verifyContracts([world.address]);
   await verifyContracts([adminAccess.address]);
-  await verifyContracts([donation.address]);
+  await verifyContracts([bankRegistry.address]);
+  await verifyContracts([players.address]);
 }
 
 main().catch((error) => {
