@@ -17,9 +17,9 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   using UnsafeMath for uint16;
   using UnsafeMath for uint256;
 
-  event DepositItems(address from, uint playerId, uint[] id, uint[] value);
+  event DepositItems(address from, uint playerId, uint[] ids, uint[] values);
   event DepositItem(address from, uint playerId, uint id, uint value);
-  event WithdrawItems(address from, address to, uint playerId, uint[] id, uint[] values);
+  event WithdrawItems(address from, address to, uint playerId, uint[] ids, uint[] values);
   event DepositFTM(address from, uint playerId, uint amount);
   event WithdrawFTM(address from, address to, uint playerId, uint amount);
   event DepositToken(address from, uint playerId, address token, uint amount);
