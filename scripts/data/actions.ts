@@ -1773,7 +1773,7 @@ export const allActions: ActionInput[] = [
     combatStats: {
       melee: 55,
       magic: 0,
-      ranged: 0,
+      ranged: 20,
       meleeDefence: 55,
       magicDefence: 35,
       rangedDefence: 0,
@@ -1805,7 +1805,7 @@ export const allActions: ActionInput[] = [
     combatStats: {
       melee: 65,
       magic: 0,
-      ranged: 0,
+      ranged: 30,
       meleeDefence: 60,
       magicDefence: 60,
       rangedDefence: 0,
@@ -1867,9 +1867,9 @@ export const allActions: ActionInput[] = [
     ],
     randomRewards: [{itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 1328, amount: 2}],
     combatStats: {
-      melee: 100,
+      melee: 70,
       magic: 30,
-      ranged: 0,
+      ranged: 30,
       meleeDefence: 100,
       magicDefence: 30,
       rangedDefence: 30,

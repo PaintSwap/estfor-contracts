@@ -26,7 +26,7 @@ let playersImplMisc1;
 let players;
 
 if (isBeta) {
-  worldLibrary = "0xf1358a6db8a3fef6ebb93d951c07060e19fe056e";
+  worldLibrary = "0x9abb79ab5d7d0d3aa661a8281267c66f32012ea8";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
