@@ -9,8 +9,7 @@ import {IClans} from "../interfaces/IClans.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
-  /// @custom:oz-renamed-from bankImpl
-  address public dummy;
+  address public bankImpl; // Keep this same as it's used by the deleted BankProxy which is used by some old banks
   IERC1155 public itemNFT;
   IERC1155 public playerNFT;
   IClans public clans;
@@ -33,7 +32,7 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   // This is only to allow upgrading the bank implementation of old beta clans created.
   // In the first week which did not use the beacon proxy setup, used the now deleted BankProxy.sol
   function setBankImpl(address _bankImpl) external onlyOwner {
-    dummy = _bankImpl;
+    bankImpl = _bankImpl;
   }
 
   // solhint-disable-next-line no-empty-blocks
