@@ -609,7 +609,7 @@ describe("Rewards", function () {
       expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1);
       expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier2);
 
-      const tier3Start = 25001;
+      const tier3Start = 33913;
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, tier3Start, false);
 
       let balanceBefore = await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId);

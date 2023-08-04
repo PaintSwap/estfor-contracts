@@ -5,7 +5,8 @@ import {ActionInput, defaultActionChoice} from "@paintswap/estfor-definitions/ty
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId, getRequestId, RATE_MUL, SPAWN_MUL} from "./utils";
-import {allDailyRewards, allWeeklyRewards} from "../scripts/data/dailyRewards";
+import {setDailyAndWeeklyRewards} from "../scripts/utils";
+import {World} from "../typechain-types";
 
 describe("World", function () {
   const deployContracts = async function () {
@@ -20,22 +21,20 @@ describe("World", function () {
       await owner.sendTransaction({
         to: owner.address,
         value: 1,
+        maxFeePerGas: 1,
       });
     }
-
     // Create the world
     const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
     const worldLibrary = await WorldLibrary.deploy();
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = await upgrades.deployProxy(
-      World,
-      [mockOracleClient.address, subscriptionId, allDailyRewards, allWeeklyRewards],
-      {
-        kind: "uups",
-        unsafeAllow: ["delegatecall", "external-library-linking"],
-      }
-    );
+    const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    })) as World;
+
+    await setDailyAndWeeklyRewards(world);
 
     const minRandomWordsUpdateTime = await world.MIN_RANDOM_WORDS_UPDATE_TIME();
 

@@ -2,7 +2,8 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {allDailyRewards, allWeeklyRewards} from "../scripts/data/dailyRewards";
+import {setDailyAndWeeklyRewards} from "../scripts/utils";
+import {World} from "../typechain-types";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
@@ -19,6 +20,7 @@ describe("ItemNFT", function () {
       await owner.sendTransaction({
         to: owner.address,
         value: 1,
+        maxFeePerGas: 1,
       });
     }
 
@@ -27,14 +29,12 @@ describe("ItemNFT", function () {
     const worldLibrary = await WorldLibrary.deploy();
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = await upgrades.deployProxy(
-      World,
-      [mockOracleClient.address, subscriptionId, allDailyRewards, allWeeklyRewards],
-      {
-        kind: "uups",
-        unsafeAllow: ["delegatecall", "external-library-linking"],
-      }
-    );
+    const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    })) as World;
+
+    await setDailyAndWeeklyRewards(world);
 
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(Shop, [brush.address, dev.address], {

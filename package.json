@@ -88,7 +88,7 @@
     "editActionChoices": "npx hardhat run scripts/editActionChoices.ts",
     "addXPThresholdRewards": "npx hardhat run scripts/addXPThresholdRewards.ts",
     "editXPThresholdRewards": "npx hardhat run scripts/editXPThresholdRewards.ts",
-    "addDailyRewards": "npx hardhat run scripts/addDailyRewards.ts",
+    "setDailyRewards": "npx hardhat run scripts/setDailyRewards.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",
     "pauseGame": "npx hardhat run scripts/pauseGame.ts",

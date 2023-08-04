@@ -51,7 +51,6 @@ import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
-import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -109,7 +108,7 @@ async function main() {
   const World = await ethers.getContractFactory("World", {
     libraries: {WorldLibrary: worldLibrary.address},
   });
-  const world = (await upgrades.deployProxy(World, [oracle.address, subscriptionId, [], []], {
+  const world = (await upgrades.deployProxy(World, [oracle.address, subscriptionId], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   })) as World;

@@ -3,7 +3,8 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {allDailyRewards, allWeeklyRewards} from "../scripts/data/dailyRewards";
+import {World} from "../typechain-types";
+import {setDailyAndWeeklyRewards} from "../scripts/utils";
 
 describe("Shop", function () {
   const deployContracts = async function () {
@@ -21,6 +22,7 @@ describe("Shop", function () {
       await owner.sendTransaction({
         to: owner.address,
         value: 1,
+        maxFeePerGas: 1,
       });
     }
 
@@ -29,14 +31,12 @@ describe("Shop", function () {
     const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
     const worldLibrary = await WorldLibrary.deploy();
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = await upgrades.deployProxy(
-      World,
-      [mockOracleClient.address, subscriptionId, allDailyRewards, allWeeklyRewards],
-      {
-        kind: "uups",
-        unsafeAllow: ["delegatecall", "external-library-linking"],
-      }
-    );
+    const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    })) as World;
+
+    await setDailyAndWeeklyRewards(world);
 
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(Shop, [brush.address, dev.address], {

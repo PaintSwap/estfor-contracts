@@ -113,12 +113,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _disableInitializers();
   }
 
-  function initialize(
-    VRFCoordinatorV2Interface _coordinator,
-    uint64 _subscriptionId,
-    Equipment[][] calldata _dailyRewards,
-    Equipment[][] calldata _weeklyRewards
-  ) public initializer {
+  function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
     __VRFConsumerBaseV2_init(address(_coordinator));
     __Ownable_init();
     __UUPSUpgradeable_init();
@@ -149,13 +144,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
 
     thisWeeksRandomWordSegment = bytes8(uint64(randomWords[3][0]));
-
-    for (uint i = 0; i < _dailyRewards.length; ++i) {
-      setDailyRewardPool(i + 1, _dailyRewards[i]);
-    }
-    for (uint i = 0; i < _weeklyRewards.length; ++i) {
-      setWeeklyRewardPool(i + 1, _weeklyRewards[i]);
-    }
   }
 
   function requestRandomWords() external returns (uint requestId) {
