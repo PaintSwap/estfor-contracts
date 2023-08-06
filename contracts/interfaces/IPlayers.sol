@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "../globals/misc.sol";
+import "../globals/players.sol";
 
 interface IPlayers {
   function clearEverythingBeforeTokenTransfer(address from, uint tokenId) external;
@@ -28,4 +29,6 @@ interface IPlayers {
   function activePlayer(address owner) external view returns (uint playerId);
 
   function xp(uint playerId, Skill skill) external view returns (uint xp);
+
+  function activeBoost(uint playerId) external view returns (PlayerBoostInfo memory);
 }

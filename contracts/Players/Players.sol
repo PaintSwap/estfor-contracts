@@ -432,7 +432,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   // Only used by a test, could remove and replace with getStorageAt like another test uses
-  function activeBoost(uint _playerId) external view returns (PlayerBoostInfo memory) {
+  function activeBoost(uint _playerId) external view override returns (PlayerBoostInfo memory) {
     return activeBoosts_[_playerId];
   }
 

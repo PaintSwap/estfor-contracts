@@ -19,9 +19,9 @@ struct PendingRandomReward {
   uint40 startTime;
   uint24 xpElapsedTime;
   uint64 queueId;
-  BoostType boostType; // Could be removed if necessary, just used as an optimization
   uint16 boostItemTokenId;
   uint24 elapsedTime;
+  uint24 sentinelElapsedTime;
   uint40 boostStartTime; // When the boost was started
   // Full equipment at the time this was generated
   uint8 fullAttireBonusRewardsPercent;

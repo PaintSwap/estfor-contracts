@@ -111,6 +111,10 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
 
+      uint24 _sentinelElapsedTime = skill == Skill.THIEVING
+        ? actionMetadata.elapsedTime
+        : uint24((block.timestamp - startTime) >= type(uint24).max ? type(uint24).max : block.timestamp - startTime);
+
       _addPendingRandomReward(
         _from,
         _playerId,
@@ -119,6 +123,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         actionMetadata.queueId,
         uint40(startTime),
         actionMetadata.elapsedTime,
+        _sentinelElapsedTime,
         actionMetadata.xpElapsedTime,
         attire_[_playerId][actionMetadata.queueId],
         skill,
@@ -293,13 +298,13 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function donate(address _from, uint _playerId, uint _amount) external {
-    (uint16 itemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) = donation.donate(
+    (uint16 extraItemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) = donation.donate(
       _from,
       _playerId,
       _amount
     );
-    if (itemTokenId != NONE) {
-      _instantConsumeSpecialBoost(_from, _playerId, itemTokenId, uint40(block.timestamp), clanId);
+    if (extraItemTokenId != NONE) {
+      _instantConsumeSpecialBoost(_from, _playerId, extraItemTokenId, uint40(block.timestamp), clanId);
     }
     if (clanItemTokenId != NONE) {
       _instantConsumeSpecialBoost(_from, _playerId, clanItemTokenId, uint40(block.timestamp), clanId);
@@ -411,6 +416,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint64 _queueId,
     uint40 _skillStartTime,
     uint24 _elapsedTime,
+    uint24 _sentinelElapsedTime,
     uint24 _xpElapsedTime,
     Attire storage _attire,
     Skill _skill,
@@ -419,7 +425,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   ) private {
     bool hasRandomRewards = _actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
     if (_xpElapsedTime != 0 && hasRandomRewards) {
-      bool hasRandomWord = world.hasRandomWord(_skillStartTime.add(_elapsedTime));
+      bool hasRandomWord = world.hasRandomWord(_skillStartTime.add(_sentinelElapsedTime));
       if (!hasRandomWord) {
         PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
         BoostType boostType;
@@ -458,7 +464,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
             startTime: _skillStartTime,
             xpElapsedTime: uint24(_xpElapsedTime),
             elapsedTime: _elapsedTime,
-            boostType: boostType,
+            sentinelElapsedTime: _sentinelElapsedTime,
             boostItemTokenId: boostItemTokenId,
             boostStartTime: boostStartTime,
             fullAttireBonusRewardsPercent: fullAttireBonusRewardsPercent

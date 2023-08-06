@@ -552,7 +552,9 @@ describe("Rewards", function () {
       let baseEquipment = equipments[0];
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
-      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(baseEquipment.amount * 1.1);
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(
+        Math.round(baseEquipment.amount * 1.1)
+      );
 
       // Next day
       baseEquipment = equipments[1];
@@ -631,6 +633,7 @@ describe("Rewards", function () {
 
   describe("Random rewards", function () {
     it("Random rewards (many)", async function () {
+      //it("Random rewards (many)", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       this.timeout(100000); // 100 seconds, this test can take a while on CI
@@ -655,15 +658,15 @@ describe("Rewards", function () {
         {
           actionId: 1,
           info: {
-            skill: EstforTypes.Skill.WOODCUTTING,
+            skill: EstforTypes.Skill.THIEVING,
             xpPerHour: 3600,
             minXP: 0,
             isDynamic: false,
             worldLocation: 0,
             isFullModeOnly: false,
             numSpawned: 0,
-            handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
-            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            handItemTokenIdRangeMin: EstforConstants.NONE,
+            handItemTokenIdRangeMax: EstforConstants.NONE,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: false,
             successPercent: 100,
@@ -699,7 +702,7 @@ describe("Rewards", function () {
         choiceId: EstforConstants.NONE,
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * numHours,
-        rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
@@ -791,15 +794,15 @@ describe("Rewards", function () {
         {
           actionId: 1,
           info: {
-            skill: EstforTypes.Skill.WOODCUTTING,
+            skill: EstforTypes.Skill.THIEVING,
             xpPerHour: 3600,
             minXP: 0,
             isDynamic: false,
             worldLocation: 0,
             isFullModeOnly: false,
             numSpawned: 0,
-            handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
-            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            handItemTokenIdRangeMin: EstforConstants.NONE,
+            handItemTokenIdRangeMax: EstforConstants.NONE,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: false,
             successPercent: 100,
@@ -939,15 +942,15 @@ describe("Rewards", function () {
         {
           actionId: 1,
           info: {
-            skill: EstforTypes.Skill.WOODCUTTING,
+            skill: EstforTypes.Skill.THIEVING,
             xpPerHour: 3600,
             minXP: 0,
             isDynamic: false,
             worldLocation: 0,
             isFullModeOnly: false,
             numSpawned: 0,
-            handItemTokenIdRangeMin: EstforConstants.WOODCUTTING_BASE,
-            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+            handItemTokenIdRangeMin: NONE,
+            handItemTokenIdRangeMax: NONE,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: false,
             successPercent: 100,
@@ -986,7 +989,7 @@ describe("Rewards", function () {
         choiceId: EstforConstants.NONE,
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * numHours,
-        rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
@@ -998,7 +1001,7 @@ describe("Rewards", function () {
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.eq(2);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
     });
 
     it("PendingRandomRewards should be added each time an action is processed", async function () {
@@ -1074,7 +1077,6 @@ describe("Rewards", function () {
       expect(pendingRandomRewards[1].xpElapsedTime).to.eq(timespan - 3600);
     });
 
-    // Could be a part of world if there was bytecode space
     it("Check random bytes", async function () {
       const {playerId, world, mockOracleClient} = await loadFixture(playersFixture);
       const {timestamp} = await ethers.provider.getBlock("latest");
@@ -1291,7 +1293,47 @@ describe("Rewards", function () {
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
-      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.gt(0);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
+      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.be.gt(0);
+
+      // Increment again but it should still not produce anything
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await ethers.provider.send("evm_mine", []);
+
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
+      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.be.gt(0);
+
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(0);
+
+      await players.connect(alice).processActions(playerId);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
+
+      // Increment again but it should still not produce anything
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await ethers.provider.send("evm_mine", []);
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
+
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
+      expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(BRONZE_ARROW);
+      expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(numHours * (numSpawned / SPAWN_MUL));
 
       await players.connect(alice).processActions(playerId);
 
@@ -1437,7 +1479,19 @@ describe("Rewards", function () {
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
-      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.gt(0);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.eq(0);
+
+      await players.connect(alice).processActions(playerId);
+
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
+      expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(BRONZE_ARROW);
 
       await players.connect(alice).processActions(playerId);
 
@@ -1587,8 +1641,24 @@ describe("Rewards", function () {
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
-      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.gt(0);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.eq(0);
 
+      await players.connect(alice).processActions(playerId);
+
+      // Increment again but it should still not produce anything
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      await ethers.provider.send("evm_mine", []);
+
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.eq(0);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
 
       // Check output

@@ -935,9 +935,10 @@ describe("Combat Actions", function () {
       ]); // Roughly 1/2 of the time
     });
 
-    it("Check random rewards, next day", async function () {
-      const {playerId, players, world, itemNFT, alice, queuedAction, rate, numSpawned, mockOracleClient} =
-        await loadFixture(playersFixtureMelee);
+    it("Check random rewards, process after waiting another day", async function () {
+      const {playerId, players, world, itemNFT, alice, queuedAction, numSpawned, mockOracleClient} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -957,6 +958,18 @@ describe("Combat Actions", function () {
       requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+      // Regardless of waiting another day of combat, you don't get the rewards till the following day
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.eq(0);
+
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
@@ -993,6 +1006,16 @@ describe("Combat Actions", function () {
       requestId = getRequestId(tx);
       expect(requestId).to.not.eq(0);
       await mockOracleClient.fulfill(requestId, world.address);
+      await players.connect(alice).processActions(playerId);
+
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([

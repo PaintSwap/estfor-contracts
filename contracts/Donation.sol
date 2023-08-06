@@ -8,6 +8,7 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
+import {IPlayers} from "./interfaces/IPlayers.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {Clans} from "./Clans/Clans.sol";
 
@@ -48,7 +49,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   mapping(uint lotteryId => mapping(uint raffleId => uint playerId)) public raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
   mapping(uint lotteryId => LotteryWinnerInfo winner) public winners;
   BitMaps.BitMap private claimedRewards;
-  address private players;
+  IPlayers private players;
   address private world;
   mapping(uint clanId => ClanInfo clanInfo) public clanDonationInfo;
   uint16 public donationRewardItemTokenId;
@@ -70,7 +71,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint16[3] private clanBoostRewardItemTokenIds;
 
   modifier onlyPlayers() {
-    if (players != msg.sender) {
+    if (address(players) != msg.sender) {
       revert OnlyPlayers();
     }
     _;
@@ -152,7 +153,12 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         }
 
         raffleIdToPlayerId[_lastLotteryId][++lastRaffleId] = _playerId;
-        itemTokenId = donationRewardItemTokenId;
+
+        // Do not override this boost if you have one that started at this timestamp already (i.e winning lottery boost)
+        // Note: Ideally this would be set inside Players but contract size issues....
+        if (players.activeBoost(_playerId).extraOrLastStartTime != uint40(block.timestamp)) {
+          itemTokenId = donationRewardItemTokenId;
+        }
         playersEntered[_lastLotteryId].set(_playerId);
         isRaffleDonation = true;
 
@@ -364,7 +370,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     return playersEntered[_lotteryId].get(_playerId);
   }
 
-  function setPlayers(address _players) external onlyOwner {
+  function setPlayers(IPlayers _players) external onlyOwner {
     players = _players;
   }
 

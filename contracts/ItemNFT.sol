@@ -359,9 +359,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
-  function getBoostInfo(uint16 _tokenId) external view returns (uint16 boostValue, uint24 boostDuration) {
+  function getBoostInfo(
+    uint16 _tokenId
+  ) external view returns (BoostType boostType, uint16 boostValue, uint24 boostDuration) {
     Item storage item = _getItem(_tokenId);
-    return (item.boostValue, item.boostDuration);
+    return (item.boostType, item.boostValue, item.boostDuration);
   }
 
   function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {

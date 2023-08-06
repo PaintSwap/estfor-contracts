@@ -493,9 +493,13 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionMetadata.xpGained = xpGained;
       totalXPGained += xpGained;
 
+      uint24 _sentinelElapsedTime = skill == Skill.THIEVING
+        ? uint24(elapsedTime)
+        : uint24((block.timestamp - startTime) >= type(uint24).max ? type(uint24).max : block.timestamp - startTime);
+
       // Number of pending reward rolls
       if (actionHasRandomRewards) {
-        bool hasRandomWord = world.hasRandomWord(startTime + elapsedTime);
+        bool hasRandomWord = world.hasRandomWord(startTime + _sentinelElapsedTime);
         if (!hasRandomWord) {
           if (isCombat) {
             uint prevMonstersKilled = (numSpawnedPerHour * prevXPElapsedTime) / (SPAWN_MUL * 3600);
@@ -681,17 +685,17 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       (ids, amounts) = PlayersLibrary.subtractMatchingRewards(ids, amounts, prevNewIds, prevNewAmounts);
     }
 
-    // Any random rewards unlocked
-    uint16 monstersKilled = uint16((numSpawnedPerHour * _xpElapsedTime) / (SPAWN_MUL * 3600));
-    (randomIds, randomAmounts, ) = _getRandomRewards(
-      _playerId,
-      _startTime,
-      _elapsedTime,
-      isCombat ? monstersKilled : _xpElapsedTime / 3600,
-      actionRewards,
-      successPercent,
-      _fullAttireBonusRewardsPercent
-    );
+    // Any random rewards unlocked. Only thieving because it doesn't have any dynamic components
+    if (actionSkill == Skill.THIEVING) {
+      (randomIds, randomAmounts, ) = _getRandomRewards(
+        _playerId,
+        _startTime + uint24(_elapsedTime),
+        _xpElapsedTime / 3600,
+        actionRewards,
+        successPercent,
+        _fullAttireBonusRewardsPercent
+      );
+    }
 
     // Check for any boosts for random rewards (guaranteed rewards already have boosts applied)
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
@@ -817,20 +821,32 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         _pendingQueuedActionProcessed
       );
       bool processedAny;
+
+      // TODO: Remove everything related to this later
+      // boostType was removed and shifted everything up in the PendingRandomReward struct
+      bool isLegacyPendingRandomReward = pendingRandomReward.boostItemTokenId != 0 &&
+        pendingRandomReward.boostItemTokenId < 10;
       uint numTickets = isCombat ? monstersKilled : pendingRandomReward.xpElapsedTime / 3600;
 
-      uint elapsedTime = pendingRandomReward.elapsedTime;
+      uint elapsedTime = isLegacyPendingRandomReward
+        ? pendingRandomReward.xpElapsedTime
+        : pendingRandomReward.elapsedTime;
+      uint40 sentinelElapsedTime = isLegacyPendingRandomReward
+        ? pendingRandomReward.xpElapsedTime
+        : pendingRandomReward.sentinelElapsedTime;
+      uint8 fullAttireBonusRewardsPercent = isLegacyPendingRandomReward
+        ? 0
+        : pendingRandomReward.fullAttireBonusRewardsPercent;
 
       uint[] memory randomIds;
       uint[] memory randomAmounts;
       (randomIds, randomAmounts, processedAny) = _getRandomRewards(
         _playerId,
-        pendingRandomReward.startTime,
-        elapsedTime,
+        pendingRandomReward.startTime + sentinelElapsedTime,
         numTickets,
         actionRewards,
         successPercent,
-        pendingRandomReward.fullAttireBonusRewardsPercent
+        fullAttireBonusRewardsPercent
       );
 
       if (processedAny) {
@@ -839,25 +855,31 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
       if (randomIds.length != 0) {
         // Check for boosts
-        if (pendingRandomReward.boostType == BoostType.GATHERING) {
-          (uint16 boostValue, uint24 boostDuration) = itemNFT.getBoostInfo(pendingRandomReward.boostItemTokenId);
-          uint boostedTime = PlayersLibrary.getBoostedTime(
-            pendingRandomReward.startTime,
-            elapsedTime,
-            pendingRandomReward.boostStartTime,
-            boostDuration
-          );
+        if (!isLegacyPendingRandomReward) {
+          if (pendingRandomReward.boostItemTokenId != NONE) {
+            (BoostType boostType, uint16 boostValue, uint24 boostDuration) = itemNFT.getBoostInfo(
+              pendingRandomReward.boostItemTokenId
+            );
+            if (boostType == BoostType.GATHERING) {
+              uint boostedTime = PlayersLibrary.getBoostedTime(
+                pendingRandomReward.startTime,
+                elapsedTime,
+                pendingRandomReward.boostStartTime,
+                boostDuration
+              );
 
-          _addGatheringBoostedAmounts(boostedTime, randomAmounts, boostValue, elapsedTime);
-        }
+              _addGatheringBoostedAmounts(boostedTime, randomAmounts, boostValue, elapsedTime);
+            }
+          }
 
-        // Copy into main arrays
-        uint oldLength = length;
-        for (uint j = 0; j < randomIds.length; ++j) {
-          ids[j + oldLength] = randomIds[j];
-          amounts[j + oldLength] = randomAmounts[j];
-          queueIds[j + oldLength] = pendingRandomReward.queueId;
-          ++length;
+          // Copy into main arrays
+          uint oldLength = length;
+          for (uint j = 0; j < randomIds.length; ++j) {
+            ids[j + oldLength] = randomIds[j];
+            amounts[j + oldLength] = randomAmounts[j];
+            queueIds[j + oldLength] = pendingRandomReward.queueId;
+            ++length;
+          }
         }
       }
     }
@@ -987,8 +1009,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
   function _getRandomRewards(
     uint _playerId,
-    uint40 _skillStartTime,
-    uint _elapsedTime,
+    uint40 _sentinelTimestamp,
     uint _numTickets,
     ActionRewards memory _actionRewards,
     uint8 _successPercent,
@@ -999,8 +1020,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       abi.encodeWithSelector(
         IPlayersMiscDelegateView.getRandomRewards.selector,
         _playerId,
-        _skillStartTime,
-        _elapsedTime,
+        _sentinelTimestamp,
         _numTickets,
         _actionRewards,
         _successPercent,

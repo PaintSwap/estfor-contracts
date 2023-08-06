@@ -56,8 +56,7 @@ interface IPlayersMiscDelegateView {
 
   function getRandomRewards(
     uint playerId,
-    uint40 skillStartTime,
-    uint elapsedTime,
+    uint40 skillSentinelTime,
     uint numTickets,
     ActionRewards memory actionRewards,
     uint8 successPercent,

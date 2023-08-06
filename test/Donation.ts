@@ -487,6 +487,48 @@ describe("Donation", function () {
     expect(activeBoost.extraOrLastValue).to.eq(5);
   });
 
+  it("Get extra XP boost as part of queueing a donation, do not override lottery winnings", async function () {
+    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockOracleClient, donation} = await loadFixture(
+      deployContracts
+    );
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+    let lotteryId = await donation.lastLotteryId();
+    expect(lotteryId).to.eq(1);
+
+    await players.connect(alice).donate(playerId, raffleEntryCost);
+
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+
+    const winnerInfo = await donation.winners(lotteryId);
+    expect(winnerInfo.lotteryId).to.eq(lotteryId);
+
+    // Now claim it while queueing another donation
+    await expect(
+      players.connect(alice).startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.NONE,
+        0,
+        0,
+        raffleEntryCost, // donation
+        EstforTypes.ActionQueueStatus.NONE
+      )
+    )
+      .to.emit(donation, "ClaimedLotteryWinnings")
+      .withArgs(lotteryId, 1, EstforConstants.LUCKY_POTION, 1);
+
+    expect(await donation.hasClaimedReward(lotteryId)).to.eq(true);
+    lotteryId = await donation.lastLotteryId();
+    expect(lotteryId).to.eq(2);
+
+    // Should have the lucky boost not luck of the draw boost
+    const activeBoost = await players.activeBoost(playerId);
+    expect(activeBoost.extraOrLastItemTokenId).to.eq(EstforConstants.LUCKY_POTION);
+  });
+
   it("Number of clan donations is limited to the max capacity of the clan", async function () {
     const {
       donation,
