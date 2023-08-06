@@ -440,6 +440,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return clanBoosts_[_clanId];
   }
 
+  function globalBoost() external view returns (PlayerBoostInfo memory) {
+    return globalBoost_;
+  }
+
   function RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF() external pure returns (uint) {
     return RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_;
   }

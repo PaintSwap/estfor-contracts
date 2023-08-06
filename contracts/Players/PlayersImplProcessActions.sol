@@ -257,7 +257,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
     _handleLotteryWinnings(_from, _playerId, pendingQueuedActionState.lotteryWinner);
 
-    _clearBoostsIfExpired(_playerId);
+    _clearPlayerBoostsIfExpired(_playerId);
 
     bytes1 packedData = player.packedData;
     // Clear bottom half which holds the worldLocation
@@ -266,7 +266,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     player.packedData = packedData;
   }
 
-  function _clearBoostsIfExpired(uint _playerId) private {
+  function _clearPlayerBoostsIfExpired(uint _playerId) private {
     PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
       delete playerBoost.value;
@@ -279,15 +279,15 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     if (
-      playerBoost.extraItemTokenId != NONE &&
-      playerBoost.extraStartTime.add(playerBoost.extraDuration) <= block.timestamp
+      playerBoost.extraOrLastItemTokenId != NONE &&
+      playerBoost.extraOrLastStartTime.add(playerBoost.extraOrLastDuration) <= block.timestamp
     ) {
-      delete playerBoost.extraValue;
-      delete playerBoost.extraStartTime;
-      delete playerBoost.extraDuration;
-      delete playerBoost.extraValue;
-      delete playerBoost.extraItemTokenId;
-      delete playerBoost.extraBoostType;
+      delete playerBoost.extraOrLastValue;
+      delete playerBoost.extraOrLastStartTime;
+      delete playerBoost.extraOrLastDuration;
+      delete playerBoost.extraOrLastValue;
+      delete playerBoost.extraOrLastItemTokenId;
+      delete playerBoost.extraOrLastBoostType;
       emit ExtraBoostFinished(_playerId);
     }
   }
@@ -306,6 +306,18 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
     if (globalItemTokenId != NONE) {
       _instantConsumeSpecialBoost(_from, _playerId, globalItemTokenId, uint40(block.timestamp), clanId);
+    }
+  }
+
+  // Is there a current boost ongoing when this one will be overriden? If so set extraOrLast* up to the current time so that it can be used
+  // to give the player the remaining boost time for any queued actions on-going at this time.
+  function _setLastBoostIfAppropriate(PlayerBoostInfo storage _boost) private {
+    if (block.timestamp < _boost.startTime + _boost.duration) {
+      _boost.extraOrLastStartTime = _boost.startTime;
+      _boost.extraOrLastDuration = uint24(block.timestamp - _boost.startTime); // duration from start to current time
+      _boost.extraOrLastValue = _boost.value;
+      _boost.extraOrLastBoostType = _boost.boostType;
+      _boost.extraOrLastItemTokenId = _boost.itemTokenId;
     }
   }
 
@@ -339,25 +351,28 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
     if (item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL) {
       PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
-      playerBoost.extraStartTime = _startTime;
-      playerBoost.extraDuration = item.boostDuration;
-      playerBoost.extraValue = item.boostValue;
-      playerBoost.extraBoostType = item.boostType;
-      playerBoost.extraItemTokenId = _itemTokenId;
+      playerBoost.extraOrLastStartTime = _startTime;
+      playerBoost.extraOrLastDuration = item.boostDuration;
+      playerBoost.extraOrLastValue = item.boostValue;
+      playerBoost.extraOrLastBoostType = item.boostType;
+      playerBoost.extraOrLastItemTokenId = _itemTokenId;
       emit ConsumeExtraBoostVial(_from, _playerId, boostInfo);
     } else if (item.equipPosition == EquipPosition.GLOBAL_BOOST_VIAL) {
-      globalBoost.startTime = _startTime;
-      globalBoost.duration = item.boostDuration;
-      globalBoost.value = item.boostValue;
-      globalBoost.boostType = item.boostType;
-      globalBoost.itemTokenId = _itemTokenId;
+      _setLastBoostIfAppropriate(globalBoost_); // Must be set before making any changes
+      globalBoost_.startTime = _startTime;
+      globalBoost_.duration = item.boostDuration;
+      globalBoost_.value = item.boostValue;
+      globalBoost_.boostType = item.boostType;
+      globalBoost_.itemTokenId = _itemTokenId;
       emit ConsumeGlobalBoostVial(_from, _playerId, boostInfo);
     } else {
-      clanBoosts_[_clanId].startTime = _startTime;
-      clanBoosts_[_clanId].duration = item.boostDuration;
-      clanBoosts_[_clanId].value = item.boostValue;
-      clanBoosts_[_clanId].boostType = item.boostType;
-      clanBoosts_[_clanId].itemTokenId = _itemTokenId;
+      PlayerBoostInfo storage clanBoost = clanBoosts_[_clanId];
+      _setLastBoostIfAppropriate(clanBoost); // Must be set before making any changes
+      clanBoost.startTime = _startTime;
+      clanBoost.duration = item.boostDuration;
+      clanBoost.value = item.boostValue;
+      clanBoost.boostType = item.boostType;
+      clanBoost.itemTokenId = _itemTokenId;
       emit ConsumeClanBoostVial(_from, _playerId, _clanId, boostInfo);
     }
   }
@@ -371,7 +386,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _claimRandomRewards(_playerId, _pendingQueuedActionProcessed);
     _handleDailyRewards(_from, _playerId);
     _handleLotteryWinnings(_from, _playerId, _lotteryWinner);
-    _clearBoostsIfExpired(_playerId);
+    _clearPlayerBoostsIfExpired(_playerId);
   }
 
   function _claimRandomRewards(

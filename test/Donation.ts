@@ -306,7 +306,7 @@ describe("Donation", function () {
       .withArgs(clanId, raffleEntryCost, EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.activeBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
@@ -317,7 +317,7 @@ describe("Donation", function () {
       .withArgs(clanId, raffleEntryCost.mul(2), EstforConstants.CLAN_BOOSTER_3)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.activeBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_2);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
@@ -328,7 +328,7 @@ describe("Donation", function () {
       .withArgs(clanId, raffleEntryCost.mul(3), EstforConstants.CLAN_BOOSTER)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.activeBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_3);
   });
 
@@ -483,8 +483,8 @@ describe("Donation", function () {
 
     // Should have the implicit boost
     const activeBoost = await players.activeBoost(playerId);
-    expect(activeBoost.extraBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
-    expect(activeBoost.extraValue).to.eq(5);
+    expect(activeBoost.extraOrLastBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
+    expect(activeBoost.extraOrLastValue).to.eq(5);
   });
 
   it("Number of clan donations is limited to the max capacity of the clan", async function () {

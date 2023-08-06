@@ -126,12 +126,12 @@ struct PlayerBoostInfo {
   uint16 value;
   uint16 itemTokenId; // Get the effect of it
   BoostType boostType;
-  // Another boost slot
-  uint40 extraStartTime;
-  uint24 extraDuration;
-  uint16 extraValue;
-  uint16 extraItemTokenId;
-  BoostType extraBoostType;
+  // Another boost slot (for global/clan boosts this is the "last", for users it is the "extra")
+  uint40 extraOrLastStartTime;
+  uint24 extraOrLastDuration;
+  uint16 extraOrLastValue;
+  uint16 extraOrLastItemTokenId;
+  BoostType extraOrLastBoostType;
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.
