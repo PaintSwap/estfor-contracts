@@ -67,12 +67,12 @@ Donation [0xdd1131f57e5e416622fa2b61d4108822e8cc38dc](https://ftmscan.com/addres
 Clans [0xd35410f526db135f09bb8e2bb066c8a63135d812](https://ftmscan.com/address/0xd35410f526db135f09bb8e2bb066c8a63135d812)  
 Bank Beacon [0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e](https://ftmscan.com/address/0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e)
 
-PlayersLibrary [0xf0bbe8fdfb1362aad6cfbdaf2d36a2c642c80494](https://ftmscan.com/address/0xf0bbe8fdfb1362aad6cfbdaf2d36a2c642c80494)  
-PlayersImplQueueActions [0xa0422ef9228f33a09da374029f6340013d9bcbd3](https://ftmscan.com/address/0xa0422ef9228f33a09da374029f6340013d9bcbd3)  
-PlayersImplProcessActions [0xee860b09f52e3d30923ab5f55d471b139e87378a](https://ftmscan.com/address/0xee860b09f52e3d30923ab5f55d471b139e87378a)  
-PlayersImplRewards [0xb773bdf7ebd45589760fac3c70e03e05bc4cbe5c](https://ftmscan.com/address/0xb773bdf7ebd45589760fac3c70e03e05bc4cbe5c)  
-PlayersImplMisc [0xe0c8a7f7e2c94862d6ff83fef602e84df05326bc](https://ftmscan.com/address/0xe0c8a7f7e2c94862d6ff83fef602e84df05326bc)  
-PlayersImplMisc1 [0xa5f7a758d2da1dee298e8e6e63c266b8ee3357db](https://ftmscan.com/address/0xa5f7a758d2da1dee298e8e6e63c266b8ee3357db)  
+PlayersLibrary [0x8afe8cf12c38c08804ffb069103fdb79c6c19b25](https://ftmscan.com/address/0x8afe8cf12c38c08804ffb069103fdb79c6c19b25)  
+PlayersImplQueueActions [0xa5b2aa30940b816ef89389e6931673df740d46dd](https://ftmscan.com/address/0xa5b2aa30940b816ef89389e6931673df740d46dd)  
+PlayersImplProcessActions [0x9c3664e0a1fc99ccf02b947cf359ebdbcc0d6d71](https://ftmscan.com/address/0x9c3664e0a1fc99ccf02b947cf359ebdbcc0d6d71)  
+PlayersImplRewards [0x73c5e18298b12ea447cb68d5778ccbda0b82ce80](https://ftmscan.com/address/0x73c5e18298b12ea447cb68d5778ccbda0b82ce80)  
+PlayersImplMisc [0x7cefddce7e5bbf9b5d95a91fdad2e877d960d5bc](https://ftmscan.com/address/0x7cefddce7e5bbf9b5d95a91fdad2e877d960d5bc)  
+PlayersImplMisc1 [0x56a7ba849f9f7c0ddfe577c8efb2207df9356a3a](https://ftmscan.com/address/0x56a7ba849f9f7c0ddfe577c8efb2207df9356a3a)  
 Players [0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be](https://ftmscan.com/address/0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be)
 
 BankRegistry [0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0](https://ftmscan.com/address/0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0)  

@@ -824,19 +824,12 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
       // TODO: Remove everything related to this later
       // boostType was removed and shifted everything up in the PendingRandomReward struct
-      bool isLegacyPendingRandomReward = pendingRandomReward.boostItemTokenId != 0 &&
+      bool isLegacyWithBoostPendingRandomReward = pendingRandomReward.boostItemTokenId != 0 &&
         pendingRandomReward.boostItemTokenId < 10;
       uint numTickets = isCombat ? monstersKilled : pendingRandomReward.xpElapsedTime / 3600;
 
-      uint elapsedTime = isLegacyPendingRandomReward
-        ? pendingRandomReward.xpElapsedTime
-        : pendingRandomReward.elapsedTime;
-      uint40 sentinelElapsedTime = isLegacyPendingRandomReward
-        ? pendingRandomReward.xpElapsedTime
-        : pendingRandomReward.sentinelElapsedTime;
-      uint8 fullAttireBonusRewardsPercent = isLegacyPendingRandomReward
-        ? 0
-        : pendingRandomReward.fullAttireBonusRewardsPercent;
+      uint40 sentinelElapsedTime = pendingRandomReward.sentinelElapsedTime;
+      uint8 fullAttireBonusRewardsPercent = pendingRandomReward.fullAttireBonusRewardsPercent;
 
       uint[] memory randomIds;
       uint[] memory randomAmounts;
@@ -854,32 +847,32 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       }
 
       if (randomIds.length != 0) {
-        // Check for boosts
-        if (!isLegacyPendingRandomReward) {
-          if (pendingRandomReward.boostItemTokenId != NONE) {
-            (BoostType boostType, uint16 boostValue, uint24 boostDuration) = itemNFT.getBoostInfo(
-              pendingRandomReward.boostItemTokenId
+        if (!isLegacyWithBoostPendingRandomReward && pendingRandomReward.boostItemTokenId != NONE) {
+          // Check for boosts
+          (BoostType boostType, uint16 boostValue, uint24 boostDuration) = itemNFT.getBoostInfo(
+            pendingRandomReward.boostItemTokenId
+          );
+          if (boostType == BoostType.GATHERING) {
+            uint elapsedTime = pendingRandomReward.elapsedTime;
+
+            uint boostedTime = PlayersLibrary.getBoostedTime(
+              pendingRandomReward.startTime,
+              elapsedTime,
+              pendingRandomReward.boostStartTime,
+              boostDuration
             );
-            if (boostType == BoostType.GATHERING) {
-              uint boostedTime = PlayersLibrary.getBoostedTime(
-                pendingRandomReward.startTime,
-                elapsedTime,
-                pendingRandomReward.boostStartTime,
-                boostDuration
-              );
 
-              _addGatheringBoostedAmounts(boostedTime, randomAmounts, boostValue, elapsedTime);
-            }
+            _addGatheringBoostedAmounts(boostedTime, randomAmounts, boostValue, elapsedTime);
           }
+        }
 
-          // Copy into main arrays
-          uint oldLength = length;
-          for (uint j = 0; j < randomIds.length; ++j) {
-            ids[j + oldLength] = randomIds[j];
-            amounts[j + oldLength] = randomAmounts[j];
-            queueIds[j + oldLength] = pendingRandomReward.queueId;
-            ++length;
-          }
+        // Copy into main arrays
+        uint oldLength = length;
+        for (uint j = 0; j < randomIds.length; ++j) {
+          ids[j + oldLength] = randomIds[j];
+          amounts[j + oldLength] = randomAmounts[j];
+          queueIds[j + oldLength] = pendingRandomReward.queueId;
+          ++length;
         }
       }
     }
