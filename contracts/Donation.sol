@@ -196,7 +196,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         }
 
         clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
-        emit DonateToClan(_from, _playerId, _amount * 1 ether, clanId);
+        emit DonateToClan(_from, _playerId, _amount, clanId);
       }
       emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
     }

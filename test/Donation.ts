@@ -306,7 +306,9 @@ describe("Donation", function () {
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(donation, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost, EstforConstants.CLAN_BOOSTER_2)
-      .and.to.emit(players, "ConsumeClanBoostVial");
+      .and.to.emit(players, "ConsumeClanBoostVial")
+      .and.to.emit(donation, "DonateToClan")
+      .withArgs(alice.address, playerId, raffleEntryCost, clanId);
 
     expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);

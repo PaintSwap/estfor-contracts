@@ -84,6 +84,7 @@ async function main() {
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
 
+  // Donation
   const Donation = await ethers.getContractFactory("Donation");
   const donation = await upgrades.upgradeProxy(DONATION_ADDRESS, Donation, {
     kind: "uups",
@@ -156,7 +157,7 @@ async function main() {
   await verifyContracts([world.address]);
   await verifyContracts([adminAccess.address]);
   await verifyContracts([bankRegistry.address]);
-  await verifyContracts([players.address]);
+  await verifyContracts([donation.address]);
 }
 
 main().catch((error) => {
