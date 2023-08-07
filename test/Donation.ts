@@ -6,7 +6,6 @@ import {getRequestId} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
-import {ClanRank} from "@paintswap/estfor-definitions/types";
 
 describe("Donation", function () {
   async function deployContracts() {
@@ -529,85 +528,7 @@ describe("Donation", function () {
     expect(activeBoost.extraOrLastItemTokenId).to.eq(EstforConstants.LUCKY_POTION);
   });
 
-  it("Number of clan donations is limited to the max capacity of the clan", async function () {
-    const {
-      donation,
-      players,
-      alice,
-      world,
-      mockOracleClient,
-      playerId,
-      raffleEntryCost,
-      brush,
-      clans,
-      playerNFT,
-      avatarId,
-      bob,
-      totalBrush,
-    } = await loadFixture(deployContracts);
-
-    // Be a member of a clan
-    const clanId = 1;
-    await clans.addTiers([
-      {
-        id: clanId,
-        maxMemberCapacity: 3,
-        maxBankCapacity: 3,
-        maxImageId: 16,
-        price: 0,
-        minimumAge: 0,
-      },
-    ]);
-
-    let tierId = 1;
-    const imageId = 1;
-    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
-
-    await expect(players.connect(alice).donate(playerId, raffleEntryCost.mul(2)))
-      .to.emit(donation, "DonateToClan")
-      .withArgs(alice.address, playerId, raffleEntryCost, clanId);
-
-    await brush.mint(bob.address, totalBrush);
-    await brush.connect(bob).approve(donation.address, totalBrush);
-
-    // Can do up to 2 more donations
-    for (let i = 0; i < 2; ++i) {
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob" + i, true);
-      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
-      await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
-      await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost))
-        .to.emit(donation, "DonateToClan")
-        .withArgs(bob.address, bobPlayerId, raffleEntryCost, clanId);
-      // Leave clan to free up space
-      await clans.connect(bob).changeRank(clanId, bobPlayerId, ClanRank.NONE, bobPlayerId);
-    }
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-    await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
-    await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
-
-    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost.mul(3)
-    );
-
-    // Next donation will not go towards the clan
-    await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.not.emit(donation, "DonateToClan");
-
-    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost.mul(3)
-    );
-
-    // Fresh day it should work
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
-
-    await expect(players.connect(bob).donate(bobPlayerId, raffleEntryCost)).to.not.be.reverted;
-    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost.mul(4)
-    );
-    expect((await donation.clanDonationInfo(clanId)).numDonationsToday).to.eq(1);
-  });
-
-  it("Check only raffle cost is added to the clans total donations", async function () {
+  it("Check full amount is added to the clans total donations", async function () {
     const {donation, players, alice, playerId, raffleEntryCost, clans} = await loadFixture(deployContracts);
 
     const clanId = 1;
@@ -627,7 +548,7 @@ describe("Donation", function () {
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
     await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
     expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost
+      raffleEntryCost.mul(2)
     );
   });
 

@@ -24,7 +24,6 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
   event ClanDonationThreshold(uint thresholdIncrement, uint16 rewardItemTokenId);
   event LastClanDonationThreshold(uint clanId, uint lastThreshold, uint16 rewardItemTokenId);
-  event NewClanDonationDay(uint clanId);
 
   error NotOwnerOfPlayer();
   error NotEnoughBrush();
@@ -35,8 +34,8 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   struct ClanInfo {
     uint40 totalDonated;
     uint40 lastThreshold;
-    uint40 numDonationsToday; // Ideally wanted this below and uint16 but kept hitting OZ upgrade issues...
-    uint40 lastDonationTimestamp;
+    uint40 numDonationsToday; // (Unused)
+    uint40 lastDonationTimestamp; // (Unused)
     uint16 nextReward;
   }
 
@@ -172,48 +171,28 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
           }
 
           uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
-          totalDonatedToClan += raffleEntryCost;
+          totalDonatedToClan += uint40(_amount / 1 ether);
 
-          // Want to prevent members from leaving and entering with new players to boost it up more than the maximum possible
-          uint40 numDonationsToday;
-          if ((block.timestamp / 1 days) * 1 days > clanDonationInfo[clanId].lastDonationTimestamp) {
-            // New day
-            clanDonationInfo[clanId].lastDonationTimestamp = uint40((block.timestamp / 1 days) * 1 days);
-            numDonationsToday = 1;
-            emit NewClanDonationDay(clanId);
-          } else {
-            numDonationsToday = clanDonationInfo[clanId].numDonationsToday + 1;
-          }
+          if (totalDonatedToClan >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)) {
+            // Give the whole clan a reward
+            clanItemTokenId = clanDonationInfo[clanId].nextReward;
+            clanDonationInfo[clanId].lastThreshold = totalDonatedToClan;
 
-          uint maxMemberCapacity = clans.maxMemberCapacity(clanId);
-          if (numDonationsToday <= maxMemberCapacity) {
-            clanDonationInfo[clanId].numDonationsToday = numDonationsToday;
-
-            if (totalDonatedToClan >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)) {
-              // Give the whole clan a reward
-              clanItemTokenId = clanDonationInfo[clanId].nextReward;
-              clanDonationInfo[clanId].lastThreshold = totalDonatedToClan;
-
-              // Cycle through them
-              uint16 nextReward;
-              if (clanItemTokenId == clanBoostRewardItemTokenIds[clanBoostRewardItemTokenIds.length - 1]) {
-                // Reached the end so start again
-                nextReward = clanBoostRewardItemTokenIds[0];
-              } else {
-                // They just happen to be id'ed sequentially. If this changes then this logic will need to change
-                nextReward = clanItemTokenId + 1;
-              }
-              emit LastClanDonationThreshold(
-                clanId,
-                uint(clanDonationInfo[clanId].lastThreshold) * 1 ether,
-                nextReward
-              );
-              clanDonationInfo[clanId].nextReward = nextReward;
+            // Cycle through them
+            uint16 nextReward;
+            if (clanItemTokenId == clanBoostRewardItemTokenIds[clanBoostRewardItemTokenIds.length - 1]) {
+              // Reached the end so start again
+              nextReward = clanBoostRewardItemTokenIds[0];
+            } else {
+              // They just happen to be id'ed sequentially. If this changes then this logic will need to change
+              nextReward = clanItemTokenId + 1;
             }
-
-            clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
-            emit DonateToClan(_from, _playerId, uint(raffleEntryCost) * 1 ether, clanId);
+            emit LastClanDonationThreshold(clanId, uint(clanDonationInfo[clanId].lastThreshold) * 1 ether, nextReward);
+            clanDonationInfo[clanId].nextReward = nextReward;
           }
+
+          clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
+          emit DonateToClan(_from, _playerId, _amount * 1 ether, clanId);
         }
         emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
       }
