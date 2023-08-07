@@ -229,7 +229,7 @@ describe("Donation", function () {
       .withArgs(alice.address, playerId, raffleEntryCost, 0, 0);
   });
 
-  it("Check threshold rewards", async function () {
+  it("Check global threshold rewards", async function () {
     const {donation, players, alice, playerId} = await loadFixture(deployContracts);
 
     const nextThreshold = await donation.getNextGlobalThreshold();
@@ -250,33 +250,36 @@ describe("Donation", function () {
 
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1500")))
       .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("3500"), EstforConstants.PRAY_TO_THE_BEARDIE_3)
+      .withArgs(ethers.utils.parseEther("3000"), EstforConstants.PRAY_TO_THE_BEARDIE_3)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
-    // Donated 500 above the old threshold
-    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("3500"));
+    // Donated 500 above the old threshold, should be
+    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("3000"));
 
     // Should go back to the start
-    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1000")))
+    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("499"))).to.not.emit(
+      donation,
+      "NextGlobalDonationThreshold"
+    );
+    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1")))
       .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("4500"), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .withArgs(ethers.utils.parseEther("4000"), EstforConstants.PRAY_TO_THE_BEARDIE)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
+
+    // Go over multiple increments
+    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("3500")))
+      .to.emit(donation, "NextGlobalDonationThreshold")
+      .withArgs(ethers.utils.parseEther("7000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .and.to.emit(players, "ConsumeGlobalBoostVial");
+
+    expect(await donation.getTotalDonated()).to.eq(ethers.utils.parseEther("6500"));
+    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("7000"));
   });
 
   it("Check clan boost rotation", async function () {
-    const {
-      donation,
-      players,
-      alice,
-      world,
-      mockOracleClient,
-      playerId,
-      raffleEntryCost,
-      brush,
-      clans,
-      bob,
-      totalBrush,
-    } = await loadFixture(deployContracts);
+    const {donation, players, alice, playerId, raffleEntryCost, brush, clans, bob, totalBrush} = await loadFixture(
+      deployContracts
+    );
 
     // Be a member of a clan
     const clanId = 1;
@@ -308,9 +311,6 @@ describe("Donation", function () {
     expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
-
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(donation, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost.mul(2), EstforConstants.CLAN_BOOSTER_3)
@@ -319,9 +319,6 @@ describe("Donation", function () {
     expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_2);
 
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
-
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(donation, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost.mul(3), EstforConstants.CLAN_BOOSTER)
@@ -329,6 +326,19 @@ describe("Donation", function () {
 
     expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_3);
+
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost.mul(7).add(ethers.utils.parseEther("1"))))
+      .to.emit(donation, "LastClanDonationThreshold")
+      .withArgs(clanId, raffleEntryCost.mul(10), EstforConstants.CLAN_BOOSTER_2)
+      .and.to.emit(players, "ConsumeClanBoostVial");
+
+    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
+
+    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+      raffleEntryCost.mul(10).add(ethers.utils.parseEther("1"))
+    );
+
+    expect(await donation.getNextClanThreshold(clanId)).to.eq(raffleEntryCost.mul(11));
   });
 
   it("Check claiming previous claims works up to 3 other lotteries ago", async function () {

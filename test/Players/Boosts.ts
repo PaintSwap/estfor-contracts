@@ -505,7 +505,7 @@ describe("Boosts", function () {
     await players.connect(alice).donate(0, nextGlobalThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("2")))
       .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("2001"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .withArgs(ethers.utils.parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -740,10 +740,7 @@ describe("Boosts", function () {
     await players.connect(alice).donate(0, maxThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, raffleCost))
       .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(
-        ethers.utils.parseEther((2000 + Number(ethers.utils.formatEther(raffleCost)) - 1).toString()),
-        EstforConstants.PRAY_TO_THE_BEARDIE_2
-      )
+      .withArgs(ethers.utils.parseEther("2000").toString(), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(donation, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2);
 

@@ -160,42 +160,45 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         }
         playersEntered[_lastLotteryId].set(_playerId);
         isRaffleDonation = true;
-
-        clanId = clans.getClanId(_playerId);
-        if (clanId != 0) {
-          // Add raffle donation amount only to the clan reward reward to prevent them reaching it too quickly.
-          // Note: Make sure no important state is set before the max donations check
-          if (clanDonationInfo[clanId].nextReward == 0) {
-            // First time this clan has been donated to
-            clanDonationInfo[clanId].nextReward = clanBoostRewardItemTokenIds[0];
-          }
-
-          uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
-          totalDonatedToClan += uint40(_amount / 1 ether);
-
-          if (totalDonatedToClan >= (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement)) {
-            // Give the whole clan a reward
-            clanItemTokenId = clanDonationInfo[clanId].nextReward;
-            clanDonationInfo[clanId].lastThreshold = totalDonatedToClan;
-
-            // Cycle through them
-            uint16 nextReward;
-            if (clanItemTokenId == clanBoostRewardItemTokenIds[clanBoostRewardItemTokenIds.length - 1]) {
-              // Reached the end so start again
-              nextReward = clanBoostRewardItemTokenIds[0];
-            } else {
-              // They just happen to be id'ed sequentially. If this changes then this logic will need to change
-              nextReward = clanItemTokenId + 1;
-            }
-            emit LastClanDonationThreshold(clanId, uint(clanDonationInfo[clanId].lastThreshold) * 1 ether, nextReward);
-            clanDonationInfo[clanId].nextReward = nextReward;
-          }
-
-          clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
-          emit DonateToClan(_from, _playerId, _amount * 1 ether, clanId);
-        }
-        emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
       }
+
+      clanId = clans.getClanId(_playerId);
+      if (clanId != 0) {
+        // Add raffle donation amount only to the clan reward reward to prevent them reaching it too quickly.
+        // Note: Make sure no important state is set before the max donations check
+        if (clanDonationInfo[clanId].nextReward == 0) {
+          // First time this clan has been donated to
+          clanDonationInfo[clanId].nextReward = clanBoostRewardItemTokenIds[0];
+        }
+
+        uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
+        totalDonatedToClan += uint40(_amount / 1 ether);
+
+        uint nextClanThreshold = (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement);
+        if (totalDonatedToClan >= nextClanThreshold) {
+          // Give the whole clan a reward
+          clanItemTokenId = clanDonationInfo[clanId].nextReward;
+          uint remainder = (totalDonatedToClan - nextClanThreshold);
+          uint numThresholdIncrements = (remainder / clanThresholdIncrement) + 1;
+          clanDonationInfo[clanId].lastThreshold += uint40(numThresholdIncrements * clanThresholdIncrement);
+
+          // Cycle through them
+          uint16 nextReward;
+          if (clanItemTokenId == clanBoostRewardItemTokenIds[clanBoostRewardItemTokenIds.length - 1]) {
+            // Reached the end so start again
+            nextReward = clanBoostRewardItemTokenIds[0];
+          } else {
+            // They just happen to be id'ed sequentially. If this changes then this logic will need to change
+            nextReward = clanItemTokenId + 1;
+          }
+          emit LastClanDonationThreshold(clanId, uint(clanDonationInfo[clanId].lastThreshold) * 1 ether, nextReward);
+          clanDonationInfo[clanId].nextReward = nextReward;
+        }
+
+        clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
+        emit DonateToClan(_from, _playerId, _amount * 1 ether, clanId);
+      }
+      emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
     }
 
     if (!isRaffleDonation) {
@@ -207,7 +210,10 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     // Is a donation threshold hit?
     if (nextGlobalThreshold != 0 && totalDonated >= nextGlobalThreshold) {
       globalItemTokenId = nextGlobalRewardItemTokenId;
-      nextGlobalThreshold = totalDonated + (isBeta ? 1000 : 100_000);
+      uint nextIncrement = isBeta ? 1000 : 100_000;
+      uint remainder = (totalDonated - nextGlobalThreshold);
+      uint numThresholdIncrements = (remainder / nextIncrement) + 1;
+      nextGlobalThreshold += uint40(numThresholdIncrements * nextIncrement);
 
       // Cycle through them
       uint16 nextReward;
