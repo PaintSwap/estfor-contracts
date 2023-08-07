@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS} from "./contractAddresses";
+import {PLAYERS_ADDRESS} from "./contractAddresses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 
 async function main() {
@@ -9,15 +9,18 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
 
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const Players = await ethers.getContractFactory("Players");
   const players = Players.attach(PLAYERS_ADDRESS);
 
+  /*
+  // Single
   const thresholdRewards = allXPThresholdRewards.find((reward) => reward.xpThreshold === 2700000);
   if (!thresholdRewards) {
     throw new Error("Reward not found");
   }
   await players.editXPThresholdRewards([thresholdRewards]);
+*/
+  await players.editXPThresholdRewards(allXPThresholdRewards);
 }
 
 main().catch((error) => {

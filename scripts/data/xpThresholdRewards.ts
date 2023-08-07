@@ -10,8 +10,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 500,
     rewards: [
       {
-        itemTokenId: EstforConstants.EMERALD_STAFF,
-        amount: 1,
+        itemTokenId: EstforConstants.COOKED_MINNUS,
+        amount: 120,
       },
     ],
   },
@@ -19,7 +19,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 1000,
     rewards: [
       {
-        itemTokenId: EstforConstants.XP_BOOST,
+        itemTokenId: EstforConstants.GATHERING_BOOST,
         amount: 1,
       },
     ],
@@ -37,8 +37,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 5000,
     rewards: [
       {
-        itemTokenId: EstforConstants.COOKED_SKRIMP,
-        amount: 20,
+        itemTokenId: EstforConstants.SKILL_BOOST,
+        amount: 1,
       },
     ],
   },
@@ -46,8 +46,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 10000,
     rewards: [
       {
-        itemTokenId: EstforConstants.WHITE_DEATH_SPORE,
-        amount: 10,
+        itemTokenId: EstforConstants.COMBAT_BOOST,
+        amount: 1,
       },
     ],
   },
@@ -55,8 +55,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 30000,
     rewards: [
       {
-        itemTokenId: EstforConstants.ASH_LOG,
-        amount: 20,
+        itemTokenId: EstforConstants.COOKED_GOLDFISH,
+        amount: 100,
       },
     ],
   },
@@ -64,8 +64,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 50000,
     rewards: [
       {
-        itemTokenId: EstforConstants.BONE_KEY,
-        amount: 3,
+        itemTokenId: EstforConstants.XP_BOOST,
+        amount: 1,
       },
     ],
   },
@@ -73,8 +73,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 100000,
     rewards: [
       {
-        itemTokenId: EstforConstants.AQUA_KEY,
-        amount: 3,
+        itemTokenId: EstforConstants.XP_BOOST,
+        amount: 2,
       },
     ],
   },
@@ -82,8 +82,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 120000,
     rewards: [
       {
-        itemTokenId: EstforConstants.DRAGON_BONE,
-        amount: 50,
+        itemTokenId: EstforConstants.GATHERING_BOOST,
+        amount: 2,
       },
     ],
   },
@@ -91,8 +91,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 300000,
     rewards: [
       {
-        itemTokenId: EstforConstants.SKILL_BOOST,
-        amount: 3,
+        itemTokenId: EstforConstants.XP_BOOST,
+        amount: 2,
       },
     ],
   },
@@ -100,8 +100,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 350000,
     rewards: [
       {
-        itemTokenId: EstforConstants.XP_BOOST,
-        amount: 3,
+        itemTokenId: EstforConstants.COMBAT_BOOST,
+        amount: 2,
       },
     ],
   },
@@ -109,8 +109,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 500000,
     rewards: [
       {
-        itemTokenId: EstforConstants.GATHERING_BOOST,
-        amount: 4,
+        itemTokenId: EstforConstants.XP_BOOST,
+        amount: 2,
       },
     ],
   },
@@ -118,8 +118,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 600000,
     rewards: [
       {
-        itemTokenId: EstforConstants.COMBAT_BOOST,
-        amount: 5,
+        itemTokenId: EstforConstants.RUFARUM,
+        amount: 40,
       },
     ],
   },
@@ -127,8 +127,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 750000,
     rewards: [
       {
-        itemTokenId: EstforConstants.LOSSUTH_SCALE,
-        amount: 5,
+        itemTokenId: EstforConstants.RIGOB_CLOTH,
+        amount: 40,
       },
     ],
   },
@@ -137,7 +137,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     rewards: [
       {
         itemTokenId: EstforConstants.TITANIUM_BAR,
-        amount: 1200,
+        amount: 50,
       },
     ],
   },
@@ -145,8 +145,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 1000000,
     rewards: [
       {
-        itemTokenId: EstforConstants.NATURE_SCROLL,
-        amount: 5000,
+        itemTokenId: EstforConstants.COOKED_RAZORFISH,
+        amount: 1000,
       },
     ],
   },
@@ -154,8 +154,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 1200000,
     rewards: [
       {
-        itemTokenId: EstforConstants.WHITE_DEATH_SPORE,
-        amount: 100,
+        itemTokenId: EstforConstants.XP_BOOST,
+        amount: 5,
       },
     ],
   },
@@ -163,8 +163,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 1500000,
     rewards: [
       {
-        itemTokenId: EstforConstants.COOKED_DOUBTFISH,
-        amount: 250,
+        itemTokenId: EstforConstants.GATHERING_BOOST,
+        amount: 5,
       },
     ],
   },
@@ -172,8 +172,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 1800000,
     rewards: [
       {
-        itemTokenId: EstforConstants.COOKED_ROSEFIN,
-        amount: 500,
+        itemTokenId: EstforConstants.SKILL_BOOST,
+        amount: 5,
       },
     ],
   },
@@ -181,8 +181,8 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 2000000,
     rewards: [
       {
-        itemTokenId: EstforConstants.XP_BOOST,
-        amount: 10,
+        itemTokenId: EstforConstants.COMBAT_BOOST,
+        amount: 5,
       },
     ],
   },
@@ -191,7 +191,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     rewards: [
       {
         itemTokenId: EstforConstants.SKILL_BOOST,
-        amount: 10,
+        amount: 5,
       },
     ],
   },
@@ -199,7 +199,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 2700000,
     rewards: [
       {
-        itemTokenId: EstforConstants.GATHERING_BOOST,
+        itemTokenId: EstforConstants.XP_BOOST,
         amount: 10,
       },
     ],
@@ -208,7 +208,7 @@ export const allXPThresholdRewards: XPThresholdReward[] = [
     xpThreshold: 3000000,
     rewards: [
       {
-        itemTokenId: EstforConstants.COMBAT_BOOST,
+        itemTokenId: EstforConstants.XP_BOOST,
         amount: 10,
       },
     ],
