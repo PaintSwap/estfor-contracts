@@ -10,8 +10,8 @@ async function main() {
 
   const Donation = await ethers.getContractFactory("Donation");
   const donation = Donation.attach(DONATION_ADDRESS);
-  await donation.setClanThresholdIncrement(ethers.utils.parseEther("50"));
-  //  await donation.setNextGlobalDonationThreshold(ethers.utils.parseEther("1000"));
+  await donation.setClanDonationThresholdIncrement(ethers.utils.parseEther("50"));
+  //  await donation.setLastGlobalDonationThreshold(ethers.utils.parseEther("1000"));
 }
 
 main().catch((error) => {

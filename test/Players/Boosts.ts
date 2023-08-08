@@ -440,7 +440,7 @@ describe("Boosts", function () {
 
     expect(await players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
       donation,
-      "NextGlobalDonationThreshold"
+      "LastGlobalDonationThreshold"
     );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -504,8 +504,8 @@ describe("Boosts", function () {
 
     await players.connect(alice).donate(0, nextGlobalThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("2")))
-      .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .to.emit(donation, "LastGlobalDonationThreshold")
+      .withArgs(ethers.utils.parseEther("1000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -599,7 +599,7 @@ describe("Boosts", function () {
     const raffleCost = await donation.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
-    await donation.setClanThresholdIncrement(raffleCost.mul(2));
+    await donation.setClanDonationThresholdIncrement(raffleCost.mul(2));
 
     await expect(players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
       donation,
@@ -735,12 +735,12 @@ describe("Boosts", function () {
     const raffleCost = await donation.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
-    await donation.setClanThresholdIncrement(raffleCost);
+    await donation.setClanDonationThresholdIncrement(raffleCost);
 
     await players.connect(alice).donate(0, maxThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, raffleCost))
-      .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("2000").toString(), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .to.emit(donation, "LastGlobalDonationThreshold")
+      .withArgs(ethers.utils.parseEther("1000").toString(), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(donation, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2);
 
@@ -838,7 +838,7 @@ describe("Boosts", function () {
 
     const clanId = 1;
     const raffleCost = await donation.getRaffleEntryCost();
-    await donation.setClanThresholdIncrement(raffleCost);
+    await donation.setClanDonationThresholdIncrement(raffleCost);
 
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await expect(
@@ -1009,8 +1009,8 @@ describe("Boosts", function () {
           EstforTypes.ActionQueueStatus.NONE
         )
     )
-      .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(nextGlobalThreshold.mul(2), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .to.emit(donation, "LastGlobalDonationThreshold")
+      .withArgs(nextGlobalThreshold, EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration / 2 + 1]);
@@ -1026,8 +1026,8 @@ describe("Boosts", function () {
     ]);
 
     await expect(players.connect(alice).donate(0, nextGlobalThreshold))
-      .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(nextGlobalThreshold.mul(3), EstforConstants.PRAY_TO_THE_BEARDIE_3)
+      .to.emit(donation, "LastGlobalDonationThreshold")
+      .withArgs(nextGlobalThreshold.mul(2), EstforConstants.PRAY_TO_THE_BEARDIE_3)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
@@ -1062,8 +1062,8 @@ describe("Boosts", function () {
 
     // The next global boost should have an effect
     await expect(players.connect(alice).donate(0, nextGlobalThreshold))
-      .to.emit(donation, "NextGlobalDonationThreshold")
-      .withArgs(nextGlobalThreshold.mul(4), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .to.emit(donation, "LastGlobalDonationThreshold")
+      .withArgs(nextGlobalThreshold.mul(3), EstforConstants.PRAY_TO_THE_BEARDIE)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + boostDuration + boostDuration + 1]);

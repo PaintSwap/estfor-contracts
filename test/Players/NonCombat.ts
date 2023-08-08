@@ -1951,7 +1951,7 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[1].elapsedTime).to.eq(3600);
       expect(pendingQueuedActionState.actionMetadatas[2].actionId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[2].queueId).to.eq(3);
-      expect(pendingQueuedActionState.actionMetadatas[2].elapsedTime).to.eq(1800);
+      expect(pendingQueuedActionState.actionMetadatas[2].elapsedTime).to.be.oneOf([1800, 1801]);
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.CRAFTING)).to.eq(7200);

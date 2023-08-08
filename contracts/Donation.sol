@@ -20,7 +20,8 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event DonateToClan(address from, uint playerId, uint amount, uint clanId);
   event WinnerAndNewLottery(uint lotteryId, uint raffleId, uint16 rewardItemTokenId, uint rewardAmount);
   event SetRaffleEntryCost(uint brushAmount);
-  event NextGlobalDonationThreshold(uint amount, uint16 rewardItemTokenId);
+  event GlobalDonationThreshold(uint thresholdIncrement);
+  event LastGlobalDonationThreshold(uint lastThreshold, uint16 rewardItemTokenId);
   event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
   event ClanDonationThreshold(uint thresholdIncrement, uint16 rewardItemTokenId);
   event LastClanDonationThreshold(uint clanId, uint lastThreshold, uint16 rewardItemTokenId);
@@ -53,7 +54,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   mapping(uint clanId => ClanInfo clanInfo) public clanDonationInfo;
   uint16 public donationRewardItemTokenId;
   uint40 private totalDonated; // In BRUSH ether (no wei decimals)
-  uint40 private nextGlobalThreshold; // In BRUSH ether (no wei decimals)
+  uint40 private lastGlobalThreshold; // In BRUSH ether (no wei decimals)
   uint16 public nextGlobalRewardItemTokenId;
   uint16 public nextLotteryWinnerRewardItemTokenId;
   /// @custom:oz-renamed-from instantConsume
@@ -62,10 +63,11 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint24 public lastRaffleId; // Relative to each lottery
   uint40 public lastOracleRandomWordTimestamp;
   uint16 private raffleEntryCost; // In BRUSH ether (no wei decimals)
+  uint24 private globalThresholdIncrement;
   uint40[6] public lastUnclaimedWinners; // 1 storage slot to keep track of the last 3 winning playerId & lotteryId, stored as [playerId, lotteryId, playerId, lotteryId, playerId, lotteryId]
   Clans private clans;
   uint40 public clanThresholdIncrement;
-  bool public isBeta;
+  bool public isBeta; // (Unused) But state is set on beta
   uint16[3] private globalBoostRewardItemTokenIds;
   uint16[3] private clanBoostRewardItemTokenIds;
 
@@ -95,7 +97,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     address _world,
     Clans _clans,
     uint _raffleEntryCost,
-    uint _startGlobalThreshold,
+    uint _globalThresholdIncrement,
     uint _clanThresholdIncrement,
     bool _isBeta
   ) public initializer {
@@ -113,16 +115,16 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
     raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
     donationRewardItemTokenId = LUCK_OF_THE_DRAW;
-    nextGlobalThreshold = uint40(_startGlobalThreshold / 1 ether);
     nextGlobalRewardItemTokenId = globalBoostRewardItemTokenIds[0];
-    isBeta = _isBeta;
     lastLotteryId = 1;
     clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
+    globalThresholdIncrement = _isBeta ? 1000 : 100_000;
     nextLotteryWinnerRewardItemTokenId = LUCKY_POTION;
     nextLotteryWinnerRewardInstantConsume = true;
 
     emit SetRaffleEntryCost(_raffleEntryCost);
-    emit NextGlobalDonationThreshold(_startGlobalThreshold, globalBoostRewardItemTokenIds[0]);
+    emit LastGlobalDonationThreshold(0, globalBoostRewardItemTokenIds[0]);
+    emit GlobalDonationThreshold(_globalThresholdIncrement);
     emit ClanDonationThreshold(_clanThresholdIncrement, clanBoostRewardItemTokenIds[0]);
     emit WinnerAndNewLottery(0, 0, nextLotteryWinnerRewardItemTokenId, 1);
   }
@@ -174,7 +176,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
         totalDonatedToClan += uint40(_amount / 1 ether);
 
-        uint nextClanThreshold = (clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement);
+        uint nextClanThreshold = clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement;
         if (totalDonatedToClan >= nextClanThreshold) {
           // Give the whole clan a reward
           clanItemTokenId = clanDonationInfo[clanId].nextReward;
@@ -207,13 +209,13 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
     totalDonated += uint40(_amount / 1 ether);
 
-    // Is a donation threshold hit?
-    if (nextGlobalThreshold != 0 && totalDonated >= nextGlobalThreshold) {
+    // Is a global donation threshold hit?
+    uint nextGlobalThreshold = lastGlobalThreshold + globalThresholdIncrement;
+    if (totalDonated >= nextGlobalThreshold) {
       globalItemTokenId = nextGlobalRewardItemTokenId;
-      uint nextIncrement = isBeta ? 1000 : 100_000;
       uint remainder = (totalDonated - nextGlobalThreshold);
-      uint numThresholdIncrements = (remainder / nextIncrement) + 1;
-      nextGlobalThreshold += uint40(numThresholdIncrements * nextIncrement);
+      uint numThresholdIncrements = (remainder / globalThresholdIncrement) + 1;
+      lastGlobalThreshold += uint40(numThresholdIncrements * globalThresholdIncrement);
 
       // Cycle through them
       uint16 nextReward;
@@ -227,7 +229,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       nextGlobalRewardItemTokenId = nextReward;
 
-      emit NextGlobalDonationThreshold(uint(nextGlobalThreshold) * 1 ether, nextReward);
+      emit LastGlobalDonationThreshold(uint(lastGlobalThreshold) * 1 ether, nextReward);
     }
   }
 
@@ -336,7 +338,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   function getNextGlobalThreshold() external view returns (uint) {
-    return uint(nextGlobalThreshold) * 1 ether;
+    return uint(lastGlobalThreshold + globalThresholdIncrement) * 1 ether;
   }
 
   function getNextClanThreshold(uint _clanId) external view returns (uint) {
@@ -364,15 +366,14 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     emit SetRaffleEntryCost(_raffleEntryCost);
   }
 
-  function setClanThresholdIncrement(uint _clanThresholdIncrement) external onlyOwner {
+  function setClanDonationThresholdIncrement(uint _clanThresholdIncrement) external onlyOwner {
     clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
-    emit ClanDonationThreshold(_clanThresholdIncrement, clanBoostRewardItemTokenIds[0]);
+    emit ClanDonationThreshold(_clanThresholdIncrement, clanBoostRewardItemTokenIds[0]); // This passes in the first reward
   }
 
-  function setNextGlobalDonationThreshold(uint _nextGlobalDonationThreshold) external onlyOwner {
-    nextGlobalThreshold = uint40(_nextGlobalDonationThreshold / 1 ether);
-
-    emit NextGlobalDonationThreshold(_nextGlobalDonationThreshold, nextGlobalRewardItemTokenId); // re-use current reward
+  function setGlobalDonationThresholdIncrement(uint _globalThresholdIncrement) external onlyOwner {
+    globalThresholdIncrement = uint24(_globalThresholdIncrement / 1 ether);
+    emit GlobalDonationThreshold(_globalThresholdIncrement);
   }
 
   // solhint-disable-next-line no-empty-blocks
