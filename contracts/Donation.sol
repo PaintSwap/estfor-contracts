@@ -166,8 +166,6 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       clanId = clans.getClanId(_playerId);
       if (clanId != 0) {
-        // Add raffle donation amount only to the clan reward reward to prevent them reaching it too quickly.
-        // Note: Make sure no important state is set before the max donations check
         if (clanDonationInfo[clanId].nextReward == 0) {
           // First time this clan has been donated to
           clanDonationInfo[clanId].nextReward = clanBoostRewardItemTokenIds[0];
@@ -200,10 +198,11 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
         emit DonateToClan(_from, _playerId, _amount, clanId);
       }
-      emit Donate(_from, _playerId, _amount, _lastLotteryId, lastRaffleId);
     }
 
-    if (!isRaffleDonation) {
+    if (isRaffleDonation) {
+      emit Donate(_from, _playerId, _amount, lastLotteryId, lastRaffleId);
+    } else {
       emit Donate(_from, _playerId, _amount, 0, 0);
     }
 

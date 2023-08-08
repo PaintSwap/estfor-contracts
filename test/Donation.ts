@@ -182,20 +182,24 @@ describe("Donation", function () {
   });
 
   it("Reach minimum to get a ticket", async function () {
-    const {donation, avatarId, totalBrush, players, alice, brush, playerId, playerNFT, raffleEntryCost} =
-      await loadFixture(deployContracts);
+    const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
     let lotteryId = await donation.lastLotteryId();
     expect(lotteryId).to.eq(1);
-    await players.connect(alice).donate(playerId, ethers.utils.parseEther("0.1"));
+    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("0.1")))
+      .to.emit(donation, "Donate")
+      .withArgs(alice.address, playerId, ethers.utils.parseEther("0.1"), 0, 0);
     expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.false;
 
-    // Use a new player and check that minimum works
-    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "my name ser", true);
-    await brush.mint(alice.address, totalBrush);
-    await brush.connect(alice).approve(donation.address, totalBrush);
-    await players.connect(alice).donate(newPlayerId, raffleEntryCost);
-    expect(await donation.hasPlayerEntered(lotteryId, newPlayerId)).to.be.true;
+    await players.connect(alice).donate(playerId, raffleEntryCost.sub(1));
+    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.false;
+
+    // Now check that minimum works
+    const raffleId = 1;
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost))
+      .to.emit(donation, "Donate")
+      .withArgs(alice.address, playerId, raffleEntryCost, lotteryId, raffleId);
+    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.true;
   });
 
   it("Cannot donate until the previous day oracle is called", async function () {
@@ -221,9 +225,12 @@ describe("Donation", function () {
   it("Cannot donate to a raffle with playerId more than once a day", async function () {
     const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
+    let lotteryId = await donation.lastLotteryId();
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(donation, "Donate")
       .withArgs(alice.address, playerId, raffleEntryCost, 1, 1);
+    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.true;
+    // Donating again will not enter raffle twice
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(donation, "Donate")
       .withArgs(alice.address, playerId, raffleEntryCost, 0, 0);
