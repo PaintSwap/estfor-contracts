@@ -1395,9 +1395,11 @@ export const allActions: ActionInput[] = [
       worldLocation: 0,
       isFullModeOnly: false,
     },
-    guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
+      {itemTokenId: EstforConstants.FEATHER, rate: 5 * 10},
+    ],
     randomRewards: [
-      {itemTokenId: EstforConstants.FEATHER, chance: 10000, amount: 10},
       {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 1200, amount: 1},
       {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 600, amount: 1},
     ],
@@ -1763,7 +1765,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10},
-      {itemTokenId: EstforConstants.FEATHER, rate: 3 * 10},
+      {itemTokenId: EstforConstants.FEATHER, rate: 10 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 2},
@@ -2023,7 +2025,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.LOG, chance: 48000, amount: 80},
+      {itemTokenId: EstforConstants.LOG, chance: 48000, amount: 120},
       {itemTokenId: EstforConstants.BRONZE_BAR, chance: 32000, amount: 40},
     ],
     combatStats: {
@@ -2055,7 +2057,7 @@ export const allActions: ActionInput[] = [
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.BRONZE_BAR, chance: 40000, amount: 50},
-      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 32000, amount: 50},
+      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 32000, amount: 100},
     ],
     combatStats: {
       melee: 0,
@@ -2144,7 +2146,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 36000, amount: 70},
+      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 36000, amount: 120},
       {itemTokenId: EstforConstants.IRON_BAR, chance: 36000, amount: 50},
     ],
     combatStats: {
@@ -2235,9 +2237,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.OAK_LOG, chance: 40000, amount: 100},
-      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 20000, amount: 100},
-      {itemTokenId: EstforConstants.MAPLE_LOG, chance: 20000, amount: 100},
+      {itemTokenId: EstforConstants.OAK_LOG, chance: 40000, amount: 120},
+      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 20000, amount: 140},
+      {itemTokenId: EstforConstants.MAPLE_LOG, chance: 20000, amount: 160},
     ],
     combatStats: {
       melee: 0,
