@@ -20,7 +20,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   using UnsafeMath for uint;
 
   event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
-  event RequestFulfilled(uint requestId, uint[3] randomWords);
+  event RequestFulfilledV2(uint requestId, uint randomWord);
   event AddActionsV2(Action[] actions);
   event EditActionsV2(Action[] actions);
   event AddDynamicActions(uint16[] actionIds);
@@ -29,7 +29,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event EditActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event RemoveActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds);
 
-  // Legacy, just for ABI reasons
+  // Legacy, just for ABI reasons and old beta events
   event AddAction(ActionV1 action);
   event AddActions(ActionV1[] actions);
   event EditActions(ActionV1[] actions);
@@ -37,6 +37,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
   event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
   event EditActionChoices_(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
+  event RequestFulfilled(uint requestId, uint[3] randomWords);
 
   error RandomWordsCannotBeUpdatedYet();
   error CanOnlyRequestAfterTheNextCheckpoint(uint currentTime, uint checkpoint);
@@ -68,7 +69,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   // Past request ids
   uint[] public requestIds; // Each one is a set of random words for 1 day
-  mapping(uint requestId => uint[3] randomWord) public randomWords;
+  mapping(uint requestId => uint randomWord) public randomWords;
   uint40 public lastRandomWordsUpdatedTime;
   uint40 private startTime;
   uint40 private weeklyRewardCheckpoint;
@@ -79,15 +80,15 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
   bytes32 private constant KEY_HASH = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
 
-  uint32 private constant CALLBACK_GAS_LIMIT = 500000;
-  // The default is 3, but you can set this higher.
+  uint32 private constant CALLBACK_GAS_LIMIT = 400000;
   uint16 private constant REQUEST_CONFIRMATIONS = 1;
-  // For this example, retrieve 3 random values in one request.
   // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-  uint32 private constant NUM_WORDS = 3;
+  uint32 private constant NUM_WORDS = 1;
 
   uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
   uint32 private constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
+
+  uint32 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
 
   mapping(uint actionId => ActionInfo actionInfo) public actions;
   uint16[] private lastAddedDynamicActions;
@@ -120,35 +121,35 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
-    startTime = uint40((block.timestamp / MIN_RANDOM_WORDS_UPDATE_TIME) * MIN_RANDOM_WORDS_UPDATE_TIME) - 5 days; // Floor to the nearest day 00:00 UTC
-    lastRandomWordsUpdatedTime = startTime + 4 days;
+    startTime = uint40(
+      (block.timestamp / MIN_RANDOM_WORDS_UPDATE_TIME) *
+        MIN_RANDOM_WORDS_UPDATE_TIME -
+        (NUM_DAYS_RANDOM_WORDS_INITIALIZED + 1) *
+        1 days
+    ); // Floor to the nearest day 00:00 UTC
+    lastRandomWordsUpdatedTime = uint40(startTime + NUM_DAYS_RANDOM_WORDS_INITIALIZED * 1 days);
     weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
 
-    // Initialize 4 days worth of random words
-    for (U256 iter; iter.lt(4); iter = iter.inc()) {
+    // Initialize a few days worth of random words so that we have enough data to fetch the first day
+    for (U256 iter; iter.lt(NUM_DAYS_RANDOM_WORDS_INITIALIZED); iter = iter.inc()) {
       uint i = iter.asUint256();
       uint requestId = 200 + i;
       requestIds.push(requestId);
       emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);
-      uint[] memory _randomWords = new uint[](3);
+      uint[] memory _randomWords = new uint[](1);
       _randomWords[0] = uint(
-        blockhash(block.number - 4 + i) ^ 0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
-      );
-      _randomWords[1] = uint(
-        blockhash(block.number - 4 + i) ^ 0xca820e9e57e5e703aeebfa2dc60ae09067f931b6e888c0a7c7a15a76341ab2c2
-      );
-      _randomWords[2] = uint(
-        blockhash(block.number - 4 + i) ^ 0xd1f1b7d57307aee9687ae39dbb462b1c1f07a406d34cd380670360ef02f243b6
+        blockhash(block.number - NUM_DAYS_RANDOM_WORDS_INITIALIZED + i) ^
+          0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
       );
       fulfillRandomWords(requestId, _randomWords);
     }
 
-    thisWeeksRandomWordSegment = bytes8(uint64(randomWords[3][0]));
+    thisWeeksRandomWordSegment = bytes8(uint64(randomWords[0]));
   }
 
   function requestRandomWords() external returns (uint requestId) {
     // Last one has not been fulfilled yet
-    if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]][0] == 0) {
+    if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]] == 0) {
       revert RandomWordsCannotBeUpdatedYet();
     }
     uint40 newLastRandomWordsUpdatedTime = lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME;
@@ -172,36 +173,33 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function fulfillRandomWords(uint _requestId, uint[] memory _randomWords) internal override {
-    if (randomWords[_requestId][0] != 0) {
+    if (randomWords[_requestId] != 0) {
       revert RequestAlreadyFulfilled();
     }
 
-    uint[3] memory random = [_randomWords[0], _randomWords[1], _randomWords[2]];
+    if (_randomWords.length != NUM_WORDS) {
+      revert LengthMismatch();
+    }
 
-    if (random[0] == 0) {
+    uint randomWord = _randomWords[0];
+    if (randomWord == 0) {
       // Not sure if 0 can be selected, but in case use previous block hash as pseudo random number
-      random[0] = uint(blockhash(block.number - 1));
-    }
-    if (random[1] == 0) {
-      random[1] = uint(blockhash(block.number - 2));
-    }
-    if (random[2] == 0) {
-      random[2] = uint(blockhash(block.number - 3));
+      randomWord = uint(blockhash(block.number - 1));
     }
 
-    randomWords[_requestId] = random;
+    randomWords[_requestId] = randomWord;
     if (address(quests) != address(0)) {
-      quests.newOracleRandomWords(random);
+      quests.newOracleRandomWords(randomWord);
     }
     if (address(donation) != address(0)) {
-      donation.newOracleRandomWords(random);
+      donation.newOracleRandomWords(randomWord);
     }
-    emit RequestFulfilled(_requestId, random);
+    emit RequestFulfilledV2(_requestId, randomWord);
 
     // Are we at the threshold for a new week
     if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
       // Issue new daily rewards for each tier based on the new random words
-      thisWeeksRandomWordSegment = bytes8(uint64(random[0]));
+      thisWeeksRandomWordSegment = bytes8(uint64(randomWord));
 
       weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
     }
@@ -253,7 +251,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (offset < 0 || requestIds.length <= uint(offset)) {
       return 0;
     }
-    return randomWords[requestIds[uint(offset)]][0];
+    return randomWords[requestIds[uint(offset)]];
   }
 
   function hasRandomWord(uint _timestamp) external view returns (bool) {
@@ -267,18 +265,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function getFullRandomWords(uint _timestamp) public view returns (uint[3] memory) {
-    int offset = _getRandomWordOffset(_timestamp);
-    if (offset < 0 || requestIds.length <= uint(offset)) {
-      revert NoValidRandomWord();
-    }
-    return randomWords[requestIds[uint(offset)]];
-  }
-
-  function getMultipleFullRandomWords(uint _timestamp) public view returns (uint[3][5] memory words) {
-    for (U256 iter; iter.lt(5); iter = iter.inc()) {
+  function getMultipleWords(uint _timestamp) public view returns (uint[4] memory words) {
+    for (U256 iter; iter.lt(4); iter = iter.inc()) {
       uint i = iter.asUint256();
-      words[i] = getFullRandomWords(_timestamp - i * 1 days);
+      words[i] = getRandomWord(_timestamp - (i * 1 days));
     }
   }
 
@@ -353,32 +343,20 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       // 32 bytes
       bytes32 word = bytes32(getRandomWord(_skillEndTime));
       b = abi.encodePacked(_getRandomComponent(word, _skillEndTime, _playerId));
-    } else if (_numTickets <= 48) {
-      uint[3] memory fullWords = getFullRandomWords(_skillEndTime);
-      // 3 * 32 bytes
-      for (U256 iter; iter.lt(3); iter = iter.inc()) {
+    } else if (_numTickets <= 64) {
+      // 4 * 32 bytes
+      uint[4] memory multipleWords = getMultipleWords(_skillEndTime);
+      for (U256 iter; iter.lt(4); iter = iter.inc()) {
         uint i = iter.asUint256();
-        fullWords[i] = uint(_getRandomComponent(bytes32(fullWords[i]), _skillEndTime, _playerId));
-      }
-      b = abi.encodePacked(fullWords);
-    } else {
-      // 3 * 5 * 32 bytes
-      uint[3][5] memory multipleFullWords = getMultipleFullRandomWords(_skillEndTime);
-      for (U256 iter; iter.lt(5); iter = iter.inc()) {
-        uint i = iter.asUint256();
-        for (U256 jter; jter.lt(3); jter = jter.inc()) {
-          uint j = jter.asUint256();
-          multipleFullWords[i][j] = uint(
-            _getRandomComponent(bytes32(multipleFullWords[i][j]), _skillEndTime, _playerId)
-          );
-          // XOR all the full words with the first fresh random number to give more randomness to the existing random words
-          if (i != 0) {
-            multipleFullWords[i][j] = multipleFullWords[i][j] ^ multipleFullWords[0][j];
-          }
+        multipleWords[i] = uint(_getRandomComponent(bytes32(multipleWords[i]), _skillEndTime, _playerId));
+        // XOR all the words with the first fresh random number to give more randomness to the existing random words
+        if (i != 0) {
+          multipleWords[i] = uint(keccak256(abi.encodePacked(multipleWords[i] ^ multipleWords[0])));
         }
       }
-
-      b = abi.encodePacked(multipleFullWords);
+      b = abi.encodePacked(multipleWords);
+    } else {
+      assert(false);
     }
   }
 

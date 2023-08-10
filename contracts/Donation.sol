@@ -241,7 +241,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     }
   }
 
-  function newOracleRandomWords(uint[3] calldata randomWords) external onlyWorld {
+  function newOracleRandomWords(uint _randomWord) external onlyWorld {
     uint16 _lastLotteryId = lastLotteryId;
 
     bool hasDonations = lastRaffleId != 0;
@@ -253,7 +253,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
     if (hasDonations) {
       // Decide the winner
-      uint24 raffleIdWinner = uint24(randomWords[0] % lastRaffleId) + 1;
+      uint24 raffleIdWinner = uint24(_randomWord % lastRaffleId) + 1;
       winners[_lastLotteryId] = LotteryWinnerInfo({
         lotteryId: _lastLotteryId,
         raffleId: raffleIdWinner,

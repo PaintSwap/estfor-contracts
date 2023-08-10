@@ -828,18 +828,15 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         pendingRandomReward.boostItemTokenId < 10;
       uint numTickets = isCombat ? monstersKilled : pendingRandomReward.xpElapsedTime / 3600;
 
-      uint40 sentinelElapsedTime = pendingRandomReward.sentinelElapsedTime;
-      uint8 fullAttireBonusRewardsPercent = pendingRandomReward.fullAttireBonusRewardsPercent;
-
       uint[] memory randomIds;
       uint[] memory randomAmounts;
       (randomIds, randomAmounts, processedAny) = _getRandomRewards(
         _playerId,
-        pendingRandomReward.startTime + sentinelElapsedTime,
+        pendingRandomReward.startTime + pendingRandomReward.sentinelElapsedTime,
         numTickets,
         actionRewards,
         successPercent,
-        fullAttireBonusRewardsPercent
+        pendingRandomReward.fullAttireBonusRewardsPercent
       );
 
       if (processedAny) {

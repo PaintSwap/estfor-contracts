@@ -1088,14 +1088,13 @@ describe("Rewards", function () {
       await mockOracleClient.fulfill(requestId, world.address);
       let randomBytes = await world.getRandomBytes(numTickets, timestamp - 86400, playerId);
       expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32);
-      numTickets = 48;
+      numTickets = MAX_UNIQUE_TICKETS;
 
-      const randomBytes1 = await world.getRandomBytes(numTickets, timestamp - 86400, playerId);
-      expect(ethers.utils.hexDataLength(randomBytes1)).to.be.eq(32 * 3);
+      randomBytes = await world.getRandomBytes(numTickets, timestamp - 86400, playerId);
+      expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32 * 4);
 
-      numTickets = 49;
-      const randomBytes2 = await world.getRandomBytes(numTickets, timestamp - 86400, playerId);
-      expect(ethers.utils.hexDataLength(randomBytes2)).to.be.eq(32 * 3 * 5);
+      numTickets = MAX_UNIQUE_TICKETS + 1;
+      await expect(world.getRandomBytes(numTickets, timestamp - 86400, playerId)).to.be.reverted;
     });
 
     it("Check past random rewards which are claimed the following day don't cause issues (many)", async function () {
