@@ -181,14 +181,70 @@ describe("Donation", function () {
     await expect(players.connect(alice).processActions(playerId)).to.not.emit(donation, "ClaimedLotteryWinnings");
   });
 
+  it("Minimum of 1 BRUSH can be donated", async function () {
+    const {donation, players, alice, playerId} = await loadFixture(deployContracts);
+
+    let lotteryId = await donation.lastLotteryId();
+    expect(lotteryId).to.eq(1);
+    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("0.1"))).to.revertedWithCustomError(
+      donation,
+      "MinimumOneBrush"
+    );
+  });
+
+  it("Decimals of brush do not count", async function () {
+    const {donation, players, alice, playerId, clans, brush} = await loadFixture(deployContracts);
+
+    const beforeBalance = await brush.balanceOf(alice.address);
+
+    const clanId = 1;
+    await clans.addTiers([
+      {
+        id: clanId,
+        maxMemberCapacity: 3,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+
+    let tierId = 1;
+    const imageId = 1;
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+
+    let lotteryId = await donation.lastLotteryId();
+    expect(lotteryId).to.eq(1);
+    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1.1")))
+      .to.emit(donation, "Donate")
+      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0)
+      .and.to.emit(donation, "DonateToClan")
+      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), clanId);
+
+    // But it takes 1.1 brush from you
+    expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance.sub(ethers.utils.parseEther("1.1")));
+
+    expect(await donation.getTotalDonated()).to.eq(ethers.utils.parseEther("1"));
+    expect(await donation.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("1"));
+
+    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1.99")))
+      .to.emit(donation, "Donate")
+      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0)
+      .and.to.emit(donation, "DonateToClan")
+      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), clanId);
+
+    expect(await donation.getTotalDonated()).to.eq(ethers.utils.parseEther("2"));
+    expect(await donation.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("2"));
+  });
+
   it("Reach minimum to get a ticket", async function () {
     const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
     let lotteryId = await donation.lastLotteryId();
     expect(lotteryId).to.eq(1);
-    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("0.1")))
+    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1")))
       .to.emit(donation, "Donate")
-      .withArgs(alice.address, playerId, ethers.utils.parseEther("0.1"), 0, 0);
+      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0);
     expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.false;
 
     await players.connect(alice).donate(playerId, raffleEntryCost.sub(1));

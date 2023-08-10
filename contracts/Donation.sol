@@ -29,6 +29,7 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error NotOwnerOfPlayer();
   error NotEnoughBrush();
   error OracleNotCalledYet();
+  error MinimumOneBrush();
   error OnlyPlayers();
   error OnlyWorld();
 
@@ -100,9 +101,9 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     uint _globalThresholdIncrement,
     uint _clanThresholdIncrement,
     bool _isBeta
-  ) public initializer {
-    __Ownable_init();
+  ) external initializer {
     __UUPSUpgradeable_init();
+    __Ownable_init();
 
     brush = _brush;
     playerNFT = _playerNFT;
@@ -141,6 +142,11 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     }
 
     bool isRaffleDonation = false;
+
+    uint flooredAmountWei = (_amount / 1 ether) * 1 ether;
+    if (flooredAmountWei == 0) {
+      revert MinimumOneBrush();
+    }
 
     if (_playerId != 0) {
       bool hasEnoughForRaffle = (_amount / 1 ether) >= raffleEntryCost;
@@ -196,14 +202,14 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         }
 
         clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
-        emit DonateToClan(_from, _playerId, _amount, clanId);
+        emit DonateToClan(_from, _playerId, flooredAmountWei, clanId);
       }
     }
 
     if (isRaffleDonation) {
-      emit Donate(_from, _playerId, _amount, lastLotteryId, lastRaffleId);
+      emit Donate(_from, _playerId, flooredAmountWei, lastLotteryId, lastRaffleId);
     } else {
-      emit Donate(_from, _playerId, _amount, 0, 0);
+      emit Donate(_from, _playerId, flooredAmountWei, 0, 0);
     }
 
     totalDonated += uint40(_amount / 1 ether);
@@ -334,6 +340,10 @@ contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   function getTotalDonated() external view returns (uint) {
     return uint(totalDonated) * 1 ether;
+  }
+
+  function getClanTotalDonated(uint _clanId) external view returns (uint) {
+    return uint(clanDonationInfo[_clanId].totalDonated) * 1 ether;
   }
 
   function getNextGlobalThreshold() external view returns (uint) {
