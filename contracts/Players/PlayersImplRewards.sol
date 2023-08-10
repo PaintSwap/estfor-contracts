@@ -591,7 +591,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     ) = _dailyRewardsView(_playerId);
 
     // Any Lottery winnings
-    pendingQueuedActionState.lotteryWinner = donation.getUnclaimedLotteryWinnings(_playerId);
+    pendingQueuedActionState.lotteryWinner = wishingWell.getUnclaimedLotteryWinnings(_playerId);
 
     // Compact to fit the arrays
     assembly ("memory-safe") {

@@ -7,11 +7,11 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
 
-describe("Donation", function () {
+describe("WishingWell", function () {
   async function deployContracts() {
     const baseFixture = await loadFixture(playersFixture);
 
-    const {alice, donation, brush, itemNFT, world, mockOracleClient} = baseFixture;
+    const {alice, wishingWell, brush, itemNFT, world, mockOracleClient} = baseFixture;
 
     // Make sure it passes the next checkpoint so there are no issues running
     const {timestamp} = await ethers.provider.getBlock("latest");
@@ -23,7 +23,7 @@ describe("Donation", function () {
 
     const totalBrush = ethers.utils.parseEther("100000");
     await brush.mint(alice.address, totalBrush);
-    await brush.connect(alice).approve(donation.address, totalBrush);
+    await brush.connect(alice).approve(wishingWell.address, totalBrush);
 
     const boostDuration = 3600;
     await itemNFT.addItems([
@@ -109,15 +109,15 @@ describe("Donation", function () {
       },
     ]);
 
-    const raffleEntryCost = await donation.getRaffleEntryCost();
+    const raffleEntryCost = await wishingWell.getRaffleEntryCost();
 
     return {...baseFixture, totalBrush, raffleEntryCost};
   }
 
   it("Only Players contract can call donate", async function () {
-    const {donation, alice} = await loadFixture(deployContracts);
-    await expect(donation.connect(alice).donate(alice.address, 0, 100)).to.be.revertedWithCustomError(
-      donation,
+    const {wishingWell, alice} = await loadFixture(deployContracts);
+    await expect(wishingWell.connect(alice).donate(alice.address, 0, 100)).to.be.revertedWithCustomError(
+      wishingWell,
       "OnlyPlayers"
     );
   });
@@ -143,11 +143,11 @@ describe("Donation", function () {
   });
 
   it("Claim lottery winnings", async function () {
-    const {donation, players, alice, world, mockOracleClient, playerId, raffleEntryCost} = await loadFixture(
+    const {wishingWell, players, alice, world, mockOracleClient, playerId, raffleEntryCost} = await loadFixture(
       deployContracts
     );
 
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
 
     await players.connect(alice).donate(playerId, raffleEntryCost);
@@ -155,13 +155,13 @@ describe("Donation", function () {
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
-    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.true;
+    expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.true;
 
     // Should be unclaimed
-    expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
 
     // Check the winning structure is correct
-    const winnerInfo = await donation.winners(lotteryId);
+    const winnerInfo = await wishingWell.winners(lotteryId);
     expect(winnerInfo.lotteryId).to.eq(lotteryId);
     expect(winnerInfo.raffleId).to.eq(1);
     expect(winnerInfo.itemTokenId).to.eq(EstforConstants.LUCKY_POTION);
@@ -171,29 +171,29 @@ describe("Donation", function () {
 
     // Now claim it
     await expect(players.connect(alice).processActions(playerId))
-      .to.emit(donation, "ClaimedLotteryWinnings")
+      .to.emit(wishingWell, "ClaimedLotteryWinnings")
       .withArgs(lotteryId, 1, EstforConstants.LUCKY_POTION, 1);
-    expect(await donation.hasClaimedReward(lotteryId)).to.eq(true);
-    lotteryId = await donation.lastLotteryId();
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(true);
+    lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(2);
 
     // Cannot claim again
-    await expect(players.connect(alice).processActions(playerId)).to.not.emit(donation, "ClaimedLotteryWinnings");
+    await expect(players.connect(alice).processActions(playerId)).to.not.emit(wishingWell, "ClaimedLotteryWinnings");
   });
 
   it("Minimum of 1 BRUSH can be donated", async function () {
-    const {donation, players, alice, playerId} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId} = await loadFixture(deployContracts);
 
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("0.1"))).to.revertedWithCustomError(
-      donation,
+      wishingWell,
       "MinimumOneBrush"
     );
   });
 
   it("Decimals of brush do not count", async function () {
-    const {donation, players, alice, playerId, clans, brush} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId, clans, brush} = await loadFixture(deployContracts);
 
     const beforeBalance = await brush.balanceOf(alice.address);
 
@@ -213,53 +213,53 @@ describe("Donation", function () {
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1.1")))
-      .to.emit(donation, "Donate")
+      .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0)
-      .and.to.emit(donation, "DonateToClan")
+      .and.to.emit(wishingWell, "DonateToClan")
       .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), clanId);
 
     // But it takes 1.1 brush from you
     expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance.sub(ethers.utils.parseEther("1.1")));
 
-    expect(await donation.getTotalDonated()).to.eq(ethers.utils.parseEther("1"));
-    expect(await donation.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("1"));
+    expect(await wishingWell.getTotalDonated()).to.eq(ethers.utils.parseEther("1"));
+    expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("1"));
 
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1.99")))
-      .to.emit(donation, "Donate")
+      .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0)
-      .and.to.emit(donation, "DonateToClan")
+      .and.to.emit(wishingWell, "DonateToClan")
       .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), clanId);
 
-    expect(await donation.getTotalDonated()).to.eq(ethers.utils.parseEther("2"));
-    expect(await donation.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("2"));
+    expect(await wishingWell.getTotalDonated()).to.eq(ethers.utils.parseEther("2"));
+    expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("2"));
   });
 
   it("Reach minimum to get a ticket", async function () {
-    const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1")))
-      .to.emit(donation, "Donate")
+      .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0);
-    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.false;
+    expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.false;
 
     await players.connect(alice).donate(playerId, raffleEntryCost.sub(1));
-    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.false;
+    expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.false;
 
     // Now check that minimum works
     const raffleId = 1;
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
-      .to.emit(donation, "Donate")
+      .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, raffleEntryCost, lotteryId, raffleId);
-    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.true;
+    expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.true;
   });
 
   it("Cannot donate until the previous day oracle is called", async function () {
-    const {donation, players, alice, world, mockOracleClient, playerId, raffleEntryCost} = await loadFixture(
+    const {wishingWell, players, alice, world, mockOracleClient, playerId, raffleEntryCost} = await loadFixture(
       deployContracts
     );
 
@@ -268,10 +268,10 @@ describe("Donation", function () {
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
 
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(2);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.be.revertedWithCustomError(
-      donation,
+      wishingWell,
       "OracleNotCalledYet"
     );
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
@@ -279,68 +279,68 @@ describe("Donation", function () {
   });
 
   it("Cannot donate to a raffle with playerId more than once a day", async function () {
-    const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
-      .to.emit(donation, "Donate")
+      .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, raffleEntryCost, 1, 1);
-    expect(await donation.hasPlayerEntered(lotteryId, playerId)).to.be.true;
+    expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.true;
     // Donating again will not enter raffle twice
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
-      .to.emit(donation, "Donate")
+      .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, raffleEntryCost, 0, 0);
   });
 
   it("Check global threshold rewards", async function () {
-    const {donation, players, alice, playerId} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId} = await loadFixture(deployContracts);
 
-    const nextThreshold = await donation.getNextGlobalThreshold();
+    const nextThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextThreshold).to.be.gt(0);
 
     await players.connect(alice).donate(0, nextThreshold.sub(ethers.utils.parseEther("2")));
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1"))).to.not.emit(
-      donation,
+      wishingWell,
       "LastGlobalDonationThreshold"
     );
 
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1").toString()))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(ethers.utils.parseEther("1000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
-    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("2000"));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("2000"));
 
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1500")))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(ethers.utils.parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE_3)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     // Donated 500 above the old threshold, should be
-    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("3000"));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("3000"));
 
     // Should go back to the start
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("499"))).to.not.emit(
-      donation,
+      wishingWell,
       "LastGlobalDonationThreshold"
     );
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1")))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(ethers.utils.parseEther("3000"), EstforConstants.PRAY_TO_THE_BEARDIE)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     // Go over multiple increments
     await expect(players.connect(alice).donate(0, ethers.utils.parseEther("3500")))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(ethers.utils.parseEther("6000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
-    expect(await donation.getTotalDonated()).to.eq(ethers.utils.parseEther("6500"));
-    expect(await donation.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("7000"));
+    expect(await wishingWell.getTotalDonated()).to.eq(ethers.utils.parseEther("6500"));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("7000"));
   });
 
   it("Check clan boost rotation", async function () {
-    const {donation, players, alice, playerId, raffleEntryCost, brush, clans, bob, totalBrush} = await loadFixture(
+    const {wishingWell, players, alice, playerId, raffleEntryCost, brush, clans, bob, totalBrush} = await loadFixture(
       deployContracts
     );
 
@@ -362,22 +362,22 @@ describe("Donation", function () {
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
     await brush.mint(bob.address, totalBrush);
-    await brush.connect(bob).approve(donation.address, totalBrush);
+    await brush.connect(bob).approve(wishingWell.address, totalBrush);
 
-    await donation.setClanDonationThresholdIncrement(raffleEntryCost);
+    await wishingWell.setClanDonationThresholdIncrement(raffleEntryCost);
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
-      .to.emit(donation, "LastClanDonationThreshold")
+      .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost, EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial")
-      .and.to.emit(donation, "DonateToClan")
+      .and.to.emit(wishingWell, "DonateToClan")
       .withArgs(alice.address, playerId, raffleEntryCost, clanId);
 
     expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
-      .to.emit(donation, "LastClanDonationThreshold")
+      .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost.mul(2), EstforConstants.CLAN_BOOSTER_3)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
@@ -385,7 +385,7 @@ describe("Donation", function () {
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_2);
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
-      .to.emit(donation, "LastClanDonationThreshold")
+      .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost.mul(3), EstforConstants.CLAN_BOOSTER)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
@@ -393,22 +393,22 @@ describe("Donation", function () {
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_3);
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost.mul(7).add(ethers.utils.parseEther("1"))))
-      .to.emit(donation, "LastClanDonationThreshold")
+      .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost.mul(10), EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
-    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+    expect(ethers.utils.parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
       raffleEntryCost.mul(10).add(ethers.utils.parseEther("1"))
     );
 
-    expect(await donation.getNextClanThreshold(clanId)).to.eq(raffleEntryCost.mul(11));
+    expect(await wishingWell.getNextClanThreshold(clanId)).to.eq(raffleEntryCost.mul(11));
   });
 
   it("Check claiming previous claims works up to 3 other lotteries ago", async function () {
     const {
-      donation,
+      wishingWell,
       players,
       alice,
       playerId,
@@ -423,11 +423,11 @@ describe("Donation", function () {
     } = await loadFixture(deployContracts);
 
     await players.connect(alice).donate(playerId, raffleEntryCost);
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(donation.address, totalBrush);
+    await brush.connect(owner).approve(wishingWell.address, totalBrush);
     for (let i = 0; i < 3; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
       await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
@@ -439,14 +439,14 @@ describe("Donation", function () {
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
-    expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
 
     await players.connect(alice).processActions(playerId);
-    expect(await donation.hasClaimedReward(lotteryId)).to.eq(false); // Still unclaimed
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false); // Still unclaimed
 
     // Now do the same but only with 2 more winners which should leave this one claimable
     await players.connect(alice).donate(playerId, raffleEntryCost);
-    lotteryId = await donation.lastLotteryId();
+    lotteryId = await wishingWell.lastLotteryId();
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
       await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
@@ -456,47 +456,47 @@ describe("Donation", function () {
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
-    expect(await donation.hasClaimedReward(lotteryId)).to.eq(false);
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
     await players.connect(alice).processActions(playerId);
-    expect(await donation.hasClaimedReward(lotteryId)).to.eq(true);
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(true);
     // Check elements are removed at the end as expected
 
-    expect(await donation.lastUnclaimedWinners(4));
+    expect(await wishingWell.lastUnclaimedWinners(4));
 
     // Do a claim in-between, check lastUnclaimedWinners array is updated as expected
     await players.connect(alice).donate(playerId, raffleEntryCost);
-    lotteryId = await donation.lastLotteryId();
+    lotteryId = await wishingWell.lastLotteryId();
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
-    expect(await donation.lastUnclaimedWinners(4)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(5)).to.eq(lotteryId);
+    expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(lotteryId);
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
     await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
-    expect(await donation.lastUnclaimedWinners(2)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(3)).to.eq(lotteryId);
+    expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId);
 
     await players.connect(alice).processActions(playerId); // claim the rewards
 
-    expect(await donation.lastUnclaimedWinners(2)).to.eq(newPlayerId);
-    expect(await donation.lastUnclaimedWinners(3)).to.eq(lotteryId + 1);
+    expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(newPlayerId);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 1);
 
-    expect(await donation.lastUnclaimedWinners(4)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(5)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(0);
   });
 
   it("Multiple unclaimed wins should be claimed after each other", async function () {
-    const {donation, players, alice, playerId, brush, totalBrush, mockOracleClient, world, owner, raffleEntryCost} =
+    const {wishingWell, players, alice, playerId, brush, totalBrush, mockOracleClient, world, owner, raffleEntryCost} =
       await loadFixture(deployContracts);
 
     await players.connect(alice).donate(playerId, raffleEntryCost);
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(donation.address, totalBrush);
+    await brush.connect(owner).approve(wishingWell.address, totalBrush);
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
       await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
@@ -505,39 +505,39 @@ describe("Donation", function () {
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
-    expect(await donation.lastUnclaimedWinners(0)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(1)).to.eq(lotteryId);
-    expect(await donation.lastUnclaimedWinners(2)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(3)).to.eq(lotteryId + 1);
-    expect(await donation.lastUnclaimedWinners(4)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(5)).to.eq(lotteryId + 2);
+    expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId);
+    expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 1);
+    expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(lotteryId + 2);
 
     await players.connect(alice).processActions(playerId);
-    expect(await donation.hasClaimedReward(lotteryId)).to.be.true;
-    expect(await donation.lastUnclaimedWinners(0)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(1)).to.eq(lotteryId + 1);
-    expect(await donation.lastUnclaimedWinners(2)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(3)).to.eq(lotteryId + 2);
-    expect(await donation.lastUnclaimedWinners(4)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(5)).to.eq(0);
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.be.true;
+    expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId + 1);
+    expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 2);
+    expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(0);
 
     await players.connect(alice).processActions(playerId);
-    expect(await donation.hasClaimedReward(lotteryId + 1)).to.be.true;
-    expect(await donation.lastUnclaimedWinners(0)).to.eq(playerId);
-    expect(await donation.lastUnclaimedWinners(1)).to.eq(lotteryId + 2);
-    expect(await donation.lastUnclaimedWinners(2)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(3)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(4)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(5)).to.eq(0);
+    expect(await wishingWell.hasClaimedReward(lotteryId + 1)).to.be.true;
+    expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(playerId);
+    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId + 2);
+    expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(0);
 
     await players.connect(alice).processActions(playerId);
-    expect(await donation.hasClaimedReward(lotteryId + 2)).to.be.true;
-    expect(await donation.lastUnclaimedWinners(0)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(1)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(2)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(3)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(4)).to.eq(0);
-    expect(await donation.lastUnclaimedWinners(5)).to.eq(0);
+    expect(await wishingWell.hasClaimedReward(lotteryId + 2)).to.be.true;
+    expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(0);
+    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(0);
   });
 
   it("Get extra XP boost as part of queueing a donation", async function () {
@@ -561,14 +561,13 @@ describe("Donation", function () {
     expect(activeBoost.extraOrLastValue).to.eq(5);
   });
 
-  it("Get extra XP boost as part of queueing a donation, do not override lottery winnings", async function () {
-    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockOracleClient, donation} = await loadFixture(
-      deployContracts
-    );
+  it("Get extra XP boost as part of queueing a wishingWell, do not override lottery winnings", async function () {
+    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockOracleClient, wishingWell} =
+      await loadFixture(deployContracts);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
-    let lotteryId = await donation.lastLotteryId();
+    let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
 
     await players.connect(alice).donate(playerId, raffleEntryCost);
@@ -576,7 +575,7 @@ describe("Donation", function () {
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
 
-    const winnerInfo = await donation.winners(lotteryId);
+    const winnerInfo = await wishingWell.winners(lotteryId);
     expect(winnerInfo.lotteryId).to.eq(lotteryId);
 
     // Now claim it while queueing another donation
@@ -591,11 +590,11 @@ describe("Donation", function () {
         EstforTypes.ActionQueueStatus.NONE
       )
     )
-      .to.emit(donation, "ClaimedLotteryWinnings")
+      .to.emit(wishingWell, "ClaimedLotteryWinnings")
       .withArgs(lotteryId, 1, EstforConstants.LUCKY_POTION, 1);
 
-    expect(await donation.hasClaimedReward(lotteryId)).to.eq(true);
-    lotteryId = await donation.lastLotteryId();
+    expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(true);
+    lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(2);
 
     // Should have the lucky boost not luck of the draw boost
@@ -604,7 +603,7 @@ describe("Donation", function () {
   });
 
   it("Check full amount is added to the clans total donations", async function () {
-    const {donation, players, alice, playerId, raffleEntryCost, clans} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId, raffleEntryCost, clans} = await loadFixture(deployContracts);
 
     const clanId = 1;
     await clans.addTiers([
@@ -622,19 +621,19 @@ describe("Donation", function () {
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
     await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
-    expect(ethers.utils.parseEther((await donation.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+    expect(ethers.utils.parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
       raffleEntryCost.mul(2)
     );
   });
 
   it("setGlobalDonationThresholdIncrement()", async function () {
-    const {donation, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
     await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
-    await donation.setGlobalDonationThresholdIncrement(raffleEntryCost.mul(3));
-    expect(await donation.getNextGlobalThreshold()).to.eq(raffleEntryCost.mul(3));
+    await wishingWell.setGlobalDonationThresholdIncrement(raffleEntryCost.mul(3));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(raffleEntryCost.mul(3));
     await players.connect(alice).donate(playerId, raffleEntryCost); // Hit it
-    await donation.setGlobalDonationThresholdIncrement(raffleEntryCost.mul(2));
-    expect(await donation.getNextGlobalThreshold()).to.eq(raffleEntryCost.mul(5));
+    await wishingWell.setGlobalDonationThresholdIncrement(raffleEntryCost.mul(2));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(raffleEntryCost.mul(5));
   });
 });

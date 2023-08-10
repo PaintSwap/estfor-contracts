@@ -249,9 +249,9 @@ async function main() {
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
 
-  const Donation = await ethers.getContractFactory("Donation");
-  const donation = await upgrades.deployProxy(
-    Donation,
+  const WishingWell = await ethers.getContractFactory("WishingWell");
+  const wishingWell = await upgrades.deployProxy(
+    WishingWell,
     [
       brush.address,
       playerNFT.address,
@@ -267,8 +267,8 @@ async function main() {
       kind: "uups",
     }
   );
-  await donation.deployed();
-  console.log(`donation = "${donation.address.toLowerCase()}"`);
+  await wishingWell.deployed();
+  console.log(`wishingWell = "${wishingWell.address.toLowerCase()}"`);
 
   const Bank = await ethers.getContractFactory("Bank");
   const bank = await upgrades.deployBeacon(Bank);
@@ -295,7 +295,7 @@ async function main() {
       adminAccess.address,
       quests.address,
       clans.address,
-      donation.address,
+      wishingWell.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -342,7 +342,7 @@ async function main() {
         playersLibrary.address,
         estforLibrary.address,
         playerNFT.address,
-        donation.address,
+        wishingWell.address,
         itemNFTLibrary.address,
         itemNFT.address,
         adminAccess.address,
@@ -368,7 +368,7 @@ async function main() {
 
   tx = await world.setQuests(quests.address);
   await tx.wait();
-  tx = await world.setDonation(donation.address);
+  tx = await world.setWishingWell(wishingWell.address);
   await tx.wait();
   console.log("world setQuests");
   tx = await itemNFT.setPlayers(players.address);
@@ -383,9 +383,9 @@ async function main() {
   tx = await clans.setPlayers(players.address);
   await tx.wait();
   console.log("clans setPlayers");
-  tx = await donation.setPlayers(players.address);
+  tx = await wishingWell.setPlayers(players.address);
   await tx.wait();
-  console.log("donation setPlayers");
+  console.log("wishingWell setPlayers");
 
   tx = await clans.setBankFactory(bankFactory.address);
   await tx.wait();

@@ -128,9 +128,9 @@ export const playersFixture = async function () {
     }
   );
 
-  const Donation = await ethers.getContractFactory("Donation");
-  const donation = await upgrades.deployProxy(
-    Donation,
+  const WishingWell = await ethers.getContractFactory("WishingWell");
+  const wishingWell = await upgrades.deployProxy(
+    WishingWell,
     [
       brush.address,
       playerNFT.address,
@@ -146,7 +146,7 @@ export const playersFixture = async function () {
       kind: "uups",
     }
   );
-  await donation.deployed();
+  await wishingWell.deployed();
 
   // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
@@ -187,7 +187,7 @@ export const playersFixture = async function () {
       adminAccess.address,
       quests.address,
       clans.address,
-      donation.address,
+      wishingWell.address,
       playersImplQueueActions.address,
       playersImplProcessActions.address,
       playersImplRewards.address,
@@ -219,13 +219,13 @@ export const playersFixture = async function () {
   });
 
   await world.setQuests(quests.address);
-  await world.setDonation(donation.address);
+  await world.setWishingWell(wishingWell.address);
 
   await itemNFT.setPlayers(players.address);
   await playerNFT.setPlayers(players.address);
   await quests.setPlayers(players.address);
   await clans.setPlayers(players.address);
-  await donation.setPlayers(players.address);
+  await wishingWell.setPlayers(players.address);
 
   await itemNFT.setBankFactory(bankFactory.address);
   await clans.setBankFactory(bankFactory.address);
@@ -275,7 +275,7 @@ export const playersFixture = async function () {
     playersImplMisc1,
     Players,
     avatarId,
-    donation,
+    wishingWell,
     promotions,
     quests,
     clans,

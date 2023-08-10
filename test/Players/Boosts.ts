@@ -399,7 +399,7 @@ describe("Boosts", function () {
   });
 
   it("Extra XP Boost", async function () {
-    const {playerId, players, itemNFT, world, donation, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, wishingWell, brush, alice} = await loadFixture(playersFixture);
 
     const boostValue = 50;
     const boostDuration = 120;
@@ -433,13 +433,13 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, ethers.utils.parseEther("10000"));
-    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("10000"));
+    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("10000"));
 
-    const raffleCost = await donation.getRaffleEntryCost();
+    const raffleCost = await wishingWell.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
     expect(await players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
-      donation,
+      wishingWell,
       "LastGlobalDonationThreshold"
     );
 
@@ -463,7 +463,7 @@ describe("Boosts", function () {
   });
 
   it("Global XP Boost", async function () {
-    const {playerId, players, itemNFT, world, donation, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, wishingWell, brush, alice} = await loadFixture(playersFixture);
 
     const boostDuration = 120;
     const boostValue = 50;
@@ -497,14 +497,14 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, ethers.utils.parseEther("10000"));
-    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("10000"));
+    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("10000"));
 
-    const nextGlobalThreshold = await donation.getNextGlobalThreshold();
+    const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextGlobalThreshold).to.be.gt(0);
 
     await players.connect(alice).donate(0, nextGlobalThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("2")))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(ethers.utils.parseEther("1000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
@@ -528,7 +528,7 @@ describe("Boosts", function () {
   });
 
   it("Clan XP Boost", async function () {
-    const {playerId, players, itemNFT, world, donation, clans, brush, alice, playerNFT, avatarId, bob} =
+    const {playerId, players, itemNFT, world, wishingWell, clans, brush, alice, playerNFT, avatarId, bob} =
       await loadFixture(playersFixture);
 
     const boostDuration = 120;
@@ -589,20 +589,20 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, ethers.utils.parseEther("100000"));
-    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("100000"));
+    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("100000"));
 
     const clanId = 1;
-    const clanDonationInfo = await donation.clanDonationInfo(clanId);
+    const clanDonationInfo = await wishingWell.clanDonationInfo(clanId);
     expect(clanDonationInfo.totalDonated).to.be.eq(0);
     expect(clanDonationInfo.lastThreshold).to.be.eq(0);
 
-    const raffleCost = await donation.getRaffleEntryCost();
+    const raffleCost = await wishingWell.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
-    await donation.setClanDonationThresholdIncrement(raffleCost.mul(2));
+    await wishingWell.setClanDonationThresholdIncrement(raffleCost.mul(2));
 
     await expect(players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
-      donation,
+      wishingWell,
       "LastClanDonationThreshold"
     );
 
@@ -611,10 +611,10 @@ describe("Boosts", function () {
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
 
     await brush.mint(bob.address, ethers.utils.parseEther("100000"));
-    await brush.connect(bob).approve(donation.address, ethers.utils.parseEther("100000"));
+    await brush.connect(bob).approve(wishingWell.address, ethers.utils.parseEther("100000"));
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
-      .to.emit(donation, "LastClanDonationThreshold")
+      .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost.mul(2), EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
@@ -638,7 +638,7 @@ describe("Boosts", function () {
   });
 
   it("Normal, extra, clan & global XP Boosts", async function () {
-    const {playerId, players, itemNFT, world, donation, clans, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, wishingWell, clans, brush, alice} = await loadFixture(playersFixture);
 
     const boostDuration = 120;
     const boostValue1 = 20;
@@ -724,24 +724,24 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, ethers.utils.parseEther("100000"));
-    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("100000"));
+    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("100000"));
 
     const clanId = 1;
-    const nextGlobalThreshold = await donation.getNextGlobalThreshold();
-    const nextClanThreshold = await donation.getNextClanThreshold(clanId);
+    const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
+    const nextClanThreshold = await wishingWell.getNextClanThreshold(clanId);
 
     const maxThreshold = nextClanThreshold.gt(nextGlobalThreshold) ? nextClanThreshold : nextGlobalThreshold;
 
-    const raffleCost = await donation.getRaffleEntryCost();
+    const raffleCost = await wishingWell.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
-    await donation.setClanDonationThresholdIncrement(raffleCost);
+    await wishingWell.setClanDonationThresholdIncrement(raffleCost);
 
     await players.connect(alice).donate(0, maxThreshold.sub(ethers.utils.parseEther("1")));
     await expect(players.connect(alice).donate(playerId, raffleCost))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(ethers.utils.parseEther("1000").toString(), EstforConstants.PRAY_TO_THE_BEARDIE_2)
-      .and.to.emit(donation, "LastClanDonationThreshold")
+      .and.to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -766,7 +766,7 @@ describe("Boosts", function () {
   // If a clan boost is active, and another one comes it should still count for actions queued up to this time.
   // TODO: Use secondBoostValue like the global boost test does
   it("Clan boost override", async function () {
-    const {playerId, players, itemNFT, world, donation, clans, brush, alice, playerNFT, avatarId, bob} =
+    const {playerId, players, itemNFT, world, wishingWell, clans, brush, alice, playerNFT, avatarId, bob} =
       await loadFixture(playersFixture);
 
     const boostDuration = 720; // 2 kills worth
@@ -834,11 +834,11 @@ describe("Boosts", function () {
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
     await brush.mint(alice.address, ethers.utils.parseEther("100000"));
-    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("100000"));
+    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("100000"));
 
     const clanId = 1;
-    const raffleCost = await donation.getRaffleEntryCost();
-    await donation.setClanDonationThresholdIncrement(raffleCost);
+    const raffleCost = await wishingWell.getRaffleEntryCost();
+    await wishingWell.setClanDonationThresholdIncrement(raffleCost);
 
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
     await expect(
@@ -854,7 +854,7 @@ describe("Boosts", function () {
           EstforTypes.ActionQueueStatus.NONE
         )
     )
-      .to.emit(donation, "LastClanDonationThreshold")
+      .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
@@ -878,10 +878,10 @@ describe("Boosts", function () {
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
 
     await brush.mint(bob.address, ethers.utils.parseEther("100000"));
-    await brush.connect(bob).approve(donation.address, ethers.utils.parseEther("100000"));
+    await brush.connect(bob).approve(wishingWell.address, ethers.utils.parseEther("100000"));
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
-      .to.emit(donation, "LastClanDonationThreshold")
+      .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost.mul(2), EstforConstants.CLAN_BOOSTER_3)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
@@ -937,7 +937,7 @@ describe("Boosts", function () {
   });
 
   it("Global boost override", async function () {
-    const {playerId, players, itemNFT, world, donation, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, wishingWell, brush, alice} = await loadFixture(playersFixture);
 
     const boostDuration = 720;
     const boostValue = 50;
@@ -990,9 +990,9 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, ethers.utils.parseEther("10000"));
-    await brush.connect(alice).approve(donation.address, ethers.utils.parseEther("10000"));
+    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("10000"));
 
-    const nextGlobalThreshold = await donation.getNextGlobalThreshold();
+    const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextGlobalThreshold).to.be.gt(0);
 
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
@@ -1009,7 +1009,7 @@ describe("Boosts", function () {
           EstforTypes.ActionQueueStatus.NONE
         )
     )
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(nextGlobalThreshold, EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
@@ -1026,7 +1026,7 @@ describe("Boosts", function () {
     ]);
 
     await expect(players.connect(alice).donate(0, nextGlobalThreshold))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(nextGlobalThreshold.mul(2), EstforConstants.PRAY_TO_THE_BEARDIE_3)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
@@ -1062,7 +1062,7 @@ describe("Boosts", function () {
 
     // The next global boost should have an effect
     await expect(players.connect(alice).donate(0, nextGlobalThreshold))
-      .to.emit(donation, "LastGlobalDonationThreshold")
+      .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(nextGlobalThreshold.mul(3), EstforConstants.PRAY_TO_THE_BEARDIE)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 

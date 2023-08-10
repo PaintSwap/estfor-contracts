@@ -107,7 +107,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   mapping(uint tier => Equipment[]) public dailyRewardPool;
   mapping(uint tier => Equipment[]) public weeklyRewardPool;
 
-  IOracleRewardCB private donation;
+  IOracleRewardCB private wishingWell;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -191,8 +191,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     if (address(quests) != address(0)) {
       quests.newOracleRandomWords(randomWord);
     }
-    if (address(donation) != address(0)) {
-      donation.newOracleRandomWords(randomWord);
+    if (address(wishingWell) != address(0)) {
+      wishingWell.newOracleRandomWords(randomWord);
     }
     emit RequestFulfilledV2(_requestId, randomWord);
 
@@ -557,8 +557,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     quests = _quests;
   }
 
-  function setDonation(IOracleRewardCB _donation) external onlyOwner {
-    donation = _donation;
+  function setWishingWell(IOracleRewardCB _wishingWell) external onlyOwner {
+    wishingWell = _wishingWell;
   }
 
   function setDailyRewardPool(uint _tier, Equipment[] calldata _dailyRewards) external onlyOwner {

@@ -7,7 +7,7 @@ import {World} from "../World.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
-import {Donation} from "../Donation.sol";
+import {WishingWell} from "../WishingWell.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -51,7 +51,7 @@ interface IPlayersDelegate {
     AdminAccess adminAccess,
     Quests quests,
     Clans clans,
-    Donation donation,
+    WishingWell wishingWell,
     address implQueueActions,
     address implProcessActions,
     address implRewards,

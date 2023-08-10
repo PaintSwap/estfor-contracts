@@ -16,7 +16,7 @@ import {World} from "../World.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
-import {Donation} from "../Donation.sol";
+import {WishingWell} from "../WishingWell.sol";
 import {IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
@@ -44,7 +44,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     AdminAccess _adminAccess,
     Quests _quests,
     Clans _clans,
-    Donation _donation,
+    WishingWell _wishingWell,
     address _implQueueActions,
     address _implProcessActions,
     address _implRewards,
@@ -62,7 +62,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     adminAccess = _adminAccess;
     quests = _quests;
     clans = _clans;
-    donation = _donation;
+    wishingWell = _wishingWell;
     implQueueActions = _implQueueActions;
     implProcessActions = _implProcessActions;
     implRewards = _implRewards;

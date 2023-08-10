@@ -12,7 +12,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
-import {Donation} from "../Donation.sol";
+import {WishingWell} from "../WishingWell.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
@@ -79,7 +79,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     AdminAccess _adminAccess,
     Quests _quests,
     Clans _clans,
-    Donation _donation,
+    WishingWell _wishingWell,
     address _implQueueActions,
     address _implProcessActions,
     address _implRewards,
@@ -101,7 +101,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _adminAccess,
         _quests,
         _clans,
-        _donation,
+        _wishingWell,
         _implQueueActions,
         _implProcessActions,
         _implRewards,

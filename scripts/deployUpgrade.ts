@@ -12,7 +12,7 @@ import {
   WORLD_ADDRESS,
   WORLD_LIBRARY_ADDRESS,
   ADMIN_ACCESS_ADDRESS,
-  DONATION_ADDRESS,
+  WISHING_WELL_ADDRESS,
   BANK_REGISTRY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
@@ -84,13 +84,13 @@ async function main() {
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
 
-  // Donation
-  const Donation = await ethers.getContractFactory("Donation");
-  const donation = await upgrades.upgradeProxy(DONATION_ADDRESS, Donation, {
+  // WishingWell
+  const WishingWell = await ethers.getContractFactory("WishingWell");
+  const wishingWell = await upgrades.upgradeProxy(WISHING_WELL_ADDRESS, WishingWell, {
     kind: "uups",
   });
-  await donation.deployed();
-  console.log(`donation = "${donation.address.toLowerCase()}"`);
+  await wishingWell.deployed();
+  console.log(`wishingWell = "${wishingWell.address.toLowerCase()}"`);
 
   // Quests
   const Quests = await ethers.getContractFactory("Quests");
@@ -157,7 +157,7 @@ async function main() {
   await verifyContracts([world.address]);
   await verifyContracts([adminAccess.address]);
   await verifyContracts([bankRegistry.address]);
-  await verifyContracts([donation.address]);
+  await verifyContracts([wishingWell.address]);
 }
 
 main().catch((error) => {

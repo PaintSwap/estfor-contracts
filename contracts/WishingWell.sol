@@ -15,7 +15,7 @@ import {Clans} from "./Clans/Clans.sol";
 // solhint-disable-next-line no-global-import
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
 
-contract Donation is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
+contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event Donate(address from, uint playerId, uint amount, uint lotteryId, uint raffleId);
   event DonateToClan(address from, uint playerId, uint amount, uint clanId);
   event WinnerAndNewLottery(uint lotteryId, uint raffleId, uint16 rewardItemTokenId, uint rewardAmount);

@@ -130,7 +130,7 @@ describe("PlayerNFT", function () {
       avatarId,
       quests,
       clans,
-      donation,
+      wishingWell,
       bankFactory,
     } = await loadFixture(deployContracts);
 
@@ -170,7 +170,7 @@ describe("PlayerNFT", function () {
         adminAccess.address,
         quests.address,
         clans.address,
-        donation.address,
+        wishingWell.address,
         playersImplQueueActions.address,
         playersImplProcessActions.address,
         playersImplRewards.address,

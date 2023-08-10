@@ -298,7 +298,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function donate(address _from, uint _playerId, uint _amount) external {
-    (uint16 extraItemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) = donation.donate(
+    (uint16 extraItemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) = wishingWell.donate(
       _from,
       _playerId,
       _amount
@@ -510,7 +510,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   function _handleLotteryWinnings(address _from, uint _playerId, LotteryWinnerInfo memory _lotteryWinner) private {
     // Check for lottery winners, TODO: currently just uses instant extra boost consumptions
     if (_lotteryWinner.itemTokenId != 0) {
-      donation.claimedLotteryWinnings(_lotteryWinner.lotteryId);
+      wishingWell.claimedLotteryWinnings(_lotteryWinner.lotteryId);
       _instantConsumeSpecialBoost(_from, _playerId, _lotteryWinner.itemTokenId, uint40(block.timestamp), 0);
     }
   }

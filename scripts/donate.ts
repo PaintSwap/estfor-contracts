@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {BRUSH_ADDRESS, DONATION_ADDRESS, PLAYERS_ADDRESS} from "./contractAddresses";
+import {BRUSH_ADDRESS, WISHING_WELL_ADDRESS, PLAYERS_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -11,13 +11,13 @@ async function main() {
   const Players = await ethers.getContractFactory("Players");
   const players = Players.attach(PLAYERS_ADDRESS);
 
-  const Donation = await ethers.getContractFactory("Donation");
-  const donation = Donation.attach(DONATION_ADDRESS);
+  const WishingWell = await ethers.getContractFactory("WishingWell");
+  const wishingWell = WishingWell.attach(WISHING_WELL_ADDRESS);
 
-  const raffleCost = await donation.getRaffleEntryCost();
+  const raffleCost = await wishingWell.getRaffleEntryCost();
 
   const brush = await ethers.getContractAt("IERC20", BRUSH_ADDRESS);
-  let tx = await brush.approve(donation.address, ethers.utils.parseEther("1000"));
+  let tx = await brush.approve(wishingWell.address, ethers.utils.parseEther("1000"));
   await tx.wait();
   const playerId = 1;
   await players.donate(playerId, raffleCost);

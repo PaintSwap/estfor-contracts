@@ -8,7 +8,7 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
-import {Donation} from "../Donation.sol";
+import {WishingWell} from "../WishingWell.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import "../interfaces/IPlayersDelegates.sol";
 
@@ -172,7 +172,7 @@ abstract contract PlayersBase {
   mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
   Quests internal quests;
   Clans internal clans;
-  Donation internal donation;
+  WishingWell internal wishingWell;
   address internal reserved1;
 
   PlayerBoostInfo internal globalBoost_; // A boost shared by everyone
