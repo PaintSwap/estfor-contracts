@@ -43,9 +43,9 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     address _dev,
     IBrushToken _brush,
     address[2] calldata _buyPath
-  ) public initializer {
-    __Ownable_init();
+  ) external initializer {
     __UUPSUpgradeable_init();
+    __Ownable_init();
 
     pool = _pool;
     router = _router;

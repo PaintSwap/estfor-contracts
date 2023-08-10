@@ -17,59 +17,10 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
+import {IPlayersDelegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
-
-// Functions to help with delegatecall selectors
-interface IPlayerDelegate {
-  function startActions(
-    uint playerId,
-    QueuedActionInput[] calldata queuedActions,
-    uint16 boostItemTokenId,
-    uint40 boostStartTime,
-    uint questId,
-    uint donationAmount,
-    ActionQueueStatus queueStatus
-  ) external;
-
-  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
-
-  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
-
-  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
-
-  function mintedPlayer(
-    address from,
-    uint playerId,
-    Skill[2] calldata startSkills,
-    uint[] calldata startingItemTokenIds,
-    uint[] calldata startingAmounts
-  ) external;
-
-  function clearEverything(address from, uint playerId, bool processTheTransactions) external;
-
-  function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
-
-  function buyBrushQuest(address to, uint playerId, uint questId, bool useExactETH) external;
-
-  function initialize(
-    ItemNFT itemNFT,
-    PlayerNFT playerNFT,
-    World world,
-    AdminAccess adminAccess,
-    Quests quests,
-    Clans clans,
-    Donation donation,
-    address implQueueActions,
-    address implProcessActions,
-    address implRewards,
-    address implMisc,
-    address implMisc1,
-    bool isBeta
-  ) external;
-}
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
   using UnsafeMath for U256;
@@ -135,7 +86,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address _implMisc,
     address _implMisc1,
     bool _isBeta
-  ) public initializer {
+  ) external initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
     __ReentrancyGuard_init();
@@ -143,7 +94,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(
       _implMisc1,
       abi.encodeWithSelector(
-        IPlayerDelegate.initialize.selector,
+        IPlayersDelegate.initialize.selector,
         _itemNFT,
         _playerNFT,
         _world,
@@ -222,7 +173,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(
       implMisc,
       abi.encodeWithSelector(
-        IPlayerDelegate.mintedPlayer.selector,
+        IPlayersDelegate.mintedPlayer.selector,
         _from,
         _playerId,
         _startSkills,
@@ -241,7 +192,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   ) external payable isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _delegatecall(
       implMisc,
-      abi.encodeWithSelector(IPlayerDelegate.buyBrushQuest.selector, _to, _playerId, _questId, _useExactETH)
+      abi.encodeWithSelector(IPlayersDelegate.buyBrushQuest.selector, _to, _playerId, _questId, _useExactETH)
     );
   }
 
@@ -287,7 +238,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function _clearEverything(address _from, uint _playerId, bool _processTheActions) private {
     _delegatecall(
       implQueueActions,
-      abi.encodeWithSelector(IPlayerDelegate.clearEverything.selector, _from, _playerId, _processTheActions)
+      abi.encodeWithSelector(IPlayersDelegate.clearEverything.selector, _from, _playerId, _processTheActions)
     );
   }
 
@@ -303,7 +254,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(
       implQueueActions,
       abi.encodeWithSelector(
-        IPlayerDelegate.startActions.selector,
+        IPlayersDelegate.startActions.selector,
         _playerId,
         _queuedActions,
         _boostItemTokenId,
@@ -467,14 +418,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
     _delegatecall(
       implMisc,
-      abi.encodeWithSelector(IPlayerDelegate.addXPThresholdRewards.selector, _xpThresholdRewards)
+      abi.encodeWithSelector(IPlayersDelegate.addXPThresholdRewards.selector, _xpThresholdRewards)
     );
   }
 
   function editXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
     _delegatecall(
       implMisc,
-      abi.encodeWithSelector(IPlayerDelegate.editXPThresholdRewards.selector, _xpThresholdRewards)
+      abi.encodeWithSelector(IPlayersDelegate.editXPThresholdRewards.selector, _xpThresholdRewards)
     );
   }
 
@@ -488,13 +439,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
-    _delegatecall(implMisc1, abi.encodeWithSelector(IPlayerDelegate.addFullAttireBonuses.selector, _fullAttireBonuses));
+    _delegatecall(
+      implMisc1,
+      abi.encodeWithSelector(IPlayersDelegate.addFullAttireBonuses.selector, _fullAttireBonuses)
+    );
   }
 
   function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp, bool _force) external isAdminAndBeta {
     _delegatecall(
       implProcessActions,
-      abi.encodeWithSelector(IPlayerDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp, _force)
+      abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp, _force)
     );
   }
 

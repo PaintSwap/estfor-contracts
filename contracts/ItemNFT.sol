@@ -96,10 +96,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     AdminAccess _adminAccess,
     string calldata _baseURI,
     bool _isBeta
-  ) public initializer {
+  ) external initializer {
     __ERC1155_init("");
-    __Ownable_init();
     __UUPSUpgradeable_init();
+    __Ownable_init();
+
     world = _world;
     shop = _shop;
     baseURI = _baseURI;

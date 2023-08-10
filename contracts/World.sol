@@ -114,10 +114,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _disableInitializers();
   }
 
-  function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) public initializer {
+  function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) external initializer {
     __VRFConsumerBaseV2_init(address(_coordinator));
-    __Ownable_init();
     __UUPSUpgradeable_init();
+    __Ownable_init();
 
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
@@ -245,7 +245,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return int((_timestamp - startTime) / MIN_RANDOM_WORDS_UPDATE_TIME);
   }
 
-  // Just returns the first random word of the array
   function _getRandomWord(uint _timestamp) private view returns (uint) {
     int offset = _getRandomWordOffset(_timestamp);
     if (offset < 0 || requestIds.length <= uint(offset)) {
@@ -562,7 +561,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     donation = _donation;
   }
 
-  function setDailyRewardPool(uint _tier, Equipment[] calldata _dailyRewards) public onlyOwner {
+  function setDailyRewardPool(uint _tier, Equipment[] calldata _dailyRewards) external onlyOwner {
     if (_dailyRewards.length > 255) {
       revert TooManyRewardsInPool();
     }
@@ -577,7 +576,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function setWeeklyRewardPool(uint _tier, Equipment[] calldata _weeklyRewards) public onlyOwner {
+  function setWeeklyRewardPool(uint _tier, Equipment[] calldata _weeklyRewards) external onlyOwner {
     if (_weeklyRewards.length > 255) {
       revert TooManyRewardsInPool();
     }

@@ -89,6 +89,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error DependentQuestNotCompleted(uint16 dependentQuestId);
   error RefundFailed();
   error InvalidMinimumRequirement();
+  error NotSupported();
 
   struct MinimumRequirement {
     Skill skill;
@@ -145,9 +146,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     _disableInitializers();
   }
 
-  function initialize(address _world, Router _router, address[2] calldata _buyPath) public initializer {
-    __Ownable_init();
+  function initialize(address _world, Router _router, address[2] calldata _buyPath) external initializer {
     __UUPSUpgradeable_init();
+    __Ownable_init();
 
     world = _world;
     router = _router;
@@ -320,8 +321,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     }
   }
 
-  // This doesn't really belong here, just for consistency
+  // This doesn't really belong here, just for consistency, but also untested
   function sellBrush(address _to, uint _brushAmount, uint _minFTM, bool _useExactETH) external {
+    revert NotSupported();
+    /*
     if (_brushAmount == 0) {
       revert InvalidBrushAmount();
     }
@@ -342,7 +345,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       uint amountIn = _brushAmount;
       uint amountOutMin = _minFTM;
       router.swapExactTokensForETH(amountIn, amountOutMin, sellPath, _to, deadline);
-    }
+    } */
   }
 
   function processQuestsView(

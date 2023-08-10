@@ -1,7 +1,65 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {ItemNFT} from "../ItemNFT.sol";
+import {PlayerNFT} from "../PlayerNFT.sol";
+import {World} from "../World.sol";
+import {AdminAccess} from "../AdminAccess.sol";
+import {Quests} from "../Quests.sol";
+import {Clans} from "../Clans/Clans.sol";
+import {Donation} from "../Donation.sol";
+
+// solhint-disable-next-line no-global-import
 import "../globals/all.sol";
+
+// Functions to help with delegatecall selectors
+interface IPlayersDelegate {
+  function startActions(
+    uint playerId,
+    QueuedActionInput[] calldata queuedActions,
+    uint16 boostItemTokenId,
+    uint40 boostStartTime,
+    uint questId,
+    uint donationAmount,
+    ActionQueueStatus queueStatus
+  ) external;
+
+  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
+
+  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;
+
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
+
+  function mintedPlayer(
+    address from,
+    uint playerId,
+    Skill[2] calldata startSkills,
+    uint[] calldata startingItemTokenIds,
+    uint[] calldata startingAmounts
+  ) external;
+
+  function clearEverything(address from, uint playerId, bool processTheTransactions) external;
+
+  function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
+
+  function buyBrushQuest(address to, uint playerId, uint questId, bool useExactETH) external;
+
+  function initialize(
+    ItemNFT itemNFT,
+    PlayerNFT playerNFT,
+    World world,
+    AdminAccess adminAccess,
+    Quests quests,
+    Clans clans,
+    Donation donation,
+    address implQueueActions,
+    address implProcessActions,
+    address implRewards,
+    address implMisc,
+    address implMisc1,
+    bool isBeta
+  ) external;
+}
 
 interface IPlayersMiscDelegate {
   function handleDailyRewards(address from, uint playerId) external;

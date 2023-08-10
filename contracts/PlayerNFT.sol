@@ -98,10 +98,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint72 _editNameCost,
     string calldata _imageBaseUri,
     bool _isBeta
-  ) public initializer {
+  ) external initializer {
     __ERC1155_init("");
-    __Ownable_init();
     __UUPSUpgradeable_init();
+    __Ownable_init();
+
     brush = _brush;
     nextPlayerId = 1;
     imageBaseUri = _imageBaseUri;

@@ -19,8 +19,9 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(address[] calldata _admins, address[] calldata _promotionalAdmins) public initializer {
-    __Ownable_init();
     __UUPSUpgradeable_init();
+    __Ownable_init();
+
     _updateAdmins(_admins, true);
     _updatePromotionalAdmins(_promotionalAdmins, true);
   }

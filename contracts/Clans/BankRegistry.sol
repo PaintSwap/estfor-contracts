@@ -20,9 +20,10 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(IERC1155 _itemNFT, IERC1155 _playerNFT, IClans _clans, IPlayers _players) public initializer {
-    __Ownable_init();
+  function initialize(IERC1155 _itemNFT, IERC1155 _playerNFT, IClans _clans, IPlayers _players) external initializer {
     __UUPSUpgradeable_init();
+    __Ownable_init();
+
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
     clans = _clans;

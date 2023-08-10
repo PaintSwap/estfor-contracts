@@ -67,9 +67,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush, address _dev) public initializer {
-    __Ownable_init();
+  function initialize(IBrushToken _brush, address _dev) external initializer {
     __UUPSUpgradeable_init();
+    __Ownable_init();
     brush = _brush;
     dev = _dev;
   }
@@ -166,7 +166,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     emit BuyBatch(msg.sender, _to, _tokenIds, _quantities, prices);
   }
 
-  function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) public {
+  function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) external {
     uint price = liquidatePrice(_tokenId);
     uint totalBrush = price * _quantity;
     if (totalBrush < _minExpectedBrush) {
