@@ -51,9 +51,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     ItemNFT _itemNFT,
     IERC1155 _playerNFT,
     bool _isBeta
-  ) public initializer {
-    __Ownable_init();
+  ) external initializer {
     __UUPSUpgradeable_init();
+    __Ownable_init();
+
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
     adminAccess = _adminAccess;
