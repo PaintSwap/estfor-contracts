@@ -285,6 +285,63 @@ describe("World", function () {
       expect((await world.actions(actionId)).isAvailable).to.be.false;
     });
 
+    it("Edit to have less guarenteed & random rewards", async function () {
+      const {world} = await loadFixture(deployContracts);
+      const actionAvailable = false;
+
+      const actionInfo = {
+        skill: EstforTypes.Skill.COMBAT,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        worldLocation: 0,
+        isFullModeOnly: false,
+        numSpawned: 1 * SPAWN_MUL,
+        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+        isAvailable: actionAvailable,
+        actionChoiceRequired: true,
+        successPercent: 100,
+      };
+
+      let tx = await world.addActions([
+        {
+          actionId: 1,
+          info: actionInfo,
+          guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 60 * 10}],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: 1328, amount: 1}],
+          combatStats: EstforTypes.emptyCombatStats,
+        },
+      ]);
+      const actionId = await getActionId(tx);
+      expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
+
+      await world.editActions([
+        {
+          actionId,
+          info: actionInfo,
+          guaranteedRewards: [],
+          randomRewards: [],
+          combatStats: EstforTypes.emptyCombatStats,
+        },
+      ]);
+      expect((await world.getActionRewards(actionId)).guaranteedRewardTokenId1).to.eq(0);
+      expect((await world.getActionRewards(actionId)).randomRewardAmount1).to.eq(0);
+
+      await world.editActions([
+        {
+          actionId,
+          info: actionInfo,
+          guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 60 * 10}],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: 1328, amount: 1}],
+          combatStats: EstforTypes.emptyCombatStats,
+        },
+      ]);
+
+      expect((await world.getActionRewards(actionId)).guaranteedRewardTokenId1).to.eq(EstforConstants.OAK_LOG);
+      expect((await world.getActionRewards(actionId)).randomRewardAmount1).to.eq(1);
+    });
+
     it("Dynamic actions", async function () {
       // Dynamic actions TODO
     });

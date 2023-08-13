@@ -401,6 +401,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
     // Set the rewards
     ActionRewards storage actionReward = actionRewards[_action.actionId];
+    delete actionRewards[_action.actionId];
     WorldLibrary.setActionGuaranteedRewards(_action, actionReward);
     WorldLibrary.setActionRandomRewards(_action, actionReward);
 
