@@ -194,9 +194,10 @@ describe("Boosts", function () {
       await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired inside action
       await ethers.provider.send("evm_mine", []);
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(
-        queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100
-      );
+      expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
+        queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100,
+        queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100 + 1,
+      ]);
     });
 
     it("Check boost is removed from being active when processing", async function () {

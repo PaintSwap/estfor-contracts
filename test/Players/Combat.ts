@@ -935,6 +935,43 @@ describe("Combat Actions", function () {
       ]); // Roughly 1/2 of the time
     });
 
+    it("Check random rewards, finish after 00:00 before oracle is called", async function () {
+      const {playerId, players, world, alice, queuedAction, numSpawned, mockOracleClient} = await loadFixture(
+        playersFixtureMelee
+      );
+
+      let tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+
+      const oneDay = 24 * 3600;
+      let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      let timestamp = Math.floor(currentTimestamp / oneDay) * oneDay + oneDay; // go to 00:00
+
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp + 1]);
+
+      tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]); // Finishes just after 00:00 the next day at 23:00
+      await ethers.provider.send("evm_mine", []);
+
+      // Should get rolls
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numSpawned / SPAWN_MUL);
+      await players.connect(alice).processActions(playerId);
+
+      // Call oracle
+      tx = await world.requestRandomWords();
+      await mockOracleClient.fulfill(getRequestId(tx), world.address);
+
+      await expect(world.requestRandomWords()).to.be.reverted;
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.numPastRandomRewardInstancesToRemove).to.be.gt(0);
+    });
+
     it("Check random rewards, process after waiting another day", async function () {
       const {playerId, players, world, itemNFT, alice, queuedAction, numSpawned, mockOracleClient} = await loadFixture(
         playersFixtureMelee

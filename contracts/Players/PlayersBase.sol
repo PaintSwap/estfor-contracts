@@ -402,6 +402,11 @@ abstract contract PlayersBase {
     }
     if (itemTokenIds.length != 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
+    }
+
+    if (numPastRandomRewardInstancesToRemove != 0 || itemTokenIds.length != 0) {
+      // So this event can also be called when no dice rolls are used if the action (e.g thieving)
+      // finished before 00:00 UTC and is called after the oracle is called
       emit PendingRandomRewardsClaimed(
         _from,
         _playerId,

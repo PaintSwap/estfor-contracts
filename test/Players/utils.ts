@@ -206,28 +206,27 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
 
   const rate = 1 * GUAR_MUL; // per kill
   const numSpawned = 10 * SPAWN_MUL;
-  let tx = await world.addActions([
-    {
-      actionId: 10,
-      info: {
-        skill: EstforTypes.Skill.COMBAT,
-        xpPerHour: 3600,
-        minXP: 0,
-        isDynamic: false,
-        worldLocation: 0,
-        isFullModeOnly: false,
-        numSpawned,
-        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-        isAvailable: true,
-        actionChoiceRequired: true,
-        successPercent: 100,
-      },
-      guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
-      randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 33500, amount: 1}], // ~50% chance
-      combatStats: monsterCombatStats,
+  const combatAction = {
+    actionId: 10,
+    info: {
+      skill: EstforTypes.Skill.COMBAT,
+      xpPerHour: 3600,
+      minXP: 0,
+      isDynamic: false,
+      worldLocation: 0,
+      isFullModeOnly: false,
+      numSpawned,
+      handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+      handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+      isAvailable: true,
+      actionChoiceRequired: true,
+      successPercent: 100,
     },
-  ]);
+    guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
+    randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 33500, amount: 1}], // ~50% chance
+    combatStats: monsterCombatStats,
+  };
+  let tx = await world.addActions([combatAction]);
   const actionId = await getActionId(tx);
 
   tx = await world.addBulkActionChoices(
@@ -288,7 +287,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     },
   ]);
 
-  return {queuedAction, rate, numSpawned, choiceId};
+  return {queuedAction, rate, numSpawned, choiceId, combatAction};
 };
 
 export const setupBasicCooking = async function (
