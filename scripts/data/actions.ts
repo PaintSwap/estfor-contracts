@@ -2301,8 +2301,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 8000, amount: 200},
-      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 8000, amount: 200},
+      {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 14000, amount: 80},
+      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 10000, amount: 80},
     ],
     combatStats: {
       melee: 0,
@@ -2332,9 +2332,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [],
     randomRewards: [
-      {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 40000, amount: 200},
-      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 20000, amount: 250},
-      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 20000, amount: 250},
+      {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 12000, amount: 80},
+      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 10000, amount: 80},
+      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 8000, amount: 80},
     ],
     combatStats: {
       melee: 0,
