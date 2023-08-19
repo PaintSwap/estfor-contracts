@@ -269,6 +269,19 @@ describe("Clans", function () {
       );
     });
 
+    it("Cannot accept an invite if you are already in a clan", async () => {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId, discord, telegram, imageId} = await loadFixture(
+        clanFixture
+      );
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, imageId, 1);
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      await expect(clans.connect(bob).acceptInvite(clanId, bobPlayerId)).to.be.revertedWithCustomError(
+        clans,
+        "AlreadyInClan"
+      );
+    });
+
     it("Delete invites as a player", async () => {
       const {clans, playerId, alice, bob, charlie, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);

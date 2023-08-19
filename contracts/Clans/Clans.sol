@@ -344,6 +344,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert InviteDoesNotExist();
     }
 
+    if (isMemberOfAnyClan(_playerId)) {
+      revert AlreadyInClan();
+    }
+
     Tier storage tier = tiers[clan.tierId];
     if (clan.memberCount >= tier.maxMemberCapacity) {
       revert ClanIsFull();
