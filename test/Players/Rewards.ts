@@ -1114,7 +1114,7 @@ describe("Rewards", function () {
       ).to.deep.eq([firstThievingNumHours + secondThievingNumHours, numSpawned / SPAWN_MUL]);
     });
 
-    it("Mixing thieving and combat random rolls (thieving, combat, thieving) before oracle is called, process after", async function () {
+    it("Mixing thieving and combat random rolls (thieving, combat, thieving), after 00:00 before oracle is called, process after", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for thieving 19:00, dice given for combat 00:01, dice given for thieving 23:00
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
@@ -1319,7 +1319,6 @@ describe("Rewards", function () {
       await mockOracleClient.fulfill(requestId, world.address);
 
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
-      console.log(pendingQueuedActionState.producedPastRandomRewards);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.BRONZE_ARROW);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(firstThievingNumHours);
@@ -1468,7 +1467,7 @@ describe("Rewards", function () {
       ).to.deep.eq([firstThievingNumHours + secondThievingNumHours, numSpawned / SPAWN_MUL]);
     });
 
-    it("Mixing thieving and combat random rolls (combat, combat, thieving) after 00:00 but before oracle is called", async function () {
+    it("Mixing thieving and combat random rolls (combat, combat, thieving) looting after 00:00 but before oracle is called", async function () {
       // Combat ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for combat 19:00, dice given for combat 20:00, dice given for thieving 23:00
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
@@ -1584,7 +1583,123 @@ describe("Rewards", function () {
       ).to.deep.eq([thievingNumHours, ((firstCombatNumHours + secondCombatNumHours) * numSpawned) / SPAWN_MUL]);
     });
 
-    it("Mixing thieving and combat random rolls (combat, thieving) after 00:00, before oracle is called", async function () {
+    it("Mixing combat/thieving over 48 hours, when queueing combat & thieving, then thieving in another 24 hours after first calling oracle.", async function () {
+      // Combat starts 00:01 and ends 01:01, thieving ends 00:01 the following day. Looted at 00:02 after oracle by starting a new 24 hour thieving action
+      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+
+      const randomChanceFraction = 1;
+      const randomChance = Math.floor(65535 * randomChanceFraction);
+
+      await world.editActions([
+        {
+          ...combatAction,
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.POISON, chance: randomChance, amount: 1}],
+        },
+      ]);
+
+      let tx = await world.addActions([
+        {
+          actionId: EstforConstants.ACTION_THIEVING_CHILD,
+          info: {
+            skill: EstforTypes.Skill.THIEVING,
+            xpPerHour: 3600,
+            minXP: 0,
+            isDynamic: false,
+            worldLocation: 0,
+            isFullModeOnly: false,
+            numSpawned: 0,
+            handItemTokenIdRangeMin: NONE,
+            handItemTokenIdRangeMax: NONE,
+            isAvailable: actionIsAvailable,
+            actionChoiceRequired: false,
+            successPercent: 100,
+          },
+          guaranteedRewards: [],
+          randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+          combatStats: EstforTypes.emptyCombatStats,
+        },
+      ]);
+
+      // Make sure it passes the next checkpoint so there are no issues running
+      const {timestamp} = await ethers.provider.getBlock("latest");
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+      await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
+
+      tx = await world.requestRandomWords();
+      let requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+      tx = await world.requestRandomWords();
+      requestId = getRequestId(tx);
+      expect(requestId).to.not.eq(0);
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      const combatNumHours = 1; // start at 00:01
+      const queuedActionCombat = {...queuedAction, timespan: 3600 * combatNumHours};
+
+      const thievingNumHours = 23; // ends at 00:01 the following day
+      const queuedActionThieving: EstforTypes.QueuedActionInput = {
+        attire: EstforTypes.noAttire,
+        actionId: EstforConstants.ACTION_THIEVING_CHILD,
+        combatStyle: EstforTypes.CombatStyle.NONE,
+        choiceId: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE,
+        timespan: 3600 * thievingNumHours,
+        rightHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+      };
+
+      const secondThievingNumHours = 24; // ends at 00:001 the day after
+      const queuedActionThieving2 = {
+        ...queuedActionThieving,
+        timespan: 3600 * secondThievingNumHours,
+      };
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedActionCombat, queuedActionThieving], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]); // Go another hour past the 24
+      await ethers.provider.send("evm_mine", []);
+
+      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.actionMetadatas.length).to.eq(2);
+      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq((combatNumHours * numSpawned) / SPAWN_MUL);
+      expect(pendingQueuedActionState.actionMetadatas[1].rolls).to.eq(thievingNumHours);
+
+      await players.connect(alice).startActions(playerId, [queuedActionThieving2], EstforTypes.ActionQueueStatus.NONE);
+      await ethers.provider.send("evm_increaseTime", [3600 * 48]); // Go another hour past the 24
+      await ethers.provider.send("evm_mine", []);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
+      expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(secondThievingNumHours);
+
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+      requestId = getRequestId(await world.requestRandomWords());
+      await mockOracleClient.fulfill(requestId, world.address);
+
+      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
+      expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(
+        (combatNumHours * numSpawned) / SPAWN_MUL
+      );
+      expect(pendingQueuedActionState.producedPastRandomRewards[1].amount).to.eq(thievingNumHours);
+      expect(pendingQueuedActionState.producedPastRandomRewards[2].amount).to.eq(secondThievingNumHours);
+
+      await players.connect(alice).processActions(playerId);
+
+      expect(
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
+      ).to.deep.eq([thievingNumHours + secondThievingNumHours, (combatNumHours * numSpawned) / SPAWN_MUL]);
+    });
+
+    it("Mixing thieving and combat random rolls (combat, thieving) looting after 00:00, before oracle is called", async function () {
       // Combat ends 19:00, Thieving ends 22:00. Looted at 00:01 before oracle. Dice given for combat 19:00, dice given for thieving 22:00
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 

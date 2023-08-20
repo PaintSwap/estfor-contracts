@@ -492,22 +492,17 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       // Total XP gained
       pendingQueuedActionMetadata.xpGained = xpGained;
       totalXPGained += xpGained;
-
-      uint24 _sentinelElapsedTime = skill == Skill.THIEVING
-        ? uint24(elapsedTime)
-        : uint24((block.timestamp - startTime) >= type(uint24).max ? type(uint24).max : block.timestamp - startTime);
-
-      // Number of pending reward rolls
       if (actionHasRandomRewards) {
-        bool hasRandomWord = world.hasRandomWord(startTime + _sentinelElapsedTime);
-        if (!hasRandomWord) {
-          if (isCombat) {
-            uint prevMonstersKilled = (numSpawnedPerHour * prevXPElapsedTime) / (SPAWN_MUL * 3600);
-            uint16 monstersKilled = uint16(
-              (numSpawnedPerHour * (xpElapsedTime + prevXPElapsedTime)) / (SPAWN_MUL * 3600) - prevMonstersKilled
-            );
-            pendingQueuedActionMetadata.rolls = uint32(monstersKilled);
-          } else {
+        if (isCombat) {
+          // Always add dice rolls for combat
+          uint prevMonstersKilled = (numSpawnedPerHour * prevXPElapsedTime) / (SPAWN_MUL * 3600);
+          uint16 monstersKilled = uint16(
+            (numSpawnedPerHour * (xpElapsedTime + prevXPElapsedTime)) / (SPAWN_MUL * 3600) - prevMonstersKilled
+          );
+          pendingQueuedActionMetadata.rolls = uint32(monstersKilled);
+        } else {
+          bool hasRandomWord = world.hasRandomWord(startTime + elapsedTime);
+          if (!hasRandomWord) {
             uint prevRolls = prevXPElapsedTime / 3600;
             pendingQueuedActionMetadata.rolls = uint32((xpElapsedTime + prevXPElapsedTime) / 3600 - prevRolls);
           }

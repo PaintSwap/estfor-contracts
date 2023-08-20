@@ -113,12 +113,12 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
       bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
       if (actionMetadata.xpElapsedTime != 0 && hasRandomRewards) {
-        uint24 _sentinelElapsedTime = actionMetadata.elapsedTime;
-        bool hasRandomWord = world.hasRandomWord(startTime.add(_sentinelElapsedTime));
+        uint24 sentinelElapsedTime = actionMetadata.elapsedTime;
+        bool hasRandomWord = world.hasRandomWord(startTime.add(sentinelElapsedTime));
         if (hasRandomWord && skill != Skill.THIEVING) {
           // The elapsed time needs to be updated if the random words are known as other dynamic things
           // like changing food/scroll consumption can be used to modify the random reward outputs.
-          _sentinelElapsedTime = uint24(
+          sentinelElapsedTime = uint24(
             (block.timestamp - startTime) >= type(uint24).max ? type(uint24).max : block.timestamp - startTime
           );
           hasRandomWord = false;
@@ -132,7 +132,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
             actionMetadata.queueId,
             uint40(startTime),
             actionMetadata.elapsedTime,
-            _sentinelElapsedTime,
+            sentinelElapsedTime,
             actionMetadata.xpElapsedTime,
             attire_[_playerId][actionMetadata.queueId],
             skill,
