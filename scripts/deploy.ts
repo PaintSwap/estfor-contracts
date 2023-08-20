@@ -164,12 +164,12 @@ async function main() {
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
   } else {
     // live version
-    itemsUri = "ipfs://TODO/";
-    imageBaseUri = "ipfs://TODO/";
+    itemsUri = "ipfs://QmQq3imYgF2jAfuYUW6JWHZ6SuYWknmseZXxXUfxBjZipt/";
+    imageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
-    raffleEntryCost = ethers.utils.parseEther("50");
+    raffleEntryCost = ethers.utils.parseEther("12.5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("100000");
-    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("10000");
+    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("5000");
   }
 
   // Create NFT contract which contains all items
