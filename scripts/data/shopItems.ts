@@ -41,19 +41,19 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
-    price: ethers.utils.parseEther("200"),
+    price: ethers.utils.parseEther("50"),
   },
   {
     tokenId: EstforConstants.XP_BOOST,
-    price: ethers.utils.parseEther("100"),
+    price: ethers.utils.parseEther("25"),
   },
   {
     tokenId: EstforConstants.GATHERING_BOOST,
-    price: ethers.utils.parseEther("100"),
+    price: ethers.utils.parseEther("25"),
   },
   {
     tokenId: EstforConstants.SKILL_BOOST,
-    price: ethers.utils.parseEther("200"),
+    price: ethers.utils.parseEther("50"),
   },
   {
     tokenId: EstforConstants.COOKED_MINNUS,
