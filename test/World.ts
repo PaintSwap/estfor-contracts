@@ -4,7 +4,7 @@ import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
 import {ActionInput, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {getActionId, getRequestId, RATE_MUL, SPAWN_MUL} from "./utils";
+import {getActionId, RATE_MUL, requestAndFulfillRandomWords, SPAWN_MUL} from "./utils";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
 import {World} from "../typechain-types";
 
@@ -157,9 +157,7 @@ describe("World", function () {
       let error = false;
       while (!error) {
         try {
-          const tx = await world.requestRandomWords();
-          let requestId = getRequestId(tx);
-          await mockOracleClient.fulfill(requestId, world.address);
+          await requestAndFulfillRandomWords(world, mockOracleClient);
         } catch {
           error = true;
         }
@@ -174,9 +172,7 @@ describe("World", function () {
       error = false;
       while (!error) {
         try {
-          const tx = await world.requestRandomWords();
-          let requestId = getRequestId(tx);
-          await mockOracleClient.fulfill(requestId, world.address);
+          await requestAndFulfillRandomWords(world, mockOracleClient);
         } catch {
           error = true;
         }
@@ -199,8 +195,7 @@ describe("World", function () {
       // Keep requesting
       while (true) {
         try {
-          const tx = await world.requestRandomWords();
-          await mockOracleClient.fulfill(getRequestId(tx), world.address);
+          await requestAndFulfillRandomWords(world, mockOracleClient);
         } catch {
           break;
         }

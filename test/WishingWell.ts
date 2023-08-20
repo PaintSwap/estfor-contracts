@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {playersFixture} from "./Players/PlayersFixture";
-import {getRequestId} from "./utils";
+import {requestAndFulfillRandomWords} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
@@ -18,8 +18,7 @@ describe("WishingWell", function () {
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-    let tx = await world.requestRandomWords();
-    await mockOracleClient.fulfill(getRequestId(tx), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
 
     const totalBrush = ethers.utils.parseEther("100000");
     await brush.mint(alice.address, totalBrush);
@@ -153,7 +152,7 @@ describe("WishingWell", function () {
     await players.connect(alice).donate(playerId, raffleEntryCost);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
 
     expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.true;
 
@@ -265,7 +264,7 @@ describe("WishingWell", function () {
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost));
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
 
     let lotteryId = await wishingWell.lastLotteryId();
@@ -274,7 +273,7 @@ describe("WishingWell", function () {
       wishingWell,
       "OracleNotCalledYet"
     );
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.not.be.reverted;
   });
 
@@ -430,14 +429,14 @@ describe("WishingWell", function () {
     await brush.connect(owner).approve(wishingWell.address, totalBrush);
     for (let i = 0; i < 3; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser" + i, false);
       await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     }
 
     // Should no longer be claimable
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
 
@@ -449,12 +448,12 @@ describe("WishingWell", function () {
     lotteryId = await wishingWell.lastLotteryId();
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "should work now" + i, false);
       await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     }
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
     await players.connect(alice).processActions(playerId);
@@ -468,13 +467,13 @@ describe("WishingWell", function () {
     lotteryId = await wishingWell.lastLotteryId();
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
     expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(playerId);
     expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(lotteryId);
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
     await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
     expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(playerId);
     expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId);
 
@@ -499,11 +498,11 @@ describe("WishingWell", function () {
     await brush.connect(owner).approve(wishingWell.address, totalBrush);
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       await players.connect(alice).donate(playerId, raffleEntryCost);
     }
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
 
     expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(playerId);
     expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId);
@@ -573,7 +572,7 @@ describe("WishingWell", function () {
     await players.connect(alice).donate(playerId, raffleEntryCost);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await mockOracleClient.fulfill(getRequestId(await world.requestRandomWords()), world.address);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
 
     const winnerInfo = await wishingWell.winners(lotteryId);
     expect(winnerInfo.lotteryId).to.eq(lotteryId);

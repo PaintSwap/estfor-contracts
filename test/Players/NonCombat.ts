@@ -3,7 +3,14 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {getActionChoiceId, getActionId, getRequestId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL} from "../utils";
+import {
+  getActionChoiceId,
+  getActionId,
+  GUAR_MUL,
+  NO_DONATION_AMOUNT,
+  RATE_MUL,
+  requestAndFulfillRandomWords,
+} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
   getXPFromLevel,
@@ -1047,15 +1054,9 @@ describe("Non-Combat Actions", function () {
         );
       await ethers.provider.send("evm_increaseTime", [3 * 3600]);
 
-      tx = await world.requestRandomWords();
-      let requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
 
-      tx = await world.requestRandomWords();
-      requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
 
       await players.connect(alice).processActions(playerId);
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
@@ -1103,14 +1104,8 @@ describe("Non-Combat Actions", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      tx = await world.requestRandomWords();
-      let requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
-      tx = await world.requestRandomWords();
-      requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1151,10 +1146,7 @@ describe("Non-Combat Actions", function () {
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
 
-      tx = await world.requestRandomWords();
-      requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       await players.connect(alice).processActions(playerId);
       // Should get the loot (Should get rewards if waiting until the next day to claim)
@@ -1201,15 +1193,9 @@ describe("Non-Combat Actions", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-      tx = await world.requestRandomWords();
-      let requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      tx = await world.requestRandomWords();
-      requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1227,16 +1213,12 @@ describe("Non-Combat Actions", function () {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        const tx = await world.requestRandomWords();
-        let requestId = getRequestId(tx);
-        expect(requestId).to.not.eq(0);
-        await mockOracleClient.fulfill(requestId, world.address);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
         await players.connect(alice).processActions(playerId);
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      requestId = getRequestId(await world.requestRandomWords());
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       await players.connect(alice).processActions(playerId);
 
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
@@ -1290,15 +1272,9 @@ describe("Non-Combat Actions", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      tx = await world.requestRandomWords();
-      let requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      tx = await world.requestRandomWords();
-      requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1316,16 +1292,12 @@ describe("Non-Combat Actions", function () {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        tx = await world.requestRandomWords();
-        requestId = getRequestId(tx);
-        expect(requestId).to.not.eq(0);
-        await mockOracleClient.fulfill(requestId, world.address);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
         await players.connect(alice).processActions(playerId);
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      requestId = getRequestId(await world.requestRandomWords());
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       await players.connect(alice).processActions(playerId);
 
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
@@ -1378,15 +1350,9 @@ describe("Non-Combat Actions", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-      tx = await world.requestRandomWords();
-      let requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      tx = await world.requestRandomWords();
-      requestId = getRequestId(tx);
-      expect(requestId).to.not.eq(0);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1467,16 +1433,12 @@ describe("Non-Combat Actions", function () {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        const tx = await world.requestRandomWords();
-        let requestId = getRequestId(tx);
-        expect(requestId).to.not.eq(0);
-        await mockOracleClient.fulfill(requestId, world.address);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
         await players.connect(alice).processActions(playerId);
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      requestId = getRequestId(await world.requestRandomWords());
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
       await players.connect(alice).processActions(playerId);
 
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(
@@ -1548,12 +1510,9 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [3600]);
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      let requestId = getRequestId(await world.requestRandomWords());
-      await mockOracleClient.fulfill(requestId, world.address);
-      requestId = getRequestId(await world.requestRandomWords());
-      await mockOracleClient.fulfill(requestId, world.address);
-      requestId = getRequestId(await world.requestRandomWords());
-      await mockOracleClient.fulfill(requestId, world.address);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
 
       await players.connect(alice).processActions(playerId);
 
