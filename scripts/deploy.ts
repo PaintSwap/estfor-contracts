@@ -167,7 +167,7 @@ async function main() {
     itemsUri = "ipfs://QmQq3imYgF2jAfuYUW6JWHZ6SuYWknmseZXxXUfxBjZipt/";
     imageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
-    raffleEntryCost = ethers.utils.parseEther("12.5");
+    raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("100000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("5000");
   }
