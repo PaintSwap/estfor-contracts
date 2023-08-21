@@ -130,7 +130,9 @@ abstract contract PlayersBase {
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
   uint internal constant MAX_SUCCESS_PERCENT_CHANCE_ = 90;
   uint internal constant MAX_UNIQUE_TICKETS_ = 64;
-  uint internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1000;
+  // The random chance where the odds are increased when there are dice roll overflows.
+  // Don't set this above 1747 otherwise it can result in 100% chance for anything around that value
+  uint internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1328;
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;

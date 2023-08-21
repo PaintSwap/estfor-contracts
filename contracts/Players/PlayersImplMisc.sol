@@ -634,7 +634,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           mintMultipliers[j] = 1;
           mintMultipliersExcess[j] = 1;
           if (_numTickets > MAX_UNIQUE_TICKETS_) {
-            if (randomReward.chance < RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_) {
+            if (randomReward.chance <= RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_) {
               // Rare item, increase chance if there aren't enough unique tickets
               extraChances[j] = uint16(randomReward.chance * multiplier);
               extraChancesExcess[j] = uint16(randomReward.chance * (multiplier + 1));

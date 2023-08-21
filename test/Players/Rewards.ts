@@ -2108,9 +2108,9 @@ describe("Rewards", function () {
         health: 1,
       };
 
-      const cutoff = (await players.RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF()).toNumber();
-
-      const randomChance = cutoff - 1; // Below 1000 triggers this
+      const randomRewardChanceMultiplier = (await players.RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF()).toNumber();
+      const randomChance = 999;
+      expect(randomRewardChanceMultiplier).to.be.gt(randomChance);
       const numSpawned = 150 * SPAWN_MUL;
 
       const numHours = 23;
