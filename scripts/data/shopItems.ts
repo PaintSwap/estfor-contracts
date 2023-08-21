@@ -41,19 +41,19 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
-    price: ethers.utils.parseEther("50"),
+    price: ethers.utils.parseEther("25"), // These are halved for 1 week of launch
   },
   {
     tokenId: EstforConstants.XP_BOOST,
-    price: ethers.utils.parseEther("25"),
+    price: ethers.utils.parseEther("13"), // These are halved for 1 week of launch
   },
   {
     tokenId: EstforConstants.GATHERING_BOOST,
-    price: ethers.utils.parseEther("25"),
+    price: ethers.utils.parseEther("13"), // These are halved for 1 week of launch
   },
   {
     tokenId: EstforConstants.SKILL_BOOST,
-    price: ethers.utils.parseEther("50"),
+    price: ethers.utils.parseEther("25"), // These are halved for 1 week of launch
   },
   {
     tokenId: EstforConstants.COOKED_MINNUS,

@@ -131,7 +131,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         continue;
       }
 
-      // Also need to check the starting location is valid
       CombatStats memory combatStats;
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       if (isCombat) {
