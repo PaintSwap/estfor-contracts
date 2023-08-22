@@ -60,6 +60,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error NonCombatCannotHaveBothGuaranteedAndRandomRewards();
   error InvalidReward();
   error TooManyRewardsInPool();
+  error CallbackGasLimitTooHigh();
 
   // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface private COORDINATOR;
@@ -74,13 +75,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint40 private startTime;
   uint40 private weeklyRewardCheckpoint;
   bytes8 private thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
+  uint24 private callbackGasLimit;
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
   // For a list of available gas lanes on each network, this is 10000gwei
   // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
   bytes32 private constant KEY_HASH = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
 
-  uint32 private constant CALLBACK_GAS_LIMIT = 400000;
   uint16 private constant REQUEST_CONFIRMATIONS = 1;
   // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
   uint32 private constant NUM_WORDS = 1;
@@ -129,6 +130,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     ); // Floor to the nearest day 00:00 UTC
     lastRandomWordsUpdatedTime = uint40(startTime + NUM_DAYS_RANDOM_WORDS_INITIALIZED * 1 days);
     weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
+    callbackGasLimit = 600_000;
 
     // Initialize a few days worth of random words so that we have enough data to fetch the first day
     for (U256 iter; iter.lt(NUM_DAYS_RANDOM_WORDS_INITIALIZED); iter = iter.inc()) {
@@ -162,7 +164,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       KEY_HASH,
       subscriptionId,
       REQUEST_CONFIRMATIONS,
-      CALLBACK_GAS_LIMIT,
+      callbackGasLimit,
       NUM_WORDS
     );
 
@@ -590,6 +592,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       }
       weeklyRewardPool[_tier].push(_weeklyRewards[i]);
     }
+  }
+
+  function setChainlinkCallbackGasLimit(uint _gasLimit) external onlyOwner {
+    if (_gasLimit > 3_000_000) {
+      revert CallbackGasLimitTooHigh();
+    }
+    callbackGasLimit = uint24(_gasLimit);
   }
 
   // solhint-disable-next-line no-empty-blocks
