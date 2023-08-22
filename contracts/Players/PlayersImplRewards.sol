@@ -95,9 +95,13 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     U256 bounds = actionQueue.length.asU256();
     uint pendingQueuedActionStateLength;
     uint startTime = players_[_playerId].currentActionStartTime;
-    Skill firstRemainingActionSkill; // Can be Skill.COMBAT or Skill.TRAVELING
+    Skill firstRemainingActionSkill; // Might also be the non-actual skills Skill.COMBAT or Skill.TRAVELING
+    uint numActionsSkipped;
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
+      QueuedAction storage queuedAction = actionQueue[i];
+
+      i -= numActionsSkipped;
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
         .equipmentStates[i];
       PendingQueuedActionMetadata memory pendingQueuedActionMetadata = pendingQueuedActionState.actionMetadatas[i];
@@ -108,7 +112,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionEquipmentState.consumedAmounts = new uint[](MAX_CONSUMED_PER_ACTION);
       uint consumedLength;
 
-      QueuedAction storage queuedAction = actionQueue[i];
       uint32 pointsAccrued;
       uint endTime = startTime + queuedAction.timespan;
 
@@ -127,6 +130,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           remainingQueuedActionsLength
         );
         remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
+        ++numActionsSkipped;
         startTime += queuedAction.timespan;
         continue;
       }
@@ -165,6 +169,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           // Clear the state and make sure the next queued action can finish
           clearActionProcessed(currentActionProcessed);
         }
+        ++numActionsSkipped;
         startTime += queuedAction.timespan;
         continue;
       }

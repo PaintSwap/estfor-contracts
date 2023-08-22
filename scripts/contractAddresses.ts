@@ -42,7 +42,7 @@ if (!isBeta) {
   playersLibrary = "0x3d08306658d3e3e54b5608915b6ce092d8e97448";
   playersImplQueueActions = "0xb7a2fbce876444a6b6037551631b33bb131c88d9";
   playersImplProcessActions = "0xbe92cdfa6311e34e71f27c8ba04d703cb5daea37";
-  playersImplRewards = "0xdea1b4518e65a6f6256878baa8f69be4494b366c";
+  playersImplRewards = "0x12772b73d4b19595fd58f02bf442c6160d19857a";
   playersImplMisc = "0xea74bff137a0af1eee70ecedffe5a0640c5f1c7e";
   playersImplMisc1 = "0x222d5d31acb500509c9b4c7a4e2a076e2253dd2d";
   players = "0x0c07300ed83db48cfa4048c3f4a465fb5ae454f7";
@@ -66,7 +66,7 @@ if (!isBeta) {
   playersLibrary = "0x96580ff13fb3ef3735eb7549e014b360c777cdcb";
   playersImplQueueActions = "0x37b6fa791ab30874b1a1eeaac5c583ae6e5188bb";
   playersImplProcessActions = "0xaad4429aeefd9d19a6b554222acbc42b929a1dc7";
-  playersImplRewards = "0x8e86176c0db347d9f00fe688846c31eb98af540a";
+  playersImplRewards = "0xaea65427bceda0b3c9cc01e1689db30e39b0641f";
   playersImplMisc = "0xefeb13e575493d4266a97ea877103f632f06e99f";
   playersImplMisc1 = "0xed80678300b2c44ac6d05b454875e496ad96b283";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";

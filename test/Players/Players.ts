@@ -993,7 +993,7 @@ describe("Players", function () {
           );
         await players.connect(alice).processActions(playerId);
 
-        // Completely finish first one and go into the second one a bit
+        // Completely finish first all
         await ethers.provider.send("evm_increaseTime", [
           queuedActionFiremaking.timespan + queuedAction.timespan + queuedActionFishing.timespan,
         ]);
@@ -1014,6 +1014,36 @@ describe("Players", function () {
         expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
         expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
         expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      });
+
+      it("Missing middle item, 3 fully finished actions, checking consumed/produced is correct", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+        const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(
+            playerId,
+            [queuedAction, queuedActionFiremaking, queuedActionFishing],
+            EstforTypes.ActionQueueStatus.NONE
+          );
+
+        // Remove required items
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.MAGIC_FIRE_STARTER, 1, "0x");
+
+        // Completely finish all
+        await ethers.provider.send("evm_increaseTime", [
+          queuedAction.timespan + queuedActionFiremaking.timespan + queuedActionFishing.timespan,
+        ]);
+        await ethers.provider.send("evm_mine", []);
+        let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+        expect(pendingQueuedActionState.equipmentStates.length).to.eq(2);
+        expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.LOG);
+        expect(pendingQueuedActionState.equipmentStates[1].producedItemTokenIds[0]).to.eq(EstforConstants.RAW_MINNUS);
       });
     });
 
