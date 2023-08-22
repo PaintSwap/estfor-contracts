@@ -45,11 +45,11 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.XP_BOOST,
-    price: ethers.utils.parseEther("13"), // These are halved for 1 week of launch
+    price: ethers.utils.parseEther("12"), // These are halved for 1 week of launch
   },
   {
     tokenId: EstforConstants.GATHERING_BOOST,
-    price: ethers.utils.parseEther("13"), // These are halved for 1 week of launch
+    price: ethers.utils.parseEther("12"), // These are halved for 1 week of launch
   },
   {
     tokenId: EstforConstants.SKILL_BOOST,
