@@ -238,15 +238,6 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     }
   }
 
-  function _awaitingClaim(uint _playerId) private view returns (uint lotteryId) {
-    for (uint i = 0; i < lastUnclaimedWinners.length; i += 2) {
-      if (lastUnclaimedWinners[i] == _playerId) {
-        lotteryId = lastUnclaimedWinners[i + 1];
-        break;
-      }
-    }
-  }
-
   function newOracleRandomWords(uint _randomWord) external onlyWorld {
     uint16 _lastLotteryId = lastLotteryId;
 
@@ -328,6 +319,15 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     // Delete last ones
     delete lastUnclaimedWinners[lastUnclaimedWinners.length - 2];
     delete lastUnclaimedWinners[lastUnclaimedWinners.length - 1];
+  }
+
+  function _awaitingClaim(uint _playerId) private view returns (uint lotteryId) {
+    for (uint i = 0; i < lastUnclaimedWinners.length; i += 2) {
+      if (lastUnclaimedWinners[i] == _playerId) {
+        lotteryId = lastUnclaimedWinners[i + 1];
+        break;
+      }
+    }
   }
 
   // Scans the last 3 unclaimed winners to see if this playerId belongs there.

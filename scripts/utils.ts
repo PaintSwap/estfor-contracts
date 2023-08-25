@@ -61,14 +61,14 @@ export const setDailyAndWeeklyRewards = async (world: World) => {
   for (let i = 0; i < allDailyRewards.length; ++i) {
     const tier = i + 1;
     const tx = await world.setDailyRewardPool(tier, allDailyRewards[i]);
-    tx.wait();
+    await tx.wait();
   }
 
   // Set up weekly rewards
   for (let i = 0; i < allWeeklyRewards.length; ++i) {
     const tier = i + 1;
     const tx = await world.setWeeklyRewardPool(tier, allWeeklyRewards[i]);
-    tx.wait();
+    await tx.wait();
   }
 };
 

@@ -26,22 +26,6 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
     _updatePromotionalAdmins(_promotionalAdmins, true);
   }
 
-  function addAdmins(address[] calldata _admins) external onlyOwner {
-    _updateAdmins(_admins, true);
-  }
-
-  function addAdmin(address _admin) external onlyOwner {
-    _updateAdmin(_admin, true);
-  }
-
-  function removeAdmin(address _admin) external onlyOwner {
-    _updateAdmin(_admin, false);
-  }
-
-  function addPromotionalAdmins(address[] calldata _admins) external onlyOwner {
-    _updatePromotionalAdmins(_admins, true);
-  }
-
   function _updateAdmins(address[] calldata _admins, bool _isAdmin) internal {
     U256 bounds = _admins.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
@@ -66,6 +50,22 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
 
   function isPromotionalAdmin(address _admin) external view returns (bool) {
     return promotionalAdmins[_admin];
+  }
+
+  function addAdmins(address[] calldata _admins) external onlyOwner {
+    _updateAdmins(_admins, true);
+  }
+
+  function addAdmin(address _admin) external onlyOwner {
+    _updateAdmin(_admin, true);
+  }
+
+  function removeAdmin(address _admin) external onlyOwner {
+    _updateAdmin(_admin, false);
+  }
+
+  function addPromotionalAdmins(address[] calldata _admins) external onlyOwner {
+    _updatePromotionalAdmins(_admins, true);
   }
 
   // solhint-disable-next-line no-empty-blocks

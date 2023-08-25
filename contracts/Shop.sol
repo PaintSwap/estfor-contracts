@@ -74,23 +74,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     dev = _dev;
   }
 
-  function _liquidatePrice(uint16 _tokenId, uint _totalBrushPerItem) private view returns (uint80 price) {
-    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
-    uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
-    if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
-      if (totalOfThisItem != 0) {
-        price = uint80(_totalBrushPerItem / totalOfThisItem);
-      }
-    } else {
-      price = uint80(tokenAllocation.price);
-    }
-
-    if (totalOfThisItem < 100) {
-      // Needs to have a minimum of an item before any can be sold.
-      price = 0;
-    }
-  }
-
   function liquidatePrice(uint16 _tokenId) public view returns (uint80 price) {
     uint totalBrush = brush.balanceOf(address(this));
     uint totalBrushForItem = totalBrush / itemNFT.totalSupply();
@@ -232,6 +215,23 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
     tokenAllocation.allocationRemaining = uint80(allocationRemaining - totalSold);
     itemNFT.burn(msg.sender, _tokenId, _quantity);
+  }
+
+  function _liquidatePrice(uint16 _tokenId, uint _totalBrushPerItem) private view returns (uint80 price) {
+    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
+    uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
+    if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
+      if (totalOfThisItem != 0) {
+        price = uint80(_totalBrushPerItem / totalOfThisItem);
+      }
+    } else {
+      price = uint80(tokenAllocation.price);
+    }
+
+    if (totalOfThisItem < 100) {
+      // Needs to have a minimum of an item before any can be sold.
+      price = 0;
+    }
   }
 
   function _addBuyableItem(ShopItem calldata _shopItem) private {
