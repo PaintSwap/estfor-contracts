@@ -18,6 +18,7 @@ import {
   BANK_ADDRESS,
   BANK_REGISTRY_ADDRESS,
   BANK_FACTORY_ADDRESS,
+  PROMOTIONS_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -31,8 +32,9 @@ async function main() {
     ITEM_NFT_ADDRESS,
     PLAYER_NFT_ADDRESS,
     PLAYERS_LIBRARY_ADDRESS,
-    QUESTS_ADDRESS,
     CLANS_ADDRESS,
+    PROMOTIONS_ADDRESS,
+    QUESTS_ADDRESS,
     BANK_ADDRESS,
     await upgrades.beacon.getImplementationAddress(BANK_ADDRESS),
     BANK_REGISTRY_ADDRESS,

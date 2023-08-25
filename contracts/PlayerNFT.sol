@@ -117,6 +117,39 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     emit EditNameCost(_editNameCost);
   }
 
+  function mint(uint _avatarId, string calldata _name, bool _makeActive) external {
+    address from = _msgSender();
+    uint playerId = nextPlayerId++;
+    string memory trimmedName = _setName(playerId, _name);
+    emit NewPlayer(playerId, _avatarId, trimmedName);
+    _setTokenIdToAvatar(playerId, _avatarId);
+    _mint(from, playerId, 1, "");
+    _mintStartingItems(from, playerId, _avatarId, _makeActive);
+  }
+
+  function burn(address _from, uint _playerId) external {
+    if (_from != _msgSender() && !isApprovedForAll(_from, _msgSender())) {
+      revert ERC1155BurnForbidden();
+    }
+    _burn(_from, _playerId, 1);
+  }
+
+  function editName(uint _playerId, string calldata _newName) external isOwnerOfPlayer(_playerId) {
+    uint brushCost = editNameCost;
+    // Pay
+    brush.transferFrom(_msgSender(), address(this), brushCost);
+    uint quarterCost = brushCost / 4;
+    // Send half to the pool (currently shop)
+    brush.transfer(pool, brushCost - quarterCost * 2);
+    // Send 1 quarter to the dev address
+    brush.transfer(dev, quarterCost);
+    // Burn 1 quarter
+    brush.burn(quarterCost);
+
+    string memory trimmedName = _setName(_playerId, _newName);
+    emit EditPlayer(_playerId, trimmedName);
+  }
+
   function _mintStartingItems(address _from, uint _playerId, uint _avatarId, bool _makeActive) private {
     // Give the player some starting items
     uint[] memory itemTokenIds = new uint[](7);
@@ -168,31 +201,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
   }
 
-  function mint(uint _avatarId, string calldata _name, bool _makeActive) external {
-    address from = _msgSender();
-    uint playerId = nextPlayerId;
-    nextPlayerId = nextPlayerId.inc();
-    string memory trimmedName = _setName(playerId, _name);
-    emit NewPlayer(playerId, _avatarId, trimmedName);
-    _mint(from, playerId, 1, "");
-    _mintStartingItems(from, playerId, _avatarId, _makeActive);
-    _setTokenIdToAvatar(playerId, _avatarId);
-  }
-
   function _setTokenIdToAvatar(uint _playerId, uint _avatarId) private {
     if (bytes(avatars[_avatarId].description).length == 0) {
       revert AvatarNotExists();
     }
     playerIdToAvatar[_playerId] = _avatarId;
-  }
-
-  function uri(uint _playerId) public view virtual override returns (string memory) {
-    if (!exists(_playerId)) {
-      revert ERC1155Metadata_URIQueryForNonexistentToken();
-    }
-    AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
-    string memory imageURI = string(abi.encodePacked(imageBaseUri, avatarInfo.imageURI));
-    return players.getURI(_playerId, names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
   }
 
   function _beforeTokenTransfer(
@@ -220,6 +233,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
   }
 
+  function uri(uint _playerId) public view virtual override returns (string memory) {
+    if (!exists(_playerId)) {
+      revert ERC1155Metadata_URIQueryForNonexistentToken();
+    }
+    AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
+    string memory imageURI = string(abi.encodePacked(imageBaseUri, avatarInfo.imageURI));
+    return players.getURI(_playerId, names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
+  }
+
   /**
    * @dev Returns whether `playerId` exists.
    *
@@ -234,22 +256,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return exists(_tokenId) ? 1 : 0;
   }
 
-  function editName(uint _playerId, string calldata _newName) external isOwnerOfPlayer(_playerId) {
-    uint brushCost = editNameCost;
-    // Pay
-    brush.transferFrom(_msgSender(), address(this), brushCost);
-    uint quarterCost = brushCost / 4;
-    // Send half to the pool (currently shop)
-    brush.transfer(pool, brushCost - quarterCost * 2);
-    // Send 1 quarter to the dev address
-    brush.transfer(dev, quarterCost);
-    // Burn 1 quarter
-    brush.burn(quarterCost);
-
-    string memory trimmedName = _setName(_playerId, _newName);
-    emit EditPlayer(_playerId, trimmedName);
-  }
-
   /**
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
@@ -261,13 +267,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       uint i = iter.asUint256();
       batchBalances[i] = balanceOf(_account, _ids[i]);
     }
-  }
-
-  function burn(address _from, uint _playerId) external {
-    if (_from != _msgSender() && !isApprovedForAll(_from, _msgSender())) {
-      revert ERC1155BurnForbidden();
-    }
-    _burn(_from, _playerId, 1);
   }
 
   function royaltyInfo(
