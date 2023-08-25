@@ -41,7 +41,14 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
+import {
+  BRUSH_ADDRESS,
+  CLANS_ADDRESS,
+  QUESTS_ADDRESS,
+  SHOP_ADDRESS,
+  WFTM_ADDRESS,
+  WORLD_ADDRESS,
+} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
@@ -99,6 +106,8 @@ async function main() {
     }
   }
 
+  const timeout = 600 * 1000; // 10 minutes
+
   // Create the world
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   const worldLibrary = await WorldLibrary.deploy();
@@ -111,6 +120,7 @@ async function main() {
   const world = (await upgrades.deployProxy(World, [oracle.address, subscriptionId], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
+    timeout,
   })) as World;
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
@@ -118,6 +128,7 @@ async function main() {
   const Shop = await ethers.getContractFactory("Shop");
   const shop = (await upgrades.deployProxy(Shop, [brush.address, devAddress], {
     kind: "uups",
+    timeout,
   })) as Shop;
 
   await shop.deployed();
@@ -130,6 +141,7 @@ async function main() {
     [router.address, shop.address, devAddress, brush.address, buyPath],
     {
       kind: "uups",
+      timeout,
     }
   );
   await royaltyReceiver.deployed();
@@ -144,6 +156,7 @@ async function main() {
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
   const adminAccess = await upgrades.deployProxy(AdminAccess, [admins, promotionalAdmins], {
     kind: "uups",
+    timeout,
   });
   await adminAccess.deployed();
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
@@ -184,6 +197,7 @@ async function main() {
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
+      timeout,
     }
   )) as ItemNFT;
   await itemNFT.deployed();
@@ -212,6 +226,7 @@ async function main() {
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
+      timeout,
     }
   )) as PlayerNFT;
   await playerNFT.deployed();
@@ -223,6 +238,7 @@ async function main() {
     [adminAccess.address, itemNFT.address, playerNFT.address, isBeta],
     {
       kind: "uups",
+      timeout,
     }
   )) as Promotions;
   await promotions.deployed();
@@ -231,6 +247,7 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
+    timeout,
   })) as Quests;
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
@@ -244,6 +261,7 @@ async function main() {
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
+      timeout,
     }
   )) as Clans;
   await clans.deployed();
@@ -265,6 +283,7 @@ async function main() {
     ],
     {
       kind: "uups",
+      timeout,
     }
   );
   await wishingWell.deployed();
@@ -275,7 +294,6 @@ async function main() {
   await bank.deployed();
   console.log(`bank = "${bank.address.toLowerCase()}"`);
 
-  // This contains all the player data
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playersLibrary = await PlayersLibrary.deploy();
   await playersLibrary.deployed();
@@ -284,8 +302,8 @@ async function main() {
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(playersLibrary.address);
 
+  // This contains all the player data
   const Players = await ethers.getContractFactory("Players");
-
   const players = (await upgrades.deployProxy(
     Players,
     [
@@ -306,6 +324,7 @@ async function main() {
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
+      timeout,
     }
   )) as Players;
   await players.deployed();
@@ -317,6 +336,7 @@ async function main() {
     [itemNFT.address, playerNFT.address, clans.address, players.address],
     {
       kind: "uups",
+      timeout,
     }
   );
   await bankRegistry.deployed();
@@ -350,9 +370,11 @@ async function main() {
         worldLibrary.address,
         world.address,
         royaltyReceiver.address,
-        quests.address,
         clans.address,
+        quests.address,
+        promotions.address,
         bank.address,
+        await upgrades.beacon.getImplementationAddress(bank.address),
         bankRegistry.address,
         bankFactory.address,
       ];
@@ -368,9 +390,10 @@ async function main() {
 
   tx = await world.setQuests(quests.address);
   await tx.wait();
+  console.log("world setQuests");
   tx = await world.setWishingWell(wishingWell.address);
   await tx.wait();
-  console.log("world setQuests");
+  console.log("world setWishingWell");
   tx = await itemNFT.setPlayers(players.address);
   await tx.wait();
   console.log("itemNFT setPlayers");
