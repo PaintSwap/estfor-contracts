@@ -510,18 +510,20 @@ library PlayersLibrary {
       // Round up
       uint totalFoodRequired = Math.ceilDiv(uint32(_totalHealthLost), healthRestored);
       totalFoodRequiredKilling = Math.ceilDiv(uint32(_totalHealthLostKilling), healthRestored);
+
+      uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
+
       // Can only consume a maximum of 65535 food
       if (totalFoodRequired > type(uint16).max) {
-        foodConsumed = type(uint16).max;
         died = true;
       } else {
-        uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
         died = totalFoodRequired > balance;
-        if (died) {
-          foodConsumed = uint16(balance > type(uint16).max ? type(uint16).max : balance);
-        } else {
-          foodConsumed = uint16(totalFoodRequired);
-        }
+      }
+
+      if (died) {
+        foodConsumed = uint16(balance > type(uint16).max ? type(uint16).max : balance);
+      } else {
+        foodConsumed = uint16(totalFoodRequired);
       }
     }
   }
