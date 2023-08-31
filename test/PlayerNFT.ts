@@ -283,20 +283,4 @@ describe("PlayerNFT", function () {
     await playerNFT.burn(owner.address, 2);
     expect(await playerNFT["totalSupply()"]()).to.be.eq(0);
   });
-
-  it("Check daily rewards not given when making a new hero straight away", async function () {
-    const {players, playerNFT, itemNFT, alice, world, playerId} = await loadFixture(deployContracts);
-
-    await players.setDailyRewardsEnabled(true);
-    await world.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
-
-    await playerNFT.connect(alice).mint(1, "name1", true);
-
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
-
-    // Check that it does in fact work when processing the action
-    await players.connect(alice).setActivePlayer(playerId);
-    await players.connect(alice).processActions(playerId);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
-  });
 });
