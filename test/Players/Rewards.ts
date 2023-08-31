@@ -243,7 +243,7 @@ describe("Rewards", function () {
     it("Daily & weekly reward when starting an action", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -384,7 +384,7 @@ describe("Rewards", function () {
     it("Only 1 claim", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
 
@@ -420,7 +420,7 @@ describe("Rewards", function () {
     it("Update on process actions", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -448,7 +448,7 @@ describe("Rewards", function () {
       // So that people can't get last Monday's daily reward
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -514,7 +514,7 @@ describe("Rewards", function () {
       const imageId = 1;
       await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
       const oneDay = 24 * 3600;
@@ -568,7 +568,7 @@ describe("Rewards", function () {
     it("Tiered rewards", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
 

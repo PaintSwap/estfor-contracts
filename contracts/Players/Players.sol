@@ -281,8 +281,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       revert PlayerAlreadyActive();
     }
     if (existingActivePlayerId != 0) {
-      // If there is an existing active player, unequip all items
-      _clearEverything(_from, existingActivePlayerId, true);
+      // If there is an existing active player, process the actions if anything needs doing to it
+      bool shouldProcessActions = players_[existingActivePlayerId].actionQueue.length != 0 ||
+        pendingRandomRewards[existingActivePlayerId].length != 0;
+      _clearEverything(_from, existingActivePlayerId, shouldProcessActions);
     }
     emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
   }
