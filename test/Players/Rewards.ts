@@ -418,7 +418,7 @@ describe("Rewards", function () {
       expect(balanceAfter).to.eq(balanceBefore);
     });
 
-    it.only("Only 1 claim per wallet per day", async function () {
+    it("Only 1 claim per wallet per day", async function () {
       const {playerId, players, itemNFT, playerNFT, avatarId, world, alice, mockOracleClient} = await loadFixture(
         playersFixture
       );
