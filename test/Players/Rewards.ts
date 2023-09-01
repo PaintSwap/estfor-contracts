@@ -462,19 +462,16 @@ describe("Rewards", function () {
       expect(balanceAfter).to.eq(balanceBefore);
     });
 
-    it("Check daily rewards not given when making a new hero straight away", async function () {
-      const {players, playerNFT, itemNFT, alice, world, playerId} = await loadFixture(playersFixture);
+    it("Check daily rewards not given when making a new hero", async function () {
+      const {players, playerNFT, itemNFT, alice, world} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
       await world.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
-
       await playerNFT.connect(alice).mint(1, "name1", true);
 
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
 
-      // Check that it does in fact work when processing the action
-      await players.connect(alice).setActivePlayer(playerId);
-      await players.connect(alice).processActions(playerId);
+      await playerNFT.connect(alice).mint(1, "name2", true);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
     });
 
