@@ -10289,6 +10289,430 @@
           }
         }
       }
+    },
+    "d64c55afb18181ab785531c94c463163d2740d7497fb3ed93b74fd9ce98d9e0b": {
+      "address": "0x07885029734e9d2eA68824B043360E7Be0492577",
+      "txHash": "0x33f2d1df435a797d4d86e202fa97a2efd8c5607db2a660b27e9eeabfa184f5dd",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\introspection\\ERC165Upgradeable.sol:40"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "ERC1155Upgradeable",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155Upgradeable.sol:43"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC1155Upgradeable",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155Upgradeable.sol:46"
+          },
+          {
+            "label": "_uri",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_string_storage",
+            "contract": "ERC1155Upgradeable",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155Upgradeable.sol:49"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_array(t_uint256)47_storage",
+            "contract": "ERC1155Upgradeable",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155Upgradeable.sol:549"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "nextPlayerId",
+            "offset": 0,
+            "slot": "301",
+            "type": "t_uint256",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:43"
+          },
+          {
+            "label": "avatars",
+            "offset": 0,
+            "slot": "302",
+            "type": "t_mapping(t_uint256,t_struct(AvatarInfo)40131_storage)",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:45"
+          },
+          {
+            "label": "imageBaseUri",
+            "offset": 0,
+            "slot": "303",
+            "type": "t_string_storage",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:46"
+          },
+          {
+            "label": "playerIdToAvatar",
+            "offset": 0,
+            "slot": "304",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:47"
+          },
+          {
+            "label": "names",
+            "offset": 0,
+            "slot": "305",
+            "type": "t_mapping(t_uint256,t_string_storage)",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:48"
+          },
+          {
+            "label": "lowercaseNames",
+            "offset": 0,
+            "slot": "306",
+            "type": "t_mapping(t_string_memory_ptr,t_bool)",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:49"
+          },
+          {
+            "label": "brush",
+            "offset": 0,
+            "slot": "307",
+            "type": "t_contract(IBrushToken)40534",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:51"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "308",
+            "type": "t_contract(IPlayers)40658",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:52"
+          },
+          {
+            "label": "pool",
+            "offset": 0,
+            "slot": "309",
+            "type": "t_address",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:53"
+          },
+          {
+            "label": "royaltyReceiver",
+            "offset": 0,
+            "slot": "310",
+            "type": "t_address",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:55"
+          },
+          {
+            "label": "royaltyFee",
+            "offset": 20,
+            "slot": "310",
+            "type": "t_uint8",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:56"
+          },
+          {
+            "label": "editNameCost",
+            "offset": 21,
+            "slot": "310",
+            "type": "t_uint72",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:57"
+          },
+          {
+            "label": "isBeta",
+            "offset": 30,
+            "slot": "310",
+            "type": "t_bool",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:58"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "311",
+            "type": "t_address",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:60"
+          },
+          {
+            "label": "merkleRoot",
+            "offset": 0,
+            "slot": "312",
+            "type": "t_bytes32",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:62"
+          },
+          {
+            "label": "numMintedFromWhitelist",
+            "offset": 0,
+            "slot": "313",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:63"
+          },
+          {
+            "label": "adminAccess",
+            "offset": 0,
+            "slot": "314",
+            "type": "t_contract(AdminAccess)6434",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:64"
+          },
+          {
+            "label": "numBurned",
+            "offset": 20,
+            "slot": "314",
+            "type": "t_uint32",
+            "contract": "PlayerNFT",
+            "src": "contracts\\PlayerNFT.sol:65"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_enum(Skill)39732)2_storage": {
+            "label": "enum Skill[2]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)47_storage": {
+            "label": "uint256[47]",
+            "numberOfBytes": "1504"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(AdminAccess)6434": {
+            "label": "contract AdminAccess",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)40534": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlayers)40658": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Skill)39732": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "AGILITY",
+              "ALCHEMY",
+              "FLETCHING",
+              "RESERVED1",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_bool)": {
+            "label": "mapping(string => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(uint256 => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_string_storage)": {
+            "label": "mapping(uint256 => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(AvatarInfo)40131_storage)": {
+            "label": "mapping(uint256 => struct AvatarInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AvatarInfo)40131_storage": {
+            "label": "struct AvatarInfo",
+            "members": [
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "description",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "imageURI",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "startSkills",
+                "type": "t_array(t_enum(Skill)39732)2_storage",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint72": {
+            "label": "uint72",
+            "numberOfBytes": "9"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
     }
   }
 }
