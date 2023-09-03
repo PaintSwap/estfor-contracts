@@ -8,20 +8,32 @@ type ShopItem = {
 
 export const allShopItems: ShopItem[] = [
   {
-    tokenId: EstforConstants.BRONZE_PICKAXE,
-    price: ethers.utils.parseEther("10"),
-  },
-  {
-    tokenId: EstforConstants.BRONZE_AXE,
-    price: ethers.utils.parseEther("10"),
-  },
-  {
     tokenId: EstforConstants.MAGIC_FIRE_STARTER,
     price: ethers.utils.parseEther("1"),
   },
   {
+    tokenId: EstforConstants.BRONZE_SWORD,
+    price: ethers.utils.parseEther("1"),
+  },
+  {
+    tokenId: EstforConstants.BASIC_BOW,
+    price: ethers.utils.parseEther("1"),
+  },
+  {
+    tokenId: EstforConstants.TOTEM_STAFF,
+    price: ethers.utils.parseEther("1"),
+  },
+  {
     tokenId: EstforConstants.NET_STICK,
-    price: ethers.utils.parseEther("10"),
+    price: ethers.utils.parseEther("1"),
+  },
+  {
+    tokenId: EstforConstants.BRONZE_PICKAXE,
+    price: ethers.utils.parseEther("1"),
+  },
+  {
+    tokenId: EstforConstants.BRONZE_AXE,
+    price: ethers.utils.parseEther("1"),
   },
   {
     tokenId: EstforConstants.MEDIUM_NET,
@@ -41,19 +53,19 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
-    price: ethers.utils.parseEther("25"), // These are halved for 1 week of launch
+    price: ethers.utils.parseEther("50"),
   },
   {
     tokenId: EstforConstants.XP_BOOST,
-    price: ethers.utils.parseEther("12"), // These are halved for 1 week of launch
+    price: ethers.utils.parseEther("25"),
   },
   {
     tokenId: EstforConstants.GATHERING_BOOST,
-    price: ethers.utils.parseEther("12"), // These are halved for 1 week of launch
+    price: ethers.utils.parseEther("25"),
   },
   {
     tokenId: EstforConstants.SKILL_BOOST,
-    price: ethers.utils.parseEther("25"), // These are halved for 1 week of launch
+    price: ethers.utils.parseEther("50"),
   },
   {
     tokenId: EstforConstants.COOKED_MINNUS,
