@@ -1933,6 +1933,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2800, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 400, amount: 1},
       {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.SCORCHING_BOOTS, chance: 2, amount: 1},
     ],
     combatStats: {
       melee: 200,
@@ -1968,6 +1969,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 2800, amount: 1},
       {itemTokenId: EstforConstants.VENOM_POUCH, chance: 1328, amount: 1},
       {itemTokenId: EstforConstants.MASTER_TROUSERS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.GODLY_BOW, chance: 2, amount: 1},
     ],
     combatStats: {
       melee: 250,
