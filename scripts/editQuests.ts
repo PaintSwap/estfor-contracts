@@ -18,12 +18,10 @@ async function main() {
   //  await tx.wait();
 
   // Single one
-  const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_CLEAR_SKIES) as Quest;
-  const tx = await quests.editQuest(quest, [
-    {skill: Skill.HEALTH, xp: 2939},
-    {skill: Skill.NONE, xp: 0},
-    {skill: Skill.NONE, xp: 0},
-  ]);
+  const questIndex = allQuests.findIndex((q) => q.questId === EstforConstants.QUEST_CLEAR_SKIES);
+  const quest = allQuests[questIndex];
+  const minRequirements = allQuestsMinRequirements[questIndex];
+  const tx = await quests.editQuest(quest, minRequirements);
   await tx.wait();
 }
 
