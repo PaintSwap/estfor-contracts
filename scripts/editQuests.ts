@@ -1,6 +1,8 @@
 import {ethers} from "hardhat";
 import {QUESTS_ADDRESS} from "./contractAddresses";
 import {Quest, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
+import {EstforConstants} from "@paintswap/estfor-definitions";
+import {Skill} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -12,13 +14,17 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await Quests.attach(QUESTS_ADDRESS);
 
-  const tx = await quests.editQuests(allQuests, allQuestsMinRequirements);
-  await tx.wait();
+  //  const tx = await quests.editQuests(allQuests, allQuestsMinRequirements);
+  //  await tx.wait();
 
   // Single one
-  //  const quest = allQuests.find((q) => q.questId === QUEST_IRON_AGE) as Quest;
-  //  const tx = await quests.editQuest(quest, defaultMinRequirements);
-  //  await tx.wait();
+  const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_CLEAR_SKIES) as Quest;
+  const tx = await quests.editQuest(quest, [
+    {skill: Skill.HEALTH, xp: 2939},
+    {skill: Skill.NONE, xp: 0},
+    {skill: Skill.NONE, xp: 0},
+  ]);
+  await tx.wait();
 }
 
 main().catch((error) => {
