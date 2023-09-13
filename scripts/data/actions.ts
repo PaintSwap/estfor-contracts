@@ -1932,8 +1932,8 @@ export const allActions: ActionInput[] = [
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2800, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 400, amount: 1},
-      {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 8, amount: 1},
-      {itemTokenId: EstforConstants.SCORCHING_BOOTS, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.SCORCHING_BOOTS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 2, amount: 1},
     ],
     combatStats: {
       melee: 200,
