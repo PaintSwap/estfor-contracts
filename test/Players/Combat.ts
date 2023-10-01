@@ -862,7 +862,11 @@ describe("Combat Actions", function () {
     });
 
     it("clearEverything", async function () {
-      const {playerId, players, alice, world, itemNFT, choiceId, quests} = await loadFixture(playersFixtureMelee);
+      const {playerId, players, alice, world, itemNFT, choiceId, brush, wishingWell} = await loadFixture(
+        playersFixtureMelee
+      );
+
+      const boostValue = 50;
 
       await itemNFT.addItems([
         {
@@ -870,6 +874,26 @@ describe("Combat Actions", function () {
           healthRestored: 2,
           tokenId: EstforConstants.COOKED_BLEKK,
           equipPosition: EstforTypes.EquipPosition.FOOD,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.XP_BOOST,
+          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+          boostValue,
+          boostDuration: 86400,
+          isTransferable: false,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.LUCK_OF_THE_DRAW,
+          equipPosition: EstforTypes.EquipPosition.EXTRA_BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.ANY_XP,
+          boostValue: 5,
+          boostDuration: 86400,
+          isTransferable: false,
         },
       ]);
 
@@ -891,21 +915,12 @@ describe("Combat Actions", function () {
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
-      const boostValue = 50;
-      await itemNFT.addItems([
-        {
-          ...EstforTypes.defaultItemInput,
-          tokenId: EstforConstants.XP_BOOST,
-          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
-          // Boost
-          boostType: EstforTypes.BoostType.NON_COMBAT_XP,
-          boostValue,
-          boostDuration: 86400,
-          isTransferable: false,
-        },
-      ]);
-
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+
+      await brush.mint(alice.address, ethers.utils.parseEther("100000"));
+      await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("100000"));
+
+      const raffleCost = await wishingWell.getRaffleEntryCost();
       await players
         .connect(alice)
         .startActionsExtra(
@@ -914,17 +929,21 @@ describe("Combat Actions", function () {
           EstforConstants.XP_BOOST,
           0,
           0,
-          NO_DONATION_AMOUNT,
+          raffleCost,
           EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [73318]);
       await players.connect(alice).processActions(playerId);
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.DEFENCE, 250, true);
       await ethers.provider.send("evm_increaseTime", [240]);
+      expect((await players.activeBoost(playerId)).boostType).to.not.eq(0);
+      expect((await players.activeBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
       await expect(players.connect(alice).clearEverything(playerId)).to.not.be.reverted;
       expect((await players.getActionQueue(playerId)).length).to.eq(0);
       // Active boost should be removed
       expect((await players.activeBoost(playerId)).boostType).to.eq(0);
+      // Should not remove the extra boost though
+      expect((await players.activeBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
     });
 
     it("Check random rewards", async function () {

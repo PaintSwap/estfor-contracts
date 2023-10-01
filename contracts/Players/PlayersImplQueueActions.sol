@@ -549,7 +549,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Remove any active boost
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
     if (activeBoost.boostType != BoostType.NONE) {
-      delete activeBoosts_[_playerId];
+      _clearPlayerMainBoost(_playerId);
       if (activeBoost.startTime > block.timestamp) {
         // Mint it if it hasn't been consumed yet
         itemNFT.mint(_from, activeBoost.itemTokenId, 1);

@@ -426,6 +426,17 @@ abstract contract PlayersBase {
     }
   }
 
+  function _clearPlayerMainBoost(uint _playerId) internal {
+    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
+    delete playerBoost.value;
+    delete playerBoost.startTime;
+    delete playerBoost.duration;
+    delete playerBoost.value;
+    delete playerBoost.itemTokenId;
+    delete playerBoost.boostType;
+    emit BoostFinished(_playerId);
+  }
+
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {
     bool success;
     (success, returndata) = target.delegatecall(data);

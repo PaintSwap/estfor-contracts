@@ -283,13 +283,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   function _clearPlayerBoostsIfExpired(uint _playerId) private {
     PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
-      delete playerBoost.value;
-      delete playerBoost.startTime;
-      delete playerBoost.duration;
-      delete playerBoost.value;
-      delete playerBoost.itemTokenId;
-      delete playerBoost.boostType;
-      emit BoostFinished(_playerId);
+      _clearPlayerMainBoost(_playerId);
     }
 
     if (
