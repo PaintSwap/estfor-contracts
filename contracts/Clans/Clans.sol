@@ -42,6 +42,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event InvitesDeletedByClan(uint clanId, uint[] invitedPlayerIds, uint deletedInvitesPlayerId);
   event JoinRequestsRemovedByClan(uint clanId, uint[] joinRequestPlayerIds, uint removingJoinRequestsPlayerId);
   event EditNameCost(uint newCost);
+  event EnableJoinRequestsToClan(uint clanId, bool enableJoinRequests, uint playerId);
 
   // legacy for ABI reasons on old beta version
   event MemberLeft(uint clanId, uint playerId);
@@ -84,6 +85,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error InviteDoesNotExist();
   error NoInvitesToDelete();
   error NoJoinRequestsToDelete();
+  error JoinRequestsDisabled();
 
   enum ClanRank {
     NONE, // Not in a clan
@@ -99,6 +101,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint16 memberCount;
     uint40 createdTimestamp;
     uint8 tierId;
+    bool disableJoinRequests;
     string name;
     mapping(uint playerId => bool invited) inviteRequests;
   }
@@ -371,6 +374,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert ClanDoesNotExist();
     }
 
+    if (clan.disableJoinRequests) {
+      revert JoinRequestsDisabled();
+    }
+
     PlayerInfo storage player = playerInfo[_playerId];
 
     if (isMemberOfAnyClan(_playerId)) {
@@ -557,6 +564,16 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     _claimOwnership(_clanId, _playerId);
+  }
+
+  function setEnableJoinRequestsToClan(
+    uint _clanId,
+    bool _enableJoinRequests,
+    uint _playerId
+  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
+    Clan storage clan = clans[_clanId];
+    clan.disableJoinRequests = !_enableJoinRequests;
+    emit EnableJoinRequestsToClan(_clanId, _enableJoinRequests, _playerId);
   }
 
   function upgradeClan(uint _clanId, uint _playerId, uint8 _newTierId) public isOwnerOfPlayer(_playerId) {
