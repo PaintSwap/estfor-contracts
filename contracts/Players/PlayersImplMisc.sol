@@ -150,6 +150,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   // === End XP Threshold rewards ===
 
   function dailyRewardsViewImpl(
+    address _from,
     uint _playerId
   ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
     uint streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
@@ -183,7 +184,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         }
 
         (uint itemTokenId, uint amount) = world.getDailyReward(playerTier, _playerId);
-        if (itemTokenId != NONE) {
+        // Can only get the daily reward on an account once per day regardless of how many heros claim
+        uint lastWalletTimestamp = walletDailyInfo[_from].lastDailyRewardClaimedTimestamp;
+        if (itemTokenId != NONE && lastWalletTimestamp < (block.timestamp / 1 days) * 1 days) {
           // Add clan member boost to daily reward (if applicable)
           uint clanTierMembership = clans.getClanTierMembership(_playerId);
           amount += (amount * clanTierMembership) / 10; // +10% extra for each clan tier
@@ -222,6 +225,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
   function handleDailyRewards(address _from, uint _playerId) external {
     (uint[] memory rewardItemTokenIds, uint[] memory rewardAmounts, bytes32 dailyRewardMask) = dailyRewardsViewImpl(
+      _from,
       _playerId
     );
     if (uint(dailyRewardMask) != 0) {
@@ -230,6 +234,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     if (rewardAmounts.length != 0) {
       itemNFT.mint(_from, rewardItemTokenIds[0], rewardAmounts[0]);
       emit DailyReward(_from, _playerId, rewardItemTokenIds[0], rewardAmounts[0]);
+
+      walletDailyInfo[_from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }
 
     if (rewardAmounts.length > 1) {

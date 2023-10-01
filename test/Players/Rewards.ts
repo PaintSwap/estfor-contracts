@@ -15,6 +15,7 @@ import {
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting} from "./utils";
 import {defaultActionChoice, emptyCombatStats} from "@paintswap/estfor-definitions/types";
+import {createPlayer} from "../../scripts/utils";
 
 const actionIsAvailable = true;
 
@@ -243,7 +244,7 @@ describe("Rewards", function () {
     it("Daily & weekly reward when starting an action", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -381,10 +382,10 @@ describe("Rewards", function () {
       );
     });
 
-    it("Only 1 claim", async function () {
+    it("Only 1 claim per hero per day", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
 
@@ -417,10 +418,67 @@ describe("Rewards", function () {
       expect(balanceAfter).to.eq(balanceBefore);
     });
 
+    it("Only 1 claim per wallet per day", async function () {
+      const {playerId, players, itemNFT, playerNFT, avatarId, world, alice, mockOracleClient} = await loadFixture(
+        playersFixture
+      );
+
+      await players.setDailyRewardsEnabled(true);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
+
+      const oneDay = 24 * 3600;
+      const oneWeek = oneDay * 7;
+      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
+
+      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+
+      const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
+      for (let i = 0; i < numDays; ++i) {
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+      }
+
+      // Get the new equipments for the next week
+      const tier = 1;
+      let equipments = await world.getActiveDailyAndWeeklyRewards(tier, playerId);
+      let equipment = equipments[0];
+
+      let balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      let balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      expect(balanceAfter).to.eq(balanceBefore.toNumber() + equipment.amount);
+
+      // Using another hero, shouldn't get any more rewards
+      const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "alice1", true);
+
+      equipments = await world.getActiveDailyAndWeeklyRewards(tier, newPlayerId);
+      equipment = equipments[0];
+
+      balanceBefore = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      await players.connect(alice).startActions(newPlayerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      balanceAfter = await itemNFT.balanceOf(alice.address, equipment.itemTokenId);
+      expect(balanceAfter).to.eq(balanceBefore);
+    });
+
+    it("Check daily rewards not given when making a new hero", async function () {
+      const {players, playerNFT, itemNFT, alice, world} = await loadFixture(playersFixture);
+
+      await players.setDailyRewardsEnabled(true);
+      await world.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+      await playerNFT.connect(alice).mint(1, "name1", true);
+
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
+
+      await playerNFT.connect(alice).mint(1, "name2", true);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
+    });
+
     it("Update on process actions", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -448,7 +506,7 @@ describe("Rewards", function () {
       // So that people can't get last Monday's daily reward
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -514,7 +572,7 @@ describe("Rewards", function () {
       const imageId = 1;
       await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
       const oneDay = 24 * 3600;
@@ -568,7 +626,7 @@ describe("Rewards", function () {
     it("Tiered rewards", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
-      players.setDailyRewardsEnabled(true);
+      await players.setDailyRewardsEnabled(true);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20);
 

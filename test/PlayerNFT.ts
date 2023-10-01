@@ -271,4 +271,16 @@ describe("PlayerNFT", function () {
     ]);
     expect(balances).to.eql(balances.map(() => ethers.BigNumber.from("1")));
   });
+
+  it("totalSupply", async function () {
+    const {playerNFT, owner, alice} = await loadFixture(deployContracts);
+
+    expect(await playerNFT["totalSupply()"]()).to.be.eq(1);
+    await playerNFT.mint(1, "name1", true);
+    expect(await playerNFT["totalSupply()"]()).to.be.eq(2);
+    await playerNFT.connect(alice).burn(alice.address, 1);
+    expect(await playerNFT["totalSupply()"]()).to.be.eq(1);
+    await playerNFT.burn(owner.address, 2);
+    expect(await playerNFT["totalSupply()"]()).to.be.eq(0);
+  });
 });

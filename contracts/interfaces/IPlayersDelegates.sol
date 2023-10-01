@@ -87,7 +87,8 @@ interface IPlayersMiscDelegateView {
   function dailyClaimedRewardsImpl(uint playerId) external view returns (bool[7] memory claimed);
 
   function dailyRewardsViewImpl(
-    uint _playerId
+    address from,
+    uint playerId
   ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask);
 
   function processConsumablesView(

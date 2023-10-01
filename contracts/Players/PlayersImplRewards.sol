@@ -587,7 +587,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionState.dailyRewardItemTokenIds,
       pendingQueuedActionState.dailyRewardAmounts,
       pendingQueuedActionState.dailyRewardMask
-    ) = _dailyRewardsView(_playerId);
+    ) = _dailyRewardsView(from, _playerId);
 
     // Any Lottery winnings
     pendingQueuedActionState.lotteryWinner = wishingWell.getUnclaimedLotteryWinnings(_playerId);
@@ -1083,11 +1083,12 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   }
 
   function _dailyRewardsView(
+    address _from,
     uint _playerId
   ) internal view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersMiscDelegateView.dailyRewardsViewImpl.selector, _playerId)
+      abi.encodeWithSelector(IPlayersMiscDelegateView.dailyRewardsViewImpl.selector, _from, _playerId)
     );
     return abi.decode(data, (uint[], uint[], bytes32));
   }
