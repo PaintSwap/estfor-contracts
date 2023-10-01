@@ -40,9 +40,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event PlayerRankUpdated(uint clanId, uint memberId, ClanRank rank, uint playerId);
   event InvitesDeletedByPlayer(uint[] clanIds, uint playerId);
   event InvitesDeletedByClan(uint clanId, uint[] invitedPlayerIds, uint deletedInvitesPlayerId);
+  event JoinRequestsRemovedByClan(uint clanId, uint[] joinRequestPlayerIds, uint removingJoinRequestsPlayerId);
   event EditNameCost(uint newCost);
 
-  // legacy
+  // legacy for ABI reasons on old beta version
   event MemberLeft(uint clanId, uint playerId);
 
   error AlreadyInClan();
@@ -82,6 +83,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error CannotRenounceToSelf();
   error InviteDoesNotExist();
   error NoInvitesToDelete();
+  error NoJoinRequestsToDelete();
 
   enum ClanRank {
     NONE, // Not in a clan
@@ -391,6 +393,27 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function removeJoinRequest(uint _clanId, uint _playerId) public isOwnerOfPlayer(_playerId) {
     playerInfo[_playerId].requestedClanId = 0;
     emit JoinRequestRemoved(_clanId, _playerId);
+  }
+
+  function removeJoinRequestsAsClan(
+    uint _clanId,
+    uint[] calldata _joinRequestPlayerIds,
+    uint _playerId
+  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
+    if (_joinRequestPlayerIds.length == 0) {
+      revert NoJoinRequestsToDelete();
+    }
+
+    for (uint i = 0; i < _joinRequestPlayerIds.length; ++i) {
+      uint joinRequestPlayerId = _joinRequestPlayerIds[i];
+      PlayerInfo storage player = playerInfo[joinRequestPlayerId];
+      if (player.requestedClanId != _clanId) {
+        revert NoJoinRequest();
+      }
+      player.requestedClanId = 0;
+    }
+
+    emit JoinRequestsRemovedByClan(_clanId, _joinRequestPlayerIds, _playerId);
   }
 
   function _acceptJoinRequest(uint _clanId, uint _newMemberPlayedId) private {

@@ -362,6 +362,67 @@ describe("Clans", function () {
       expect(await clans.isClanMember(clanId, charliePlayerId)).to.be.true;
       expect(await clans.isClanMember(clanId, devPlayerId)).to.be.false;
     });
+
+    it("Remove join request as player", async () => {
+      const {clans, bob, charlie, dev, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
+
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+      await clans.connect(charlie).requestToJoin(clanId, charliePlayerId);
+
+      let playerInfo = await clans.playerInfo(bobPlayerId);
+      expect(playerInfo.requestedClanId).to.eq(clanId);
+      await clans.connect(bob).removeJoinRequest(clanId, bobPlayerId);
+      playerInfo = await clans.playerInfo(bobPlayerId);
+      expect(playerInfo.requestedClanId).to.eq(0);
+      // Charlie should be unchanged
+      playerInfo = await clans.playerInfo(charliePlayerId);
+      expect(playerInfo.requestedClanId).to.eq(clanId);
+    });
+
+    it("Remove join requests as clan", async () => {
+      // Duplicate ones should fail
+      const {clans, playerId, alice, bob, charlie, dev, clanId, playerNFT, avatarId} = await loadFixture(clanFixture);
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      await clans.connect(bob).requestToJoin(clanId, bobPlayerId);
+
+      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
+      await clans.connect(charlie).requestToJoin(clanId, charliePlayerId);
+
+      const devPlayerId = await createPlayer(playerNFT, avatarId, dev, "dev", true);
+      await clans.connect(dev).requestToJoin(clanId, devPlayerId);
+
+      expect((await clans.playerInfo(bobPlayerId)).requestedClanId).to.eq(clanId);
+      expect((await clans.playerInfo(charliePlayerId)).requestedClanId).to.eq(clanId);
+      expect((await clans.playerInfo(devPlayerId)).requestedClanId).to.eq(clanId);
+
+      // Trying to remove duplicate
+      await expect(
+        clans.connect(alice).removeJoinRequestsAsClan(clanId, [charliePlayerId, charliePlayerId], playerId)
+      ).to.be.revertedWithCustomError(clans, "NoJoinRequest");
+
+      // Do not have permission to remove join requests if you don't own this player
+      await expect(clans.removeJoinRequestsAsClan(clanId, [charliePlayerId], playerId)).to.be.revertedWithCustomError(
+        clans,
+        "NotOwnerOfPlayer"
+      );
+
+      await clans.connect(alice).removeJoinRequestsAsClan(clanId, [devPlayerId, charliePlayerId], playerId);
+
+      // Must be at least a scout
+      await clans.connect(alice).changeRank(clanId, playerId, ClanRank.COMMONER, playerId);
+      await expect(
+        clans.connect(alice).removeJoinRequestsAsClan(clanId, [bobPlayerId], playerId)
+      ).to.be.revertedWithCustomError(clans, "RankNotHighEnough");
+
+      let playerInfo = await clans.playerInfo(bobPlayerId);
+      expect(playerInfo.requestedClanId).to.eq(clanId); // bob should be unchanged
+      playerInfo = await clans.playerInfo(charliePlayerId);
+      expect(playerInfo.requestedClanId).to.eq(0);
+      playerInfo = await clans.playerInfo(devPlayerId);
+      expect(playerInfo.requestedClanId).to.eq(0);
+    });
   });
 
   describe("Treasurers", () => {
