@@ -62,6 +62,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   bytes32 private merkleRoot; // Unused now (was for alpha/beta whitelisting)
   mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist; // Unused now
   AdminAccess private adminAccess;
+  uint32 numBurned;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(_msgSender(), playerId) != 1) {
@@ -131,6 +132,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (_from != _msgSender() && !isApprovedForAll(_from, _msgSender())) {
       revert ERC1155BurnForbidden();
     }
+    ++numBurned;
     _burn(_from, _playerId, 1);
   }
 
@@ -287,6 +289,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function symbol() external view returns (string memory) {
     return string(abi.encodePacked("EK_P", isBeta ? "B" : ""));
+  }
+
+  function totalSupply() external view returns (uint) {
+    return nextPlayerId - numBurned - 1;
   }
 
   function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {

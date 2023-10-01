@@ -420,7 +420,7 @@ export const allQuestsMinRequirements: MinRequirementArray[] = [
   defaultMinRequirements,
   defaultMinRequirements,
   [
-    {skill: Skill.HEALTH, xp: 3000},
+    {skill: Skill.HEALTH, xp: 2939},
     {skill: Skill.NONE, xp: 0},
     {skill: Skill.NONE, xp: 0},
   ],

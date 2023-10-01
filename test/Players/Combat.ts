@@ -2699,6 +2699,122 @@ describe("Combat Actions", function () {
     expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(0);
   });
 
+  it("Dead, don't have enough food and requires over 65535 with a partial progress consuming some food", async function () {
+    // Lose all the XP that would have been gained
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const monsterCombatStats: EstforTypes.CombatStats = {
+      melee: 30,
+      magic: 0,
+      ranged: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 100,
+    };
+
+    const rate = 6000 * GUAR_MUL; // per kill
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 100 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
+        randomRewards: [],
+        combatStats: monsterCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    const foodNum = 100;
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.BRONZE_SWORD, EstforConstants.COOKED_MINNUS, EstforConstants.BRONZE_HELMET],
+      [1, foodNum, 1]
+    );
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_HELMET,
+        equipPosition: EstforTypes.EquipPosition.HEAD,
+      },
+    ]);
+
+    const timespan = 3600 * 24; // 3 hours
+    tx = await world.addBulkActionChoices(
+      [EstforConstants.NONE],
+      [[1]],
+      [
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
+        ],
+      ]
+    );
+    const choiceId = await getActionChoiceId(tx);
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
+      choiceId,
+      regenerateId: EstforConstants.COOKED_MINNUS,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_SWORD,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        healthRestored: 1,
+        tokenId: EstforConstants.COOKED_MINNUS,
+        equipPosition: EstforTypes.EquipPosition.FOOD,
+      },
+    ]);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [30]);
+    await ethers.provider.send("evm_mine", []);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
+    expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
+    const consumedFood = pendingQueuedActionState.equipmentStates[0].consumedAmounts[0].toNumber();
+    expect(consumedFood).to.be.lt(foodNum);
+
+    await players.connect(alice).processActions(playerId);
+
+    const actuallyConsumed = (await players.players(playerId)).currentActionProcessedFoodConsumed;
+    expect(actuallyConsumed).to.be.oneOf([consumedFood, consumedFood + 1, consumedFood + 2]);
+
+    await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+    await ethers.provider.send("evm_mine", []);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
+    expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(foodNum - actuallyConsumed);
+
+    await expect(players.connect(alice).processActions(playerId)).to.not.be.reverted;
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
+  });
+
   it("Dead, don't kill all", async function () {
     // Lose all the XP that would have been gained
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);

@@ -2,7 +2,9 @@ node_modules
 .env
 *.log
 unknown-*.json
+!unknown-250.json
 !unknown-250-beta.json
+!unknown-250-mock-live.json
 coverage
 coverage.json
 typechain
