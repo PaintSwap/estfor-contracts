@@ -162,7 +162,7 @@ async function main() {
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
 
   let itemsUri: string;
-  let imageBaseUri: string;
+  let heroImageBaseUri: string;
   let editNameBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
@@ -170,15 +170,15 @@ async function main() {
   const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
-    imageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
+    heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
   } else {
     // live version
-    itemsUri = "ipfs://QmQq3imYgF2jAfuYUW6JWHZ6SuYWknmseZXxXUfxBjZipt/";
-    imageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
+    itemsUri = "ipfs://QmSNUExj1R9TUwmiXN7dicRDwtEck65A9ZtvfVpyvpGihz/";
+    heroImageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
@@ -220,7 +220,7 @@ async function main() {
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
-      imageBaseUri,
+      heroImageBaseUri,
       isBeta,
     ],
     {
