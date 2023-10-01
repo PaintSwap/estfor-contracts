@@ -891,13 +891,40 @@ describe("Combat Actions", function () {
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      const boostValue = 50;
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.XP_BOOST,
+          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+          boostValue,
+          boostDuration: 86400,
+          isTransferable: false,
+        },
+      ]);
+
+      await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      await players
+        .connect(alice)
+        .startActionsExtra(
+          playerId,
+          [queuedAction],
+          EstforConstants.XP_BOOST,
+          0,
+          0,
+          NO_DONATION_AMOUNT,
+          EstforTypes.ActionQueueStatus.NONE
+        );
       await ethers.provider.send("evm_increaseTime", [73318]);
       await players.connect(alice).processActions(playerId);
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.DEFENCE, 250, true);
       await ethers.provider.send("evm_increaseTime", [240]);
       await expect(players.connect(alice).clearEverything(playerId)).to.not.be.reverted;
       expect((await players.getActionQueue(playerId)).length).to.eq(0);
+      // Active boost should be removed
+      expect((await players.activeBoost(playerId)).boostType).to.eq(0);
     });
 
     it("Check random rewards", async function () {

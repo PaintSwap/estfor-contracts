@@ -5,7 +5,7 @@ import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
+import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {getXPFromLevel, setupBasicFiremaking, setupBasicFishing, setupBasicWoodcutting, setupTravelling} from "./utils";
 import {Players} from "../../typechain-types";
@@ -1154,6 +1154,44 @@ describe("Players", function () {
       expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
       await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, newPlayerId, 1, "0x");
       expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
+    });
+
+    it("Transferring a player with an active boost should remove it", async function () {
+      const {playerId, players, playerNFT, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+      const boostValue = 50;
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.XP_BOOST,
+          equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+          // Boost
+          boostType: EstforTypes.BoostType.NON_COMBAT_XP,
+          boostValue,
+          boostDuration: 86400,
+          isTransferable: false,
+        },
+      ]);
+
+      await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
+      await players
+        .connect(alice)
+        .startActionsExtra(
+          playerId,
+          [queuedAction],
+          EstforConstants.XP_BOOST,
+          0,
+          0,
+          NO_DONATION_AMOUNT,
+          EstforTypes.ActionQueueStatus.NONE
+        );
+
+      expect((await players.activeBoost(playerId)).boostType).to.not.eq(0);
+      await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+      // Active boost should be removed
+      expect((await players.activeBoost(playerId)).boostType).to.eq(0);
     });
 
     it("Game paused", async function () {
