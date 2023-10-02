@@ -91,6 +91,7 @@
     "setDailyRewards": "npx hardhat run scripts/setDailyRewards.ts",
     "setDonationThresholds": "npx hardhat run scripts/setDonationThresholds.ts",
     "setChainlinkCallbackGasLimit": "npx hardhat run scripts/setChainlinkCallbackGasLimit.ts",
+    "setPaintSwapMarketplaceWhitelist": "npx hardhat run scripts/setPaintSwapMarketplaceWhitelist.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",
     "pauseGame": "npx hardhat run scripts/pauseGame.ts",
