@@ -128729,6 +128729,395 @@
           }
         }
       }
+    },
+    "94510d3d2322999569e5d9109ea231f183bf467a163b7f55374ded221f35fde0": {
+      "address": "0x95A4aeeA4018e8DBF8a5Ab297E155C100917165F",
+      "txHash": "0x6894e2c94f59df777ae6c3e851187cc7b3e1b2bb2b0b6f97c5c288d6eb79aca2",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "brush",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(IBrushToken)40677",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:159"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(IPlayers)40801",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:160"
+          },
+          {
+            "label": "bankFactory",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_contract(IBankFactory)40665",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:161"
+          },
+          {
+            "label": "playerNFT",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_contract(IERC1155)4869",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:162"
+          },
+          {
+            "label": "nextClanId",
+            "offset": 20,
+            "slot": "204",
+            "type": "t_uint80",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:163"
+          },
+          {
+            "label": "pool",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_address",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:164"
+          },
+          {
+            "label": "editNameCost",
+            "offset": 20,
+            "slot": "205",
+            "type": "t_uint80",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:165"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_address",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:166"
+          },
+          {
+            "label": "clans",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_uint256,t_struct(Clan)6760_storage)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:167"
+          },
+          {
+            "label": "playerInfo",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_mapping(t_uint256,t_struct(PlayerInfo)6768_storage)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:168"
+          },
+          {
+            "label": "tiers",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_mapping(t_uint256,t_struct(Tier)6781_storage)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:169"
+          },
+          {
+            "label": "lowercaseNames",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_mapping(t_string_memory_ptr,t_bool)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:170"
+          },
+          {
+            "label": "ownerlessClanTimestamps",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_mapping(t_uint256,t_uint40)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:171"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IBankFactory)40665": {
+            "label": "contract IBankFactory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)40677": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IERC1155)4869": {
+            "label": "contract IERC1155",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlayers)40801": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_enum(ClanRank)6741": {
+            "label": "enum Clans.ClanRank",
+            "members": ["NONE", "COMMONER", "SCOUT", "TREASURER", "LEADER"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_string_memory_ptr,t_bool)": {
+            "label": "mapping(string => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Clan)6760_storage)": {
+            "label": "mapping(uint256 => struct Clans.Clan)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerInfo)6768_storage)": {
+            "label": "mapping(uint256 => struct Clans.PlayerInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Tier)6781_storage)": {
+            "label": "mapping(uint256 => struct Clans.Tier)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint40)": {
+            "label": "mapping(uint256 => uint40)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Clan)6760_storage": {
+            "label": "struct Clans.Clan",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_uint80",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "imageId",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "memberCount",
+                "type": "t_uint16",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "createdTimestamp",
+                "type": "t_uint40",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "tierId",
+                "type": "t_uint8",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "disableJoinRequests",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "inviteRequests",
+                "type": "t_mapping(t_uint256,t_bool)",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(PlayerInfo)6768_storage": {
+            "label": "struct Clans.PlayerInfo",
+            "members": [
+              {
+                "label": "clanId",
+                "type": "t_uint32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "rank",
+                "type": "t_enum(ClanRank)6741",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "requestedClanId",
+                "type": "t_uint32",
+                "offset": 5,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Tier)6781_storage": {
+            "label": "struct Clans.Tier",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "maxMemberCapacity",
+                "type": "t_uint16",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "maxBankCapacity",
+                "type": "t_uint16",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "maxImageId",
+                "type": "t_uint24",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "minimumAge",
+                "type": "t_uint40",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint80",
+                "offset": 13,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          }
+        }
+      }
     }
   }
 }

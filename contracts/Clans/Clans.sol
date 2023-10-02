@@ -42,7 +42,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event InvitesDeletedByClan(uint clanId, uint[] invitedPlayerIds, uint deletedInvitesPlayerId);
   event JoinRequestsRemovedByClan(uint clanId, uint[] joinRequestPlayerIds, uint removingJoinRequestsPlayerId);
   event EditNameCost(uint newCost);
-  event EnableJoinRequestsToClan(uint clanId, bool enableJoinRequests, uint playerId);
+  event JoinRequestsEnabled(uint clanId, bool joinRequestsEnabled, uint playerId);
 
   // legacy for ABI reasons on old beta version
   event MemberLeft(uint clanId, uint playerId);
@@ -566,14 +566,14 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _claimOwnership(_clanId, _playerId);
   }
 
-  function setEnableJoinRequestsToClan(
+  function setJoinRequestsEnabled(
     uint _clanId,
-    bool _enableJoinRequests,
+    bool _joinRequestsEnabled,
     uint _playerId
   ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
     Clan storage clan = clans[_clanId];
-    clan.disableJoinRequests = !_enableJoinRequests;
-    emit EnableJoinRequestsToClan(_clanId, _enableJoinRequests, _playerId);
+    clan.disableJoinRequests = !_joinRequestsEnabled;
+    emit JoinRequestsEnabled(_clanId, _joinRequestsEnabled, _playerId);
   }
 
   function upgradeClan(uint _clanId, uint _playerId, uint8 _newTierId) public isOwnerOfPlayer(_playerId) {

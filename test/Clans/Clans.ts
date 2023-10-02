@@ -428,12 +428,12 @@ describe("Clans", function () {
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
       await clans.connect(bob).requestToJoin(clanId, bobPlayerId); // By default join requests are enabled
 
-      await expect(clans.setEnableJoinRequestsToClan(clanId, false, playerId)).to.be.revertedWithCustomError(
+      await expect(clans.setJoinRequestsEnabled(clanId, false, playerId)).to.be.revertedWithCustomError(
         clans,
         "NotOwnerOfPlayer"
       );
 
-      await clans.connect(alice).setEnableJoinRequestsToClan(clanId, false, playerId);
+      await clans.connect(alice).setJoinRequestsEnabled(clanId, false, playerId);
 
       const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
       await expect(clans.connect(charlie).requestToJoin(clanId, charliePlayerId)).to.be.revertedWithCustomError(
@@ -443,11 +443,12 @@ describe("Clans", function () {
 
       // Must be at least a scout
       await clans.connect(alice).changeRank(clanId, playerId, ClanRank.COMMONER, playerId);
-      await expect(
-        clans.connect(alice).setEnableJoinRequestsToClan(clanId, false, playerId)
-      ).to.be.revertedWithCustomError(clans, "RankNotHighEnough");
+      await expect(clans.connect(alice).setJoinRequestsEnabled(clanId, false, playerId)).to.be.revertedWithCustomError(
+        clans,
+        "RankNotHighEnough"
+      );
 
-      await expect(clans.setEnableJoinRequestsToClan(clanId, false, playerId)).to.be.revertedWithCustomError(
+      await expect(clans.setJoinRequestsEnabled(clanId, false, playerId)).to.be.revertedWithCustomError(
         clans,
         "NotOwnerOfPlayer"
       );
