@@ -144,6 +144,26 @@ library EstforLibrary {
     return true;
   }
 
+  function containsValidTwitterCharacters(string calldata _twitter) external pure returns (bool) {
+    bytes memory twitter = bytes(_twitter);
+    U256 iter = twitter.length.asU256();
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      bytes1 char = twitter[i];
+
+      bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
+      bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
+      bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
+      bool isUnderscore = char == 0x5F; // "_"
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscore) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   function toLower(string memory _str) internal pure returns (string memory) {
     bytes memory lowerStr = abi.encodePacked(_str);
     U256 iter = lowerStr.length.asU256();

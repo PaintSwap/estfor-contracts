@@ -59,15 +59,22 @@ describe("PlayerNFT", function () {
     const {playerId, playerNFT, alice, brush, origName, editNameBrushPrice} = await loadFixture(deployContracts);
     const name = "My name is edited";
     await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice.mul(3));
-    await expect(playerNFT.connect(alice).editName(playerId, name)).to.be.revertedWith(
+
+    const discord = "";
+    const twitter = "";
+    const telegram = "";
+    await expect(playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram)).to.be.revertedWith(
       "ERC20: transfer amount exceeds balance"
     );
     await brush.mint(alice.address, editNameBrushPrice.mul(3));
 
-    await expect(playerNFT.editName(playerId, name)).to.be.revertedWithCustomError(playerNFT, "NotOwnerOfPlayer");
+    await expect(playerNFT.editPlayer(playerId, name, discord, twitter, telegram)).to.be.revertedWithCustomError(
+      playerNFT,
+      "NotOwnerOfPlayer"
+    );
     expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.true;
 
-    await playerNFT.connect(alice).editName(playerId, name);
+    await playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram);
     expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.false; // Should be deleted now
     expect(await playerNFT.names(playerId)).to.eq(name);
 
@@ -75,10 +82,29 @@ describe("PlayerNFT", function () {
     const makeActive = true;
     // Duplicate
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "name", makeActive);
-    await expect(playerNFT.connect(alice).editName(newPlayerId, name)).to.be.revertedWithCustomError(
-      playerNFT,
-      "NameAlreadyExists"
-    );
+    await expect(
+      playerNFT.connect(alice).editPlayer(newPlayerId, name, discord, twitter, telegram)
+    ).to.be.revertedWithCustomError(playerNFT, "NameAlreadyExists");
+  });
+
+  it("Edit Socials (no charge if name does not change)", async function () {
+    const {playerId, playerNFT, alice, brush, origName, editNameBrushPrice} = await loadFixture(deployContracts);
+    const discord = "";
+    const twitter = "1231231";
+    const telegram = "";
+    let nameChanged = false;
+    await expect(playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram))
+      .to.emit(playerNFT, "EditPlayerV2")
+      .withArgs(playerId, origName, nameChanged, discord, twitter, telegram);
+
+    // Name changed should be true if name changed
+    await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice);
+    await brush.mint(alice.address, editNameBrushPrice);
+    nameChanged = true;
+    const newName = "New name";
+    await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram))
+      .to.emit(playerNFT, "EditPlayerV2")
+      .withArgs(playerId, newName, nameChanged, discord, twitter, telegram);
   });
 
   it("uri", async function () {
@@ -276,7 +302,7 @@ describe("PlayerNFT", function () {
     const {playerNFT, owner, alice} = await loadFixture(deployContracts);
 
     expect(await playerNFT["totalSupply()"]()).to.be.eq(1);
-    await playerNFT.mint(1, "name1", true);
+    await createPlayer(playerNFT, 1, owner, "name1", true);
     expect(await playerNFT["totalSupply()"]()).to.be.eq(2);
     await playerNFT.connect(alice).burn(alice.address, 1);
     expect(await playerNFT["totalSupply()"]()).to.be.eq(1);

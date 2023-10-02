@@ -763,7 +763,7 @@ describe("Players", function () {
 
       // Test case, create a player
       const makeActive = true;
-      await expect(playerNFT.connect(alice).mint(1, "0xSamWitch123", makeActive)).to.not.be.reverted;
+      await expect(createPlayer(playerNFT, 1, alice, "0xSamWitch123", makeActive)).to.not.be.reverted;
     });
 
     it("Left/Right equipment", async function () {

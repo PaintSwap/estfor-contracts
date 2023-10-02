@@ -19,12 +19,15 @@ export const createPlayer = async (
   avatarId: number,
   account: SignerWithAddress,
   name: string,
-  makeActive: boolean
+  makeActive: boolean,
+  discord = "",
+  twitter = "",
+  telegram = ""
 ): Promise<BigNumber> => {
-  const tx = await playerNFT.connect(account).mint(avatarId, name, makeActive);
+  const tx = await playerNFT.connect(account).mintWithSocials(avatarId, name, discord, twitter, telegram, makeActive);
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "NewPlayer";
+    return x.event == "NewPlayerV2";
   })[0].args;
   return event?.playerId;
 };

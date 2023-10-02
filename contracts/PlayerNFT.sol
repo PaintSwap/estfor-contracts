@@ -21,8 +21,16 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   using UnsafeMath for U256;
   using UnsafeMath for uint;
 
-  event NewPlayer(uint playerId, uint avatarId, string name);
-  event EditPlayer(uint playerId, string newName);
+  event NewPlayerV2(
+    uint playerId,
+    uint avatarId,
+    string name,
+    address from,
+    string discord,
+    string twitter,
+    string telegram
+  );
+  event EditPlayerV2(uint playerId, string newName, bool paid, string discord, string twitter, string telegram);
   event EditNameCost(uint newCost);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
@@ -32,13 +40,24 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error NotPlayers();
   error AvatarNotExists();
   error NameTooShort();
-  error NameTooLong(uint length, string name, string name1);
+  error NameTooLong();
   error NameAlreadyExists();
   error NameInvalidCharacters();
   error MintedMoreThanAllowed();
   error NotInWhitelist();
   error ERC1155Metadata_URIQueryForNonexistentToken();
   error ERC1155BurnForbidden();
+  error DiscordTooLong();
+  error DiscordTooShort();
+  error DiscordInvalidCharacters();
+  error TelegramTooLong();
+  error TelegramInvalidCharacters();
+  error TwitterTooLong();
+  error TwitterInvalidCharacters();
+
+  // For ABI backwards compatibility
+  event NewPlayer(uint playerId, uint avatarId, string name);
+  event EditPlayer(uint playerId, string newName);
 
   uint private nextPlayerId;
 
@@ -118,11 +137,30 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     emit EditNameCost(_editNameCost);
   }
 
+  // TODO: Delete later, only here for backwards compatibility
   function mint(uint _avatarId, string calldata _name, bool _makeActive) external {
     address from = _msgSender();
     uint playerId = nextPlayerId++;
-    string memory trimmedName = _setName(playerId, _name);
+    (string memory trimmedName, ) = _setName(playerId, _name);
     emit NewPlayer(playerId, _avatarId, trimmedName);
+    _setTokenIdToAvatar(playerId, _avatarId);
+    _mint(from, playerId, 1, "");
+    _mintStartingItems(from, playerId, _avatarId, _makeActive);
+  }
+
+  function mintWithSocials(
+    uint _avatarId,
+    string calldata _name,
+    string calldata _discord,
+    string calldata _twitter,
+    string calldata _telegram,
+    bool _makeActive
+  ) external {
+    address from = _msgSender();
+    uint playerId = nextPlayerId++;
+    (string memory trimmedName, ) = _setName(playerId, _name);
+    _checkSocials(_discord, _twitter, _telegram);
+    emit NewPlayerV2(playerId, _avatarId, trimmedName, from, _discord, _twitter, _telegram);
     _setTokenIdToAvatar(playerId, _avatarId);
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, _avatarId, _makeActive);
@@ -136,6 +174,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _burn(_from, _playerId, 1);
   }
 
+  // TODO: Delete later, only here for backwards compatibility
   function editName(uint _playerId, string calldata _newName) external isOwnerOfPlayer(_playerId) {
     uint brushCost = editNameCost;
     // Pay
@@ -148,8 +187,39 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     // Burn 1 quarter
     brush.burn(quarterCost);
 
-    string memory trimmedName = _setName(_playerId, _newName);
+    (string memory trimmedName, ) = _setName(_playerId, _newName);
     emit EditPlayer(_playerId, trimmedName);
+  }
+
+  function editPlayer(
+    uint _playerId,
+    string calldata _name,
+    string calldata _discord,
+    string calldata _twitter,
+    string calldata _telegram
+  ) external isOwnerOfPlayer(_playerId) {
+    // Only charge brush if changing the name
+    (string memory trimmedName, bool nameChanged) = _setName(_playerId, _name);
+    if (nameChanged) {
+      _pay(editNameCost);
+    }
+
+    _checkSocials(_discord, _twitter, _telegram);
+
+    emit EditPlayerV2(_playerId, trimmedName, nameChanged, _discord, _twitter, _telegram);
+  }
+
+  function _pay(uint _brushCost) private {
+    uint brushCost = _brushCost;
+    // Pay
+    brush.transferFrom(_msgSender(), address(this), brushCost);
+    uint quarterCost = brushCost / 4;
+    // Send half to the pool (currently shop)
+    brush.transfer(pool, brushCost - quarterCost * 2);
+    // Send 1 quarter to the dev address
+    brush.transfer(dev, quarterCost);
+    // Burn 1 quarter
+    brush.burn(quarterCost);
   }
 
   function _mintStartingItems(address _from, uint _playerId, uint _avatarId, bool _makeActive) private {
@@ -174,14 +244,17 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     players.mintedPlayer(_from, _playerId, avatars[_avatarId].startSkills, _makeActive, itemTokenIds, amounts);
   }
 
-  function _setName(uint _playerId, string calldata _name) private returns (string memory trimmedName) {
+  function _setName(
+    uint _playerId,
+    string calldata _name
+  ) private returns (string memory trimmedName, bool nameChanged) {
     // Trimmed name cannot be empty
     trimmedName = EstforLibrary.trim(_name);
     if (bytes(trimmedName).length < 3) {
       revert NameTooShort();
     }
     if (bytes(trimmedName).length > 20) {
-      revert NameTooLong(bytes(trimmedName).length, _name, trimmedName);
+      revert NameTooLong();
     }
 
     if (!EstforLibrary.containsValidNameCharacters(trimmedName)) {
@@ -190,7 +263,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
     string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
     string memory oldName = EstforLibrary.toLower(names[_playerId]);
-    bool nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
+    nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
       if (lowercaseNames[trimmedAndLowercaseName]) {
         revert NameAlreadyExists();
@@ -200,6 +273,35 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       }
       lowercaseNames[trimmedAndLowercaseName] = true;
       names[_playerId] = trimmedName;
+    }
+  }
+
+  function _checkSocials(string calldata _discord, string calldata _twitter, string calldata _telegram) private pure {
+    uint discordLength = bytes(_discord).length;
+    if (discordLength > 25) {
+      revert DiscordTooLong();
+    }
+    if (discordLength != 0 && discordLength < 4) {
+      revert DiscordTooShort();
+    }
+    if (!EstforLibrary.containsValidDiscordCharacters(_discord)) {
+      revert DiscordInvalidCharacters();
+    }
+
+    uint twitterLength = bytes(_twitter).length;
+    if (twitterLength > 15) {
+      revert TwitterTooLong();
+    }
+    if (!EstforLibrary.containsValidTwitterCharacters(_twitter)) {
+      revert TelegramInvalidCharacters();
+    }
+
+    uint telegramLength = bytes(_telegram).length;
+    if (telegramLength > 25) {
+      revert TelegramTooLong();
+    }
+    if (!EstforLibrary.containsValidTelegramCharacters(_telegram)) {
+      revert TelegramInvalidCharacters();
     }
   }
 
