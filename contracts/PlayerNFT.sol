@@ -79,7 +79,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   address private dev;
 
   bytes32 private merkleRoot; // Unused now (was for alpha/beta whitelisting)
-  mapping(address whitelistedUser => uint amount) public numMintedFromWhitelist; // Unused now
+  mapping(address whitelistedUser => uint amount) private numMintedFromWhitelist; // Unused now
   AdminAccess private adminAccess;
   uint32 numBurned;
 
@@ -148,7 +148,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _mintStartingItems(from, playerId, _avatarId, _makeActive);
   }
 
-  function mintWithSocials(
+  function mintTODOPaint(
     uint _avatarId,
     string calldata _name,
     string calldata _discord,
