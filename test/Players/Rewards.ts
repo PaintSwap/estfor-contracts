@@ -463,15 +463,15 @@ describe("Rewards", function () {
     });
 
     it("Check daily rewards not given when making a new hero", async function () {
-      const {players, playerNFT, itemNFT, alice, world} = await loadFixture(playersFixture);
+      const {players, playerNFT, itemNFT, alice, world, mockOracleClient} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
       await world.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
-      await playerNFT.connect(alice).mint(1, "name1", true);
-
+      await requestAndFulfillRandomWords(world, mockOracleClient); // Add this to that if test is run on Monday the streak start condition is fulfilled
+      await createPlayer(playerNFT, 1, alice, "name1", true);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
 
-      await playerNFT.connect(alice).mint(1, "name2", true);
+      await createPlayer(playerNFT, 1, alice, "name2", true);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
     });
 
