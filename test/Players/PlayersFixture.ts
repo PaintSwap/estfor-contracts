@@ -116,12 +116,21 @@ export const playersFixture = async function () {
     kind: "uups",
   });
 
+  const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
+
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
   const clans = await upgrades.deployProxy(
     Clans,
-    [brush.address, playerNFT.address, shop.address, dev.address, editNameBrushPrice],
+    [
+      brush.address,
+      playerNFT.address,
+      shop.address,
+      dev.address,
+      editNameBrushPrice,
+      paintSwapMarketplaceWhitelist.address,
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -284,5 +293,6 @@ export const playersFixture = async function () {
     bankRegistry,
     bankFactory,
     estforLibrary,
+    paintSwapMarketplaceWhitelist,
   };
 };

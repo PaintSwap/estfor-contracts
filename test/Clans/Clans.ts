@@ -33,7 +33,7 @@ describe("Clans", function () {
     const discord = "G4ZgtP52JK";
     const telegram = "fantomfoundation";
 
-    // Figure out what the address with would
+    // Figure out what the address would be
     const newContactAddr = ethers.utils.getContractAddress({
       from: bankFactory.address,
       nonce: clanId,
@@ -828,7 +828,7 @@ describe("Clans", function () {
     });
   });
 
-  it("Edit tiers", async () => {
+  it("Edit tiers", async function () {
     const fixture = await loadFixture(clanFixture);
     const {clans} = fixture;
 
@@ -874,5 +874,151 @@ describe("Clans", function () {
     expect(tier2.maxImageId).to.eq(tiers[1].maxImageId);
     expect(tier2.minimumAge).to.eq(tiers[1].minimumAge);
     expect(tier2.price).to.eq(tiers[1].price);
+  });
+
+  describe("GateKeeping", function () {
+    it("Check gateway defensive constraints", async function () {
+      const {alice, clans, clanId, paintSwapMarketplaceWhitelist} = await loadFixture(clanFixture);
+
+      const erc1155 = await ethers.deployContract("MockERC1155");
+      await expect(clans.gateKeep(clanId, [{nft: erc1155.address, nftType: 1155}])).to.be.revertedWithCustomError(
+        clans,
+        "NotOwnerOfPlayer"
+      );
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [{nft: erc1155.address, nftType: 1155}])
+      ).to.be.revertedWithCustomError(clans, "NFTNotWhitelistedOnMarketplace");
+      await paintSwapMarketplaceWhitelist.setWhitelisted(erc1155.address, true);
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [{nft: erc1155.address, nftType: 999}])
+      ).to.be.revertedWithCustomError(clans, "UnsupportedNFTType");
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [{nft: erc1155.address, nftType: 721}])
+      ).to.be.revertedWithCustomError(clans, "InvalidNFTType");
+      await expect(clans.connect(alice).gateKeep(clanId, [{nft: erc1155.address, nftType: 1155}])).to.not.be.reverted;
+
+      const erc721 = await ethers.deployContract("MockERC721");
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [{nft: erc721.address, nftType: 721}])
+      ).to.be.revertedWithCustomError(clans, "NFTNotWhitelistedOnMarketplace");
+      await paintSwapMarketplaceWhitelist.setWhitelisted(erc721.address, true);
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [{nft: erc721.address, nftType: 999}])
+      ).to.be.revertedWithCustomError(clans, "UnsupportedNFTType");
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [{nft: erc721.address, nftType: 1155}])
+      ).to.be.revertedWithCustomError(clans, "InvalidNFTType");
+      await expect(clans.connect(alice).gateKeep(clanId, [{nft: erc721.address, nftType: 721}])).to.not.be.reverted;
+      // 5 is ok
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+        ])
+      ).to.not.be.reverted;
+      // Too many (max 5)
+      await expect(
+        clans.connect(alice).gateKeep(clanId, [
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+          {nft: erc721.address, nftType: 721},
+        ])
+      ).to.be.revertedWithCustomError(clans, "TooManyNFTs");
+    });
+
+    it("Gate keep join request with ERC1155", async function () {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId, paintSwapMarketplaceWhitelist} =
+        await loadFixture(clanFixture);
+
+      const erc1155 = await ethers.deployContract("MockERC1155");
+      await paintSwapMarketplaceWhitelist.setWhitelisted(erc1155.address, true);
+
+      await clans.connect(alice).gateKeep(clanId, [{nft: erc1155.address, nftType: 1155}]);
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const tokenId = 1;
+      await expect(
+        clans.connect(bob).requestToJoinTODOPaint(clanId, bobPlayerId, tokenId)
+      ).to.be.revertedWithCustomError(clans, "NoGateKeptNFTFound");
+
+      await erc1155.mint(bob.address);
+      await clans.connect(bob).requestToJoinTODOPaint(clanId, bobPlayerId, tokenId);
+      await erc1155.connect(bob).safeTransferFrom(bob.address, alice.address, tokenId, 1, "0x");
+
+      // Accepting should work even if they have since removed the NFT
+      await clans.connect(alice).acceptJoinRequest(clanId, bobPlayerId, playerId);
+    });
+
+    it("Gate keep join request with ERC721", async function () {
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId, paintSwapMarketplaceWhitelist} =
+        await loadFixture(clanFixture);
+
+      const erc721 = await ethers.deployContract("MockERC721");
+      await paintSwapMarketplaceWhitelist.setWhitelisted(erc721.address, true);
+
+      await clans.connect(alice).gateKeep(clanId, [{nft: erc721.address, nftType: 721}]);
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const tokenId = 1;
+      await expect(clans.connect(bob).requestToJoinTODOPaint(clanId, bobPlayerId, tokenId)).to.be.revertedWith(
+        "ERC721: invalid token ID"
+      );
+
+      await erc721.mint(bob.address);
+      await clans.connect(bob).requestToJoinTODOPaint(clanId, bobPlayerId, tokenId);
+      await clans.connect(alice).acceptJoinRequest(clanId, bobPlayerId, playerId);
+    });
+
+    it("Gate keep accepting invites with ERC1155", async function () {
+      // Sending invites without the nft is fine, they must have the NFT to accept it though.
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId, paintSwapMarketplaceWhitelist} =
+        await loadFixture(clanFixture);
+
+      const erc1155 = await ethers.deployContract("MockERC1155");
+      await paintSwapMarketplaceWhitelist.setWhitelisted(erc1155.address, true);
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      expect(await clans.hasInviteRequest(clanId, bobPlayerId)).to.be.true;
+
+      await clans.connect(alice).gateKeep(clanId, [{nft: erc1155.address, nftType: 1155}]);
+
+      const tokenId = 1;
+      await expect(
+        clans.connect(bob).acceptInviteTODOPaint(clanId, bobPlayerId, tokenId)
+      ).to.be.revertedWithCustomError(clans, "NoGateKeptNFTFound");
+      await erc1155.mint(bob.address);
+      await clans.connect(bob).acceptInviteTODOPaint(clanId, bobPlayerId, tokenId);
+    });
+
+    it("Gate keep accepting invites with ERC721", async function () {
+      // Sending invites without the nft is fine, they must have the NFT to accept it though.
+      const {clans, playerId, alice, bob, clanId, playerNFT, avatarId, paintSwapMarketplaceWhitelist} =
+        await loadFixture(clanFixture);
+
+      const erc721 = await ethers.deployContract("MockERC721");
+      await paintSwapMarketplaceWhitelist.setWhitelisted(erc721.address, true);
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+
+      await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+      expect(await clans.hasInviteRequest(clanId, bobPlayerId)).to.be.true;
+
+      await clans.connect(alice).gateKeep(clanId, [{nft: erc721.address, nftType: 721}]);
+
+      const tokenId = 1;
+      await expect(clans.connect(bob).acceptInviteTODOPaint(clanId, bobPlayerId, tokenId)).to.be.revertedWith(
+        "ERC721: invalid token ID"
+      );
+      await erc721.mint(bob.address);
+      await clans.connect(bob).acceptInviteTODOPaint(clanId, bobPlayerId, tokenId);
+    });
   });
 });
