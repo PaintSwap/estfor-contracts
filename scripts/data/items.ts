@@ -2569,7 +2569,7 @@ export const allItems: ItemInput[] = [
     isTransferable: true,
     isFullModeOnly: false,
     skill: Skill.MINING,
-    minXP: 554828,
+    minXP: 392228,
     healthRestored: 0,
     boostType: BoostType.NONE,
     boostValue: 0,
@@ -5634,7 +5634,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_2.json",
-    name: "Limited Egg",
+    name: "1Kin Starter Egg",
   },
   {
     combatStats: {
