@@ -46,6 +46,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event EditNameCost(uint newCost);
   event JoinRequestsEnabled(uint clanId, bool joinRequestsEnabled, uint playerId);
   event GateKeepNFTs(uint clanId, address[] nfts, uint playerId);
+  event PinMessage(uint clanId, string message, uint playerId);
 
   // legacy for ABI reasons on old beta version
   event MemberLeft(uint clanId, uint playerId);
@@ -94,6 +95,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error NoGateKeptNFTFound();
   error NFTNotWhitelistedOnMarketplace();
   error UnsupportedNFTType();
+  error MessageTooLong();
 
   enum ClanRank {
     NONE, // Not in a clan
@@ -623,6 +625,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function upgradeClan(uint _clanId, uint _playerId, uint8 _newTierId) public isOwnerOfPlayer(_playerId) {
     _upgradeClan(_clanId, _playerId, _newTierId);
+  }
+
+  function pinMessage(uint _clanId, string calldata _message) external isOwnerOfPlayer(clans[_clanId].owner) {
+    if (bytes(_message).length > 200) {
+      revert MessageTooLong();
+    }
+    emit PinMessage(_clanId, _message, clans[_clanId].owner);
   }
 
   function getClanNameOfPlayer(uint _playerId) external view returns (string memory) {

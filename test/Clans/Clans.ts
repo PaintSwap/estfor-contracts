@@ -1020,5 +1020,27 @@ describe("Clans", function () {
       await erc721.mint(bob.address);
       await clans.connect(bob).acceptInviteTODOPaint(clanId, bobPlayerId, tokenId);
     });
+
+    describe("Message Pinning", function () {
+      it("Must be owner to pin", async function () {
+        const {clans, clanId} = await loadFixture(clanFixture);
+        await expect(clans.pinMessage(clanId, "test")).to.be.revertedWithCustomError(clans, "NotOwnerOfPlayer");
+      });
+
+      it("Check maximum length", async function () {
+        const {alice, clans, clanId} = await loadFixture(clanFixture);
+        await expect(clans.connect(alice).pinMessage(clanId, "x".repeat(201))).to.be.revertedWithCustomError(
+          clans,
+          "MessageTooLong"
+        );
+      });
+
+      it("Pin message", async function () {
+        const {alice, clans, clanId, playerId} = await loadFixture(clanFixture);
+        expect(await clans.connect(alice).pinMessage(clanId, "test"))
+          .to.emit(clans, "MessagePinned")
+          .withArgs(clanId, "test", playerId);
+      });
+    });
   });
 });
