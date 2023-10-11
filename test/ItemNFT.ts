@@ -73,8 +73,9 @@ describe("ItemNFT", function () {
       itemNFT,
       brush,
       owner,
-      world,
       alice,
+      dev,
+      world,
       mockOracleClient,
       shop,
       royaltyReceiver,
@@ -304,5 +305,68 @@ describe("ItemNFT", function () {
     );
     expect(await itemNFTNotBeta.name()).to.be.eq("Estfor Items");
     expect(await itemNFTNotBeta.symbol()).to.be.eq("EK_I");
+  });
+
+  it("Transfer of items to many different users at once", async function () {
+    const {itemNFT, owner, alice, dev} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(owner.address, EstforConstants.TITANIUM_AXE, 2); // to alice
+    await itemNFT.testMint(owner.address, EstforConstants.IRON_AXE, 3); // to dev
+    await itemNFT.testMint(owner.address, EstforConstants.MITHRIL_AXE, 1); // Don't transfer this
+
+    await itemNFT.testMint(owner.address, EstforConstants.ADAMANTINE_AXE, 4); // to dev
+    await itemNFT.testMint(owner.address, EstforConstants.RUNITE_AXE, 3); // to alice (only send 1)
+    await itemNFT.testMint(owner.address, EstforConstants.ORICHALCUM_AXE, 2); // to alice
+
+    const tokenIds = [
+      EstforConstants.TITANIUM_AXE,
+      EstforConstants.IRON_AXE,
+      EstforConstants.ADAMANTINE_AXE,
+      EstforConstants.RUNITE_AXE,
+      EstforConstants.ORICHALCUM_AXE,
+    ];
+    const tos = [alice.address, dev.address, dev.address, alice.address, alice.address];
+    const amounts = [2, 3, 4, 1, 2];
+
+    // Turn this into expected transfer nft object
+    const nftInfos = [];
+    for (let i = 0; i < tokenIds.length; ++i) {
+      const tokenId = tokenIds[i];
+      const to = tos[i];
+      const amount = amounts[i];
+
+      let exists = false;
+      for (let j = 0; j < nftInfos.length; ++j) {
+        const nftInfo: any = nftInfos[j];
+        if (to == nftInfo.to) {
+          // Already exists
+          exists = true;
+          nftInfo.tokenIds.push(tokenId);
+          nftInfo.amounts.push(amount);
+          break;
+        }
+      }
+
+      if (!exists) {
+        nftInfos.push({tokenIds: [tokenId], amounts: [amount], to: to});
+      }
+    }
+
+    await itemNFT.safeBulkTransfer(nftInfos);
+
+    // Check balances of the NFTs are as expected
+    expect(
+      await itemNFT.balanceOfs(alice.address, [
+        EstforConstants.TITANIUM_AXE,
+        EstforConstants.RUNITE_AXE,
+        EstforConstants.ORICHALCUM_AXE,
+      ])
+    ).to.deep.eq([2, 1, 2]);
+
+    expect(
+      await itemNFT.balanceOfs(dev.address, [EstforConstants.IRON_AXE, EstforConstants.ADAMANTINE_AXE])
+    ).to.deep.eq([3, 4]);
+
+    expect(await itemNFT.balanceOf(owner.address, EstforConstants.MITHRIL_AXE)).to.eq(1);
   });
 });

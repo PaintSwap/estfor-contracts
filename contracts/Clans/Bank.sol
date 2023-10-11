@@ -10,7 +10,9 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 
 import {IClans} from "../interfaces/IClans.sol";
 import {IBank} from "../interfaces/IBank.sol";
+import {ItemNFT} from "../ItemNFT.sol";
 import {BankRegistry} from "./BankRegistry.sol";
+import {BulkTransferInfo} from "../globals/items.sol";
 
 contract Bank is ERC1155Holder, IBank, Initializable {
   using UnsafeMath for U256;
@@ -20,6 +22,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   event DepositItems(address from, uint playerId, uint[] ids, uint[] values);
   event DepositItem(address from, uint playerId, uint id, uint value);
   event WithdrawItems(address from, address to, uint playerId, uint[] ids, uint[] values);
+  event WithdrawItemsBulk(address from, BulkTransferInfo[] nftTransferInfos, uint playerId);
   event DepositFTM(address from, uint playerId, uint amount);
   event WithdrawFTM(address from, address to, uint playerId, uint amount);
   event DepositToken(address from, uint playerId, address token, uint amount);
@@ -33,10 +36,15 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   error WithdrawFailed();
   error LengthMismatch();
   error ToIsNotOwnerOfPlayer();
+  error ReentrancyGuardReentrantCall();
+
+  uint8 private constant NOT_ENTERED = 1;
+  uint8 private constant ENTERED = 2;
 
   uint32 public clanId;
   BankRegistry public bankRegistry;
   uint16 public uniqueItemCount;
+  uint8 private reentrantStatus;
   mapping(uint itemTokenId => bool hasAny) public uniqueItems;
 
   modifier isOwnerOfPlayer(uint _playerId) {
@@ -53,6 +61,25 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     _;
   }
 
+  /**
+   * @dev Prevents a contract from calling itself, directly or indirectly.
+   * Calling a `nonReentrant` function from another `nonReentrant`
+   * function is not supported. It is possible to prevent this from happening
+   * by making the `nonReentrant` function external, and making it call a
+   * `private` function that does the actual work.
+   */
+  modifier nonReentrant() {
+    // On the first call to nonReentrant, _status will be NOT_ENTERED
+    if (reentrantStatus == ENTERED) {
+      revert ReentrancyGuardReentrantCall();
+    }
+    reentrantStatus = ENTERED;
+    _;
+    // By storing the original value once again, a refund is triggered (see
+    // https://eips.ethereum.org/EIPS/eip-2200)
+    reentrantStatus = NOT_ENTERED;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -61,6 +88,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   function initialize(uint _clanId, address _bankRegistry) external override initializer {
     clanId = uint32(_clanId);
     bankRegistry = BankRegistry(_bankRegistry);
+    reentrantStatus = NOT_ENTERED;
   }
 
   function depositItems(
@@ -82,19 +110,45 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     uint _playerId,
     uint[] calldata _ids,
     uint[] calldata _amounts
-  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
-    bankRegistry.itemNFT().safeBatchTransferFrom(address(this), _to, _ids, _amounts, "");
+  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) nonReentrant {
+    ItemNFT itemNFT = bankRegistry.itemNFT();
+    itemNFT.safeBatchTransferFrom(address(this), _to, _ids, _amounts, "");
 
     // Update uniqueItemCount after withdrawing items
     U256 bounds = _ids.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint id = _ids[iter.asUint256()];
-      if (uniqueItems[id] && bankRegistry.itemNFT().balanceOf(address(this), id) == 0) {
+      if (uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
         uniqueItemCount = uint16(uniqueItemCount.dec());
         uniqueItems[id] = false;
       }
     }
     emit WithdrawItems(msg.sender, _to, _playerId, _ids, _amounts);
+  }
+
+  function withdrawItemsBulk(
+    BulkTransferInfo[] calldata _nftsInfo,
+    uint _playerId
+  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) nonReentrant {
+    ItemNFT itemNFT = bankRegistry.itemNFT();
+    itemNFT.safeBulkTransfer(_nftsInfo);
+
+    // Update uniqueItemCount after withdrawing items
+    for (uint i; i < _nftsInfo.length; ++i) {
+      U256 bounds = _nftsInfo.length.asU256();
+      for (U256 iter; iter < bounds; iter = iter.inc()) {
+        uint[] calldata ids = _nftsInfo[iter.asUint256()].tokenIds;
+        for (uint j; j < ids.length; ++j) {
+          uint id = ids[j];
+          if (uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
+            uniqueItemCount = uint16(uniqueItemCount.dec());
+            uniqueItems[id] = false;
+          }
+        }
+      }
+    }
+
+    emit WithdrawItemsBulk(msg.sender, _nftsInfo, _playerId);
   }
 
   function onERC1155Received(

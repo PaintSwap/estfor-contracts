@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 uint16 constant NONE = 0;
+
 // 1 - 255 (head)
 uint16 constant HEAD_BASE = 1;
 uint16 constant BRONZE_HELMET = HEAD_BASE;
@@ -464,3 +465,9 @@ uint16 constant RIGOB_CLOTH = MISC_BASE - 52;
 uint16 constant QUAVA_SILK = MISC_BASE - 53;
 
 uint16 constant MISC_MIN = 32768;
+
+struct BulkTransferInfo {
+  uint[] tokenIds;
+  uint[] amounts;
+  address to;
+}
