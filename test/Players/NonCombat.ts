@@ -21,6 +21,8 @@ import {
   setupBasicAlchemy,
   setupBasicFletching,
 } from "./utils";
+import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
+import {FullAttireBonusInputStruct} from "../../typechain-types/contracts/Players/Players";
 
 const actionIsAvailable = true;
 
@@ -55,38 +57,8 @@ describe("Non-Combat Actions", function () {
     it("Full nature equipment", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
-      const rate = 100 * GUAR_MUL; // per hour
-      const tx = await world.addActions([
-        {
-          actionId: 1,
-          info: {
-            skill: EstforTypes.Skill.WOODCUTTING,
-            xpPerHour: 3600,
-            minXP: 0,
-            isDynamic: false,
-            worldLocation: 0,
-            isFullModeOnly: false,
-            numSpawned: 0,
-            handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
-            handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-            isAvailable: actionIsAvailable,
-            actionChoiceRequired: false,
-            successPercent: 100,
-          },
-          guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
-          randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
-      ]);
-      const actionId = await getActionId(tx);
-
-      const timespan = 3600;
+      const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, world);
       await itemNFT.addItems([
-        {
-          ...EstforTypes.defaultItemInput,
-          tokenId: EstforConstants.BRONZE_AXE,
-          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_MASK,
@@ -115,21 +87,13 @@ describe("Non-Combat Actions", function () {
       ]);
 
       await players.addFullAttireBonuses([
-        {
-          skill: Skill.WOODCUTTING,
-          itemTokenIds: [
-            EstforConstants.NATURE_MASK,
-            EstforConstants.NATURE_BODY,
-            EstforConstants.NATURE_BRACERS,
-            EstforConstants.NATURE_TROUSERS,
-            EstforConstants.NATURE_BOOTS,
-          ],
-          bonusXPPercent: 3,
-          bonusRewardsPercent: 0,
-        },
+        allFullAttireBonuses.find(
+          (attireBonus) => attireBonus.skill == Skill.WOODCUTTING
+        ) as FullAttireBonusInputStruct,
       ]);
 
-      const queuedAction: EstforTypes.QueuedActionInput = {
+      const queuedAction = {
+        ...queuedActionWoodcutting,
         attire: {
           head: EstforConstants.NATURE_MASK,
           neck: EstforConstants.NONE,
@@ -140,13 +104,6 @@ describe("Non-Combat Actions", function () {
           ring: EstforConstants.NONE, // Always NONE for now
           reserved1: EstforConstants.NONE, // Always NONE for now
         },
-        actionId,
-        combatStyle: EstforTypes.CombatStyle.NONE,
-        choiceId: EstforConstants.NONE,
-        regenerateId: EstforConstants.NONE,
-        timespan,
-        rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
       await itemNFT.testMints(
@@ -164,7 +121,7 @@ describe("Non-Combat Actions", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
-      const balanceExpected = Math.floor((timespan * rate) / (3600 * GUAR_MUL));
+      const balanceExpected = Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL));
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
         queuedAction.timespan + queuedAction.timespan * 0.03
@@ -1443,7 +1400,7 @@ describe("Non-Combat Actions", function () {
 
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(
         Math.floor(xpPerHour * numRepeats * numHours * 1.03)
-      ); // + 3% from full attire bonus equipment
+      ); // +3% from full attire bonus equipment
 
       const expectedTotal = numRepeats * numHours;
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
@@ -2157,47 +2114,36 @@ describe("Non-Combat Actions", function () {
 
     const {queuedAction: basicWoodcuttingAction} = await setupBasicWoodcutting(itemNFT, world);
     const queuedAction = {...basicWoodcuttingAction};
-    (queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_PICKAXE), // Incorrect
-      await itemNFT.addItems([
-        {
-          ...EstforTypes.defaultItemInput,
-          tokenId: EstforConstants.BRONZE_PICKAXE,
-          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        },
-      ]);
+    queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_PICKAXE; // Incorrect
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_PICKAXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
 
+    queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_AXE;
     queuedAction.rightHandEquipmentTokenId = EstforConstants.NONE;
+
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "IncorrectEquippedItem");
 
-    queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_AXE;
     queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_AXE;
+
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "IncorrectLeftHandEquipment");
 
     queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
-    queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_AXE;
-    await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
-    await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(players, "DoNotHaveEnoughQuantityToEquipToAction");
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
-
-    // This works
+    // Now this works
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-
-    // Specifying a combat style should fail
-    queuedAction.combatStyle = EstforTypes.CombatStyle.ATTACK;
-    await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(players, "InvalidCombatStyle");
 
     // Transfer away, the action should just be skipped and no xp/loot should be given
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(1);

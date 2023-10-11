@@ -31,4 +31,6 @@ interface IPlayers {
   function xp(uint playerId, Skill skill) external view returns (uint xp);
 
   function activeBoost(uint playerId) external view returns (PlayerBoostInfo memory);
+
+  function beforeItemNFTTransfer(address from, address to, uint[] calldata ids, uint[] calldata amounts) external;
 }

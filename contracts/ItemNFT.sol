@@ -10,6 +10,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
+import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
@@ -307,21 +308,23 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     uint[] memory _amounts,
     bytes memory /*_data*/
   ) internal virtual override {
-    if (_from == address(0) || _amounts.length == 0 || _from == _to) {
-      // When minting or self sending, then no further processing is required
+    if (_amounts.length == 0 || _from == _to) {
+      // When self sending no further processing is required
       return;
     }
 
+    bool isMinted = _from == address(0);
     bool isBurnt = _to == address(0) || _to == 0x000000000000000000000000000000000000dEaD;
     if (isBurnt) {
       _removeAnyBurntFromTotal(_ids, _amounts);
-    } else {
+    } else if (!isMinted) {
       _checkIsTransferable(_from, _ids);
     }
-    if (players == address(0)) {
-      if (block.chainid != 31337) {
-        revert InvalidChainId();
-      }
+    if (players != address(0)) {
+      // Callback into players contract
+      IPlayers(players).beforeItemNFTTransfer(_from, _to, _ids, _amounts);
+    } else if (block.chainid != 31337) {
+      revert InvalidChainId();
     }
   }
 

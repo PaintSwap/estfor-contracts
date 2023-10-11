@@ -17,7 +17,7 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IPlayersDelegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
+import {IPlayersDelegate, IPlayersMiscDelegate, IPlayersMisc1Delegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -173,13 +173,25 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(
       implMisc,
       abi.encodeWithSelector(
-        IPlayersDelegate.mintedPlayer.selector,
+        IPlayersMiscDelegate.mintedPlayer.selector,
         _from,
         _playerId,
         _startSkills,
         _startingItemTokenIds,
         _startingAmounts
       )
+    );
+  }
+
+  function beforeItemNFTTransfer(
+    address _from,
+    address _to,
+    uint[] memory _ids,
+    uint[] memory _amounts
+  ) external override onlyItemNFT {
+    _delegatecall(
+      implMisc1,
+      abi.encodeWithSelector(IPlayersMisc1Delegate.beforeItemNFTTransfer.selector, _from, _to, _ids, _amounts)
     );
   }
 
@@ -222,9 +234,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
     _clearEverything(_from, _playerId, true);
     // If it was the active player, then clear it
-    uint existingActivePlayerId = activePlayer_[_from];
+    uint existingActivePlayerId = activePlayerInfo[_from].playerId;
     if (existingActivePlayerId == _playerId) {
-      delete activePlayer_[_from];
+      delete activePlayerInfo[_from];
       emit SetActivePlayer(_from, existingActivePlayerId, 0);
     }
   }
@@ -274,9 +286,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _setActivePlayer(address _from, uint _playerId) private {
-    uint existingActivePlayerId = activePlayer_[_from];
+    uint existingActivePlayerId = activePlayerInfo[_from].playerId;
     // All attire and actions can be made for this player
-    activePlayer_[_from] = _playerId;
+    activePlayerInfo[_from] = ActivePlayerInfo(uint64(_playerId), 0, 0, 0, 0);
     if (existingActivePlayerId == _playerId) {
       revert PlayerAlreadyActive();
     }
@@ -323,7 +335,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function isOwnerOfPlayerAndActive(address _from, uint _playerId) public view override returns (bool) {
-    return playerNFT.balanceOf(_from, _playerId) == 1 && activePlayer_[_from] == _playerId;
+    return playerNFT.balanceOf(_from, _playerId) == 1 && activePlayerInfo[_from].playerId == _playerId;
   }
 
   function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
@@ -370,7 +382,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function activePlayer(address _owner) external view override returns (uint playerId) {
-    return activePlayer_[_owner];
+    return activePlayerInfo[_owner].playerId;
+  }
+
+  function getActivePlayerInfo(address _owner) external view returns (ActivePlayerInfo memory) {
+    return activePlayerInfo[_owner];
   }
 
   function xp(uint _playerId, Skill _skill) external view returns (uint) {

@@ -84,9 +84,40 @@ library PlayersLibrary {
     }
   }
 
+  function getBalanceUsingCheckpoint(
+    uint _itemId,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments calldata _checkpointEquipments
+  ) private pure returns (uint balance) {
+    for (uint i; i < _checkpointEquipments.itemTokenIds.length; ++i) {
+      if (_checkpointEquipments.itemTokenIds[i] == _itemId) {
+        return _getRealBalance(_checkpointEquipments.balances[i], _itemId, _pendingQueuedActionEquipmentStates);
+      }
+    }
+  }
+
+  function getBalancesUsingCheckpoint(
+    uint16[] memory _itemIds,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments calldata _checkpointEquipments
+  ) private pure returns (uint[] memory balances) {
+    balances = new uint[](_itemIds.length);
+
+    for (uint i; i < _checkpointEquipments.itemTokenIds.length; ++i) {
+      uint itemTokenId = _checkpointEquipments.itemTokenIds[i];
+      uint checkpointBalance = _checkpointEquipments.balances[i];
+      for (uint j; j < _itemIds.length; ++j) {
+        if (_itemIds[j] == itemTokenId) {
+          balances[j] = _getRealBalance(checkpointBalance, _itemIds[j], _pendingQueuedActionEquipmentStates);
+          break;
+        }
+      }
+    }
+  }
+
   // This takes into account any intermediate changes from previous actions from view functions
   // as those cannot affect the blockchain state with balanceOf
-  function getRealBalance(
+  function getBalanceUsingCurrentBalance(
     address _from,
     uint _itemId,
     ItemNFT _itemNFT,
@@ -95,7 +126,7 @@ library PlayersLibrary {
     balance = _getRealBalance(_itemNFT.balanceOf(_from, _itemId), _itemId, _pendingQueuedActionEquipmentStates);
   }
 
-  function getRealBalances(
+  function getBalanceUsingCurrentBalances(
     address _from,
     uint16[] memory _itemIds,
     ItemNFT _itemNFT,
@@ -160,7 +191,7 @@ library PlayersLibrary {
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
-    uint balance = getRealBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
+    uint balance = getBalanceUsingCurrentBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
     uint tempMaxRequiredRatio = balance / _inputAmount;
     if (tempMaxRequiredRatio < _prevConsumeMaxRatio) {
       maxRequiredRatio = tempMaxRequiredRatio;
@@ -511,7 +542,7 @@ library PlayersLibrary {
       uint totalFoodRequired = Math.ceilDiv(uint32(_totalHealthLost), healthRestored);
       totalFoodRequiredKilling = Math.ceilDiv(uint32(_totalHealthLostKilling), healthRestored);
 
-      uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
+      uint balance = getBalanceUsingCurrentBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
 
       // Can only consume a maximum of 65535 food
       if (totalFoodRequired > type(uint16).max) {
@@ -733,10 +764,10 @@ library PlayersLibrary {
   function getCombatStats(
     PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     PackedXP storage _packedXP,
-    address _from,
     ItemNFT _itemNFT,
     Attire storage _attire,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments calldata _checkpointEquipments
   ) external view returns (CombatStats memory combatStats) {
     combatStats.melee = int16(
       getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
@@ -757,11 +788,10 @@ library PlayersLibrary {
 
     bool skipNeck;
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
-      _from,
       _attire,
-      _itemNFT,
       skipNeck,
-      _pendingQueuedActionEquipmentStates
+      _pendingQueuedActionEquipmentStates,
+      _checkpointEquipments
     );
     if (itemTokenIds.length != 0) {
       Item[] memory items = _itemNFT.getItems(itemTokenIds);
@@ -779,12 +809,11 @@ library PlayersLibrary {
   // 2 versions of getAttireWithBalance exist, 1 has storage attire and the other has calldata attire. This is to
   // allow more versions of versions to accept storage attire.
   function getAttireWithBalance(
-    address _from,
     Attire calldata _attire,
-    ItemNFT _itemNFT,
     bool _skipNeck,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments calldata _checkpointEquipments
+  ) public pure returns (uint16[] memory itemTokenIds, uint[] memory balances) {
     uint attireLength;
     itemTokenIds = new uint16[](6);
     if (_attire.head != NONE) {
@@ -811,44 +840,58 @@ library PlayersLibrary {
     }
 
     if (attireLength != 0) {
-      balances = getRealBalances(_from, itemTokenIds, _itemNFT, _pendingQueuedActionEquipmentStates);
+      balances = getBalancesUsingCheckpoint(itemTokenIds, _pendingQueuedActionEquipmentStates, _checkpointEquipments);
+    }
+  }
+
+  function getAttireTokenIds(Attire memory _attire, bool _skipNeck) public pure returns (uint16[] memory itemTokenIds) {
+    uint attireLength;
+    itemTokenIds = new uint16[](6);
+    if (_attire.head != NONE) {
+      itemTokenIds[attireLength++] = _attire.head;
+    }
+    if (_attire.neck != NONE && !_skipNeck) {
+      itemTokenIds[attireLength++] = _attire.neck;
+    }
+    if (_attire.body != NONE) {
+      itemTokenIds[attireLength++] = _attire.body;
+    }
+    if (_attire.arms != NONE) {
+      itemTokenIds[attireLength++] = _attire.arms;
+    }
+    if (_attire.legs != NONE) {
+      itemTokenIds[attireLength++] = _attire.legs;
+    }
+    if (_attire.feet != NONE) {
+      itemTokenIds[attireLength++] = _attire.feet;
+    }
+
+    assembly ("memory-safe") {
+      mstore(itemTokenIds, attireLength)
+    }
+  }
+
+  function getAttireWithCurrentBalance(
+    address _from,
+    Attire memory _attire,
+    ItemNFT _itemNFT,
+    bool _skipNeck
+  ) external view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
+    itemTokenIds = getAttireTokenIds(_attire, _skipNeck);
+    if (itemTokenIds.length != 0) {
+      balances = _itemNFT.balanceOfs(_from, itemTokenIds);
     }
   }
 
   function getAttireWithBalance(
-    address _from,
     Attire storage _attire,
-    ItemNFT _itemNFT,
     bool _skipNeck,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
-    uint attireLength;
-    itemTokenIds = new uint16[](6);
-    if (_attire.head != NONE) {
-      itemTokenIds[attireLength++] = _attire.head;
-    }
-    if (_attire.neck != NONE && !_skipNeck) {
-      itemTokenIds[attireLength++] = _attire.neck;
-    }
-    if (_attire.body != NONE) {
-      itemTokenIds[attireLength++] = _attire.body;
-    }
-    if (_attire.arms != NONE) {
-      itemTokenIds[attireLength++] = _attire.arms;
-    }
-    if (_attire.legs != NONE) {
-      itemTokenIds[attireLength++] = _attire.legs;
-    }
-    if (_attire.feet != NONE) {
-      itemTokenIds[attireLength++] = _attire.feet;
-    }
-
-    assembly ("memory-safe") {
-      mstore(itemTokenIds, attireLength)
-    }
-
-    if (attireLength != 0) {
-      balances = getRealBalances(_from, itemTokenIds, _itemNFT, _pendingQueuedActionEquipmentStates);
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments calldata _checkpointEquipments
+  ) public pure returns (uint16[] memory itemTokenIds, uint[] memory balances) {
+    itemTokenIds = getAttireTokenIds(_attire, _skipNeck);
+    if (itemTokenIds.length != 0) {
+      balances = getBalancesUsingCheckpoint(itemTokenIds, _pendingQueuedActionEquipmentStates, _checkpointEquipments);
     }
   }
 
@@ -879,13 +922,13 @@ library PlayersLibrary {
   }
 
   function updateStatsFromHandEquipment(
-    address _from,
     ItemNFT _itemNFT,
     uint16[2] calldata _handEquipmentTokenIds,
     CombatStats calldata _combatStats,
     bool isCombat,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
-    ActionChoice calldata _actionChoice
+    uint16 _handItemTokenIdRangeMin,
+    CheckpointEquipments calldata _checkpointEquipments
   ) external view returns (bool missingRequiredHandEquipment, CombatStats memory combatStats) {
     U256 iter = _handEquipmentTokenIds.length.asU256();
     combatStats = _combatStats;
@@ -894,10 +937,14 @@ library PlayersLibrary {
       uint16 i = iter.asUint16();
       uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
       if (handEquipmentTokenId != NONE) {
-        uint256 balance = getRealBalance(_from, handEquipmentTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
+        uint256 balance = getBalanceUsingCheckpoint(
+          handEquipmentTokenId,
+          _pendingQueuedActionEquipmentStates,
+          _checkpointEquipments
+        );
         if (balance == 0) {
           // Assume that if the player doesn't have the non-combat item that this action cannot be done or if the action choice required it (e.g range bows)
-          if (!isCombat || _actionChoice.handItemTokenIdRangeMin != NONE) {
+          if (!isCombat || _handItemTokenIdRangeMin != NONE) {
             missingRequiredHandEquipment = true;
           }
         } else if (isCombat) {
@@ -939,7 +986,6 @@ library PlayersLibrary {
   }
 
   function getPointsAccrued(
-    address _from,
     Player storage _player,
     QueuedAction storage _queuedAction,
     uint _startTime,
@@ -949,11 +995,11 @@ library PlayersLibrary {
     PlayerBoostInfo storage _activeBoost,
     PlayerBoostInfo storage _globalBoost,
     PlayerBoostInfo storage _clanBoost,
-    ItemNFT _itemNFT,
     World _world,
     uint8 _bonusAttirePercent,
     uint16[5] calldata _expectedItemTokenIds,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments calldata _checkpointEquipments
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     bool _isCombatSkill = _queuedAction.combatStyle != CombatStyle.NONE;
     uint24 xpPerHour = _world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
@@ -968,29 +1014,27 @@ library PlayersLibrary {
     pointsAccrued += _getXPFromBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _clanBoost);
     pointsAccrued += _getXPFromExtraOrLastBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _clanBoost);
     pointsAccrued += _extraXPFromFullAttire(
-      _from,
       _attire,
       _xpElapsedTime,
       xpPerHour,
-      _itemNFT,
       _bonusAttirePercent,
       _expectedItemTokenIds,
-      _pendingQueuedActionEquipmentStates
+      _pendingQueuedActionEquipmentStates,
+      _checkpointEquipments
     );
     pointsAccruedExclBaseBoost = pointsAccrued;
     pointsAccrued += _extraFromAvatar(_player, _skill, _xpElapsedTime, xpPerHour);
   }
 
   function _extraXPFromFullAttire(
-    address _from,
     Attire storage _attire,
     uint _elapsedTime,
     uint24 _xpPerHour,
-    ItemNFT _itemNFT,
     uint8 _bonusPercent,
     uint16[5] calldata _expectedItemTokenIds,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) internal view returns (uint32 extraPointsAccrued) {
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments calldata _checkpointEquipments
+  ) internal pure returns (uint32 extraPointsAccrued) {
     if (_bonusPercent == 0) {
       return 0;
     }
@@ -998,11 +1042,10 @@ library PlayersLibrary {
     // Check if they have the full equipment set, if so they can get some bonus
     bool skipNeck = true;
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
-      _from,
       _attire,
-      _itemNFT,
       skipNeck,
-      _pendingQueuedActionEquipmentStates
+      _pendingQueuedActionEquipmentStates,
+      _checkpointEquipments
     );
     bool hasFullAttire = _extraBoostFromFullAttire(itemTokenIds, balances, _expectedItemTokenIds);
     if (hasFullAttire) {
@@ -1035,22 +1078,20 @@ library PlayersLibrary {
   }
 
   function getFullAttireBonusRewardsPercent(
-    address _from,
     Attire storage _attire,
-    ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
     uint8 _bonusRewardsPercent,
-    uint16[5] calldata fullAttireBonusItemTokenIds
-  ) external view returns (uint8 fullAttireBonusRewardsPercent) {
+    uint16[5] calldata fullAttireBonusItemTokenIds,
+    CheckpointEquipments calldata _checkpointEquipments
+  ) external pure returns (uint8 fullAttireBonusRewardsPercent) {
     if (_bonusRewardsPercent != 0) {
       // Check if they have the full equipment set, if so they can get some bonus
       bool skipNeck = true;
       (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
-        _from,
         _attire,
-        _itemNFT,
         skipNeck,
-        _pendingQueuedActionEquipmentStates
+        _pendingQueuedActionEquipmentStates,
+        _checkpointEquipments
       );
       bool hasFullAttire = _extraBoostFromFullAttire(itemTokenIds, balances, fullAttireBonusItemTokenIds);
 

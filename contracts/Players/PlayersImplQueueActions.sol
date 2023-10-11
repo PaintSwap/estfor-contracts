@@ -126,6 +126,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire[i + remainingQueuedActions.length] = _queuedActions[i].attire;
     }
 
+    _setInitialCheckpoints(from, _playerId, player.actionQueue, attire);
     emit SetActionQueue(from, _playerId, player.actionQueue, attire, player.currentActionStartTime);
 
     assert(totalTimespan <= MAX_TIME_); // Should never happen
@@ -260,12 +261,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       revert EmptyTimespan();
     }
 
-    {
-      // Check combatStyle is only selected if queuedAction is combat
-      bool combatStyleSelected = _queuedAction.combatStyle != CombatStyle.NONE;
-      if (isCombat != combatStyleSelected) {
-        revert InvalidCombatStyle();
-      }
+    // Check combatStyle is only selected if queuedAction is combat
+    bool combatStyleSelected = _queuedAction.combatStyle != CombatStyle.NONE;
+    if (isCombat != combatStyleSelected) {
+      revert InvalidCombatStyle();
     }
 
     Attire memory attire = _queuedAction.attire;
@@ -418,13 +417,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     _checkEquipPosition(_attire);
 
     bool skipNeck;
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithBalance(
+    (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithCurrentBalance(
       _from,
       _attire,
       itemNFT,
-      skipNeck,
-      pendingQueuedActionEquipmentStates
+      skipNeck
     );
     if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minXPs) = itemNFT.getMinRequirements(itemTokenIds);
