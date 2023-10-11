@@ -24,6 +24,8 @@ interface IPlayers {
     uint[] calldata startingAmounts
   ) external;
 
+  function upgradePlayer(uint playerId) external;
+
   function isOwnerOfPlayerAndActive(address from, uint playerId) external view returns (bool);
 
   function activePlayer(address owner) external view returns (uint playerId);

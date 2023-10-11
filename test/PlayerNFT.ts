@@ -63,18 +63,18 @@ describe("PlayerNFT", function () {
     const discord = "";
     const twitter = "";
     const telegram = "";
-    await expect(playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram)).to.be.revertedWith(
-      "ERC20: transfer amount exceeds balance"
-    );
+    await expect(
+      playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram, false)
+    ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
     await brush.mint(alice.address, editNameBrushPrice.mul(3));
 
-    await expect(playerNFT.editPlayer(playerId, name, discord, twitter, telegram)).to.be.revertedWithCustomError(
+    await expect(playerNFT.editPlayer(playerId, name, discord, twitter, telegram, false)).to.be.revertedWithCustomError(
       playerNFT,
       "NotOwnerOfPlayer"
     );
     expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.true;
 
-    await playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram);
+    await playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram, false);
     expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.false; // Should be deleted now
     expect(await playerNFT.names(playerId)).to.eq(name);
 
@@ -83,7 +83,7 @@ describe("PlayerNFT", function () {
     // Duplicate
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "name", makeActive);
     await expect(
-      playerNFT.connect(alice).editPlayer(newPlayerId, name, discord, twitter, telegram)
+      playerNFT.connect(alice).editPlayer(newPlayerId, name, discord, twitter, telegram, false)
     ).to.be.revertedWithCustomError(playerNFT, "NameAlreadyExists");
   });
 
@@ -92,19 +92,46 @@ describe("PlayerNFT", function () {
     const discord = "";
     const twitter = "1231231";
     const telegram = "";
-    let nameChanged = false;
-    await expect(playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram))
+    await expect(playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, false))
       .to.emit(playerNFT, "EditPlayerV2")
-      .withArgs(playerId, origName, nameChanged, discord, twitter, telegram);
+      .withArgs(playerId, origName, 0, discord, twitter, telegram, false);
 
     // Name changed should be true if name changed
     await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice);
     await brush.mint(alice.address, editNameBrushPrice);
-    nameChanged = true;
     const newName = "New name";
-    await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram))
+    await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, false))
       .to.emit(playerNFT, "EditPlayerV2")
-      .withArgs(playerId, newName, nameChanged, discord, twitter, telegram);
+      .withArgs(playerId, newName, editNameBrushPrice, discord, twitter, telegram, false);
+  });
+
+  it("Upgrade player should cost brush", async function () {
+    const {playerId, playerNFT, players, alice, brush, origName, editNameBrushPrice, upgradePlayerBrushPrice} =
+      await loadFixture(deployContracts);
+    const discord = "";
+    const twitter = "1231231";
+    const telegram = "";
+
+    const brushAmount = editNameBrushPrice.add(upgradePlayerBrushPrice.mul(2));
+    await brush.connect(alice).approve(playerNFT.address, brushAmount);
+    await brush.mint(alice.address, brushAmount);
+
+    const amountPaid = editNameBrushPrice.add(upgradePlayerBrushPrice);
+    const newName = "new name";
+    await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
+      .to.emit(playerNFT, "EditPlayerV2")
+      .withArgs(playerId, newName, amountPaid, discord, twitter, telegram, true);
+
+    expect(await brush.balanceOf(alice.address)).to.eq(brushAmount.sub(amountPaid));
+
+    // Check upgraded flag
+    const player = await players.players(playerId);
+    expect(player.packedData == "0x80");
+
+    // Upgrading should fail the second time
+    await expect(
+      playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true)
+    ).to.be.revertedWithCustomError(players, "AlreadyUpgraded");
   });
 
   it("uri", async function () {
@@ -119,7 +146,7 @@ describe("PlayerNFT", function () {
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");
-    expect(metadata.attributes).to.have.length(18);
+    expect(metadata.attributes).to.have.length(19);
     expect(metadata.attributes[0]).to.have.property("trait_type");
     expect(metadata.attributes[0].trait_type).to.equal("Avatar");
     expect(metadata.attributes[0]).to.have.property("value");
@@ -129,9 +156,13 @@ describe("PlayerNFT", function () {
     expect(metadata.attributes[1]).to.have.property("value");
     expect(metadata.attributes[1].value).to.equal("");
     expect(metadata.attributes[2]).to.have.property("trait_type");
-    expect(metadata.attributes[2].trait_type).to.equal("Melee level");
+    expect(metadata.attributes[2].trait_type).to.equal("Full version");
     expect(metadata.attributes[2]).to.have.property("value");
-    expect(metadata.attributes[2].value).to.equal(1);
+    expect(metadata.attributes[2].value).to.equal("false");
+    expect(metadata.attributes[3]).to.have.property("trait_type");
+    expect(metadata.attributes[3].trait_type).to.equal("Melee level");
+    expect(metadata.attributes[3]).to.have.property("value");
+    expect(metadata.attributes[3].value).to.equal(1);
     expect(metadata).to.have.property("external_url");
     expect(metadata.external_url).to.eq(`https://beta.estfor.com/game/journal/${playerId}`);
   });
@@ -168,6 +199,7 @@ describe("PlayerNFT", function () {
       libraries: {EstforLibrary: estforLibrary.address},
     });
     const editNameBrushPrice = ethers.utils.parseEther("1");
+    const upgradePlayerBrushPrice = ethers.utils.parseEther("2");
     const imageBaseUri = "ipfs://";
     const playerNFTNotBeta = (await upgrades.deployProxy(
       PlayerNFT,
@@ -178,6 +210,7 @@ describe("PlayerNFT", function () {
         royaltyReceiver.address,
         adminAccess.address,
         editNameBrushPrice,
+        upgradePlayerBrushPrice,
         imageBaseUri,
         isBeta,
       ],
@@ -260,6 +293,8 @@ describe("PlayerNFT", function () {
       libraries: {EstforLibrary: estforLibrary.address},
     });
     const editNameBrushPrice = ethers.utils.parseEther("1");
+    const upgradePlayerBrushPrice = ethers.utils.parseEther("2");
+
     const imageBaseUri = "ipfs://";
     const playerNFTNotBeta = (await upgrades.deployProxy(
       PlayerNFT,
@@ -270,6 +305,7 @@ describe("PlayerNFT", function () {
         royaltyReceiver.address,
         adminAccess.address,
         editNameBrushPrice,
+        upgradePlayerBrushPrice,
         imageBaseUri,
         isBeta,
       ],

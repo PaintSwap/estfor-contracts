@@ -30,8 +30,17 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     string twitter,
     string telegram
   );
-  event EditPlayerV2(uint playerId, string newName, bool paid, string discord, string twitter, string telegram);
+  event EditPlayerV2(
+    uint playerId,
+    string newName,
+    uint paid,
+    string discord,
+    string twitter,
+    string telegram,
+    bool upgrade
+  );
   event EditNameCost(uint newCost);
+  event UpgradePlayerCost(uint newCost);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
   error NotOwnerOfPlayer();
@@ -77,6 +86,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   bool public isBeta;
 
   address private dev;
+  uint80 upgradePlayerCost; // Max 1.2 million brush
 
   bytes32 private merkleRoot; // Unused now (was for alpha/beta whitelisting)
   mapping(address whitelistedUser => uint amount) private numMintedFromWhitelist; // Unused now
@@ -116,6 +126,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     address _royaltyReceiver,
     AdminAccess _adminAccess,
     uint72 _editNameCost,
+    uint80 _upgradePlayerCost,
     string calldata _imageBaseUri,
     bool _isBeta
   ) external initializer {
@@ -129,12 +140,14 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     pool = _pool;
     dev = _dev;
     editNameCost = _editNameCost;
+    upgradePlayerCost = _upgradePlayerCost;
     royaltyFee = 30; // 3%
     royaltyReceiver = _royaltyReceiver;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
 
     emit EditNameCost(_editNameCost);
+    emit UpgradePlayerCost(_upgradePlayerCost);
   }
 
   // TODO: Delete later, only here for backwards compatibility
@@ -196,17 +209,25 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     string calldata _name,
     string calldata _discord,
     string calldata _twitter,
-    string calldata _telegram
+    string calldata _telegram,
+    bool _upgrade
   ) external isOwnerOfPlayer(_playerId) {
     // Only charge brush if changing the name
     (string memory trimmedName, bool nameChanged) = _setName(_playerId, _name);
+    uint amountPaid;
     if (nameChanged) {
+      amountPaid = editNameCost;
       _pay(editNameCost);
     }
 
-    _checkSocials(_discord, _twitter, _telegram);
+    if (_upgrade) {
+      amountPaid += upgradePlayerCost;
+      _pay(upgradePlayerCost);
+      players.upgradePlayer(_playerId);
+    }
 
-    emit EditPlayerV2(_playerId, trimmedName, nameChanged, _discord, _twitter, _telegram);
+    _checkSocials(_discord, _twitter, _telegram);
+    emit EditPlayerV2(_playerId, trimmedName, amountPaid, _discord, _twitter, _telegram, _upgrade);
   }
 
   function _pay(uint _brushCost) private {
@@ -418,6 +439,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function setEditNameCost(uint72 _editNameCost) external onlyOwner {
     editNameCost = _editNameCost;
     emit EditNameCost(_editNameCost);
+  }
+
+  function setUpgradeCost(uint80 _upgradePlayerCost) external onlyOwner {
+    upgradePlayerCost = _upgradePlayerCost;
+    emit UpgradePlayerCost(_upgradePlayerCost);
   }
 
   // solhint-disable-next-line no-empty-blocks

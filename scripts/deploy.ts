@@ -176,6 +176,7 @@ async function main() {
   let itemsUri: string;
   let heroImageBaseUri: string;
   let editNameBrushPrice: BigNumber;
+  let upgradePlayerBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
@@ -184,6 +185,7 @@ async function main() {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
+    upgradePlayerBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
@@ -192,6 +194,7 @@ async function main() {
     itemsUri = "ipfs://QmQvWjU5KqNSjHipYdvGvF1wZh7kj2kkvbmEyv9zgbzhPK/";
     heroImageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
+    upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("5000");
@@ -232,6 +235,7 @@ async function main() {
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
+      upgradePlayerBrushPrice,
       heroImageBaseUri,
       isBeta,
     ],

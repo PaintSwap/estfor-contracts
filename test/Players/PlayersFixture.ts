@@ -82,6 +82,7 @@ export const playersFixture = async function () {
     libraries: {EstforLibrary: estforLibrary.address},
   });
   const editNameBrushPrice = ethers.utils.parseEther("1");
+  const upgradePlayerBrushPrice = ethers.utils.parseEther("1");
   const imageBaseUri = "ipfs://";
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
@@ -92,6 +93,7 @@ export const playersFixture = async function () {
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
+      upgradePlayerBrushPrice,
       imageBaseUri,
       isBeta,
     ],
@@ -272,6 +274,7 @@ export const playersFixture = async function () {
     dev,
     origName,
     editNameBrushPrice,
+    upgradePlayerBrushPrice,
     mockOracleClient,
     avatarInfo,
     adminAccess,

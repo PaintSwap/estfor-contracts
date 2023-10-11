@@ -128,6 +128,7 @@ abstract contract PlayersBase {
   error InvalidReward();
   error BuyBrushFailed();
   error NonInstanceConsumeNotSupportedYet();
+  error AlreadyUpgraded();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -225,6 +226,10 @@ abstract contract PlayersBase {
 
   function _isCombatStyle(CombatStyle _combatStyle) internal pure returns (bool) {
     return _combatStyle != CombatStyle.NONE;
+  }
+
+  function _isPlayerFullMode(uint _playerId) internal view returns (bool) {
+    return players_[_playerId].packedData >> 7 == bytes1(uint8(0x1));
   }
 
   function _getElapsedTime(uint _startTime, uint _endTime) internal view returns (uint elapsedTime) {

@@ -183,6 +183,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
+  // Callback after upgrading a player
+  function upgradePlayer(uint _playerId) external override onlyPlayerNFT {
+    if (_isPlayerFullMode(_playerId)) {
+      revert AlreadyUpgraded();
+    }
+
+    players_[_playerId].packedData = players_[_playerId].packedData | (bytes1(uint8(0x1)) << 7);
+  }
+
   // This is a special type of quest.
   function buyBrushQuest(
     address _to,
@@ -349,9 +358,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _avatarName,
         _avatarDescription,
         imageURI,
-        isBeta,
-        _playerId,
-        clans.getClanNameOfPlayer(_playerId)
+        _playerId
       )
     );
     return abi.decode(data, (string));
