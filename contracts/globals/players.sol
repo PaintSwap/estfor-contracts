@@ -31,7 +31,7 @@ enum EquipPosition {
 }
 
 struct Player {
-  uint40 currentActionStartTime; // The start time of the first queued action
+  uint40 currentActionStartTime; // The in-progress start time of the first queued action
   Skill currentActionProcessedSkill1; // The skill that the queued action has already gained XP in
   uint24 currentActionProcessedXPGained1; // The amount of XP that the queued action has already gained
   Skill currentActionProcessedSkill2;
@@ -244,6 +244,7 @@ struct PendingQueuedActionMetadata {
   uint64 queueId;
   uint24 elapsedTime;
   uint24 xpElapsedTime;
+  uint8 checkpoint;
 }
 
 struct PendingQueuedActionData {
@@ -361,4 +362,20 @@ struct ItemInput {
   // uri
   string metadataURI;
   string name;
+}
+
+/* Order head, neck, body, arms, legs, feet, ring, reserved1,
+   leftHandEquipment, rightHandEquipment,
+   Not used yet: input1, input2,input3, regenerate, reserved2, reserved3 */
+struct CheckpointEquipments {
+  uint16[16] itemTokenIds;
+  uint16[16] balances;
+}
+
+struct ActivePlayerInfo {
+  uint64 playerId;
+  uint40 checkpoint;
+  uint24 timespan;
+  uint24 timespan1;
+  uint24 timespan2;
 }

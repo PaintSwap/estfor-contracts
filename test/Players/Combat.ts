@@ -1774,6 +1774,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.processedData.currentAction.foodConsumed).to.eq(1);
+
       await itemNFT.connect(alice).burn(alice.address, EstforConstants.SHADOW_SCROLL, 2);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.processedData.currentAction.foodConsumed).to.eq(9); // Don't kill them all but in combat for the whole time
@@ -1798,7 +1799,6 @@ describe("Combat Actions", function () {
 
       // Check no more food is consumed as this is an excess
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 9);
-      // Kill 4 more
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
         Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 5
       );
@@ -1873,8 +1873,8 @@ describe("Combat Actions", function () {
         playerId,
         players,
         alice,
-        world,
         queuedAction: magicQueuedAction,
+        world,
         itemNFT,
       } = await loadFixture(playersFixtureMagic);
 

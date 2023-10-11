@@ -30,14 +30,6 @@ interface IPlayersDelegate {
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
 
-  function mintedPlayer(
-    address from,
-    uint playerId,
-    Skill[2] calldata startSkills,
-    uint[] calldata startingItemTokenIds,
-    uint[] calldata startingAmounts
-  ) external;
-
   function clearEverything(address from, uint playerId, bool processTheTransactions) external;
 
   function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
@@ -63,6 +55,18 @@ interface IPlayersDelegate {
 
 interface IPlayersMiscDelegate {
   function handleDailyRewards(address from, uint playerId) external;
+
+  function mintedPlayer(
+    address from,
+    uint playerId,
+    Skill[2] calldata startSkills,
+    uint[] calldata startingItemTokenIds,
+    uint[] calldata startingAmounts
+  ) external;
+}
+
+interface IPlayersMisc1Delegate {
+  function beforeItemNFTTransfer(address from, address to, uint[] memory ids, uint[] memory amounts) external;
 }
 
 interface IPlayersProcessActionsDelegate {

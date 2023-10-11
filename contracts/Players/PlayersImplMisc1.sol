@@ -230,4 +230,127 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       );
     }
   }
+
+  function _fromBeforeItemNFTTransfer(
+    address _from,
+    uint _playerId,
+    uint[] memory _ids,
+    uint[] memory _amounts,
+    uint _nextCheckpointTimestamp,
+    uint _queuedIndex
+  ) private {
+    if (block.timestamp < _nextCheckpointTimestamp) {
+      // Action 1 has not finished yet
+      for (uint i; i < _ids.length; ++i) {
+        uint itemId = _ids[i];
+        uint amount = _amounts[i];
+        if (itemId == 0) {
+          continue;
+        }
+        for (uint j; j < checkpointEquipments[_playerId][_queuedIndex].itemTokenIds.length; ++j) {
+          if (checkpointEquipments[_playerId][_queuedIndex].itemTokenIds[j] == itemId) {
+            // An item being transferred is currently in use.
+            uint checkpointBalance = checkpointEquipments[_playerId][_queuedIndex].balances[j];
+            if (checkpointBalance == type(uint16).max) {
+              // special sentinel case of owning case
+              // They own a lot so need to check balance
+              checkpointBalance = itemNFT.balanceOf(_from, itemId) - amount;
+              if (checkpointBalance > type(uint16).max) {
+                // They will still own a lot after the transfer
+                checkpointBalance = type(uint16).max; // Reset back to this sentinel value
+              }
+            } else {
+              if (checkpointBalance >= amount) {
+                checkpointBalance -= amount;
+              } else {
+                checkpointBalance = 0;
+              }
+            }
+            checkpointEquipments[_playerId][_queuedIndex].balances[j] = uint16(checkpointBalance);
+          }
+        }
+      }
+    }
+  }
+
+  function _toBeforeItemNFTTransfer(
+    uint _playerId,
+    uint[] memory _ids,
+    uint[] memory _amounts,
+    uint _checkpointTimestamp,
+    uint _queuedIndex
+  ) private {
+    if (_checkpointTimestamp >= block.timestamp) {
+      // Action has not started (Don't think it will ever happen with the first one)
+      for (uint i; i < _ids.length; i++) {
+        uint itemId = _ids[i];
+        uint amount = _amounts[i];
+        if (itemId == 0) {
+          continue;
+        }
+        for (uint j; j < checkpointEquipments[_playerId][_queuedIndex].itemTokenIds.length; ++j) {
+          if (checkpointEquipments[_playerId][_queuedIndex].itemTokenIds[j] == itemId) {
+            // An item being transferred is currently in use.
+            uint checkpointBlance = checkpointEquipments[_playerId][_queuedIndex].balances[j] + amount;
+            if (checkpointBlance > type(uint16).max) {
+              checkpointBlance = type(uint16).max;
+            }
+            checkpointEquipments[_playerId][_queuedIndex].balances[j] = uint16(checkpointBlance);
+          }
+        }
+      }
+    }
+  }
+
+  function beforeItemNFTTransfer(address _from, address _to, uint[] memory _ids, uint[] memory _amounts) external {
+    bool isMinting = _from == address(0);
+    if (!isMinting) {
+      uint playerId = activePlayerInfo[_from].playerId;
+      if (playerId != 0) {
+        uint checkpoint = activePlayerInfo[_from].checkpoint;
+        if (checkpoint != 0) {
+          _fromBeforeItemNFTTransfer(_from, playerId, _ids, _amounts, checkpoint + activePlayerInfo[_from].timespan, 0);
+          _fromBeforeItemNFTTransfer(
+            _from,
+            playerId,
+            _ids,
+            _amounts,
+            checkpoint + activePlayerInfo[_from].timespan + activePlayerInfo[_from].timespan1,
+            1
+          );
+          _fromBeforeItemNFTTransfer(
+            _from,
+            playerId,
+            _ids,
+            _amounts,
+            checkpoint +
+              activePlayerInfo[_from].timespan +
+              activePlayerInfo[_from].timespan1 +
+              activePlayerInfo[_from].timespan2,
+            2
+          );
+        }
+      }
+    }
+
+    // Checkpoint balance only increases if the action hasn't started yet, otherwise is unaffected.
+    bool isBurning = _to == address(0);
+    if (!isBurning) {
+      uint playerId = activePlayerInfo[_to].playerId;
+      if (playerId != 0) {
+        uint checkpoint = activePlayerInfo[_to].checkpoint;
+        if (checkpoint != 0) {
+          _toBeforeItemNFTTransfer(playerId, _ids, _amounts, checkpoint, 0);
+          _toBeforeItemNFTTransfer(playerId, _ids, _amounts, checkpoint + activePlayerInfo[_to].timespan, 1);
+          _toBeforeItemNFTTransfer(
+            playerId,
+            _ids,
+            _amounts,
+            checkpoint + activePlayerInfo[_to].timespan + activePlayerInfo[_to].timespan1,
+            2
+          );
+        }
+      }
+    }
+  }
 }

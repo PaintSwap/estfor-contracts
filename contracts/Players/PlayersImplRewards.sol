@@ -100,11 +100,11 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint i = iter.asUint256();
       QueuedAction storage queuedAction = actionQueue[i];
-
-      i -= numActionsSkipped;
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
-        .equipmentStates[i];
-      PendingQueuedActionMetadata memory pendingQueuedActionMetadata = pendingQueuedActionState.actionMetadatas[i];
+        .equipmentStates[i - numActionsSkipped];
+      PendingQueuedActionMetadata memory pendingQueuedActionMetadata = pendingQueuedActionState.actionMetadatas[
+        i - numActionsSkipped
+      ];
       pendingQueuedActionEquipmentState.producedItemTokenIds = new uint[](MAX_GUARANTEED_REWARDS_PER_ACTION);
       pendingQueuedActionEquipmentState.producedAmounts = new uint[](MAX_GUARANTEED_REWARDS_PER_ACTION);
       uint producedLength;
@@ -135,16 +135,18 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         continue;
       }
 
+      CheckpointEquipments storage _checkpointEquipments = checkpointEquipments[_playerId][i];
+
       CombatStats memory combatStats;
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
       if (isCombat) {
         combatStats = PlayersLibrary.getCombatStats(
           pendingQueuedActionProcessed,
           xp_[_playerId],
-          from,
           itemNFT,
           attire_[_playerId][queuedAction.queueId],
-          pendingQueuedActionState.equipmentStates
+          pendingQueuedActionState.equipmentStates,
+          _checkpointEquipments
         );
       }
 
@@ -155,13 +157,13 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
       bool missingRequiredHandEquipment;
       (missingRequiredHandEquipment, combatStats) = PlayersLibrary.updateStatsFromHandEquipment(
-        from,
         itemNFT,
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
         pendingQueuedActionState.equipmentStates,
-        actionChoice
+        actionChoice.handItemTokenIdRangeMin,
+        _checkpointEquipments
       );
 
       if (missingRequiredHandEquipment) {
@@ -178,6 +180,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionMetadata.elapsedTime = uint24(elapsedTime);
       pendingQueuedActionMetadata.actionId = queuedAction.actionId;
       pendingQueuedActionMetadata.queueId = queuedAction.queueId;
+      pendingQueuedActionMetadata.checkpoint = uint8(i);
 
       // Create some items if necessary (smithing ores to bars for instance)
       bool fullyFinished = elapsedTime >= queuedAction.timespan;
@@ -341,24 +344,24 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint prevPointsAccruedExclBaseBoost;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
       (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
-        from,
         _playerId,
         queuedAction,
         veryStartTime,
         skill,
         xpElapsedTime + prevXPElapsedTime,
-        pendingQueuedActionState.equipmentStates
+        pendingQueuedActionState.equipmentStates,
+        _checkpointEquipments
       );
 
       if (prevProcessedTime != 0) {
         (prevPointsAccrued, prevPointsAccruedExclBaseBoost) = _getPointsAccrued(
-          from,
           _playerId,
           queuedAction,
           veryStartTime,
           skill,
           prevXPElapsedTime,
-          pendingQueuedActionState.equipmentStates
+          pendingQueuedActionState.equipmentStates,
+          _checkpointEquipments
         );
 
         pointsAccrued -= uint32(prevPointsAccrued);
@@ -395,12 +398,11 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       {
         uint8 bonusRewardsPercent = fullAttireBonus[skill].bonusRewardsPercent;
         uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
-          from,
           attire_[_playerId][queuedAction.queueId],
-          itemNFT,
           pendingQueuedActionState.equipmentStates,
           bonusRewardsPercent,
-          fullAttireBonus[skill].itemTokenIds
+          fullAttireBonus[skill].itemTokenIds,
+          _checkpointEquipments
         );
 
         // Full
@@ -529,7 +531,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint burnedAmountOwned;
     uint activeQuestBurnedItemTokenId = quests.getActiveQuestBurnedItemTokenId(_playerId);
     if (activeQuestBurnedItemTokenId != NONE) {
-      burnedAmountOwned = PlayersLibrary.getRealBalance(
+      burnedAmountOwned = PlayersLibrary.getBalanceUsingCurrentBalance(
         from,
         activeQuestBurnedItemTokenId,
         itemNFT,
@@ -881,16 +883,15 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   }
 
   function _getPointsAccrued(
-    address _from,
     uint _playerId,
     QueuedAction storage _queuedAction,
     uint _startTime,
     Skill _skill,
     uint _xpElapsedTime,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments storage _checkpointEquipments
   ) internal view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     (pointsAccrued, pointsAccruedExclBaseBoost) = PlayersLibrary.getPointsAccrued(
-      _from,
       players_[_playerId],
       _queuedAction,
       _startTime,
@@ -900,11 +901,11 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       activeBoosts_[_playerId],
       globalBoost_,
       clanBoosts_[clans.getClanId(_playerId)],
-      itemNFT,
       world,
       fullAttireBonus[_skill].bonusXPPercent,
       fullAttireBonus[_skill].itemTokenIds,
-      _pendingQueuedActionEquipmentStates
+      _pendingQueuedActionEquipmentStates,
+      _checkpointEquipments
     );
   }
 

@@ -137,7 +137,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
             attire_[_playerId][actionMetadata.queueId],
             skill,
             actionMetadata.rolls,
-            pendingQueuedActionState.equipmentStates
+            pendingQueuedActionState.equipmentStates,
+            checkpointEquipments[_playerId][actionMetadata.checkpoint]
           );
         }
       }
@@ -423,7 +424,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     Attire storage _attire,
     Skill _skill,
     uint _rolls,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
+    CheckpointEquipments storage _checkpointEquipments
   ) private {
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
     BoostType boostType;
@@ -446,12 +448,11 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Special case where thieving gives you a bonus if wearing full equipment
     uint8 bonusRewardsPercent = fullAttireBonus[_skill].bonusRewardsPercent;
     uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
-      _from,
       _attire,
-      itemNFT,
       _pendingQueuedActionEquipmentStates,
       bonusRewardsPercent,
-      fullAttireBonus[_skill].itemTokenIds
+      fullAttireBonus[_skill].itemTokenIds,
+      _checkpointEquipments
     );
 
     // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)

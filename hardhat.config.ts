@@ -36,7 +36,18 @@ const defaultConfig: SolcUserConfig = {
   },
 };
 
-const lowerRunsConfig: SolcUserConfig = {
+const lowRunsConfig: SolcUserConfig = {
+  ...defaultConfig,
+  settings: {
+    ...defaultConfig.settings,
+    optimizer: {
+      ...defaultConfig.settings.optimizer,
+      runs: 2000,
+    },
+  },
+};
+
+const mediumRunsConfig: SolcUserConfig = {
   ...defaultConfig,
   settings: {
     ...defaultConfig.settings,
@@ -47,11 +58,27 @@ const lowerRunsConfig: SolcUserConfig = {
   },
 };
 
+const highRunsConfig: SolcUserConfig = {
+  ...defaultConfig,
+  settings: {
+    ...defaultConfig.settings,
+    optimizer: {
+      ...defaultConfig.settings.optimizer,
+      runs: 50000,
+    },
+  },
+};
+
 const config: HardhatUserConfig = {
   solidity: {
-    compilers: [defaultConfig, lowerRunsConfig],
+    compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, highRunsConfig],
     overrides: {
-      "contracts/Clans/Clans.sol": lowerRunsConfig,
+      "contracts/Clans/Clans.sol": mediumRunsConfig,
+      "contracts/ItemNFT.sol": highRunsConfig,
+      "contracts/Players/Players.sol": highRunsConfig,
+      "contracts/Players/PlayersImplProcessActions.sol": lowRunsConfig,
+      "contracts/Players/PlayersImplRewards.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplQueueActions.sol": mediumRunsConfig,
     },
   },
   gasReporter: {
@@ -66,7 +93,7 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("30", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("34", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,

@@ -11,6 +11,7 @@ import {Clans} from "../Clans/Clans.sol";
 import {WishingWell} from "../WishingWell.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import "../interfaces/IPlayersDelegates.sol";
+import {IPlayers} from "../interfaces/IPlayers.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -141,7 +142,7 @@ abstract contract PlayersBase {
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;
 
-  mapping(address user => uint playerId) internal activePlayer_;
+  mapping(address user => ActivePlayerInfo playerInfo) internal activePlayerInfo;
 
   mapping(uint playerId => PlayerBoostInfo boostInfo) internal activeBoosts_;
 
@@ -185,6 +186,7 @@ abstract contract PlayersBase {
   mapping(uint clanId => PlayerBoostInfo clanBoost) internal clanBoosts_; // Clan specific boosts
 
   mapping(address user => WalletDailyInfo walletDailyInfo) internal walletDailyInfo;
+  mapping(uint playerId => CheckpointEquipments[3] checkpointEquipments) internal checkpointEquipments;
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {
@@ -238,6 +240,64 @@ abstract contract PlayersBase {
     }
   }
 
+  function _setInitialCheckpoints(
+    address _from,
+    uint _playerId,
+    QueuedAction[] memory _queuedActions,
+    Attire[] memory _attire
+  ) internal {
+    uint checkpoint = players_[_playerId].currentActionStartTime;
+    if (_queuedActions.length > 0) {
+      checkpoint -= _queuedActions[0].prevProcessedTime;
+    }
+    if (checkpoint == 0) {
+      checkpoint = block.timestamp;
+    }
+    activePlayerInfo[_from].checkpoint = uint40(checkpoint);
+
+    for (uint i; i < 3; ++i) {
+      if (i < _queuedActions.length) {
+        QueuedAction memory queuedAction = _queuedActions[i];
+        if (queuedAction.prevProcessedTime == 0) {
+          // Set the checkpoints
+          uint16[] memory itemIds = new uint16[](10); // attire, left/right hand equipment
+          itemIds[0] = _attire[i].head;
+          itemIds[1] = _attire[i].neck;
+          itemIds[2] = _attire[i].body;
+          itemIds[3] = _attire[i].arms;
+          itemIds[4] = _attire[i].legs;
+          itemIds[5] = _attire[i].feet;
+          itemIds[6] = _attire[i].ring;
+          itemIds[7] = _attire[i].reserved1;
+          itemIds[8] = queuedAction.leftHandEquipmentTokenId;
+          itemIds[9] = queuedAction.rightHandEquipmentTokenId;
+
+          uint[] memory balances = itemNFT.balanceOfs(_from, itemIds);
+          uint16[10] memory itemTokenIds;
+
+          // Only store up to 16 bits for storage efficiency
+          uint16[10] memory cappedBalances;
+          for (uint j = 0; j < cappedBalances.length; ++j) {
+            itemTokenIds[j] = itemIds[j];
+            cappedBalances[j] = balances[j] > type(uint16).max ? type(uint16).max : uint16(balances[j]);
+          }
+          checkpointEquipments[_playerId][i].itemTokenIds = itemTokenIds;
+          checkpointEquipments[_playerId][i].balances = cappedBalances;
+        }
+
+        if (i == 0) {
+          activePlayerInfo[_from].timespan = queuedAction.timespan + queuedAction.prevProcessedTime;
+        } else if (i == 1) {
+          activePlayerInfo[_from].timespan1 = queuedAction.timespan + queuedAction.prevProcessedTime;
+        } else if (i == 2) {
+          activePlayerInfo[_from].timespan2 = queuedAction.timespan + queuedAction.prevProcessedTime;
+        } else {
+          assert(false);
+        }
+      }
+    }
+  }
+
   function _setActionQueue(
     address _from,
     uint _playerId,
@@ -266,6 +326,10 @@ abstract contract PlayersBase {
       for (uint i; i < _attire.length; ++i) {
         attire_[_playerId][player.actionQueue[i].queueId] = _attire[i];
       }
+    }
+
+    if (_startTime != 0) {
+      _setInitialCheckpoints(_from, _playerId, _queuedActions, _attire);
     }
     emit SetActionQueue(_from, _playerId, _queuedActions, _attire, _startTime);
   }
