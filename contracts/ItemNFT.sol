@@ -247,6 +247,21 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
+  function safeBulkTransfer(BulkTransferInfo[] calldata _nftsInfo) external {
+    if (_nftsInfo.length == 0) {
+      return;
+    }
+    for (uint i = 0; i < _nftsInfo.length; ++i) {
+      BulkTransferInfo memory nftsInfo = _nftsInfo[i];
+      address to = nftsInfo.to;
+      if (nftsInfo.tokenIds.length == 1) {
+        safeTransferFrom(msg.sender, to, nftsInfo.tokenIds[0], nftsInfo.amounts[0], "");
+      } else {
+        safeBatchTransferFrom(msg.sender, to, nftsInfo.tokenIds, nftsInfo.amounts, "");
+      }
+    }
+  }
+
   function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external {
     _checkBurn(_from);
     _burnBatch(_from, _tokenIds, _amounts);
