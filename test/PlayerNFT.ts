@@ -105,9 +105,10 @@ describe("PlayerNFT", function () {
       .withArgs(playerId, newName, editNameBrushPrice, discord, twitter, telegram, false);
   });
 
-  it("Upgrade player should cost brush", async function () {
-    const {playerId, playerNFT, players, alice, brush, origName, editNameBrushPrice, upgradePlayerBrushPrice} =
-      await loadFixture(deployContracts);
+  it("Editing upgrade player should cost brush", async function () {
+    const {playerId, playerNFT, players, alice, brush, editNameBrushPrice, upgradePlayerBrushPrice} = await loadFixture(
+      deployContracts
+    );
     const discord = "";
     const twitter = "1231231";
     const telegram = "";
@@ -132,6 +133,27 @@ describe("PlayerNFT", function () {
     await expect(
       playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true)
     ).to.be.revertedWithCustomError(players, "AlreadyUpgraded");
+  });
+
+  it("Upgrading from mint should cost brush", async function () {
+    const {playerId, playerNFT, players, alice, brush, upgradePlayerBrushPrice} = await loadFixture(deployContracts);
+    const discord = "";
+    const twitter = "1231231";
+    const telegram = "";
+
+    const brushAmount = upgradePlayerBrushPrice;
+    await brush.connect(alice).approve(playerNFT.address, brushAmount);
+    await brush.mint(alice.address, brushAmount);
+
+    const upgrade = true;
+    await expect(playerNFT.connect(alice).mintTODOPaint(1, "name", discord, twitter, telegram, upgrade, true))
+      .to.emit(playerNFT, "NewPlayerV2")
+      .withArgs(playerId.add(1), 1, "name", alice.address, discord, twitter, telegram, brushAmount, true);
+
+    expect(await brush.balanceOf(alice.address)).to.eq(0);
+    // Check upgraded flag
+    const player = await players.players(playerId.add(1));
+    expect(player.packedData == "0x80");
   });
 
   it("uri", async function () {

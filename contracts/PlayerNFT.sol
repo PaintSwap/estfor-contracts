@@ -28,7 +28,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     address from,
     string discord,
     string twitter,
-    string telegram
+    string telegram,
+    uint paid,
+    bool upgrade
   );
   event EditPlayerV2(
     uint playerId,
@@ -167,13 +169,20 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     string calldata _discord,
     string calldata _twitter,
     string calldata _telegram,
+    bool _upgrade,
     bool _makeActive
   ) external {
     address from = _msgSender();
     uint playerId = nextPlayerId++;
     (string memory trimmedName, ) = _setName(playerId, _name);
     _checkSocials(_discord, _twitter, _telegram);
-    emit NewPlayerV2(playerId, _avatarId, trimmedName, from, _discord, _twitter, _telegram);
+    uint paid = 0;
+    if (_upgrade) {
+      paid += upgradePlayerCost;
+      _pay(upgradePlayerCost);
+    }
+
+    emit NewPlayerV2(playerId, _avatarId, trimmedName, from, _discord, _twitter, _telegram, paid, _upgrade);
     _setTokenIdToAvatar(playerId, _avatarId);
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, _avatarId, _makeActive);
