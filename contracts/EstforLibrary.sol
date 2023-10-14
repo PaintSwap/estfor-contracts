@@ -156,7 +156,8 @@ library EstforLibrary {
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
       bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
       bool isPlus = char == 0x2B; // "+"
-      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isPlus) {
+      bool isUnderscore = char == 0x5F; // "_"
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isPlus && !isUnderscore) {
         return false;
       }
     }

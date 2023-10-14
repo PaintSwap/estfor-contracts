@@ -335,7 +335,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (telegramLength > 32) {
       revert TelegramTooLong();
     }
-    if (telegramLength != 0 && telegramLength < 2) {
+    if (telegramLength != 0 && telegramLength < 5) {
       revert TelegramTooShort();
     }
     if (!EstforLibrary.containsValidTelegramCharacters(_telegram)) {
