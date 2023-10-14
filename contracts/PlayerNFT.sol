@@ -62,8 +62,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error DiscordTooShort();
   error DiscordInvalidCharacters();
   error TelegramTooLong();
+  error TelegramTooShort();
   error TelegramInvalidCharacters();
   error TwitterTooLong();
+  error TwitterTooShort();
   error TwitterInvalidCharacters();
 
   // For ABI backwards compatibility
@@ -308,27 +310,33 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function _checkSocials(string calldata _discord, string calldata _twitter, string calldata _telegram) private pure {
     uint discordLength = bytes(_discord).length;
-    if (discordLength > 25) {
+    if (discordLength > 32) {
       revert DiscordTooLong();
     }
-    if (discordLength != 0 && discordLength < 4) {
+    if (discordLength != 0 && discordLength < 2) {
       revert DiscordTooShort();
     }
-    if (!EstforLibrary.containsValidDiscordCharacters(_discord)) {
+    if (!EstforLibrary.containsValidDiscordCharactersForName(_discord)) {
       revert DiscordInvalidCharacters();
     }
 
     uint twitterLength = bytes(_twitter).length;
-    if (twitterLength > 15) {
+    if (twitterLength > 32) {
       revert TwitterTooLong();
+    }
+    if (twitterLength != 0 && twitterLength < 2) {
+      revert TwitterTooShort();
     }
     if (!EstforLibrary.containsValidTwitterCharacters(_twitter)) {
       revert TelegramInvalidCharacters();
     }
 
     uint telegramLength = bytes(_telegram).length;
-    if (telegramLength > 25) {
+    if (telegramLength > 32) {
       revert TelegramTooLong();
+    }
+    if (telegramLength != 0 && telegramLength < 2) {
+      revert TelegramTooShort();
     }
     if (!EstforLibrary.containsValidTelegramCharacters(_telegram)) {
       revert TelegramInvalidCharacters();
