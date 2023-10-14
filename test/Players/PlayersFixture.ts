@@ -1,7 +1,7 @@
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
-import {ItemNFT, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
+import {ItemNFT, PassiveActions, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 
 export const playersFixture = async function () {
@@ -229,6 +229,18 @@ export const playersFixture = async function () {
     kind: "uups",
   });
 
+  const PassiveActions = await ethers.getContractFactory("PassiveActions", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
+  const passiveActions = (await upgrades.deployProxy(
+    PassiveActions,
+    [players.address, itemNFT.address, world.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    }
+  )) as PassiveActions;
+
   await world.setQuests(quests.address);
   await world.setWishingWell(wishingWell.address);
 
@@ -242,6 +254,7 @@ export const playersFixture = async function () {
   await clans.setBankFactory(bankFactory.address);
 
   await itemNFT.setPromotions(promotions.address);
+  await itemNFT.setPassiveActions(passiveActions.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -297,5 +310,6 @@ export const playersFixture = async function () {
     bankFactory,
     estforLibrary,
     paintSwapMarketplaceWhitelist,
+    passiveActions,
   };
 };
