@@ -124,26 +124,6 @@ library EstforLibrary {
     return true;
   }
 
-  function containsValidDiscordCharactersForName(string calldata _discord) external pure returns (bool) {
-    bytes memory discord = bytes(_discord);
-    U256 iter = discord.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint i = iter.asUint256();
-      bytes1 char = discord[i];
-
-      bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
-      bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
-      bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
-      bool isUnderscoreOrPeriod = (char == 0x5F) || (char == 0x2E); // "_" or "."
-      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscoreOrPeriod) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   function containsValidTelegramCharacters(string calldata _telegram) external pure returns (bool) {
     bytes memory telegram = bytes(_telegram);
     U256 iter = telegram.length.asU256();
@@ -156,8 +136,7 @@ library EstforLibrary {
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
       bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
       bool isPlus = char == 0x2B; // "+"
-      bool isUnderscore = char == 0x5F; // "_"
-      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isPlus && !isUnderscore) {
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isPlus) {
         return false;
       }
     }
@@ -176,8 +155,28 @@ library EstforLibrary {
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
       bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function containsBaselineSocialNameCharacters(string calldata _socialMediaName) external pure returns (bool) {
+    bytes memory socialMediaName = bytes(_socialMediaName);
+    U256 iter = socialMediaName.length.asU256();
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      bytes1 char = socialMediaName[i];
+
+      bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
+      bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
+      bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
       bool isUnderscore = char == 0x5F; // "_"
-      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscore) {
+      bool isPeriod = char == 0x2E; // "."
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscore && !isPeriod) {
         return false;
       }
     }

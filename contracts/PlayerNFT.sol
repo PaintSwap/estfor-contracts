@@ -313,10 +313,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (discordLength > 32) {
       revert DiscordTooLong();
     }
-    if (discordLength != 0 && discordLength < 2) {
+    if (discordLength == 1) {
       revert DiscordTooShort();
     }
-    if (!EstforLibrary.containsValidDiscordCharactersForName(_discord)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_discord)) {
       revert DiscordInvalidCharacters();
     }
 
@@ -324,10 +324,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (twitterLength > 32) {
       revert TwitterTooLong();
     }
-    if (twitterLength != 0 && twitterLength < 2) {
+    if (twitterLength == 1) {
       revert TwitterTooShort();
     }
-    if (!EstforLibrary.containsValidTwitterCharacters(_twitter)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_twitter)) {
       revert TelegramInvalidCharacters();
     }
 
@@ -335,10 +335,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (telegramLength > 32) {
       revert TelegramTooLong();
     }
-    if (telegramLength != 0 && telegramLength < 5) {
+    if (telegramLength == 1) {
       revert TelegramTooShort();
     }
-    if (!EstforLibrary.containsValidTelegramCharacters(_telegram)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
       revert TelegramInvalidCharacters();
     }
   }
