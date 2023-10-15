@@ -25,7 +25,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const timeout = 600 * 1000; // 10 minutes
-  const newEstforLibrary = true;
+  const newEstforLibrary = false;
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
   let estforLibrary: EstforLibrary;
   if (newEstforLibrary) {
