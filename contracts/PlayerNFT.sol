@@ -34,6 +34,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   );
   event EditPlayerV2(
     uint playerId,
+    address from,
     string newName,
     uint paid,
     string discord,
@@ -238,7 +239,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
 
     _checkSocials(_discord, _twitter, _telegram);
-    emit EditPlayerV2(_playerId, trimmedName, amountPaid, _discord, _twitter, _telegram, _upgrade);
+    emit EditPlayerV2(_playerId, msg.sender, trimmedName, amountPaid, _discord, _twitter, _telegram, _upgrade);
   }
 
   function _pay(uint _brushCost) private {

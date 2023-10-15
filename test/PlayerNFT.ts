@@ -94,7 +94,7 @@ describe("PlayerNFT", function () {
     const telegram = "";
     await expect(playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, false))
       .to.emit(playerNFT, "EditPlayerV2")
-      .withArgs(playerId, origName, 0, discord, twitter, telegram, false);
+      .withArgs(playerId, alice.address, origName, 0, discord, twitter, telegram, false);
 
     // Name changed should be true if name changed
     await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice);
@@ -102,7 +102,7 @@ describe("PlayerNFT", function () {
     const newName = "New name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, false))
       .to.emit(playerNFT, "EditPlayerV2")
-      .withArgs(playerId, newName, editNameBrushPrice, discord, twitter, telegram, false);
+      .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, false);
   });
 
   it("Editing upgrade player should cost brush", async function () {
@@ -121,7 +121,7 @@ describe("PlayerNFT", function () {
     const newName = "new name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
       .to.emit(playerNFT, "EditPlayerV2")
-      .withArgs(playerId, newName, amountPaid, discord, twitter, telegram, true);
+      .withArgs(playerId, alice.address, newName, amountPaid, discord, twitter, telegram, true);
 
     expect(await brush.balanceOf(alice.address)).to.eq(brushAmount.sub(amountPaid));
 

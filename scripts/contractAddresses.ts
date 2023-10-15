@@ -56,7 +56,7 @@ if (!isBeta) {
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
   itemNFTLibrary = "0x22496409ef2407cd675195a604d0784a223c6028";
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
-  estforLibrary = "0xb47ef2348db705437f6d1cc07a2c2d00b0ef6e60";
+  estforLibrary = "0x5700909581d61b380ff7177f9a9709b9d3321c04";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
