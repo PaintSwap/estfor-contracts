@@ -146,7 +146,7 @@ describe("PlayerNFT", function () {
     await brush.mint(alice.address, brushAmount);
 
     const upgrade = true;
-    await expect(playerNFT.connect(alice).mintTODOPaint(1, "name", discord, twitter, telegram, upgrade, true))
+    await expect(playerNFT.connect(alice).mint(1, "name", discord, twitter, telegram, upgrade, true))
       .to.emit(playerNFT, "NewPlayerV2")
       .withArgs(playerId.add(1), 1, "name", alice.address, discord, twitter, telegram, brushAmount, true);
 

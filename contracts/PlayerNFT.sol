@@ -60,13 +60,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error ERC1155Metadata_URIQueryForNonexistentToken();
   error ERC1155BurnForbidden();
   error DiscordTooLong();
-  error DiscordTooShort();
   error DiscordInvalidCharacters();
   error TelegramTooLong();
-  error TelegramTooShort();
   error TelegramInvalidCharacters();
   error TwitterTooLong();
-  error TwitterTooShort();
   error TwitterInvalidCharacters();
 
   // For ABI backwards compatibility
@@ -155,18 +152,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     emit UpgradePlayerCost(_upgradePlayerCost);
   }
 
-  // TODO: Delete later, only here for backwards compatibility
-  function mint(uint _avatarId, string calldata _name, bool _makeActive) external {
-    address from = _msgSender();
-    uint playerId = nextPlayerId++;
-    (string memory trimmedName, ) = _setName(playerId, _name);
-    emit NewPlayer(playerId, _avatarId, trimmedName);
-    _setTokenIdToAvatar(playerId, _avatarId);
-    _mint(from, playerId, 1, "");
-    _mintStartingItems(from, playerId, _avatarId, _makeActive);
-  }
-
-  function mintTODOPaint(
+  function mint(
     uint _avatarId,
     string calldata _name,
     string calldata _discord,
@@ -197,23 +183,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
     ++numBurned;
     _burn(_from, _playerId, 1);
-  }
-
-  // TODO: Delete later, only here for backwards compatibility
-  function editName(uint _playerId, string calldata _newName) external isOwnerOfPlayer(_playerId) {
-    uint brushCost = editNameCost;
-    // Pay
-    brush.transferFrom(_msgSender(), address(this), brushCost);
-    uint quarterCost = brushCost / 4;
-    // Send half to the pool (currently shop)
-    brush.transfer(pool, brushCost - quarterCost * 2);
-    // Send 1 quarter to the dev address
-    brush.transfer(dev, quarterCost);
-    // Burn 1 quarter
-    brush.burn(quarterCost);
-
-    (string memory trimmedName, ) = _setName(_playerId, _newName);
-    emit EditPlayer(_playerId, trimmedName);
   }
 
   function editPlayer(
@@ -314,9 +283,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (discordLength > 32) {
       revert DiscordTooLong();
     }
-    if (discordLength == 1) {
-      revert DiscordTooShort();
-    }
     if (!EstforLibrary.containsBaselineSocialNameCharacters(_discord)) {
       revert DiscordInvalidCharacters();
     }
@@ -325,9 +291,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (twitterLength > 32) {
       revert TwitterTooLong();
     }
-    if (twitterLength == 1) {
-      revert TwitterTooShort();
-    }
     if (!EstforLibrary.containsBaselineSocialNameCharacters(_twitter)) {
       revert TelegramInvalidCharacters();
     }
@@ -335,9 +298,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint telegramLength = bytes(_telegram).length;
     if (telegramLength > 32) {
       revert TelegramTooLong();
-    }
-    if (telegramLength == 1) {
-      revert TelegramTooShort();
     }
     if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
       revert TelegramInvalidCharacters();

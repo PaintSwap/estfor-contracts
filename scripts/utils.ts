@@ -25,9 +25,7 @@ export const createPlayer = async (
   telegram = "",
   upgrade = false
 ): Promise<BigNumber> => {
-  const tx = await playerNFT
-    .connect(account)
-    .mintTODOPaint(avatarId, name, discord, twitter, telegram, upgrade, makeActive);
+  const tx = await playerNFT.connect(account).mint(avatarId, name, discord, twitter, telegram, upgrade, makeActive);
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
     return x.event == "NewPlayerV2";
