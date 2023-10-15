@@ -23,9 +23,16 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   event AddPassiveActions(PassiveActionInput[] passiveActionInputs);
   event EditPassiveActions(PassiveActionInput[] passiveActionInputs);
-  event SetPassiveAction(uint playerId, uint actionId, uint queueId, uint16 boostItemTokenId);
-  event EarlyEndPassiveAction(uint playerId, uint actionId);
-  event ClaimPassiveAction(uint playerId, uint actionId, uint[] itemTokenIds, uint[] amounts);
+  event StartPassiveAction(uint playerId, address from, uint actionId, uint queueId, uint16 boostItemTokenId);
+  event EarlyEndPassiveAction(uint playerId, address from, uint queueId);
+  event ClaimPassiveAction(
+    uint playerId,
+    address from,
+    uint queueId,
+    uint[] itemTokenIds,
+    uint[] amounts,
+    bool startingAnother
+  );
 
   error NotOwnerOfPlayerAndActive();
   error NotPassiveVial();
@@ -143,7 +150,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     if (activePassiveActions[_playerId].actionId != NONE) {
       (bool finished, , , ) = finishedInfo(_playerId);
       if (finished) {
-        _claim(_playerId, activePassiveActions[_playerId].actionId);
+        _claim(_playerId, activePassiveActions[_playerId].queueId, true);
       } else {
         revert PreviousActionNotFinished();
       }
@@ -177,12 +184,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
     _burnInputs(action, _boostItemTokenId);
 
-    emit SetPassiveAction(_playerId, _actionId, queueId, _boostItemTokenId);
+    emit StartPassiveAction(_playerId, msg.sender, _actionId, queueId, _boostItemTokenId);
   }
 
   function claim(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    uint16 actionId = activePassiveActions[_playerId].actionId;
-    if (actionId == NONE) {
+    uint queueId = activePassiveActions[_playerId].queueId;
+    if (queueId == NONE) {
       revert NoActivePassiveAction();
     }
     (bool finished, bool oracleReady, , ) = finishedInfo(_playerId);
@@ -190,13 +197,13 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       revert PassiveActionNotReadyToBeClaimed();
     }
 
-    _claim(_playerId, actionId);
+    _claim(_playerId, queueId, false);
     delete activePassiveActions[_playerId];
   }
 
   function endEarly(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    uint actionId = activePassiveActions[_playerId].actionId;
-    if (actionId == NONE) {
+    uint queueId = activePassiveActions[_playerId].queueId;
+    if (queueId == NONE) {
       revert NoActivePassiveAction();
     }
 
@@ -206,7 +213,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
 
     delete activePassiveActions[_playerId];
-    emit EarlyEndPassiveAction(_playerId, actionId);
+    emit EarlyEndPassiveAction(_playerId, msg.sender, queueId);
   }
 
   // Get current state of the passive action
@@ -304,7 +311,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   // Action must be finished as a precondition
-  function _claim(uint _playerId, uint16 _actionId) private {
+  function _claim(uint _playerId, uint _queueId, bool _startingAnother) private {
     PendingPassiveActionState memory _pendingPassiveActionState = pendingPassiveActionState(_playerId);
     uint numItemsToMint = _pendingPassiveActionState.producedItemTokenIds.length +
       _pendingPassiveActionState.producedRandomRewardItemTokenIds.length;
@@ -324,7 +331,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     if (numItemsToMint > 0) {
       itemNFT.mintBatch(msg.sender, itemTokenIds, amounts);
     }
-    emit ClaimPassiveAction(_playerId, _actionId, itemTokenIds, amounts);
+    emit ClaimPassiveAction(_playerId, msg.sender, _queueId, itemTokenIds, amounts, _startingAnother);
   }
 
   function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
