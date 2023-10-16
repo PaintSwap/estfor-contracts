@@ -409,6 +409,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_;
   }
 
+  function isPlayerUpgraded(uint _playerId) external view override returns (bool) {
+    return _isPlayerFullMode(_playerId);
+  }
+
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(

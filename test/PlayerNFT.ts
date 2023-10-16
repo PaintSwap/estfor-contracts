@@ -163,12 +163,12 @@ describe("PlayerNFT", function () {
     expect(uri.startsWith("data:application/json;base64")).to.be.true;
     const metadata = JSON.parse(Buffer.from(uri.split(";base64,")[1], "base64").toString());
     expect(metadata).to.have.property("name");
-    expect(metadata.name.startsWith(origName));
-    expect(metadata.name.endsWith(` (15)`));
+    expect(metadata.name.startsWith(origName)).to.be.true;
+    expect(metadata.name.endsWith(` (20)`)).to.be.true;
     expect(metadata.image).to.eq(`ipfs://${avatarInfo.imageURI}`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");
-    expect(metadata.attributes).to.have.length(19);
+    expect(metadata.attributes).to.have.length(20);
     expect(metadata.attributes[0]).to.have.property("trait_type");
     expect(metadata.attributes[0].trait_type).to.equal("Avatar");
     expect(metadata.attributes[0]).to.have.property("value");
@@ -185,6 +185,12 @@ describe("PlayerNFT", function () {
     expect(metadata.attributes[3].trait_type).to.equal("Melee level");
     expect(metadata.attributes[3]).to.have.property("value");
     expect(metadata.attributes[3].value).to.equal(1);
+    expect(metadata.attributes[18].trait_type).to.equal("Forging level");
+    expect(metadata.attributes[18]).to.have.property("value");
+    expect(metadata.attributes[18].value).to.equal(1);
+    expect(metadata.attributes[19].trait_type).to.equal("Total level");
+    expect(metadata.attributes[19]).to.have.property("value");
+    expect(metadata.attributes[19].value).to.equal(20);
     expect(metadata).to.have.property("external_url");
     expect(metadata.external_url).to.eq(`https://beta.estfor.com/game/journal/${playerId}`);
   });

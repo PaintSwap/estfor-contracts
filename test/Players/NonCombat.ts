@@ -20,6 +20,7 @@ import {
   checkPendingQueuedActionState,
   setupBasicAlchemy,
   setupBasicFletching,
+  setupBasicForging,
 } from "./utils";
 
 const actionIsAvailable = true;
@@ -2041,6 +2042,41 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.FLETCHING)).to.eq(queuedAction.timespan);
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW_HEAD)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ARROW_SHAFT)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.FEATHER)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate * 2) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+    });
+  });
+
+  // Very similar to crafting for the skill, but liquidaion is handled differently in InstantActions
+  describe("Forging", function () {
+    it("Finish 1 item", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction, rate} = await setupBasicForging(itemNFT, world);
+
+      const startingAmount = 200;
+      await itemNFT.testMints(
+        alice.address,
+        [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
+        [startingAmount, startingAmount, startingAmount]
+      );
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.FORGING)).to.eq(queuedAction.timespan);
       // Check the inputs/output are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW_HEAD)).to.eq(
         startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
