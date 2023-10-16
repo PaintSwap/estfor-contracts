@@ -9,13 +9,17 @@ import {
 import {expect} from "chai";
 import NONE, {
   ADAMANTINE_ARROW,
+  ADAMANTINE_BAR,
   BRONZE_ARROW,
+  BRONZE_BAR,
   IRON_ARROW,
+  IRON_BAR,
   ORICHALCUM_ARROW,
   RUNITE_ARROW,
+  RUNITE_BAR,
 } from "@paintswap/estfor-definitions/constants";
 
-describe("Instant actions", function () {
+describe.only("Instant actions", function () {
   describe("Generic", function () {
     const actionType = InstantActionType.GENERIC;
 
@@ -154,11 +158,57 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
       await itemNFT.testMints(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
-      await instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [1], actionType);
+      await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType);
 
       expect(
         await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])
       ).to.deep.eq([2, 1, 0, 2]);
+    });
+
+    it("Do multiple instant actions at once", async function () {
+      const {playerId, instantActions, itemNFT, alice} = await loadFixture(playersFixture);
+
+      const instantActionInput: InstantActionInput = {
+        ...defaultInstantActionInput,
+        inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
+        inputAmounts: [1, 2, 3],
+        outputTokenId: RUNITE_ARROW,
+        outputAmount: 2,
+      };
+
+      const instantActionInput1: InstantActionInput = {
+        ...defaultInstantActionInput,
+        actionId: 2,
+        inputTokenIds: [BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
+        inputAmounts: [4, 5, 6],
+        outputTokenId: RUNITE_BAR,
+        outputAmount: 2,
+      };
+
+      await instantActions.addActions([instantActionInput, instantActionInput1]);
+
+      await itemNFT.testMints(
+        alice.address,
+        [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
+        [6, 6, 6, 6, 6, 6]
+      );
+
+      await instantActions
+        .connect(alice)
+        .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType);
+
+      expect(
+        await itemNFT.balanceOfs(alice.address, [
+          BRONZE_ARROW,
+          IRON_ARROW,
+          ADAMANTINE_ARROW,
+          RUNITE_ARROW,
+          BRONZE_BAR,
+          IRON_BAR,
+          ADAMANTINE_BAR,
+          RUNITE_BAR,
+        ])
+      ).to.deep.eq([4, 2, 0, 4, 2, 1, 0, 2]);
     });
 
     it("Cannot add same instant action twice", async function () {
@@ -235,14 +285,14 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
 
       await expect(
-        instantActions.doInstantAction(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "NotOwnerOfPlayerAndActive");
     });
 
     it("Cannot do an action which does not exist", async function () {
       const {playerId, instantActions, alice} = await loadFixture(playersFixture);
       await expect(
-        instantActions.connect(alice).doInstantAction(playerId, [0], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [0], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "InvalidActionId");
     });
 
@@ -261,20 +311,20 @@ describe("Instant actions", function () {
       await itemNFT.testMint(alice.address, BRONZE_ARROW, 1);
 
       await expect(
-        instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
       await players.testModifyXP(alice.address, playerId, Skill.WOODCUTTING, 1, true);
       await players.testModifyXP(alice.address, playerId, Skill.FIREMAKING, 1, true);
 
       await expect(
-        instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
       await players.testModifyXP(alice.address, playerId, Skill.CRAFTING, 2, true);
 
       await expect(
-        instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.not.be.reverted;
     });
 
@@ -292,7 +342,7 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
       await itemNFT.testMints(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
-      await instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [2], actionType);
+      await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType);
 
       expect(
         await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])
@@ -361,7 +411,7 @@ describe("Instant actions", function () {
       await itemNFT.testMint(alice.address, BRONZE_ARROW, 2);
 
       await expect(
-        instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [2], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType)
       ).to.be.revertedWithCustomError(instantActions, "PlayerNotUpgraded");
       // Upgrade player
       await brush.mint(alice.address, upgradePlayerBrushPrice);
@@ -369,7 +419,7 @@ describe("Instant actions", function () {
       await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
       await expect(
-        instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [2], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType)
       ).to.not.be.reverted;
     });
   });
@@ -395,7 +445,7 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
 
       await itemNFT.testMint(alice.address, IRON_ARROW, 1);
-      await instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [1], actionType);
+      await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType);
 
       expect(await itemNFT.balanceOf(alice.address, IRON_ARROW)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(2);
@@ -454,7 +504,7 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
       await itemNFT.testMints(alice.address, [BRONZE_ARROW], [3]);
 
-      await instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [1], actionType);
+      await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType);
 
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(2);
       expect(await itemNFT.balanceOf(alice.address, RUNITE_ARROW)).to.eq(1);
@@ -474,10 +524,40 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
       await itemNFT.testMints(alice.address, [BRONZE_ARROW], [6]);
 
-      await instantActions.connect(alice).doInstantAction(playerId, [instantActionInput.actionId], [2], actionType);
+      await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType);
 
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.eq(4);
       expect(await itemNFT.balanceOf(alice.address, RUNITE_ARROW)).to.eq(6);
+    });
+
+    it("Do multiple instant actions at once", async function () {
+      const {playerId, instantActions, itemNFT, alice} = await loadFixture(playersFixture);
+
+      const instantActionInput: InstantActionInput = {
+        ...defaultInstantActionInput,
+        inputTokenIds: [BRONZE_ARROW],
+        inputAmounts: [1],
+        outputTokenId: RUNITE_ARROW,
+        outputAmount: 2,
+      };
+
+      const instantActionInput1: InstantActionInput = {
+        ...defaultInstantActionInput,
+        actionId: 2,
+        inputTokenIds: [BRONZE_BAR],
+        inputAmounts: [1],
+        outputTokenId: RUNITE_ARROW,
+        outputAmount: 1,
+      };
+
+      await instantActions.addActions([instantActionInput, instantActionInput1]);
+      await itemNFT.testMints(alice.address, [BRONZE_ARROW, BRONZE_BAR], [6, 6]);
+
+      await instantActions
+        .connect(alice)
+        .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType);
+
+      expect(await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, BRONZE_BAR, RUNITE_ARROW])).to.deep.eq([4, 5, 5]);
     });
   });
 });

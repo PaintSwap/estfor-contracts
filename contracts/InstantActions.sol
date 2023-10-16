@@ -13,7 +13,7 @@ import "./globals/all.sol";
 contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   event AddInstantActions(InstantActionInput[] instantActionInputs);
   event EditInstantActions(InstantActionInput[] instantActionInputs);
-  event DoInstantAction(
+  event DoInstantActions(
     uint playerId,
     address from,
     uint16[] actionIds,
@@ -101,7 +101,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     itemNFT = _itemNFT;
   }
 
-  function doInstantAction(
+  function doInstantActions(
     uint _playerId,
     uint16[] calldata _actionIds,
     uint[] calldata _amounts,
@@ -128,7 +128,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     itemNFT.burnBatch(msg.sender, inputTokenIds, inputAmounts);
     itemNFT.mintBatch(msg.sender, outputTokenIds, outputAmounts);
 
-    emit DoInstantAction(
+    emit DoInstantActions(
       _playerId,
       msg.sender,
       _actionIds,
