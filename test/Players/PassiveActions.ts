@@ -1,7 +1,11 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {playersFixture} from "./PlayersFixture";
-import {Skill, PassiveActionInput} from "@paintswap/estfor-definitions/types";
+import {
+  Skill,
+  PassiveActionInput,
+  defaultPassiveActionInput as _defaultPassiveActionInput,
+} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {expect} from "chai";
 import {requestAndFulfillRandomWords} from "../utils";
@@ -9,27 +13,8 @@ import {BRONZE_ARROW, IRON_ARROW} from "@paintswap/estfor-definitions/constants"
 
 describe("Passive actions", function () {
   const defaultPassiveActionInput: PassiveActionInput = {
+    ..._defaultPassiveActionInput,
     actionId: 1,
-    info: {
-      durationDays: 1,
-      inputTokenId1: NONE,
-      inputAmount1: 0,
-      inputTokenId2: NONE,
-      inputAmount2: 0,
-      inputTokenId3: NONE,
-      inputAmount3: 0,
-      minSkill1: Skill.NONE,
-      minXP1: 0,
-      minSkill2: Skill.NONE,
-      minXP2: 0,
-      minSkill3: Skill.NONE,
-      minXP3: 0,
-      skipSuccessPercent: 0,
-      worldLocation: 0,
-      isFullModeOnly: false,
-    },
-    guaranteedRewards: [],
-    randomRewards: [],
   };
 
   it("No inputs", async function () {
