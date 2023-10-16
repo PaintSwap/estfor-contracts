@@ -21,7 +21,8 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint[] consumedItemTokenIds,
     uint[] consumedAmounts,
     uint[] producedItemTokenIds,
-    uint[] producedAmounts
+    uint[] producedAmounts,
+    InstantActionType actionType
   );
 
   error ActionIdZeroNotAllowed();
@@ -136,7 +137,8 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       inputTokenIds,
       inputAmounts,
       outputTokenIds,
-      outputAmounts
+      outputAmounts,
+      actionType
     );
   }
 

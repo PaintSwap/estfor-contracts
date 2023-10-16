@@ -19,7 +19,7 @@ import NONE, {
   RUNITE_BAR,
 } from "@paintswap/estfor-definitions/constants";
 
-describe.only("Instant actions", function () {
+describe("Instant actions", function () {
   describe("Generic", function () {
     const actionType = InstantActionType.GENERIC;
 
@@ -193,9 +193,23 @@ describe.only("Instant actions", function () {
         [6, 6, 6, 6, 6, 6]
       );
 
-      await instantActions
-        .connect(alice)
-        .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType);
+      await expect(
+        instantActions
+          .connect(alice)
+          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType)
+      )
+        .to.emit(instantActions, "DoInstantActions")
+        .withArgs(
+          playerId,
+          alice.address,
+          [instantActionInput.actionId, instantActionInput1.actionId],
+          [2, 1],
+          [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
+          [2, 4, 6, 4, 5, 6],
+          [RUNITE_ARROW, RUNITE_BAR],
+          [4, 2],
+          actionType
+        );
 
       expect(
         await itemNFT.balanceOfs(alice.address, [
@@ -553,9 +567,23 @@ describe.only("Instant actions", function () {
       await instantActions.addActions([instantActionInput, instantActionInput1]);
       await itemNFT.testMints(alice.address, [BRONZE_ARROW, BRONZE_BAR], [6, 6]);
 
-      await instantActions
-        .connect(alice)
-        .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType);
+      await expect(
+        instantActions
+          .connect(alice)
+          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType)
+      )
+        .to.emit(instantActions, "DoInstantActions")
+        .withArgs(
+          playerId,
+          alice.address,
+          [instantActionInput.actionId, instantActionInput1.actionId],
+          [2, 1],
+          [BRONZE_ARROW, BRONZE_BAR],
+          [2, 1],
+          [RUNITE_ARROW],
+          [5],
+          actionType
+        );
 
       expect(await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, BRONZE_BAR, RUNITE_ARROW])).to.deep.eq([4, 5, 5]);
     });
