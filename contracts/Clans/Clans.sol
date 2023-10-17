@@ -102,7 +102,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     COMMONER, // Member of the clan
     SCOUT, // Invite and kick commoners
     TREASURER, // Can withdraw from bank
-    LEADER // Can edit clan details
+    LEADER, // Can edit clan details
+    OWNER // Can do everything and transfer ownership
   }
 
   struct Clan {
@@ -246,7 +247,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     clan.createdTimestamp = uint40(block.timestamp);
 
     player.clanId = uint32(clanId);
-    player.rank = ClanRank.LEADER;
+    player.rank = ClanRank.OWNER;
     if (player.requestedClanId != 0) {
       removeJoinRequest(player.requestedClanId, _playerId);
     }
@@ -267,8 +268,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     string calldata _name,
     string calldata _discord,
     string calldata _telegram,
-    uint _imageId
-  ) external isOwnerOfPlayer(clans[_clanId].owner) {
+    uint _imageId,
+    uint _playerId
+  ) external isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.LEADER) {
     Clan storage clan = clans[_clanId];
     Tier storage tier = tiers[clan.tierId];
     _checkClanImage(_imageId, tier.maxImageId);
@@ -279,7 +281,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     _checkSocials(_discord, _telegram);
     string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram);
-    emit ClanEdited(_clanId, clans[_clanId].owner, clanInfo, _imageId);
+    emit ClanEdited(_clanId, _playerId, clanInfo, _imageId);
   }
 
   function deleteInvitesAsPlayer(uint[] calldata _clanIds, uint _playerId) external isOwnerOfPlayer(_playerId) {
@@ -554,7 +556,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
         _removeFromClan(_clanId, _memberId, _playerId);
       } else {
         // If owner is leaving their post then we need to update the owned state
-        if (currentMemberRank == ClanRank.LEADER) {
+        if (currentMemberRank == ClanRank.OWNER) {
           _ownerCleared(_clanId);
         }
         _updateRank(_clanId, _memberId, _rank, _playerId);
@@ -589,7 +591,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     if (_newRank != ClanRank.NONE) {
-      if (_newRank >= ClanRank.LEADER) {
+      if (_newRank >= ClanRank.OWNER) {
         revert RankMustBeLowerRenounce();
       }
       // Change old owner to new rank
@@ -627,11 +629,15 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _upgradeClan(_clanId, _playerId, _newTierId);
   }
 
-  function pinMessage(uint _clanId, string calldata _message) external isOwnerOfPlayer(clans[_clanId].owner) {
+  function pinMessage(
+    uint _clanId,
+    string calldata _message,
+    uint _playerId
+  ) external isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.LEADER) {
     if (bytes(_message).length > 200) {
       revert MessageTooLong();
     }
-    emit PinMessage(_clanId, _message, clans[_clanId].owner);
+    emit PinMessage(_clanId, _message, _playerId);
   }
 
   function getClanNameOfPlayer(uint _playerId) external view returns (string memory) {
@@ -807,7 +813,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     Clan storage clan = clans[_clanId];
     clan.owner = uint80(_playerId);
     delete ownerlessClanTimestamps[_clanId];
-    playerInfo[_playerId].rank = ClanRank.LEADER;
+    playerInfo[_playerId].rank = ClanRank.OWNER;
     emit ClanOwnershipTransferred(_clanId, _playerId);
   }
 
@@ -887,7 +893,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit EditTiers(_tiers);
   }
 
-  function gateKeep(uint _clanId, NFTInfo[] calldata _nftInfos) external isOwnerOfPlayer(clans[_clanId].owner) {
+  function gateKeep(
+    uint _clanId,
+    NFTInfo[] calldata _nftInfos,
+    uint _playerId
+  ) external isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.LEADER) {
     if (_nftInfos.length > 5) {
       revert TooManyNFTs();
     }
@@ -917,7 +927,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     clans[_clanId].gateKeptNFTs = _nftInfos;
-    emit GateKeepNFTs(_clanId, nfts, clans[_clanId].owner);
+    emit GateKeepNFTs(_clanId, nfts, _playerId);
   }
 
   function setBankFactory(IBankFactory _bankFactory) external onlyOwner {
@@ -935,6 +945,14 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function setPaintSwapMarketplaceWhitelist(address _paintswapMarketplaceWhitelist) external onlyOwner {
     paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
+  }
+
+  function tempUpdateClanRankLeaders(uint startId, uint endId) external onlyOwner {
+    for (uint i = startId; i < endId; ++i) {
+      if (clans[i].owner != 0) {
+        playerInfo[clans[i].owner].rank = ClanRank.OWNER;
+      }
+    }
   }
 
   function _authorizeUpgrade(address) internal override onlyOwner {}
