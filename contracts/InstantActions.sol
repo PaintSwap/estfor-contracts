@@ -83,6 +83,13 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     bytes1 packedData; // last bit is full mode only
   }
 
+  struct InstantActionState {
+    uint[] consumedTokenIds;
+    uint[] consumedAmounts;
+    uint[] producedTokenIds;
+    uint[] producedAmounts;
+  }
+
   IPlayers public players;
   mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) public actions;
   ItemNFT public itemNFT;
@@ -106,39 +113,23 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint _playerId,
     uint16[] calldata _actionIds,
     uint[] calldata _amounts,
-    InstantActionType actionType
+    InstantActionType _actionType
   ) external isOwnerOfPlayerAndActive(_playerId) {
-    uint[] memory inputTokenIds;
-    uint[] memory inputAmounts;
-    uint[] memory outputTokenIds;
-    uint[] memory outputAmounts;
+    InstantActionState memory instantActionState = getInstantActionState(_playerId, _actionIds, _amounts, _actionType);
 
-    // Check it exists
-    if (actionType == InstantActionType.FORGING_COMBINE) {
-      (inputTokenIds, inputAmounts, outputTokenIds, outputAmounts) = _forgingCombine(_playerId, _actionIds, _amounts);
-    } else if (actionType == InstantActionType.GENERIC) {
-      (inputTokenIds, inputAmounts, outputTokenIds, outputAmounts) = _genericInstantAction(
-        _playerId,
-        _actionIds,
-        _amounts
-      );
-    } else {
-      revert UnsupportedActionType();
-    }
-
-    itemNFT.burnBatch(msg.sender, inputTokenIds, inputAmounts);
-    itemNFT.mintBatch(msg.sender, outputTokenIds, outputAmounts);
+    itemNFT.burnBatch(msg.sender, instantActionState.consumedTokenIds, instantActionState.consumedAmounts);
+    itemNFT.mintBatch(msg.sender, instantActionState.producedTokenIds, instantActionState.producedAmounts);
 
     emit DoInstantActions(
       _playerId,
       msg.sender,
       _actionIds,
       _amounts,
-      inputTokenIds,
-      inputAmounts,
-      outputTokenIds,
-      outputAmounts,
-      actionType
+      instantActionState.consumedTokenIds,
+      instantActionState.consumedAmounts,
+      instantActionState.producedTokenIds,
+      instantActionState.producedAmounts,
+      _actionType
     );
   }
 
@@ -154,96 +145,96 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _genericInstantAction(
+  function getInstantActionState(
+    uint _playerId,
+    uint16[] calldata _actionIds,
+    uint[] calldata _amounts,
+    InstantActionType _actionType
+  ) public view returns (InstantActionState memory instantActionState) {
+    if (_actionType == InstantActionType.FORGING_COMBINE) {
+      instantActionState = _forgingCombineActionState(_playerId, _actionIds, _amounts);
+    } else if (_actionType == InstantActionType.GENERIC) {
+      instantActionState = _genericInstantActionState(_playerId, _actionIds, _amounts);
+    } else {
+      revert UnsupportedActionType();
+    }
+  }
+
+  function _genericInstantActionState(
     uint _playerId,
     uint16[] calldata _actionIds,
     uint[] calldata _amounts
-  )
-    private
-    view
-    returns (
-      uint[] memory inputTokenIds,
-      uint[] memory inputAmounts,
-      uint[] memory outputTokenIds,
-      uint[] memory outputAmounts
-    )
-  {
+  ) private view returns (InstantActionState memory instantActionState) {
     // Forging actions only have 1 input, burn all those and mint the components back
     uint MAX_INPUTS = 3;
-    inputTokenIds = new uint[](_actionIds.length * MAX_INPUTS);
-    inputAmounts = new uint[](_actionIds.length * MAX_INPUTS);
-    outputTokenIds = new uint[](_actionIds.length);
-    outputAmounts = new uint[](_actionIds.length);
+    instantActionState.consumedTokenIds = new uint[](_actionIds.length * MAX_INPUTS);
+    instantActionState.consumedAmounts = new uint[](_actionIds.length * MAX_INPUTS);
+    instantActionState.producedTokenIds = new uint[](_actionIds.length);
+    instantActionState.producedAmounts = new uint[](_actionIds.length);
     uint length;
-    // All outputTokenIds should be the same for forging
+    // All producedTokenIds should be the same for forging
     for (uint i; i < _actionIds.length; ++i) {
       InstantAction storage instantAction = actions[InstantActionType.GENERIC][_actionIds[i]];
 
       _checkDoActionRequirements(_playerId, instantAction);
 
       if (instantAction.inputTokenId1 != 0) {
-        inputTokenIds[length] = instantAction.inputTokenId1;
-        inputAmounts[length++] = instantAction.inputAmount1 * _amounts[i];
+        instantActionState.consumedTokenIds[length] = instantAction.inputTokenId1;
+        instantActionState.consumedAmounts[length++] = instantAction.inputAmount1 * _amounts[i];
       }
 
       if (instantAction.inputTokenId2 != 0) {
-        inputTokenIds[length] = instantAction.inputTokenId2;
-        inputAmounts[length++] = instantAction.inputAmount2 * _amounts[i];
+        instantActionState.consumedTokenIds[length] = instantAction.inputTokenId2;
+        instantActionState.consumedAmounts[length++] = instantAction.inputAmount2 * _amounts[i];
       }
 
       if (instantAction.inputTokenId3 != 0) {
-        inputTokenIds[length] = instantAction.inputTokenId3;
-        inputAmounts[length++] = instantAction.inputAmount3 * _amounts[i];
+        instantActionState.consumedTokenIds[length] = instantAction.inputTokenId3;
+        instantActionState.consumedAmounts[length++] = instantAction.inputAmount3 * _amounts[i];
       }
 
-      outputTokenIds[i] = instantAction.outputTokenId;
-      outputAmounts[i] = instantAction.outputAmount * _amounts[i];
+      instantActionState.producedTokenIds[i] = instantAction.outputTokenId;
+      instantActionState.producedAmounts[i] = instantAction.outputAmount * _amounts[i];
     }
 
+    uint[] memory consumedTokenIds = instantActionState.consumedTokenIds;
+    uint[] memory consumedAmounts = instantActionState.consumedAmounts;
+
     assembly ("memory-safe") {
-      mstore(inputTokenIds, length)
-      mstore(inputAmounts, length)
+      mstore(consumedTokenIds, length)
+      mstore(consumedAmounts, length)
     }
   }
 
-  function _forgingCombine(
+  function _forgingCombineActionState(
     uint _playerId,
     uint16[] calldata _actionIds,
     uint[] calldata _amounts
-  )
-    private
-    view
-    returns (
-      uint[] memory inputTokenIds,
-      uint[] memory inputAmounts,
-      uint[] memory outputTokenIds,
-      uint[] memory outputAmounts
-    )
-  {
+  ) private view returns (InstantActionState memory instantActionState) {
     // Forging actions only have 1 input, burn all those and mint the components back
-    inputTokenIds = new uint[](_actionIds.length);
+    instantActionState.consumedTokenIds = new uint[](_actionIds.length);
     // All outputTokenIds should be the same for forging
-    uint outputAmount;
-    uint outputTokenId = actions[InstantActionType.FORGING_COMBINE][_actionIds[0]].outputTokenId;
+    uint producedAmount;
+    uint producedTokenId = actions[InstantActionType.FORGING_COMBINE][_actionIds[0]].outputTokenId;
     for (uint i; i < _actionIds.length; ++i) {
       InstantAction storage instantAction = actions[InstantActionType.FORGING_COMBINE][_actionIds[i]];
-      if (outputTokenId != instantAction.outputTokenId) {
+      if (producedTokenId != instantAction.outputTokenId) {
         // All outputs should be the same
         revert InvalidOutputTokenId();
       }
 
       _checkDoActionRequirements(_playerId, instantAction);
 
-      outputAmount += instantAction.outputAmount * _amounts[i];
-      inputTokenIds[i] = instantAction.inputTokenId1;
+      producedAmount += instantAction.outputAmount * _amounts[i];
+      instantActionState.consumedTokenIds[i] = instantAction.inputTokenId1;
     }
 
-    inputAmounts = _amounts;
+    instantActionState.consumedAmounts = _amounts;
 
-    outputTokenIds = new uint[](1);
-    outputTokenIds[0] = outputTokenId;
-    outputAmounts = new uint[](1);
-    outputAmounts[0] = outputAmount;
+    instantActionState.producedTokenIds = new uint[](1);
+    instantActionState.producedTokenIds[0] = producedTokenId;
+    instantActionState.producedAmounts = new uint[](1);
+    instantActionState.producedAmounts[0] = producedAmount;
   }
 
   function _checkMinXPRequirements(uint _playerId, InstantAction storage _instantAction) private view {

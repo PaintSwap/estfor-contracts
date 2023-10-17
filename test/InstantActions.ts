@@ -158,6 +158,23 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
       await itemNFT.testMints(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
+      const instantActionState = await instantActions.getInstantActionState(
+        playerId,
+        [instantActionInput.actionId],
+        [1],
+        actionType
+      );
+      expect(instantActionState.consumedTokenIds.length).to.eq(3);
+      expect(instantActionState.consumedTokenIds[0]).to.eq(BRONZE_ARROW);
+      expect(instantActionState.consumedAmounts[0]).to.eq(1);
+      expect(instantActionState.consumedTokenIds[1]).to.eq(IRON_ARROW);
+      expect(instantActionState.consumedAmounts[1]).to.eq(2);
+      expect(instantActionState.consumedTokenIds[2]).to.eq(ADAMANTINE_ARROW);
+      expect(instantActionState.consumedAmounts[2]).to.eq(3);
+      expect(instantActionState.producedTokenIds.length).to.eq(1);
+      expect(instantActionState.producedTokenIds[0]).to.eq(RUNITE_ARROW);
+      expect(instantActionState.producedAmounts[0]).to.eq(2);
+
       await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType);
 
       expect(
@@ -564,6 +581,21 @@ describe("Instant actions", function () {
 
       await instantActions.addActions([instantActionInput, instantActionInput1]);
       await itemNFT.testMints(alice.address, [BRONZE_ARROW, BRONZE_BAR], [6, 6]);
+
+      const instantActionState = await instantActions.getInstantActionState(
+        playerId,
+        [instantActionInput.actionId, instantActionInput1.actionId],
+        [2, 1],
+        actionType
+      );
+      expect(instantActionState.consumedTokenIds.length).to.eq(2);
+      expect(instantActionState.consumedTokenIds[0]).to.eq(BRONZE_ARROW);
+      expect(instantActionState.consumedAmounts[0]).to.eq(2);
+      expect(instantActionState.consumedTokenIds[1]).to.eq(BRONZE_BAR);
+      expect(instantActionState.consumedAmounts[1]).to.eq(1);
+      expect(instantActionState.producedTokenIds.length).to.eq(1);
+      expect(instantActionState.producedTokenIds[0]).to.eq(RUNITE_ARROW);
+      expect(instantActionState.producedAmounts[0]).to.eq(5);
 
       await expect(
         instantActions
