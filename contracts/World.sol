@@ -339,17 +339,17 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     );
   }
 
-  function getRandomBytes(uint _numTickets, uint _skillEndTime, uint _playerId) external view returns (bytes memory b) {
+  function getRandomBytes(uint _numTickets, uint _timestamp, uint _playerId) external view returns (bytes memory b) {
     if (_numTickets <= 16) {
       // 32 bytes
-      bytes32 word = bytes32(getRandomWord(_skillEndTime));
-      b = abi.encodePacked(_getRandomComponent(word, _skillEndTime, _playerId));
-    } else if (_numTickets <= 64) {
+      bytes32 word = bytes32(getRandomWord(_timestamp));
+      b = abi.encodePacked(_getRandomComponent(word, _timestamp, _playerId));
+    } else if (_numTickets <= MAX_UNIQUE_TICKETS_) {
       // 4 * 32 bytes
-      uint[4] memory multipleWords = getMultipleWords(_skillEndTime);
+      uint[4] memory multipleWords = getMultipleWords(_timestamp);
       for (U256 iter; iter.lt(4); iter = iter.inc()) {
         uint i = iter.asUint256();
-        multipleWords[i] = uint(_getRandomComponent(bytes32(multipleWords[i]), _skillEndTime, _playerId));
+        multipleWords[i] = uint(_getRandomComponent(bytes32(multipleWords[i]), _timestamp, _playerId));
         // XOR all the words with the first fresh random number to give more randomness to the existing random words
         if (i != 0) {
           multipleWords[i] = uint(keccak256(abi.encodePacked(multipleWords[i] ^ multipleWords[0])));
@@ -404,8 +404,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     // Set the rewards
     ActionRewards storage actionReward = actionRewards[_action.actionId];
     delete actionRewards[_action.actionId];
-    WorldLibrary.setActionGuaranteedRewards(_action, actionReward);
-    WorldLibrary.setActionRandomRewards(_action, actionReward);
+    WorldLibrary.setActionGuaranteedRewards(_action.guaranteedRewards, actionReward);
+    WorldLibrary.setActionRandomRewards(_action.randomRewards, actionReward);
 
     if (_action.info.skill == Skill.COMBAT) {
       actionCombatStats[_action.actionId] = _action.combatStats;

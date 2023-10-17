@@ -9,6 +9,7 @@ import {
   MockPaintSwapMarketplaceWhitelist,
   MockRouter,
   MockWrappedFantom,
+  PassiveActions,
   PlayerNFT,
   Players,
   Promotions,
@@ -42,14 +43,7 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {
-  BRUSH_ADDRESS,
-  CLANS_ADDRESS,
-  QUESTS_ADDRESS,
-  SHOP_ADDRESS,
-  WFTM_ADDRESS,
-  WORLD_ADDRESS,
-} from "./contractAddresses";
+import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
@@ -372,6 +366,21 @@ async function main() {
   await bankFactory.deployed();
   console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
 
+  const PassiveActions = await ethers.getContractFactory("PassiveActions", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
+  const passiveActions = (await upgrades.deployProxy(
+    PassiveActions,
+    [players.address, itemNFT.address, world.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+      timeout,
+    }
+  )) as PassiveActions;
+  await passiveActions.deployed();
+  console.log(`PassiveActions = "${passiveActions.address.toLowerCase()}"`);
+
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {
     try {
@@ -400,6 +409,7 @@ async function main() {
         await upgrades.beacon.getImplementationAddress(bank.address),
         bankRegistry.address,
         bankFactory.address,
+        passiveActions.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -443,6 +453,10 @@ async function main() {
   tx = await itemNFT.setPromotions(promotions.address);
   await tx.wait();
   console.log("itemNFT setPromotions");
+
+  tx = await itemNFT.setPassiveActions(passiveActions.address);
+  await tx.wait();
+  console.log("itemNFT setPassiveActions");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();

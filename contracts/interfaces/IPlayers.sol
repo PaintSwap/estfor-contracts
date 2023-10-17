@@ -26,6 +26,8 @@ interface IPlayers {
 
   function upgradePlayer(uint playerId) external;
 
+  function isPlayerUpgraded(uint playerId) external view returns (bool);
+
   function isOwnerOfPlayerAndActive(address from, uint playerId) external view returns (bool);
 
   function activePlayer(address owner) external view returns (uint playerId);

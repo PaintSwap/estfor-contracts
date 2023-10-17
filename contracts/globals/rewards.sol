@@ -5,7 +5,7 @@ import {BoostType, Equipment} from "./misc.sol";
 
 struct GuaranteedReward {
   uint16 itemTokenId;
-  uint16 rate; // num per hour, base 10 (1 decimal)
+  uint16 rate; // num per hour (base 10, 1 decimal) for actions and num per duration for passive actions
 }
 
 struct RandomReward {
@@ -29,7 +29,7 @@ struct PendingRandomReward {
 
 struct ActionRewards {
   uint16 guaranteedRewardTokenId1;
-  uint16 guaranteedRewardRate1; // Num per hour, base 10 (1 decimal). Max 6553.5 per hour
+  uint16 guaranteedRewardRate1; // Num per hour base 10 (1 decimal) for actions (Max 6553.5 per hour), num per duration for passive actions
   uint16 guaranteedRewardTokenId2;
   uint16 guaranteedRewardRate2;
   uint16 guaranteedRewardTokenId3;

@@ -27,7 +27,8 @@ enum EquipPosition {
   BOOST_VIAL,
   EXTRA_BOOST_VIAL,
   GLOBAL_BOOST_VIAL,
-  CLAN_BOOST_VIAL
+  CLAN_BOOST_VIAL,
+  PASSIVE_BOOST_VIAL
 }
 
 struct Player {
@@ -362,3 +363,5 @@ struct ItemInput {
   string metadataURI;
   string name;
 }
+
+uint constant MAX_UNIQUE_TICKETS_ = 64;

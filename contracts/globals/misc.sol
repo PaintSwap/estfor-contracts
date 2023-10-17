@@ -7,7 +7,8 @@ enum BoostType {
   COMBAT_XP,
   NON_COMBAT_XP,
   GATHERING,
-  ABSENCE
+  ABSENCE,
+  PASSIVE_SKIP_CHANCE
 }
 
 struct Equipment {
