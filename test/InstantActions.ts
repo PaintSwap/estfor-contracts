@@ -587,5 +587,58 @@ describe("Instant actions", function () {
 
       expect(await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, BRONZE_BAR, RUNITE_ARROW])).to.deep.eq([4, 5, 5]);
     });
+
+    it("Cannot do forging actions if they have different output tokens", async function () {
+      const {playerId, instantActions, itemNFT, alice} = await loadFixture(playersFixture);
+
+      const instantActionInput: InstantActionInput = {
+        ...defaultInstantActionInput,
+        inputTokenIds: [BRONZE_ARROW],
+        inputAmounts: [1],
+        outputTokenId: RUNITE_ARROW,
+        outputAmount: 3,
+      };
+
+      const instantActionInput1: InstantActionInput = {
+        ...defaultInstantActionInput,
+        actionId: 2,
+        inputTokenIds: [BRONZE_ARROW],
+        inputAmounts: [1],
+        outputTokenId: RUNITE_BAR,
+        outputAmount: 1,
+      };
+
+      await instantActions.addActions([instantActionInput, instantActionInput1]);
+      await itemNFT.testMints(alice.address, [BRONZE_ARROW], [6]);
+
+      await expect(
+        instantActions
+          .connect(alice)
+          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [1, 1], actionType)
+      ).to.be.revertedWithCustomError(instantActions, "InvalidOutputTokenId");
+    });
+  });
+
+  it("Using incorrect actionType should revert", async function () {
+    const {instantActions, alice, playerId} = await loadFixture(playersFixture);
+
+    const instantActionInput: InstantActionInput = {
+      ..._defaultInstantActionInput,
+      actionId: 1,
+      actionType: InstantActionType.NONE,
+      inputTokenIds: [BRONZE_ARROW],
+      inputAmounts: [1],
+    };
+
+    await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
+      instantActions,
+      "UnsupportedActionType"
+    );
+
+    await expect(
+      instantActions
+        .connect(alice)
+        .doInstantActions(playerId, [instantActionInput.actionId], [2], InstantActionType.NONE)
+    ).to.be.revertedWithCustomError(instantActions, "UnsupportedActionType");
   });
 });
