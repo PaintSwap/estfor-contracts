@@ -99,7 +99,7 @@ describe("Instant actions", function () {
         inputTokenIds: [BRONZE_ARROW],
         inputAmounts: [1],
         minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING, Skill.ALCHEMY],
-        minXPs: ["1", "1", "1"],
+        minXPs: [1, 1, 1],
       };
 
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
@@ -317,25 +317,23 @@ describe("Instant actions", function () {
         ...defaultInstantActionInput,
         inputTokenIds: [BRONZE_ARROW],
         inputAmounts: [1],
-        minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-        minXPs: ["1", "1", "1"],
+        minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING],
+        minXPs: [1, 1],
       };
       await instantActions.addActions([instantActionInput]);
 
       await itemNFT.testMint(alice.address, BRONZE_ARROW, 1);
-
       await expect(
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
       await players.testModifyXP(alice.address, playerId, Skill.WOODCUTTING, 1, true);
-      await players.testModifyXP(alice.address, playerId, Skill.FIREMAKING, 1, true);
 
       await expect(
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
-      await players.testModifyXP(alice.address, playerId, Skill.CRAFTING, 2, true);
+      await players.testModifyXP(alice.address, playerId, Skill.FIREMAKING, 2, true);
 
       await expect(
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)

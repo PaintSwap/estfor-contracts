@@ -288,9 +288,9 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     instantAction = InstantAction({
       minSkill1: _actionInput.minSkills.length > 0 ? _actionInput.minSkills[0] : Skill.NONE,
       minXP1: _actionInput.minXPs.length > 0 ? _actionInput.minXPs[0] : 0,
-      minSkill2: _actionInput.minSkills.length > 0 ? _actionInput.minSkills[1] : Skill.NONE,
+      minSkill2: _actionInput.minSkills.length > 1 ? _actionInput.minSkills[1] : Skill.NONE,
       minXP2: _actionInput.minXPs.length > 1 ? _actionInput.minXPs[1] : 0,
-      minSkill3: _actionInput.minSkills.length > 0 ? _actionInput.minSkills[2] : Skill.NONE,
+      minSkill3: _actionInput.minSkills.length > 2 ? _actionInput.minSkills[2] : Skill.NONE,
       minXP3: _actionInput.minXPs.length > 2 ? _actionInput.minXPs[2] : 0,
       inputTokenId1: _actionInput.inputTokenIds.length > 0 ? _actionInput.inputTokenIds[0] : NONE,
       inputAmount1: _actionInput.inputAmounts.length > 0 ? _actionInput.inputAmounts[0] : 0,
