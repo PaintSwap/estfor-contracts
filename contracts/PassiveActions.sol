@@ -47,12 +47,17 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   error InputSpecifiedWithoutAmount();
   error InputAmountsMustBeInOrder();
   error PreviousInputTokenIdMustBeSpecified();
-  error PreviousMinSkillMustBeSpecified();
-  error MinXPsMustBeInOrder();
+  error MinimumSkillsNoDuplicates();
   error ActionAlreadyFinished();
   error NoActivePassiveAction();
   error PassiveActionNotReadyToBeClaimed();
   error PreviousActionNotFinished();
+  error LengthMismatch();
+  error InputItemNoDuplicates();
+  error TooManyMinSkills();
+  error InvalidSkill();
+  error TooManyInputItems();
+  error InvalidInputTokenId();
 
   struct PassiveActionInput {
     uint16 actionId;
@@ -63,18 +68,10 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   struct PassiveActionInfoInput {
     uint8 durationDays;
-    uint16 inputTokenId1;
-    uint16 inputAmount1;
-    uint16 inputTokenId2;
-    uint16 inputAmount2;
-    uint16 inputTokenId3;
-    uint16 inputAmount3;
-    Skill minSkill1;
-    uint32 minXP1;
-    Skill minSkill2;
-    uint32 minXP2;
-    Skill minSkill3;
-    uint32 minXP3;
+    uint16[] inputTokenIds;
+    uint16[] inputAmounts;
+    Skill[] minSkills;
+    uint32[] minXPs;
     uint8 skipSuccessPercent; // 0-100 (% chance of skipping a day)
     uint8 worldLocation; // 0 is the main starting world
     bool isFullModeOnly;
@@ -482,18 +479,18 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     bytes1 packedData = bytes1(uint8(_actionInfo.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     passiveAction = PassiveAction({
       durationDays: _actionInfo.durationDays,
-      inputTokenId1: _actionInfo.inputTokenId1,
-      inputAmount1: _actionInfo.inputAmount1,
-      inputTokenId2: _actionInfo.inputTokenId2,
-      inputAmount2: _actionInfo.inputAmount2,
-      inputTokenId3: _actionInfo.inputTokenId3,
-      inputAmount3: _actionInfo.inputAmount3,
-      minSkill1: _actionInfo.minSkill1,
-      minXP1: _actionInfo.minXP1,
-      minSkill2: _actionInfo.minSkill2,
-      minXP2: _actionInfo.minXP2,
-      minSkill3: _actionInfo.minSkill3,
-      minXP3: _actionInfo.minXP3,
+      minSkill1: _actionInfo.minSkills.length > 0 ? _actionInfo.minSkills[0] : Skill.NONE,
+      minXP1: _actionInfo.minXPs.length > 0 ? _actionInfo.minXPs[0] : 0,
+      minSkill2: _actionInfo.minSkills.length > 1 ? _actionInfo.minSkills[1] : Skill.NONE,
+      minXP2: _actionInfo.minXPs.length > 1 ? _actionInfo.minXPs[1] : 0,
+      minSkill3: _actionInfo.minSkills.length > 2 ? _actionInfo.minSkills[2] : Skill.NONE,
+      minXP3: _actionInfo.minXPs.length > 2 ? _actionInfo.minXPs[2] : 0,
+      inputTokenId1: _actionInfo.inputTokenIds.length > 0 ? _actionInfo.inputTokenIds[0] : NONE,
+      inputAmount1: _actionInfo.inputAmounts.length > 0 ? _actionInfo.inputAmounts[0] : 0,
+      inputTokenId2: _actionInfo.inputTokenIds.length > 1 ? _actionInfo.inputTokenIds[1] : NONE,
+      inputAmount2: _actionInfo.inputAmounts.length > 1 ? _actionInfo.inputAmounts[1] : 0,
+      inputTokenId3: _actionInfo.inputTokenIds.length > 2 ? _actionInfo.inputTokenIds[2] : NONE,
+      inputAmount3: _actionInfo.inputAmounts.length > 2 ? _actionInfo.inputAmounts[2] : 0,
       skipSuccessPercent: _actionInfo.skipSuccessPercent,
       packedData: packedData
     });
@@ -521,58 +518,61 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     WorldLibrary.setActionRandomRewards(_passiveActionInput.randomRewards, actionReward);
   }
 
-  function _checkInfo(PassiveActionInfoInput calldata _actionInfo) private pure {
-    // Check inputs are correct
-    if (_actionInfo.inputTokenId1 != NONE && _actionInfo.inputAmount1 == 0) {
-      revert InputSpecifiedWithoutAmount();
+  function _checkInfo(PassiveActionInfoInput calldata _actionInfo) private view {
+    uint16[] calldata inputTokenIds = _actionInfo.inputTokenIds;
+    uint16[] calldata amounts = _actionInfo.inputAmounts;
+
+    if (inputTokenIds.length > 3) {
+      revert TooManyInputItems();
     }
-    if (_actionInfo.inputTokenId2 != NONE) {
-      if (_actionInfo.inputAmount2 == 0) {
+    if (inputTokenIds.length != amounts.length) {
+      revert LengthMismatch();
+    }
+
+    for (uint i; i < inputTokenIds.length; ++i) {
+      if (inputTokenIds[i] == 0) {
+        revert InvalidInputTokenId();
+      }
+      if (amounts[i] == 0) {
         revert InputSpecifiedWithoutAmount();
       }
-      if (_actionInfo.inputTokenId1 == NONE) {
-        revert PreviousInputTokenIdMustBeSpecified();
-      }
-      if (_actionInfo.inputAmount2 < _actionInfo.inputAmount1) {
-        revert InputAmountsMustBeInOrder();
-      }
-    }
-    if (_actionInfo.inputTokenId3 != NONE) {
-      if (_actionInfo.inputAmount3 == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
-      if (_actionInfo.inputTokenId2 == NONE) {
-        revert PreviousInputTokenIdMustBeSpecified();
-      }
-      if (_actionInfo.inputAmount3 < _actionInfo.inputAmount2) {
-        revert InputAmountsMustBeInOrder();
+
+      if (i != inputTokenIds.length - 1) {
+        if (amounts[i] > amounts[i + 1]) {
+          revert InputAmountsMustBeInOrder();
+        }
+        for (uint j; j < inputTokenIds.length; ++j) {
+          if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
+            revert InputItemNoDuplicates();
+          }
+        }
       }
     }
 
-    // Check min xp is correct
-    if (_actionInfo.minSkill1 != Skill.NONE && _actionInfo.minXP1 == 0) {
-      revert InputSpecifiedWithoutAmount();
+    // Check minimum xp
+    Skill[] calldata minSkills = _actionInfo.minSkills;
+    uint32[] calldata minXPs = _actionInfo.minXPs;
+
+    if (minSkills.length > 3) {
+      revert TooManyMinSkills();
     }
-    if (_actionInfo.minSkill2 != Skill.NONE) {
-      if (_actionInfo.minXP2 == 0) {
+    if (minSkills.length != minXPs.length) {
+      revert LengthMismatch();
+    }
+    for (uint i; i < minSkills.length; ++i) {
+      if (minSkills[i] == Skill.NONE) {
+        revert InvalidSkill();
+      }
+      if (minXPs[i] == 0) {
         revert InputSpecifiedWithoutAmount();
       }
-      if (_actionInfo.minSkill1 == Skill.NONE) {
-        revert PreviousMinSkillMustBeSpecified();
-      }
-      if (_actionInfo.minXP2 > _actionInfo.minXP1) {
-        revert MinXPsMustBeInOrder();
-      }
-    }
-    if (_actionInfo.minSkill3 != Skill.NONE) {
-      if (_actionInfo.minXP3 == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
-      if (_actionInfo.minSkill2 == Skill.NONE) {
-        revert PreviousMinSkillMustBeSpecified();
-      }
-      if (_actionInfo.minXP3 > _actionInfo.minXP2) {
-        revert MinXPsMustBeInOrder();
+
+      if (i != minSkills.length - 1) {
+        for (uint j; j < minSkills.length; ++j) {
+          if (j != i && minSkills[i] == minSkills[j]) {
+            revert MinimumSkillsNoDuplicates();
+          }
+        }
       }
     }
   }

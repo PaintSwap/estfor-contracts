@@ -57,76 +57,32 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        inputTokenId1: 1,
-        inputAmount1: 1,
-        inputTokenId2: 2,
-        inputAmount2: 2,
-        inputTokenId3: 3,
-        inputAmount3: 3,
+        inputTokenIds: [1, 2, 3],
+        inputAmounts: [1, 2, 3],
       },
     };
 
-    passiveActionInput.info.inputAmount1 = 4;
+    passiveActionInput.info.inputAmounts[0] = 4;
     await expect(passiveActions.addActions([passiveActionInput])).to.be.revertedWithCustomError(
       passiveActions,
       "InputAmountsMustBeInOrder"
     );
 
-    passiveActionInput.info.inputAmount1 = 1;
-    passiveActionInput.info.inputAmount2 = 4;
+    passiveActionInput.info.inputAmounts[0] = 1;
+    passiveActionInput.info.inputAmounts[1] = 4;
     await expect(passiveActions.addActions([passiveActionInput])).to.be.revertedWithCustomError(
       passiveActions,
       "InputAmountsMustBeInOrder"
     );
 
-    passiveActionInput.info.inputAmount2 = 2;
-    passiveActionInput.info.inputAmount3 = 1;
+    passiveActionInput.info.inputAmounts[1] = 2;
+    passiveActionInput.info.inputAmounts[2] = 1;
     await expect(passiveActions.addActions([passiveActionInput])).to.be.revertedWithCustomError(
       passiveActions,
       "InputAmountsMustBeInOrder"
     );
 
-    passiveActionInput.info.inputAmount3 = 3;
-    expect(await passiveActions.addActions([passiveActionInput])).to.not.be.reverted;
-  });
-
-  it("Check minimum skill requirement order", async function () {
-    const {passiveActions} = await loadFixture(playersFixture);
-
-    const passiveActionInput: PassiveActionInput = {
-      ...defaultPassiveActionInput,
-      info: {
-        ...defaultPassiveActionInput.info,
-        minSkill1: Skill.AGILITY,
-        minXP1: 3,
-        minSkill2: Skill.WOODCUTTING,
-        minXP2: 2,
-        minSkill3: Skill.FIREMAKING,
-        minXP3: 1,
-      },
-    };
-
-    passiveActionInput.info.minXP1 = 1;
-    await expect(passiveActions.addActions([passiveActionInput])).to.be.revertedWithCustomError(
-      passiveActions,
-      "MinXPsMustBeInOrder"
-    );
-
-    passiveActionInput.info.minXP1 = 3;
-    passiveActionInput.info.minXP2 = 4;
-    await expect(passiveActions.addActions([passiveActionInput])).to.be.revertedWithCustomError(
-      passiveActions,
-      "MinXPsMustBeInOrder"
-    );
-
-    passiveActionInput.info.minXP2 = 2;
-    passiveActionInput.info.minXP3 = 4;
-    await expect(passiveActions.addActions([passiveActionInput])).to.be.revertedWithCustomError(
-      passiveActions,
-      "MinXPsMustBeInOrder"
-    );
-
-    passiveActionInput.info.minXP3 = 1;
+    passiveActionInput.info.inputAmounts[2] = 3;
     expect(await passiveActions.addActions([passiveActionInput])).to.not.be.reverted;
   });
 
@@ -137,8 +93,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        inputTokenId1: EstforConstants.OAK_LOG,
-        inputAmount1: 100,
+        inputTokenIds: [EstforConstants.OAK_LOG],
+        inputAmounts: [100],
       },
     };
 
@@ -250,14 +206,14 @@ describe("Passive actions", function () {
   });
 
   it("Must have the minimum requirements to start this passive action", async function () {
-    const {playerId, passiveActions, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, players, alice} = await loadFixture(playersFixture);
 
     const passiveActionInput: PassiveActionInput = {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        minSkill1: Skill.WOODCUTTING,
-        minXP1: 1,
+        minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.ALCHEMY],
+        minXPs: [1, 1, 1],
       },
     };
 
@@ -265,6 +221,16 @@ describe("Passive actions", function () {
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0))
       .to.be.revertedWithCustomError(passiveActions, "MinimumXPNotReached")
       .withArgs(Skill.WOODCUTTING, 1);
+
+    await players.testModifyXP(alice.address, playerId, Skill.WOODCUTTING, 2, false);
+    await players.testModifyXP(alice.address, playerId, Skill.FIREMAKING, 1, false);
+
+    await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0))
+      .to.be.revertedWithCustomError(passiveActions, "MinimumXPNotReached")
+      .withArgs(Skill.ALCHEMY, 1);
+
+    await players.testModifyXP(alice.address, playerId, Skill.ALCHEMY, 1, false);
+    await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
   });
 
   it("Add multiple actions", async function () {
@@ -275,8 +241,8 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 10,
-        minSkill1: Skill.WOODCUTTING,
-        minXP1: 1,
+        minSkills: [Skill.WOODCUTTING],
+        minXPs: [1],
       },
     };
 
@@ -285,8 +251,8 @@ describe("Passive actions", function () {
       actionId: 2,
       info: {
         ...defaultPassiveActionInput.info,
-        minSkill1: Skill.FIREMAKING,
-        minXP1: 2,
+        minSkills: [Skill.FIREMAKING],
+        minXPs: [2],
       },
     };
 
@@ -734,10 +700,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        inputTokenId1: BRONZE_ARROW,
-        inputAmount1: 2,
-        inputTokenId2: IRON_ARROW,
-        inputAmount2: 3,
+        inputTokenIds: [BRONZE_ARROW, IRON_ARROW],
+        inputAmounts: [2, 3],
         durationDays: 10,
         skipSuccessPercent: 100,
       },
