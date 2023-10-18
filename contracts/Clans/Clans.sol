@@ -391,16 +391,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit InviteAccepted(_clanId, _playerId);
   }
 
-  function acceptInviteTODOPaint(
+  function acceptInvite(
     uint _clanId,
     uint _playerId,
     uint _gateKeepTokenId
   ) external isOwnerOfPlayerAndActive(_playerId) {
     _acceptInvite(_clanId, _playerId, _gateKeepTokenId);
-  }
-
-  function acceptInvite(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    _acceptInvite(_clanId, _playerId, 0);
   }
 
   function _requestToJoin(uint _clanId, uint _playerId, uint _gateKeepTokenId) private {
@@ -434,16 +430,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit JoinRequestSent(_clanId, _playerId);
   }
 
-  function requestToJoinTODOPaint(
+  function requestToJoin(
     uint _clanId,
     uint _playerId,
     uint _gateKeepTokenId
   ) external isOwnerOfPlayerAndActive(_playerId) {
     _requestToJoin(_clanId, _playerId, _gateKeepTokenId);
-  }
-
-  function requestToJoin(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    _requestToJoin(_clanId, _playerId, 0);
   }
 
   function removeJoinRequest(uint _clanId, uint _playerId) public isOwnerOfPlayer(_playerId) {
