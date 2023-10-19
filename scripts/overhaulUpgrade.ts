@@ -13,9 +13,7 @@ import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {Skill} from "@paintswap/estfor-definitions/types";
 
 async function main() {
-  //  const [owner] = await ethers.getSigners();
-
-  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
+  const [owner] = await ethers.getSigners();
   console.log(`Large upgrade using account: ${owner.address}`);
 
   const network = await ethers.provider.getNetwork();
@@ -103,7 +101,11 @@ async function main() {
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const Players = (await ethers.getContractFactory("Players")).connect(owner);
+  const Players = (
+    await ethers.getContractFactory("Players", {
+      libraries: {PlayersLibrary: playersLibrary.address},
+    })
+  ).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
