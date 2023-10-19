@@ -297,5 +297,6 @@ export const playersFixture = async function () {
     bankFactory,
     estforLibrary,
     paintSwapMarketplaceWhitelist,
+    playersLibrary,
   };
 };

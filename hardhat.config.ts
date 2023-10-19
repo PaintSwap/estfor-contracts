@@ -52,6 +52,8 @@ const config: HardhatUserConfig = {
     compilers: [defaultConfig, lowerRunsConfig],
     overrides: {
       "contracts/Clans/Clans.sol": lowerRunsConfig,
+      "contracts/Players/Players.sol": lowerRunsConfig,
+      "contracts/Players/PlayersImplProcessActions.sol": lowerRunsConfig,
     },
   },
   gasReporter: {

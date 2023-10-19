@@ -28,6 +28,7 @@ describe("Bank", function () {
     const telegram = "fantomfoundation";
     return {...fixture, clans, clanName, discord, telegram};
   }
+
   it("Should be able to deposit items up to max capacity and only treasurers withdraw", async function () {
     const {
       clans,
@@ -139,7 +140,7 @@ describe("Bank", function () {
     expect(balanceBefore.add(1)).to.eq(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD));
 
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser", true);
-    await clans.requestToJoin(clanId, newPlayerId);
+    await clans.requestToJoin(clanId, newPlayerId, 0);
     await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
 
     await expect(

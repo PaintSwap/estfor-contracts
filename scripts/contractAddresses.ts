@@ -64,11 +64,11 @@ if (!isBeta) {
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
   playersLibrary = "0x4d6e98a7d0dae169a3aa9fd4a7fdf0298e602fa1";
-  playersImplQueueActions = "0x5e41bfdf66657b424325a89dd9d7a227d5ec4ce2";
-  playersImplProcessActions = "0x607ff8814e70ace5962191e80c7a1eb346971834";
-  playersImplRewards = "0x0e9fb7c6c5164eefde3417a031e2a86013335d39";
-  playersImplMisc = "0x1fac44c977e8bd635715d0d11d84ef38361a8593";
-  playersImplMisc1 = "0xb461cab71a619bbe7e879b521a07dbf894314ff4";
+  playersImplQueueActions = "0x4192f7b2ab046471a29b2e8e5031e98e00ff55a7";
+  playersImplProcessActions = "0xdafa698c2c0722c503151728916f64f2fbebe303";
+  playersImplRewards = "0x9782185ae5f260379682fe9adc48d21e4f167af4";
+  playersImplMisc = "0xfa4c0ee00a667517cf89a414edb3fe25a1d57e42";
+  playersImplMisc1 = "0xa0514061144d8f5e038940e1382b26bee89ff564";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans

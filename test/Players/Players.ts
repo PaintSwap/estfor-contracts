@@ -1324,6 +1324,100 @@ describe("Players", function () {
     ).to.be.revertedWithCustomError(players, "HasQueuedActions");
   });
 
+  it("Check max level packed XP", async function () {
+    const {players, playerId, playersLibrary, alice} = await loadFixture(playersFixture);
+
+    let packedXP = await players.packedXP(playerId);
+    const xp = 1109796; // First max level
+    expect(await playersLibrary.getLevel(xp)).to.eq(100); // exactly 100
+
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, xp, false);
+    packedXP = await players.packedXP(playerId);
+    let maxDataAsNum = Number(packedXP.packedDataIsMaxed);
+
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MAGIC, xp, false);
+    packedXP = await players.packedXP(playerId);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed);
+    const MELEE_OFFSET = 0;
+    const RANGED_OFFSET = 2;
+    const MAGIC_OFFSET = 4;
+    const DEFENCE_OFFSET = 6;
+    const HEALTH_OFFSET = 8;
+    const RESERVED_COMBAT_OFFSET = 10;
+    expect((maxDataAsNum >> MELEE_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> RANGED_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> MAGIC_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> DEFENCE_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> HEALTH_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> RESERVED_COMBAT_OFFSET) & 0b11).to.eq(0);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed1);
+    const MINING_OFFSET = 0;
+    const WOODCUTTING_OFFSET = 2;
+    const FISHING_OFFSET = 4;
+    const SMITHING_OFFSET = 6;
+    const THIEVING_OFFSET = 8;
+    const CRAFTING_OFFSET = 10;
+    expect((maxDataAsNum >> MINING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> WOODCUTTING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FISHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> SMITHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> THIEVING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> CRAFTING_OFFSET) & 0b11).to.eq(0);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed2);
+    const COOKING_OFFSET = 0;
+    const FIREMAKING_OFFSET = 2;
+    const AGILITY_OFFSET = 4;
+    const ALCHEMY_OFFSET = 6;
+    const FLETCHING_OFFSET = 8;
+    const FORGING_OFFSET = 10;
+    expect((maxDataAsNum >> COOKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FIREMAKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> AGILITY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> ALCHEMY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FLETCHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(0);
+
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.CRAFTING, xp - 1, false); // 1 below max
+    packedXP = await players.packedXP(playerId);
+    expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(0);
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.CRAFTING, xp, false); // Now max
+    packedXP = await players.packedXP(playerId);
+    expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(1);
+
+    // Set a few more and check the rest
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.SMITHING, xp, false);
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, xp, false);
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FORGING, xp, false);
+
+    packedXP = await players.packedXP(playerId);
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed);
+    expect((maxDataAsNum >> MELEE_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> RANGED_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> MAGIC_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> DEFENCE_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> HEALTH_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> RESERVED_COMBAT_OFFSET) & 0b11).to.eq(0);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed1);
+    expect((maxDataAsNum >> MINING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> WOODCUTTING_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> FISHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> SMITHING_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> THIEVING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> CRAFTING_OFFSET) & 0b11).to.eq(1);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed2);
+    expect((maxDataAsNum >> COOKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FIREMAKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> AGILITY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> ALCHEMY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FLETCHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(1);
+  });
+
   it("Travelling", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);

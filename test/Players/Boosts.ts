@@ -609,7 +609,7 @@ describe("Boosts", function () {
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
     await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
-    await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+    await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
     await brush.mint(bob.address, ethers.utils.parseEther("100000"));
     await brush.connect(bob).approve(wishingWell.address, ethers.utils.parseEther("100000"));
@@ -876,7 +876,7 @@ describe("Boosts", function () {
     // Add bob
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
     await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
-    await clans.connect(bob).acceptInvite(clanId, bobPlayerId);
+    await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
     await brush.mint(bob.address, ethers.utils.parseEther("100000"));
     await brush.connect(bob).approve(wishingWell.address, ethers.utils.parseEther("100000"));

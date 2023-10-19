@@ -138,6 +138,8 @@ abstract contract PlayersBase {
   // The random chance where the odds are increased when there are dice roll overflows.
   // Don't set this above 1747 otherwise it can result in 100% chance for anything around that value
   uint internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1328;
+  uint internal constant MAX_LEVEL = 100; // Original max level
+  uint internal constant MAX_LEVEL_1 = 500; // TODO: Update later
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;
@@ -280,34 +282,57 @@ abstract contract PlayersBase {
     PackedXP storage packedXP = xp_[_playerId];
     uint oldPoints = PlayersLibrary.readXP(_skill, packedXP);
     uint newPoints = oldPoints.add(_pointsAccrued);
-    // Intentional new scope to remove stack shuffling errors
-    {
-      if (newPoints > type(uint32).max) {
-        newPoints = type(uint32).max;
-        _pointsAccrued = uint32(newPoints - oldPoints);
-      }
-      if (_pointsAccrued == 0) {
-        return;
-      }
-      uint offset = 2; // Accounts for NONE & COMBAT skills
-      uint skillOffsetted = uint8(_skill) - offset;
-      uint slotNum = skillOffsetted / 6;
-      uint relativePos = skillOffsetted % 6;
 
-      assembly ("memory-safe") {
-        let val := sload(add(packedXP.slot, slotNum))
-        // Clear the 5 bytes containing the old xp
-        val := and(val, not(shl(mul(relativePos, 40), 0xffffffffff)))
-        // Now set new xp
-        val := or(val, shl(mul(relativePos, 40), newPoints))
-        sstore(add(packedXP.slot, slotNum), val)
-      }
+    if (newPoints > type(uint32).max) {
+      newPoints = type(uint32).max;
+      _pointsAccrued = uint32(newPoints - oldPoints);
+    }
+    if (_pointsAccrued == 0) {
+      return;
+    }
+    uint offset = 2; // Accounts for NONE & COMBAT skills
+    uint skillOffsetted = uint8(_skill) - offset;
+    uint slotNum = skillOffsetted / 6;
+    uint relativePos = skillOffsetted % 6;
 
-      emit AddXP(_from, _playerId, _skill, _pointsAccrued);
+    // packedDataIsMaxedBitStart is the starting bit index for packedDataIsMaxed within the 256-bit storage slot
+    uint packedDataIsMaxedBitStart = 240;
+    uint bitsPerSkill = 2; // Two bits to store the max level version for each skill
+    uint actualBitIndex = packedDataIsMaxedBitStart + relativePos * bitsPerSkill;
+
+    uint16 newLevel = PlayersLibrary.getLevel(newPoints);
+
+    // Determine the new max level version for this skill based on newLevel
+    uint newMaxLevelVersion;
+    /*if (newLevel == MAX_LEVEL_1) { // Not used yet
+      newMaxLevelVersion = 2;
+    } else */ if (
+      newLevel == MAX_LEVEL
+    ) {
+      newMaxLevelVersion = 1;
+    } else {
+      newMaxLevelVersion = 0;
     }
 
+    assembly ("memory-safe") {
+      let val := sload(add(packedXP.slot, slotNum))
+
+      // Clear the 5 bytes containing the old xp
+      val := and(val, not(shl(mul(relativePos, 40), 0xffffffffff)))
+      // Now set new xp
+      val := or(val, shl(mul(relativePos, 40), newPoints))
+
+      // Clear the bits for this skill in packedDataIsMaxed
+      val := and(val, not(shl(actualBitIndex, 0x3))) // This shifts 11 (in binary) to the index and then negates it
+      // Set the new max level version for this skill in packedDataIsMaxed
+      val := or(val, shl(actualBitIndex, newMaxLevelVersion))
+
+      sstore(add(packedXP.slot, slotNum), val)
+    }
+
+    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
+
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
-    uint16 newLevel = PlayersLibrary.getLevel(newPoints);
     // Update the player's level
     if (newLevel > oldLevel) {
       emit LevelUp(_from, _playerId, _skill, oldLevel, newLevel);
