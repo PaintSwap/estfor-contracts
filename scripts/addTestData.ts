@@ -243,7 +243,7 @@ export const addTestData = async (
   tx = await clans.inviteMember(clanId, alicePlayerId, playerId);
   await tx.wait();
   console.log("Invite Alice");
-  tx = await clans.connect(alice).acceptInvite(clanId, alicePlayerId);
+  tx = await clans.connect(alice).acceptInvite(clanId, alicePlayerId, 0);
   await tx.wait();
   console.log("Accept invite");
 
@@ -256,7 +256,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Re-invite Alice");
 
-  tx = await clans.connect(alice).requestToJoin(clanId, alicePlayerId);
+  tx = await clans.connect(alice).requestToJoin(clanId, alicePlayerId, 0);
   await tx.wait();
   console.log("Request to join as well");
 
