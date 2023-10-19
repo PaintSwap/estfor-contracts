@@ -6,6 +6,7 @@ import {
   ItemNFT,
   MockBrushToken,
   MockOracleClient,
+  MockPaintSwapMarketplaceWhitelist,
   MockRouter,
   MockWrappedFantom,
   PlayerNFT,
@@ -70,6 +71,7 @@ async function main() {
   let wftm: MockWrappedFantom;
   let oracle: MockOracleClient;
   let router: MockRouter;
+  let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   let tx;
   let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
   {
@@ -77,6 +79,7 @@ async function main() {
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
     const MockRouter = await ethers.getContractFactory("MockRouter");
+    const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
@@ -85,6 +88,9 @@ async function main() {
       oracle = await MockOracleClient.deploy();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
+      console.log(`mockRouter = "${router.address.toLowerCase()}"`);
+      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
+      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
@@ -95,12 +101,18 @@ async function main() {
       oracle = await MockOracleClient.deploy();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
+      console.log(`mockRouter = "${router.address.toLowerCase()}"`);
+      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
+      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
       oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
       router = await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d");
+      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.attach(
+        "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
+      );
     } else {
       throw Error("Not a supported network");
     }
@@ -162,24 +174,27 @@ async function main() {
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
 
   let itemsUri: string;
-  let imageBaseUri: string;
+  let heroImageBaseUri: string;
   let editNameBrushPrice: BigNumber;
+  let upgradePlayerBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
   const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
-    imageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
+    heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
     editNameBrushPrice = ethers.utils.parseEther("1");
+    upgradePlayerBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
   } else {
     // live version
-    itemsUri = "ipfs://QmQq3imYgF2jAfuYUW6JWHZ6SuYWknmseZXxXUfxBjZipt/";
-    imageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
+    itemsUri = "ipfs://QmQvWjU5KqNSjHipYdvGvF1wZh7kj2kkvbmEyv9zgbzhPK/";
+    heroImageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
+    upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("5000");
@@ -220,7 +235,8 @@ async function main() {
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
-      imageBaseUri,
+      upgradePlayerBrushPrice,
+      heroImageBaseUri,
       isBeta,
     ],
     {
@@ -257,7 +273,14 @@ async function main() {
   });
   const clans = (await upgrades.deployProxy(
     Clans,
-    [brush.address, playerNFT.address, shop.address, devAddress, editNameBrushPrice],
+    [
+      brush.address,
+      playerNFT.address,
+      shop.address,
+      devAddress,
+      editNameBrushPrice,
+      paintSwapMarketplaceWhitelist.address,
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],

@@ -201,6 +201,7 @@ struct PackedXP {
   uint40 defence;
   uint40 health;
   uint40 reservedCombat;
+  bytes2 packedDataIsMaxed; // 2 bits per skill, 1 = first maxed level
   // Next slot
   uint40 mining;
   uint40 woodcutting;
@@ -208,12 +209,15 @@ struct PackedXP {
   uint40 smithing;
   uint40 thieving;
   uint40 crafting;
+  bytes2 packedDataIsMaxed1; // 2 bits per skill, 1 = first maxed level
   // Next slot
   uint40 cooking;
   uint40 firemaking;
   uint40 agility;
   uint40 alchemy;
   uint40 fletching;
+  uint40 forging;
+  bytes2 packedDataIsMaxed2; // 2 bits per skill, 1 = first maxed level
 }
 
 struct AvatarInfo {

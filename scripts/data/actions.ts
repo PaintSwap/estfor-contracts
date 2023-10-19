@@ -626,7 +626,7 @@ export const allActions: ActionInput[] = [
       actionChoiceRequired: false,
       xpPerHour: 900,
       numSpawned: 0 * 1000,
-      minXP: 683124,
+      minXP: 784726,
       handItemTokenIdRangeMin: EstforConstants.TITANIUM_PICKAXE,
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,

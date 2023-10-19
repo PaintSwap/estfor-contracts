@@ -152,8 +152,6 @@ interface IPlayersMisc1DelegateView {
     string calldata avatarName,
     string calldata avatarDescription,
     string calldata imageURI,
-    bool isBeta,
-    uint playerId,
-    string calldata clanName
+    uint playerId
   ) external view returns (string memory uri);
 }

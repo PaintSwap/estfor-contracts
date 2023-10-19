@@ -24,6 +24,7 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
 
+  const timeout = 600 * 1000; // 10 minutes
   const newEstforLibrary = false;
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
   let estforLibrary: EstforLibrary;
@@ -52,6 +53,7 @@ async function main() {
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
+    timeout,
   });
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
@@ -72,6 +74,7 @@ async function main() {
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
+    timeout,
   });
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
@@ -80,6 +83,7 @@ async function main() {
   const Shop = await ethers.getContractFactory("Shop");
   const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
     kind: "uups",
+    timeout,
   });
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
@@ -96,6 +100,7 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
     kind: "uups",
+    timeout,
   });
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
@@ -107,6 +112,7 @@ async function main() {
   const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
+    timeout,
   });
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
@@ -115,6 +121,7 @@ async function main() {
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
     kind: "uups",
+    timeout,
   });
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
@@ -137,6 +144,7 @@ async function main() {
   const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
+    timeout,
   });
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
@@ -145,6 +153,7 @@ async function main() {
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
   const adminAccess = await upgrades.upgradeProxy(ADMIN_ACCESS_ADDRESS, AdminAccess, {
     kind: "uups",
+    timeout,
   });
   await adminAccess.deployed();
 

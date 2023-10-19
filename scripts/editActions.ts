@@ -22,15 +22,11 @@ async function main() {
   );
 
   const tx = await world.editActions(actions);
-  await tx.wait(); */
+  await tx.wait(); 
+*/
+  const actions = await allActions.filter((action) => action.actionId === EstforConstants.ACTION_MINING_DRAGONSTONE);
 
-  const actions = await allActions.filter(
-    (action) =>
-      action.actionId === EstforConstants.ACTION_COMBAT_ERKAD ||
-      action.actionId === EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON
-  );
-
-  if (actions.length !== 2) {
+  if (actions.length !== 1) {
     console.log("Cannot find actions");
   } else {
     const tx = await world.editActions(actions);

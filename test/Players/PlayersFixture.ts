@@ -82,6 +82,7 @@ export const playersFixture = async function () {
     libraries: {EstforLibrary: estforLibrary.address},
   });
   const editNameBrushPrice = ethers.utils.parseEther("1");
+  const upgradePlayerBrushPrice = ethers.utils.parseEther("1");
   const imageBaseUri = "ipfs://";
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
@@ -92,6 +93,7 @@ export const playersFixture = async function () {
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
+      upgradePlayerBrushPrice,
       imageBaseUri,
       isBeta,
     ],
@@ -116,12 +118,21 @@ export const playersFixture = async function () {
     kind: "uups",
   });
 
+  const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
+
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
   });
   const clans = await upgrades.deployProxy(
     Clans,
-    [brush.address, playerNFT.address, shop.address, dev.address, editNameBrushPrice],
+    [
+      brush.address,
+      playerNFT.address,
+      shop.address,
+      dev.address,
+      editNameBrushPrice,
+      paintSwapMarketplaceWhitelist.address,
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -263,6 +274,7 @@ export const playersFixture = async function () {
     dev,
     origName,
     editNameBrushPrice,
+    upgradePlayerBrushPrice,
     mockOracleClient,
     avatarInfo,
     adminAccess,
@@ -284,5 +296,7 @@ export const playersFixture = async function () {
     bankRegistry,
     bankFactory,
     estforLibrary,
+    paintSwapMarketplaceWhitelist,
+    playersLibrary,
   };
 };

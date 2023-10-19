@@ -183,6 +183,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
+  // Callback after upgrading a player
+  function upgradePlayer(uint _playerId) external override onlyPlayerNFT {
+    if (_isPlayerFullMode(_playerId)) {
+      revert AlreadyUpgraded();
+    }
+
+    players_[_playerId].packedData = players_[_playerId].packedData | (bytes1(uint8(0x1)) << 7);
+  }
+
   // This is a special type of quest.
   function buyBrushQuest(
     address _to,
@@ -349,9 +358,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _avatarName,
         _avatarDescription,
         imageURI,
-        isBeta,
-        _playerId,
-        clans.getClanNameOfPlayer(_playerId)
+        _playerId
       )
     );
     return abi.decode(data, (string));
@@ -375,6 +382,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function xp(uint _playerId, Skill _skill) external view returns (uint) {
     return PlayersLibrary.readXP(_skill, xp_[_playerId]);
+  }
+
+  function packedXP(uint _playerId) external view returns (PackedXP memory) {
+    return xp_[_playerId];
   }
 
   function players(uint _playerId) external view returns (Player memory) {
@@ -449,6 +460,27 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       implProcessActions,
       abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp, _force)
     );
+  }
+
+  function tempSetPackedMaxLevelFlag(uint _playerId, Skill _skill) external onlyOwner {
+    uint offset = 2; // Accounts for NONE & COMBAT skills
+    uint skillOffsetted = uint8(_skill) - offset;
+    uint slotNum = skillOffsetted / 6;
+    uint relativePos = skillOffsetted % 6;
+
+    // packedDataIsMaxedBitStart is the starting bit index for packedDataIsMaxed within the 256-bit storage slot
+    uint packedDataIsMaxedBitStart = 240;
+    uint bitsPerSkill = 2; // Two bits to store the max level version for each skill
+    uint actualBitIndex = packedDataIsMaxedBitStart + relativePos * bitsPerSkill;
+    uint newMaxLevelVersion = 1;
+
+    PackedXP storage _packedXP = xp_[_playerId];
+    assembly ("memory-safe") {
+      let val := sload(add(_packedXP.slot, slotNum))
+      val := and(val, not(shl(actualBitIndex, 0x3)))
+      val := or(val, shl(actualBitIndex, newMaxLevelVersion))
+      sstore(add(_packedXP.slot, slotNum), val)
+    }
   }
 
   // For the various view functions that require delegatecall
