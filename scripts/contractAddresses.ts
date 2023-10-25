@@ -23,6 +23,7 @@ let playersImplRewards;
 let playersImplMisc;
 let playersImplMisc1;
 let players;
+let instantActions;
 
 if (!isBeta) {
   worldLibrary = "0x4457c8211eec0a1b805db0669dc2dd3c7957d1df";
@@ -48,6 +49,7 @@ if (!isBeta) {
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
+  instantActions = "";
 } else {
   worldLibrary = "0x9abb79ab5d7d0d3aa661a8281267c66f32012ea8";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -73,6 +75,7 @@ if (!isBeta) {
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
+  instantActions = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -100,6 +103,8 @@ export const PLAYERS_IMPL_REWARDS_ADDRESS = playersImplRewards;
 export const PLAYERS_IMPL_MISC_ADDRESS = playersImplMisc;
 export const PLAYERS_IMPL_MISC1_ADDRESS = playersImplMisc1;
 export const PLAYERS_ADDRESS = players;
+
+export const INSTANT_ACTIONS_ADDRESS = instantActions;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

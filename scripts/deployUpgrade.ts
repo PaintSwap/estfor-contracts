@@ -14,6 +14,7 @@ import {
   ADMIN_ACCESS_ADDRESS,
   WISHING_WELL_ADDRESS,
   BANK_REGISTRY_ADDRESS,
+  INSTANT_ACTIONS_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -156,6 +157,16 @@ async function main() {
     timeout,
   });
   await adminAccess.deployed();
+  console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
+
+  // Instant access
+  const InstantActions = await ethers.getContractFactory("InstantActions");
+  const instantActions = await upgrades.upgradeProxy(INSTANT_ACTIONS_ADDRESS, InstantActions, {
+    kind: "uups",
+    timeout,
+  });
+  await instantActions.deployed();
+  console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
   await verifyContracts([players.address]);
   await verifyContracts([playerNFT.address]);
@@ -167,6 +178,7 @@ async function main() {
   await verifyContracts([adminAccess.address]);
   await verifyContracts([bankRegistry.address]);
   await verifyContracts([wishingWell.address]);
+  await verifyContracts([instantActions.address]);
 }
 
 main().catch((error) => {
