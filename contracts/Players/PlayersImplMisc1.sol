@@ -98,7 +98,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.COOKING, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FIREMAKING, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.ALCHEMY, packedXP)) +
-      PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP));
+      PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP)) +
+      PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FORGING, packedXP));
 
     string memory attributes = string(
       abi.encodePacked(
@@ -146,6 +147,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
           "Fletching level",
           PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP))
         ),
+        ",",
+        _getTraitNumberJSON("Forging level", PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FORGING, packedXP))),
         ",",
         _getTraitNumberJSON("Total level", uint16(overallLevel))
       )

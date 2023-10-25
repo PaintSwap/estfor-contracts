@@ -3,6 +3,7 @@ import {ethers, upgrades} from "hardhat";
 import {
   BankFactory,
   Clans,
+  InstantActions,
   ItemNFT,
   MockBrushToken,
   MockOracleClient,
@@ -368,9 +369,18 @@ async function main() {
   const BankFactory = await ethers.getContractFactory("BankFactory");
   const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bank.address], {
     kind: "uups",
+    timeout,
   })) as BankFactory;
   await bankFactory.deployed();
   console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
+
+  const InstantActions = await ethers.getContractFactory("InstantActions");
+  const instantActions = (await upgrades.deployProxy(InstantActions, [players.address, itemNFT.address], {
+    kind: "uups",
+    timeout,
+  })) as InstantActions;
+  await instantActions.deployed();
+  console.log(`InstantActions = "${instantActions.address.toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {
@@ -400,6 +410,7 @@ async function main() {
         await upgrades.beacon.getImplementationAddress(bank.address),
         bankRegistry.address,
         bankFactory.address,
+        instantActions.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -443,6 +454,10 @@ async function main() {
   tx = await itemNFT.setPromotions(promotions.address);
   await tx.wait();
   console.log("itemNFT setPromotions");
+
+  tx = await itemNFT.setInstantActions(instantActions.address);
+  await tx.wait();
+  console.log("itemNFT setInstantActions");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();

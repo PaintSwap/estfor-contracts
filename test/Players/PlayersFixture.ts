@@ -1,7 +1,7 @@
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
-import {ItemNFT, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
+import {InstantActions, ItemNFT, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 
 export const playersFixture = async function () {
@@ -229,6 +229,11 @@ export const playersFixture = async function () {
     kind: "uups",
   });
 
+  const InstantActions = await ethers.getContractFactory("InstantActions");
+  const instantActions = (await upgrades.deployProxy(InstantActions, [players.address, itemNFT.address], {
+    kind: "uups",
+  })) as InstantActions;
+
   await world.setQuests(quests.address);
   await world.setWishingWell(wishingWell.address);
 
@@ -242,6 +247,7 @@ export const playersFixture = async function () {
   await clans.setBankFactory(bankFactory.address);
 
   await itemNFT.setPromotions(promotions.address);
+  await itemNFT.setInstantActions(instantActions.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -298,5 +304,6 @@ export const playersFixture = async function () {
     estforLibrary,
     paintSwapMarketplaceWhitelist,
     playersLibrary,
+    instantActions,
   };
 };

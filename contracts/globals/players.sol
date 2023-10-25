@@ -135,7 +135,7 @@ struct PlayerBoostInfo {
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.
-// Fixed based available actions that can be undertaken for an action
+// Available choices that can be undertaken for an action
 struct ActionChoiceInput {
   Skill skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
