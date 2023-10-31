@@ -368,6 +368,8 @@ describe("PlayerNFT", function () {
     expect(await playerNFT["totalSupply()"]()).to.be.eq(1);
     await createPlayer(playerNFT, 1, owner, "name1", true);
     expect(await playerNFT["totalSupply()"]()).to.be.eq(2);
+    expect(await playerNFT["totalSupply(uint256)"](1)).to.be.eq(1);
+    expect(await playerNFT["totalSupply(uint256)"](2)).to.be.eq(1);
     await playerNFT.connect(alice).burn(alice.address, 1);
     expect(await playerNFT["totalSupply()"]()).to.be.eq(1);
     await playerNFT.burn(owner.address, 2);
