@@ -3,6 +3,7 @@ import {
   ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
+  PROMOTIONS_ADDRESS,
   QUESTS_ADDRESS,
   SHOP_ADDRESS,
   WORLD_ADDRESS,
@@ -92,6 +93,12 @@ async function main() {
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
+  });
+
+  let Promotions = await ethers.getContractFactory("Promotions");
+  Promotions = Promotions.connect(owner);
+  const promotions = await upgrades.upgradeProxy(PROMOTIONS_ADDRESS, Promotions, {
+    kind: "uups",
   });
 
   const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
