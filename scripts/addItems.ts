@@ -12,9 +12,14 @@ async function main() {
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
-  const items = allItems.filter((item) => item.tokenId === EstforConstants.CLAN_BOOSTER);
+  const items = allItems.filter(
+    (item) =>
+      item.tokenId === EstforConstants.HALLOWEEN_BONUS_1 ||
+      item.tokenId === EstforConstants.HALLOWEEN_BONUS_2 ||
+      item.tokenId === EstforConstants.HALLOWEEN_BONUS_3
+  );
 
-  if (items.length !== 1) {
+  if (items.length !== 3) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.addItems(items);

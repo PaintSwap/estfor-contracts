@@ -46,7 +46,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAdminAndBeta();
   error LengthMismatch();
 
-  World private world;
+  World public world;
   bool private isBeta;
   string private baseURI;
 
@@ -54,7 +54,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(uint itemId => uint amount) public itemBalances;
   mapping(uint itemId => uint timestamp) public timestampFirstMint;
 
-  address private players;
+  address public players;
   address private shop;
   uint16 private totalSupplyAll_;
 
