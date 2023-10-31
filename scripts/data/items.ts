@@ -7176,7 +7176,7 @@ export const allItems: ItemInput[] = [
     boostDuration: 259500,
     metadataURI: "CLAN_BOOSTER_3.json",
     name: "Clan Booster 3",
-  },
+  } /*
   {
     combatStats: {
       melee: 0,
@@ -7338,6 +7338,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FLUX.json",
     name: "Flux",
   },
+  */,
   {
     combatStats: {
       melee: 0,
