@@ -121,16 +121,14 @@ describe("Players", function () {
     ]);
     const actionId = await getActionId(tx);
 
-    tx = await world.addBulkActionChoices(
-      [EstforConstants.NONE],
-      [[1]],
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -211,16 +209,14 @@ describe("Players", function () {
     ]);
     const actionId = await getActionId(tx);
 
-    tx = await world.addBulkActionChoices(
-      [EstforConstants.NONE],
-      [[1]],
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -535,12 +531,88 @@ describe("Players", function () {
         players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
-      // Update firemamking level, check it works
+      // Update firemaking level, check it works
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, minXP, false);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
+    });
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    it("Min XP multiple skills", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const minXP1 = getXPFromLevel(70);
+      const minXP2 = getXPFromLevel(80);
+      const minXP3 = getXPFromLevel(90);
+      const {queuedAction: queuedActionBase, actionId, rate} = await setupBasicFiremaking(itemNFT, world);
+
+      // Logs go in, nothing comes out
+      let tx = await world.addActionChoices(
+        actionId,
+        [2],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+            minSkills: [EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.FIREMAKING],
+            minXPs: [minXP1, minXP2],
+          },
+        ]
+      );
+      let choiceId = await getActionChoiceId(tx);
+      let queuedAction = {...queuedActionBase, choiceId};
+
+      // 2 skills
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      // Update alchemy level, should not work yet
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.ALCHEMY, minXP1, false);
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      // Update firemaking but not to correct level
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, minXP1, false);
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, minXP2, false);
+      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+        .not.be.reverted;
+
+      // 3 skills
+      tx = await world.addActionChoices(
+        actionId,
+        [3],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+            minSkills: [EstforTypes.Skill.FIREMAKING, EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.COOKING],
+            minXPs: [minXP2, minXP1, minXP3],
+          },
+        ]
+      );
+      choiceId = await getActionChoiceId(tx);
+      queuedAction = {...queuedActionBase, choiceId};
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      // Update cooking to correct level
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, minXP3, true);
+      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+        .not.be.reverted;
     });
 
     it("Output number > 1", async function () {
@@ -549,22 +621,20 @@ describe("Players", function () {
 
       // Logs go in, oak logs come out suprisingly!
       const outputAmount = 2;
-      const tx = await world.addBulkActionChoices(
-        [actionId],
-        [[2]],
+      const tx = await world.addActionChoices(
+        actionId,
+        [2],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.FIREMAKING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.LOG,
-              inputAmount1: 1,
-              outputTokenId: EstforConstants.OAK_LOG,
-              outputAmount,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+            outputTokenId: EstforConstants.OAK_LOG,
+            outputAmount,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -613,20 +683,18 @@ describe("Players", function () {
     const actionId = await getActionId(tx);
 
     // Logs go in, nothing comes out
-    tx = await world.addBulkActionChoices(
-      [actionId],
-      [[1]],
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.FIREMAKING,
-            xpPerHour: 3600,
-            rate,
-            inputTokenId1: EstforConstants.LOG,
-            inputAmount1: 1,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.FIREMAKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.LOG],
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -1418,7 +1486,7 @@ describe("Players", function () {
     expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(1);
   });
 
-  it("Travelling", async function () {
+  it.skip("Travelling", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);
 

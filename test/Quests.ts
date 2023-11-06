@@ -483,16 +483,14 @@ describe("Quests", function () {
     ]);
     const actionId = await getActionId(tx);
 
-    tx = await world.addBulkActionChoices(
+    tx = await world.addActionChoices(
       [EstforConstants.NONE],
       [[2]],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const timespan = 3600;

@@ -203,20 +203,19 @@ describe("Non-Combat Actions", function () {
     const actionId = await getActionId(tx);
 
     // Logs go in, nothing comes out
-    tx = await world.addBulkActionChoices(
-      [actionId],
-      [[1]],
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
+
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.FIREMAKING,
-            xpPerHour: 3600,
-            rate,
-            inputTokenId1: EstforConstants.LOG,
-            inputAmount1: 1,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.FIREMAKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.LOG],
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -337,20 +336,19 @@ describe("Non-Combat Actions", function () {
 
     // Logs go in, nothing comes out
     const firemakingRate = 1200 * RATE_MUL; // per hour
-    tx = await world.addBulkActionChoices(
-      [actionId],
-      [[1]],
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
+
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.FIREMAKING,
-            xpPerHour: 3600,
-            rate: firemakingRate,
-            inputTokenId1: EstforConstants.LOG,
-            inputAmount1: 1,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.FIREMAKING,
+          xpPerHour: 3600,
+          rate: firemakingRate,
+          inputTokenIds: [EstforConstants.LOG],
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -504,20 +502,19 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       // Logs go in, nothing comes out
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[1]],
+      tx = await world.addActionChoices(
+        actionId,
+        [1],
+
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.FIREMAKING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.LOG,
-              inputAmount1: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -667,24 +664,21 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       // Ores go in, bars come out
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[1]],
+      tx = await world.addActionChoices(
+        actionId,
+        [1],
+
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.SMITHING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.MITHRIL_ORE,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.COAL_ORE,
-              inputAmount2: 2,
-              outputTokenId: EstforConstants.MITHRIL_BAR,
-              outputAmount: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.SMITHING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
+            inputAmounts: [1, 2],
+            outputTokenId: EstforConstants.MITHRIL_BAR,
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -764,45 +758,38 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       // Ores go in, bars come out
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[1]],
+      tx = await world.addActionChoices(
+        actionId,
+        [1],
+
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.SMITHING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.MITHRIL_ORE,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.COAL_ORE,
-              inputAmount2: 2,
-              outputTokenId: EstforConstants.MITHRIL_BAR,
-              outputAmount: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.SMITHING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
+            inputAmounts: [1, 2],
+            outputTokenId: EstforConstants.MITHRIL_BAR,
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[2]],
+      tx = await world.addActionChoices(
+        actionId,
+        [2],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.SMITHING,
-              xpPerHour: 7200,
-              rate,
-              inputTokenId1: EstforConstants.MITHRIL_ORE,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.COAL_ORE,
-              inputAmount2: 2,
-              outputTokenId: EstforConstants.MITHRIL_BAR,
-              outputAmount: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.SMITHING,
+            xpPerHour: 7200,
+            rate,
+            inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
+            inputAmounts: [1, 2],
+            outputTokenId: EstforConstants.MITHRIL_BAR,
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId1 = await getActionChoiceId(tx);

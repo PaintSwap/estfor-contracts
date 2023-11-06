@@ -54,6 +54,7 @@ const config: HardhatUserConfig = {
       "contracts/Clans/Clans.sol": lowerRunsConfig,
       "contracts/Players/Players.sol": lowerRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": lowerRunsConfig,
+      "contracts/World.sol": lowerRunsConfig,
     },
   },
   gasReporter: {

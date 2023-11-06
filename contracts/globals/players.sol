@@ -138,6 +138,23 @@ struct PlayerBoostInfo {
 // Available choices that can be undertaken for an action
 struct ActionChoiceInput {
   Skill skill; // Skill that this action choice is related to
+  int16 skillDiff; // How much the skill is increased/decreased by this action choice
+  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
+  uint24 xpPerHour;
+  uint16[] inputTokenIds;
+  uint8[] inputAmounts;
+  uint16 outputTokenId;
+  uint8 outputAmount;
+  uint8 successPercent; // 0-100
+  uint16 handItemTokenIdRangeMin; // Inclusive
+  uint16 handItemTokenIdRangeMax; // Inclusive
+  bool isFullModeOnly;
+  Skill[] minSkills; // Skills required to do this action choice
+  uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
+}
+
+struct ActionChoiceInputV2 {
+  Skill skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
@@ -157,6 +174,32 @@ struct ActionChoiceInput {
 }
 
 struct ActionChoice {
+  Skill skill; // Skill that this action choice is related to
+  uint32 minXP; // Min XP in the skill to be able to do this action choice
+  int16 skillDiff; // How much the skill is increased/decreased by this action choice
+  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
+  uint24 xpPerHour;
+  uint16 inputTokenId1;
+  uint8 inputAmount1;
+  uint16 inputTokenId2;
+  uint8 inputAmount2;
+  uint16 inputTokenId3;
+  uint8 inputAmount3;
+  uint16 outputTokenId;
+  uint8 outputAmount;
+  uint8 successPercent; // 0-100
+  uint16 handItemTokenIdRangeMin; // Inclusive
+  uint16 handItemTokenIdRangeMax; // Inclusive
+  bytes1 packedData; // FullMode is last bit, first bit is worldLocation, 2nd bit is if there are other skills in next storage slot to check.
+  bytes1 reserved;
+  // Second storage slot
+  Skill minSkill2;
+  uint32 minXP2;
+  Skill minSkill3;
+  uint32 minXP3;
+}
+
+struct ActionChoiceV2 {
   Skill skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
@@ -366,3 +409,5 @@ struct ItemInput {
   string metadataURI;
   string name;
 }
+
+uint constant IS_FULL_MODE_BIT = 7;

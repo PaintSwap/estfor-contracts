@@ -22,7 +22,7 @@ export const getActionId = async (tx: ContractTransaction): Promise<number> => {
 export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionChoicesV2";
+    return x.event == "AddActionChoicesV3";
   })[0].args;
   return event?.actionChoiceIds[0];
 };
@@ -30,7 +30,7 @@ export const getActionChoiceId = async (tx: ContractTransaction): Promise<number
 export const getActionChoiceIds = async (tx: ContractTransaction): Promise<number[]> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionChoicesV2";
+    return x.event == "AddActionChoicesV3";
   })[0].args;
   return event?.actionChoiceIds;
 };

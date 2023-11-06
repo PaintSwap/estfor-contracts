@@ -93,7 +93,6 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   IPlayers public players;
   mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) public actions;
   ItemNFT public itemNFT;
-  uint constant IS_FULL_MODE_BIT = 7;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
