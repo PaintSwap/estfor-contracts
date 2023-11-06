@@ -189,7 +189,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       revert AlreadyUpgraded();
     }
 
-    players_[_playerId].packedData = players_[_playerId].packedData | (bytes1(uint8(0x1)) << 7);
+    players_[_playerId].packedData = players_[_playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
   }
 
   // This is a special type of quest.

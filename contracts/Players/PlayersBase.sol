@@ -231,7 +231,7 @@ abstract contract PlayersBase {
   }
 
   function _isPlayerFullMode(uint _playerId) internal view returns (bool) {
-    return players_[_playerId].packedData >> 7 == bytes1(uint8(0x1));
+    return players_[_playerId].packedData >> IS_FULL_MODE_BIT == bytes1(uint8(0x1));
   }
 
   function _getElapsedTime(uint _startTime, uint _endTime) internal view returns (uint elapsedTime) {

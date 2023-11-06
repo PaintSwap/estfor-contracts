@@ -175,6 +175,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _setTokenIdToAvatar(playerId, _avatarId);
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, _avatarId, _makeActive);
+    if (_upgrade) {
+      players.upgradePlayer(playerId);
+    }
   }
 
   function burn(address _from, uint _playerId) external {

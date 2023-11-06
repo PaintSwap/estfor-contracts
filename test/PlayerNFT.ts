@@ -55,6 +55,35 @@ describe("PlayerNFT", function () {
     );
   });
 
+  it("Minting with an upgrade should cost brush", async function () {
+    const {playerNFT, players, alice, brush, upgradePlayerBrushPrice} = await loadFixture(deployContracts);
+    const brushAmount = upgradePlayerBrushPrice;
+    await brush.connect(alice).approve(playerNFT.address, brushAmount);
+    await brush.mint(alice.address, brushAmount);
+
+    const discord = "";
+    const twitter = "1231231";
+    const telegram = "";
+    const avatarId = 1;
+    const makeActive = true;
+    const newPlayerId = await createPlayer(
+      playerNFT,
+      avatarId,
+      alice,
+      "name",
+      makeActive,
+      discord,
+      twitter,
+      telegram,
+      true
+    );
+    expect(await brush.balanceOf(alice.address)).to.eq(0);
+
+    // Check upgraded flag
+    const player = await players.players(newPlayerId);
+    expect(player.packedData == "0x80");
+  });
+
   it("Edit Name", async function () {
     const {playerId, playerNFT, alice, brush, origName, editNameBrushPrice} = await loadFixture(deployContracts);
     const name = "My name is edited";

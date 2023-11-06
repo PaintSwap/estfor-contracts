@@ -1361,6 +1361,70 @@ describe("Players", function () {
     );
   });
 
+  it("Base XP boost, upgraded", async function () {
+    const {players, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, alice} = await loadFixture(
+      playersFixture
+    );
+
+    const avatarId = 2;
+    const avatarInfo: AvatarInfo = {
+      name: "Name goes here",
+      description: "Hi I'm a description",
+      imageURI: "1234.png",
+      startSkills: [Skill.WOODCUTTING, Skill.NONE],
+    };
+    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    // Upgrade player, should have a 20% boost now
+    await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
+    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.2));
+    await players.connect(alice).processActions(playerId);
+    const startXP = START_XP;
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+      Math.floor(startXP + queuedAction.timespan * 1.2)
+    );
+  });
+
+  it("Base XP boost, 2 skills, upgraded", async function () {
+    const {players, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, alice} = await loadFixture(
+      playersFixture
+    );
+
+    const avatarId = 2;
+    const avatarInfo: AvatarInfo = {
+      name: "Name goes here",
+      description: "Hi I'm a description",
+      imageURI: "1234.png",
+      startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
+    };
+    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    // Upgrade player, should have a 20% boost now
+    await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
+    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
+    await players.connect(alice).processActions(playerId);
+    const startXP = START_XP / 2;
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+      Math.floor(startXP + queuedAction.timespan * 1.1)
+    );
+  });
+
   it("Revert if trying to initialize QueueActionImpl", async function () {
     const {playersImplMisc1} = await loadFixture(playersFixture);
 

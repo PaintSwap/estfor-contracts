@@ -926,6 +926,9 @@ library PlayersLibrary {
     }
     bool bothSet = _player.skillBoosted1 != Skill.NONE && _player.skillBoosted2 != Skill.NONE;
     bonusPercent = bothSet ? 5 : 10;
+    // Upgraded characters get double base bonus stats
+    bool isUpgraded = _player.packedData >> IS_FULL_MODE_BIT == bytes1(uint8(0x1));
+    bonusPercent = isUpgraded ? bonusPercent * 2 : bonusPercent;
   }
 
   function _extraFromAvatar(
