@@ -1543,7 +1543,7 @@ describe("Combat Actions", function () {
         imageURI: "1234.png",
         startSkills: [Skill.WOODCUTTING, Skill.NONE],
       };
-      await playerNFT.setAvatars(avatarId, [avatarInfo]);
+      await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
       const noSkillPlayerId = await createPlayer(playerNFT, avatarId, alice, "fakename123", true);
       await players.connect(alice).startActions(noSkillPlayerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2267,7 +2267,7 @@ describe("Combat Actions", function () {
         imageURI: "1234.png",
         startSkills: [Skill.RANGED, Skill.NONE],
       };
-      await playerNFT.setAvatars(avatarId, [avatarInfo]);
+      await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
       // Create player
       const origName = "0xSamWitch1";

@@ -44,13 +44,19 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   );
   event EditNameCost(uint newCost);
   event UpgradePlayerCost(uint newCost);
+  event SetAvatarsV2(uint[] avatarIds, AvatarInfo[] avatarInfos);
+  event UpgradePlayerAvatar(uint playerId, uint newAvatarId);
+
+  // For ABI backwards compatibility
+  event NewPlayer(uint playerId, uint avatarId, string name);
+  event EditPlayer(uint playerId, string newName);
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
   error NotOwnerOfPlayer();
   error NotAdmin();
   error NotAdminOrLive();
   error NotPlayers();
-  error AvatarNotExists();
+  error BaseAvatarNotExists();
   error NameTooShort();
   error NameTooLong();
   error NameAlreadyExists();
@@ -65,16 +71,20 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error TelegramInvalidCharacters();
   error TwitterTooLong();
   error TwitterInvalidCharacters();
+  error LengthMismatch();
 
-  // For ABI backwards compatibility
-  event NewPlayer(uint playerId, uint avatarId, string name);
-  event EditPlayer(uint playerId, string newName);
+  struct PlayerInfo {
+    uint24 avatarId;
+    uint24 originalAvatarId;
+  }
+
+  uint constant EVOLVED_OFFSET = 10000;
 
   uint private nextPlayerId;
 
   mapping(uint avatarId => AvatarInfo avatarInfo) public avatars;
   string public imageBaseUri;
-  mapping(uint playerId => uint avatar) public playerIdToAvatar;
+  mapping(uint playerId => PlayerInfo playerInfo) public playerInfos;
   mapping(uint playerId => string name) public names;
   mapping(string name => bool exists) public lowercaseNames;
 
@@ -94,6 +104,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   mapping(address whitelistedUser => uint amount) private numMintedFromWhitelist; // Unused now
   AdminAccess private adminAccess;
   uint32 numBurned;
+  uint constant NUM_BASE_AVATARS = 8;
 
   modifier isOwnerOfPlayer(uint playerId) {
     if (balanceOf(_msgSender(), playerId) != 1) {
@@ -172,11 +183,17 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
 
     emit NewPlayerV2(playerId, _avatarId, trimmedName, from, _discord, _twitter, _telegram, paid, _upgrade);
-    _setTokenIdToAvatar(playerId, _avatarId);
+    _checkMintingAvatar(_avatarId);
+    playerInfos[playerId].originalAvatarId = uint24(_avatarId);
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, _avatarId, _makeActive);
     if (_upgrade) {
+      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + _avatarId);
+      playerInfos[playerId].avatarId = evolvedAvatarId;
       players.upgradePlayer(playerId);
+      emit UpgradePlayerAvatar(playerId, evolvedAvatarId);
+    } else {
+      playerInfos[playerId].avatarId = uint24(_avatarId);
     }
   }
 
@@ -196,6 +213,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     string calldata _telegram,
     bool _upgrade
   ) external isOwnerOfPlayer(_playerId) {
+    _checkSocials(_discord, _twitter, _telegram);
+
     // Only charge brush if changing the name
     (string memory trimmedName, bool nameChanged) = _setName(_playerId, _name);
     uint amountPaid;
@@ -207,10 +226,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (_upgrade) {
       amountPaid += upgradePlayerCost;
       _pay(upgradePlayerCost);
+      if (playerInfos[_playerId].originalAvatarId == 0) {
+        playerInfos[_playerId].originalAvatarId = playerInfos[_playerId].avatarId;
+      }
+      uint24 newAvatarId = uint24(EVOLVED_OFFSET + playerInfos[_playerId].avatarId);
+      playerInfos[_playerId].avatarId = newAvatarId;
       players.upgradePlayer(_playerId);
+      emit UpgradePlayerAvatar(_playerId, newAvatarId);
     }
 
-    _checkSocials(_discord, _twitter, _telegram);
     emit EditPlayerV2(_playerId, msg.sender, trimmedName, amountPaid, _discord, _twitter, _telegram, _upgrade);
   }
 
@@ -281,6 +305,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
   }
 
+  function _checkMintingAvatar(uint _avatarId) private view {
+    if (bytes(avatars[_avatarId].description).length == 0 || _avatarId > NUM_BASE_AVATARS) {
+      revert BaseAvatarNotExists();
+    }
+  }
+
   function _checkSocials(string calldata _discord, string calldata _twitter, string calldata _telegram) private pure {
     uint discordLength = bytes(_discord).length;
     if (discordLength > 32) {
@@ -305,13 +335,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
       revert TelegramInvalidCharacters();
     }
-  }
-
-  function _setTokenIdToAvatar(uint _playerId, uint _avatarId) private {
-    if (bytes(avatars[_avatarId].description).length == 0) {
-      revert AvatarNotExists();
-    }
-    playerIdToAvatar[_playerId] = _avatarId;
   }
 
   function _beforeTokenTransfer(
@@ -343,7 +366,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (!exists(_playerId)) {
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
-    AvatarInfo storage avatarInfo = avatars[playerIdToAvatar[_playerId]];
+    AvatarInfo storage avatarInfo = avatars[playerInfos[_playerId].avatarId];
     string memory imageURI = string(abi.encodePacked(imageBaseUri, avatarInfo.imageURI));
     return players.getURI(_playerId, names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
   }
@@ -355,7 +378,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
    *
    */
   function exists(uint _tokenId) public view returns (bool) {
-    return playerIdToAvatar[_tokenId] != 0;
+    return playerInfos[_tokenId].avatarId != 0;
   }
 
   function totalSupply(uint _tokenId) external view returns (uint) {
@@ -399,14 +422,14 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return nextPlayerId - numBurned - 1;
   }
 
-  function setAvatars(uint _startAvatarId, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
-    U256 iter = _avatarInfos.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint i = iter.asUint256();
-      avatars[_startAvatarId.add(i)] = _avatarInfos[i];
+  function setAvatars(uint[] calldata _avatarIds, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
+    if (_avatarIds.length != _avatarInfos.length) {
+      revert LengthMismatch();
     }
-    emit SetAvatars(_startAvatarId, _avatarInfos);
+    for (uint i; i < _avatarIds.length; ++i) {
+      avatars[_avatarIds[i]] = _avatarInfos[i];
+    }
+    emit SetAvatarsV2(_avatarIds, _avatarInfos);
   }
 
   function setImageBaseUri(string calldata _imageBaseUri) external onlyOwner {

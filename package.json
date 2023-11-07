@@ -97,6 +97,7 @@
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",
     "pauseGame": "npx hardhat run scripts/pauseGame.ts",
+    "setAvatars": "npx hardhat run scripts/setAvatars.ts",
     "donate": "npx hardhat run scripts/donate.ts",
     "impersonate": "npx hardhat run scripts/impersonate.ts",
     "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",

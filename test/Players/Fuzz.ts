@@ -23,7 +23,7 @@ import {
   allActionChoicesRanged,
   allActionChoicesSmithing,
 } from "../../scripts/data/actionChoices";
-import {avatarInfos} from "../../scripts/data/avatars";
+import {avatarIds, avatarInfos} from "../../scripts/data/avatars";
 import {allXPThresholdRewards} from "../../scripts/data/xpThresholdRewards";
 import {allItems} from "../../scripts/data/items";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
@@ -42,8 +42,7 @@ describe("Fuzz testing", async function () {
     const {playerId, players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     await players.setDailyRewardsEnabled(true);
-    const startAvatarId = 1;
-    await playerNFT.setAvatars(startAvatarId, avatarInfos);
+    await playerNFT.setAvatars(avatarIds, avatarInfos);
     await players.addXPThresholdRewards(allXPThresholdRewards);
     const chunkSize = 100;
     for (let i = 0; i < allItems.length; i += chunkSize) {

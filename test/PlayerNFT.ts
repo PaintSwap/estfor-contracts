@@ -5,6 +5,7 @@ import {ethers, upgrades} from "hardhat";
 import {createPlayer} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
+import {avatarIds, avatarInfos} from "../scripts/data/avatars";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
@@ -53,6 +54,19 @@ describe("PlayerNFT", function () {
       playerNFT,
       "NameAlreadyExists"
     );
+  });
+
+  it("Mint a standard player", async function () {
+    const {playerId, playerNFT, alice} = await loadFixture(deployContracts);
+
+    const name = "A123";
+    const avatarId = 1;
+    const makeActive = true;
+    await createPlayer(playerNFT, avatarId, alice, name, makeActive);
+
+    // Check avatar ids are as expected
+    expect((await playerNFT.playerInfos(playerId)).avatarId).to.eq(1);
+    expect((await playerNFT.playerInfos(playerId)).originalAvatarId).to.eq(1);
   });
 
   it("Minting with an upgrade should cost brush", async function () {
@@ -150,7 +164,9 @@ describe("PlayerNFT", function () {
     const newName = "new name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
       .to.emit(playerNFT, "EditPlayerV2")
-      .withArgs(playerId, alice.address, newName, amountPaid, discord, twitter, telegram, true);
+      .withArgs(playerId, alice.address, newName, amountPaid, discord, twitter, telegram, true)
+      .and.to.emit(playerNFT, "UpgradePlayerAvatar")
+      .withArgs(playerId, 10001);
 
     expect(await brush.balanceOf(alice.address)).to.eq(brushAmount.sub(amountPaid));
 
@@ -162,10 +178,21 @@ describe("PlayerNFT", function () {
     await expect(
       playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true)
     ).to.be.revertedWithCustomError(players, "AlreadyUpgraded");
+
+    // Check avatar ids are as expected
+    expect((await playerNFT.playerInfos(playerId)).avatarId).to.eq(10001);
+    expect((await playerNFT.playerInfos(playerId)).originalAvatarId).to.eq(1);
   });
 
   it("Upgrading from mint should cost brush", async function () {
-    const {playerId, playerNFT, players, alice, brush, upgradePlayerBrushPrice} = await loadFixture(deployContracts);
+    const {
+      playerId: prevPlayerId,
+      playerNFT,
+      players,
+      alice,
+      brush,
+      upgradePlayerBrushPrice,
+    } = await loadFixture(deployContracts);
     const discord = "";
     const twitter = "1231231";
     const telegram = "";
@@ -175,14 +202,21 @@ describe("PlayerNFT", function () {
     await brush.mint(alice.address, brushAmount);
 
     const upgrade = true;
+    const playerId = prevPlayerId.add(1);
     await expect(playerNFT.connect(alice).mint(1, "name", discord, twitter, telegram, upgrade, true))
       .to.emit(playerNFT, "NewPlayerV2")
-      .withArgs(playerId.add(1), 1, "name", alice.address, discord, twitter, telegram, brushAmount, true);
+      .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, brushAmount, true)
+      .and.to.emit(playerNFT, "UpgradePlayerAvatar")
+      .withArgs(playerId, 10001);
 
     expect(await brush.balanceOf(alice.address)).to.eq(0);
     // Check upgraded flag
-    const player = await players.players(playerId.add(1));
+    const player = await players.players(playerId);
     expect(player.packedData == "0x80");
+
+    // Check avatar ids are as expected
+    expect((await playerNFT.playerInfos(playerId)).avatarId).to.eq(10001);
+    expect((await playerNFT.playerInfos(playerId)).originalAvatarId).to.eq(1);
   });
 
   it("uri", async function () {
@@ -222,6 +256,27 @@ describe("PlayerNFT", function () {
     expect(metadata.attributes[19].value).to.equal(20);
     expect(metadata).to.have.property("external_url");
     expect(metadata.external_url).to.eq(`https://beta.estfor.com/game/journal/${playerId}`);
+  });
+
+  it("Create mint non-existent avatar", async function () {
+    const {playerNFT, alice} = await loadFixture(deployContracts);
+
+    const incorrectAvatarId = 500;
+    await expect(createPlayer(playerNFT, incorrectAvatarId, alice, "New name", true)).to.be.revertedWithCustomError(
+      playerNFT,
+      "BaseAvatarNotExists"
+    );
+  });
+
+  it("Cannot mint non-base avatar", async function () {
+    const {playerNFT, alice} = await loadFixture(deployContracts);
+    await expect(playerNFT.setAvatars(avatarIds, avatarInfos)).to.emit(playerNFT, "SetAvatarsV2");
+
+    // Cannot use it on an evolved avatar, only the base
+    await expect(createPlayer(playerNFT, 10001, alice, "New name", true)).to.be.revertedWithCustomError(
+      playerNFT,
+      "BaseAvatarNotExists"
+    );
   });
 
   it("external_url when not in beta", async function () {
@@ -304,7 +359,7 @@ describe("PlayerNFT", function () {
     await itemNFT.setBankFactory(bankFactory.address);
     await itemNFT.setPromotions(players.address);
     await playerNFTNotBeta.setPlayers(players.address);
-    await playerNFTNotBeta.setAvatars(avatarId, [avatarInfo]);
+    await playerNFTNotBeta.setAvatars([avatarId], [avatarInfo]);
 
     const origName = "0xSamWitch";
     const makeActive = true;

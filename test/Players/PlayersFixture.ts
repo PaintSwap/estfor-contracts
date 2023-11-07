@@ -256,7 +256,7 @@ export const playersFixture = async function () {
     imageURI: "1234.png",
     startSkills: [Skill.MAGIC, Skill.NONE],
   };
-  await playerNFT.setAvatars(avatarId, [avatarInfo]);
+  await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
   // Create player
   const origName = "0xSamWitch";

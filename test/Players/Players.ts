@@ -25,14 +25,14 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.FIREMAKING, Skill.NONE],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "Name", true);
 
     expect(await players.xp(playerId, Skill.FIREMAKING)).to.eq(START_XP);
 
     avatarInfo.startSkills = [Skill.FIREMAKING, Skill.HEALTH];
 
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
     expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP / 2);
     expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(START_XP / 2);
@@ -1317,7 +1317,7 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.WOODCUTTING, Skill.NONE],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -1344,7 +1344,7 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -1373,7 +1373,7 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.WOODCUTTING, Skill.NONE],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -1405,7 +1405,7 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);

@@ -20,7 +20,6 @@ import {
 import {deployPlayerImplementations, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
-
 import {
   allActionChoicesFiremaking,
   allActionChoicesCooking,
@@ -43,21 +42,14 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {
-  BRUSH_ADDRESS,
-  CLANS_ADDRESS,
-  QUESTS_ADDRESS,
-  SHOP_ADDRESS,
-  WFTM_ADDRESS,
-  WORLD_ADDRESS,
-} from "./contractAddresses";
+import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
-import {avatarInfos} from "./data/avatars";
+import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 
@@ -467,8 +459,7 @@ async function main() {
   await tx.wait();
   console.log("Set daily rewards enabled");
 
-  const startAvatarId = 1;
-  tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
+  tx = await playerNFT.setAvatars(avatarIds, avatarInfos);
   await tx.wait();
   console.log("Add avatars");
 
