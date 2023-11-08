@@ -212,6 +212,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   ) private view returns (InstantActionState memory instantActionState) {
     // Forging actions only have 1 input, burn all those and mint the components back
     instantActionState.consumedTokenIds = new uint[](_actionIds.length);
+    instantActionState.consumedAmounts = new uint[](_actionIds.length);
     // All outputTokenIds should be the same for forging
     uint producedAmount;
     uint producedTokenId = actions[InstantActionType.FORGING_COMBINE][_actionIds[0]].outputTokenId;
@@ -226,9 +227,8 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
 
       producedAmount += instantAction.outputAmount * _amounts[i];
       instantActionState.consumedTokenIds[i] = instantAction.inputTokenId1;
+      instantActionState.consumedAmounts[i] = instantAction.inputAmount1 * _amounts[i];
     }
-
-    instantActionState.consumedAmounts = _amounts;
 
     instantActionState.producedTokenIds = new uint[](1);
     instantActionState.producedTokenIds[0] = producedTokenId;
@@ -321,10 +321,6 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     // If forging then you need exactly 1 input
     if (_actionInput.actionType == InstantActionType.FORGING_COMBINE) {
       if (inputTokenIds.length != 1) {
-        revert IncorrectInputAmounts();
-      }
-      // Amount must be one
-      if (amounts[0] != 1) {
         revert IncorrectInputAmounts();
       }
     } else {

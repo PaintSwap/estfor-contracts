@@ -1,110 +1,61 @@
 import {ethers} from "hardhat";
 import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./contractAddresses";
-import {
-  allActionChoicesAlchemy,
-  allActionChoicesCrafting,
-  allActionChoicesFletching,
-  allActionChoicesRanged,
-  allActionChoicesSmithing,
-} from "./data/actionChoices";
-import {
-  allActionChoiceIdsAlchemy,
-  allActionChoiceIdsCrafting,
-  allActionChoiceIdsFletching,
-  allActionChoiceIdsRanged,
-  allActionChoiceIdsSmithing,
-} from "./data/actionChoiceIds";
+import {allActionChoicesAlchemy, allActionChoicesForging} from "./data/actionChoices";
+import {allActionChoiceIdsAlchemy, allActionChoiceIdsForging} from "./data/actionChoiceIds";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ActionChoiceInput} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add action choices using account: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(`Add action choices using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
   const world = await World.attach(WORLD_ADDRESS);
 
-  const newActionChoiceIdsCrafting = [
-    EstforConstants.ACTIONCHOICE_CRAFTING_BONEMEAL_MEDIUM,
-    EstforConstants.ACTIONCHOICE_CRAFTING_AZAMITE_COWL,
-    EstforConstants.ACTIONCHOICE_CRAFTING_AZAMITE_BODY,
-    EstforConstants.ACTIONCHOICE_CRAFTING_AZAMITE_CHAPS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_AZAMITE_BRACERS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_AZAMITE_BOOTS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_HAUBERK_COWL,
-    EstforConstants.ACTIONCHOICE_CRAFTING_HAUBERK_BODY,
-    EstforConstants.ACTIONCHOICE_CRAFTING_HAUBERK_CHAPS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_HAUBERK_BRACERS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_HAUBERK_BOOTS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_GARAGOS_COWL,
-    EstforConstants.ACTIONCHOICE_CRAFTING_GARAGOS_BODY,
-    EstforConstants.ACTIONCHOICE_CRAFTING_GARAGOS_CHAPS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_GARAGOS_BRACERS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_GARAGOS_BOOTS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_ETERNAL_COWL,
-    EstforConstants.ACTIONCHOICE_CRAFTING_ETERNAL_BODY,
-    EstforConstants.ACTIONCHOICE_CRAFTING_ETERNAL_CHAPS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_ETERNAL_BRACERS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_ETERNAL_BOOTS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_COWL,
-    EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_BODY,
-    EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_CHAPS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_BRACERS,
-    EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_BOOTS,
+  const newActionChoiceIdsAlchemy = [
+    EstforConstants.ACTIONCHOICE_ALCHEMY_COPPER_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_TIN_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_IRON_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_SAPPHIRE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_COAL_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_EMERALD,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_MITHRIL_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_RUBY,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_ADAMANTINE_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_AMETHYST,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_DIAMOND,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_RUNITE_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_DRAGONSTONE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_TITANIUM_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_ORICHALCUM_ORE,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_FEATHER,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_OAK_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_WILLOW_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_MAPLE_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_REDWOOD_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_MAGICAL_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_ASH_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_ENCHANTED_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_LIVING_LOG,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER,
   ];
 
-  const newActionChoicesCrafting: ActionChoiceInput[] = [];
-  allActionChoiceIdsCrafting.forEach((actionChoiceId, index) => {
-    if (newActionChoiceIdsCrafting.includes(actionChoiceId)) {
-      newActionChoicesCrafting.push(allActionChoicesCrafting[index]);
+  const newActionChoicesAlchemy: ActionChoiceInput[] = [];
+  allActionChoiceIdsAlchemy.forEach((actionChoiceId, index) => {
+    if (newActionChoiceIdsAlchemy.includes(actionChoiceId)) {
+      newActionChoicesAlchemy.push(allActionChoicesAlchemy[index]);
     }
   });
 
-  const newActionChoiceIdsSmithing = [
-    EstforConstants.ACTIONCHOICE_SMITHING_BRONZE_ARROW_HEAD,
-    EstforConstants.ACTIONCHOICE_SMITHING_IRON_ARROW_HEAD,
-    EstforConstants.ACTIONCHOICE_SMITHING_MITHRIL_ARROW_HEAD,
-    EstforConstants.ACTIONCHOICE_SMITHING_ADAMANTINE_ARROW_HEAD,
-    EstforConstants.ACTIONCHOICE_SMITHING_RUNITE_ARROW_HEAD,
-    EstforConstants.ACTIONCHOICE_SMITHING_TITANIUM_ARROW_HEAD,
-    EstforConstants.ACTIONCHOICE_SMITHING_ORICHALCUM_ARROW_HEAD,
-  ];
-
-  const newActionChoicesSmithing: ActionChoiceInput[] = [];
-  allActionChoiceIdsSmithing.forEach((actionChoiceId, index) => {
-    if (newActionChoiceIdsSmithing.includes(actionChoiceId)) {
-      newActionChoicesSmithing.push(allActionChoicesSmithing[index]);
-    }
-  });
-
-  const smithingActionId = EstforConstants.ACTION_SMITHING_ITEM;
-  const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
-  const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM;
   const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
-  const genericCombatActionId = EstforConstants.NONE;
-
-  // New skills, range, fletching & alchemy
+  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
   await world
     .connect(owner)
     .addBulkActionChoices(
-      [craftingActionId, smithingActionId, fletchingActionId, alchemyActionId, genericCombatActionId],
-      [
-        newActionChoiceIdsCrafting,
-        newActionChoiceIdsSmithing,
-        allActionChoiceIdsFletching,
-        allActionChoiceIdsAlchemy,
-        allActionChoiceIdsRanged,
-      ],
-      [
-        newActionChoicesCrafting,
-        newActionChoicesSmithing,
-        allActionChoicesFletching,
-        allActionChoicesAlchemy,
-        allActionChoicesRanged,
-      ]
+      [alchemyActionId, forgingActionId],
+      [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
+      [newActionChoicesAlchemy, allActionChoicesForging]
     );
 }
 

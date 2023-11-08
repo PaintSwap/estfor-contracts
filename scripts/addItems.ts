@@ -14,12 +14,15 @@ async function main() {
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
   const items = allItems.filter(
     (item) =>
-      item.tokenId === EstforConstants.HALLOWEEN_BONUS_1 ||
-      item.tokenId === EstforConstants.HALLOWEEN_BONUS_2 ||
-      item.tokenId === EstforConstants.HALLOWEEN_BONUS_3
+      item.tokenId === EstforConstants.TINY_ELIXIUM ||
+      item.tokenId === EstforConstants.SMALL_ELIXIUM ||
+      item.tokenId === EstforConstants.MEDIUM_ELIXIUM ||
+      item.tokenId === EstforConstants.LARGE_ELIXIUM ||
+      item.tokenId === EstforConstants.EXTRA_LARGE_ELIXIUM ||
+      item.tokenId === EstforConstants.FLUX
   );
 
-  if (items.length !== 3) {
+  if (items.length !== 6) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.addItems(items);

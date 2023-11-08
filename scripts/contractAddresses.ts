@@ -1,4 +1,4 @@
-const isBeta = process.env.IS_BETA == "true";
+import {isBeta} from "./utils";
 
 let worldLibrary;
 let world;
@@ -75,7 +75,7 @@ if (!isBeta) {
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
-  instantActions = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
+  instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;

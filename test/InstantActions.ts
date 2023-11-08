@@ -504,34 +504,19 @@ describe("Instant actions", function () {
       );
     });
 
-    it("Input amount must be 1", async function () {
-      const {instantActions} = await loadFixture(playersFixture);
-      const instantActionInput: InstantActionInput = {
-        ...defaultInstantActionInput,
-        inputTokenIds: [IRON_ARROW],
-        inputAmounts: [2],
-        outputTokenId: BRONZE_ARROW,
-        outputAmount: 2,
-      };
-      await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
-        instantActions,
-        "IncorrectInputAmounts"
-      );
-    });
-
     it("Any inputs should be burnt", async function () {
       const {playerId, instantActions, itemNFT, alice} = await loadFixture(playersFixture);
 
       const instantActionInput: InstantActionInput = {
         ...defaultInstantActionInput,
         inputTokenIds: [BRONZE_ARROW],
-        inputAmounts: [1],
+        inputAmounts: [2],
         outputTokenId: RUNITE_ARROW,
         outputAmount: 1,
       };
 
       await instantActions.addActions([instantActionInput]);
-      await itemNFT.testMints(alice.address, [BRONZE_ARROW], [3]);
+      await itemNFT.testMints(alice.address, [BRONZE_ARROW], [4]);
 
       await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType);
 

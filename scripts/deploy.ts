@@ -17,7 +17,7 @@ import {
   Shop,
   World,
 } from "../typechain-types";
-import {deployPlayerImplementations, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
+import {deployPlayerImplementations, isBeta, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
 import {
@@ -52,6 +52,7 @@ import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
+import {allInstantActions} from "./data/instantActions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -173,7 +174,6 @@ async function main() {
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
-  const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
@@ -542,6 +542,11 @@ async function main() {
   tx = await clans.addTiers(isBeta ? allClanTiersBeta : allClanTiers);
   await tx.wait();
   console.log("Add clan tiers");
+
+  // Add instant actions
+  tx = await instantActions.addActions(allInstantActions);
+  await tx.wait();
+  console.log("Add instant actions");
 
   // Add test data for the game
   if (isBeta) {

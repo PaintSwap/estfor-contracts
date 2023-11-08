@@ -128,3 +128,5 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
     playersImplMisc1,
   };
 };
+
+export const isBeta = process.env.IS_BETA == "true";

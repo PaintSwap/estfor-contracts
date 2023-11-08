@@ -19,7 +19,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   // Players
-  const newPlayersLibrary = false;
+  const newPlayersLibrary = true;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {

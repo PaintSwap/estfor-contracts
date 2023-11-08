@@ -1,7 +1,7 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ethers, BigNumber} from "ethers";
 
-type ShopItem = {
+export type ShopItem = {
   tokenId: number;
   price: BigNumber;
 };
@@ -70,6 +70,10 @@ export const allShopItems: ShopItem[] = [
   {
     tokenId: EstforConstants.COOKED_MINNUS,
     price: ethers.utils.parseEther("0.1"),
+  },
+  {
+    tokenId: EstforConstants.FLUX,
+    price: ethers.utils.parseEther("10"),
   },
 ];
 

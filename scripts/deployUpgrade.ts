@@ -38,7 +38,7 @@ async function main() {
     estforLibrary = await EstforLibrary.attach(ESTFOR_LIBRARY_ADDRESS);
   }
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
-
+  /*
   // Players
   const Players = await ethers.getContractFactory("Players");
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
@@ -168,7 +168,7 @@ async function main() {
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
-
+*/
   // Instant actions
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = await upgrades.upgradeProxy(INSTANT_ACTIONS_ADDRESS, InstantActions, {
@@ -178,9 +178,9 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
-  await verifyContracts([players.address]);
-  await verifyContracts([playerNFT.address]);
-  await verifyContracts([itemNFT.address]);
+  //  await verifyContracts([players.address]);
+  //  await verifyContracts([playerNFT.address]);
+  /*  await verifyContracts([itemNFT.address]);
   await verifyContracts([shop.address]);
   await verifyContracts([quests.address]);
   await verifyContracts([clans.address]);
@@ -188,7 +188,7 @@ async function main() {
   await verifyContracts([adminAccess.address]);
   await verifyContracts([bankRegistry.address]);
   await verifyContracts([wishingWell.address]);
-  await verifyContracts([promotions.address]);
+  await verifyContracts([promotions.address]); */
   await verifyContracts([instantActions.address]);
 }
 
