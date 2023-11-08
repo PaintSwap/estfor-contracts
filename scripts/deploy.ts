@@ -372,7 +372,7 @@ async function main() {
     timeout,
   })) as InstantActions;
   await instantActions.deployed();
-  console.log(`InstantActions = "${instantActions.address.toLowerCase()}"`);
+  console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {
