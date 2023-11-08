@@ -149,9 +149,8 @@ describe("PlayerNFT", function () {
   });
 
   it("Editing upgrade player should cost brush", async function () {
-    const {playerId, playerNFT, players, alice, brush, editNameBrushPrice, upgradePlayerBrushPrice} = await loadFixture(
-      deployContracts
-    );
+    const {playerId, playerNFT, players, alice, brush, dev, shop, editNameBrushPrice, upgradePlayerBrushPrice} =
+      await loadFixture(deployContracts);
     const discord = "";
     const twitter = "1231231";
     const telegram = "";
@@ -160,15 +159,22 @@ describe("PlayerNFT", function () {
     await brush.connect(alice).approve(playerNFT.address, brushAmount);
     await brush.mint(alice.address, brushAmount);
 
-    const amountPaid = editNameBrushPrice.add(upgradePlayerBrushPrice);
     const newName = "new name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
       .to.emit(playerNFT, "EditPlayerV2")
-      .withArgs(playerId, alice.address, newName, amountPaid, discord, twitter, telegram, true)
+      .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
-      .withArgs(playerId, 10001);
+      .withArgs(playerId, 10001, 0);
 
-    expect(await brush.balanceOf(alice.address)).to.eq(brushAmount.sub(amountPaid));
+    expect(await brush.balanceOf(alice.address)).to.eq(
+      brushAmount.sub(editNameBrushPrice.add(upgradePlayerBrushPrice))
+    );
+
+    // 75% goes to the dev address & 25% goes to the treasury for player upgrades. For editing name, 25% goes to the dev address & 50% goes to the treasury (25% burnt)
+    expect(await brush.balanceOf(dev.address)).to.eq(
+      upgradePlayerBrushPrice.div(4).mul(3).add(editNameBrushPrice.div(4))
+    );
+    expect(await brush.balanceOf(shop.address)).to.eq(upgradePlayerBrushPrice.div(4).add(editNameBrushPrice.div(2)));
 
     // Check upgraded flag
     const player = await players.players(playerId);
@@ -190,6 +196,8 @@ describe("PlayerNFT", function () {
       playerNFT,
       players,
       alice,
+      dev,
+      shop,
       brush,
       upgradePlayerBrushPrice,
     } = await loadFixture(deployContracts);
@@ -205,11 +213,16 @@ describe("PlayerNFT", function () {
     const playerId = prevPlayerId.add(1);
     await expect(playerNFT.connect(alice).mint(1, "name", discord, twitter, telegram, upgrade, true))
       .to.emit(playerNFT, "NewPlayerV2")
-      .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, brushAmount, true)
+      .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, 0, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
-      .withArgs(playerId, 10001);
+      .withArgs(playerId, 10001, 0);
 
     expect(await brush.balanceOf(alice.address)).to.eq(0);
+
+    // 75% goes to the dev address & 25% goes to the treasury for player upgrades
+    expect(await brush.balanceOf(dev.address)).to.eq(upgradePlayerBrushPrice.div(4).mul(3));
+    expect(await brush.balanceOf(shop.address)).to.eq(upgradePlayerBrushPrice.div(4));
+
     // Check upgraded flag
     const player = await players.players(playerId);
     expect(player.packedData == "0x80");

@@ -45,7 +45,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   event EditNameCost(uint newCost);
   event UpgradePlayerCost(uint newCost);
   event SetAvatarsV2(uint[] avatarIds, AvatarInfo[] avatarInfos);
-  event UpgradePlayerAvatar(uint playerId, uint newAvatarId);
+  event UpgradePlayerAvatar(uint playerId, uint newAvatarId, uint brushBurnt);
 
   // For ABI backwards compatibility
   event NewPlayer(uint playerId, uint avatarId, string name);
@@ -176,22 +176,14 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint playerId = nextPlayerId++;
     (string memory trimmedName, ) = _setName(playerId, _name);
     _checkSocials(_discord, _twitter, _telegram);
-    uint paid = 0;
-    if (_upgrade) {
-      paid += upgradePlayerCost;
-      _pay(upgradePlayerCost);
-    }
-
-    emit NewPlayerV2(playerId, _avatarId, trimmedName, from, _discord, _twitter, _telegram, paid, _upgrade);
+    emit NewPlayerV2(playerId, _avatarId, trimmedName, from, _discord, _twitter, _telegram, 0, _upgrade);
     _checkMintingAvatar(_avatarId);
     playerInfos[playerId].originalAvatarId = uint24(_avatarId);
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, _avatarId, _makeActive);
     if (_upgrade) {
       uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + _avatarId);
-      playerInfos[playerId].avatarId = evolvedAvatarId;
-      players.upgradePlayer(playerId);
-      emit UpgradePlayerAvatar(playerId, evolvedAvatarId);
+      _upgradePlayer(playerId, evolvedAvatarId);
     } else {
       playerInfos[playerId].avatarId = uint24(_avatarId);
     }
@@ -203,6 +195,17 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
     ++numBurned;
     _burn(_from, _playerId, 1);
+  }
+
+  function _upgradePlayer(uint _playerId, uint24 _newAvatarId) private {
+    playerInfos[_playerId].avatarId = _newAvatarId;
+    players.upgradePlayer(_playerId);
+    // Send half to the pool (currently shop)
+    uint quarterCost = upgradePlayerCost / 4;
+    brush.transferFrom(_msgSender(), pool, quarterCost);
+    // Send half to the dev address
+    brush.transferFrom(_msgSender(), dev, upgradePlayerCost - quarterCost);
+    emit UpgradePlayerAvatar(_playerId, _newAvatarId, 0);
   }
 
   function editPlayer(
@@ -224,15 +227,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
 
     if (_upgrade) {
-      amountPaid += upgradePlayerCost;
-      _pay(upgradePlayerCost);
       if (playerInfos[_playerId].originalAvatarId == 0) {
         playerInfos[_playerId].originalAvatarId = playerInfos[_playerId].avatarId;
       }
-      uint24 newAvatarId = uint24(EVOLVED_OFFSET + playerInfos[_playerId].avatarId);
-      playerInfos[_playerId].avatarId = newAvatarId;
-      players.upgradePlayer(_playerId);
-      emit UpgradePlayerAvatar(_playerId, newAvatarId);
+      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + playerInfos[_playerId].avatarId);
+      _upgradePlayer(_playerId, evolvedAvatarId);
     }
 
     emit EditPlayerV2(_playerId, msg.sender, trimmedName, amountPaid, _discord, _twitter, _telegram, _upgrade);
