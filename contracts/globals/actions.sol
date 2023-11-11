@@ -85,4 +85,4 @@ uint constant SPAWN_MUL = 1000;
 uint constant RATE_MUL = 1000;
 uint constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour respawn time)
 
-uint constant IS_ACTION_CHOICE_HAS_SECOND_STORAGE_SLOT_BIT = 1;
+uint constant IS_ACTION_CHOICE_HAS_SECOND_STORAGE_SLOT_BIT = 6;

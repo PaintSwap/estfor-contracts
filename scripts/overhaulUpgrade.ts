@@ -9,6 +9,7 @@ import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
   SHOP_ADDRESS,
+  QUESTS_ADDRESS,
 } from "./contractAddresses";
 import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {Players, World} from "../typechain-types";
@@ -22,6 +23,7 @@ import {allActions} from "./data/actions";
 import {avatarIds, avatarInfos} from "./data/avatars";
 import {allItems} from "./data/items";
 import {ShopItem, allShopItems} from "./data/shopItems";
+import {QuestInput, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -389,6 +391,25 @@ async function main() {
     .addBuyableItem(allShopItems.find((shopItem) => shopItem.tokenId == EstforConstants.FLUX) as ShopItem);
   await tx.wait();
   console.log("Add flux");
+
+  // Quests
+  const Quests = (await ethers.getContractFactory("Quests")).connect(owner);
+  const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
+    kind: "uups",
+    timeout,
+    unsafeSkipStorageCheck: true,
+  });
+  await quests.deployed();
+  console.log("Deployed quests");
+
+  // Add the new quest
+  const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_SO_FLETCH) as QuestInput;
+  tx = await quests.addQuests([quest], [defaultMinRequirements]);
+  await tx.wait();
+  console.log("Add new quest");
+  // Edit them all to fix up the second storage slot bit location
+  tx = await quests.editQuests(allQuests, allQuestsMinRequirements);
+  await tx.wait();
 
   // verify all the contracts
   await verifyContracts([

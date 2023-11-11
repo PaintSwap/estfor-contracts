@@ -20,7 +20,7 @@ import {
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
 import {allActions} from "../../scripts/data/actions";
-import {Quest, allQuests, defaultMinRequirements} from "../../scripts/data/quests";
+import {QuestInput, allQuests, defaultMinRequirements} from "../../scripts/data/quests";
 
 const actionIsAvailable = true;
 
@@ -668,7 +668,7 @@ describe("Combat Actions", function () {
       };
 
       // Activate a quest
-      const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+      const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as QuestInput;
       const quest = {
         ...quest1,
         actionId1: queuedAction.actionId,
@@ -676,7 +676,7 @@ describe("Combat Actions", function () {
         burnItemTokenId: EstforConstants.NATUOW_HIDE,
         burnAmount: 5,
       };
-      await quests.addQuests([quest], [false], [defaultMinRequirements]);
+      await quests.addQuests([quest], [defaultMinRequirements]);
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
 
@@ -785,7 +785,7 @@ describe("Combat Actions", function () {
       };
 
       // Activate a quest
-      const _quest = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+      const _quest = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as QuestInput;
       const quest = {
         ..._quest,
         actionId1: queuedAction.actionId,
@@ -815,7 +815,6 @@ describe("Combat Actions", function () {
       };
       await quests.addQuests(
         [quest, questMelee, questMagic, questWoodcutting, questHealth],
-        [false, false, false, false, false],
         [
           defaultMinRequirements,
           defaultMinRequirements,

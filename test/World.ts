@@ -621,7 +621,7 @@ describe("World", function () {
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
-      expect(actionChoice.packedData).to.eq("0x02");
+      expect(actionChoice.packedData).to.eq("0x40");
     });
   });
 

@@ -50,7 +50,7 @@ import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarIds, avatarInfos} from "./data/avatars";
-import {allQuestsMinRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
+import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 
@@ -534,7 +534,7 @@ async function main() {
   console.log("Add shopping items");
 
   // Add quests
-  tx = await quests.addQuests(allQuests, allQuestsRandomFlags, allQuestsMinRequirements);
+  tx = await quests.addQuests(allQuests, allQuestsMinRequirements);
   await tx.wait();
   console.log("Add quests");
 
