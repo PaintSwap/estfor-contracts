@@ -69,7 +69,7 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("30", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("35", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,

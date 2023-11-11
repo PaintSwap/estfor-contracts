@@ -470,27 +470,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function tempSetPackedMaxLevelFlag(uint _playerId, Skill _skill) external onlyOwner {
-    uint offset = 2; // Accounts for NONE & COMBAT skills
-    uint skillOffsetted = uint8(_skill) - offset;
-    uint slotNum = skillOffsetted / 6;
-    uint relativePos = skillOffsetted % 6;
-
-    // packedDataIsMaxedBitStart is the starting bit index for packedDataIsMaxed within the 256-bit storage slot
-    uint packedDataIsMaxedBitStart = 240;
-    uint bitsPerSkill = 2; // Two bits to store the max level version for each skill
-    uint actualBitIndex = packedDataIsMaxedBitStart + relativePos * bitsPerSkill;
-    uint newMaxLevelVersion = 1;
-
-    PackedXP storage _packedXP = xp_[_playerId];
-    assembly ("memory-safe") {
-      let val := sload(add(_packedXP.slot, slotNum))
-      val := and(val, not(shl(actualBitIndex, 0x3)))
-      val := or(val, shl(actualBitIndex, newMaxLevelVersion))
-      sstore(add(_packedXP.slot, slotNum), val)
-    }
-  }
-
   // For the various view functions that require delegatecall
   fallback() external {
     bytes4 selector = bytes4(msg.data);

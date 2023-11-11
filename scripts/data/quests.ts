@@ -376,7 +376,7 @@ export const allQuests: QuestInput[] = [
   },
   {
     questId: EstforConstants.QUEST_SO_FLETCH,
-    dependentQuestId: EstforConstants.QUEST_APPRENTICESHIP,
+    dependentQuestId: NONE,
     actionId1: NONE,
     actionNum1: 0,
     actionId2: NONE,

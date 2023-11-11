@@ -1043,7 +1043,6 @@ describe("Quests", function () {
         actionChoiceId: choiceId,
         actionChoiceNum: 1,
         skillReward: Skill.ALCHEMY,
-        dependentQuestId: 0,
       };
       await quests.addQuests([quest], [defaultMinRequirements]);
       const questId = quest.questId;
