@@ -322,7 +322,7 @@ async function main() {
   await world.deployed();
   console.log("world upgraded");
 
-  const actions = allActions.filter((action) => action.actionId === EstforConstants.ACTION_FORGING_ITEM);
+  let actions = allActions.filter((action) => action.actionId === EstforConstants.ACTION_FORGING_ITEM);
   if (actions.length !== 1) {
     console.log("Cannot find actions");
     process.exit(1);
@@ -330,6 +330,20 @@ async function main() {
     await world.connect(owner).addActions(actions);
   }
   console.log("Add forging action");
+
+  // Edit some combat action drops
+  actions = await allActions.filter(
+    (action) =>
+      action.actionId === EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE ||
+      action.actionId === EstforConstants.ACTION_COMBAT_ROCKHAWK ||
+      action.actionId === EstforConstants.ACTION_COMBAT_QRAKUR ||
+      action.actionId === EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON ||
+      action.actionId === EstforConstants.ACTION_COMBAT_ERKAD
+  );
+
+  tx = await world.editActions(actions);
+  await tx.wait();
+  console.log("editActions");
 
   const newActionChoiceIdsAlchemy = [
     EstforConstants.ACTIONCHOICE_ALCHEMY_COPPER_ORE,
