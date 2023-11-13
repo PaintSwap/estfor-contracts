@@ -61,58 +61,58 @@ export const avatarInfos: AvatarInfo[] = [
     startSkills: [Skill.MELEE, Skill.MAGIC],
   },
   {
-    name: "Evolved Kittie Mage",
+    name: "Archmage Felus",
     description:
-      "Evolved Kittie Mage is a wise and thoughtful mage, skilled in the Arcane arts. A researcher, she is always eager to learn more about the world of magic.",
+      "Archmage Felus has learned many lessons navigating the labyrinthine path of Primdiat magic. Now power is the currency in which she trades, ever digging for magics both ancient and new, always pursuing greatness.",
     imageURI: "10001.jpg",
     startSkills: [Skill.MAGIC, Skill.NONE],
   },
   {
-    name: "Evolved Itchy Lizzy",
+    name: "Invisible Lizard",
     description:
-      "Evolved Itchy Lizzy is skilled in stealth and deception. She prefers to work alone but will team up with others if it serves her ultimate goal.",
+      "Invisible Lizard has made the shadows her home and the whisping breeze her mount, delving deep and climbing high, always unseen. One could no sooner capture the North Wind than contain Invisible Lizard.",
     imageURI: "10002.jpg",
     startSkills: [Skill.THIEVING, Skill.NONE],
   },
   {
-    name: "Evolved Polar Ace",
+    name: "Arctic Bearserker",
     description:
-      "Evolved Polar Ace is a resourceful bard who is skilled in music and performance. He is highly charismatic and always knows how to put on a good show.",
+      "Arctic Bearserker  mastered the crafts of storytelling and song while traveling the realms of Estfor. Fortunately, the ruffians of Estfor provide ample fuel to fire the body's forge, and Arctic Bearserker is now something of a Hero himself.",
     imageURI: "10003.jpg",
     startSkills: [Skill.MAGIC, Skill.DEFENCE],
   },
   {
-    name: "Evolved King Lionel",
+    name: "Leonidas",
     description:
-      "Evolved King Lionel is a powerful warrior who is skilled in swordplay and hand-to-hand combat. A natural leader, he inspires confidence in all those around him.",
+      "Leonidas has gone from a young and bold fighter to a wizened and tough lion. His prowess in the art of leadership matched only by his raw talent in combat, both honed through years of leading adventuring parties.",
     imageURI: "10004.jpg",
     startSkills: [Skill.MELEE, Skill.NONE],
   },
   {
-    name: "Evolved Raging Ears",
+    name: "Mysticor",
     description:
-      "Evolved Raging Ears is a kind wizard skilled in the healing arts. She is a deeply spiritual person who always puts the needs of others before her own.",
+      "Mysticor is a white witch who is to be taken no way but seriously. Though the focus of her craft has been the healing and uplifting of others, life in a hard world will make a bunny hard. Do not cross the healer, unless you want to see her aggressive side.",
     imageURI: "10005.jpg",
     startSkills: [Skill.MAGIC, Skill.HEALTH],
   },
   {
-    name: "Evolved Sleepless Piggy",
+    name: "Chaos",
     description:
-      "Evolved Sleepless Piggy is a brawny and powerful barbarian who is skilled in hard combat. He is quick to anger and fiercely protective of his friends and allies.",
+      "Chaos is a brute. A true animal among animals. His violence, unmatched by the barbarians he once saw as mentors, is truly without equal. Though few sprout the courage to challenge him, far fewer walk away.",
     imageURI: "10006.jpg",
     startSkills: [Skill.MELEE, Skill.DEFENCE],
   },
   {
-    name: "Evolved Wolfgang Companion",
+    name: "Lunar Ranger",
     description:
-      "Evolved Wolfgang Companion is a fierce ranger, skilled in trapping as well as archery. With a strong sense of justice, she will always defend the weak and innocent.",
+      "Though the size of Lunar Ranger is, indeed, daunting, what is truly most dangerous is the unparalleled precision of her aim. A versatile ranger and huntress, she is at home in the forests and wilds of Estfor alongside beast and monster.",
     imageURI: "10007.jpg",
     startSkills: [Skill.RANGED, Skill.NONE],
   },
   {
-    name: "Evolved Slaying Doggo",
+    name: "Crusader",
     description:
-      "Evolved Slaying Doggo is a proud, ambitious warrior who is skilled in close combat and magic. His unshakable sense of duty makes him a powerful ally in battle.",
+      "Crusader has kept his balance and honor down the devastating road of heroism to become a true beacon of a knight. His courage, fortitude, and commitment are unmatched, and those fortunate enough to be called his friends are rich, indeed.",
     imageURI: "10008.jpg",
     startSkills: [Skill.MELEE, Skill.MAGIC],
   },
