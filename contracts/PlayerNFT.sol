@@ -200,10 +200,10 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function _upgradePlayer(uint _playerId, uint24 _newAvatarId) private {
     playerInfos[_playerId].avatarId = _newAvatarId;
     players.upgradePlayer(_playerId);
-    // Send half to the pool (currently shop)
+    // Send quarter to the pool (currently shop)
     uint quarterCost = upgradePlayerCost / 4;
     brush.transferFrom(_msgSender(), pool, quarterCost);
-    // Send half to the dev address
+    // Send rest to the dev address
     brush.transferFrom(_msgSender(), dev, upgradePlayerCost - quarterCost);
     emit UpgradePlayerAvatar(_playerId, _newAvatarId, 0);
   }
