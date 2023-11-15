@@ -15,7 +15,7 @@ async function main() {
   ).connect(owner);
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
 
-  const items = await allItems.filter((item) => item.tokenId === EstforConstants.RUNITE_PICKAXE);
+  const items = allItems.filter((item) => item.tokenId === EstforConstants.RUNITE_PICKAXE);
 
   if (items.length !== 1) {
     console.log("Cannot find all items");
