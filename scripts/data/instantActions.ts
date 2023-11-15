@@ -1293,7 +1293,7 @@ export const allInstantActions: InstantActionInput[] = [
     minSkills: [Skill.CRAFTING],
     minXPs: [1021],
     inputTokenIds: [EstforConstants.NATUOW_LEATHER],
-    inputAmounts: [1],
+    inputAmounts: [10],
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,

@@ -273,36 +273,79 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
     });
 
-    it("Must be owner to edit an action", async function () {
-      const {instantActions, alice} = await loadFixture(playersFixture);
+    describe("Edit", function () {
+      it("Must be owner to edit an action", async function () {
+        const {instantActions, alice} = await loadFixture(playersFixture);
 
-      const instantActionInput: InstantActionInput = {
-        ...defaultInstantActionInput,
-        inputTokenIds: [BRONZE_ARROW],
-        inputAmounts: [1],
-      };
-      await instantActions.addActions([instantActionInput]);
-      await expect(instantActions.connect(alice).editActions([instantActionInput])).to.be.revertedWithCustomError(
-        instantActions,
-        "CallerIsNotOwner"
-      );
-      await instantActions.editActions([instantActionInput]);
+        const instantActionInput: InstantActionInput = {
+          ...defaultInstantActionInput,
+          inputTokenIds: [BRONZE_ARROW],
+          inputAmounts: [1],
+        };
+        await instantActions.addActions([instantActionInput]);
+        await expect(instantActions.connect(alice).editActions([instantActionInput])).to.be.revertedWithCustomError(
+          instantActions,
+          "CallerIsNotOwner"
+        );
+        await instantActions.editActions([instantActionInput]);
+      });
+
+      it("Edited action must exist", async function () {
+        const {instantActions, alice} = await loadFixture(playersFixture);
+
+        const instantActionInput: InstantActionInput = {
+          ...defaultInstantActionInput,
+          inputTokenIds: [BRONZE_ARROW],
+          inputAmounts: [1],
+        };
+        await expect(instantActions.editActions([instantActionInput])).to.be.revertedWithCustomError(
+          instantActions,
+          "ActionDoesNotExist"
+        );
+        await instantActions.addActions([instantActionInput]);
+        const newinstantActionInput = {
+          ...instantActionInput,
+          inputTokenIds: [IRON_ARROW],
+        };
+        await expect(instantActions.editActions([newinstantActionInput])).to.emit(instantActions, "EditInstantActions");
+        expect((await instantActions.actions(actionType, 1)).inputTokenId1).to.eq(IRON_ARROW);
+      });
     });
 
-    it("Edited action must exist", async function () {
-      const {instantActions, alice} = await loadFixture(playersFixture);
+    describe("Remove", function () {
+      it("Must be owner to removed an action", async function () {
+        const {instantActions, alice} = await loadFixture(playersFixture);
 
-      const instantActionInput: InstantActionInput = {
-        ...defaultInstantActionInput,
-        inputTokenIds: [BRONZE_ARROW],
-        inputAmounts: [1],
-      };
-      await instantActions.addActions([instantActionInput]);
-      await expect(instantActions.connect(alice).editActions([instantActionInput])).to.be.revertedWithCustomError(
-        instantActions,
-        "CallerIsNotOwner"
-      );
-      await instantActions.editActions([instantActionInput]);
+        const instantActionInput: InstantActionInput = {
+          ...defaultInstantActionInput,
+          inputTokenIds: [BRONZE_ARROW],
+          inputAmounts: [1],
+        };
+        await instantActions.addActions([instantActionInput]);
+        await expect(instantActions.connect(alice).removeActions([actionType], [1])).to.be.revertedWithCustomError(
+          instantActions,
+          "CallerIsNotOwner"
+        );
+      });
+
+      it("Removed action must exist", async function () {
+        const {instantActions} = await loadFixture(playersFixture);
+        await expect(instantActions.removeActions([actionType], [1])).to.be.revertedWithCustomError(
+          instantActions,
+          "ActionDoesNotExist"
+        );
+        const instantActionInput: InstantActionInput = {
+          ...defaultInstantActionInput,
+          inputTokenIds: [BRONZE_ARROW],
+          inputAmounts: [1],
+        };
+        await instantActions.addActions([instantActionInput]);
+        await expect(instantActions.removeActions([actionType], [1]))
+          .to.emit(instantActions, "RemoveInstantActions")
+          .withArgs([actionType], [1]);
+        // Confirm it no longer exists
+        expect((await instantActions.actions(actionType, 1)).inputTokenId1).to.eq(NONE);
+      });
     });
 
     it("Must be owner of player to do instant actions", async function () {
