@@ -26,7 +26,7 @@ let players;
 let instantActions;
 
 if (!isBeta) {
-  worldLibrary = "0x4457c8211eec0a1b805db0669dc2dd3c7957d1df";
+  worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
   world = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
   royaltyReceiver = "0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b";
@@ -40,12 +40,12 @@ if (!isBeta) {
   clans = "0x334caa8907bdf49470f7b085380c25431ef96f6d";
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
   bank = "0xe183a43881eac74808c55bdb2a073929602af4db";
-  playersLibrary = "0x0ab89556b1e8f904544dfb34ee4d2954d6567d80";
-  playersImplQueueActions = "0x340d9c2f9ad35ef7f2b2a426190b8f16ceb83281";
-  playersImplProcessActions = "0x2c775ed7cc888836454287ea11242c01aa51c21c";
-  playersImplRewards = "0x53e2f292161138c082111b49701cc03c1d175060";
-  playersImplMisc = "0xa4e121759bf5dbd7e7936254b26988dda892ba83";
-  playersImplMisc1 = "0x4f7d7624552776d51ff92927b45fe9223374b0b7";
+  playersLibrary = "0x7f3d2f36b3b3181e01fe4048dd9ba63be3440710";
+  playersImplQueueActions = "0xa84314f52b6811e6e26c25d63b655108d6a16c02";
+  playersImplProcessActions = "0x51bb1f55fe017f0df121c1c1cdd192ae96f32516";
+  playersImplRewards = "0xfa69a967bf8a35b456c56c19d644fc1a819da833";
+  playersImplMisc = "0x5e2a2a50f1b6afff7d588dccac0a4f0252f589fa";
+  playersImplMisc1 = "0x84dacfda4ae5831e388f62692fb697dffc89ca53";
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
