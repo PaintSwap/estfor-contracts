@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
-import {ActionInput, defaultActionChoice} from "@paintswap/estfor-definitions/types";
+import {ActionChoiceInput, ActionInput, Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId, RATE_MUL, requestAndFulfillRandomWords, SPAWN_MUL} from "./utils";
@@ -347,46 +347,218 @@ describe("World", function () {
       const {world} = await loadFixture(deployContracts);
       const choiceId = 0;
       await expect(
-        world.addBulkActionChoices(
-          [EstforConstants.NONE],
-          [[choiceId]],
+        world.addActionChoices(
+          EstforConstants.NONE,
+          [choiceId],
           [
-            [
-              {
-                ...defaultActionChoice,
-                skill: EstforTypes.Skill.MAGIC,
-                skillDiff: 2,
-                minXP: 0,
-                rate: 1 * RATE_MUL,
-                inputTokenId1: EstforConstants.AIR_SCROLL,
-                inputAmount1: 1,
-              },
-            ],
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.MAGIC,
+              skillDiff: 2,
+              rate: 1 * RATE_MUL,
+              inputTokenIds: [EstforConstants.AIR_SCROLL],
+              inputAmounts: [1],
+            },
           ]
         )
-      ).to.be.reverted;
+      ).to.be.revertedWithCustomError(world, "ActionChoiceIdZeroNotAllowed");
     });
 
-    it("Edit", async function () {
+    it("Bulk add action choices", async function () {
       const {world} = await loadFixture(deployContracts);
-
-      const choiceId = 1;
       await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[choiceId]],
+        [EstforConstants.NONE, EstforConstants.ACTION_ALCHEMY_ITEM],
+        [[1], [2, 3]],
         [
           [
             {
               ...defaultActionChoice,
               skill: EstforTypes.Skill.MAGIC,
               skillDiff: 2,
-              xpPerHour: 0,
-              minXP: 0,
               rate: 1 * RATE_MUL,
-              inputTokenId1: EstforConstants.AIR_SCROLL,
-              inputAmount1: 1,
+              inputTokenIds: [EstforConstants.AIR_SCROLL],
+              inputAmounts: [1],
             },
           ],
+          [
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.ALCHEMY,
+              skillDiff: 2,
+              rate: 1 * RATE_MUL,
+              inputTokenIds: [EstforConstants.AIR_SCROLL],
+              inputAmounts: [1],
+            },
+            {
+              ...defaultActionChoice,
+              skill: EstforTypes.Skill.ALCHEMY,
+              skillDiff: 2,
+              rate: 1 * RATE_MUL,
+              inputTokenIds: [EstforConstants.AIR_SCROLL],
+              inputAmounts: [1],
+            },
+          ],
+        ]
+      );
+
+      // Check that they exist
+      expect((await world.getActionChoice(EstforConstants.NONE, 1)).skill).to.eq(EstforTypes.Skill.MAGIC);
+      expect((await world.getActionChoice(EstforConstants.ACTION_ALCHEMY_ITEM, 2)).skill).to.eq(
+        EstforTypes.Skill.ALCHEMY
+      );
+      expect((await world.getActionChoice(EstforConstants.ACTION_ALCHEMY_ITEM, 3)).skill).to.eq(
+        EstforTypes.Skill.ALCHEMY
+      );
+    });
+
+    it("Check input item order", async function () {
+      const {world, worldLibrary} = await loadFixture(deployContracts);
+
+      const choiceId = 1;
+      const actionChoiceInput: ActionChoiceInput = {
+        ...defaultActionChoice,
+        skill: EstforTypes.Skill.MAGIC,
+        skillDiff: 2,
+        xpPerHour: 0,
+        rate: 1 * RATE_MUL,
+        inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.ADAMANTINE_ARROW],
+        inputAmounts: [1, 2, 3],
+      };
+
+      actionChoiceInput.inputAmounts[0] = 4;
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
+
+      actionChoiceInput.inputAmounts[0] = 1;
+      actionChoiceInput.inputAmounts[1] = 4;
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
+
+      actionChoiceInput.inputAmounts[1] = 2;
+      actionChoiceInput.inputAmounts[2] = 1;
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
+
+      actionChoiceInput.inputAmounts[2] = 3;
+      expect(await world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])).to.not.be.reverted;
+    });
+
+    it("Check input item validation", async function () {
+      const {world, worldLibrary} = await loadFixture(deployContracts);
+
+      const choiceId = 1;
+      const actionChoiceInput: ActionChoiceInput = {
+        ...defaultActionChoice,
+        skill: EstforTypes.Skill.MAGIC,
+        skillDiff: 2,
+        xpPerHour: 0,
+        rate: 1 * RATE_MUL,
+        inputTokenIds: [
+          EstforConstants.BRONZE_ARROW,
+          EstforConstants.IRON_ARROW,
+          EstforConstants.ADAMANTINE_ARROW,
+          EstforConstants.ORICHALCUM_ARROW,
+        ],
+        inputAmounts: [1, 2, 3],
+      };
+
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "TooManyInputItems");
+
+      actionChoiceInput.inputTokenIds = [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW];
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "LengthMismatch");
+
+      actionChoiceInput.inputTokenIds = [
+        EstforConstants.BRONZE_ARROW,
+        EstforConstants.IRON_ARROW,
+        EstforConstants.BRONZE_ARROW,
+      ];
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "InputItemNoDuplicates");
+    });
+
+    it("Minimum skill validation", async function () {
+      const {world, worldLibrary} = await loadFixture(deployContracts);
+
+      const choiceId = 1;
+      const actionChoiceInput: ActionChoiceInput = {
+        ...defaultActionChoice,
+        skill: EstforTypes.Skill.MAGIC,
+        skillDiff: 2,
+        xpPerHour: 0,
+        rate: 1 * RATE_MUL,
+        inputTokenIds: [EstforConstants.BRONZE_ARROW],
+        inputAmounts: [1],
+        minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING, Skill.ALCHEMY],
+        minXPs: [1, 1, 1],
+      };
+
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "TooManyMinSkills");
+
+      actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING];
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "LengthMismatch");
+
+      actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.WOODCUTTING];
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "MinimumSkillsNoDuplicates");
+    });
+
+    it("Output item validation", async function () {
+      const {world, worldLibrary} = await loadFixture(deployContracts);
+
+      const choiceId = 1;
+      const actionChoiceInput: ActionChoiceInput = {
+        ...defaultActionChoice,
+        skill: EstforTypes.Skill.MAGIC,
+        skillDiff: 2,
+        xpPerHour: 0,
+        rate: 1 * RATE_MUL,
+        inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.ADAMANTINE_ARROW],
+        inputAmounts: [1, 2, 3],
+        outputTokenId: EstforConstants.RUNITE_ARROW,
+        outputAmount: 0,
+      };
+
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "OutputAmountCannotBeZero");
+
+      actionChoiceInput.outputAmount = 1;
+      actionChoiceInput.outputTokenId = EstforConstants.NONE;
+      await expect(
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+      ).to.be.revertedWithCustomError(worldLibrary, "OutputTokenIdCannotBeEmpty");
+    });
+
+    it("Edit", async function () {
+      const {world} = await loadFixture(deployContracts);
+
+      const choiceId = 1;
+      await world.addActionChoices(
+        EstforConstants.NONE,
+        [choiceId],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            xpPerHour: 0,
+            rate: 1 * RATE_MUL,
+            inputTokenIds: [EstforConstants.AIR_SCROLL],
+            inputAmounts: [1],
+          },
         ]
       );
 
@@ -399,8 +571,8 @@ describe("World", function () {
             skill: EstforTypes.Skill.MAGIC,
             skillDiff: 2,
             rate: 1 * RATE_MUL,
-            inputTokenId1: EstforConstants.AIR_SCROLL,
-            inputAmount1: 2,
+            inputTokenIds: [EstforConstants.AIR_SCROLL],
+            inputAmounts: [2],
           },
         ]
       );
@@ -418,13 +590,38 @@ describe("World", function () {
             skill: EstforTypes.Skill.MAGIC,
             skillDiff: 2,
             rate: 1 * RATE_MUL,
-            inputTokenId1: EstforConstants.AIR_SCROLL,
-            inputAmount1: 10,
+            inputTokenIds: [EstforConstants.AIR_SCROLL],
+            inputAmounts: [10],
           },
         ]
       );
       actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
       expect(actionChoice.inputAmount1).to.eq(10);
+    });
+
+    it("Multiple minimum skills check packed data", async function () {
+      const {world} = await loadFixture(deployContracts);
+      const choiceId = 1;
+      await world.addActionChoices(
+        EstforConstants.NONE,
+        [choiceId],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            xpPerHour: 0,
+            rate: 1 * RATE_MUL,
+            inputTokenIds: [EstforConstants.BRONZE_ARROW],
+            inputAmounts: [1],
+            minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
+            minXPs: [1, 1, 1],
+          },
+        ]
+      );
+
+      const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
+      expect(actionChoice.packedData).to.eq("0x40");
     });
   });
 

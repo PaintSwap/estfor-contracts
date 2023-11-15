@@ -85,38 +85,33 @@ interface IPlayerImpls {
 }
 
 export const deployPlayerImplementations = async (playersLibraryAddress: string): Promise<IPlayerImpls> => {
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
+  const playersImplQueueActions = (await ethers.deployContract("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplQueueActions = await PlayersImplQueueActions.deploy();
+  })) as PlayersImplQueueActions;
   console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
   await playersImplQueueActions.deployed();
 
-  const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
+  const playersImplProcessActions = (await ethers.deployContract("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplProcessActions = await PlayersImplProcessActions.deploy();
+  })) as PlayersImplProcessActions;
   console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
   await playersImplProcessActions.deployed();
 
-  const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
+  const playersImplRewards = (await ethers.deployContract("PlayersImplRewards", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplRewards = await PlayersImplRewards.deploy();
+  })) as PlayersImplRewards;
   console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
   await playersImplRewards.deployed();
 
-  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
+  const playersImplMisc = (await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplMisc = await PlayersImplMisc.deploy();
+  })) as PlayersImplMisc;
   console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
   await playersImplMisc.deployed();
 
-  const PlayersImplMisc1 = await ethers.getContractFactory("PlayersImplMisc1", {
+  const playersImplMisc1 = (await ethers.deployContract("PlayersImplMisc1", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplMisc1 = await PlayersImplMisc1.deploy();
+  })) as PlayersImplMisc1;
   console.log(`playersImplMisc1 = "${playersImplMisc1.address.toLowerCase()}"`);
   await playersImplMisc1.deployed();
 
@@ -128,3 +123,5 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
     playersImplMisc1,
   };
 };
+
+export const isBeta = process.env.IS_BETA == "true";

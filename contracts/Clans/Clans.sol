@@ -939,13 +939,5 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
   }
 
-  function tempUpdateClanRankLeaders(uint startId, uint endId) external onlyOwner {
-    for (uint i = startId; i < endId; ++i) {
-      if (clans[i].owner != 0) {
-        playerInfo[clans[i].owner].rank = ClanRank.OWNER;
-      }
-    }
-  }
-
   function _authorizeUpgrade(address) internal override onlyOwner {}
 }

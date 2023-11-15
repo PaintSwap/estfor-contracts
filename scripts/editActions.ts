@@ -22,11 +22,19 @@ async function main() {
   );
 
   const tx = await world.editActions(actions);
-  await tx.wait(); 
-*/
-  const actions = await allActions.filter((action) => action.actionId === EstforConstants.ACTION_MINING_DRAGONSTONE);
+  await tx.wait();
+  */
 
-  if (actions.length !== 1) {
+  const actions = await allActions.filter(
+    (action) =>
+      action.actionId === EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE ||
+      action.actionId === EstforConstants.ACTION_COMBAT_ROCKHAWK ||
+      action.actionId === EstforConstants.ACTION_COMBAT_QRAKUR ||
+      action.actionId === EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON ||
+      action.actionId === EstforConstants.ACTION_COMBAT_ERKAD
+  );
+
+  if (actions.length !== 5) {
     console.log("Cannot find actions");
   } else {
     const tx = await world.editActions(actions);

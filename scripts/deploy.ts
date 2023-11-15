@@ -3,6 +3,7 @@ import {ethers, upgrades} from "hardhat";
 import {
   BankFactory,
   Clans,
+  InstantActions,
   ItemNFT,
   MockBrushToken,
   MockOracleClient,
@@ -16,10 +17,9 @@ import {
   Shop,
   World,
 } from "../typechain-types";
-import {deployPlayerImplementations, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
+import {deployPlayerImplementations, isBeta, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
-
 import {
   allActionChoicesFiremaking,
   allActionChoicesCooking,
@@ -42,23 +42,17 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {
-  BRUSH_ADDRESS,
-  CLANS_ADDRESS,
-  QUESTS_ADDRESS,
-  SHOP_ADDRESS,
-  WFTM_ADDRESS,
-  WORLD_ADDRESS,
-} from "./contractAddresses";
+import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
-import {avatarInfos} from "./data/avatars";
-import {allQuestsMinRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
+import {avatarIds, avatarInfos} from "./data/avatars";
+import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
+import {allInstantActions} from "./data/instantActions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -180,7 +174,6 @@ async function main() {
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
-  const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
@@ -368,9 +361,18 @@ async function main() {
   const BankFactory = await ethers.getContractFactory("BankFactory");
   const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bank.address], {
     kind: "uups",
+    timeout,
   })) as BankFactory;
   await bankFactory.deployed();
   console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
+
+  const InstantActions = await ethers.getContractFactory("InstantActions");
+  const instantActions = (await upgrades.deployProxy(InstantActions, [players.address, itemNFT.address], {
+    kind: "uups",
+    timeout,
+  })) as InstantActions;
+  await instantActions.deployed();
+  console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {
@@ -400,6 +402,7 @@ async function main() {
         await upgrades.beacon.getImplementationAddress(bank.address),
         bankRegistry.address,
         bankFactory.address,
+        instantActions.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -444,6 +447,10 @@ async function main() {
   await tx.wait();
   console.log("itemNFT setPromotions");
 
+  tx = await itemNFT.setInstantActions(instantActions.address);
+  await tx.wait();
+  console.log("itemNFT setInstantActions");
+
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
   console.log("setItemNFT");
@@ -452,8 +459,7 @@ async function main() {
   await tx.wait();
   console.log("Set daily rewards enabled");
 
-  const startAvatarId = 1;
-  tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
+  tx = await playerNFT.setAvatars(avatarIds, avatarInfos);
   await tx.wait();
   console.log("Add avatars");
 
@@ -528,7 +534,7 @@ async function main() {
   console.log("Add shopping items");
 
   // Add quests
-  tx = await quests.addQuests(allQuests, allQuestsRandomFlags, allQuestsMinRequirements);
+  tx = await quests.addQuests(allQuests, allQuestsMinRequirements);
   await tx.wait();
   console.log("Add quests");
 
@@ -536,6 +542,11 @@ async function main() {
   tx = await clans.addTiers(isBeta ? allClanTiersBeta : allClanTiers);
   await tx.wait();
   console.log("Add clan tiers");
+
+  // Add instant actions
+  tx = await instantActions.addActions(allInstantActions);
+  await tx.wait();
+  console.log("Add instant actions");
 
   // Add test data for the game
   if (isBeta) {

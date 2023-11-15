@@ -46,7 +46,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAdminAndBeta();
   error LengthMismatch();
 
-  World private world;
+  World public world;
   bool private isBeta;
   string private baseURI;
 
@@ -54,7 +54,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(uint itemId => uint amount) public itemBalances;
   mapping(uint itemId => uint timestamp) public timestampFirstMint;
 
-  address private players;
+  address public players;
   address private shop;
   uint16 private totalSupplyAll_;
 
@@ -69,9 +69,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   AdminAccess private adminAccess;
   IBankFactory private bankFactory;
   address private promotions;
+  address private instantActions;
 
   modifier onlyPlayersOrShopOrPromotions() {
-    if (_msgSender() != players && _msgSender() != shop && _msgSender() != promotions) {
+    if (
+      _msgSender() != players && _msgSender() != shop && _msgSender() != promotions && _msgSender() != instantActions
+    ) {
       revert NotPlayersOrShop();
     }
     _;
@@ -354,7 +357,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function _checkBurn(address _from) private view {
     if (
-      _from != _msgSender() && !isApprovedForAll(_from, _msgSender()) && players != _msgSender() && shop != _msgSender()
+      _from != _msgSender() &&
+      !isApprovedForAll(_from, _msgSender()) &&
+      players != _msgSender() &&
+      shop != _msgSender() &&
+      instantActions != _msgSender()
     ) {
       revert ERC1155ReceiverNotApproved();
     }
@@ -454,6 +461,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function setPromotions(address _promotions) external onlyOwner {
     promotions = _promotions;
+  }
+
+  function setInstantActions(address _instantActions) external onlyOwner {
+    instantActions = _instantActions;
   }
 
   function setBaseURI(string calldata _baseURI) external onlyOwner {

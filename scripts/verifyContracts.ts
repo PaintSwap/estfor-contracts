@@ -19,6 +19,7 @@ import {
   BANK_REGISTRY_ADDRESS,
   BANK_FACTORY_ADDRESS,
   PROMOTIONS_ADDRESS,
+  PLAYERS_IMPL_MISC1_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -43,6 +44,7 @@ async function main() {
     PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
     PLAYERS_IMPL_REWARDS_ADDRESS,
     PLAYERS_IMPL_MISC_ADDRESS,
+    PLAYERS_IMPL_MISC1_ADDRESS,
     PLAYERS_ADDRESS,
   ];
 

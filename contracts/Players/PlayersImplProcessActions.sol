@@ -274,8 +274,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _clearPlayerBoostsIfExpired(_playerId);
 
     bytes1 packedData = player.packedData;
-    // Clear bottom half which holds the worldLocation
-    packedData &= bytes1(uint8(0x0F));
+    // Clear first 6 bits which holds the worldLocation
+    packedData &= bytes1(uint8(0xC0));
     packedData |= bytes1(pendingQueuedActionState.worldLocation);
     player.packedData = packedData;
   }

@@ -189,7 +189,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       revert AlreadyUpgraded();
     }
 
-    players_[_playerId].packedData = players_[_playerId].packedData | (bytes1(uint8(0x1)) << 7);
+    players_[_playerId].packedData = players_[_playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
   }
 
   // This is a special type of quest.
@@ -207,12 +207,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function activateQuest(
     uint _playerId,
-    uint questId
+    uint _questId
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length != 0) {
       _processActionsAndSetState(_playerId);
     }
-    quests.activateQuest(msg.sender, _playerId, questId);
+    quests.activateQuest(msg.sender, _playerId, _questId);
   }
 
   function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
@@ -384,6 +384,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return PlayersLibrary.readXP(_skill, xp_[_playerId]);
   }
 
+  function totalXP(uint _playerId) external view override returns (uint) {
+    return players_[_playerId].totalXP;
+  }
+
   function packedXP(uint _playerId) external view returns (PackedXP memory) {
     return xp_[_playerId];
   }
@@ -407,6 +411,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF() external pure returns (uint) {
     return RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_;
+  }
+
+  function isPlayerUpgraded(uint _playerId) external view override returns (bool) {
+    return _isPlayerFullMode(_playerId);
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -460,27 +468,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       implProcessActions,
       abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp, _force)
     );
-  }
-
-  function tempSetPackedMaxLevelFlag(uint _playerId, Skill _skill) external onlyOwner {
-    uint offset = 2; // Accounts for NONE & COMBAT skills
-    uint skillOffsetted = uint8(_skill) - offset;
-    uint slotNum = skillOffsetted / 6;
-    uint relativePos = skillOffsetted % 6;
-
-    // packedDataIsMaxedBitStart is the starting bit index for packedDataIsMaxed within the 256-bit storage slot
-    uint packedDataIsMaxedBitStart = 240;
-    uint bitsPerSkill = 2; // Two bits to store the max level version for each skill
-    uint actualBitIndex = packedDataIsMaxedBitStart + relativePos * bitsPerSkill;
-    uint newMaxLevelVersion = 1;
-
-    PackedXP storage _packedXP = xp_[_playerId];
-    assembly ("memory-safe") {
-      let val := sload(add(_packedXP.slot, slotNum))
-      val := and(val, not(shl(actualBitIndex, 0x3)))
-      val := or(val, shl(actualBitIndex, newMaxLevelVersion))
-      sstore(add(_packedXP.slot, slotNum), val)
-    }
   }
 
   // For the various view functions that require delegatecall

@@ -2027,16 +2027,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2200,16 +2198,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2350,16 +2346,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2498,16 +2492,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);

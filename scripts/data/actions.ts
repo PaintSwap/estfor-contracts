@@ -1770,6 +1770,7 @@ export const allActions: ActionInput[] = [
     randomRewards: [
       {itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 2},
       {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 664, amount: 1},
+      {itemTokenId: EstforConstants.FLUX, chance: 60, amount: 1},
       {itemTokenId: EstforConstants.SCORCHING_CHAPS, chance: 8, amount: 1},
     ],
     combatStats: {
@@ -1867,7 +1868,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.IRON_ORE, rate: 1 * 10},
       {itemTokenId: EstforConstants.FEATHER, rate: 2 * 10},
     ],
-    randomRewards: [{itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 1328, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 1328, amount: 2},
+      {itemTokenId: EstforConstants.FLUX, chance: 600, amount: 1},
+    ],
     combatStats: {
       melee: 70,
       magic: 30,
@@ -1898,7 +1902,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
       {itemTokenId: EstforConstants.FEATHER, rate: 10 * 10},
     ],
-    randomRewards: [{itemTokenId: EstforConstants.SCORCHING_BRACERS, chance: 8, amount: 1}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.FLUX, chance: 600, amount: 2},
+      {itemTokenId: EstforConstants.SCORCHING_BRACERS, chance: 8, amount: 1},
+    ],
     combatStats: {
       melee: 130,
       magic: 70,
@@ -1926,6 +1933,7 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: false,
     },
     guaranteedRewards: [
+      {itemTokenId: EstforConstants.FLUX, rate: 1 * 10},
       {itemTokenId: EstforConstants.DRAGON_TEETH, rate: 1 * 10},
       {itemTokenId: EstforConstants.DRAGON_BONE, rate: 5 * 10},
     ],
@@ -1962,6 +1970,7 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: false,
     },
     guaranteedRewards: [
+      {itemTokenId: EstforConstants.FLUX, rate: 1 * 10},
       {itemTokenId: EstforConstants.POISON, rate: 2 * 10},
       {itemTokenId: EstforConstants.STRING, rate: 10 * 10},
     ],
@@ -2499,6 +2508,34 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_ALCHEMY_ITEM,
     info: {
       skill: Skill.ALCHEMY,
+      isAvailable: true,
+      isDynamic: false,
+      actionChoiceRequired: true,
+      xpPerHour: 0,
+      numSpawned: 0 * 1000,
+      minXP: 0,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: false,
+    },
+    guaranteedRewards: [],
+    randomRewards: [],
+    combatStats: {
+      melee: 0,
+      magic: 0,
+      ranged: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+  },
+  {
+    actionId: EstforConstants.ACTION_FORGING_ITEM,
+    info: {
+      skill: Skill.FORGING,
       isAvailable: true,
       isDynamic: false,
       actionChoiceRequired: true,

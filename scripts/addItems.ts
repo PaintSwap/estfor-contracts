@@ -12,9 +12,17 @@ async function main() {
 
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
-  const items = allItems.filter((item) => item.tokenId === EstforConstants.CLAN_BOOSTER);
+  const items = allItems.filter(
+    (item) =>
+      item.tokenId === EstforConstants.TINY_ELIXIUM ||
+      item.tokenId === EstforConstants.SMALL_ELIXIUM ||
+      item.tokenId === EstforConstants.MEDIUM_ELIXIUM ||
+      item.tokenId === EstforConstants.LARGE_ELIXIUM ||
+      item.tokenId === EstforConstants.EXTRA_LARGE_ELIXIUM ||
+      item.tokenId === EstforConstants.FLUX
+  );
 
-  if (items.length !== 1) {
+  if (items.length !== 6) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.addItems(items);

@@ -1,6 +1,9 @@
 import {MEDIUM_NET} from "@paintswap/estfor-definitions/constants";
 import {ethers} from "hardhat";
 import {SHOP_ADDRESS} from "./contractAddresses";
+import {ShopItem, allShopItems, allShopItemsBeta} from "./data/shopItems";
+import {isBeta} from "./utils";
+import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -12,7 +15,8 @@ async function main() {
   const Shop = await ethers.getContractFactory("Shop");
   const shop = Shop.attach(SHOP_ADDRESS);
 
-  await shop.addBuyableItem({price: ethers.utils.parseEther("50"), tokenId: MEDIUM_NET});
+  const shopItems = isBeta ? allShopItemsBeta : allShopItems;
+  await shop.addBuyableItem(shopItems.find((shopItem) => shopItem.tokenId == EstforConstants.FLUX) as ShopItem);
 }
 
 main().catch((error) => {

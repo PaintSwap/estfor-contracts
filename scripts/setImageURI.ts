@@ -12,7 +12,7 @@ async function main() {
     libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
   });
   const playerNFT = await PlayerNFT.attach(PLAYER_NFT_ADDRESS);
-  await playerNFT.setImageBaseUri("ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/");
+  await playerNFT.setImageBaseUri("ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/");
 }
 
 main().catch((error) => {

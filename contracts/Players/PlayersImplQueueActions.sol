@@ -242,6 +242,22 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         revert ActionChoiceMinimumXPNotReached();
       }
 
+      if (
+        actionChoice.minSkill2 != Skill.NONE &&
+        _getRealXP(actionChoice.minSkill2, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        actionChoice.minXP2
+      ) {
+        revert ActionChoiceMinimumXPNotReached();
+      }
+
+      if (
+        actionChoice.minSkill3 != Skill.NONE &&
+        _getRealXP(actionChoice.minSkill3, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        actionChoice.minXP3
+      ) {
+        revert ActionChoiceMinimumXPNotReached();
+      }
+
       if (actionChoice.skill == Skill.NONE) {
         revert InvalidSkill();
       }

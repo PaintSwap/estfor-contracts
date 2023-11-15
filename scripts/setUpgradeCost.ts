@@ -9,7 +9,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const playerNFT = await ethers.getContractAt("PlayerNFT", PLAYER_NFT_ADDRESS);
-  const tx = await playerNFT.setUpgradeCost(ethers.utils.parseEther("2000"));
+  const tx = await playerNFT.setUpgradeCost(ethers.utils.parseEther("1"));
   await tx.wait();
 }
 

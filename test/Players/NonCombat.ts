@@ -20,6 +20,7 @@ import {
   checkPendingQueuedActionState,
   setupBasicAlchemy,
   setupBasicFletching,
+  setupBasicForging,
 } from "./utils";
 
 const actionIsAvailable = true;
@@ -202,20 +203,19 @@ describe("Non-Combat Actions", function () {
     const actionId = await getActionId(tx);
 
     // Logs go in, nothing comes out
-    tx = await world.addBulkActionChoices(
-      [actionId],
-      [[1]],
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
+
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.FIREMAKING,
-            xpPerHour: 3600,
-            rate,
-            inputTokenId1: EstforConstants.LOG,
-            inputAmount1: 1,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.FIREMAKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.LOG],
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -336,20 +336,19 @@ describe("Non-Combat Actions", function () {
 
     // Logs go in, nothing comes out
     const firemakingRate = 1200 * RATE_MUL; // per hour
-    tx = await world.addBulkActionChoices(
-      [actionId],
-      [[1]],
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
+
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.FIREMAKING,
-            xpPerHour: 3600,
-            rate: firemakingRate,
-            inputTokenId1: EstforConstants.LOG,
-            inputAmount1: 1,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.FIREMAKING,
+          xpPerHour: 3600,
+          rate: firemakingRate,
+          inputTokenIds: [EstforConstants.LOG],
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -503,20 +502,19 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       // Logs go in, nothing comes out
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[1]],
+      tx = await world.addActionChoices(
+        actionId,
+        [1],
+
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.FIREMAKING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.LOG,
-              inputAmount1: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -666,24 +664,21 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       // Ores go in, bars come out
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[1]],
+      tx = await world.addActionChoices(
+        actionId,
+        [1],
+
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.SMITHING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.MITHRIL_ORE,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.COAL_ORE,
-              inputAmount2: 2,
-              outputTokenId: EstforConstants.MITHRIL_BAR,
-              outputAmount: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.SMITHING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
+            inputAmounts: [1, 2],
+            outputTokenId: EstforConstants.MITHRIL_BAR,
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -763,45 +758,38 @@ describe("Non-Combat Actions", function () {
       const actionId = await getActionId(tx);
 
       // Ores go in, bars come out
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[1]],
+      tx = await world.addActionChoices(
+        actionId,
+        [1],
+
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.SMITHING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.MITHRIL_ORE,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.COAL_ORE,
-              inputAmount2: 2,
-              outputTokenId: EstforConstants.MITHRIL_BAR,
-              outputAmount: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.SMITHING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
+            inputAmounts: [1, 2],
+            outputTokenId: EstforConstants.MITHRIL_BAR,
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
-      tx = await world.addBulkActionChoices(
-        [actionId],
-        [[2]],
+      tx = await world.addActionChoices(
+        actionId,
+        [2],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.SMITHING,
-              xpPerHour: 7200,
-              rate,
-              inputTokenId1: EstforConstants.MITHRIL_ORE,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.COAL_ORE,
-              inputAmount2: 2,
-              outputTokenId: EstforConstants.MITHRIL_BAR,
-              outputAmount: 1,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.SMITHING,
+            xpPerHour: 7200,
+            rate,
+            inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
+            inputAmounts: [1, 2],
+            outputTokenId: EstforConstants.MITHRIL_BAR,
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId1 = await getActionChoiceId(tx);
@@ -2041,6 +2029,41 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.FLETCHING)).to.eq(queuedAction.timespan);
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW_HEAD)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ARROW_SHAFT)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.FEATHER)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate * 2) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+    });
+  });
+
+  // Very similar to crafting for the skill, but liquidaion is handled differently in InstantActions
+  describe("Forging", function () {
+    it("Finish 1 item", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction, rate} = await setupBasicForging(itemNFT, world);
+
+      const startingAmount = 200;
+      await itemNFT.testMints(
+        alice.address,
+        [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
+        [startingAmount, startingAmount, startingAmount]
+      );
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.FORGING)).to.eq(queuedAction.timespan);
       // Check the inputs/output are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW_HEAD)).to.eq(
         startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
