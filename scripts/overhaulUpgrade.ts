@@ -10,6 +10,7 @@ import {
   ESTFOR_LIBRARY_ADDRESS,
   SHOP_ADDRESS,
   QUESTS_ADDRESS,
+  INSTANT_ACTIONS_ADDRESS,
 } from "./contractAddresses";
 import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {Players, World} from "../typechain-types";
@@ -276,15 +277,6 @@ async function main() {
   }
   console.log("Add items");
 
-  // Deploy instant actions
-  const InstantActions = (await ethers.getContractFactory("InstantActions")).connect(owner);
-  const instantActions = await upgrades.deployProxy(InstantActions, [PLAYERS_ADDRESS, ITEM_NFT_ADDRESS], {
-    kind: "uups",
-    timeout,
-  });
-  await instantActions.deployed();
-  console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
-
   // Update player upgrade cost
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
@@ -301,10 +293,8 @@ async function main() {
   tx = await playerNFT.setUpgradeCost(ethers.utils.parseEther("1400")); // 30% discount
   await tx.wait();
 
-  tx = await itemNFT.setInstantActions(instantActions.address);
-  await tx.wait();
-
-  tx = await instantActions.addActions(allInstantActions);
+  const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
+  tx = await instantActions.connect(owner).addActions(allInstantActions);
   await tx.wait();
 
   const worldLibrary = await ethers.deployContract("WorldLibrary");
@@ -322,6 +312,7 @@ async function main() {
   await world.deployed();
   console.log("world upgraded");
 
+  // Add new forging action
   let actions = allActions.filter((action) => action.actionId === EstforConstants.ACTION_FORGING_ITEM);
   if (actions.length !== 1) {
     console.log("Cannot find actions");
@@ -331,7 +322,7 @@ async function main() {
   }
   console.log("Add forging action");
 
-  // Edit some combat action drops
+  // Edit some combat action random reward drops
   actions = await allActions.filter(
     (action) =>
       action.actionId === EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE ||
@@ -398,7 +389,7 @@ async function main() {
   await tx.wait();
   console.log("set avatars");
 
-  // Update shop
+  // Update shop with new flux item
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
   tx = await shop
     .connect(owner)
@@ -437,6 +428,8 @@ async function main() {
     estforLibrary.address,
     playersLibrary.address,
     world.address,
+    worldLibrary.address,
+    instantActions.address,
   ]);
 }
 
