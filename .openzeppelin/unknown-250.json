@@ -14700,7 +14700,7 @@
             "label": "players",
             "offset": 0,
             "slot": "201",
-            "type": "t_contract(IPlayers)56806",
+            "type": "t_contract(IPlayers)15345",
             "contract": "InstantActions",
             "src": "contracts\\InstantActions.sol:93"
           },
@@ -14708,7 +14708,7 @@
             "label": "actions",
             "offset": 0,
             "slot": "202",
-            "type": "t_mapping(t_enum(InstantActionType)16297,t_mapping(t_uint16,t_struct(InstantAction)16356_storage))",
+            "type": "t_mapping(t_enum(InstantActionType)5192,t_mapping(t_uint16,t_struct(InstantAction)5251_storage))",
             "contract": "InstantActions",
             "src": "contracts\\InstantActions.sol:94"
           },
@@ -14716,7 +14716,7 @@
             "label": "itemNFT",
             "offset": 0,
             "slot": "203",
-            "type": "t_contract(ItemNFT)19647",
+            "type": "t_contract(ItemNFT)8542",
             "contract": "InstantActions",
             "src": "contracts\\InstantActions.sol:95"
           }
@@ -14742,20 +14742,20 @@
             "label": "bytes1",
             "numberOfBytes": "1"
           },
-          "t_contract(IPlayers)56806": {
+          "t_contract(IPlayers)15345": {
             "label": "contract IPlayers",
             "numberOfBytes": "20"
           },
-          "t_contract(ItemNFT)19647": {
+          "t_contract(ItemNFT)8542": {
             "label": "contract ItemNFT",
             "numberOfBytes": "20"
           },
-          "t_enum(InstantActionType)16297": {
+          "t_enum(InstantActionType)5192": {
             "label": "enum InstantActions.InstantActionType",
             "members": ["NONE", "FORGING_COMBINE", "GENERIC"],
             "numberOfBytes": "1"
           },
-          "t_enum(Skill)55669": {
+          "t_enum(Skill)14263": {
             "label": "enum Skill",
             "members": [
               "NONE",
@@ -14801,20 +14801,20 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_mapping(t_enum(InstantActionType)16297,t_mapping(t_uint16,t_struct(InstantAction)16356_storage))": {
+          "t_mapping(t_enum(InstantActionType)5192,t_mapping(t_uint16,t_struct(InstantAction)5251_storage))": {
             "label": "mapping(enum InstantActions.InstantActionType => mapping(uint16 => struct InstantActions.InstantAction))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint16,t_struct(InstantAction)16356_storage)": {
+          "t_mapping(t_uint16,t_struct(InstantAction)5251_storage)": {
             "label": "mapping(uint16 => struct InstantActions.InstantAction)",
             "numberOfBytes": "32"
           },
-          "t_struct(InstantAction)16356_storage": {
+          "t_struct(InstantAction)5251_storage": {
             "label": "struct InstantActions.InstantAction",
             "members": [
               {
                 "label": "minSkill1",
-                "type": "t_enum(Skill)55669",
+                "type": "t_enum(Skill)14263",
                 "offset": 0,
                 "slot": "0"
               },
@@ -14826,7 +14826,7 @@
               },
               {
                 "label": "minSkill2",
-                "type": "t_enum(Skill)55669",
+                "type": "t_enum(Skill)14263",
                 "offset": 5,
                 "slot": "0"
               },
@@ -14838,7 +14838,7 @@
               },
               {
                 "label": "minSkill3",
-                "type": "t_enum(Skill)55669",
+                "type": "t_enum(Skill)14263",
                 "offset": 10,
                 "slot": "0"
               },
@@ -17784,6 +17784,297 @@
           "t_uint64": {
             "label": "uint64",
             "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "8ca459cffd0699c6faf42f0a1c24329165dda2240c2d38a5147a923a736a4572": {
+      "address": "0x66dC3bD2666EfD9a51554e33722Da40467662F39",
+      "txHash": "0xff6f728ab6605e95d9e5da49f0aca57336de3133bd03c5f14f7b21c77389106b",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(IPlayers)15423",
+            "contract": "InstantActions",
+            "src": "contracts\\InstantActions.sol:94"
+          },
+          {
+            "label": "actions",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_mapping(t_enum(InstantActionType)5201,t_mapping(t_uint16,t_struct(InstantAction)5260_storage))",
+            "contract": "InstantActions",
+            "src": "contracts\\InstantActions.sol:95"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_contract(ItemNFT)8620",
+            "contract": "InstantActions",
+            "src": "contracts\\InstantActions.sol:96"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IPlayers)15423": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)8620": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_enum(InstantActionType)5201": {
+            "label": "enum InstantActions.InstantActionType",
+            "members": ["NONE", "FORGING_COMBINE", "GENERIC"],
+            "numberOfBytes": "1"
+          },
+          "t_enum(Skill)14341": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "AGILITY",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_enum(InstantActionType)5201,t_mapping(t_uint16,t_struct(InstantAction)5260_storage))": {
+            "label": "mapping(enum InstantActions.InstantActionType => mapping(uint16 => struct InstantActions.InstantAction))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint16,t_struct(InstantAction)5260_storage)": {
+            "label": "mapping(uint16 => struct InstantActions.InstantAction)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantAction)5260_storage": {
+            "label": "struct InstantActions.InstantAction",
+            "members": [
+              {
+                "label": "minSkill1",
+                "type": "t_enum(Skill)14341",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "minXP1",
+                "type": "t_uint32",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill2",
+                "type": "t_enum(Skill)14341",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "minXP2",
+                "type": "t_uint32",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill3",
+                "type": "t_enum(Skill)14341",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "minXP3",
+                "type": "t_uint32",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 15,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint16",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint16",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint16",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "outputTokenId",
+                "type": "t_uint16",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "outputAmount",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 31,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
           },
           "t_uint8": {
             "label": "uint8",
