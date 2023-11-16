@@ -271,7 +271,7 @@ describe("PlayerNFT", function () {
     expect(metadata.external_url).to.eq(`https://beta.estfor.com/game/journal/${playerId}`);
   });
 
-  it("Create mint non-existent avatar", async function () {
+  it("Mint non-existent avatar", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
 
     const incorrectAvatarId = 500;
