@@ -16,7 +16,7 @@ async function main() {
   );
   const world = await World.attach(WORLD_ADDRESS);
   /*
-  const actions = await allActions.filter(
+  const actions = allActions.filter(
     (action) =>
       action.info.skill === Skill.COMBAT || action.info.skill === Skill.FISHING || action.info.skill === Skill.MINING
   );
@@ -25,7 +25,7 @@ async function main() {
   await tx.wait();
   */
 
-  const actions = await allActions.filter(
+  const actions = allActions.filter(
     (action) =>
       action.actionId === EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE ||
       action.actionId === EstforConstants.ACTION_COMBAT_ROCKHAWK ||

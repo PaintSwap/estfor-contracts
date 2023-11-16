@@ -13,6 +13,7 @@ import "./globals/all.sol";
 contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   event AddInstantActions(InstantActionInput[] instantActionInputs);
   event EditInstantActions(InstantActionInput[] instantActionInputs);
+  event RemoveInstantActions(InstantActionType[] actionTypes, uint16[] actionIds);
   event DoInstantActions(
     uint playerId,
     address from,
@@ -398,6 +399,23 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       _setAction(instantActionInput);
     }
     emit EditInstantActions(_instantActionInputs);
+  }
+
+  function removeActions(
+    InstantActionType[] calldata _actionTypes,
+    uint16[] calldata _instantActionIds
+  ) external onlyOwner {
+    if (_instantActionIds.length != _actionTypes.length) {
+      revert LengthMismatch();
+    }
+
+    for (uint i = 0; i < _instantActionIds.length; ++i) {
+      if (actions[_actionTypes[i]][_instantActionIds[i]].inputTokenId1 == NONE) {
+        revert ActionDoesNotExist();
+      }
+      delete actions[_actionTypes[i]][_instantActionIds[i]];
+    }
+    emit RemoveInstantActions(_actionTypes, _instantActionIds);
   }
 
   // solhint-disable-next-line no-empty-blocks

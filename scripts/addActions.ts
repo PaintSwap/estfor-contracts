@@ -13,7 +13,7 @@ async function main() {
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
   const world = await World.attach(WORLD_ADDRESS);
 
-  const actions = await allActions.filter((action) => action.actionId === EstforConstants.ACTION_FORGING_ITEM);
+  const actions = allActions.filter((action) => action.actionId === EstforConstants.ACTION_FORGING_ITEM);
 
   if (actions.length !== 1) {
     console.log("Cannot find actions");

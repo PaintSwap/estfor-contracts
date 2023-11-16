@@ -323,7 +323,7 @@ async function main() {
   console.log("Add forging action");
 
   // Edit some combat action random reward drops
-  actions = await allActions.filter(
+  actions = allActions.filter(
     (action) =>
       action.actionId === EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE ||
       action.actionId === EstforConstants.ACTION_COMBAT_ROCKHAWK ||
