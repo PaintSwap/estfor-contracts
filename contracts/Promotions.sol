@@ -11,10 +11,28 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {World} from "./World.sol";
 
 import "./globals/items.sol";
+import "./globals/rewards.sol";
 
 contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   using BitMaps for BitMaps.BitMap;
 
+  event PromotionRedeemedV2(
+    address indexed to,
+    uint playerId,
+    Promotion promotion,
+    string redeemCode,
+    uint[] itemTokenIds,
+    uint[] amounts,
+    uint multiDaySet
+  );
+
+  event AddPromotion(PromotionInfo promotionInfo);
+  event EditPromotion(PromotionInfo promotionInfo);
+  event RemovePromotion(Promotion promotion);
+  event ClearPlayerPromotion(uint playerId, Promotion promotion);
+
+  // For previous versions of the events
+  event PromotionAdded(PromotionInfoV1 promotionInfo);
   event PromotionRedeemed(
     address indexed to,
     uint playerId,
@@ -23,9 +41,6 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint[] itemTokenIds,
     uint[] amounts
   );
-
-  event PromotionAdded(PromotionInfo promotionInfo);
-  event PromotionDeleted(Promotion promotion);
 
   error NotOwnerOfPlayer();
   error PromotionAlreadyClaimed();
@@ -39,6 +54,18 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error OracleNotCalled();
   error PromotionNotAdded();
   error MintingOutsideAvailableDate();
+  error InvalidMultidayPromotionTimeInterval();
+  error LengthMismatch();
+  error InvalidStreakBonus();
+  error PickingTooManyItems();
+  error NoNumItemsToPick();
+  error StartTimeMustBeHigherEndTime();
+  error MultidaySpecified();
+  error PromotionNotSet();
+  error MustBeRandomPromotion();
+  error NoItemsToPickFrom();
+  error InvalidNumDaysHitNeededForStreakBonus();
+  error PlayerNotHitEnoughClaims();
 
   struct User {
     bool starterPromotionClaimed;
@@ -47,21 +74,39 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
   struct PromotionInfo {
     Promotion promotion;
+    uint40 startTime;
+    uint40 endTime; // Exclusive
+    uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
+    uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
+    uint8 numItemsToPick; // Number of items to pick
+    bool isRandom; // The selection is random
+    bool isMultiday; // The promotion is multi-day
+    bool isStreakBonusRandom; // If the final day bonus is random
+    uint8 numStreakBonusItemsToPick; // Number of items to pick for the streak bonus
+    uint64 minTotalXP; // Minimum xp required to claim
+    uint16[] streakBonusItemTokenIds;
+    uint32[] streakBonusAmounts;
+    uint16[] itemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+    uint32[] amounts; // Corresponding amounts to the itemTokenIds
+  }
+
+  struct PromotionInfoV1 {
+    Promotion promotion;
     uint40 dateStart;
     uint40 dateEnd; // Exclusive
     uint16 minTotalXP; // Minimum level required to claim
     uint8 numItemsToPick; // Number of items to pick
     bool isRandom; // The selection is random
-    uint16[] itemTokenIds; // Possible itemTokenIds
-    uint32[] amounts;
+    uint16[] itemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+    uint32[] amounts; // Corresponding amounts to the itemTokenIds
   }
 
   enum Promotion {
     NONE,
     STARTER,
     HALLOWEEN_2023,
-    HOLIDAY2, // Just have placeholders for now
-    HOLIDAY3,
+    XMAS_2023,
+    HOLIDAY3, // Just have placeholders for now
     HOLIDAY4,
     HOLIDAY5,
     HOLIDAY6,
@@ -76,8 +121,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   ItemNFT private itemNFT;
   IERC1155 private playerNFT;
   bool private isBeta;
-  mapping(uint playerId => BitMaps.BitMap) private playerPromotionsCompleted;
+  mapping(uint playerId => BitMaps.BitMap) private singlePlayerPromotionsCompleted;
   mapping(Promotion promotion => PromotionInfo) public activePromotions;
+  mapping(uint playerId => mapping(Promotion promotion => uint8[32] daysCompleted))
+    private multidayPlayerPromotionsCompleted; // Total 31 days (1 month), last one indicates if the final day bonus has been claimed
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!IPlayers(itemNFT.players()).isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -137,32 +184,84 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       revert NotOwnerOfPlayer();
     }
 
-    uint[] memory ids = new uint[](5);
+    uint[] memory itemTokenIds = new uint[](5);
     uint[] memory amounts = new uint[](5);
-    ids[0] = XP_BOOST; // 5x XP Boost
+    itemTokenIds[0] = XP_BOOST; // 5x XP Boost
     amounts[0] = 5;
-    ids[1] = SKILL_BOOST; // 3x Skill Boost
+    itemTokenIds[1] = SKILL_BOOST; // 3x Skill Boost
     amounts[1] = 3;
-    ids[2] = COOKED_FEOLA; // 200x Cooked Feola
+    itemTokenIds[2] = COOKED_FEOLA; // 200x Cooked Feola
     amounts[2] = 200;
-    ids[3] = SHADOW_SCROLL; // 300x Shadow Scrolls
+    itemTokenIds[3] = SHADOW_SCROLL; // 300x Shadow Scrolls
     amounts[3] = 300;
-    ids[4] = SECRET_EGG_2; // 1x Special Egg
+    itemTokenIds[4] = SECRET_EGG_2; // 1x Special Egg
     amounts[4] = 1;
     users[_to].starterPromotionClaimed = true;
     users[_to].redeemCodeStarterPromotion = bytes8(bytes(_redeemCode));
 
-    itemNFT.mintBatch(_to, ids, amounts);
-    emit PromotionRedeemed(_to, _playerId, Promotion.STARTER, _redeemCode, ids, amounts);
+    itemNFT.mintBatch(_to, itemTokenIds, amounts);
+    emit PromotionRedeemed(_to, _playerId, Promotion.STARTER, _redeemCode, itemTokenIds, amounts);
+  }
+
+  function mintPromotion(uint _playerId, Promotion _promotion) external isOwnerOfPlayerAndActive(_playerId) {
+    (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) = mintPromotionView(_playerId, _promotion);
+
+    PromotionInfo storage promotionInfo = activePromotions[_promotion];
+    if (promotionInfo.isMultiday) {
+      multidayPlayerPromotionsCompleted[_playerId][_promotion][dayToSet] = 0xFF;
+    } else {
+      // Mark the promotion as completed
+      singlePlayerPromotionsCompleted[_playerId].set(uint(_promotion));
+    }
+
+    if (itemTokenIds.length != 0) {
+      itemNFT.mintBatch(msg.sender, itemTokenIds, amounts);
+    }
+
+    emit PromotionRedeemedV2(msg.sender, _playerId, _promotion, "", itemTokenIds, amounts, dayToSet);
+  }
+
+  function mintPromotionView(
+    uint _playerId,
+    Promotion _promotion
+  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) {
+    PromotionInfo memory promotionInfo = activePromotions[_promotion];
+    if (promotionInfo.isMultiday) {
+      (itemTokenIds, amounts, dayToSet) = _handleMultidayPromotion(_playerId, _promotion);
+    } else {
+      _checkMintPromotion(_playerId, _promotion);
+
+      itemTokenIds = new uint[](promotionInfo.numItemsToPick);
+      amounts = new uint[](promotionInfo.numItemsToPick);
+
+      if (promotionInfo.isRandom) {
+        // Pick a random item from the list, only supports 1 item atm
+        uint numAvailableItems = promotionInfo.itemTokenIds.length;
+        World world = itemNFT.world();
+
+        if (!world.hasRandomWord(block.timestamp - 1 days)) {
+          revert OracleNotCalled();
+        }
+
+        uint randomWord = itemNFT.world().getRandomWord(block.timestamp - 1 days);
+        uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
+        uint index = modifiedRandomWord % numAvailableItems;
+        itemTokenIds[0] = promotionInfo.itemTokenIds[index];
+        amounts[0] = promotionInfo.amounts[index];
+      } else {
+        // Give all items (TODO: Not implemented yet)
+        assert(false);
+      }
+    }
   }
 
   function _checkMintPromotion(uint _playerId, Promotion _promotion) private view {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
-    if (promotionInfo.dateStart > block.timestamp || promotionInfo.dateEnd <= block.timestamp) {
+    if (promotionInfo.startTime > block.timestamp || promotionInfo.endTime <= block.timestamp) {
       revert MintingOutsideAvailableDate();
     }
 
-    if (playerPromotionsCompleted[_playerId].get(uint(_promotion))) {
+    if (singlePlayerPromotionsCompleted[_playerId].get(uint(_promotion))) {
       revert PromotionAlreadyClaimed();
     }
 
@@ -171,66 +270,153 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function mintPromotion(uint _playerId, Promotion _promotion) external isOwnerOfPlayerAndActive(_playerId) {
-    _checkMintPromotion(_playerId, _promotion);
-
-    // Mark the promotion as completed
-    playerPromotionsCompleted[_playerId].set(uint(_promotion));
-
+  function _checkMultidayDailyMintPromotion(uint _playerId, Promotion _promotion) private view {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
-    uint[] memory ids = new uint[](promotionInfo.numItemsToPick);
-    uint[] memory amounts = new uint[](promotionInfo.numItemsToPick);
+    if (promotionInfo.startTime > block.timestamp || promotionInfo.endTime <= block.timestamp) {
+      revert MintingOutsideAvailableDate();
+    }
 
-    if (promotionInfo.isRandom) {
-      // Pick a random item from the list, only supports 1 item atm
-      uint numAvailableItems = promotionInfo.itemTokenIds.length;
-      World world = itemNFT.world();
+    // Have they minted today's promotion already?
+    uint today = (block.timestamp - promotionInfo.startTime) / 1 days;
+    if (multidayPlayerPromotionsCompleted[_playerId][_promotion][today] > 0) {
+      revert PromotionAlreadyClaimed();
+    }
 
-      if (!world.hasRandomWord(block.timestamp - 1 days)) {
-        revert OracleNotCalled();
+    if (promotionInfo.minTotalXP > IPlayers(itemNFT.players()).totalXP(_playerId)) {
+      revert PlayerDoesNotQualify();
+    }
+  }
+
+  function _getTierReward(uint _playerId, World _world) private view returns (uint itemTokenId, uint amount) {
+    // No items specified to choose from so pick a random daily item from the tier above
+    uint totalXP = IPlayers(itemNFT.players()).totalXP(_playerId);
+    uint playerTier;
+
+    // Work out the tier
+    if (totalXP >= TIER_5_DAILY_REWARD_START_XP) {
+      playerTier = 5; // Can't go higher than 5 currently
+    } else if (totalXP >= TIER_4_DAILY_REWARD_START_XP) {
+      playerTier = 5;
+    } else if (totalXP >= TIER_3_DAILY_REWARD_START_XP) {
+      playerTier = 4;
+    } else if (totalXP >= TIER_2_DAILY_REWARD_START_XP) {
+      playerTier = 3;
+    } else {
+      playerTier = 2;
+    }
+
+    if (!_world.hasRandomWord(block.timestamp - 1 days)) {
+      revert OracleNotCalled();
+    }
+    (itemTokenId, amount) = _world.getDailyReward(playerTier, _playerId);
+  }
+
+  // TODO: Only really supporting xmas 2023 so far with tiered rewards
+  function _handleMultidayPromotion(
+    uint _playerId,
+    Promotion _promotion
+  ) private view returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) {
+    PromotionInfo memory promotionInfo = activePromotions[_promotion];
+    if (block.timestamp < promotionInfo.startTime) {
+      revert MintingOutsideAvailableDate();
+    }
+
+    uint today = (block.timestamp - promotionInfo.startTime) / 1 days;
+    uint numPromotionDays = (promotionInfo.endTime - promotionInfo.startTime) / 1 days;
+    World world = itemNFT.world();
+    if (today < numPromotionDays) {
+      itemTokenIds = new uint[](promotionInfo.numItemsToPick);
+      amounts = new uint[](promotionInfo.numItemsToPick);
+
+      _checkMultidayDailyMintPromotion(_playerId, _promotion);
+
+      if (promotionInfo.itemTokenIds.length == 0) {
+        (itemTokenIds[0], amounts[0]) = _getTierReward(_playerId, world);
+      } else {
+        // Not supported yet
+        assert(false);
       }
 
-      uint randomWord = itemNFT.world().getRandomWord(block.timestamp - 1 days);
-      uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
-      uint index = modifiedRandomWord % numAvailableItems;
-      ids[0] = promotionInfo.itemTokenIds[index];
-      amounts[0] = promotionInfo.amounts[index];
+      dayToSet = today;
+    } else if (today - numPromotionDays < promotionInfo.numDaysClaimablePeriodStreakBonus) {
+      // Check final day bonus hasn't been claimed and is within the claim period
+      if (multidayPlayerPromotionsCompleted[_playerId][_promotion][31] > 0) {
+        revert PromotionAlreadyClaimed();
+      }
+
+      // Have they actually claimed enough?
+      uint totalClaimed;
+      for (uint i; i < multidayPlayerPromotionsCompleted[_playerId][_promotion].length; ++i) {
+        if (multidayPlayerPromotionsCompleted[_playerId][_promotion][i] > 0) {
+          ++totalClaimed;
+        }
+      }
+
+      if (totalClaimed < promotionInfo.numDaysHitNeededForStreakBonus) {
+        revert PlayerNotHitEnoughClaims();
+      }
+
+      itemTokenIds = new uint[](promotionInfo.numStreakBonusItemsToPick);
+      amounts = new uint[](promotionInfo.numStreakBonusItemsToPick);
+      dayToSet = 31;
+
+      // Mint the final day bonus
+      if (promotionInfo.isStreakBonusRandom) {
+        // Pick a random item from the list, only supports 1 item atm
+        uint numAvailableItems = promotionInfo.streakBonusItemTokenIds.length;
+        if (!world.hasRandomWord(promotionInfo.endTime - 1)) {
+          revert OracleNotCalled();
+        }
+
+        // The streak bonus random reward should be based on the last day of the promotion
+        uint randomWord = itemNFT.world().getRandomWord(promotionInfo.endTime - 1);
+        uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
+        uint index = modifiedRandomWord % numAvailableItems;
+        itemTokenIds[0] = promotionInfo.streakBonusItemTokenIds[index];
+        amounts[0] = promotionInfo.streakBonusAmounts[index];
+      } else {
+        // Give all items (TODO: Not implemented yet)
+        assert(false);
+      }
     } else {
-      // Give all items (TODO: Not implemented yet)
-      assert(false);
+      revert MintingOutsideAvailableDate();
     }
-
-    if (ids.length != 0) {
-      itemNFT.mintBatch(msg.sender, ids, amounts);
-    }
-    emit PromotionRedeemed(msg.sender, _playerId, _promotion, "", ids, amounts);
   }
 
+  // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.
   function hasCompletedPromotion(uint _playerId, Promotion _promotion) external view returns (bool) {
-    return playerPromotionsCompleted[_playerId].get(uint(_promotion));
+    PromotionInfo memory promotionInfo = activePromotions[_promotion];
+    if (promotionInfo.isMultiday) {
+      if (block.timestamp < promotionInfo.startTime) {
+        return false;
+      }
+
+      uint today = (block.timestamp - promotionInfo.startTime) / 1 days;
+      uint numPromotionDays = (promotionInfo.endTime - promotionInfo.startTime) / 1 days;
+      if (today <= numPromotionDays) {
+        return multidayPlayerPromotionsCompleted[_playerId][_promotion][today] > 0;
+      }
+
+      return multidayPlayerPromotionsCompleted[_playerId][_promotion][31] > 0;
+    }
+    return singlePlayerPromotionsCompleted[_playerId].get(uint(_promotion));
   }
 
-  function testClearPromotionalPack(address _toClear) external isAdminAndBeta {
-    delete users[_toClear];
-  }
-
-  function addPromotion(PromotionInfo calldata _promotionInfo) external onlyOwner {
-    if (
-      _promotionInfo.itemTokenIds.length == 0 || _promotionInfo.itemTokenIds.length != _promotionInfo.amounts.length
-    ) {
-      revert InvalidPromotion();
+  function _checkAddingGenericPromotion(PromotionInfo calldata _promotionInfo) private pure {
+    if (_promotionInfo.itemTokenIds.length != _promotionInfo.amounts.length) {
+      revert LengthMismatch();
     }
 
-    if (_promotionInfo.numItemsToPick > _promotionInfo.itemTokenIds.length) {
-      revert InvalidPromotion();
+    if (_promotionInfo.promotion == Promotion.NONE) {
+      revert PromotionNotSet();
+    }
+
+    if (_promotionInfo.startTime > _promotionInfo.endTime) {
+      revert StartTimeMustBeHigherEndTime();
     }
 
     if (_promotionInfo.numItemsToPick == 0) {
-      revert InvalidPromotion();
-    }
-
-    if (_promotionInfo.dateStart >= _promotionInfo.dateEnd) {
-      revert InvalidPromotion();
+      revert NoNumItemsToPick();
     }
 
     if (_promotionInfo.numItemsToPick != 1) {
@@ -240,21 +426,120 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
     if (!_promotionInfo.isRandom) {
       // Special handling
-      revert InvalidPromotion();
+      revert MustBeRandomPromotion();
+    }
+  }
+
+  // Precondition that the promotion is multiday
+  function _checkAddingMultidayMintPromotion(PromotionInfo calldata _promotionInfo) private pure {
+    if (_promotionInfo.streakBonusItemTokenIds.length != _promotionInfo.streakBonusAmounts.length) {
+      revert LengthMismatch();
     }
 
-    if (_promotionInfo.promotion == Promotion.NONE) {
-      revert InvalidPromotion();
+    bool hasStreakBonus = _promotionInfo.numDaysClaimablePeriodStreakBonus != 0;
+
+    // start and endTime must be factors of 24 hours apart
+    if ((_promotionInfo.endTime - _promotionInfo.startTime) % 1 days != 0) {
+      revert InvalidMultidayPromotionTimeInterval();
     }
 
-    // Already added
+    if (hasStreakBonus) {
+      if (
+        _promotionInfo.numStreakBonusItemsToPick == 0 ||
+        _promotionInfo.streakBonusItemTokenIds.length == 0 ||
+        _promotionInfo.numDaysHitNeededForStreakBonus == 0
+      ) {
+        revert InvalidStreakBonus();
+      }
+
+      if (
+        _promotionInfo.numDaysHitNeededForStreakBonus > ((_promotionInfo.endTime - _promotionInfo.startTime) / 1 days)
+      ) {
+        revert InvalidNumDaysHitNeededForStreakBonus();
+      }
+
+      if (!_promotionInfo.isStreakBonusRandom) {
+        revert InvalidStreakBonus();
+      }
+    } else {
+      // No streak bonus
+      if (
+        _promotionInfo.streakBonusItemTokenIds.length != 0 ||
+        _promotionInfo.numStreakBonusItemsToPick != 0 ||
+        _promotionInfo.numDaysHitNeededForStreakBonus != 0
+      ) {
+        revert InvalidStreakBonus();
+      }
+
+      if (_promotionInfo.isStreakBonusRandom) {
+        revert InvalidStreakBonus();
+      }
+    }
+
+    if (_promotionInfo.numStreakBonusItemsToPick > _promotionInfo.streakBonusItemTokenIds.length) {
+      revert PickingTooManyItems();
+    }
+  }
+
+  function _checkAddingSinglePromotion(PromotionInfo calldata _promotionInfo) private pure {
+    // Should not have any multi-day promotion specific fields set
+    if (
+      _promotionInfo.numDaysHitNeededForStreakBonus != 0 ||
+      _promotionInfo.numDaysClaimablePeriodStreakBonus != 0 ||
+      _promotionInfo.isStreakBonusRandom ||
+      _promotionInfo.numStreakBonusItemsToPick != 0 ||
+      _promotionInfo.streakBonusItemTokenIds.length != 0 ||
+      _promotionInfo.streakBonusAmounts.length != 0
+    ) {
+      revert MultidaySpecified();
+    }
+
+    if (_promotionInfo.itemTokenIds.length == 0) {
+      revert NoItemsToPickFrom();
+    }
+
+    if (_promotionInfo.numItemsToPick > _promotionInfo.itemTokenIds.length) {
+      revert PickingTooManyItems();
+    }
+  }
+
+  function testClearPromotionalPack(address _toClear) external isAdminAndBeta {
+    delete users[_toClear];
+  }
+
+  function testClearPlayerPromotion(uint _playerId, Promotion _promotion) external isAdminAndBeta {
+    singlePlayerPromotionsCompleted[_playerId].unset(uint(_promotion));
+    delete multidayPlayerPromotionsCompleted[_playerId][_promotion];
+    emit ClearPlayerPromotion(_playerId, _promotion);
+  }
+
+  function addPromotion(PromotionInfo calldata _promotionInfo) external onlyOwner {
+    _checkAddingGenericPromotion(_promotionInfo);
     if (activePromotions[_promotionInfo.promotion].promotion != Promotion.NONE) {
       revert PromotionAlreadyAdded();
     }
 
-    activePromotions[_promotionInfo.promotion] = _promotionInfo;
+    if (_promotionInfo.isMultiday) {
+      _checkAddingMultidayMintPromotion(_promotionInfo);
+    } else {
+      _checkAddingSinglePromotion(_promotionInfo);
+    }
 
-    emit PromotionAdded(_promotionInfo);
+    activePromotions[_promotionInfo.promotion] = _promotionInfo;
+    emit AddPromotion(_promotionInfo);
+  }
+
+  function editPromotion(PromotionInfo calldata _promotionInfo) external onlyOwner {
+    _checkAddingGenericPromotion(_promotionInfo);
+
+    if (_promotionInfo.isMultiday) {
+      _checkAddingMultidayMintPromotion(_promotionInfo);
+    } else {
+      _checkAddingSinglePromotion(_promotionInfo);
+    }
+
+    activePromotions[_promotionInfo.promotion] = _promotionInfo;
+    emit EditPromotion(_promotionInfo);
   }
 
   function removePromotion(Promotion _promotion) external onlyOwner {
@@ -262,7 +547,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       revert PromotionNotAdded();
     }
     delete activePromotions[_promotion];
-    emit PromotionDeleted(_promotion);
+    emit RemovePromotion(_promotion);
   }
 
   // solhint-disable-next-line no-empty-blocks
