@@ -17,6 +17,8 @@ async function main() {
     numItemsToPick: 1,
     isRandom: true,
     isMultiday: false,
+    brushCost: "0",
+    evolvedHeroOnly: false,
     numDaysClaimablePeriodStreakBonus: 0,
     numDaysHitNeededForStreakBonus: 0,
     isStreakBonusRandom: false,

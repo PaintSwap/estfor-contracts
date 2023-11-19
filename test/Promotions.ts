@@ -14,7 +14,7 @@ import {
   createPlayer,
 } from "../scripts/utils";
 
-describe.only("Promotions", function () {
+describe("Promotions", function () {
   describe("1kin", function () {
     it("Only promotional admin can mint", async function () {
       const {promotions, alice, bob, playerId} = await loadFixture(playersFixture);
@@ -81,6 +81,8 @@ describe.only("Promotions", function () {
         numDaysHitNeededForStreakBonus: 0,
         isStreakBonusRandom: false,
         numStreakBonusItemsToPick: 0,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         streakBonusItemTokenIds: [],
         streakBonusAmounts: [],
         itemTokenIds: [
@@ -122,6 +124,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: false,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
         isStreakBonusRandom: false,
@@ -148,6 +152,60 @@ describe.only("Promotions", function () {
 
       const activePromotion = await promotions.activePromotions(promotion.promotion);
       expect(activePromotion.startTime).to.eq(0);
+    });
+
+    it("Evolved hero only promotion", async function () {
+      const {
+        promotions,
+        playerId,
+        playerNFT,
+        brush,
+        upgradePlayerBrushPrice,
+        origName,
+        alice,
+        world,
+        mockOracleClient,
+      } = await loadFixture(playersFixture);
+      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+
+      const promotion = {
+        promotion: Promotion.HALLOWEEN_2023,
+        startTime: NOW,
+        endTime: NOW + 10000,
+        minTotalXP: 0,
+        numItemsToPick: 1,
+        isRandom: true,
+        isMultiday: false,
+        brushCost: "0",
+        evolvedHeroOnly: true,
+        numDaysClaimablePeriodStreakBonus: 0,
+        numDaysHitNeededForStreakBonus: 0,
+        isStreakBonusRandom: false,
+        numStreakBonusItemsToPick: 0,
+        streakBonusItemTokenIds: [],
+        streakBonusAmounts: [],
+        itemTokenIds: [
+          EstforConstants.HALLOWEEN_BONUS_1,
+          EstforConstants.HALLOWEEN_BONUS_2,
+          EstforConstants.HALLOWEEN_BONUS_3,
+        ],
+        amounts: [1, 1, 1],
+      };
+
+      await promotions.addPromotion(promotion);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await expect(
+        promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
+      ).to.be.revertedWithCustomError(promotions, "PlayerNotEvolved");
+
+      // Evolve player
+      await brush.mint(alice.address, upgradePlayerBrushPrice);
+      await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+      const discord = "";
+      const twitter = "";
+      const telegram = "";
+      await playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, true);
+      await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     });
   });
 
@@ -177,6 +235,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: false,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
         isStreakBonusRandom: false,
@@ -211,6 +271,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: false,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -250,6 +312,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: false,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -286,6 +350,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: false,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -317,6 +383,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: false,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -348,6 +416,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: false,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -383,6 +453,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: false,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -414,6 +486,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: false,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -431,6 +505,51 @@ describe.only("Promotions", function () {
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "PromotionAlreadyClaimed");
+      });
+
+      it("Brush cost to enter promotion", async function () {
+        const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(
+          playersFixture
+        );
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+
+        const promotion = {
+          promotion: Promotion.HALLOWEEN_2023,
+          startTime: NOW,
+          endTime: NOW + 10000,
+          minTotalXP: 0,
+          numItemsToPick: 1,
+          isRandom: true,
+          isMultiday: false,
+          brushCost: ethers.utils.parseEther("1").toString(),
+          evolvedHeroOnly: false,
+          numDaysClaimablePeriodStreakBonus: 0,
+          numDaysHitNeededForStreakBonus: 0,
+          isStreakBonusRandom: false,
+          numStreakBonusItemsToPick: 0,
+          streakBonusItemTokenIds: [],
+          streakBonusAmounts: [],
+          itemTokenIds: [
+            EstforConstants.HALLOWEEN_BONUS_1,
+            EstforConstants.HALLOWEEN_BONUS_2,
+            EstforConstants.HALLOWEEN_BONUS_3,
+          ],
+          amounts: [1, 1, 1],
+        };
+
+        await promotions.addPromotion(promotion);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("1"));
+        await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.be.revertedWith(
+          "ERC20: transfer amount exceeds balance"
+        );
+
+        await brush.mint(alice.address, ethers.utils.parseEther("1"));
+        await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
+
+        expect(await brush.balanceOf(alice.address)).to.eq(0);
+        expect(await brush.balanceOf(shop.address)).to.eq(ethers.utils.parseEther("0.5"));
+        expect(await brush.balanceOf(dev.address)).to.eq(ethers.utils.parseEther("0.5"));
       });
     });
   });
@@ -455,6 +574,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: true,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
           isStreakBonusRandom: false,
@@ -481,6 +602,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: true,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
         isStreakBonusRandom: false,
@@ -578,6 +701,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: true,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
         isStreakBonusRandom: false,
@@ -605,6 +730,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: true,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
         isStreakBonusRandom: true,
@@ -637,6 +764,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: true,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
         isStreakBonusRandom: true,
@@ -673,6 +802,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: true,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
         isStreakBonusRandom: true,
@@ -704,6 +835,8 @@ describe.only("Promotions", function () {
         numItemsToPick: 1,
         isRandom: true,
         isMultiday: true,
+        brushCost: "0",
+        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
         isStreakBonusRandom: true,
@@ -732,6 +865,8 @@ describe.only("Promotions", function () {
       numItemsToPick: number; // Number of items to pick
       isRandom: boolean; // The selection is random
       isMultiday: boolean; // The promotion is multi-day
+      brushCost: string; // The brush cost for the promotion
+      evolvedHeroOnly: boolean; // If the promotion is only for evolved heroes
       isStreakBonusRandom: boolean; // If the final day bonus is random
       numStreakBonusItemsToPick: number; // Number of items to pick for the streak bonus
       minTotalXP: number; // Minimum xp required to claim
@@ -752,6 +887,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: true,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 1,
           isStreakBonusRandom: true,
@@ -882,6 +1019,8 @@ describe.only("Promotions", function () {
           numItemsToPick: 1,
           isRandom: true,
           isMultiday: true,
+          brushCost: "0",
+          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 2,
           isStreakBonusRandom: true,
@@ -1058,6 +1197,51 @@ describe.only("Promotions", function () {
         expect(await promotions.hasCompletedPromotion(playerId, Promotion.XMAS_2023)).to.eq(true);
         expect((await itemNFT.balanceOf(alice.address, itemTokenId)).toNumber()).to.eq(1);
       });
+    });
+
+    it("Brush cost to enter promotion", async function () {
+      const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(
+        playersFixture
+      );
+      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+
+      const promotion = {
+        promotion: Promotion.HALLOWEEN_2023,
+        startTime: NOW,
+        endTime: NOW + 10000,
+        minTotalXP: 0,
+        numItemsToPick: 1,
+        isRandom: true,
+        isMultiday: false,
+        brushCost: ethers.utils.parseEther("1").toString(),
+        evolvedHeroOnly: false,
+        numDaysClaimablePeriodStreakBonus: 0,
+        numDaysHitNeededForStreakBonus: 0,
+        isStreakBonusRandom: false,
+        numStreakBonusItemsToPick: 0,
+        streakBonusItemTokenIds: [],
+        streakBonusAmounts: [],
+        itemTokenIds: [
+          EstforConstants.HALLOWEEN_BONUS_1,
+          EstforConstants.HALLOWEEN_BONUS_2,
+          EstforConstants.HALLOWEEN_BONUS_3,
+        ],
+        amounts: [1, 1, 1],
+      };
+
+      await promotions.addPromotion(promotion);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("1"));
+      await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.be.revertedWith(
+        "ERC20: transfer amount exceeds balance"
+      );
+
+      await brush.mint(alice.address, ethers.utils.parseEther("1"));
+      await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
+
+      expect(await brush.balanceOf(alice.address)).to.eq(0);
+      expect(await brush.balanceOf(shop.address)).to.eq(ethers.utils.parseEther("0.5"));
+      expect(await brush.balanceOf(dev.address)).to.eq(ethers.utils.parseEther("0.5"));
     });
   });
 });

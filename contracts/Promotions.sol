@@ -8,6 +8,8 @@ import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {PlayerNFT} from "./PlayerNFT.sol";
 import {World} from "./World.sol";
 
 import "./globals/items.sol";
@@ -26,8 +28,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint multiDaySet
   );
 
-  event AddPromotion(PromotionInfo promotionInfo);
-  event EditPromotion(PromotionInfo promotionInfo);
+  event AddPromotion(PromotionInfoInput promotionInfo);
+  event EditPromotion(PromotionInfoInput promotionInfo);
   event RemovePromotion(Promotion promotion);
   event ClearPlayerPromotion(uint playerId, Promotion promotion);
 
@@ -66,24 +68,51 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error NoItemsToPickFrom();
   error InvalidNumDaysHitNeededForStreakBonus();
   error PlayerNotHitEnoughClaims();
+  error InvalidBrushCost();
+  error PlayerNotEvolved();
+  error NotEnoughBrush();
 
   struct User {
     bool starterPromotionClaimed;
     bytes8 redeemCodeStarterPromotion;
   }
 
+  struct PromotionInfoInput {
+    Promotion promotion;
+    uint40 startTime;
+    uint40 endTime; // Exclusive
+    uint8 numItemsToPick; // Number of items to pick
+    bool isRandom; // The selection is random
+    uint64 minTotalXP; // Minimum xp required to claim
+    bool evolvedHeroOnly; // Only allow evolved heroes to claim
+    // Multiday specific
+    bool isMultiday; // The promotion is multi-day
+    uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
+    uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
+    bool isStreakBonusRandom; // If the final day bonus is random
+    uint8 numStreakBonusItemsToPick; // Number of items to pick for the streak bonus
+    uint brushCost; // Cost in brush to mint the promotion (in ether), max 16mil
+    uint16[] streakBonusItemTokenIds;
+    uint32[] streakBonusAmounts;
+    uint16[] itemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+    uint32[] amounts; // Corresponding amounts to the itemTokenIds
+  }
+
   struct PromotionInfo {
     Promotion promotion;
     uint40 startTime;
     uint40 endTime; // Exclusive
-    uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
-    uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
     uint8 numItemsToPick; // Number of items to pick
     bool isRandom; // The selection is random
+    uint64 minTotalXP; // Minimum xp required to claim#
+    bool evolvedHeroOnly; // Only allow evolved heroes to claim
+    uint24 brushCost; // Cost in brush to mint the promotion (in ether), max 16mil
+    // Multiday specific
     bool isMultiday; // The promotion is multi-day
+    uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
+    uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
     bool isStreakBonusRandom; // If the final day bonus is random
     uint8 numStreakBonusItemsToPick; // Number of items to pick for the streak bonus
-    uint64 minTotalXP; // Minimum xp required to claim
     uint16[] streakBonusItemTokenIds;
     uint32[] streakBonusAmounts;
     uint16[] itemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
@@ -119,7 +148,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   mapping(address user => User) public users;
   AdminAccess private adminAccess;
   ItemNFT private itemNFT;
-  IERC1155 private playerNFT;
+  PlayerNFT private playerNFT;
   bool private isBeta;
   mapping(uint playerId => BitMaps.BitMap) private singlePlayerPromotionsCompleted;
   mapping(Promotion promotion => PromotionInfo) public activePromotions;
@@ -141,7 +170,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   function initialize(
     AdminAccess _adminAccess,
     ItemNFT _itemNFT,
-    IERC1155 _playerNFT,
+    PlayerNFT _playerNFT,
     bool _isBeta
   ) external initializer {
     __UUPSUpgradeable_init();
@@ -206,7 +235,17 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   function mintPromotion(uint _playerId, Promotion _promotion) external isOwnerOfPlayerAndActive(_playerId) {
     (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) = mintPromotionView(_playerId, _promotion);
 
+    // Check they have paid if this is a paid promotion
     PromotionInfo storage promotionInfo = activePromotions[_promotion];
+
+    if (!hasClaimedAny(_playerId, _promotion)) {
+      if (promotionInfo.brushCost > 0) {
+        _pay(promotionInfo.brushCost * 1 ether);
+      } else if (promotionInfo.evolvedHeroOnly && !IPlayers(itemNFT.players()).isPlayerUpgraded(_playerId)) {
+        revert PlayerNotEvolved();
+      }
+    }
+
     if (promotionInfo.isMultiday) {
       multidayPlayerPromotionsCompleted[_playerId][_promotion][dayToSet] = 0xFF;
     } else {
@@ -226,6 +265,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     Promotion _promotion
   ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
+
     if (promotionInfo.isMultiday) {
       (itemTokenIds, amounts, dayToSet) = _handleMultidayPromotion(_playerId, _promotion);
     } else {
@@ -383,6 +423,19 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
+  function _pay(uint _brushCost) private {
+    // Pay
+    IBrushToken brush = playerNFT.brush();
+    // Send half to the pool
+    if (!brush.transferFrom(msg.sender, playerNFT.pool(), _brushCost / 2)) {
+      revert NotEnoughBrush();
+    }
+    // Send half to the dev address
+    if (!brush.transferFrom(msg.sender, playerNFT.dev(), _brushCost / 2)) {
+      revert NotEnoughBrush();
+    }
+  }
+
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.
   function hasCompletedPromotion(uint _playerId, Promotion _promotion) external view returns (bool) {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
@@ -402,7 +455,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     return singlePlayerPromotionsCompleted[_playerId].get(uint(_promotion));
   }
 
-  function _checkAddingGenericPromotion(PromotionInfo calldata _promotionInfo) private pure {
+  function _checkAddingGenericPromotion(PromotionInfoInput calldata _promotionInfo) private pure {
     if (_promotionInfo.itemTokenIds.length != _promotionInfo.amounts.length) {
       revert LengthMismatch();
     }
@@ -428,10 +481,15 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       // Special handling
       revert MustBeRandomPromotion();
     }
+
+    // Check brush input is valid
+    if (_promotionInfo.brushCost % 1 ether != 0) {
+      revert InvalidBrushCost();
+    }
   }
 
   // Precondition that the promotion is multiday
-  function _checkAddingMultidayMintPromotion(PromotionInfo calldata _promotionInfo) private pure {
+  function _checkAddingMultidayMintPromotion(PromotionInfoInput calldata _promotionInfo) private pure {
     if (_promotionInfo.streakBonusItemTokenIds.length != _promotionInfo.streakBonusAmounts.length) {
       revert LengthMismatch();
     }
@@ -481,7 +539,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _checkAddingSinglePromotion(PromotionInfo calldata _promotionInfo) private pure {
+  function _checkAddingSinglePromotion(PromotionInfoInput calldata _promotionInfo) private pure {
     // Should not have any multi-day promotion specific fields set
     if (
       _promotionInfo.numDaysHitNeededForStreakBonus != 0 ||
@@ -503,6 +561,30 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
+  function _packPromotionInfo(
+    PromotionInfoInput calldata _promotionInfoInput
+  ) private pure returns (PromotionInfo memory promotionInfo) {
+    promotionInfo = PromotionInfo({
+      promotion: _promotionInfoInput.promotion,
+      startTime: _promotionInfoInput.startTime,
+      endTime: _promotionInfoInput.endTime,
+      numItemsToPick: _promotionInfoInput.numItemsToPick,
+      isRandom: _promotionInfoInput.isRandom,
+      minTotalXP: _promotionInfoInput.minTotalXP,
+      evolvedHeroOnly: _promotionInfoInput.evolvedHeroOnly,
+      brushCost: uint24(_promotionInfoInput.brushCost / 1 ether),
+      isMultiday: _promotionInfoInput.isMultiday,
+      numDaysHitNeededForStreakBonus: _promotionInfoInput.numDaysHitNeededForStreakBonus,
+      numDaysClaimablePeriodStreakBonus: _promotionInfoInput.numDaysClaimablePeriodStreakBonus,
+      numStreakBonusItemsToPick: _promotionInfoInput.numStreakBonusItemsToPick,
+      isStreakBonusRandom: _promotionInfoInput.isStreakBonusRandom,
+      streakBonusItemTokenIds: _promotionInfoInput.streakBonusItemTokenIds,
+      streakBonusAmounts: _promotionInfoInput.streakBonusAmounts,
+      itemTokenIds: _promotionInfoInput.itemTokenIds,
+      amounts: _promotionInfoInput.amounts
+    });
+  }
+
   function testClearPromotionalPack(address _toClear) external isAdminAndBeta {
     delete users[_toClear];
   }
@@ -513,7 +595,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     emit ClearPlayerPromotion(_playerId, _promotion);
   }
 
-  function addPromotion(PromotionInfo calldata _promotionInfo) external onlyOwner {
+  function addPromotion(PromotionInfoInput calldata _promotionInfo) external onlyOwner {
     _checkAddingGenericPromotion(_promotionInfo);
     if (activePromotions[_promotionInfo.promotion].promotion != Promotion.NONE) {
       revert PromotionAlreadyAdded();
@@ -525,11 +607,11 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       _checkAddingSinglePromotion(_promotionInfo);
     }
 
-    activePromotions[_promotionInfo.promotion] = _promotionInfo;
+    activePromotions[_promotionInfo.promotion] = _packPromotionInfo(_promotionInfo);
     emit AddPromotion(_promotionInfo);
   }
 
-  function editPromotion(PromotionInfo calldata _promotionInfo) external onlyOwner {
+  function editPromotion(PromotionInfoInput calldata _promotionInfo) external onlyOwner {
     _checkAddingGenericPromotion(_promotionInfo);
 
     if (_promotionInfo.isMultiday) {
@@ -538,8 +620,21 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       _checkAddingSinglePromotion(_promotionInfo);
     }
 
-    activePromotions[_promotionInfo.promotion] = _promotionInfo;
+    activePromotions[_promotionInfo.promotion] = _packPromotionInfo(_promotionInfo);
     emit EditPromotion(_promotionInfo);
+  }
+
+  function hasClaimedAny(uint _playerId, Promotion _promotion) public view returns (bool) {
+    PromotionInfo storage promotionInfo = activePromotions[_promotion];
+    if (promotionInfo.isMultiday) {
+      bool anyClaimed;
+      uint8[32] storage daysCompleted = multidayPlayerPromotionsCompleted[_playerId][_promotion];
+      assembly ("memory-safe") {
+        anyClaimed := not(eq(sload(daysCompleted.slot), 0))
+      }
+      return anyClaimed;
+    }
+    return singlePlayerPromotionsCompleted[_playerId].get(uint(_promotion));
   }
 
   function removePromotion(Promotion _promotion) external onlyOwner {

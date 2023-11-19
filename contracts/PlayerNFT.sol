@@ -88,16 +88,16 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   mapping(uint playerId => string name) public names;
   mapping(string name => bool exists) public lowercaseNames;
 
-  IBrushToken private brush;
+  IBrushToken public brush;
   IPlayers private players;
-  address private pool;
+  address public pool;
 
   address private royaltyReceiver;
   uint8 private royaltyFee; // base 1000, highest is 25.5
   uint72 public editNameCost; // Max is 4700 BRUSH
   bool public isBeta;
 
-  address private dev;
+  address public dev;
   uint80 upgradePlayerCost; // Max 1.2 million brush
 
   bytes32 private merkleRoot; // Unused now (was for alpha/beta whitelisting)
