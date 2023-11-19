@@ -293,21 +293,19 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     }
   }
 
-  // This doesn't really belong here, just for consistency, but also untested
+  // This doesn't really belong here, just for consistency
   function sellBrush(address _to, uint _brushAmount, uint _minFTM, bool _useExactETH) external {
-    revert NotSupported();
-    /*
     if (_brushAmount == 0) {
       revert InvalidBrushAmount();
     }
 
     uint deadline = block.timestamp.add(10 minutes);
-    // Sell brush and send it back to the user
+    // Sell brush and send ftm back to the user
     address[] memory sellPath = new address[](2);
     sellPath[0] = buyPath2;
     sellPath[1] = buyPath1;
 
-    IERC20(buyPath2).transferFrom(msg.sender, address(router), _brushAmount);
+    IERC20(buyPath2).transferFrom(msg.sender, address(this), _brushAmount);
 
     if (_useExactETH) {
       uint amountOut = _minFTM;
@@ -317,7 +315,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       uint amountIn = _brushAmount;
       uint amountOutMin = _minFTM;
       router.swapExactTokensForETH(amountIn, amountOutMin, sellPath, _to, deadline);
-    } */
+    }
   }
 
   function processQuestsView(
