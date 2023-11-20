@@ -71,21 +71,23 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error InvalidBrushCost();
   error PlayerNotEvolved();
   error NotEnoughBrush();
-
-  struct User {
-    bool starterPromotionClaimed;
-    bytes8 redeemCodeStarterPromotion;
-  }
+  error MustBeAdminOnlyPromotion();
 
   struct PromotionInfoInput {
     Promotion promotion;
     uint40 startTime;
     uint40 endTime; // Exclusive
     uint8 numDailyRandomItemsToPick; // Number of items to pick
-    uint64 minTotalXP; // Minimum xp required to claim
-    bool evolvedHeroOnly; // Only allow evolved heroes to claim
+    uint40 minTotalXP; // Minimum xp required to claim
     uint brushCost; // Cost in brush to start the promotion, max 16mil
+    // Special promotion specific (like 1kin)
+    uint8 redeemCodeLength; // Length of the redeem code
     bool adminOnly; // Only admins can mint the promotion, like for 1kin (Not used yet)
+    bool promotionTiedToUser; // If the promotion is tied to a user
+    bool promotionTiedToPlayer; // If the promotion is tied to the player
+    bool promotionMustOwnPlayer; // Must own the player to get the promotion
+    // Evolution specific
+    bool evolvedHeroOnly; // Only allow evolved heroes to claim
     // Multiday specific
     bool isMultiday; // The promotion is multi-day
     uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
@@ -110,10 +112,16 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint40 startTime;
     uint40 endTime; // Exclusive
     uint8 numDailyRandomItemsToPick; // Number of items to pick
-    uint64 minTotalXP; // Minimum xp required to claim
-    bool evolvedHeroOnly; // Only allow evolved heroes to claim
+    uint40 minTotalXP; // Minimum xp required to claim
     uint24 brushCost; // Cost in brush to mint the promotion (in ether), max 16mil
-    bool adminOnly; // Only admins can mint the promotion, like for 1kin (Not used yet)
+    // Special promotion specific (like 1kin), could pack these these later
+    uint8 redeemCodeLength; // Length of the redeem code
+    bool adminOnly; // Only admins can mint the promotion, like for 1kin
+    bool promotionTiedToUser; // If the promotion is tied to a user
+    bool promotionTiedToPlayer; // If the promotion is tied to the player
+    bool promotionMustOwnPlayer; // Must own the player to get the promotion
+    // Evolution specific
+    bool evolvedHeroOnly; // Only allow evolved heroes to claim
     // Multiday specific
     bool isMultiday; // The promotion is multi-day
     uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
@@ -159,7 +167,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     HOLIDAY10
   }
 
-  mapping(address user => User) public users;
+  mapping(address user => uint noLongerUsed) public users; // No longer used
   AdminAccess private adminAccess;
   ItemNFT private itemNFT;
   PlayerNFT private playerNFT;
@@ -168,6 +176,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   mapping(Promotion promotion => PromotionInfo) public activePromotions;
   mapping(uint playerId => mapping(Promotion promotion => uint8[32] daysCompleted))
     private multidayPlayerPromotionsCompleted; // Total 31 days (1 month), last one indicates if the final day bonus has been claimed
+
+  // Special promotions
+  mapping(address user => BitMaps.BitMap) private userPromotionsClaimed;
+  mapping(uint playerId => BitMaps.BitMap) private playerPromotionsClaimed;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!IPlayers(itemNFT.players()).isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -210,12 +222,13 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     _;
   }
 
+  // Keep for backwards compatibility for now
   function mintStarterPromotionalPack(
     address _to,
     uint _playerId,
     string calldata _redeemCode
   ) external onlyPromotionalAdmin {
-    if (users[_to].starterPromotionClaimed) {
+    if (userPromotionsClaimed[_to].get(uint8(Promotion.STARTER))) {
       revert PromotionAlreadyClaimed();
     }
 
@@ -239,11 +252,56 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     amounts[3] = 300;
     itemTokenIds[4] = SECRET_EGG_2; // 1x Special Egg
     amounts[4] = 1;
-    users[_to].starterPromotionClaimed = true;
-    users[_to].redeemCodeStarterPromotion = bytes8(bytes(_redeemCode));
+
+    userPromotionsClaimed[_to].set(uint8(Promotion.STARTER));
 
     itemNFT.mintBatch(_to, itemTokenIds, amounts);
     emit PromotionRedeemed(_to, _playerId, Promotion.STARTER, _redeemCode, itemTokenIds, amounts);
+  }
+
+  function adminMintPromotionalPack(
+    address _to,
+    uint _playerId,
+    string calldata _redeemCode,
+    Promotion _promotion
+  ) external onlyPromotionalAdmin {
+    PromotionInfo storage promotionInfo = activePromotions[_promotion];
+    if (!promotionInfo.adminOnly) {
+      revert MustBeAdminOnlyPromotion();
+    }
+
+    if (promotionInfo.promotionTiedToUser) {
+      if (userPromotionsClaimed[_to].get(uint8(_promotion))) {
+        revert PromotionAlreadyClaimed();
+      }
+      userPromotionsClaimed[_to].set(uint8(_promotion));
+    }
+
+    if (promotionInfo.promotionTiedToPlayer) {
+      if (playerPromotionsClaimed[_playerId].get(uint8(_promotion))) {
+        revert PromotionAlreadyClaimed();
+      }
+      playerPromotionsClaimed[_playerId].set(uint8(_promotion));
+    }
+
+    if (bytes(_redeemCode).length != promotionInfo.redeemCodeLength) {
+      revert InvalidRedeemCode();
+    }
+
+    if (promotionInfo.promotionMustOwnPlayer && playerNFT.balanceOf(_to, _playerId) != 1) {
+      revert NotOwnerOfPlayer();
+    }
+
+    uint[] memory itemTokenIds = new uint[](promotionInfo.guaranteedItemTokenIds.length);
+    uint[] memory amounts = new uint[](promotionInfo.guaranteedItemTokenIds.length);
+
+    for (uint i; i < promotionInfo.guaranteedItemTokenIds.length; ++i) {
+      itemTokenIds[i] = promotionInfo.guaranteedItemTokenIds[i];
+      amounts[i] = promotionInfo.guaranteedAmounts[i];
+    }
+
+    itemNFT.mintBatch(_to, itemTokenIds, amounts);
+    emit PromotionRedeemed(_to, _playerId, _promotion, _redeemCode, itemTokenIds, amounts);
   }
 
   function mintPromotion(uint _playerId, Promotion _promotion) external isOwnerOfPlayerAndActive(_playerId) {
@@ -599,7 +657,11 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       minTotalXP: _promotionInfoInput.minTotalXP,
       evolvedHeroOnly: _promotionInfoInput.evolvedHeroOnly,
       brushCost: uint24(_promotionInfoInput.brushCost / 1 ether),
+      redeemCodeLength: _promotionInfoInput.redeemCodeLength,
       adminOnly: _promotionInfoInput.adminOnly,
+      promotionTiedToUser: _promotionInfoInput.promotionTiedToUser,
+      promotionTiedToPlayer: _promotionInfoInput.promotionTiedToPlayer,
+      promotionMustOwnPlayer: _promotionInfoInput.promotionMustOwnPlayer,
       isMultiday: _promotionInfoInput.isMultiday,
       numDaysHitNeededForStreakBonus: _promotionInfoInput.numDaysHitNeededForStreakBonus,
       numDaysClaimablePeriodStreakBonus: _promotionInfoInput.numDaysClaimablePeriodStreakBonus,
