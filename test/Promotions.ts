@@ -47,7 +47,7 @@ type PromotionInfoInput = {
   randomAmounts: number[]; // Corresponding amounts to the randomItemTokenIds
 };
 
-describe.only("Promotions", function () {
+describe("Promotions", function () {
   describe("1kin", function () {
     it("Only promotional admin can mint", async function () {
       const {promotions, alice, bob, playerId} = await loadFixture(playersFixture);
