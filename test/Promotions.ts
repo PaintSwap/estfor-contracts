@@ -14,6 +14,34 @@ import {
   createPlayer,
 } from "../scripts/utils";
 
+type PromotionInfoInput = {
+  promotion: Promotion;
+  startTime: number;
+  endTime: number; // Exclusive
+  numDailyRandomItemsToPick: number; // Number of items to pick
+  minTotalXP: number; // Minimum xp required to claim
+  evolvedHeroOnly: boolean; // Only allow evolved heroes to claim
+  brushCost: string; // Cost in brush to start the promotion, max 16mil
+  adminOnly: boolean; // Only admins can mint the promotion, like for 1kin (Not used yet)
+  // Multiday specific
+  isMultiday: boolean; // The promotion is multi-day
+  numDaysHitNeededForStreakBonus: number; // How many days to hit for the streak bonus
+  numDaysClaimablePeriodStreakBonus: number; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
+  numRandomStreakBonusItemsToPick1: number; // Number of items to pick for the streak bonus
+  numRandomStreakBonusItemsToPick2: number; // Number of random items to pick for the streak bonus
+  randomStreakBonusItemTokenIds1: number[];
+  randomStreakBonusAmounts1: number[];
+  randomStreakBonusItemTokenIds2: number[];
+  randomStreakBonusAmounts2: number[];
+  guaranteedStreakBonusItemTokenIds: number[];
+  guaranteedStreakBonusAmounts: number[];
+  // Single and multiday
+  guaranteedItemTokenIds: number[]; // Guaranteed items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+  guaranteedAmounts: number[]; // Corresponding amounts to the itemTokenIds
+  randomItemTokenIds: number[]; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+  randomAmounts: number[]; // Corresponding amounts to the randomItemTokenIds
+};
+
 describe("Promotions", function () {
   describe("1kin", function () {
     it("Only promotional admin can mint", async function () {
@@ -69,28 +97,34 @@ describe("Promotions", function () {
       const {promotions, alice} = await loadFixture(playersFixture);
       const {timestamp: NOW} = await ethers.provider.getBlock("latest");
 
-      const promotion = {
+      const promotion: PromotionInfoInput = {
         promotion: Promotion.HALLOWEEN_2023,
         startTime: NOW,
         endTime: NOW + 10000,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
-        isStreakBonusRandom: false,
-        numStreakBonusItemsToPick: 0,
+        numRandomStreakBonusItemsToPick1: 0,
+        numRandomStreakBonusItemsToPick2: 0,
         brushCost: "0",
-        evolvedHeroOnly: false,
-        streakBonusItemTokenIds: [],
-        streakBonusAmounts: [],
-        itemTokenIds: [
+        randomStreakBonusItemTokenIds1: [],
+        randomStreakBonusAmounts1: [],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        amounts: [1, 1, 1],
+        randomAmounts: [1, 1, 1],
       };
 
       await promotions.addPromotion(promotion);
@@ -121,23 +155,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 10000,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: false,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
-        isStreakBonusRandom: false,
-        numStreakBonusItemsToPick: 0,
-        streakBonusItemTokenIds: [],
-        streakBonusAmounts: [],
-        itemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 0,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [],
+        randomStreakBonusAmounts1: [],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        amounts: [1, 1, 1],
+        randomAmounts: [1, 1, 1],
       };
 
       await promotions.addPromotion(promotion);
@@ -173,23 +213,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 10000,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: true,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: false,
         brushCost: "0",
-        evolvedHeroOnly: true,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
-        isStreakBonusRandom: false,
-        numStreakBonusItemsToPick: 0,
-        streakBonusItemTokenIds: [],
-        streakBonusAmounts: [],
-        itemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 0,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [],
+        randomStreakBonusAmounts1: [],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        amounts: [1, 1, 1],
+        randomAmounts: [1, 1, 1],
       };
 
       await promotions.addPromotion(promotion);
@@ -232,23 +278,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 10000,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: false,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
-        isStreakBonusRandom: false,
-        numStreakBonusItemsToPick: 0,
-        streakBonusItemTokenIds: [],
-        streakBonusAmounts: [],
-        itemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 0,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [],
+        randomStreakBonusAmounts1: [],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        amounts: [1, 1, 1],
+        randomAmounts: [1, 1, 1],
       });
       await expect(promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.be.revertedWithCustomError(
         promotions,
@@ -268,23 +320,29 @@ describe("Promotions", function () {
           startTime: NOW,
           endTime: NOW + 1000,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         });
 
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
@@ -309,23 +367,29 @@ describe("Promotions", function () {
           startTime: NOW,
           endTime: NOW + 1000,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         });
 
         for (let i = 0; i < 25; ++i) {
@@ -347,23 +411,29 @@ describe("Promotions", function () {
           startTime: NOW + 50,
           endTime: NOW + 1000,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         });
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -380,23 +450,29 @@ describe("Promotions", function () {
           startTime: NOW - 2,
           endTime: NOW - 1,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         });
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -413,23 +489,29 @@ describe("Promotions", function () {
           startTime: NOW,
           endTime: NOW + 1000,
           minTotalXP: 10000,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         });
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -450,23 +532,29 @@ describe("Promotions", function () {
           startTime: NOW,
           endTime: NOW + 60 * 60 * 24 + 10000,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         });
 
         await expect(
@@ -483,23 +571,29 @@ describe("Promotions", function () {
           startTime: NOW,
           endTime: NOW + 10000,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         });
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
         await expect(
@@ -518,23 +612,29 @@ describe("Promotions", function () {
           startTime: NOW,
           endTime: NOW + 10000,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: false,
           brushCost: ethers.utils.parseEther("1").toString(),
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          amounts: [1, 1, 1],
+          randomAmounts: [1, 1, 1],
         };
 
         await promotions.addPromotion(promotion);
@@ -571,19 +671,25 @@ describe("Promotions", function () {
           startTime: NOW,
           endTime: NOW + 1000,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: true,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 0,
           numDaysHitNeededForStreakBonus: 0,
-          isStreakBonusRandom: false,
-          numStreakBonusItemsToPick: 0,
-          streakBonusItemTokenIds: [],
-          streakBonusAmounts: [],
-          itemTokenIds: [],
-          amounts: [],
+          numRandomStreakBonusItemsToPick1: 0,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [],
+          randomStreakBonusAmounts1: [],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [],
+          randomAmounts: [],
         })
       ).to.be.revertedWithCustomError(promotions, "InvalidMultidayPromotionTimeInterval");
     });
@@ -599,19 +705,25 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 7 * 24 * 3600,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: true,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
-        isStreakBonusRandom: false,
-        numStreakBonusItemsToPick: 0,
-        streakBonusItemTokenIds: [],
-        streakBonusAmounts: [],
-        itemTokenIds: [],
-        amounts: [],
+        numRandomStreakBonusItemsToPick1: 0,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [],
+        randomStreakBonusAmounts1: [],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [],
+        randomAmounts: [],
       });
 
       await players.setDailyRewardsEnabled(true);
@@ -698,19 +810,25 @@ describe("Promotions", function () {
         startTime: NOW + 50,
         endTime: NOW + 50 + 24 * 3600,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: true,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
-        isStreakBonusRandom: false,
-        numStreakBonusItemsToPick: 0,
-        streakBonusItemTokenIds: [],
-        streakBonusAmounts: [],
-        itemTokenIds: [],
-        amounts: [],
+        numRandomStreakBonusItemsToPick1: 0,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [],
+        randomStreakBonusAmounts1: [],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [],
+        randomAmounts: [],
       });
       await expect(
         promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
@@ -727,23 +845,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 24 * 3600,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: true,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
-        isStreakBonusRandom: true,
-        numStreakBonusItemsToPick: 1,
-        streakBonusItemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 1,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        streakBonusAmounts: [1, 1, 1],
-        itemTokenIds: [],
-        amounts: [],
+        randomStreakBonusAmounts1: [1, 1, 1],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [],
+        randomAmounts: [],
       });
       await ethers.provider.send("evm_increaseTime", [2 * 60 * 60 * 24 + 1]);
       await expect(
@@ -761,23 +885,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 24 * 3600,
         minTotalXP: 10000,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: true,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
-        isStreakBonusRandom: true,
-        numStreakBonusItemsToPick: 1,
-        streakBonusItemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 1,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        streakBonusAmounts: [1, 1, 1],
-        itemTokenIds: [],
-        amounts: [],
+        randomStreakBonusAmounts1: [1, 1, 1],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [],
+        randomAmounts: [],
       });
       await expect(
         promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
@@ -799,23 +929,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 24 * 3600,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: true,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
-        isStreakBonusRandom: true,
-        numStreakBonusItemsToPick: 1,
-        streakBonusItemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 1,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        streakBonusAmounts: [1, 1, 1],
-        itemTokenIds: [],
-        amounts: [],
+        randomStreakBonusAmounts1: [1, 1, 1],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [],
+        randomAmounts: [],
       });
 
       await expect(
@@ -832,23 +968,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 24 * 3600,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: true,
         brushCost: "0",
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 1,
         numDaysHitNeededForStreakBonus: 1,
-        isStreakBonusRandom: true,
-        numStreakBonusItemsToPick: 1,
-        streakBonusItemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 1,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        streakBonusAmounts: [1, 1, 1],
-        itemTokenIds: [],
-        amounts: [],
+        randomStreakBonusAmounts1: [1, 1, 1],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [],
+        randomAmounts: [],
       });
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       await expect(
@@ -856,51 +998,37 @@ describe("Promotions", function () {
       ).to.be.revertedWithCustomError(promotions, "PromotionAlreadyClaimed");
     });
 
-    type PromotionInfo = {
-      promotion: Promotion;
-      startTime: number;
-      endTime: number; // Exclusive
-      numDaysHitNeededForStreakBonus: number; // How many days to hit for the streak bonus
-      numDaysClaimablePeriodStreakBonus: number; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
-      numItemsToPick: number; // Number of items to pick
-      isRandom: boolean; // The selection is random
-      isMultiday: boolean; // The promotion is multi-day
-      brushCost: string; // The brush cost for the promotion
-      evolvedHeroOnly: boolean; // If the promotion is only for evolved heroes
-      isStreakBonusRandom: boolean; // If the final day bonus is random
-      numStreakBonusItemsToPick: number; // Number of items to pick for the streak bonus
-      minTotalXP: number; // Minimum xp required to claim
-      streakBonusItemTokenIds: number[]; // Possible items for the streak bonus
-      streakBonusAmounts: number[]; // Corresponding amounts to the streakBonusItemTokenIds
-      itemTokenIds: number[]; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
-      amounts: number[]; // Corresponding amounts to the itemTokenIds
-    };
-
     describe("Streak inputs", function () {
-      async function getOriginalPromotion(): Promise<PromotionInfo> {
+      async function getOriginalPromotion(): Promise<PromotionInfoInput> {
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         return {
           promotion: Promotion.XMAS_2023,
           startTime: NOW,
           endTime: NOW + 24 * 3600,
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: true,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 1,
-          isStreakBonusRandom: true,
-          numStreakBonusItemsToPick: 1,
-          streakBonusItemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 1,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          streakBonusAmounts: [1, 1, 1],
-          itemTokenIds: [],
-          amounts: [],
+          randomStreakBonusAmounts1: [1, 1, 1],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [],
+          randomAmounts: [],
         };
       }
 
@@ -920,31 +1048,25 @@ describe("Promotions", function () {
           "InvalidStreakBonus"
         );
 
-        promotion.numStreakBonusItemsToPick = 0;
-        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
-          "InvalidStreakBonus"
-        );
-
-        promotion.streakBonusItemTokenIds = [];
-        promotion.streakBonusAmounts = [];
+        promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotions,
           "InvalidStreakBonus"
         );
 
         // Works
-        promotion.isStreakBonusRandom = false;
+        promotion.randomStreakBonusItemTokenIds1 = [];
+        promotion.randomStreakBonusAmounts1 = [];
         await promotions.addPromotion(promotion);
         await promotions.removePromotion(Promotion.XMAS_2023);
 
         promotion = {...(await getOriginalPromotion())};
 
         // Wrong itemTokenIds length
-        promotion.streakBonusItemTokenIds = [EstforConstants.HALLOWEEN_BONUS_1];
+        promotion.randomStreakBonusItemTokenIds1 = [EstforConstants.HALLOWEEN_BONUS_1];
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(promotions, "LengthMismatch");
         // reset those
-        promotion.streakBonusItemTokenIds = [
+        promotion.randomStreakBonusItemTokenIds1 = [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
@@ -959,12 +1081,10 @@ describe("Promotions", function () {
         promotion.isMultiday = false;
         promotion.numDaysClaimablePeriodStreakBonus = 0;
         promotion.numDaysHitNeededForStreakBonus = 0;
-        promotion.numStreakBonusItemsToPick = 0;
-        promotion.streakBonusItemTokenIds = [];
-        promotion.streakBonusAmounts = [];
+        promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(promotions, "MultidaySpecified");
-
-        promotion.isStreakBonusRandom = false;
+        promotion.randomStreakBonusItemTokenIds1 = [];
+        promotion.randomStreakBonusAmounts1 = [];
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(promotions, "NoItemsToPickFrom");
       });
 
@@ -980,59 +1100,58 @@ describe("Promotions", function () {
         );
 
         promotion.numDaysHitNeededForStreakBonus = 1;
-        promotion.numStreakBonusItemsToPick = 0;
+        promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotions,
           "InvalidStreakBonus"
         );
 
-        promotion.numStreakBonusItemsToPick = 1;
-        promotion.streakBonusItemTokenIds = [];
-        promotion.streakBonusAmounts = [];
+        promotion.numRandomStreakBonusItemsToPick1 = 1;
+        promotion.randomStreakBonusItemTokenIds1 = [];
+        promotion.randomStreakBonusAmounts1 = [];
 
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotions,
           "InvalidStreakBonus"
         );
 
-        promotion.streakBonusItemTokenIds = (await getOriginalPromotion()).streakBonusItemTokenIds;
-        promotion.streakBonusAmounts = (await getOriginalPromotion()).streakBonusAmounts;
-        promotion.isStreakBonusRandom = false;
-        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
-          "InvalidStreakBonus"
-        );
-
-        promotion.isStreakBonusRandom = true;
+        promotion.randomStreakBonusItemTokenIds1 = (await getOriginalPromotion()).randomStreakBonusItemTokenIds1;
+        promotion.randomStreakBonusAmounts1 = (await getOriginalPromotion()).randomStreakBonusAmounts1;
         await promotions.addPromotion(promotion);
       });
     });
 
     describe("Streak bonus", function () {
-      async function geStreakBonusPromotion(): Promise<PromotionInfo> {
+      async function geStreakBonusPromotion(): Promise<PromotionInfoInput> {
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         return {
           promotion: Promotion.XMAS_2023,
           startTime: NOW,
           endTime: NOW + 24 * 3600 * 3, // 3 days
           minTotalXP: 0,
-          numItemsToPick: 1,
-          isRandom: true,
+          evolvedHeroOnly: false,
+          adminOnly: false,
+          numDailyRandomItemsToPick: 1,
           isMultiday: true,
           brushCost: "0",
-          evolvedHeroOnly: false,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 2,
-          isStreakBonusRandom: true,
-          numStreakBonusItemsToPick: 1,
-          streakBonusItemTokenIds: [
+          numRandomStreakBonusItemsToPick1: 1,
+          numRandomStreakBonusItemsToPick2: 0,
+          randomStreakBonusItemTokenIds1: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
             EstforConstants.HALLOWEEN_BONUS_3,
           ],
-          streakBonusAmounts: [1, 1, 1],
-          itemTokenIds: [],
-          amounts: [],
+          randomStreakBonusAmounts1: [1, 1, 1],
+          randomStreakBonusItemTokenIds2: [],
+          randomStreakBonusAmounts2: [],
+          guaranteedStreakBonusItemTokenIds: [],
+          guaranteedStreakBonusAmounts: [],
+          guaranteedItemTokenIds: [],
+          guaranteedAmounts: [],
+          randomItemTokenIds: [],
+          randomAmounts: [],
         };
       }
 
@@ -1210,23 +1329,29 @@ describe("Promotions", function () {
         startTime: NOW,
         endTime: NOW + 10000,
         minTotalXP: 0,
-        numItemsToPick: 1,
-        isRandom: true,
+        evolvedHeroOnly: false,
+        adminOnly: false,
+        numDailyRandomItemsToPick: 1,
         isMultiday: false,
         brushCost: ethers.utils.parseEther("1").toString(),
-        evolvedHeroOnly: false,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
-        isStreakBonusRandom: false,
-        numStreakBonusItemsToPick: 0,
-        streakBonusItemTokenIds: [],
-        streakBonusAmounts: [],
-        itemTokenIds: [
+        numRandomStreakBonusItemsToPick1: 0,
+        numRandomStreakBonusItemsToPick2: 0,
+        randomStreakBonusItemTokenIds1: [],
+        randomStreakBonusAmounts1: [],
+        randomStreakBonusItemTokenIds2: [],
+        randomStreakBonusAmounts2: [],
+        guaranteedStreakBonusItemTokenIds: [],
+        guaranteedStreakBonusAmounts: [],
+        guaranteedItemTokenIds: [],
+        guaranteedAmounts: [],
+        randomItemTokenIds: [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3,
         ],
-        amounts: [1, 1, 1],
+        randomAmounts: [1, 1, 1],
       };
 
       await promotions.addPromotion(promotion);

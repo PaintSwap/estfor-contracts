@@ -81,42 +81,56 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     Promotion promotion;
     uint40 startTime;
     uint40 endTime; // Exclusive
-    uint8 numItemsToPick; // Number of items to pick
-    bool isRandom; // The selection is random
+    uint8 numDailyRandomItemsToPick; // Number of items to pick
     uint64 minTotalXP; // Minimum xp required to claim
     bool evolvedHeroOnly; // Only allow evolved heroes to claim
+    uint brushCost; // Cost in brush to start the promotion, max 16mil
+    bool adminOnly; // Only admins can mint the promotion, like for 1kin (Not used yet)
     // Multiday specific
     bool isMultiday; // The promotion is multi-day
     uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
     uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
-    bool isStreakBonusRandom; // If the final day bonus is random
-    uint8 numStreakBonusItemsToPick; // Number of items to pick for the streak bonus
-    uint brushCost; // Cost in brush to mint the promotion (in ether), max 16mil
-    uint16[] streakBonusItemTokenIds;
-    uint32[] streakBonusAmounts;
-    uint16[] itemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
-    uint32[] amounts; // Corresponding amounts to the itemTokenIds
+    uint8 numRandomStreakBonusItemsToPick1; // Number of items to pick for the streak bonus
+    uint8 numRandomStreakBonusItemsToPick2; // Number of random items to pick for the streak bonus
+    uint16[] randomStreakBonusItemTokenIds1;
+    uint32[] randomStreakBonusAmounts1;
+    uint16[] randomStreakBonusItemTokenIds2;
+    uint32[] randomStreakBonusAmounts2;
+    uint16[] guaranteedStreakBonusItemTokenIds;
+    uint16[] guaranteedStreakBonusAmounts;
+    // Single and multiday
+    uint16[] guaranteedItemTokenIds; // Guaranteed items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+    uint32[] guaranteedAmounts; // Corresponding amounts to the itemTokenIds
+    uint16[] randomItemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+    uint32[] randomAmounts; // Corresponding amounts to the randomItemTokenIds
   }
 
   struct PromotionInfo {
     Promotion promotion;
     uint40 startTime;
     uint40 endTime; // Exclusive
-    uint8 numItemsToPick; // Number of items to pick
-    bool isRandom; // The selection is random
-    uint64 minTotalXP; // Minimum xp required to claim#
+    uint8 numDailyRandomItemsToPick; // Number of items to pick
+    uint64 minTotalXP; // Minimum xp required to claim
     bool evolvedHeroOnly; // Only allow evolved heroes to claim
     uint24 brushCost; // Cost in brush to mint the promotion (in ether), max 16mil
+    bool adminOnly; // Only admins can mint the promotion, like for 1kin (Not used yet)
     // Multiday specific
     bool isMultiday; // The promotion is multi-day
     uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
     uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
-    bool isStreakBonusRandom; // If the final day bonus is random
-    uint8 numStreakBonusItemsToPick; // Number of items to pick for the streak bonus
-    uint16[] streakBonusItemTokenIds;
-    uint32[] streakBonusAmounts;
-    uint16[] itemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
-    uint32[] amounts; // Corresponding amounts to the itemTokenIds
+    uint8 numRandomStreakBonusItemsToPick1; // Number of items to pick for the streak bonus
+    uint8 numRandomStreakBonusItemsToPick2; // Number of random items to pick for the streak bonus
+    uint16[] randomStreakBonusItemTokenIds1;
+    uint32[] randomStreakBonusAmounts1;
+    uint16[] randomStreakBonusItemTokenIds2; // Not used yet
+    uint32[] randomStreakBonusAmounts2; // Not used yet
+    uint16[] guaranteedStreakBonusItemTokenIds; // Not used yet
+    uint16[] guaranteedStreakBonusAmounts; // Not used yet
+    // Single and multiday
+    uint16[] guaranteedItemTokenIds; // Guaranteed items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+    uint32[] guaranteedAmounts; // Corresponding amounts to the itemTokenIds
+    uint16[] randomItemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
+    uint32[] randomAmounts; // Corresponding amounts to the randomItemTokenIds
   }
 
   struct PromotionInfoV1 {
@@ -269,29 +283,26 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     if (promotionInfo.isMultiday) {
       (itemTokenIds, amounts, dayToSet) = _handleMultidayPromotion(_playerId, _promotion);
     } else {
+      // Single day promotion
       _checkMintPromotion(_playerId, _promotion);
 
-      itemTokenIds = new uint[](promotionInfo.numItemsToPick);
-      amounts = new uint[](promotionInfo.numItemsToPick);
+      // TODO: Support itemTokenIds later
+      itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
+      amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
 
-      if (promotionInfo.isRandom) {
-        // Pick a random item from the list, only supports 1 item atm
-        uint numAvailableItems = promotionInfo.itemTokenIds.length;
-        World world = itemNFT.world();
+      // Pick a random item from the list, only supports 1 item atm
+      uint numAvailableItems = promotionInfo.randomItemTokenIds.length;
+      World world = itemNFT.world();
 
-        if (!world.hasRandomWord(block.timestamp - 1 days)) {
-          revert OracleNotCalled();
-        }
-
-        uint randomWord = itemNFT.world().getRandomWord(block.timestamp - 1 days);
-        uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
-        uint index = modifiedRandomWord % numAvailableItems;
-        itemTokenIds[0] = promotionInfo.itemTokenIds[index];
-        amounts[0] = promotionInfo.amounts[index];
-      } else {
-        // Give all items (TODO: Not implemented yet)
-        assert(false);
+      if (!world.hasRandomWord(block.timestamp - 1 days)) {
+        revert OracleNotCalled();
       }
+
+      uint randomWord = itemNFT.world().getRandomWord(block.timestamp - 1 days);
+      uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
+      uint index = modifiedRandomWord % numAvailableItems;
+      itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
+      amounts[0] = promotionInfo.randomAmounts[index];
     }
   }
 
@@ -365,12 +376,12 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint numPromotionDays = (promotionInfo.endTime - promotionInfo.startTime) / 1 days;
     World world = itemNFT.world();
     if (today < numPromotionDays) {
-      itemTokenIds = new uint[](promotionInfo.numItemsToPick);
-      amounts = new uint[](promotionInfo.numItemsToPick);
+      itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
+      amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
 
       _checkMultidayDailyMintPromotion(_playerId, _promotion);
 
-      if (promotionInfo.itemTokenIds.length == 0) {
+      if (promotionInfo.randomItemTokenIds.length == 0) {
         (itemTokenIds[0], amounts[0]) = _getTierReward(_playerId, world);
       } else {
         // Not supported yet
@@ -396,28 +407,31 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         revert PlayerNotHitEnoughClaims();
       }
 
-      itemTokenIds = new uint[](promotionInfo.numStreakBonusItemsToPick);
-      amounts = new uint[](promotionInfo.numStreakBonusItemsToPick);
+      itemTokenIds = new uint[](
+        promotionInfo.numRandomStreakBonusItemsToPick1 +
+          promotionInfo.numRandomStreakBonusItemsToPick2 +
+          promotionInfo.guaranteedItemTokenIds.length
+      );
+      amounts = new uint[](
+        promotionInfo.numRandomStreakBonusItemsToPick1 +
+          promotionInfo.numRandomStreakBonusItemsToPick2 +
+          promotionInfo.guaranteedItemTokenIds.length
+      );
       dayToSet = 31;
 
       // Mint the final day bonus
-      if (promotionInfo.isStreakBonusRandom) {
-        // Pick a random item from the list, only supports 1 item atm
-        uint numAvailableItems = promotionInfo.streakBonusItemTokenIds.length;
-        if (!world.hasRandomWord(promotionInfo.endTime - 1)) {
-          revert OracleNotCalled();
-        }
-
-        // The streak bonus random reward should be based on the last day of the promotion
-        uint randomWord = itemNFT.world().getRandomWord(promotionInfo.endTime - 1);
-        uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
-        uint index = modifiedRandomWord % numAvailableItems;
-        itemTokenIds[0] = promotionInfo.streakBonusItemTokenIds[index];
-        amounts[0] = promotionInfo.streakBonusAmounts[index];
-      } else {
-        // Give all items (TODO: Not implemented yet)
-        assert(false);
+      // Pick a random item from the list, only supports 1 item atm
+      uint numAvailableItems = promotionInfo.numRandomStreakBonusItemsToPick1;
+      if (!world.hasRandomWord(promotionInfo.endTime - 1)) {
+        revert OracleNotCalled();
       }
+
+      // The streak bonus random reward should be based on the last day of the promotion
+      uint randomWord = itemNFT.world().getRandomWord(promotionInfo.endTime - 1);
+      uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
+      uint index = modifiedRandomWord % numAvailableItems;
+      itemTokenIds[0] = promotionInfo.randomStreakBonusItemTokenIds1[index];
+      amounts[0] = promotionInfo.randomStreakBonusAmounts1[index];
     } else {
       revert MintingOutsideAvailableDate();
     }
@@ -456,7 +470,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _checkAddingGenericPromotion(PromotionInfoInput calldata _promotionInfo) private pure {
-    if (_promotionInfo.itemTokenIds.length != _promotionInfo.amounts.length) {
+    if (_promotionInfo.guaranteedItemTokenIds.length != _promotionInfo.guaranteedAmounts.length) {
       revert LengthMismatch();
     }
 
@@ -468,18 +482,13 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       revert StartTimeMustBeHigherEndTime();
     }
 
-    if (_promotionInfo.numItemsToPick == 0) {
+    if (_promotionInfo.numDailyRandomItemsToPick == 0) {
       revert NoNumItemsToPick();
     }
 
-    if (_promotionInfo.numItemsToPick != 1) {
+    if (_promotionInfo.numDailyRandomItemsToPick != 1) {
       // TODO: Special handling for now, only allowing 1 item to be picked
       revert InvalidPromotion();
-    }
-
-    if (!_promotionInfo.isRandom) {
-      // Special handling
-      revert MustBeRandomPromotion();
     }
 
     // Check brush input is valid
@@ -490,10 +499,6 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
   // Precondition that the promotion is multiday
   function _checkAddingMultidayMintPromotion(PromotionInfoInput calldata _promotionInfo) private pure {
-    if (_promotionInfo.streakBonusItemTokenIds.length != _promotionInfo.streakBonusAmounts.length) {
-      revert LengthMismatch();
-    }
-
     bool hasStreakBonus = _promotionInfo.numDaysClaimablePeriodStreakBonus != 0;
 
     // start and endTime must be factors of 24 hours apart
@@ -503,9 +508,16 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
     if (hasStreakBonus) {
       if (
-        _promotionInfo.numStreakBonusItemsToPick == 0 ||
-        _promotionInfo.streakBonusItemTokenIds.length == 0 ||
+        _promotionInfo.numRandomStreakBonusItemsToPick1 == 0 ||
+        _promotionInfo.randomStreakBonusItemTokenIds1.length == 0 ||
         _promotionInfo.numDaysHitNeededForStreakBonus == 0
+      ) {
+        revert InvalidStreakBonus();
+      }
+
+      // Cannot specify pool2 without pool 1
+      if (
+        _promotionInfo.numRandomStreakBonusItemsToPick1 == 0 && _promotionInfo.numRandomStreakBonusItemsToPick2 != 0
       ) {
         revert InvalidStreakBonus();
       }
@@ -516,25 +528,38 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         revert InvalidNumDaysHitNeededForStreakBonus();
       }
 
-      if (!_promotionInfo.isStreakBonusRandom) {
-        revert InvalidStreakBonus();
+      if (_promotionInfo.randomStreakBonusItemTokenIds1.length != _promotionInfo.randomStreakBonusAmounts1.length) {
+        revert LengthMismatch();
+      }
+
+      if (_promotionInfo.randomStreakBonusItemTokenIds2.length != _promotionInfo.randomStreakBonusAmounts2.length) {
+        revert LengthMismatch();
+      }
+
+      if (
+        _promotionInfo.guaranteedStreakBonusItemTokenIds.length != _promotionInfo.guaranteedStreakBonusAmounts.length
+      ) {
+        revert LengthMismatch();
       }
     } else {
       // No streak bonus
       if (
-        _promotionInfo.streakBonusItemTokenIds.length != 0 ||
-        _promotionInfo.numStreakBonusItemsToPick != 0 ||
-        _promotionInfo.numDaysHitNeededForStreakBonus != 0
+        _promotionInfo.randomStreakBonusItemTokenIds1.length != 0 ||
+        _promotionInfo.randomStreakBonusItemTokenIds2.length != 0 ||
+        _promotionInfo.numRandomStreakBonusItemsToPick1 != 0 ||
+        _promotionInfo.numRandomStreakBonusItemsToPick2 != 0 ||
+        _promotionInfo.numDaysHitNeededForStreakBonus != 0 ||
+        _promotionInfo.guaranteedStreakBonusItemTokenIds.length != 0 ||
+        _promotionInfo.guaranteedStreakBonusAmounts.length != 0
       ) {
-        revert InvalidStreakBonus();
-      }
-
-      if (_promotionInfo.isStreakBonusRandom) {
         revert InvalidStreakBonus();
       }
     }
 
-    if (_promotionInfo.numStreakBonusItemsToPick > _promotionInfo.streakBonusItemTokenIds.length) {
+    if (_promotionInfo.numRandomStreakBonusItemsToPick1 > _promotionInfo.randomStreakBonusItemTokenIds1.length) {
+      revert PickingTooManyItems();
+    }
+    if (_promotionInfo.numRandomStreakBonusItemsToPick2 > _promotionInfo.randomStreakBonusItemTokenIds2.length) {
       revert PickingTooManyItems();
     }
   }
@@ -544,19 +569,21 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     if (
       _promotionInfo.numDaysHitNeededForStreakBonus != 0 ||
       _promotionInfo.numDaysClaimablePeriodStreakBonus != 0 ||
-      _promotionInfo.isStreakBonusRandom ||
-      _promotionInfo.numStreakBonusItemsToPick != 0 ||
-      _promotionInfo.streakBonusItemTokenIds.length != 0 ||
-      _promotionInfo.streakBonusAmounts.length != 0
+      _promotionInfo.numRandomStreakBonusItemsToPick1 != 0 ||
+      _promotionInfo.randomStreakBonusItemTokenIds1.length != 0 ||
+      _promotionInfo.randomStreakBonusAmounts1.length != 0 ||
+      _promotionInfo.numRandomStreakBonusItemsToPick2 != 0 ||
+      _promotionInfo.randomStreakBonusItemTokenIds2.length != 0 ||
+      _promotionInfo.randomStreakBonusAmounts2.length != 0
     ) {
       revert MultidaySpecified();
     }
 
-    if (_promotionInfo.itemTokenIds.length == 0) {
+    if (_promotionInfo.randomItemTokenIds.length == 0) {
       revert NoItemsToPickFrom();
     }
 
-    if (_promotionInfo.numItemsToPick > _promotionInfo.itemTokenIds.length) {
+    if (_promotionInfo.numDailyRandomItemsToPick > _promotionInfo.randomItemTokenIds.length) {
       revert PickingTooManyItems();
     }
   }
@@ -568,20 +595,26 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       promotion: _promotionInfoInput.promotion,
       startTime: _promotionInfoInput.startTime,
       endTime: _promotionInfoInput.endTime,
-      numItemsToPick: _promotionInfoInput.numItemsToPick,
-      isRandom: _promotionInfoInput.isRandom,
+      numDailyRandomItemsToPick: _promotionInfoInput.numDailyRandomItemsToPick,
       minTotalXP: _promotionInfoInput.minTotalXP,
       evolvedHeroOnly: _promotionInfoInput.evolvedHeroOnly,
       brushCost: uint24(_promotionInfoInput.brushCost / 1 ether),
+      adminOnly: _promotionInfoInput.adminOnly,
       isMultiday: _promotionInfoInput.isMultiday,
       numDaysHitNeededForStreakBonus: _promotionInfoInput.numDaysHitNeededForStreakBonus,
       numDaysClaimablePeriodStreakBonus: _promotionInfoInput.numDaysClaimablePeriodStreakBonus,
-      numStreakBonusItemsToPick: _promotionInfoInput.numStreakBonusItemsToPick,
-      isStreakBonusRandom: _promotionInfoInput.isStreakBonusRandom,
-      streakBonusItemTokenIds: _promotionInfoInput.streakBonusItemTokenIds,
-      streakBonusAmounts: _promotionInfoInput.streakBonusAmounts,
-      itemTokenIds: _promotionInfoInput.itemTokenIds,
-      amounts: _promotionInfoInput.amounts
+      numRandomStreakBonusItemsToPick1: _promotionInfoInput.numRandomStreakBonusItemsToPick1,
+      randomStreakBonusItemTokenIds1: _promotionInfoInput.randomStreakBonusItemTokenIds1,
+      randomStreakBonusAmounts1: _promotionInfoInput.randomStreakBonusAmounts1,
+      numRandomStreakBonusItemsToPick2: _promotionInfoInput.numRandomStreakBonusItemsToPick2,
+      randomStreakBonusItemTokenIds2: _promotionInfoInput.randomStreakBonusItemTokenIds2,
+      randomStreakBonusAmounts2: _promotionInfoInput.randomStreakBonusAmounts2,
+      guaranteedStreakBonusItemTokenIds: _promotionInfoInput.guaranteedStreakBonusItemTokenIds,
+      guaranteedStreakBonusAmounts: _promotionInfoInput.guaranteedStreakBonusAmounts,
+      guaranteedItemTokenIds: _promotionInfoInput.guaranteedItemTokenIds,
+      guaranteedAmounts: _promotionInfoInput.guaranteedAmounts,
+      randomItemTokenIds: _promotionInfoInput.randomItemTokenIds,
+      randomAmounts: _promotionInfoInput.randomAmounts
     });
   }
 
