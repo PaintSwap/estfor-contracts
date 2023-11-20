@@ -47,13 +47,25 @@ const lowerRunsConfig: SolcUserConfig = {
   },
 };
 
+const superlowerRunsConfig: SolcUserConfig = {
+  ...defaultConfig,
+  settings: {
+    ...defaultConfig.settings,
+    optimizer: {
+      ...defaultConfig.settings.optimizer,
+      runs: 800,
+    },
+  },
+};
+
 const config: HardhatUserConfig = {
   solidity: {
-    compilers: [defaultConfig, lowerRunsConfig],
+    compilers: [defaultConfig, lowerRunsConfig, superlowerRunsConfig],
     overrides: {
       "contracts/Clans/Clans.sol": lowerRunsConfig,
       "contracts/Players/Players.sol": lowerRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": lowerRunsConfig,
+      "contracts/Promotions.sol": superlowerRunsConfig,
       "contracts/World.sol": lowerRunsConfig,
     },
   },

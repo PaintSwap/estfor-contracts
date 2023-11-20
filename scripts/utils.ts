@@ -125,3 +125,11 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
 };
 
 export const isBeta = process.env.IS_BETA == "true";
+
+// Needs to match that in rewards.sol
+export const TIER_1_DAILY_REWARD_START_XP = 0;
+export const TIER_2_DAILY_REWARD_START_XP = 7_650;
+export const TIER_3_DAILY_REWARD_START_XP = 33_913;
+export const TIER_4_DAILY_REWARD_START_XP = 195_864;
+export const TIER_5_DAILY_REWARD_START_XP = 784_726;
+export const TIER_6_DAILY_REWARD_START_XP = 2_219_451;
