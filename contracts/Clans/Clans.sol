@@ -16,6 +16,8 @@ import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IMarketplaceWhitelist} from "../interfaces/IMarketplaceWhitelist.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
+import {ClanRank} from "../globals/clans.sol";
+
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   using UnsafeMath for U256;
   using UnsafeMath for uint16;
@@ -96,15 +98,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error NFTNotWhitelistedOnMarketplace();
   error UnsupportedNFTType();
   error MessageTooLong();
-
-  enum ClanRank {
-    NONE, // Not in a clan
-    COMMONER, // Member of the clan
-    SCOUT, // Invite and kick commoners
-    TREASURER, // Can withdraw from bank
-    LEADER, // Can edit clan details
-    OWNER // Can do everything and transfer ownership
-  }
 
   struct Clan {
     uint80 owner;
@@ -939,5 +932,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
   }
 
-  function _authorizeUpgrade(address) internal override onlyOwner {}
+  function getRank(uint _clanId, uint _playerId) external view returns (ClanRank rank) {
+    if (playerInfo[_playerId].clanId == _clanId) {
+      return playerInfo[_playerId].rank;
+    }
+    return ClanRank.NONE;
+  }
+
+  // solhint-disable-next-line no-empty-blocks
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

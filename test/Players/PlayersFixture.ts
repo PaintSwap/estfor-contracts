@@ -264,6 +264,10 @@ export const playersFixture = async function () {
   const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
   const maxTime = MAX_TIME;
 
+  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", {
+    libraries: {PlayersLibrary: playersLibrary.address},
+  });
+
   return {
     playerId,
     players,
@@ -305,5 +309,6 @@ export const playersFixture = async function () {
     paintSwapMarketplaceWhitelist,
     playersLibrary,
     instantActions,
+    clanBattleLibrary,
   };
 };
