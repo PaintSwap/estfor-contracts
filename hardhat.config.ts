@@ -53,7 +53,7 @@ const superlowerRunsConfig: SolcUserConfig = {
     ...defaultConfig.settings,
     optimizer: {
       ...defaultConfig.settings.optimizer,
-      runs: 800,
+      runs: 320,
     },
   },
 };

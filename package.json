@@ -20,7 +20,7 @@
     "@openzeppelin/contracts": "^4.8.2",
     "@openzeppelin/contracts-upgradeable": "^4.8.2",
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
-    "@paintswap/estfor-definitions": "^1.0.67",
+    "@paintswap/estfor-definitions": "^1.0.68",
     "@solidity-parser/parser": "./modules/parser",
     "@typechain/ethers-v5": "^10.2.0",
     "@typechain/hardhat": "^6.1.5",

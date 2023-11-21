@@ -1461,5 +1461,15 @@ describe("Promotions", function () {
       expect(await brush.balanceOf(shop.address)).to.eq(ethers.utils.parseEther("0.5"));
       expect(await brush.balanceOf(dev.address)).to.eq(ethers.utils.parseEther("0.5"));
     });
+
+    it("mintPromotionView status codes", async function () {
+      const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(
+        playersFixture
+      );
+
+      const promotionView = await promotions.connect(alice).mintPromotionView(playerId, Promotion.HALLOWEEN_2023);
+      expect(promotionView.promotionMintStatus).to.eq(EstforTypes.PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE);
+      // TODO: Check them all.
+    });
   });
 });

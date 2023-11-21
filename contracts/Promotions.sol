@@ -167,6 +167,16 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     HOLIDAY10
   }
 
+  enum PromotionMintStatus {
+    NONE,
+    SUCCESS,
+    PROMOTION_ALREADY_CLAIMED,
+    ORACLE_NOT_CALLED,
+    MINTING_OUTSIDE_AVAILABLE_DATE,
+    PLAYER_DOES_NOT_QUALIFY,
+    PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS
+  }
+
   mapping(address user => uint noLongerUsed) public users; // No longer used
   AdminAccess private adminAccess;
   ItemNFT private itemNFT;
@@ -259,6 +269,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     emit PromotionRedeemed(_to, _playerId, Promotion.STARTER, _redeemCode, itemTokenIds, amounts);
   }
 
+  /* Add later when we can remove mintStarterPromotionalPack and use this on the server.
+  Remove for contract deployment code size reasons
   function adminMintPromotionalPack(
     address _to,
     uint _playerId,
@@ -303,9 +315,31 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     itemNFT.mintBatch(_to, itemTokenIds, amounts);
     emit PromotionRedeemed(_to, _playerId, _promotion, _redeemCode, itemTokenIds, amounts);
   }
+  */
 
   function mintPromotion(uint _playerId, Promotion _promotion) external isOwnerOfPlayerAndActive(_playerId) {
-    (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) = mintPromotionView(_playerId, _promotion);
+    (
+      uint[] memory itemTokenIds,
+      uint[] memory amounts,
+      uint dayToSet,
+      PromotionMintStatus promotionMintStatus
+    ) = mintPromotionView(_playerId, _promotion);
+
+    if (promotionMintStatus != PromotionMintStatus.SUCCESS) {
+      if (promotionMintStatus == PromotionMintStatus.PROMOTION_ALREADY_CLAIMED) {
+        revert PromotionAlreadyClaimed();
+      } else if (promotionMintStatus == PromotionMintStatus.ORACLE_NOT_CALLED) {
+        revert OracleNotCalled();
+      } else if (promotionMintStatus == PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE) {
+        revert MintingOutsideAvailableDate();
+      } else if (promotionMintStatus == PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY) {
+        revert PlayerDoesNotQualify();
+      } else if (promotionMintStatus == PromotionMintStatus.PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS) {
+        revert PlayerNotHitEnoughClaims();
+      } else {
+        revert InvalidPromotion();
+      }
+    }
 
     // Check they have paid if this is a paid promotion
     PromotionInfo storage promotionInfo = activePromotions[_promotion];
@@ -332,51 +366,39 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     emit PromotionRedeemedV2(msg.sender, _playerId, _promotion, "", itemTokenIds, amounts, dayToSet);
   }
 
+  // Should not revert (outside of developer asserts)
   function mintPromotionView(
     uint _playerId,
     Promotion _promotion
-  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) {
+  )
+    public
+    view
+    returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet, PromotionMintStatus promotionMintStatus)
+  {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
 
     if (promotionInfo.isMultiday) {
-      (itemTokenIds, amounts, dayToSet) = _handleMultidayPromotion(_playerId, _promotion);
+      (itemTokenIds, amounts, dayToSet, promotionMintStatus) = _handleMultidayPromotion(_playerId, _promotion);
     } else {
       // Single day promotion
-      _checkMintPromotion(_playerId, _promotion);
-
-      // TODO: Support itemTokenIds later
-      itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
-      amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
-
-      // Pick a random item from the list, only supports 1 item atm
-      uint numAvailableItems = promotionInfo.randomItemTokenIds.length;
-      World world = itemNFT.world();
-
-      if (!world.hasRandomWord(block.timestamp - 1 days)) {
-        revert OracleNotCalled();
-      }
-
-      uint randomWord = itemNFT.world().getRandomWord(block.timestamp - 1 days);
-      uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
-      uint index = modifiedRandomWord % numAvailableItems;
-      itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
-      amounts[0] = promotionInfo.randomAmounts[index];
+      (itemTokenIds, amounts, promotionMintStatus) = _handleSinglePromotion(_playerId, _promotion);
     }
   }
 
-  function _checkMintPromotion(uint _playerId, Promotion _promotion) private view {
+  function _checkMintPromotion(uint _playerId, Promotion _promotion) private view returns (PromotionMintStatus) {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
     if (promotionInfo.startTime > block.timestamp || promotionInfo.endTime <= block.timestamp) {
-      revert MintingOutsideAvailableDate();
+      return PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE;
     }
 
     if (singlePlayerPromotionsCompleted[_playerId].get(uint(_promotion))) {
-      revert PromotionAlreadyClaimed();
+      return PromotionMintStatus.PROMOTION_ALREADY_CLAIMED;
     }
 
     if (promotionInfo.minTotalXP > IPlayers(itemNFT.players()).totalXP(_playerId)) {
-      revert PlayerDoesNotQualify();
+      return PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY;
     }
+    return PromotionMintStatus.SUCCESS;
   }
 
   function _checkMultidayDailyMintPromotion(uint _playerId, Promotion _promotion) private view {
@@ -396,8 +418,13 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _getTierReward(uint _playerId, World _world) private view returns (uint itemTokenId, uint amount) {
+  function _getTierReward(
+    uint _playerId,
+    World _world,
+    PromotionMintStatus _oldStatus
+  ) private view returns (uint itemTokenId, uint amount, PromotionMintStatus promotionMintStatus) {
     // No items specified to choose from so pick a random daily item from the tier above
+    promotionMintStatus = _oldStatus;
     uint totalXP = IPlayers(itemNFT.players()).totalXP(_playerId);
     uint playerTier;
 
@@ -415,19 +442,52 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     if (!_world.hasRandomWord(block.timestamp - 1 days)) {
-      revert OracleNotCalled();
+      promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
+    } else {
+      (itemTokenId, amount) = _world.getDailyReward(playerTier, _playerId);
     }
-    (itemTokenId, amount) = _world.getDailyReward(playerTier, _playerId);
+  }
+
+  function _handleSinglePromotion(
+    uint _playerId,
+    Promotion _promotion
+  ) private view returns (uint[] memory itemTokenIds, uint[] memory amounts, PromotionMintStatus promotionMintStatus) {
+    PromotionInfo memory promotionInfo = activePromotions[_promotion];
+    promotionMintStatus = _checkMintPromotion(_playerId, _promotion);
+    if (promotionMintStatus == PromotionMintStatus.SUCCESS) {
+      // TODO: Support itemTokenIds later
+      itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
+      amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
+
+      // Pick a random item from the list, only supports 1 item atm
+      uint numAvailableItems = promotionInfo.randomItemTokenIds.length;
+      World world = itemNFT.world();
+
+      if (!world.hasRandomWord(block.timestamp - 1 days)) {
+        promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
+      } else {
+        uint randomWord = itemNFT.world().getRandomWord(block.timestamp - 1 days);
+        uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
+        uint index = modifiedRandomWord % numAvailableItems;
+        itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
+        amounts[0] = promotionInfo.randomAmounts[index];
+      }
+    }
   }
 
   // TODO: Only really supporting xmas 2023 so far with tiered rewards
   function _handleMultidayPromotion(
     uint _playerId,
     Promotion _promotion
-  ) private view returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet) {
+  )
+    private
+    view
+    returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet, PromotionMintStatus promotionMintStatus)
+  {
+    promotionMintStatus = PromotionMintStatus.SUCCESS;
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
     if (block.timestamp < promotionInfo.startTime) {
-      revert MintingOutsideAvailableDate();
+      return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE);
     }
 
     uint today = (block.timestamp - promotionInfo.startTime) / 1 days;
@@ -440,7 +500,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       _checkMultidayDailyMintPromotion(_playerId, _promotion);
 
       if (promotionInfo.randomItemTokenIds.length == 0) {
-        (itemTokenIds[0], amounts[0]) = _getTierReward(_playerId, world);
+        (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(_playerId, world, promotionMintStatus);
       } else {
         // Not supported yet
         assert(false);
@@ -450,7 +510,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     } else if (today - numPromotionDays < promotionInfo.numDaysClaimablePeriodStreakBonus) {
       // Check final day bonus hasn't been claimed and is within the claim period
       if (multidayPlayerPromotionsCompleted[_playerId][_promotion][31] > 0) {
-        revert PromotionAlreadyClaimed();
+        return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.PROMOTION_ALREADY_CLAIMED);
       }
 
       // Have they actually claimed enough?
@@ -462,7 +522,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       }
 
       if (totalClaimed < promotionInfo.numDaysHitNeededForStreakBonus) {
-        revert PlayerNotHitEnoughClaims();
+        return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS);
       }
 
       itemTokenIds = new uint[](
@@ -481,7 +541,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       // Pick a random item from the list, only supports 1 item atm
       uint numAvailableItems = promotionInfo.numRandomStreakBonusItemsToPick1;
       if (!world.hasRandomWord(promotionInfo.endTime - 1)) {
-        revert OracleNotCalled();
+        return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.ORACLE_NOT_CALLED);
       }
 
       // The streak bonus random reward should be based on the last day of the promotion
@@ -491,7 +551,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       itemTokenIds[0] = promotionInfo.randomStreakBonusItemTokenIds1[index];
       amounts[0] = promotionInfo.randomStreakBonusAmounts1[index];
     } else {
-      revert MintingOutsideAvailableDate();
+      return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE);
     }
   }
 
