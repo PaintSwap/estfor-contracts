@@ -7,7 +7,7 @@ async function main() {
   console.log(`Clear player promotion using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const promotions = await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS);
-  const playerId = 1;
+  const playerId = 3;
   await promotions.testClearPlayerPromotion(playerId, Promotion.XMAS_2023);
 }
 

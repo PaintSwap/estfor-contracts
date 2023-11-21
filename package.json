@@ -83,6 +83,7 @@
     "addPromotion": "npx hardhat run scripts/addPromotion.ts",
     "editPromotion": "npx hardhat run scripts/editPromotion.ts",
     "removePromotion": "npx hardhat run scripts/removePromotion.ts",
+    "clearPlayerPromotion": "npx hardhat run scripts/clearPlayerPromotion.ts",
     "addQuests": "npx hardhat run scripts/addQuests.ts",
     "editQuests": "npx hardhat run scripts/editQuests.ts",
     "addActions": "npx hardhat run scripts/addActions.ts",

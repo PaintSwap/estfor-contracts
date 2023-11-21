@@ -8,7 +8,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit a promotion using account: ${owner.address} on chain id: ${await owner.getChainId()}`);
   const promotions = (await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)) as Promotions;
-
+  /*
   // Edit old haloween promotion to use the new structure just cause.
   let tx = await promotions.connect(owner).editPromotion({
     promotion: Promotion.HALLOWEEN_2023,
@@ -44,10 +44,10 @@ async function main() {
     randomAmounts: [1, 1, 1],
   });
   await tx.wait();
-  console.log("edit first one");
+  console.log("edit first one"); */
 
-  const startTime = 1700479057; // mon nov 20th 11:17 UTC
-  const numDays = 2;
+  const startTime = 1700563660; // tues nov 21st 10:47 UTC
+  const numDays = 1;
   await promotions.connect(owner).editPromotion({
     promotion: Promotion.XMAS_2023,
     startTime,

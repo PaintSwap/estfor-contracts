@@ -33,7 +33,7 @@ async function main() {
   }); */
 
   // Temporary XMAS promotion
-  const startTime = 1700251200; // fri nov 17th 20:00 UTC
+  const startTime = 1700563660; // tues nov 21st 10:47 UTC
   const numDays = 2;
   await promotions.addPromotion({
     promotion: Promotion.XMAS_2023,
