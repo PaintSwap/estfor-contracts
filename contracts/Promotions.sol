@@ -401,21 +401,25 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     return PromotionMintStatus.SUCCESS;
   }
 
-  function _checkMultidayDailyMintPromotion(uint _playerId, Promotion _promotion) private view {
+  function _checkMultidayDailyMintPromotion(
+    uint _playerId,
+    Promotion _promotion
+  ) private view returns (PromotionMintStatus) {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
     if (promotionInfo.startTime > block.timestamp || promotionInfo.endTime <= block.timestamp) {
-      revert MintingOutsideAvailableDate();
+      return PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE;
     }
 
     // Have they minted today's promotion already?
     uint today = (block.timestamp - promotionInfo.startTime) / 1 days;
     if (multidayPlayerPromotionsCompleted[_playerId][_promotion][today] > 0) {
-      revert PromotionAlreadyClaimed();
+      return PromotionMintStatus.PROMOTION_ALREADY_CLAIMED;
     }
 
     if (promotionInfo.minTotalXP > IPlayers(itemNFT.players()).totalXP(_playerId)) {
-      revert PlayerDoesNotQualify();
+      return PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY;
     }
+    return PromotionMintStatus.SUCCESS;
   }
 
   function _getTierReward(
@@ -484,7 +488,6 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     view
     returns (uint[] memory itemTokenIds, uint[] memory amounts, uint dayToSet, PromotionMintStatus promotionMintStatus)
   {
-    promotionMintStatus = PromotionMintStatus.SUCCESS;
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
     if (block.timestamp < promotionInfo.startTime) {
       return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE);
@@ -497,17 +500,20 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
       amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
 
-      _checkMultidayDailyMintPromotion(_playerId, _promotion);
+      promotionMintStatus = _checkMultidayDailyMintPromotion(_playerId, _promotion);
+      if (promotionMintStatus == PromotionMintStatus.SUCCESS) {
+        if (promotionInfo.randomItemTokenIds.length == 0) {
+          (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(_playerId, world, promotionMintStatus);
+        } else {
+          // Not supported yet
+          assert(false);
+        }
 
-      if (promotionInfo.randomItemTokenIds.length == 0) {
-        (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(_playerId, world, promotionMintStatus);
-      } else {
-        // Not supported yet
-        assert(false);
+        dayToSet = today;
       }
-
-      dayToSet = today;
     } else if (today - numPromotionDays < promotionInfo.numDaysClaimablePeriodStreakBonus) {
+      promotionMintStatus = PromotionMintStatus.SUCCESS;
+
       // Check final day bonus hasn't been claimed and is within the claim period
       if (multidayPlayerPromotionsCompleted[_playerId][_promotion][31] > 0) {
         return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.PROMOTION_ALREADY_CLAIMED);
