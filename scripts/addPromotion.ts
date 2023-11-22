@@ -42,6 +42,7 @@ async function main() {
     minTotalXP: 0,
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
+    brushCostMissedDay: "0",
     brushCost: "0",
     redeemCodeLength: 0,
     adminOnly: false,

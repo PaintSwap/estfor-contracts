@@ -90,6 +90,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     bool evolvedHeroOnly; // Only allow evolved heroes to claim
     // Multiday specific
     bool isMultiday; // The promotion is multi-day
+    uint8 brushCostMissedDay; // Cost in brush to mint the promotion if they miss a day (in ether), max 25.6 (base 100)
     uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
     uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
     uint8 numRandomStreakBonusItemsToPick1; // Number of items to pick for the streak bonus
@@ -110,7 +111,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   struct PromotionInfo {
     Promotion promotion;
     uint40 startTime;
-    uint40 endTime; // Exclusive
+    uint8 numDays;
     uint8 numDailyRandomItemsToPick; // Number of items to pick
     uint40 minTotalXP; // Minimum xp required to claim
     uint24 brushCost; // Cost in brush to mint the promotion (in ether), max 16mil
@@ -124,6 +125,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     bool evolvedHeroOnly; // Only allow evolved heroes to claim
     // Multiday specific
     bool isMultiday; // The promotion is multi-day
+    uint8 brushCostMissedDay; // Cost in brush to mint the promotion if they miss a day (in ether), max 25.5, base 100
     uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
     uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
     uint8 numRandomStreakBonusItemsToPick1; // Number of items to pick for the streak bonus
@@ -266,7 +268,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     userPromotionsClaimed[_to].set(uint8(Promotion.STARTER));
 
     itemNFT.mintBatch(_to, itemTokenIds, amounts);
-    emit PromotionRedeemed(_to, _playerId, Promotion.STARTER, _redeemCode, itemTokenIds, amounts);
+    emit PromotionRedeemedV2(_to, _playerId, Promotion.STARTER, _redeemCode, itemTokenIds, amounts, 0);
   }
 
   /* Add later when we can remove mintStarterPromotionalPack and use this on the server.
@@ -313,7 +315,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     itemNFT.mintBatch(_to, itemTokenIds, amounts);
-    emit PromotionRedeemed(_to, _playerId, _promotion, _redeemCode, itemTokenIds, amounts);
+    emit PromotionRedeemedV2(_to, _playerId, _promotion, _redeemCode, itemTokenIds, amounts, 0);
   }
   */
 
@@ -386,7 +388,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
   function _checkMintPromotion(uint _playerId, Promotion _promotion) private view returns (PromotionMintStatus) {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
-    if (promotionInfo.startTime > block.timestamp || promotionInfo.endTime <= block.timestamp) {
+    if (
+      promotionInfo.startTime > block.timestamp ||
+      (promotionInfo.startTime + promotionInfo.numDays * 1 days) <= block.timestamp
+    ) {
       return PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE;
     }
 
@@ -405,7 +410,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     Promotion _promotion
   ) private view returns (PromotionMintStatus) {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
-    if (promotionInfo.startTime > block.timestamp || promotionInfo.endTime <= block.timestamp) {
+    if (
+      promotionInfo.startTime > block.timestamp ||
+      (promotionInfo.startTime + promotionInfo.numDays * 1 days) <= block.timestamp
+    ) {
       return PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE;
     }
 
@@ -495,9 +503,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     uint today = (block.timestamp - promotionInfo.startTime) / 1 days;
-    uint numPromotionDays = (promotionInfo.endTime - promotionInfo.startTime) / 1 days;
     World world = itemNFT.world();
-    if (today < numPromotionDays) {
+    if (today < promotionInfo.numDays) {
       itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
       amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
 
@@ -518,7 +525,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
         dayToSet = today;
       }
-    } else if (today - numPromotionDays < promotionInfo.numDaysClaimablePeriodStreakBonus) {
+    } else if (today - promotionInfo.numDays < promotionInfo.numDaysClaimablePeriodStreakBonus) {
       promotionMintStatus = PromotionMintStatus.SUCCESS;
 
       // Check final day bonus hasn't been claimed and is within the claim period
@@ -554,7 +561,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       // Pick a random item from the list, only supports 1 item atm
       uint numAvailableItems = promotionInfo.numRandomStreakBonusItemsToPick1;
 
-      uint oracleTime = (promotionInfo.endTime / 1 days) * 1 days - 1;
+      uint endTime = promotionInfo.startTime + promotionInfo.numDays * 1 days;
+      uint oracleTime = (endTime / 1 days) * 1 days - 1;
       if (!world.hasRandomWord(oracleTime)) {
         return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.ORACLE_NOT_CALLED);
       }
@@ -592,8 +600,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       }
 
       uint today = (block.timestamp - promotionInfo.startTime) / 1 days;
-      uint numPromotionDays = (promotionInfo.endTime - promotionInfo.startTime) / 1 days;
-      if (today <= numPromotionDays) {
+      if (today <= promotionInfo.numDays) {
         return multidayPlayerPromotionsCompleted[_playerId][_promotion][today] > 0;
       }
 
@@ -628,16 +635,16 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     if (_promotionInfo.brushCost % 1 ether != 0) {
       revert InvalidBrushCost();
     }
-  }
-
-  // Precondition that the promotion is multiday
-  function _checkAddingMultidayMintPromotion(PromotionInfoInput calldata _promotionInfo) private pure {
-    bool hasStreakBonus = _promotionInfo.numDaysClaimablePeriodStreakBonus != 0;
 
     // start and endTime must be factors of 24 hours apart
     if ((_promotionInfo.endTime - _promotionInfo.startTime) % 1 days != 0) {
       revert InvalidMultidayPromotionTimeInterval();
     }
+  }
+
+  // Precondition that the promotion is multiday
+  function _checkAddingMultidayMintPromotion(PromotionInfoInput calldata _promotionInfo) private pure {
+    bool hasStreakBonus = _promotionInfo.numDaysClaimablePeriodStreakBonus != 0;
 
     if (hasStreakBonus) {
       if (
@@ -695,6 +702,11 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     if (_promotionInfo.numRandomStreakBonusItemsToPick2 > _promotionInfo.randomStreakBonusItemTokenIds2.length) {
       revert PickingTooManyItems();
     }
+
+    // Check brush input is valid
+    if (_promotionInfo.brushCostMissedDay % 1 ether != 0) {
+      revert InvalidBrushCost();
+    }
   }
 
   function _checkAddingSinglePromotion(PromotionInfoInput calldata _promotionInfo) private pure {
@@ -727,7 +739,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     promotionInfo = PromotionInfo({
       promotion: _promotionInfoInput.promotion,
       startTime: _promotionInfoInput.startTime,
-      endTime: _promotionInfoInput.endTime,
+      numDays: uint8((_promotionInfoInput.endTime - _promotionInfoInput.startTime) / 1 days),
       numDailyRandomItemsToPick: _promotionInfoInput.numDailyRandomItemsToPick,
       minTotalXP: _promotionInfoInput.minTotalXP,
       evolvedHeroOnly: _promotionInfoInput.evolvedHeroOnly,
@@ -738,6 +750,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       promotionTiedToPlayer: _promotionInfoInput.promotionTiedToPlayer,
       promotionMustOwnPlayer: _promotionInfoInput.promotionMustOwnPlayer,
       isMultiday: _promotionInfoInput.isMultiday,
+      brushCostMissedDay: uint8(_promotionInfoInput.brushCostMissedDay / 1 ether),
       numDaysHitNeededForStreakBonus: _promotionInfoInput.numDaysHitNeededForStreakBonus,
       numDaysClaimablePeriodStreakBonus: _promotionInfoInput.numDaysClaimablePeriodStreakBonus,
       numRandomStreakBonusItemsToPick1: _promotionInfoInput.numRandomStreakBonusItemsToPick1,

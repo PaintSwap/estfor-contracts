@@ -30,6 +30,7 @@ type PromotionInfoInput = {
   evolvedHeroOnly: boolean; // Only allow evolved heroes to claim
   // Multiday specific
   isMultiday: boolean; // The promotion is multi-day
+  brushCostMissedDay: string; // Cost in brush to start the promotion, max 256
   numDaysHitNeededForStreakBonus: number; // How many days to hit for the streak bonus
   numDaysClaimablePeriodStreakBonus: number; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
   numRandomStreakBonusItemsToPick1: number; // Number of items to pick for the streak bonus
@@ -107,7 +108,7 @@ describe("Promotions", function () {
     return {
       promotion: Promotion.HALLOWEEN_2023,
       startTime: NOW,
-      endTime: NOW + 10000,
+      endTime: NOW + 24 * 3600,
       minTotalXP: 0,
       evolvedHeroOnly: false,
       redeemCodeLength: 0,
@@ -117,6 +118,7 @@ describe("Promotions", function () {
       promotionMustOwnPlayer: false,
       numDailyRandomItemsToPick: 1,
       isMultiday: false,
+      brushCostMissedDay: "0",
       numDaysClaimablePeriodStreakBonus: 0,
       numDaysHitNeededForStreakBonus: 0,
       numRandomStreakBonusItemsToPick1: 0,
@@ -146,9 +148,10 @@ describe("Promotions", function () {
       const promotion = await getBasicSingleMintPromotion();
       await promotions.addPromotion(promotion);
 
+      const newStartTime = NOW - 24 * 3600;
       const editedPromotion = {
         ...promotion,
-        startTime: NOW + 1,
+        startTime: newStartTime,
       };
 
       // Only owner can edit
@@ -160,7 +163,7 @@ describe("Promotions", function () {
       await expect(promotions.editPromotion(editedPromotion)).to.emit(promotions, "EditPromotion");
 
       const activePromotion = await promotions.activePromotions(promotion.promotion);
-      expect(activePromotion.startTime).to.eq(NOW + 1);
+      expect(activePromotion.startTime).to.eq(newStartTime);
     });
 
     it("Removing a promotion", async function () {
@@ -287,7 +290,7 @@ describe("Promotions", function () {
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
 
         let promotion = await getBasicSingleMintPromotion();
-        promotion = {...promotion, startTime: NOW + 50, endTime: NOW + 1000};
+        promotion = {...promotion, startTime: NOW + 50, endTime: NOW + 50 + 24 * 3600};
         await promotions.addPromotion(promotion);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -299,7 +302,7 @@ describe("Promotions", function () {
 
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         let promotion = await getBasicSingleMintPromotion();
-        promotion = {...promotion, startTime: NOW - 2, endTime: NOW - 1};
+        promotion = {...promotion, startTime: NOW - 24 * 3600, endTime: NOW};
         await promotions.addPromotion(promotion);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -323,9 +326,9 @@ describe("Promotions", function () {
       it("Cannot mint if oracle has not been called for previous day", async function () {
         const {promotions, playerId, alice} = await loadFixture(playersFixture);
         let promotion = await getBasicSingleMintPromotion();
-        promotion = {...promotion, endTime: promotion.startTime + 60 * 60 * 24 + 10000};
+        promotion = {...promotion, endTime: promotion.startTime + 3600 * 24 * 2};
 
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await promotions.addPromotion(promotion);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -383,6 +386,7 @@ describe("Promotions", function () {
         promotionMustOwnPlayer: false,
         numDailyRandomItemsToPick: 1,
         isMultiday: true,
+        brushCostMissedDay: "0",
         brushCost: "0",
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
@@ -427,7 +431,7 @@ describe("Promotions", function () {
       await world.setDailyRewardPool(4, [{itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10}]);
       await world.setDailyRewardPool(5, [{itemTokenId: EstforConstants.RUNITE_ARROW, amount: 10}]);
 
-      await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await requestAndFulfillRandomWords(world, mockOracleClient);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
@@ -440,7 +444,7 @@ describe("Promotions", function () {
         TIER_2_DAILY_REWARD_START_XP,
         false
       );
-      await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await requestAndFulfillRandomWords(world, mockOracleClient);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ARROW)).to.eq(10);
@@ -452,7 +456,7 @@ describe("Promotions", function () {
         TIER_3_DAILY_REWARD_START_XP,
         false
       );
-      await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await requestAndFulfillRandomWords(world, mockOracleClient);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ADAMANTINE_ARROW)).to.eq(10);
@@ -464,7 +468,7 @@ describe("Promotions", function () {
         TIER_4_DAILY_REWARD_START_XP,
         false
       );
-      await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await requestAndFulfillRandomWords(world, mockOracleClient);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(10);
@@ -476,7 +480,7 @@ describe("Promotions", function () {
         TIER_5_DAILY_REWARD_START_XP,
         false
       );
-      await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await requestAndFulfillRandomWords(world, mockOracleClient);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(20);
@@ -489,7 +493,7 @@ describe("Promotions", function () {
         false
       );
       // Just get more of runite for now
-      await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await requestAndFulfillRandomWords(world, mockOracleClient);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(30);
@@ -513,7 +517,7 @@ describe("Promotions", function () {
 
       const promotion = await getBasicMultidayMintPromotion();
       await promotions.addPromotion(promotion);
-      await ethers.provider.send("evm_increaseTime", [2 * 60 * 60 * 24 + 1]);
+      await ethers.provider.send("evm_increaseTime", [2 * 3600 * 24 + 1]);
       await expect(
         promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
@@ -536,7 +540,7 @@ describe("Promotions", function () {
     it("Cannot mint if oracle has not been called for previous day", async function () {
       const {promotions, playerId, alice} = await loadFixture(promotionFixture);
 
-      await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
 
       const promotion = await getBasicMultidayMintPromotion();
@@ -572,6 +576,7 @@ describe("Promotions", function () {
           promotionMustOwnPlayer: false,
           numDailyRandomItemsToPick: 1,
           isMultiday: true,
+          brushCostMissedDay: "0",
           brushCost: "0",
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 1,
@@ -699,6 +704,7 @@ describe("Promotions", function () {
           promotionMustOwnPlayer: false,
           numDailyRandomItemsToPick: 1,
           isMultiday: true,
+          brushCostMissedDay: "0",
           brushCost: "0",
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 2,
@@ -731,7 +737,7 @@ describe("Promotions", function () {
         await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotion(promotion);
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
@@ -739,12 +745,12 @@ describe("Promotions", function () {
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
 
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
         // Hit 2 check now
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
 
         // Now in the final day, should be able to claim the streak bonus when the oracle is claimed at least
         await expect(
@@ -752,7 +758,7 @@ describe("Promotions", function () {
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
         await requestAndFulfillRandomWords(world, mockOracleClient);
 
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24 - 20]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24 - 20]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         const balances = await itemNFT.balanceOfs(alice.address, [
@@ -773,10 +779,10 @@ describe("Promotions", function () {
 
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        await ethers.provider.send("evm_increaseTime", [2 * 60 * 60 * 24 - 20]);
+        await ethers.provider.send("evm_increaseTime", [2 * 3600 * 24 - 20]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
 
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
@@ -794,10 +800,10 @@ describe("Promotions", function () {
 
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        await ethers.provider.send("evm_increaseTime", [3 * 60 * 60 * 24]); // Extra day has passed
+        await ethers.provider.send("evm_increaseTime", [3 * 3600 * 24]); // Extra day has passed
 
         await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)).to.revertedWithCustomError(
           promotions,
@@ -813,10 +819,10 @@ describe("Promotions", function () {
         await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotion(promotion);
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        await ethers.provider.send("evm_increaseTime", [3 * 60 * 60 * 24 - 20]);
+        await ethers.provider.send("evm_increaseTime", [3 * 3600 * 24 - 20]);
 
         await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)).to.revertedWithCustomError(
           promotions,
@@ -837,10 +843,10 @@ describe("Promotions", function () {
 
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        await ethers.provider.send("evm_increaseTime", [2 * 60 * 60 * 24]);
+        await ethers.provider.send("evm_increaseTime", [2 * 3600 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await requestAndFulfillRandomWords(world, mockOracleClient);
 
@@ -858,7 +864,7 @@ describe("Promotions", function () {
         expect(await promotions.hasCompletedPromotion(playerId, Promotion.XMAS_2023)).to.eq(false);
         // For the remainder of the days the streak bonus should be the same
         for (let i = 0; i < promotion.numDaysClaimablePeriodStreakBonus - 2; ++i) {
-          await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
+          await ethers.provider.send("evm_increaseTime", [3600 * 24]);
           await requestAndFulfillRandomWords(world, mockOracleClient);
           expect(itemTokenId).to.eq(
             (await promotions.mintPromotionView(playerId, Promotion.XMAS_2023)).itemTokenIds[0]
