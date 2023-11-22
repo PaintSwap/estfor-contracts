@@ -341,9 +341,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       }
     }
 
-    // Check they have paid if this is a paid promotion
+    // Check they have paid or have an evolved hero if the promotion requires it
     PromotionInfo storage promotionInfo = activePromotions[_promotion];
-
     if (!hasClaimedAny(_playerId, _promotion)) {
       if (promotionInfo.brushCost > 0) {
         _pay(promotionInfo.brushCost * 1 ether);
@@ -801,7 +800,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       bool anyClaimed;
       uint8[32] storage daysCompleted = multidayPlayerPromotionsCompleted[_playerId][_promotion];
       assembly ("memory-safe") {
-        anyClaimed := not(eq(sload(daysCompleted.slot), 0))
+        // Anything set in the word would mean at least 1 is claimed
+        anyClaimed := iszero(iszero(sload(daysCompleted.slot)))
       }
       return anyClaimed;
     }
