@@ -102,45 +102,48 @@ describe.only("Promotions", function () {
     });
   });
 
+  async function getBasicSingleMintPromotion(): Promise<PromotionInfoInput> {
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    return {
+      promotion: Promotion.HALLOWEEN_2023,
+      startTime: NOW,
+      endTime: NOW + 10000,
+      minTotalXP: 0,
+      evolvedHeroOnly: false,
+      redeemCodeLength: 0,
+      adminOnly: false,
+      promotionTiedToUser: false,
+      promotionTiedToPlayer: false,
+      promotionMustOwnPlayer: false,
+      numDailyRandomItemsToPick: 1,
+      isMultiday: false,
+      numDaysClaimablePeriodStreakBonus: 0,
+      numDaysHitNeededForStreakBonus: 0,
+      numRandomStreakBonusItemsToPick1: 0,
+      numRandomStreakBonusItemsToPick2: 0,
+      brushCost: "0",
+      randomStreakBonusItemTokenIds1: [],
+      randomStreakBonusAmounts1: [],
+      randomStreakBonusItemTokenIds2: [],
+      randomStreakBonusAmounts2: [],
+      guaranteedStreakBonusItemTokenIds: [],
+      guaranteedStreakBonusAmounts: [],
+      guaranteedItemTokenIds: [],
+      guaranteedAmounts: [],
+      randomItemTokenIds: [
+        EstforConstants.HALLOWEEN_BONUS_1,
+        EstforConstants.HALLOWEEN_BONUS_2,
+        EstforConstants.HALLOWEEN_BONUS_3,
+      ],
+      randomAmounts: [1, 1, 1],
+    };
+  }
+
   describe("Generic", function () {
     it("Editing a promotion", async function () {
       const {promotions, alice} = await loadFixture(playersFixture);
       const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-      const promotion: PromotionInfoInput = {
-        promotion: Promotion.HALLOWEEN_2023,
-        startTime: NOW,
-        endTime: NOW + 10000,
-        minTotalXP: 0,
-        evolvedHeroOnly: false,
-        redeemCodeLength: 0,
-        adminOnly: false,
-        promotionTiedToUser: false,
-        promotionTiedToPlayer: false,
-        promotionMustOwnPlayer: false,
-        numDailyRandomItemsToPick: 1,
-        isMultiday: false,
-        numDaysClaimablePeriodStreakBonus: 0,
-        numDaysHitNeededForStreakBonus: 0,
-        numRandomStreakBonusItemsToPick1: 0,
-        numRandomStreakBonusItemsToPick2: 0,
-        brushCost: "0",
-        randomStreakBonusItemTokenIds1: [],
-        randomStreakBonusAmounts1: [],
-        randomStreakBonusItemTokenIds2: [],
-        randomStreakBonusAmounts2: [],
-        guaranteedStreakBonusItemTokenIds: [],
-        guaranteedStreakBonusAmounts: [],
-        guaranteedItemTokenIds: [],
-        guaranteedAmounts: [],
-        randomItemTokenIds: [
-          EstforConstants.HALLOWEEN_BONUS_1,
-          EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
-        ],
-        randomAmounts: [1, 1, 1],
-      };
-
+      const promotion = await getBasicSingleMintPromotion();
       await promotions.addPromotion(promotion);
 
       const editedPromotion = {
@@ -162,42 +165,7 @@ describe.only("Promotions", function () {
 
     it("Removing a promotion", async function () {
       const {promotions, alice} = await loadFixture(playersFixture);
-      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-      const promotion = {
-        promotion: Promotion.HALLOWEEN_2023,
-        startTime: NOW,
-        endTime: NOW + 10000,
-        minTotalXP: 0,
-        evolvedHeroOnly: false,
-        redeemCodeLength: 0,
-        adminOnly: false,
-        promotionTiedToUser: false,
-        promotionTiedToPlayer: false,
-        promotionMustOwnPlayer: false,
-        numDailyRandomItemsToPick: 1,
-        isMultiday: false,
-        brushCost: "0",
-        numDaysClaimablePeriodStreakBonus: 0,
-        numDaysHitNeededForStreakBonus: 0,
-        numRandomStreakBonusItemsToPick1: 0,
-        numRandomStreakBonusItemsToPick2: 0,
-        randomStreakBonusItemTokenIds1: [],
-        randomStreakBonusAmounts1: [],
-        randomStreakBonusItemTokenIds2: [],
-        randomStreakBonusAmounts2: [],
-        guaranteedStreakBonusItemTokenIds: [],
-        guaranteedStreakBonusAmounts: [],
-        guaranteedItemTokenIds: [],
-        guaranteedAmounts: [],
-        randomItemTokenIds: [
-          EstforConstants.HALLOWEEN_BONUS_1,
-          EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
-        ],
-        randomAmounts: [1, 1, 1],
-      };
-
+      const promotion = await getBasicSingleMintPromotion();
       await promotions.addPromotion(promotion);
 
       // Only owner can remove
@@ -216,42 +184,8 @@ describe.only("Promotions", function () {
       const {promotions, playerId, playerNFT, brush, upgradePlayerBrushPrice, origName, alice} = await loadFixture(
         promotionFixture
       );
-      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-      const promotion = {
-        promotion: Promotion.HALLOWEEN_2023,
-        startTime: NOW,
-        endTime: NOW + 10000,
-        minTotalXP: 0,
-        evolvedHeroOnly: true,
-        redeemCodeLength: 0,
-        adminOnly: false,
-        promotionTiedToUser: false,
-        promotionTiedToPlayer: false,
-        promotionMustOwnPlayer: false,
-        numDailyRandomItemsToPick: 1,
-        isMultiday: false,
-        brushCost: "0",
-        numDaysClaimablePeriodStreakBonus: 0,
-        numDaysHitNeededForStreakBonus: 0,
-        numRandomStreakBonusItemsToPick1: 0,
-        numRandomStreakBonusItemsToPick2: 0,
-        randomStreakBonusItemTokenIds1: [],
-        randomStreakBonusAmounts1: [],
-        randomStreakBonusItemTokenIds2: [],
-        randomStreakBonusAmounts2: [],
-        guaranteedStreakBonusItemTokenIds: [],
-        guaranteedStreakBonusAmounts: [],
-        guaranteedItemTokenIds: [],
-        guaranteedAmounts: [],
-        randomItemTokenIds: [
-          EstforConstants.HALLOWEEN_BONUS_1,
-          EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
-        ],
-        randomAmounts: [1, 1, 1],
-      };
-
+      let promotion = await getBasicSingleMintPromotion();
+      promotion = {...promotion, evolvedHeroOnly: true};
       await promotions.addPromotion(promotion);
       await expect(
         promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -266,6 +200,33 @@ describe.only("Promotions", function () {
       await playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, true);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     });
+
+    it("mintPromotionView status codes", async function () {
+      const {promotions, playerId, alice} = await loadFixture(playersFixture);
+
+      const promotionView = await promotions.connect(alice).mintPromotionView(playerId, Promotion.HALLOWEEN_2023);
+      expect(promotionView.promotionMintStatus).to.eq(EstforTypes.PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE);
+      // TODO: Check them all.
+    });
+
+    it("Check minting before and after 00:00 does not give a different daily reward (many)", async function () {});
+
+    // This test might fail if called around 00:00
+    it("If an event starts at 00:00 it can use previous day's oracle", async function () {
+      const {promotions, playerId, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+
+      // Go to the next 00:00
+      const oneDay = 24 * 3600;
+      let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      let timestamp = Math.floor(currentTimestamp / oneDay) * oneDay + oneDay;
+
+      let promotion = await getBasicSingleMintPromotion();
+      promotion = {...promotion, startTime: timestamp, endTime: timestamp + 24 * 3600};
+      await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await promotions.addPromotion(promotion);
+      await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
+    });
   });
 
   describe("Holiday season promotion", function () {
@@ -278,41 +239,8 @@ describe.only("Promotions", function () {
 
     it("Must own the player for promotions", async function () {
       const {promotions, playerId} = await loadFixture(promotionFixture);
-      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-      await promotions.addPromotion({
-        promotion: Promotion.HALLOWEEN_2023,
-        startTime: NOW,
-        endTime: NOW + 10000,
-        minTotalXP: 0,
-        evolvedHeroOnly: false,
-        redeemCodeLength: 0,
-        adminOnly: false,
-        promotionTiedToUser: false,
-        promotionTiedToPlayer: false,
-        promotionMustOwnPlayer: false,
-        numDailyRandomItemsToPick: 1,
-        isMultiday: false,
-        brushCost: "0",
-        numDaysClaimablePeriodStreakBonus: 0,
-        numDaysHitNeededForStreakBonus: 0,
-        numRandomStreakBonusItemsToPick1: 0,
-        numRandomStreakBonusItemsToPick2: 0,
-        randomStreakBonusItemTokenIds1: [],
-        randomStreakBonusAmounts1: [],
-        randomStreakBonusItemTokenIds2: [],
-        randomStreakBonusAmounts2: [],
-        guaranteedStreakBonusItemTokenIds: [],
-        guaranteedStreakBonusAmounts: [],
-        guaranteedItemTokenIds: [],
-        guaranteedAmounts: [],
-        randomItemTokenIds: [
-          EstforConstants.HALLOWEEN_BONUS_1,
-          EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
-        ],
-        randomAmounts: [1, 1, 1],
-      });
+      const promotion = await getBasicSingleMintPromotion();
+      await promotions.addPromotion(promotion);
       await expect(promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.be.revertedWithCustomError(
         promotions,
         "NotOwnerOfPlayerAndActive"
@@ -324,42 +252,8 @@ describe.only("Promotions", function () {
         // Pick 1 out of 3 items (like halloween 2023)
         const {itemNFT, promotions, alice, playerId} = await loadFixture(promotionFixture);
 
-        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-        await promotions.addPromotion({
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW,
-          endTime: NOW + 1000,
-          minTotalXP: 0,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: "0",
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        });
-
+        const promotion = await getBasicSingleMintPromotion();
+        await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
 
         const balances = await itemNFT.balanceOfs(alice.address, [
@@ -375,41 +269,8 @@ describe.only("Promotions", function () {
         // Just tests that all masks are minted (halloween 2023 example)
         const {itemNFT, playerNFT, promotions, alice, playerId} = await loadFixture(promotionFixture);
 
-        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-        await promotions.addPromotion({
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW,
-          endTime: NOW + 1000,
-          minTotalXP: 0,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: "0",
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        });
+        const promotion = await getBasicSingleMintPromotion();
+        await promotions.addPromotion(promotion);
 
         for (let i = 0; i < 25; ++i) {
           await createPlayer(playerNFT, 1, alice, "name" + i, true);
@@ -425,39 +286,9 @@ describe.only("Promotions", function () {
         const {promotions, alice, playerId} = await loadFixture(promotionFixture);
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
 
-        await promotions.addPromotion({
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW + 50,
-          endTime: NOW + 1000,
-          minTotalXP: 0,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: "0",
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        });
+        let promotion = await getBasicSingleMintPromotion();
+        promotion = {...promotion, startTime: NOW + 50, endTime: NOW + 1000};
+        await promotions.addPromotion(promotion);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
@@ -467,40 +298,9 @@ describe.only("Promotions", function () {
         const {promotions, alice, playerId} = await loadFixture(promotionFixture);
 
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-        await promotions.addPromotion({
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW - 2,
-          endTime: NOW - 1,
-          minTotalXP: 0,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: "0",
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        });
+        let promotion = await getBasicSingleMintPromotion();
+        promotion = {...promotion, startTime: NOW - 2, endTime: NOW - 1};
+        await promotions.addPromotion(promotion);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
@@ -509,41 +309,9 @@ describe.only("Promotions", function () {
       it("Must have the minimum required XP", async function () {
         const {promotions, alice, players, playerId} = await loadFixture(promotionFixture);
 
-        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-        await promotions.addPromotion({
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW,
-          endTime: NOW + 1000,
-          minTotalXP: 10000,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: "0",
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        });
+        let promotion = await getBasicSingleMintPromotion();
+        promotion = {...promotion, minTotalXP: 10000};
+        await promotions.addPromotion(promotion);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "PlayerDoesNotQualify");
@@ -554,44 +322,11 @@ describe.only("Promotions", function () {
 
       it("Cannot mint if oracle has not been called for previous day", async function () {
         const {promotions, playerId, alice} = await loadFixture(playersFixture);
-        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        let promotion = await getBasicSingleMintPromotion();
+        promotion = {...promotion, endTime: promotion.startTime + 60 * 60 * 24 + 10000};
 
         await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
-
-        await promotions.addPromotion({
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW,
-          endTime: NOW + 60 * 60 * 24 + 10000,
-          minTotalXP: 0,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: "0",
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        });
-
+        await promotions.addPromotion(promotion);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
@@ -600,40 +335,8 @@ describe.only("Promotions", function () {
       it("Cannot mint twice", async function () {
         const {promotions, playerId, alice} = await loadFixture(promotionFixture);
 
-        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-        await promotions.addPromotion({
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW,
-          endTime: NOW + 10000,
-          minTotalXP: 0,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: "0",
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        });
+        const promotion = await getBasicSingleMintPromotion();
+        await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
@@ -644,42 +347,8 @@ describe.only("Promotions", function () {
         const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(
           playersFixture
         );
-        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-        const promotion = {
-          promotion: Promotion.HALLOWEEN_2023,
-          startTime: NOW,
-          endTime: NOW + 10000,
-          minTotalXP: 0,
-          evolvedHeroOnly: false,
-          redeemCodeLength: 0,
-          adminOnly: false,
-          promotionTiedToUser: false,
-          promotionTiedToPlayer: false,
-          promotionMustOwnPlayer: false,
-          numDailyRandomItemsToPick: 1,
-          isMultiday: false,
-          brushCost: ethers.utils.parseEther("1").toString(),
-          numDaysClaimablePeriodStreakBonus: 0,
-          numDaysHitNeededForStreakBonus: 0,
-          numRandomStreakBonusItemsToPick1: 0,
-          numRandomStreakBonusItemsToPick2: 0,
-          randomStreakBonusItemTokenIds1: [],
-          randomStreakBonusAmounts1: [],
-          randomStreakBonusItemTokenIds2: [],
-          randomStreakBonusAmounts2: [],
-          guaranteedStreakBonusItemTokenIds: [],
-          guaranteedStreakBonusAmounts: [],
-          guaranteedItemTokenIds: [],
-          guaranteedAmounts: [],
-          randomItemTokenIds: [
-            EstforConstants.HALLOWEEN_BONUS_1,
-            EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
-          ],
-          randomAmounts: [1, 1, 1],
-        };
-
+        let promotion = await getBasicSingleMintPromotion();
+        promotion = {...promotion, brushCost: ethers.utils.parseEther("1").toString()};
         await promotions.addPromotion(promotion);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("1"));
@@ -699,7 +368,7 @@ describe.only("Promotions", function () {
 
   describe("Multi-day with streak bonus holiday promotion", async function () {
     it("End time must be a multiple of days ", async function () {
-      const {promotions, alice, playerId, players, world, mockOracleClient} = await loadFixture(promotionFixture);
+      const {promotions} = await loadFixture(promotionFixture);
       const {timestamp: NOW} = await ethers.provider.getBlock("latest");
 
       await expect(
@@ -1191,7 +860,7 @@ describe.only("Promotions", function () {
     });
 
     describe("Streak bonus", function () {
-      async function geStreakBonusPromotion(): Promise<PromotionInfoInput> {
+      async function getStreakBonusPromotion(): Promise<PromotionInfoInput> {
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         return {
           promotion: Promotion.XMAS_2023,
@@ -1233,7 +902,7 @@ describe.only("Promotions", function () {
           promotionFixture
         );
 
-        const promotion = await geStreakBonusPromotion();
+        const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
         await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
@@ -1274,7 +943,7 @@ describe.only("Promotions", function () {
       it("Cannot claim streak bonus twice", async function () {
         const {players, playerId, alice, promotions, world, mockOracleClient} = await loadFixture(promotionFixture);
 
-        const promotion = await geStreakBonusPromotion();
+        const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
         await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
@@ -1295,7 +964,7 @@ describe.only("Promotions", function () {
       it("Claim outside claim period", async function () {
         const {players, playerId, alice, promotions, world, mockOracleClient} = await loadFixture(promotionFixture);
 
-        const promotion = await geStreakBonusPromotion();
+        const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
         await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
@@ -1315,7 +984,7 @@ describe.only("Promotions", function () {
       it("Not claimed enough days to get streak bonus", async function () {
         const {players, playerId, alice, promotions, world, mockOracleClient} = await loadFixture(promotionFixture);
 
-        const promotion = await geStreakBonusPromotion();
+        const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
         await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
@@ -1336,25 +1005,25 @@ describe.only("Promotions", function () {
           promotionFixture
         );
 
-        const promotion1 = await geStreakBonusPromotion();
-        const promotion = {...promotion1, numDaysClaimablePeriodStreakBonus: 10};
+        let promotion = await getStreakBonusPromotion();
+        promotion = {...promotion, numDaysClaimablePeriodStreakBonus: 10};
 
         await players.setDailyRewardsEnabled(true);
         await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotion(promotion);
-        await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [60 * 60 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [2 * 60 * 60 * 24]);
         await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
 
         const promotionClaim = await promotions.mintPromotionView(playerId, Promotion.XMAS_2023);
         expect(promotionClaim.itemTokenIds.length).to.eq(1);
         expect(promotionClaim.dayToSet).to.eq(31);
+        expect(promotionClaim.promotionMintStatus).to.eq(EstforTypes.PromotionMintStatus.SUCCESS);
         const itemTokenId = promotionClaim.itemTokenIds[0];
         expect(itemTokenId.toNumber()).to.be.oneOf([
           EstforConstants.HALLOWEEN_BONUS_1,
@@ -1377,118 +1046,29 @@ describe.only("Promotions", function () {
         expect(await promotions.hasCompletedPromotion(playerId, Promotion.XMAS_2023)).to.eq(true);
         expect((await itemNFT.balanceOf(alice.address, itemTokenId)).toNumber()).to.eq(1);
       });
+
+      it("Brush cost to enter promotion", async function () {
+        const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(
+          promotionFixture
+        );
+
+        let promotion = await getStreakBonusPromotion();
+        promotion = {...promotion, brushCost: ethers.utils.parseEther("1").toString()};
+
+        await promotions.addPromotion(promotion);
+        await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("1"));
+
+        await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)).to.be.revertedWith(
+          "ERC20: transfer amount exceeds balance"
+        );
+
+        await brush.mint(alice.address, ethers.utils.parseEther("1"));
+        await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
+
+        expect(await brush.balanceOf(alice.address)).to.eq(0);
+        expect(await brush.balanceOf(shop.address)).to.eq(ethers.utils.parseEther("0.5"));
+        expect(await brush.balanceOf(dev.address)).to.eq(ethers.utils.parseEther("0.5"));
+      });
     });
-  });
-
-  it("Brush cost to enter promotion", async function () {
-    const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(playersFixture);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-
-    const promotion = {
-      promotion: Promotion.HALLOWEEN_2023,
-      startTime: NOW,
-      endTime: NOW + 10000,
-      minTotalXP: 0,
-      evolvedHeroOnly: false,
-      redeemCodeLength: 0,
-      adminOnly: false,
-      promotionTiedToUser: false,
-      promotionTiedToPlayer: false,
-      promotionMustOwnPlayer: false,
-      numDailyRandomItemsToPick: 1,
-      isMultiday: false,
-      brushCost: ethers.utils.parseEther("1").toString(),
-      numDaysClaimablePeriodStreakBonus: 0,
-      numDaysHitNeededForStreakBonus: 0,
-      numRandomStreakBonusItemsToPick1: 0,
-      numRandomStreakBonusItemsToPick2: 0,
-      randomStreakBonusItemTokenIds1: [],
-      randomStreakBonusAmounts1: [],
-      randomStreakBonusItemTokenIds2: [],
-      randomStreakBonusAmounts2: [],
-      guaranteedStreakBonusItemTokenIds: [],
-      guaranteedStreakBonusAmounts: [],
-      guaranteedItemTokenIds: [],
-      guaranteedAmounts: [],
-      randomItemTokenIds: [
-        EstforConstants.HALLOWEEN_BONUS_1,
-        EstforConstants.HALLOWEEN_BONUS_2,
-        EstforConstants.HALLOWEEN_BONUS_3,
-      ],
-      randomAmounts: [1, 1, 1],
-    };
-
-    await promotions.addPromotion(promotion);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
-    await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("1"));
-    await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.be.revertedWith(
-      "ERC20: transfer amount exceeds balance"
-    );
-
-    await brush.mint(alice.address, ethers.utils.parseEther("1"));
-    await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
-
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
-    expect(await brush.balanceOf(shop.address)).to.eq(ethers.utils.parseEther("0.5"));
-    expect(await brush.balanceOf(dev.address)).to.eq(ethers.utils.parseEther("0.5"));
-  });
-
-  it("mintPromotionView status codes", async function () {
-    const {promotions, playerId, alice} = await loadFixture(playersFixture);
-
-    const promotionView = await promotions.connect(alice).mintPromotionView(playerId, Promotion.HALLOWEEN_2023);
-    expect(promotionView.promotionMintStatus).to.eq(EstforTypes.PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE);
-    // TODO: Check them all.
-  });
-
-  it("Check minting before and after 00:00 does not give a different daily reward (many)", async function () {});
-
-  // This test might fail if called around 00:00
-  it("If an event starts at 00:00 it can use previous day's oracle", async function () {
-    const {promotions, playerId, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
-
-    // Go to the next 00:00
-    const oneDay = 24 * 3600;
-    let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
-    let timestamp = Math.floor(currentTimestamp / oneDay) * oneDay + oneDay;
-
-    const promotion = {
-      promotion: Promotion.HALLOWEEN_2023,
-      startTime: timestamp,
-      endTime: timestamp + 24 * 3600,
-      minTotalXP: 0,
-      evolvedHeroOnly: false,
-      redeemCodeLength: 0,
-      adminOnly: false,
-      promotionTiedToUser: false,
-      promotionTiedToPlayer: false,
-      promotionMustOwnPlayer: false,
-      numDailyRandomItemsToPick: 1,
-      isMultiday: false,
-      brushCost: "0",
-      numDaysClaimablePeriodStreakBonus: 0,
-      numDaysHitNeededForStreakBonus: 0,
-      numRandomStreakBonusItemsToPick1: 0,
-      numRandomStreakBonusItemsToPick2: 0,
-      randomStreakBonusItemTokenIds1: [],
-      randomStreakBonusAmounts1: [],
-      randomStreakBonusItemTokenIds2: [],
-      randomStreakBonusAmounts2: [],
-      guaranteedStreakBonusItemTokenIds: [],
-      guaranteedStreakBonusAmounts: [],
-      guaranteedItemTokenIds: [],
-      guaranteedAmounts: [],
-      randomItemTokenIds: [
-        EstforConstants.HALLOWEEN_BONUS_1,
-        EstforConstants.HALLOWEEN_BONUS_2,
-        EstforConstants.HALLOWEEN_BONUS_3,
-      ],
-      randomAmounts: [1, 1, 1],
-    };
-
-    await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
-    await promotions.addPromotion(promotion);
-    await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
   });
 });
