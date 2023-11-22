@@ -3,6 +3,7 @@ import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {InstantActions, ItemNFT, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
+import {allTerritories} from "../../scripts/data/terrorities";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
@@ -258,7 +259,6 @@ export const playersFixture = async function () {
   };
   await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
-  // Create player
   const origName = "0xSamWitch";
   const makeActive = true;
   const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
@@ -267,6 +267,28 @@ export const playersFixture = async function () {
   const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
+
+  const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
+  const wftm = await MockWrappedFantom.deploy();
+
+  const artGalleryLockPeriod = 3600;
+  const artGallery = await ethers.deployContract("TestPaintSwapArtGallery", [brush.address, artGalleryLockPeriod]);
+  const brushPerSecond = ethers.utils.parseEther("2");
+  const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+
+  const decorator = await ethers.deployContract("TestPaintSwapDecorator", [
+    brush.address,
+    artGallery.address,
+    router.address,
+    wftm.address,
+    brushPerSecond,
+    NOW,
+  ]);
+
+  await artGallery.transferOwnership(decorator.address);
+
+  const Territories = await ethers.getContractFactory("Territories");
+  const territories = await upgrades.deployProxy(Territories, [allTerritories, clans.address, brush.address]);
 
   return {
     playerId,
@@ -310,5 +332,10 @@ export const playersFixture = async function () {
     playersLibrary,
     instantActions,
     clanBattleLibrary,
+    artGallery,
+    artGalleryLockPeriod,
+    decorator,
+    brushPerSecond,
+    territories,
   };
 };

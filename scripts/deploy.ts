@@ -15,9 +15,18 @@ import {
   Promotions,
   Quests,
   Shop,
+  TestPaintSwapArtGallery,
+  TestPaintSwapDecorator,
   World,
 } from "../typechain-types";
-import {deployPlayerImplementations, isBeta, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
+import {
+  deployMockPaintSwapContracts,
+  deployPlayerImplementations,
+  isBeta,
+  isDevNetwork,
+  setDailyAndWeeklyRewards,
+  verifyContracts,
+} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
 import {
@@ -53,6 +62,7 @@ import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
+import {allTerritories} from "./data/terrorities";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -66,14 +76,19 @@ async function main() {
   let oracle: MockOracleClient;
   let router: MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
+  let paintSwapDecorator: TestPaintSwapDecorator;
+  let paintSwapArtGallery: TestPaintSwapArtGallery;
   let tx;
   let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
+  let pid = 0;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
+    const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
+    const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
@@ -83,21 +98,29 @@ async function main() {
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
-      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
+        brush,
+        router,
+        wftm
+      ));
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
+      await brush.deployed();
       tx = await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       console.log("Minted brush");
       await tx.wait();
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
       oracle = await MockOracleClient.deploy();
+      await oracle.deployed();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
-      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
+        brush,
+        router,
+        wftm
+      ));
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
@@ -107,6 +130,9 @@ async function main() {
       paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.attach(
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
       );
+      paintSwapArtGallery = await TestPaintSwapArtGallery.attach("0x9076C96e01F6F13e1eC4832354dF970d245e124F");
+      paintSwapDecorator = await TestPaintSwapDecorator.attach("0xCb80F529724B9620145230A0C866AC2FACBE4e3D");
+      pid = 30; // TODO: Update this later when it's actually added to the masterchef
     } else {
       throw Error("Not a supported network");
     }
@@ -374,6 +400,21 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
+  const Territories = await ethers.getContractFactory("Territories");
+  const territories = await upgrades.deployProxy(Territories, [allTerritories, clans.address, brush.address]);
+  console.log(`territories = "${territories.address.toLowerCase()}"`);
+
+  const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
+  const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
+    paintSwapDecorator.address,
+    paintSwapArtGallery.address,
+    territories.address,
+    brush.address,
+    devAddress,
+    pid,
+  ]);
+  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {
     try {
@@ -403,6 +444,7 @@ async function main() {
         bankRegistry.address,
         bankFactory.address,
         instantActions.address,
+        decoratorProvider.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
