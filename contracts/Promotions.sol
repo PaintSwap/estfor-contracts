@@ -425,6 +425,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   function _getTierReward(
     uint _playerId,
     World _world,
+    uint _oracleTime,
     PromotionMintStatus _oldStatus
   ) private view returns (uint itemTokenId, uint amount, PromotionMintStatus promotionMintStatus) {
     // No items specified to choose from so pick a random daily item from the tier above
@@ -445,7 +446,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       playerTier = 2;
     }
 
-    if (!_world.hasRandomWord(block.timestamp - 1 days)) {
+    if (!_world.hasRandomWord(_oracleTime)) {
       promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
     } else {
       (itemTokenId, amount) = _world.getDailyReward(playerTier, _playerId);
@@ -467,10 +468,11 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       uint numAvailableItems = promotionInfo.randomItemTokenIds.length;
       World world = itemNFT.world();
 
-      if (!world.hasRandomWord(block.timestamp - 1 days)) {
+      uint oracleTime = (promotionInfo.startTime / 1 days) * 1 days - 1;
+      if (!world.hasRandomWord(oracleTime)) {
         promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
       } else {
-        uint randomWord = itemNFT.world().getRandomWord(block.timestamp - 1 days);
+        uint randomWord = itemNFT.world().getRandomWord(oracleTime);
         uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
         uint index = modifiedRandomWord % numAvailableItems;
         itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
@@ -503,7 +505,13 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       promotionMintStatus = _checkMultidayDailyMintPromotion(_playerId, _promotion);
       if (promotionMintStatus == PromotionMintStatus.SUCCESS) {
         if (promotionInfo.randomItemTokenIds.length == 0) {
-          (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(_playerId, world, promotionMintStatus);
+          uint oracleTime = ((promotionInfo.startTime / 1 days + today) * 1 days) - 1;
+          (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(
+            _playerId,
+            world,
+            oracleTime,
+            promotionMintStatus
+          );
         } else {
           // Not supported yet
           assert(false);
@@ -546,12 +554,14 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       // Mint the final day bonus
       // Pick a random item from the list, only supports 1 item atm
       uint numAvailableItems = promotionInfo.numRandomStreakBonusItemsToPick1;
-      if (!world.hasRandomWord(promotionInfo.endTime - 1)) {
+
+      uint oracleTime = (promotionInfo.endTime / 1 days) * 1 days - 1;
+      if (!world.hasRandomWord(oracleTime)) {
         return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.ORACLE_NOT_CALLED);
       }
 
       // The streak bonus random reward should be based on the last day of the promotion
-      uint randomWord = itemNFT.world().getRandomWord(promotionInfo.endTime - 1);
+      uint randomWord = itemNFT.world().getRandomWord(oracleTime);
       uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
       uint index = modifiedRandomWord % numAvailableItems;
       itemTokenIds[0] = promotionInfo.randomStreakBonusItemTokenIds1[index];
