@@ -47,7 +47,7 @@ type PromotionInfoInput = {
   randomAmounts: number[]; // Corresponding amounts to the randomItemTokenIds
 };
 
-describe.only("Promotions", function () {
+describe("Promotions", function () {
   const promotionFixture = async function () {
     const fixture = await loadFixture(playersFixture);
     await requestAndFulfillRandomWords(fixture.world, fixture.mockOracleClient);
