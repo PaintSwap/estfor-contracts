@@ -7,3 +7,4 @@ import "./misc.sol";
 import "./players.sol";
 import "./rewards.sol";
 import "./quests.sol";
+import "./promotions.sol";

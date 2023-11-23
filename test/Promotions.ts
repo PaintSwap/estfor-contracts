@@ -206,8 +206,7 @@ describe("Promotions", function () {
 
     it("mintPromotionView status codes", async function () {
       const {promotions, playerId, alice} = await loadFixture(playersFixture);
-
-      const promotionView = await promotions.connect(alice).mintPromotionView(playerId, Promotion.HALLOWEEN_2023);
+      const promotionView = await promotions.connect(alice).mintPromotionViewNow(playerId, Promotion.HALLOWEEN_2023);
       expect(promotionView.promotionMintStatus).to.eq(EstforTypes.PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE);
       // TODO: Check them all.
     });
@@ -406,13 +405,130 @@ describe("Promotions", function () {
     }
 
     it("End time must be a multiple of days", async function () {
-      const {promotions} = await loadFixture(promotionFixture);
+      const {promotions, promotionsLibrary} = await loadFixture(promotionFixture);
       let promotion = await getBasicMultidayMintPromotion();
       promotion = {...promotion, endTime: promotion.startTime + 1000};
       await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-        promotions,
+        promotionsLibrary,
         "InvalidMultidayPromotionTimeInterval"
       );
+    });
+
+    describe("Paying for missed days", function () {
+      it("Pay for 1 missed day", async function () {
+        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        let promotion = await getBasicMultidayMintPromotion();
+        promotion = {
+          ...promotion,
+          endTime: NOW + 3 * 24 * 3600,
+          brushCostMissedDay: ethers.utils.parseEther("10").toString(),
+        };
+
+        await promotions.addPromotion(promotion);
+
+        await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("20"));
+        await brush.mint(alice.address, ethers.utils.parseEther("20"));
+
+        // Miss a day
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+
+        const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
+        expect(mintView.daysToSet[0]).to.eq(1);
+
+        expect(await brush.balanceOf(alice.address)).to.eq(ethers.utils.parseEther("20"));
+        await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0]);
+        expect(await brush.balanceOf(alice.address)).to.eq(ethers.utils.parseEther("10"));
+      });
+
+      it("Pay for multiple missed days", async function () {
+        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        let promotion = await getBasicMultidayMintPromotion();
+        promotion = {
+          ...promotion,
+          endTime: NOW + 4 * 24 * 3600,
+          brushCostMissedDay: ethers.utils.parseEther("10").toString(),
+        };
+        await promotions.addPromotion(promotion);
+
+        await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("10").mul(2));
+        await brush.mint(alice.address, ethers.utils.parseEther("10").mul(2));
+
+        // Miss a couple days
+        await ethers.provider.send("evm_increaseTime", [3600 * 24 * 3]);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+
+        const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
+        expect(mintView.daysToSet[0]).to.eq(3);
+
+        await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 2]);
+        expect(await brush.balanceOf(alice.address)).to.eq(0);
+
+        expect(await promotions.multidayPlayerPromotionsCompleted(playerId, promotion.promotion, 0)).to.eq(0xff);
+        expect(await promotions.multidayPlayerPromotionsCompleted(playerId, promotion.promotion, 1)).to.eq(0);
+        expect(await promotions.multidayPlayerPromotionsCompleted(playerId, promotion.promotion, 2)).to.eq(0xff);
+      });
+
+      it("Check payees", async function () {
+        // TODO, balanceOf of pool, dev, burn etc
+      });
+
+      it("Cannot pay for today if it is claimable", async function () {
+        const {playerId, promotions, brush, alice} = await loadFixture(promotionFixture);
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        let promotion = await getBasicMultidayMintPromotion();
+        promotion = {
+          ...promotion,
+          endTime: NOW + 3 * 24 * 3600,
+          brushCostMissedDay: ethers.utils.parseEther("10").toString(),
+        };
+        await promotions.addPromotion(promotion);
+
+        await brush.connect(alice).approve(promotions.address, promotion.brushCostMissedDay);
+        await brush.mint(alice.address, promotion.brushCostMissedDay);
+
+        const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
+        expect(mintView.daysToSet[0]).to.eq(0);
+
+        await expect(
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0])
+        ).to.be.revertedWithCustomError(promotions, "CannotPayForToday");
+      });
+
+      it("Cannot have duplicates or unsorted in the days array", async function () {
+        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        let promotion = await getBasicMultidayMintPromotion();
+        promotion = {
+          ...promotion,
+          endTime: NOW + 3 * 24 * 3600,
+          brushCostMissedDay: ethers.utils.parseEther("10").toString(),
+        };
+        await promotions.addPromotion(promotion);
+
+        await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("20"));
+        await brush.mint(alice.address, ethers.utils.parseEther("20"));
+
+        const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
+        expect(mintView.daysToSet[0]).to.eq(0);
+
+        // Miss a day
+        await ethers.provider.send("evm_increaseTime", [3600 * 24 * 2]);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+
+        await expect(
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 0])
+        ).to.be.revertedWithCustomError(promotions, "DaysArrayNotSortedOrDuplicates");
+        await expect(
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [1, 0])
+        ).to.be.revertedWithCustomError(promotions, "DaysArrayNotSortedOrDuplicates");
+        await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 1]);
+      });
     });
 
     it("Check tiered minting is working correctly based on XP", async function () {
@@ -600,24 +716,24 @@ describe("Promotions", function () {
       }
 
       it("Check streak bonus inputs when numDaysClaimablePeriodStreakBonus=0", async function () {
-        const {promotions} = await loadFixture(promotionFixture);
+        const {promotions, promotionsLibrary} = await loadFixture(promotionFixture);
 
         let promotion = {...(await getOriginalPromotion())};
         promotion.numDaysClaimablePeriodStreakBonus = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
+          promotionsLibrary,
           "InvalidStreakBonus"
         );
 
         promotion.numDaysHitNeededForStreakBonus = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
+          promotionsLibrary,
           "InvalidStreakBonus"
         );
 
         promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
+          promotionsLibrary,
           "InvalidStreakBonus"
         );
 
@@ -631,7 +747,10 @@ describe("Promotions", function () {
 
         // Wrong itemTokenIds length
         promotion.randomStreakBonusItemTokenIds1 = [EstforConstants.HALLOWEEN_BONUS_1];
-        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(promotions, "LengthMismatch");
+        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
+          promotionsLibrary,
+          "LengthMismatch"
+        );
         // reset those
         promotion.randomStreakBonusItemTokenIds1 = [
           EstforConstants.HALLOWEEN_BONUS_1,
@@ -641,7 +760,7 @@ describe("Promotions", function () {
       });
 
       it("Check streak bonus inputs when isMultiday=false", async function () {
-        const {promotions} = await loadFixture(promotionFixture);
+        const {promotions, promotionsLibrary} = await loadFixture(promotionFixture);
 
         const promotion = {...(await getOriginalPromotion())};
         // isMultiday is false so none of the multiday ones should be set, like previously
@@ -649,27 +768,33 @@ describe("Promotions", function () {
         promotion.numDaysClaimablePeriodStreakBonus = 0;
         promotion.numDaysHitNeededForStreakBonus = 0;
         promotion.numRandomStreakBonusItemsToPick1 = 0;
-        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(promotions, "MultidaySpecified");
+        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
+          promotionsLibrary,
+          "MultidaySpecified"
+        );
         promotion.randomStreakBonusItemTokenIds1 = [];
         promotion.randomStreakBonusAmounts1 = [];
-        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(promotions, "NoItemsToPickFrom");
+        await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
+          promotionsLibrary,
+          "NoItemsToPickFrom"
+        );
       });
 
       it("Check streak bonus inputs when isMultiday=true", async function () {
-        const {promotions} = await loadFixture(promotionFixture);
+        const {promotions, promotionsLibrary} = await loadFixture(promotionFixture);
 
         const promotion = {...(await getOriginalPromotion())};
 
         promotion.numDaysHitNeededForStreakBonus = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
+          promotionsLibrary,
           "InvalidStreakBonus"
         );
 
         promotion.numDaysHitNeededForStreakBonus = 1;
         promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
+          promotionsLibrary,
           "InvalidStreakBonus"
         );
 
@@ -678,7 +803,7 @@ describe("Promotions", function () {
         promotion.randomStreakBonusAmounts1 = [];
 
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
-          promotions,
+          promotionsLibrary,
           "InvalidStreakBonus"
         );
 
@@ -850,9 +975,10 @@ describe("Promotions", function () {
         await requestAndFulfillRandomWords(world, mockOracleClient);
         await requestAndFulfillRandomWords(world, mockOracleClient);
 
-        const promotionClaim = await promotions.mintPromotionView(playerId, Promotion.XMAS_2023);
+        const promotionClaim = await promotions.mintPromotionViewNow(playerId, Promotion.XMAS_2023);
         expect(promotionClaim.itemTokenIds.length).to.eq(1);
-        expect(promotionClaim.dayToSet).to.eq(31);
+        expect(promotionClaim.daysToSet.length).to.eq(1);
+        expect(promotionClaim.daysToSet[0]).to.eq(31);
         expect(promotionClaim.promotionMintStatus).to.eq(EstforTypes.PromotionMintStatus.SUCCESS);
         const itemTokenId = promotionClaim.itemTokenIds[0];
         expect(itemTokenId.toNumber()).to.be.oneOf([
@@ -867,7 +993,7 @@ describe("Promotions", function () {
           await ethers.provider.send("evm_increaseTime", [3600 * 24]);
           await requestAndFulfillRandomWords(world, mockOracleClient);
           expect(itemTokenId).to.eq(
-            (await promotions.mintPromotionView(playerId, Promotion.XMAS_2023)).itemTokenIds[0]
+            (await promotions.mintPromotionViewNow(playerId, Promotion.XMAS_2023)).itemTokenIds[0]
           );
         }
 

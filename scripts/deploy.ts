@@ -241,12 +241,16 @@ async function main() {
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
-  const Promotions = await ethers.getContractFactory("Promotions");
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  const Promotions = await ethers.getContractFactory("Promotions", {
+    libraries: {PromotionsLibrary: promotionsLibrary.address},
+  });
   const promotions = (await upgrades.deployProxy(
     Promotions,
     [adminAccess.address, itemNFT.address, playerNFT.address, isBeta],
     {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
       timeout,
     }
   )) as Promotions;
