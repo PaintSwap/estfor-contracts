@@ -68,6 +68,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error MustBeAdminOnlyPromotion();
   error CannotPayForToday();
   error DaysArrayNotSortedOrDuplicates();
+  error PromotionFinished();
 
   struct PromotionInfoV1 {
     Promotion promotion;
@@ -240,6 +241,14 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
     if (promotionInfo.brushCostMissedDay == 0) {
       revert InvalidBrushCost();
+    }
+
+    // Don't allow to pay if the promotion has finished
+    if (
+      promotionInfo.startTime + (promotionInfo.numDays + promotionInfo.numDaysClaimablePeriodStreakBonus) * 1 days <=
+      block.timestamp
+    ) {
+      revert PromotionFinished();
     }
 
     uint[] memory itemTokenIds = new uint[](_days.length);

@@ -529,6 +529,48 @@ describe("Promotions", function () {
         ).to.be.revertedWithCustomError(promotions, "DaysArrayNotSortedOrDuplicates");
         await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 1]);
       });
+
+      it("Cannot pay after the entire streak bonus deadline has passed", async function () {
+        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        let promotion = await getBasicMultidayMintPromotion();
+        promotion = {
+          ...promotion,
+          brushCostMissedDay: ethers.utils.parseEther("10").toString(),
+        };
+        await promotions.addPromotion(promotion);
+
+        await brush.connect(alice).approve(promotions.address, promotion.brushCostMissedDay);
+        await brush.mint(alice.address, promotion.brushCostMissedDay);
+
+        await ethers.provider.send("evm_increaseTime", [3600 * 24 * 2]);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await expect(
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0])
+        ).to.be.revertedWithCustomError(promotions, "PromotionFinished");
+      });
+
+      it("Cannot pay in the future", async function () {
+        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        let promotion = await getBasicMultidayMintPromotion();
+        promotion = {
+          ...promotion,
+          endTime: NOW + 3 * 24 * 3600,
+          brushCostMissedDay: ethers.utils.parseEther("10").toString(),
+        };
+        await promotions.addPromotion(promotion);
+
+        await brush.connect(alice).approve(promotions.address, promotion.brushCostMissedDay);
+        await brush.mint(alice.address, promotion.brushCostMissedDay);
+
+        const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
+        expect(mintView.daysToSet[0]).to.eq(0);
+
+        await expect(
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [1])
+        ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
+      });
     });
 
     it("Check tiered minting is working correctly based on XP", async function () {
