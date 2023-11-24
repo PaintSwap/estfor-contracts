@@ -47,12 +47,13 @@ async function main() {
   await tx.wait();
   console.log("edit first one"); */
 
-  const startTime = 1700563660; // tues nov 21st 10:47 UTC
-  const numDays = 1;
+  const startTime = 1700839686; // fri nov 24th 11:52 UTC
+  const numDays = 3;
+  const offset = 0;
   await promotions.connect(owner).editPromotion({
     promotion: Promotion.XMAS_2023,
-    startTime,
-    endTime: startTime + 24 * 3600 * numDays,
+    startTime: startTime - offset * 24 * 3600,
+    endTime: startTime - offset * 24 * 3600 + 24 * 3600 * numDays,
     minTotalXP: 0,
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
@@ -64,8 +65,8 @@ async function main() {
     promotionTiedToPlayer: false,
     promotionMustOwnPlayer: false,
     evolvedHeroOnly: false,
-    numDaysClaimablePeriodStreakBonus: 1,
-    numDaysHitNeededForStreakBonus: 1,
+    numDaysClaimablePeriodStreakBonus: 2,
+    numDaysHitNeededForStreakBonus: 2,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
     randomStreakBonusItemTokenIds1: [
