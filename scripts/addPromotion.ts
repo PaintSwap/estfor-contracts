@@ -33,9 +33,8 @@ async function main() {
     amounts: [1, 1, 1],
   }); */
 
-  // Temporary XMAS promotion
-  const startTime = 1700563660; // tues nov 21st 10:47 UTC
-  const numDays = 2;
+  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
+  const numDays = 22;
   await promotions.connect(owner).addPromotion({
     promotion: Promotion.XMAS_2023,
     startTime,
@@ -51,8 +50,8 @@ async function main() {
     promotionTiedToPlayer: true,
     promotionMustOwnPlayer: true,
     evolvedHeroOnly: false,
-    numDaysClaimablePeriodStreakBonus: 1,
-    numDaysHitNeededForStreakBonus: 1,
+    numDaysClaimablePeriodStreakBonus: 9,
+    numDaysHitNeededForStreakBonus: 20,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
     randomStreakBonusItemTokenIds1: [
