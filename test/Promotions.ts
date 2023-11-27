@@ -473,6 +473,49 @@ describe("Promotions", function () {
         expect(await promotions.multidayPlayerPromotionsCompleted(playerId, promotion.promotion, 2)).to.eq(0xff);
       });
 
+      it("Paying for a previous day should use a different random word (give different rewards)", async function () {
+        const {playerId, promotions, brush, alice, world, mockOracleClient, itemNFT} = await loadFixture(
+          promotionFixture
+        );
+        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        let promotion = await getBasicMultidayMintPromotion();
+        promotion = {
+          ...promotion,
+          endTime: NOW + 10 * 24 * 3600,
+          brushCostMissedDay: ethers.utils.parseEther("10").toString(),
+        };
+        await promotions.addPromotion(promotion);
+
+        await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("10").mul(10));
+        await brush.mint(alice.address, ethers.utils.parseEther("10").mul(10));
+
+        await world.setDailyRewardPool(2, [
+          {itemTokenId: EstforConstants.IRON_ARROW, amount: 10},
+          {itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10},
+        ]);
+
+        await ethers.provider.send("evm_increaseTime", [3600 * 24 * 9]);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockOracleClient);
+
+        const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
+        expect(mintView.daysToSet[0]).to.eq(9);
+
+        // Mint the current one
+        await promotions.connect(alice).mintPromotion(playerId, promotion.promotion);
+        await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 1, 2, 3, 4, 5, 6, 7]);
+
+        expect(await itemNFT.balanceOf(alice.address, EstforConstants.IRON_ARROW)).to.be.gt(0);
+        expect(await itemNFT.balanceOf(alice.address, EstforConstants.ADAMANTINE_ARROW)).to.be.gt(0);
+      });
+
       it("Check payees", async function () {
         // TODO, balanceOf of pool, dev, burn etc
       });

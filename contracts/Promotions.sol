@@ -476,7 +476,12 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     if (!_world.hasRandomWord(_oracleTime)) {
       promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
     } else {
-      (itemTokenId, amount) = _world.getDailyReward(playerTier, _playerId);
+      (itemTokenId, amount) = _world.getSpecificDailyReward(
+        playerTier,
+        _playerId,
+        0,
+        _world.getRandomWord(_oracleTime)
+      );
     }
   }
 
