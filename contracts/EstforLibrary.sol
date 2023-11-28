@@ -197,4 +197,23 @@ library EstforLibrary {
     }
     return string(lowerStr);
   }
+
+  function binarySearch(uint64[] storage _arr, uint _target) internal view returns (uint) {
+    uint low = 0;
+    uint high = _arr.length - 1;
+
+    while (low <= high) {
+      uint mid = low + (high - low) / 2;
+
+      if (_arr[mid] == _target) {
+        return mid;
+      } else if (_arr[mid] < _target) {
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    return type(uint).max; // Element not found
+  }
 }

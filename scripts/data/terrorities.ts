@@ -1,3 +1,5 @@
+import {Skill} from "@paintswap/estfor-definitions/types";
+
 export type TerritoryInput = {
   territoryId: number;
   percentageEmissions: number;
@@ -106,4 +108,23 @@ export const allTerritories: TerritoryInput[] = [
     territoryId: 25,
     percentageEmissions: 2 * PERCENTAGE_EMISSION_MUL,
   },
+];
+
+export const allTerritorySkills = [
+  Skill.MELEE,
+  Skill.RANGED,
+  Skill.MAGIC,
+  Skill.DEFENCE,
+  Skill.HEALTH,
+  Skill.MINING,
+  Skill.WOODCUTTING,
+  Skill.FISHING,
+  Skill.SMITHING,
+  Skill.THIEVING,
+  Skill.CRAFTING,
+  Skill.COOKING,
+  Skill.FIREMAKING,
+  Skill.ALCHEMY,
+  Skill.FLETCHING,
+  Skill.FORGING,
 ];

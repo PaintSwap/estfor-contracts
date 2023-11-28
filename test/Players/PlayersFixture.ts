@@ -3,10 +3,10 @@ import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {InstantActions, ItemNFT, PlayerNFT, Players, Promotions, Shop, World} from "../../typechain-types";
 import {MAX_TIME} from "../utils";
-import {allTerritories} from "../../scripts/data/terrorities";
+import {allTerritories, allTerritorySkills} from "../../scripts/data/terrorities";
 
 export const playersFixture = async function () {
-  const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
+  const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
 
   const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
   const brush = await MockBrushToken.deploy();
@@ -235,35 +235,6 @@ export const playersFixture = async function () {
     kind: "uups",
   })) as InstantActions;
 
-  await world.setQuests(quests.address);
-  await world.setWishingWell(wishingWell.address);
-
-  await itemNFT.setPlayers(players.address);
-  await playerNFT.setPlayers(players.address);
-  await quests.setPlayers(players.address);
-  await clans.setPlayers(players.address);
-  await wishingWell.setPlayers(players.address);
-
-  await itemNFT.setBankFactory(bankFactory.address);
-  await clans.setBankFactory(bankFactory.address);
-
-  await itemNFT.setPromotions(promotions.address);
-  await itemNFT.setInstantActions(instantActions.address);
-
-  const avatarId = 1;
-  const avatarInfo: AvatarInfo = {
-    name: "Name goes here",
-    description: "Hi I'm a description",
-    imageURI: "1234.png",
-    startSkills: [Skill.MAGIC, Skill.NONE],
-  };
-  await playerNFT.setAvatars([avatarId], [avatarInfo]);
-
-  const origName = "0xSamWitch";
-  const makeActive = true;
-  const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
-  const maxTime = MAX_TIME;
-
   const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
@@ -287,8 +258,63 @@ export const playersFixture = async function () {
 
   await artGallery.transferOwnership(decorator.address);
 
-  const Territories = await ethers.getContractFactory("Territories");
-  const territories = await upgrades.deployProxy(Territories, [allTerritories, clans.address, brush.address]);
+  const Territories = await ethers.getContractFactory("Territories", {
+    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
+  });
+  const terrorityBrushAttackingCost = ethers.utils.parseEther("1");
+
+  const territories = await upgrades.deployProxy(
+    Territories,
+    [
+      allTerritories,
+      players.address,
+      clans.address,
+      brush.address,
+      bankFactory.address,
+      terrorityBrushAttackingCost,
+      allTerritorySkills,
+      dev.address,
+      mockOracleClient.address,
+      subscriptionId,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+    }
+  );
+
+  await world.setQuests(quests.address);
+  await world.setWishingWell(wishingWell.address);
+
+  await itemNFT.setPlayers(players.address);
+  await playerNFT.setPlayers(players.address);
+  await quests.setPlayers(players.address);
+  await clans.setPlayers(players.address);
+  await wishingWell.setPlayers(players.address);
+
+  await itemNFT.setBankFactory(bankFactory.address);
+  await clans.setBankFactory(bankFactory.address);
+
+  await itemNFT.setPromotions(promotions.address);
+  await itemNFT.setInstantActions(instantActions.address);
+
+  await clans.setTerritories(territories.address);
+
+  const avatarId = 1;
+  const avatarInfo: AvatarInfo = {
+    name: "Name goes here",
+    description: "Hi I'm a description",
+    imageURI: "1234.png",
+    startSkills: [Skill.MAGIC, Skill.NONE],
+  };
+  await playerNFT.setAvatars([avatarId], [avatarInfo]);
+
+  const origName = "0xSamWitch";
+  const makeActive = true;
+  const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
+  const maxTime = MAX_TIME;
 
   return {
     playerId,
@@ -304,6 +330,8 @@ export const playersFixture = async function () {
     bob,
     charlie,
     dev,
+    erin,
+    frank,
     origName,
     editNameBrushPrice,
     upgradePlayerBrushPrice,
@@ -337,5 +365,6 @@ export const playersFixture = async function () {
     decorator,
     brushPerSecond,
     territories,
+    terrorityBrushAttackingCost,
   };
 };

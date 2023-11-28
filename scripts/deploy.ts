@@ -62,7 +62,7 @@ import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
-import {allTerritories} from "./data/terrorities";
+import {allTerritories, allTerritorySkills} from "./data/terrorities";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -400,8 +400,38 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
-  const Territories = await ethers.getContractFactory("Territories");
-  const territories = await upgrades.deployProxy(Territories, [allTerritories, clans.address, brush.address]);
+  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", {
+    libraries: {PlayersLibrary: playersLibrary.address},
+  });
+  console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
+
+  const Territories = await ethers.getContractFactory("Territories", {
+    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
+  });
+  const terrorityBrushAttackingCost = isBeta ? ethers.utils.parseEther("1") : ethers.utils.parseEther("1000");
+  const territorySubscriptionId = 97;
+  const territories = await upgrades.deployProxy(
+    Territories,
+    [
+      allTerritories,
+      players.address,
+      clans.address,
+      brush.address,
+      bankFactory.address,
+      terrorityBrushAttackingCost,
+      allTerritorySkills,
+      devAddress,
+      oracle.address,
+      territorySubscriptionId,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
   console.log(`territories = "${territories.address.toLowerCase()}"`);
 
   const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
@@ -444,6 +474,8 @@ async function main() {
         bankRegistry.address,
         bankFactory.address,
         instantActions.address,
+        clanBattleLibrary.address,
+        territories.address,
         decoratorProvider.address,
       ];
       console.log("Verifying contracts...");
@@ -496,6 +528,10 @@ async function main() {
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
   console.log("setItemNFT");
+
+  tx = await clans.setTerritories(territories.address);
+  await tx.wait();
+  console.log("setTerritories");
 
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();

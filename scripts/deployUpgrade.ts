@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {EstforLibrary, WorldLibrary} from "../typechain-types";
+import {ClanBattleLibrary, EstforLibrary, WorldLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -16,6 +16,9 @@ import {
   BANK_REGISTRY_ADDRESS,
   INSTANT_ACTIONS_ADDRESS,
   PROMOTIONS_ADDRESS,
+  CLAN_BATTLE_LIBRARY_ADDRESS,
+  TERRITORIES_ADDRESS,
+  DECORATOR_PROVIDER_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -178,6 +181,36 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
+  const newClanBattleLibrary = false;
+  const ClanBattleLibrary = await ethers.getContractFactory("ClanBattleLibrary");
+  let clanBattleLibrary: ClanBattleLibrary;
+  if (newClanBattleLibrary) {
+    clanBattleLibrary = await ClanBattleLibrary.deploy();
+    await estforLibrary.deployed();
+    await verifyContracts([clanBattleLibrary.address]);
+  } else {
+    clanBattleLibrary = await ClanBattleLibrary.attach(CLAN_BATTLE_LIBRARY_ADDRESS);
+  }
+  console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
+
+  const Territories = await ethers.getContractFactory("Territories", {
+    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
+  });
+  const territories = await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
+    kind: "uups",
+    timeout,
+  });
+  await territories.deployed();
+  console.log(`territories = "${territories.address.toLowerCase()}"`);
+
+  const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
+  const decoratorProvider = await upgrades.upgradeProxy(DECORATOR_PROVIDER_ADDRESS, DecoratorProvider, {
+    kind: "uups",
+    timeout,
+  });
+  await decoratorProvider.deployed();
+  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+
   await verifyContracts([players.address]);
   await verifyContracts([playerNFT.address]);
   await verifyContracts([itemNFT.address]);
@@ -190,6 +223,8 @@ async function main() {
   await verifyContracts([wishingWell.address]);
   await verifyContracts([promotions.address]);
   await verifyContracts([instantActions.address]);
+  await verifyContracts([territories.address]);
+  await verifyContracts([decoratorProvider.address]);
 }
 
 main().catch((error) => {

@@ -14,6 +14,7 @@ import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IMarketplaceWhitelist} from "../interfaces/IMarketplaceWhitelist.sol";
+import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
 import {ClanRank} from "../globals/clans.sol";
@@ -180,6 +181,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(string name => bool exists) public lowercaseNames;
   mapping(uint clanId => uint40 timestampLeft) public ownerlessClanTimestamps; // timestamp
   address private paintswapMarketplaceWhitelist;
+  IClanMemberLeftCB private territories;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -792,6 +794,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     PlayerInfo storage player = playerInfo[_playerId];
     player.clanId = 0;
     player.rank = ClanRank.NONE;
+
+    territories.clanMemberLeft(_clanId, _playerId);
   }
 
   function _claimOwnership(uint _clanId, uint _playerId) private {
@@ -930,6 +934,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function setPaintSwapMarketplaceWhitelist(address _paintswapMarketplaceWhitelist) external onlyOwner {
     paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
+  }
+
+  function setTerritories(IClanMemberLeftCB _territories) external onlyOwner {
+    territories = _territories;
   }
 
   function getRank(uint _clanId, uint _playerId) external view returns (ClanRank rank) {

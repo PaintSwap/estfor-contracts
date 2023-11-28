@@ -24,6 +24,9 @@ let playersImplMisc;
 let playersImplMisc1;
 let players;
 let instantActions;
+let clanBattleLibrary;
+let territories;
+let decoratorProvider;
 
 if (!isBeta) {
   worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
@@ -50,6 +53,9 @@ if (!isBeta) {
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
+  clanBattleLibrary = "";
+  territories = "";
+  decoratorProvider = "";
 } else {
   worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -76,6 +82,9 @@ if (!isBeta) {
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
+  clanBattleLibrary = "";
+  territories = "";
+  decoratorProvider = "";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -105,6 +114,10 @@ export const PLAYERS_IMPL_MISC1_ADDRESS = playersImplMisc1;
 export const PLAYERS_ADDRESS = players;
 
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
+
+export const CLAN_BATTLE_LIBRARY_ADDRESS = clanBattleLibrary;
+export const TERRITORIES_ADDRESS = territories;
+export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {clanFixture} from "./utils";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
-import {BigNumber} from "ethers";
+import {BigNumber, ethers} from "ethers";
 import {createPlayer} from "../../scripts/utils";
 import {getXPFromLevel} from "../Players/utils";
 
@@ -17,7 +17,7 @@ describe("ClanBattleLibrary", function () {
     const skill = Skill.FISHING;
     await players.testModifyXP(alice.address, playerId, skill, 1000, true);
 
-    let winner = await clanBattleLibrary.doBattleLib(
+    let res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -25,12 +25,12 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(0);
+    expect(res.didAWin).to.be.false;
 
     randomWordA = 1;
     randomWordB = 0;
 
-    winner = await clanBattleLibrary.doBattleLib(
+    res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -38,12 +38,12 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(1);
+    expect(res.didAWin).to.be.true;
 
     randomWordA = 0;
     randomWordB = 1;
 
-    winner = await clanBattleLibrary.doBattleLib(
+    res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -51,7 +51,7 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(-1);
+    expect(res.didAWin).to.be.false;
   });
 
   it("Mismatch in counts is an automatic win for those that are not missing", async () => {
@@ -63,7 +63,7 @@ describe("ClanBattleLibrary", function () {
     const randomWordB = 3;
     const skill = Skill.FISHING;
     await players.testModifyXP(alice.address, playerId, skill, 1000, true);
-    let winner = await clanBattleLibrary.doBattleLib(
+    let res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -71,11 +71,11 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(1);
+    expect(res.didAWin).to.be.true;
 
     clanMembersA = [];
     clanMembersB = [playerId];
-    winner = await clanBattleLibrary.doBattleLib(
+    res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -83,7 +83,40 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(-1);
+    expect(res.didAWin).to.be.false;
+  });
+
+  it("Player ids of 0 is an automatic win for the other side", async () => {
+    const {alice, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
+
+    let clanMembersA = [playerId];
+    let clanMembersB = [ethers.BigNumber.from(0)];
+    const randomWordA = 1;
+    const randomWordB = 3;
+    const skill = Skill.FISHING;
+    await players.testModifyXP(alice.address, playerId, skill, 1000, true);
+    let res = await clanBattleLibrary.doBattleLib(
+      players.address,
+      clanMembersA,
+      clanMembersB,
+      randomWordA,
+      randomWordB,
+      skill
+    );
+
+    expect(res.didAWin).to.be.true;
+
+    clanMembersA = [ethers.BigNumber.from(0)];
+    clanMembersB = [playerId];
+    res = await clanBattleLibrary.doBattleLib(
+      players.address,
+      clanMembersA,
+      clanMembersB,
+      randomWordA,
+      randomWordB,
+      skill
+    );
+    expect(res.didAWin).to.be.false;
   });
 
   it("Multiple clan members", async () => {
@@ -94,9 +127,9 @@ describe("ClanBattleLibrary", function () {
     let randomWordA = 3;
     let randomWordB = 1;
     const skill = Skill.FISHING;
-    await players.testModifyXP(alice.address, playerId, skill, 1000, true);
+    await players.testModifyXP(alice.address, playerId, skill, getXPFromLevel(20), true); // Get 2 rolls each
 
-    let winner = await clanBattleLibrary.doBattleLib(
+    let res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -104,7 +137,7 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(0);
+    expect(res.didAWin).to.be.true;
 
     const avatarId = 1;
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
@@ -112,7 +145,7 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(alice.address, newPlayerId, skill, getXPFromLevel(40), true);
 
     clanMembersA = [playerId, newPlayerId];
-    winner = await clanBattleLibrary.doBattleLib(
+    res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -120,14 +153,14 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(1);
+    expect(res.didAWin).to.be.true;
 
     randomWordA = 3;
     randomWordB = 3;
 
     clanMembersA = [playerId, playerId];
     clanMembersB = [playerId, newPlayerId];
-    winner = await clanBattleLibrary.doBattleLib(
+    res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
@@ -135,7 +168,7 @@ describe("ClanBattleLibrary", function () {
       randomWordB,
       skill
     );
-    expect(winner).to.eq(-1);
+    expect(res.didAWin).to.be.false;
   });
 
   it("Different random words should yield different results (many)", async () => {
@@ -144,7 +177,7 @@ describe("ClanBattleLibrary", function () {
     let clanMembersA = [playerId, playerId];
     let clanMembersB = [playerId, playerId];
     const skill = Skill.FISHING;
-    await players.testModifyXP(alice.address, playerId, skill, getXPFromLevel(40), true); // Get 3 rolls each
+    await players.testModifyXP(alice.address, playerId, skill, getXPFromLevel(60), true); // Get 4 rolls each
 
     let numWinsA = 0;
     let numWinsB = 0;
@@ -153,7 +186,7 @@ describe("ClanBattleLibrary", function () {
       const randomWordA = i;
       const randomWordB = 1;
 
-      const winner = await clanBattleLibrary.doBattleLib(
+      const res = await clanBattleLibrary.doBattleLib(
         players.address,
         clanMembersA,
         clanMembersB,
@@ -161,10 +194,11 @@ describe("ClanBattleLibrary", function () {
         randomWordB,
         skill
       );
-      if (winner == 1) {
-        numWinsA++;
-      } else if (winner == -1) {
-        numWinsB++;
+
+      if (res.didAWin) {
+        ++numWinsA;
+      } else {
+        ++numWinsB;
       }
     }
 
