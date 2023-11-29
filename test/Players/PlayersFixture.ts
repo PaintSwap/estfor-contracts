@@ -104,12 +104,16 @@ export const playersFixture = async function () {
     }
   )) as PlayerNFT;
 
-  const Promotions = await ethers.getContractFactory("Promotions");
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  const Promotions = await ethers.getContractFactory("Promotions", {
+    libraries: {PromotionsLibrary: promotionsLibrary.address},
+  });
   const promotions = (await upgrades.deployProxy(
     Promotions,
     [adminAccess.address, itemNFT.address, playerNFT.address, isBeta],
     {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
     }
   )) as Promotions;
   await promotions.deployed();
@@ -348,6 +352,7 @@ export const playersFixture = async function () {
     Players,
     avatarId,
     wishingWell,
+    promotionsLibrary,
     promotions,
     quests,
     clans,

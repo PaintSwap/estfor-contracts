@@ -78,7 +78,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint40 public lastRandomWordsUpdatedTime;
   uint40 private startTime;
   uint40 private weeklyRewardCheckpoint;
-  bytes8 private thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
+  bytes8 public thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
   uint24 private callbackGasLimit;
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
@@ -213,7 +213,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function getWeeklyReward(uint _tier, uint _playerId) public view returns (uint16 itemTokenId, uint24 amount) {
     uint day = 7;
-    uint index = _getRewardIndex(_playerId, day, weeklyRewardPool[_tier].length);
+    uint index = _getRewardIndex(_playerId, day, uint64(thisWeeksRandomWordSegment), weeklyRewardPool[_tier].length);
     Equipment storage equipment = weeklyRewardPool[_tier][index];
     return (equipment.itemTokenId, equipment.amount);
   }
@@ -221,9 +221,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function getSpecificDailyReward(
     uint _tier,
     uint _playerId,
-    uint _day
+    uint _day,
+    uint _randomWord
   ) public view returns (uint16 itemTokenId, uint24 amount) {
-    uint index = _getRewardIndex(_playerId, _day, dailyRewardPool[_tier].length);
+    uint index = _getRewardIndex(_playerId, _day, _randomWord, dailyRewardPool[_tier].length);
     Equipment storage equipment = dailyRewardPool[_tier][index];
     return (equipment.itemTokenId, equipment.amount);
   }
@@ -231,7 +232,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function getDailyReward(uint _tier, uint _playerId) external view returns (uint itemTokenId, uint amount) {
     uint checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
     uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
-    return getSpecificDailyReward(_tier, _playerId, day);
+    return getSpecificDailyReward(_tier, _playerId, day, uint64(thisWeeksRandomWordSegment));
   }
 
   function getActiveDailyAndWeeklyRewards(
@@ -239,7 +240,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     uint _playerId
   ) external view returns (Equipment[8] memory rewards) {
     for (uint i; i < 7; ++i) {
-      (rewards[i].itemTokenId, rewards[i].amount) = getSpecificDailyReward(_tier, _playerId, i);
+      (rewards[i].itemTokenId, rewards[i].amount) = getSpecificDailyReward(
+        _tier,
+        _playerId,
+        i,
+        uint64(thisWeeksRandomWordSegment)
+      );
     }
     (rewards[7].itemTokenId, rewards[7].amount) = getWeeklyReward(_tier, _playerId);
   }
@@ -376,8 +382,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _setAction(_action);
   }
 
-  function _getRewardIndex(uint _playerId, uint _day, uint _length) private view returns (uint) {
-    return uint(keccak256(abi.encodePacked(thisWeeksRandomWordSegment, _playerId)) >> (_day * 8)) % _length;
+  function _getRewardIndex(uint _playerId, uint _day, uint _randomWord, uint _length) private pure returns (uint) {
+    return uint(keccak256(abi.encodePacked(_randomWord, _playerId)) >> (_day * 8)) % _length;
   }
 
   function _setAction(Action calldata _action) private {

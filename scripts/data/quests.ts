@@ -382,7 +382,7 @@ export const allQuests: QuestInput[] = [
     actionId2: NONE,
     actionNum2: 0,
     actionChoiceId: EstforConstants.ACTIONCHOICE_FLETCHING_ARROW_SHAFT_FROM_LOG,
-    actionChoiceNum: 19200,
+    actionChoiceNum: 9600,
     skillReward: Skill.FLETCHING,
     skillXPGained: 250,
     rewardItemTokenId1: NONE,

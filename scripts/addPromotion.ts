@@ -6,6 +6,7 @@ import {Promotion} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
+
   console.log(`Add a promotion using account: ${owner.address} on chain id: ${await owner.getChainId()}`);
   const promotions = (await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)) as Promotions;
 
@@ -32,25 +33,25 @@ async function main() {
     amounts: [1, 1, 1],
   }); */
 
-  // Temporary XMAS promotion
-  const startTime = 1700251200; // fri nov 17th 20:00 UTC
-  const numDays = 2;
-  await promotions.addPromotion({
+  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
+  const numDays = 22;
+  await promotions.connect(owner).addPromotion({
     promotion: Promotion.XMAS_2023,
     startTime,
     endTime: startTime + 24 * 3600 * numDays,
     minTotalXP: 0,
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
+    brushCostMissedDay: ethers.utils.parseEther("25"),
     brushCost: "0",
     redeemCodeLength: 0,
     adminOnly: false,
     promotionTiedToUser: false,
-    promotionTiedToPlayer: false,
-    promotionMustOwnPlayer: false,
+    promotionTiedToPlayer: true,
+    promotionMustOwnPlayer: true,
     evolvedHeroOnly: false,
-    numDaysClaimablePeriodStreakBonus: 1,
-    numDaysHitNeededForStreakBonus: 1,
+    numDaysClaimablePeriodStreakBonus: 9,
+    numDaysHitNeededForStreakBonus: 20,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
     randomStreakBonusItemTokenIds1: [

@@ -39,7 +39,7 @@ export const requestAndFulfillRandomWords = async (world: World, mockOracleClien
   const tx = await world.requestRandomWords();
   let requestId = await getRequestId(tx);
   expect(requestId).to.not.eq(0);
-  fulfillRandomWords(requestId, world, mockOracleClient);
+  await fulfillRandomWords(requestId, world, mockOracleClient);
 };
 
 export const fulfillRandomWords = async (

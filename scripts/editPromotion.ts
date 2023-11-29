@@ -8,7 +8,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit a promotion using account: ${owner.address} on chain id: ${await owner.getChainId()}`);
   const promotions = (await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)) as Promotions;
-
+  /*
   // Edit old haloween promotion to use the new structure just cause.
   let tx = await promotions.connect(owner).editPromotion({
     promotion: Promotion.HALLOWEEN_2023,
@@ -17,6 +17,7 @@ async function main() {
     minTotalXP: 6000,
     numDailyRandomItemsToPick: 1,
     isMultiday: false,
+    brushCostMissedDay: "0",
     brushCost: "0",
     redeemCodeLength: 0,
     adminOnly: false,
@@ -44,17 +45,19 @@ async function main() {
     randomAmounts: [1, 1, 1],
   });
   await tx.wait();
-  console.log("edit first one");
+  console.log("edit first one"); */
 
-  const startTime = 1700479057; // mon nov 20th 11:17 UTC
-  const numDays = 2;
+  const startTime = 1700839686; // fri nov 24th 11:52 UTC
+  const numDays = 3;
+  const offset = 0;
   await promotions.connect(owner).editPromotion({
     promotion: Promotion.XMAS_2023,
-    startTime,
-    endTime: startTime + 24 * 3600 * numDays,
+    startTime: startTime - offset * 24 * 3600,
+    endTime: startTime - offset * 24 * 3600 + 24 * 3600 * numDays,
     minTotalXP: 0,
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
+    brushCostMissedDay: ethers.utils.parseEther("25"),
     brushCost: "0",
     redeemCodeLength: 0,
     adminOnly: false,
@@ -62,8 +65,8 @@ async function main() {
     promotionTiedToPlayer: false,
     promotionMustOwnPlayer: false,
     evolvedHeroOnly: false,
-    numDaysClaimablePeriodStreakBonus: 1,
-    numDaysHitNeededForStreakBonus: 1,
+    numDaysClaimablePeriodStreakBonus: 2,
+    numDaysHitNeededForStreakBonus: 2,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
     randomStreakBonusItemTokenIds1: [
