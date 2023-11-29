@@ -175,14 +175,13 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     emit DepositToken(msg.sender, _playerId, _token, _amount);
   }
 
-  // Untested
   function withdrawToken(
     address _to,
     uint _playerId,
     address _token,
     uint _amount
   ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
-    bool success = IERC20(_token).transfer(msg.sender, _amount);
+    bool success = IERC20(_token).transfer(_to, _amount);
     if (!success) {
       revert WithdrawFailed();
     }

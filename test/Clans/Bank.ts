@@ -4,6 +4,7 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {createPlayer} from "../../scripts/utils";
 import {playersFixture} from "../Players/PlayersFixture";
+import {ClanRank} from "@paintswap/estfor-definitions/types";
 
 describe("Bank", function () {
   async function bankFixture() {
@@ -206,5 +207,55 @@ describe("Bank", function () {
 
   it("Should be able to deposit and withdraw ftm", async function () {});
 
-  it("Should be able to deposit and withdraw tokens", async function () {});
+  it("Should be able to deposit and withdraw tokens", async function () {
+    const {clans, playerId, alice, bob, clanName, discord, telegram, Bank, bankFactory, brush} = await loadFixture(
+      bankFixture
+    );
+
+    const clanId = 1;
+    const clanBankAddress = ethers.utils.getContractAddress({
+      from: bankFactory.address,
+      nonce: clanId,
+    });
+    await clans.connect(alice).createClan(playerId, clanName, discord, telegram, 2, 1);
+
+    await brush.mint(alice.address, 1000);
+    await brush.connect(alice).approve(clanBankAddress, 1000);
+
+    const bank = await Bank.attach(clanBankAddress);
+
+    await expect(bank.connect(alice).depositToken(playerId.add(1), brush.address, 1000)).to.be.revertedWithCustomError(
+      bank,
+      "NotOwnerOfPlayer"
+    );
+
+    await expect(bank.connect(alice).depositToken(playerId, brush.address, 1000))
+      .to.emit(bank, "DepositToken")
+      .withArgs(alice.address, playerId, brush.address, 1000);
+
+    expect(await brush.balanceOf(bank.address)).to.eq(1000);
+
+    await expect(bank.connect(alice).withdrawToken(bob.address, playerId, brush.address, 500))
+      .to.emit(bank, "WithdrawToken")
+      .withArgs(alice.address, bob.address, playerId, brush.address, 500);
+
+    expect(await brush.balanceOf(bob.address)).to.eq(500);
+    expect(await brush.balanceOf(bank.address)).to.eq(500);
+
+    // Can also just transfer directly
+    await brush.mint(bank.address, 500);
+
+    await expect(bank.connect(alice).withdrawToken(bob.address, playerId, brush.address, 750))
+      .to.emit(bank, "WithdrawToken")
+      .withArgs(alice.address, bob.address, playerId, brush.address, 750);
+
+    expect(await brush.balanceOf(bob.address)).to.eq(1250);
+    expect(await brush.balanceOf(bank.address)).to.eq(250);
+
+    // Must be at least treasurer to withdraw
+    await clans.connect(alice).changeRank(clanId, playerId, ClanRank.SCOUT, playerId);
+    await expect(
+      bank.connect(alice).withdrawToken(bob.address, playerId, brush.address, 750)
+    ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
+  });
 });
