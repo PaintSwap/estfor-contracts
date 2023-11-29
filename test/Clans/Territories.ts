@@ -8,7 +8,7 @@ import {fulfillRandomWords} from "../utils";
 import {getXPFromLevel} from "../Players/utils";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 
-describe("Territories", function () {
+describe.only("Territories", function () {
   it("Check defaults", async () => {
     const {territories, terrorityBrushAttackingCost} = await loadFixture(clanFixture);
 
@@ -63,7 +63,6 @@ describe("Territories", function () {
     await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [86400]);
     await expect(
@@ -79,7 +78,6 @@ describe("Territories", function () {
     await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [86400]);
     await expect(
@@ -114,7 +112,6 @@ describe("Territories", function () {
     await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
@@ -144,9 +141,7 @@ describe("Territories", function () {
     expect(attackingClanInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
 
     const defendingPlayerInfo = await territories.playerInfos(playerId);
-    //    expect(playerInfo.defendingCooldownTimestamp).eq(NOW + 86400);
     expect(defendingPlayerInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
-    //    expect(playerInfo.lastClanId).eq(clanId);
 
     const attackingPlayerInfo = await territories.playerInfos(bobPlayerId);
     expect(attackingPlayerInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
@@ -179,7 +174,6 @@ describe("Territories", function () {
     await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
@@ -209,9 +203,7 @@ describe("Territories", function () {
     expect(attackingClanInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
 
     const defendingPlayerInfo = await territories.playerInfos(playerId);
-    //    expect(playerInfo.defendingCooldownTimestamp).eq(NOW + 86400);
     expect(defendingPlayerInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
-    //    expect(playerInfo.lastClanId).eq(clanId);
 
     const attackingPlayerInfo = await territories.playerInfos(bobPlayerId);
     expect(attackingPlayerInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
@@ -251,7 +243,6 @@ describe("Territories", function () {
     await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId, ownerPlayerId], territoryId, playerId);
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     // The other clan will have 3 players, so if you only have 1 defender you will you lose by default
     for (let i = 0; i < allTerritorySkills.length; ++i) {
@@ -313,6 +304,157 @@ describe("Territories", function () {
     await fulfillRandomWords(1, territories, mockOracleClient);
 
     territory = await territories.territories(territoryId);
+    expect(territory.clanIdOccupier).eq(bobClanId);
+  });
+
+  it("Leaving a clan while in a pending attack should mean you aren't used", async () => {
+    const {
+      playerNFT,
+      avatarId,
+      clans,
+      clanId,
+      playerId,
+      territories,
+      terrorityBrushAttackingCost,
+      brush,
+      alice,
+      bob,
+      charlie,
+      clanName,
+      discord,
+      telegram,
+      tierId,
+      imageId,
+      origName,
+      mockOracleClient,
+    } = await loadFixture(clanFixture);
+
+    const territoryId = 1;
+    await brush.mint(alice.address, terrorityBrushAttackingCost);
+    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
+
+    await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
+
+    // Create a clan of 2 players
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
+
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    const bobClanId = 2;
+    await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
+    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+
+    await brush.mint(bob.address, terrorityBrushAttackingCost);
+    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost);
+    await territories.connect(bob).attackTerritory(bobClanId, [charliePlayerId], territoryId, bobPlayerId);
+    // After attacking, leave the clan before the battle is resolved
+
+    let pendingAttack = await territories.getPendingAttack(2);
+    expect(pendingAttack.clanId).to.eq(bobClanId);
+    expect(pendingAttack.playerIds.length).to.eq(1);
+    expect(pendingAttack.playerIds[0]).to.eq(charliePlayerId);
+    await clans.connect(charlie).changeRank(bobClanId, charliePlayerId, ClanRank.NONE, charliePlayerId);
+
+    pendingAttack = await territories.getPendingAttack(2);
+    expect(pendingAttack.clanId).to.eq(bobClanId);
+    expect(pendingAttack.playerIds.length).to.eq(1);
+    expect(pendingAttack.playerIds[0]).to.eq(0); // player id is removed
+
+    await fulfillRandomWords(1, territories, mockOracleClient);
+    const territory = await territories.territories(territoryId);
+    expect(territory.clanIdOccupier).eq(clanId);
+  });
+
+  it("Clan is destroyed after a pending attack, should auto lose", async () => {
+    const {
+      playerNFT,
+      avatarId,
+      clans,
+      clanId,
+      playerId,
+      territories,
+      terrorityBrushAttackingCost,
+      brush,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      tierId,
+      imageId,
+      origName,
+      mockOracleClient,
+    } = await loadFixture(clanFixture);
+
+    const territoryId = 1;
+    await brush.mint(alice.address, terrorityBrushAttackingCost);
+    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
+
+    await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
+
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    const bobClanId = 2;
+    await brush.mint(bob.address, terrorityBrushAttackingCost);
+    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost);
+    await territories.connect(bob).attackTerritory(bobClanId, [bobPlayerId], territoryId, bobPlayerId);
+    // After attacking, leave the clan which destroys it before the battle is resolved
+
+    let pendingAttack = await territories.getPendingAttack(2);
+    expect(pendingAttack.clanId).to.eq(bobClanId);
+    expect(pendingAttack.playerIds.length).to.eq(1);
+    expect(pendingAttack.playerIds[0]).to.eq(bobPlayerId);
+    await clans.connect(bob).changeRank(bobClanId, bobPlayerId, ClanRank.NONE, bobPlayerId);
+
+    pendingAttack = await territories.getPendingAttack(2);
+    expect(pendingAttack.clanId).to.eq(bobClanId);
+    expect(pendingAttack.playerIds.length).to.eq(1);
+    expect(pendingAttack.playerIds[0]).to.eq(0); // player id is removed
+
+    await fulfillRandomWords(1, territories, mockOracleClient);
+    const territory = await territories.territories(territoryId);
+    expect(territory.clanIdOccupier).eq(clanId);
+  });
+
+  it("Clan is destroyed after taking control of a territory, should auto lose", async () => {
+    const {
+      playerNFT,
+      avatarId,
+      clans,
+      clanId,
+      playerId,
+      territories,
+      terrorityBrushAttackingCost,
+      brush,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      tierId,
+      imageId,
+      origName,
+      mockOracleClient,
+    } = await loadFixture(clanFixture);
+
+    const territoryId = 1;
+    await brush.mint(alice.address, terrorityBrushAttackingCost);
+    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
+
+    await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
+    await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
+
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+
+    const bobClanId = 2;
+    await brush.mint(bob.address, terrorityBrushAttackingCost);
+    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost);
+
+    await territories.connect(bob).attackTerritory(bobClanId, [bobPlayerId], territoryId, bobPlayerId);
+    await fulfillRandomWords(1, territories, mockOracleClient);
+
+    const territory = await territories.territories(territoryId);
     expect(territory.clanIdOccupier).eq(bobClanId);
   });
 

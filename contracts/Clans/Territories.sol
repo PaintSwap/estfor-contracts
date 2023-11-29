@@ -36,7 +36,14 @@ contract Territories is
   event BrushAttackingCost(uint brushCost);
   event SetComparableSkills(Skill[] skills);
   event RequestFulfilled(uint requestId, uint[] randomWords);
-  event AttackTerritory(uint clanId, uint64[] playerIds, uint territoryId, uint leaderPlayerId, uint requestId);
+  event AttackTerritory(
+    uint clanId,
+    uint64[] playerIds,
+    uint territoryId,
+    uint leaderPlayerId,
+    uint requestId,
+    uint pendingAttackId
+  );
   event BattleResult(
     uint requestId,
     uint[] winnerPlayerIds,
@@ -94,6 +101,7 @@ contract Territories is
   struct PlayerInfo {
     uint40 attackingCooldownTimestamp;
     uint16 lastAttackingTerritoryId; // May or may not be actively defending this (only if they actually won)
+    uint64 lastPendingAttackId;
   }
 
   struct PendingAttack {
@@ -101,12 +109,15 @@ contract Territories is
     uint32 clanId;
     uint16 territoryId;
     uint40 timestamp;
+    bool attackInProgress;
   }
 
-  mapping(uint requestId => PendingAttack pendingAttack) public pendingAttacks;
+  mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
+  mapping(uint requestId => uint pendingAttackId) public requestToPendingAttackIds;
   mapping(uint territoryId => Territory territory) public territories;
   uint64 nextTerritoryId;
   address public players;
+  uint64 nextPendingAttackId;
   IClans public clans;
   address public dev;
   IBankFactory public bankFactory;
@@ -201,6 +212,7 @@ contract Territories is
     players = _players;
     dev = _dev;
     nextTerritoryId = 1;
+    nextPendingAttackId = 1;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
 
@@ -222,12 +234,18 @@ contract Territories is
   ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
     _checkCanAttackTerritory(_clanId, _playerIds, _territoryId);
 
+    uint64 _nextPendingAttackId = nextPendingAttackId++;
+    uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
+    bool clanUnoccupied = clanIdOccupier == 0;
+
     for (uint i; i < _playerIds.length; ++i) {
       playerInfos[_playerIds[i]].attackingCooldownTimestamp = uint40(
         block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
       );
-      playerInfos[_playerIds[i]].lastAttackingTerritoryId = uint16(_territoryId);
-      //      playerInfos[_playerIds[i]].lastClanId = uint32(_clanId); // TODO: What to do with this?
+      if (!clanUnoccupied) {
+        playerInfos[_playerIds[i]].lastAttackingTerritoryId = uint16(_territoryId);
+        playerInfos[_playerIds[i]].lastPendingAttackId = _nextPendingAttackId;
+      }
     }
 
     for (uint i; i < territories[_territoryId].playerIdDefenders.length; ++i) {
@@ -244,8 +262,6 @@ contract Territories is
     // TODO take it from the clan bank later
     brush.transferFrom(msg.sender, dev, uint(brushAttackingCost) * 1 ether);
 
-    uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
-    bool clanUnoccupied = clanIdOccupier == 0;
     if (clanUnoccupied) {
       _claimTerritory(_territoryId, _clanId, _playerIds);
       emit ClaimUnoccupiedTerritory(_territoryId, _clanId, _playerIds);
@@ -254,15 +270,17 @@ contract Territories is
         block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
       );
 
-      uint requestId = _requestRandomWords();
-      pendingAttacks[requestId] = PendingAttack({
+      pendingAttacks[_nextPendingAttackId] = PendingAttack({
         playerIds: _playerIds,
         clanId: uint32(_clanId),
         territoryId: uint16(_territoryId),
-        timestamp: uint40(block.timestamp)
+        timestamp: uint40(block.timestamp),
+        attackInProgress: true
       });
+      uint requestId = _requestRandomWords();
+      requestToPendingAttackIds[requestId] = _nextPendingAttackId;
 
-      emit AttackTerritory(_clanId, _playerIds, _territoryId, _leaderPlayerId, requestId);
+      emit AttackTerritory(_clanId, _playerIds, _territoryId, _leaderPlayerId, requestId, _nextPendingAttackId);
     }
   }
 
@@ -275,9 +293,23 @@ contract Territories is
         // Check if this player is in the defenders list and remove him if so
         uint searchIndex = EstforLibrary.binarySearch(territory.playerIdDefenders, _playerId);
         if (searchIndex != type(uint).max) {
-          // Don't shift it for gas reasons
+          // Not shifting it for gas reasons
           delete territory.playerIdDefenders[searchIndex];
           emit RemoveDefender(_playerId, _clanId, territory.territoryId);
+        }
+      }
+
+      uint pendingAttackId = playerInfos[_playerId].lastPendingAttackId;
+      if (
+        pendingAttackId != 0 &&
+        pendingAttacks[pendingAttackId].attackInProgress &&
+        pendingAttacks[pendingAttackId].clanId == _clanId
+      ) {
+        // Remove from the pending attack
+        uint searchIndex = EstforLibrary.binarySearch(pendingAttacks[pendingAttackId].playerIds, _playerId);
+        if (searchIndex != type(uint).max) {
+          // Not shifting it for gas reasons
+          delete pendingAttacks[pendingAttackId].playerIds[searchIndex];
         }
       }
     }
@@ -344,12 +376,13 @@ contract Territories is
     }
 
     // Read defending players
-    uint64[] storage playerIdAttackers = pendingAttacks[_requestId].playerIds;
-    uint16 territoryId = pendingAttacks[_requestId].territoryId;
+    PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
+    uint64[] storage playerIdAttackers = pendingAttack.playerIds;
+    uint16 territoryId = pendingAttack.territoryId;
     uint64[] storage playerIdDefenders = territories[territoryId].playerIdDefenders;
 
     // Does this territory still have the same clan defenders?
-    uint32 attackingClanId = pendingAttacks[_requestId].clanId;
+    uint32 attackingClanId = pendingAttack.clanId;
     uint defendingClanId = territories[territoryId].clanIdOccupier;
 
     uint randomSkillIndex = _randomWords[0] % comparableSkills.length;
@@ -362,7 +395,8 @@ contract Territories is
       comparableSkills[randomSkillIndex]
     );
 
-    uint timestamp = pendingAttacks[_requestId].timestamp;
+    uint timestamp = pendingAttack.timestamp;
+    pendingAttack.attackInProgress = false;
 
     if (didAttackersWin) {
       _claimTerritory(territoryId, attackingClanId, playerIdAttackers);
@@ -472,11 +506,16 @@ contract Territories is
     emit AddTerritories(_territories);
   }
 
-  function getTerrorities() external view returns (Territory[] memory _territories) {
-    _territories = new Territory[](nextTerritoryId - 1);
+  function getTerrorities() external view returns (Territory[] memory) {
+    Territory[] memory _territories = new Territory[](nextTerritoryId - 1);
     for (uint i; i < _territories.length; ++i) {
       _territories[i] = territories[i + 1];
     }
+    return _territories;
+  }
+
+  function getPendingAttack(uint _pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
+    return pendingAttacks[_pendingAttackId];
   }
 
   function addTerritories(TerritoryInput[] calldata _territories) external onlyOwner {
