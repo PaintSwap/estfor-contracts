@@ -23,13 +23,16 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   event DepositFTM(address from, uint playerId, uint amount);
   event WithdrawFTM(address from, address to, uint playerId, uint amount);
   event DepositToken(address from, uint playerId, address token, uint amount);
-  event WithdrawToken(address from, address to, uint playerId, address token, uint amount);
+  event WithdrawToken(address from, uint playerId, address to, uint toPlayerId, address token, uint amount);
+  event WithdrawTokens(address from, uint playerId, address[] tos, uint[] toPlayerIds, address token, uint[] amounts);
 
   error MaxBankCapacityReached();
   error NotClanAdmin();
   error NotOwnerOfPlayer();
   error DepositFailed();
   error WithdrawFailed();
+  error LengthMismatch();
+  error ToIsNotOwnerOfPlayer();
 
   uint32 public clanId;
   BankRegistry public bankRegistry;
@@ -92,16 +95,6 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       }
     }
     emit WithdrawItems(msg.sender, _to, _playerId, _ids, _amounts);
-  }
-
-  function _receivedItemUpdateUniqueItems(uint _id, uint _maxCapacity) private {
-    if (!uniqueItems[_id]) {
-      if (uniqueItemCount >= _maxCapacity) {
-        revert MaxBankCapacityReached();
-      }
-      uniqueItemCount = uint16(uniqueItemCount.inc());
-      uniqueItems[_id] = true;
-    }
   }
 
   function onERC1155Received(
@@ -176,16 +169,58 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   }
 
   function withdrawToken(
-    address _to,
     uint _playerId,
+    address _to,
+    uint _toPlayerId,
     address _token,
     uint _amount
   ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
+    if (bankRegistry.playerNFT().balanceOf(_to, _toPlayerId) != 1) {
+      revert ToIsNotOwnerOfPlayer();
+    }
     bool success = IERC20(_token).transfer(_to, _amount);
     if (!success) {
       revert WithdrawFailed();
     }
-    emit WithdrawToken(msg.sender, _to, _playerId, _token, _amount);
+    emit WithdrawToken(msg.sender, _playerId, _to, _toPlayerId, _token, _amount);
+  }
+
+  function withdrawTokenToMany(
+    uint _playerId,
+    address[] calldata _tos,
+    uint[] calldata _toPlayerIds,
+    address _token,
+    uint[] calldata _amounts
+  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
+    if (_toPlayerIds.length != _amounts.length) {
+      revert LengthMismatch();
+    }
+
+    if (_toPlayerIds.length != _tos.length) {
+      revert LengthMismatch();
+    }
+
+    for (uint i = 0; i < _toPlayerIds.length; ++i) {
+      if (bankRegistry.playerNFT().balanceOf(_tos[i], _toPlayerIds[i]) != 1) {
+        revert ToIsNotOwnerOfPlayer();
+      }
+      bool success = IERC20(_token).transfer(_tos[i], _amounts[i]);
+      if (!success) {
+        revert WithdrawFailed();
+      }
+    }
+
+    emit WithdrawTokens(msg.sender, _playerId, _tos, _toPlayerIds, _token, _amounts);
+  }
+
+  function _receivedItemUpdateUniqueItems(uint _id, uint _maxCapacity) private {
+    if (!uniqueItems[_id]) {
+      if (uniqueItemCount >= _maxCapacity) {
+        revert MaxBankCapacityReached();
+      }
+      uniqueItemCount = uint16(uniqueItemCount.inc());
+      uniqueItems[_id] = true;
+    }
   }
 
   // Untested
