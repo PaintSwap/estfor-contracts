@@ -42,9 +42,7 @@ describe("Territories", function () {
     expect(clanInfo.attackingCooldownTimestamp).eq(NOW + 86400);
 
     const playerInfo = await territories.playerInfos(playerId);
-    //    expect(playerInfo.defendingCooldownTimestamp).eq(NOW + 86400);
     expect(playerInfo.attackingCooldownTimestamp).eq(NOW + 86400);
-    //    expect(playerInfo.lastClanId).eq(clanId);
   });
 
   it("Cannot attack a territory which doesn't exist", async () => {
@@ -411,9 +409,12 @@ describe("Territories", function () {
 
     expect((await territories.territories(territoryId)).unclaimedEmissions).to.eq(ethers.utils.parseEther("100"));
 
+    const bankAddress = await bankFactory.bankAddress(clanId);
+    expect((await territories.clanInfos(clanId)).bank).to.eq(ethers.constants.AddressZero);
     await territories.connect(alice).harvest(territoryId);
+    // After harvesting the clan bank address should be set on clans object
+    expect((await territories.clanInfos(clanId)).bank).to.eq(bankAddress);
 
-    const bankAddress = bankFactory.bankAddress(clanId);
     expect(await brush.balanceOf(bankAddress)).to.eq(ethers.utils.parseEther("100"));
   });
 
