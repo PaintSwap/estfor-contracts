@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {EstforLibrary, WorldLibrary} from "../typechain-types";
+import {EstforLibrary, PromotionsLibrary, WorldLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -16,6 +16,7 @@ import {
   BANK_REGISTRY_ADDRESS,
   INSTANT_ACTIONS_ADDRESS,
   PROMOTIONS_ADDRESS,
+  PROMOTIONS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -160,11 +161,27 @@ async function main() {
   await adminAccess.deployed();
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
 
+  const newPromotionsLibrary = false;
+  const PromotionsLibrary = await ethers.getContractFactory("PromotionsLibrary");
+  let promotionsLibrary: PromotionsLibrary;
+  if (newPromotionsLibrary) {
+    promotionsLibrary = await PromotionsLibrary.deploy();
+    await promotionsLibrary.deployed();
+    await verifyContracts([promotionsLibrary.address]);
+  } else {
+    promotionsLibrary = await PromotionsLibrary.attach(PROMOTIONS_LIBRARY_ADDRESS);
+  }
+  console.log(`promotionsLibrary = "${promotionsLibrary.address.toLowerCase()}"`);
+
   // Promotions
-  const Promotions = await ethers.getContractFactory("Promotions");
+  const Promotions = await ethers.getContractFactory("Promotions", {
+    libraries: {PromotionsLibrary: promotionsLibrary.address},
+  });
   const promotions = await upgrades.upgradeProxy(PROMOTIONS_ADDRESS, Promotions, {
     kind: "uups",
     timeout,
+    unsafeAllow: ["external-library-linking"],
+    unsafeSkipStorageCheck: true,
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);

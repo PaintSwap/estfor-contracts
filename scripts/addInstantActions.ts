@@ -10,7 +10,7 @@ async function main() {
   const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
   const actions = allInstantActions.filter((action) => {
     if (action) {
-      return action.actionId == EstforConstants.INSTANT_ACTION_FORGING_IRON_ARMOR;
+      return action.actionId == EstforConstants.INSTANT_ACTION_FORGING_BATWING_PATCH;
     }
   });
 

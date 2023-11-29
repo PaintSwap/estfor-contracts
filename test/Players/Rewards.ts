@@ -644,11 +644,11 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let mondayEquipment = await world.getSpecificDailyReward(3, playerId, 0);
+      let mondayEquipment = await world.getSpecificDailyReward(3, playerId, 0, world.thisWeeksRandomWordSegment());
 
       // Double check it is different to the other tiers
-      let dailyRewardsTier1 = await world.getSpecificDailyReward(1, playerId, 0);
-      let dailyRewardsTier2 = await world.getSpecificDailyReward(2, playerId, 0);
+      let dailyRewardsTier1 = await world.getSpecificDailyReward(1, playerId, 0, world.thisWeeksRandomWordSegment());
+      let dailyRewardsTier2 = await world.getSpecificDailyReward(2, playerId, 0, world.thisWeeksRandomWordSegment());
       expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1);
       expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier2);
 
