@@ -66,4 +66,43 @@ describe("EstforLibrary", function () {
       expect(await estforLibrary.containsValidTelegramCharacters(char)).to.be.false;
     }
   });
+
+  it("Binary search", async () => {
+    const {estforLibrary} = await loadFixture(deployContracts);
+
+    let res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 4);
+    expect(res).to.eq(2);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 5);
+    expect(res).to.eq(ethers.constants.MaxUint256);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 1);
+    expect(res).to.eq(0);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 12);
+    expect(res).to.eq(4);
+
+    await expect(estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 0)).to.be.reverted;
+  });
+
+  it("Binary search with 0s inbetween", async () => {
+    const {estforLibrary} = await loadFixture(deployContracts);
+
+    let res = await estforLibrary.binarySearchMemory([1, 0, 0, 0, 0, 0, 12], 12);
+    expect(res).to.eq(6);
+
+    res = await estforLibrary.binarySearchMemory([1, 12, 0, 0, 0, 0, 0, 0], 12);
+    expect(res).to.eq(1);
+
+    res = await estforLibrary.binarySearchMemory([1, 12, 0, 0, 16, 0, 0, 20, 0, 0], 12);
+    expect(res).to.eq(1);
+
+    res = await estforLibrary.binarySearchMemory([1, 12, 0, 0, 0, 16, 0, 0, 20, 0, 0], 12);
+    expect(res).to.eq(1);
+
+    res = await estforLibrary.binarySearchMemory([1, 12, 0, 0, 0, 16, 0, 0, 0, 20, 0, 0], 12);
+    expect(res).to.eq(1);
+
+    await expect(estforLibrary.binarySearchMemory([1, 12, 0, 0, 0, 16, 0, 0, 0, 20, 0, 0], 0)).to.be.reverted;
+  });
 });

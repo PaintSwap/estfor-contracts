@@ -198,12 +198,93 @@ library EstforLibrary {
     return string(lowerStr);
   }
 
+  // This should match the one below, mainly used for testing the algorithm
+  function binarySearchMemory(uint64[] calldata _arr, uint _target) external pure returns (uint) {
+    uint low = 0;
+    uint high = _arr.length - 1;
+
+    while (low <= high) {
+      uint mid = low + (high - low) / 2;
+
+      // Handle zero at mid
+      if (_arr[mid] == 0) {
+        uint left = mid;
+        uint right = mid;
+
+        // Expand in both directions to find a non-zero element
+        while (true) {
+          if (left >= low && _arr[left] != 0) {
+            mid = left;
+            break;
+          } else if (right <= high && _arr[right] != 0) {
+            mid = right;
+            break;
+          }
+
+          // Move left and right pointers
+          if (left > low) {
+            --left;
+          }
+          if (right < high) {
+            ++right;
+          }
+
+          // If both pointers have reached their limits, return element not found
+          if (left < low && right > high) {
+            return type(uint).max;
+          }
+        }
+      }
+
+      if (_arr[mid] == _target) {
+        return mid;
+      } else if (_arr[mid] < _target) {
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    return type(uint).max; // Element not found
+  }
+
+  // This should match the one above
   function binarySearch(uint64[] storage _arr, uint _target) internal view returns (uint) {
     uint low = 0;
     uint high = _arr.length - 1;
 
     while (low <= high) {
       uint mid = low + (high - low) / 2;
+
+      // Handle zero at mid
+      if (_arr[mid] == 0) {
+        uint left = mid;
+        uint right = mid;
+
+        // Expand in both directions to find a non-zero element
+        while (true) {
+          if (left >= low && _arr[left] != 0) {
+            mid = left;
+            break;
+          } else if (right <= high && _arr[right] != 0) {
+            mid = right;
+            break;
+          }
+
+          // Move left and right pointers
+          if (left > low) {
+            --left;
+          }
+          if (right < high) {
+            ++right;
+          }
+
+          // If both pointers have reached their limits, return element not found
+          if (left < low && right > high) {
+            return type(uint).max;
+          }
+        }
+      }
 
       if (_arr[mid] == _target) {
         return mid;
