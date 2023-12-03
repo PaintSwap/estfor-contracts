@@ -9,3 +9,5 @@ enum ClanRank {
   LEADER, // Can edit clan details
   OWNER // Can do everything and transfer ownership
 }
+
+uint constant MAX_CLAN_ATTACKERS = 20;

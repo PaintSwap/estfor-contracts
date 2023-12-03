@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import {VRFConsumerBaseV2Upgradeable} from "../VRFConsumerBaseV2Upgradeable.sol";
@@ -16,7 +17,7 @@ import {IBank} from "../interfaces/IBank.sol";
 
 import {AdminAccess} from "../AdminAccess.sol";
 
-import {ClanRank} from "../globals/clans.sol";
+import {ClanRank, MAX_CLAN_ATTACKERS} from "../globals/clans.sol";
 import {Skill} from "../globals/misc.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
@@ -48,6 +49,7 @@ contract Territories is
     uint requestId,
     uint[] winnerPlayerIds,
     uint[] loserPlayerIds,
+    Skill[] randomSkills,
     bool didAttackersWin,
     uint attackingClanId,
     uint defendingClanId,
@@ -77,6 +79,8 @@ contract Territories is
   error NotOwnerOfPlayerAndActive();
   error HarvestingTooSoon();
   error NotAdminAndBeta();
+  error TooManyAttackers();
+  error NoAttackers();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -86,7 +90,7 @@ contract Territories is
   struct Territory {
     uint16 territoryId; // TODO: Could be removed if necessary
     uint16 percentageEmissions; // Is multiplied by PERCENTAGE_EMISSION_MUL
-    uint32 clanIdOccupier;
+    uint40 clanIdOccupier;
     uint88 unclaimedEmissions;
     uint40 lastClaimTime;
     uint64[] playerIdDefenders;
@@ -106,7 +110,7 @@ contract Territories is
 
   struct PendingAttack {
     uint64[] playerIds;
-    uint32 clanId;
+    uint40 clanId;
     uint16 territoryId;
     uint40 timestamp;
     bool attackInProgress;
@@ -249,7 +253,8 @@ contract Territories is
     }
 
     for (uint i; i < territories[_territoryId].playerIdDefenders.length; ++i) {
-      playerInfos[territories[_territoryId].playerIdDefenders[i]].attackingCooldownTimestamp = uint40(
+      uint playerIdDefender = territories[_territoryId].playerIdDefenders[i];
+      playerInfos[playerIdDefender].attackingCooldownTimestamp = uint40(
         block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
       );
     }
@@ -272,7 +277,7 @@ contract Territories is
 
       pendingAttacks[_nextPendingAttackId] = PendingAttack({
         playerIds: _playerIds,
-        clanId: uint32(_clanId),
+        clanId: uint40(_clanId),
         territoryId: uint16(_territoryId),
         timestamp: uint40(block.timestamp),
         attackInProgress: true
@@ -324,6 +329,14 @@ contract Territories is
       revert AlreadyOwnATerritory();
     }
 
+    if (_playerIds.length == 0) {
+      revert NoAttackers();
+    }
+
+    if (_playerIds.length > MAX_CLAN_ATTACKERS) {
+      revert TooManyAttackers();
+    }
+
     // Check the cooldown periods on attacking (because they might have just joined another clan)
     for (uint i; i < _playerIds.length; ++i) {
       if (playerInfos[_playerIds[i]].attackingCooldownTimestamp > block.timestamp) {
@@ -334,16 +347,15 @@ contract Territories is
       if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
         revert NotMemberOfClan();
       }
+
+      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
+        revert PlayerIdsNotSortedOrDuplicates();
+      }
+      // TODO: Check they are defending a territory
     }
 
     if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
       revert ClanAttackingCooldown();
-    }
-
-    for (uint i; i < _playerIds.length; ++i) {
-      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
-        revert PlayerIdsNotSortedOrDuplicates();
-      }
     }
 
     if (territories[_territoryId].clanIdOccupier == 0) {
@@ -375,24 +387,27 @@ contract Territories is
       revert LengthMismatch();
     }
 
-    // Read defending players
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
     uint64[] storage playerIdAttackers = pendingAttack.playerIds;
     uint16 territoryId = pendingAttack.territoryId;
     uint64[] storage playerIdDefenders = territories[territoryId].playerIdDefenders;
 
     // Does this territory still have the same clan defenders?
-    uint32 attackingClanId = pendingAttack.clanId;
+    uint attackingClanId = pendingAttack.clanId;
     uint defendingClanId = territories[territoryId].clanIdOccupier;
 
-    uint randomSkillIndex = _randomWords[0] % comparableSkills.length;
+    Skill[] memory randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
+    for (uint i; i < randomSkills.length; ++i) {
+      randomSkills[i] = comparableSkills[uint8(_randomWords[0] >> (i * 8)) % comparableSkills.length];
+    }
+
     (uint[] memory winners, uint[] memory losers, bool didAttackersWin) = ClanBattleLibrary.doBattle(
       players,
       playerIdAttackers,
       playerIdDefenders,
+      randomSkills,
       _randomWords[0],
-      _randomWords[1],
-      comparableSkills[randomSkillIndex]
+      _randomWords[1]
     );
 
     uint timestamp = pendingAttack.timestamp;
@@ -407,6 +422,7 @@ contract Territories is
       _requestId,
       winners,
       losers,
+      randomSkills,
       didAttackersWin,
       attackingClanId,
       defendingClanId,

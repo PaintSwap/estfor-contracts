@@ -12,7 +12,7 @@ contract MockTerritories is ITerritories {
     brush = _brush;
   }
 
-  function addUnclaimedEmissions(uint _amount) external {
+  function addUnclaimedEmissions(uint _amount) external override {
     brush.transferFrom(msg.sender, address(this), _amount);
     ++addUnclaimedEmissionsCBCount;
   }

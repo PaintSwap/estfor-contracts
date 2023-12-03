@@ -27,11 +27,15 @@ library ClanBattleLibrary {
     address _players,
     uint64[] memory _clanMembersA,
     uint64[] memory _clanMembersB,
+    uint8[] memory _skills,
     uint _randomWordA,
-    uint _randomWordB,
-    uint8 _skill
+    uint _randomWordB
   ) external view returns (uint[] memory winners, uint[] memory losers, bool didAWin) {
-    return doBattle(_players, _clanMembersA, _clanMembersB, _randomWordA, _randomWordB, Skill(_skill));
+    Skill[] memory skills = new Skill[](_skills.length);
+    for (uint i; i < _skills.length; ++i) {
+      skills[i] = Skill(_skills[i]);
+    }
+    return doBattle(_players, _clanMembersA, _clanMembersB, skills, _randomWordA, _randomWordB);
   }
 
   // winners & losers are always the same length, if there is not a valid playerId then it pushes 0
@@ -39,9 +43,9 @@ library ClanBattleLibrary {
     address _players,
     uint64[] memory _clanMembersA,
     uint64[] memory _clanMembersB,
+    Skill[] memory _skills,
     uint _randomWordA,
-    uint _randomWordB,
-    Skill _skill
+    uint _randomWordB
   ) public view returns (uint[] memory winners, uint[] memory losers, bool didAWin) {
     shuffleArray(_clanMembersA, _randomWordA);
     shuffleArray(_clanMembersB, _randomWordB);
@@ -59,13 +63,15 @@ library ClanBattleLibrary {
       uint hitsA;
       uint hitsB;
 
+      Skill skill = _skills[i];
+
       // It's possible that there are empty entries if they left the clan
       if (_clanMembersA[i] == 0 || _clanMembersB[i] == 0) {
         hitsA = _clanMembersA[i] == 0 ? 0 : 1;
         hitsB = _clanMembersB[i] == 0 ? 0 : 1;
       } else {
-        uint levelA = PlayersLibrary.getLevel(IPlayers(_players).xp(_clanMembersA[i], _skill));
-        uint levelB = PlayersLibrary.getLevel(IPlayers(_players).xp(_clanMembersB[i], _skill));
+        uint levelA = PlayersLibrary.getLevel(IPlayers(_players).xp(_clanMembersA[i], skill));
+        uint levelB = PlayersLibrary.getLevel(IPlayers(_players).xp(_clanMembersB[i], skill));
 
         // Each battle then roll dice where every 20 levels in the skill gets you a d20 dice.
         // The highest number rolled is the outcome.
