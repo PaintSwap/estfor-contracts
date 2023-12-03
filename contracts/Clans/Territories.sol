@@ -242,8 +242,8 @@ contract Territories is
       playerInfos[_playerIds[i]].attackingCooldownTimestamp = uint40(
         block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
       );
+      playerInfos[_playerIds[i]].lastAttackingTerritoryId = uint16(_territoryId);
       if (!clanUnoccupied) {
-        playerInfos[_playerIds[i]].lastAttackingTerritoryId = uint16(_territoryId);
         playerInfos[_playerIds[i]].lastPendingAttackId = _nextPendingAttackId;
       }
     }
@@ -290,7 +290,7 @@ contract Territories is
       Territory storage territory = territories[playerInfos[_playerId].lastAttackingTerritoryId];
       // Does this territory still have the same clan defending it?
       if (territory.clanIdOccupier == _clanId) {
-        // Check if this player is in the defenders list and remove him if so
+        // Check if this player is in the defenders list and remove them if so
         uint searchIndex = EstforLibrary.binarySearch(territory.playerIdDefenders, _playerId);
         if (searchIndex != type(uint).max) {
           // Not shifting it for gas reasons

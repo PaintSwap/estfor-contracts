@@ -8,7 +8,7 @@ import {fulfillRandomWords} from "../utils";
 import {getXPFromLevel} from "../Players/utils";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 
-describe.only("Territories", function () {
+describe("Territories", function () {
   it("Check defaults", async () => {
     const {territories, terrorityBrushAttackingCost} = await loadFixture(clanFixture);
 
