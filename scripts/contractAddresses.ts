@@ -69,7 +69,7 @@ if (!isBeta) {
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
   playersLibrary = "0x30267dab4833af17624b7c6c3ec7c58a5e0a3fda";
-  playersImplQueueActions = "0x68e2542c46957f2ff999bc3d6dac33e29fa3709c";
+  playersImplQueueActions = "0x59d56a38f30fe7634c929f5dc6f5e3a2e6e522ee";
   playersImplProcessActions = "0xf22b146ae7af1e1990cf4326cecaac910edc2b50";
   playersImplRewards = "0xafd93adb9c96db6d454c78d2edb8b0ea0bd32f88";
   playersImplMisc = "0xc1e7d4fa974f46d906296c90b6c0ce3ac0145483";

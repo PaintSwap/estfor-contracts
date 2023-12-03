@@ -1550,6 +1550,80 @@ describe("Players", function () {
     expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(1);
   });
 
+  it("Queued actions exceed max time", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...basicWoodcuttingQueuedAction};
+    queuedAction.timespan = 23 * 3600;
+    await expect(
+      players
+        .connect(alice)
+        .startActions(
+          playerId,
+          [basicWoodcuttingQueuedAction, queuedAction, basicWoodcuttingQueuedAction],
+          EstforTypes.ActionQueueStatus.NONE
+        )
+    ).to.be.revertedWithCustomError(players, "EmptyTimespan");
+
+    basicWoodcuttingQueuedAction.timespan = 2 * 3600;
+    await expect(
+      players
+        .connect(alice)
+        .startActions(
+          playerId,
+          [basicWoodcuttingQueuedAction, queuedAction, basicWoodcuttingQueuedAction],
+          EstforTypes.ActionQueueStatus.NONE
+        )
+    ).to.be.revertedWithCustomError(players, "ActionTimespanExceedsMaxTime");
+
+    // If it's at the end then it trims it
+    await players
+      .connect(alice)
+      .startActions(
+        playerId,
+        [basicWoodcuttingQueuedAction, basicWoodcuttingQueuedAction, queuedAction],
+        EstforTypes.ActionQueueStatus.NONE
+      );
+
+    const actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[2].timespan).to.eq(20 * 3600);
+  });
+
+  it("Queued actions exceed max time with remainder", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...basicWoodcuttingQueuedAction, timespan: 1600};
+    const fullTimeAction = {...basicWoodcuttingQueuedAction, timespan: 24 * 3600};
+    // If it's at the end then it trims it
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, fullTimeAction], EstforTypes.ActionQueueStatus.NONE);
+
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[0].timespan).to.eq(1600);
+    expect(actionQueue[1].timespan).to.eq(24 * 3600);
+
+    await ethers.provider.send("evm_increaseTime", [23 * 3600]);
+
+    // Now try it keeping remaining queued actions
+    await players
+      .connect(alice)
+      .startActions(playerId, [fullTimeAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+
+    actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[0].timespan).to.eq(1600 + 3600);
+    expect(actionQueue[1].timespan).to.eq(23 * 3600);
+  });
+
+  it("Queued actions exceed max time with remainder", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...basicWoodcuttingQueuedAction, timespan: 25 * 3600};
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    const actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[0].timespan).to.eq(24 * 3600);
+  });
+
   it.skip("Travelling", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);

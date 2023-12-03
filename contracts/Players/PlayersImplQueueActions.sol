@@ -105,8 +105,15 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         if (iter != queuedActionsLength.dec()) {
           revert ActionTimespanExceedsMaxTime();
         }
-        // Shorten it so that it does not extend beyond the max time
-        _queuedActions[i].timespan = uint24(MAX_TIME_.sub(totalTimespan));
+
+        uint remainder;
+        // Allow to queue the excess for any running action up to 1 hour
+        if (remainingQueuedActions.length > 0) {
+          remainder = remainingQueuedActions[0].timespan % 1 hours;
+        } else {
+          remainder = _queuedActions[0].timespan % 1 hours;
+        }
+        _queuedActions[i].timespan = uint24(MAX_TIME_.add(remainder).sub(totalTimespan));
       }
 
       _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint64());
@@ -128,7 +135,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     emit SetActionQueue(from, _playerId, player.actionQueue, attire, player.currentActionStartTime);
 
-    assert(totalTimespan <= MAX_TIME_); // Should never happen
+    assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
     nextQueueId = queueId.asUint64();
 
     if (_questId != 0) {
