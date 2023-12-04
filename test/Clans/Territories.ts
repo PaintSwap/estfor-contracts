@@ -10,23 +10,19 @@ import {ClanRank} from "@paintswap/estfor-definitions/types";
 
 describe("Territories", function () {
   it("Check defaults", async () => {
-    const {territories, terrorityBrushAttackingCost} = await loadFixture(clanFixture);
+    const {territories} = await loadFixture(clanFixture);
 
     expect(allTerritories.length).to.eq(25);
     expect((await territories.getTerrorities()).length).to.eq(allTerritories.length);
     expect((await territories.territories(1)).territoryId).to.eq(allTerritories[0].territoryId);
     expect((await territories.territories(1)).percentageEmissions).to.eq(allTerritories[0].percentageEmissions);
-    expect(await territories.brushAttackingCost()).to.eq(terrorityBrushAttackingCost.div(ethers.utils.parseEther("1")));
     expect(await territories.totalEmissionPercentage()).to.eq(1000);
   });
 
   it("Claim an unoccupied territory", async () => {
-    const {clanId, playerId, territories, terrorityBrushAttackingCost, brush, alice} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, brush, alice} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
-
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
     expect(await brush.balanceOf(alice.address)).to.eq(0);
 
@@ -46,22 +42,16 @@ describe("Territories", function () {
   });
 
   it("Cannot attack a territory which doesn't exist", async () => {
-    const {clanId, playerId, territories, terrorityBrushAttackingCost, brush, alice} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories} = await loadFixture(clanFixture);
 
     const territoryId = 26;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.approve(territories.address, terrorityBrushAttackingCost);
-
     await expect(territories.attackTerritory(clanId, [playerId], territoryId, playerId)).to.be.reverted;
   });
 
   it("Cannot attack your own territory", async () => {
-    const {clanId, playerId, territories, terrorityBrushAttackingCost, brush, alice} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, alice} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
-
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
     await ethers.provider.send("evm_increaseTime", [86400]);
@@ -71,11 +61,9 @@ describe("Territories", function () {
   });
 
   it("Cannot attack a territory if you own one", async () => {
-    const {clanId, playerId, territories, terrorityBrushAttackingCost, brush, alice} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, alice} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
@@ -94,8 +82,6 @@ describe("Territories", function () {
       clanId,
       playerId,
       territories,
-      terrorityBrushAttackingCost,
-      brush,
       alice,
       bob,
       clanName,
@@ -108,16 +94,12 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
-    await brush.mint(bob.address, terrorityBrushAttackingCost.mul(10));
-    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost.mul(10));
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allTerritorySkills.length; ++i) {
@@ -156,8 +138,6 @@ describe("Territories", function () {
       clanId,
       playerId,
       territories,
-      terrorityBrushAttackingCost,
-      brush,
       alice,
       bob,
       clanName,
@@ -170,16 +150,12 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
 
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
-    await brush.mint(bob.address, terrorityBrushAttackingCost.mul(10));
-    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost.mul(10));
 
     // Make the defending players statistically more powerful.
     for (let i = 0; i < allTerritorySkills.length; ++i) {
@@ -218,8 +194,6 @@ describe("Territories", function () {
       clanId,
       playerId,
       territories,
-      terrorityBrushAttackingCost,
-      brush,
       owner,
       alice,
       bob,
@@ -235,9 +209,6 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
-
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
@@ -280,9 +251,6 @@ describe("Territories", function () {
     const ownerClanId = 3;
 
     // Tries to attack an unclaimed territory
-    await brush.mint(owner.address, terrorityBrushAttackingCost);
-    await brush.approve(territories.address, terrorityBrushAttackingCost);
-
     await expect(
       territories.attackTerritory(ownerClanId, [ownerPlayerId], territoryId + 1, ownerPlayerId)
     ).to.be.revertedWithCustomError(territories, "PlayerAttackingCooldown");
@@ -296,8 +264,6 @@ describe("Territories", function () {
     // TODO: Rejoining the old clan does not add you back as a defender
 
     // Bob should always beat alice's clan as she only has 1 defender
-    await brush.mint(bob.address, terrorityBrushAttackingCost);
-    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost);
     await territories
       .connect(bob)
       .attackTerritory(bobClanId, [bobPlayerId, charliePlayerId, erinPlayerId], territoryId, bobPlayerId);
@@ -315,8 +281,6 @@ describe("Territories", function () {
       clanId,
       playerId,
       territories,
-      terrorityBrushAttackingCost,
-      brush,
       alice,
       bob,
       charlie,
@@ -330,9 +294,6 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
-
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
     // Create a clan of 2 players
@@ -344,8 +305,6 @@ describe("Territories", function () {
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
 
-    await brush.mint(bob.address, terrorityBrushAttackingCost);
-    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost);
     await territories.connect(bob).attackTerritory(bobClanId, [charliePlayerId], territoryId, bobPlayerId);
     // After attacking, leave the clan before the battle is resolved
 
@@ -373,7 +332,6 @@ describe("Territories", function () {
       clanId,
       playerId,
       territories,
-      terrorityBrushAttackingCost,
       brush,
       alice,
       bob,
@@ -387,16 +345,11 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
-
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
     const bobClanId = 2;
-    await brush.mint(bob.address, terrorityBrushAttackingCost);
-    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost);
     await territories.connect(bob).attackTerritory(bobClanId, [bobPlayerId], territoryId, bobPlayerId);
     // After attacking, leave the clan which destroys it before the battle is resolved
 
@@ -424,7 +377,6 @@ describe("Territories", function () {
       clanId,
       playerId,
       territories,
-      terrorityBrushAttackingCost,
       brush,
       alice,
       bob,
@@ -438,9 +390,6 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
-
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
 
@@ -448,9 +397,6 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
 
     const bobClanId = 2;
-    await brush.mint(bob.address, terrorityBrushAttackingCost);
-    await brush.connect(bob).approve(territories.address, terrorityBrushAttackingCost);
-
     await territories.connect(bob).attackTerritory(bobClanId, [bobPlayerId], territoryId, bobPlayerId);
     await fulfillRandomWords(1, territories, mockOracleClient);
 
@@ -461,24 +407,11 @@ describe("Territories", function () {
   it("Multiple clans should be able to attack an occupied territory", async () => {});
 
   it("Attacking players array should be sorted and without duplicates", async () => {
-    const {
-      playerNFT,
-      avatarId,
-      clans,
-      clanId,
-      playerId,
-      territories,
-      terrorityBrushAttackingCost,
-      brush,
-      owner,
-      alice,
-      origName,
-    } = await loadFixture(clanFixture);
+    const {playerNFT, avatarId, clans, clanId, playerId, territories, owner, alice, origName} = await loadFixture(
+      clanFixture
+    );
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost);
-    await brush.connect(alice).approve(territories.address, terrorityBrushAttackingCost);
-
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
@@ -493,19 +426,8 @@ describe("Territories", function () {
   });
 
   it("Must be a leader to attack a territory", async () => {
-    const {
-      playerNFT,
-      avatarId,
-      clans,
-      clanId,
-      playerId,
-      territories,
-      terrorityBrushAttackingCost,
-      brush,
-      owner,
-      alice,
-      origName,
-    } = await loadFixture(clanFixture);
+    const {playerNFT, avatarId, clans, clanId, playerId, territories, brush, owner, alice, origName} =
+      await loadFixture(clanFixture);
 
     const territoryId = 1;
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
@@ -513,8 +435,6 @@ describe("Territories", function () {
     await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
     await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.TREASURER, playerId);
 
-    await brush.mint(owner.address, terrorityBrushAttackingCost);
-    await brush.connect(owner).approve(territories.address, terrorityBrushAttackingCost);
     await expect(
       territories.connect(owner).attackTerritory(clanId, [playerId, ownerPlayerId], territoryId, ownerPlayerId)
     ).to.be.revertedWithCustomError(territories, "NotLeader");
@@ -523,30 +443,22 @@ describe("Territories", function () {
   });
 
   it("Is owner of player when attacking", async () => {
-    const {clanId, playerId, territories, terrorityBrushAttackingCost, brush, owner} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, owner} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(owner.address, terrorityBrushAttackingCost.add(ethers.utils.parseEther("1000")));
-    await brush
-      .connect(owner)
-      .approve(territories.address, terrorityBrushAttackingCost.add(ethers.utils.parseEther("1000")));
     await expect(
       territories.connect(owner).attackTerritory(clanId, [playerId], territoryId, playerId)
     ).to.be.revertedWithCustomError(territories, "NotOwnerOfPlayerAndActive");
   });
 
   it("Occupied territories should emit brush", async () => {
-    const {clanId, playerId, territories, terrorityBrushAttackingCost, brush, alice, bankFactory} = await loadFixture(
-      clanFixture
-    );
+    const {clanId, playerId, territories, brush, alice, bankFactory} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost.add(ethers.utils.parseEther("1000")));
-    await brush
-      .connect(alice)
-      .approve(territories.address, terrorityBrushAttackingCost.add(ethers.utils.parseEther("1000")));
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
+    await brush.mint(alice.address, ethers.utils.parseEther("1000"));
+    await brush.connect(alice).approve(territories.address, ethers.utils.parseEther("1000"));
     await territories.connect(alice).addUnclaimedEmissions(ethers.utils.parseEther("1000"));
 
     expect((await territories.territories(territoryId)).unclaimedEmissions).to.eq(ethers.utils.parseEther("100"));
@@ -561,17 +473,13 @@ describe("Territories", function () {
   });
 
   it("Can only claim emissions once every 8 hours", async () => {
-    const {clanId, playerId, territories, terrorityBrushAttackingCost, brush, alice, bankFactory} = await loadFixture(
-      clanFixture
-    );
+    const {clanId, playerId, territories, brush, alice} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await brush.mint(alice.address, terrorityBrushAttackingCost.add(ethers.utils.parseEther("1000")));
-    await brush
-      .connect(alice)
-      .approve(territories.address, terrorityBrushAttackingCost.add(ethers.utils.parseEther("1000")));
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
 
+    await brush.mint(alice.address, ethers.utils.parseEther("1000"));
+    await brush.connect(alice).approve(territories.address, ethers.utils.parseEther("1000"));
     await territories.connect(alice).addUnclaimedEmissions(ethers.utils.parseEther("500"));
     await territories.connect(alice).harvest(territoryId);
     await territories.connect(alice).addUnclaimedEmissions(ethers.utils.parseEther("500"));

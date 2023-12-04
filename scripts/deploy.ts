@@ -412,7 +412,6 @@ async function main() {
   const Territories = await ethers.getContractFactory("Territories", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
-  const terrorityBrushAttackingCost = isBeta ? ethers.utils.parseEther("1") : ethers.utils.parseEther("1000");
   const territorySubscriptionId = 97;
   const territories = await upgrades.deployProxy(
     Territories,
@@ -422,9 +421,7 @@ async function main() {
       clans.address,
       brush.address,
       bankFactory.address,
-      terrorityBrushAttackingCost,
       allTerritorySkills,
-      devAddress,
       oracle.address,
       territorySubscriptionId,
       adminAccess.address,
@@ -531,11 +528,11 @@ async function main() {
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
-  console.log("setItemNFT");
+  console.log("shop.setItemNFT");
 
   tx = await clans.setTerritories(territories.address);
   await tx.wait();
-  console.log("setTerritories");
+  console.log("clans.setTerritories");
 
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();

@@ -58,7 +58,6 @@ contract Territories is
   );
   event ClaimUnoccupiedTerritory(uint territoryId, uint clanId, uint64[] playerIds);
   event RemoveDefender(uint playerId, uint clanId, uint territoryId);
-  event SetBrushAttackingCost(uint brushAttackingCost);
   event RequestSent(uint requestId, uint numWords);
 
   error InvalidTerritory();
@@ -119,12 +118,10 @@ contract Territories is
   mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
   mapping(uint requestId => uint pendingAttackId) public requestToPendingAttackIds;
   mapping(uint territoryId => Territory territory) public territories;
-  uint64 nextTerritoryId;
   address public players;
-  uint64 nextPendingAttackId;
+  uint16 public nextTerritoryId;
+  uint64 public nextPendingAttackId;
   IClans public clans;
-  address public dev;
-  IBankFactory public bankFactory;
   AdminAccess public adminAccess;
   bool isBeta;
 
@@ -133,6 +130,8 @@ contract Territories is
   IBrushToken public brush;
 
   mapping(uint playerId => PlayerInfo playerInfo) public playerInfos;
+
+  Skill[] private comparableSkills;
 
   // solhint-disable-next-line var-name-mixedcase
   VRFCoordinatorV2Interface private COORDINATOR;
@@ -150,9 +149,6 @@ contract Territories is
   uint16 private constant REQUEST_CONFIRMATIONS = 1;
   // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
   uint32 private constant NUM_WORDS = 2;
-
-  uint16 public brushAttackingCost; // In ether (max 65535)
-  Skill[] private comparableSkills;
 
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
@@ -199,9 +195,7 @@ contract Territories is
     IClans _clans,
     IBrushToken _brush,
     IBankFactory _bankFactory,
-    uint _brushAttackingCost,
     Skill[] calldata _comparableSkills,
-    address _dev,
     VRFCoordinatorV2Interface _coordinator,
     uint64 _subscriptionId,
     AdminAccess _adminAccess,
@@ -214,7 +208,6 @@ contract Territories is
     brush = _brush;
     bankFactory = _bankFactory;
     players = _players;
-    dev = _dev;
     nextTerritoryId = 1;
     nextPendingAttackId = 1;
     adminAccess = _adminAccess;
@@ -225,7 +218,6 @@ contract Territories is
     callbackGasLimit = 400_000; // TODO: See how much this actually costs
 
     setComparableSkills(_comparableSkills);
-    setBrushAttackingCost(_brushAttackingCost);
     _addTerritories(_territories);
   }
 
@@ -263,10 +255,6 @@ contract Territories is
 
     // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
     // which are set here to reduce amount of gas used by oracle callback
-
-    // TODO take it from the clan bank later
-    brush.transferFrom(msg.sender, dev, uint(brushAttackingCost) * 1 ether);
-
     if (clanUnoccupied) {
       _claimTerritory(_territoryId, _clanId, _playerIds);
       emit ClaimUnoccupiedTerritory(_territoryId, _clanId, _playerIds);
@@ -512,7 +500,7 @@ contract Territories is
       _totalEmissionPercentage += territoryInput.percentageEmissions;
     }
 
-    nextTerritoryId = uint64(_nextTerritoryId + _territories.length);
+    nextTerritoryId = uint16(_nextTerritoryId + _territories.length);
 
     if (_totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
       revert InvalidEmissionPercentage();
@@ -567,14 +555,6 @@ contract Territories is
 
     totalEmissionPercentage = uint16(_totalEmissionPercentage);
     emit RemoveTerritories(_territoryIds);
-  }
-
-  function setBrushAttackingCost(uint _brushAttackingCost) public onlyOwner {
-    if (_brushAttackingCost % 1 ether != 0) {
-      revert InvalidBrushCost();
-    }
-    brushAttackingCost = uint16(_brushAttackingCost / 1 ether);
-    emit SetBrushAttackingCost(_brushAttackingCost);
   }
 
   function setComparableSkills(Skill[] calldata _skills) public onlyOwner {
