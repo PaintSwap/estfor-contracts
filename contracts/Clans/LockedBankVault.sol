@@ -47,7 +47,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   event ClaimFunds(uint clanId, uint amount, uint numLocksClaimed);
   event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint combatantCooldownTimestamp);
 
-  error PlayerDefendingTerritory();
+  error PlayerOnTerritory();
   error TooManyAttackers();
   error NoDefenders();
   error NoAttackers();
@@ -59,7 +59,6 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   error ClanAttackingSameClanCooldown();
   error PlayerIdsNotSortedOrDuplicates();
   error NotMemberOfClan();
-  error PlayerAttackingCooldown();
   error PlayerCombatantCooldownTimestamp();
   error LengthMismatch();
   error NoBrushToAttack();
@@ -288,9 +287,9 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       }
 
       // Check they are not defending a territory
-      bool isDefendingATerritory = territories.isDefendingATerritoryOrInAPendingAttack(_clanId, _playerIds[i]);
-      if (isDefendingATerritory) {
-        revert PlayerDefendingTerritory();
+      bool isTerritoryCombatant = territories.isCombatant(_clanId, _playerIds[i]);
+      if (isTerritoryCombatant) {
+        revert PlayerOnTerritory();
       }
 
       if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
@@ -478,6 +477,16 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
   function getClanInfo(uint _clanId) external view returns (ClanInfo memory) {
     return clanInfos[_clanId];
+  }
+
+  function isCombatant(uint _clanId, uint _playerId) external view returns (bool) {
+    uint64[] storage playerIds = clanInfos[_clanId].playerIds;
+    if (playerIds.length == 0) {
+      return false;
+    }
+
+    uint searchIndex = EstforLibrary.binarySearch(playerIds, _playerId);
+    return searchIndex != type(uint).max;
   }
 
   function setComparableSkills(Skill[] calldata _skills) public onlyOwner {

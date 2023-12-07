@@ -17,7 +17,7 @@ contract MockTerritories is ITerritories {
     ++addUnclaimedEmissionsCBCount;
   }
 
-  function isDefendingATerritoryOrInAPendingAttack(uint, uint) external pure override returns (bool) {
+  function isCombatant(uint /* _clanId */, uint /* _playerId */) external pure override returns (bool) {
     return false;
   }
 }

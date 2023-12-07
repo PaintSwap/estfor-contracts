@@ -17,7 +17,7 @@ import {IBank} from "../interfaces/IBank.sol";
 import {LockedBankVault} from "./LockedBankVault.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 
-import {ClanRank, MAX_CLAN_ATTACKERS} from "../globals/clans.sol";
+import {ClanRank, MAX_CLAN_COMBATANTS} from "../globals/clans.sol";
 import {Skill} from "../globals/misc.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
@@ -37,14 +37,7 @@ contract Territories is
   event BrushAttackingCost(uint brushCost);
   event SetComparableSkills(Skill[] skills);
   event RequestFulfilled(uint requestId, uint[] randomWords);
-  event AttackTerritory(
-    uint clanId,
-    uint64[] playerIds,
-    uint territoryId,
-    uint leaderPlayerId,
-    uint requestId,
-    uint pendingAttackId
-  );
+  event AttackTerritory(uint clanId, uint territoryId, uint leaderPlayerId, uint requestId, uint pendingAttackId);
   event BattleResult(
     uint requestId,
     uint[] winnerPlayerIds,
@@ -56,9 +49,10 @@ contract Territories is
     uint[] randomWords,
     uint attackingTimestamp
   );
-  event ClaimUnoccupiedTerritory(uint territoryId, uint clanId, uint64[] playerIds);
-  event RemoveDefender(uint playerId, uint clanId, uint territoryId);
+  event ClaimUnoccupiedTerritory(uint territoryId, uint clanId);
+  event RemoveCombatant(uint playerId, uint clanId);
   event RequestSent(uint requestId, uint numWords);
+  event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint cooldownTimestamp);
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -67,7 +61,6 @@ contract Territories is
   error TransferFailed();
   error AlreadyOwnATerritory();
   error NotLeader();
-  error PlayerAttackingCooldown();
   error ClanAttackingCooldown();
   error NotMemberOfClan();
   error InvalidBrushCost();
@@ -80,6 +73,11 @@ contract Territories is
   error NotAdminAndBeta();
   error TooManyAttackers();
   error NoAttackers();
+  error CurrentlyOwnATerritory();
+  error NoCombatants();
+  error TooManyCombatants();
+  error PlayerCombatantCooldownTimestamp();
+  error PlayerDefendingLockedVaults();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -92,22 +90,21 @@ contract Territories is
     uint40 clanIdOccupier;
     uint88 unclaimedEmissions;
     uint40 lastClaimTime;
-    uint64[] playerIdDefenders;
   }
 
   struct ClanInfo {
     uint16 ownsTerritoryId;
     uint40 attackingCooldownTimestamp;
+    uint40 assignCombatantsCooldownTimestamp;
+    bool currentlyAttacking;
+    uint64[] playerIds;
   }
 
   struct PlayerInfo {
-    uint40 attackingCooldownTimestamp;
-    uint16 lastAttackingTerritoryId; // May or may not be actively defending this (only if they actually won)
-    uint64 lastPendingAttackId;
+    uint40 combatantCooldownTimestamp;
   }
 
   struct PendingAttack {
-    uint64[] playerIds;
     uint40 clanId;
     uint16 territoryId;
     uint40 timestamp;
@@ -125,7 +122,7 @@ contract Territories is
   LockedBankVault public lockedBankVault;
   bool isBeta;
 
-  mapping(uint clanId => ClanInfo clanInfo) public clanInfos;
+  mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
   uint16 public totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
   IBrushToken public brush;
 
@@ -152,7 +149,8 @@ contract Territories is
 
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
-
+  uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
+  uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
   uint constant PERCENTAGE_EMISSION_MUL = 10;
   uint public constant HARVESTING_COOLDOWN = 8 hours;
 
@@ -224,50 +222,92 @@ contract Territories is
     _addTerritories(_territories);
   }
 
+  function _checkCanAssignCombatants(uint _clanId, uint64[] calldata _playerIds) private view {
+    // Check this clan exists
+    //    if (territories[_territoryId].territoryId != _territoryId) {
+    //      revert InvalidTerritory();
+    //    }
+
+    if (clanInfos[_clanId].ownsTerritoryId != 0) {
+      revert CurrentlyOwnATerritory();
+    }
+
+    if (_playerIds.length == 0) {
+      revert NoCombatants();
+    }
+
+    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
+      revert TooManyCombatants();
+    }
+
+    // Check the cooldown periods on attacking (because they might have just joined another clan)
+    for (uint i; i < _playerIds.length; ++i) {
+      if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
+        revert PlayerCombatantCooldownTimestamp();
+      }
+
+      // Check they are part of the clan
+      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
+        revert NotMemberOfClan();
+      }
+
+      // Check they are not combatants in locked vaults
+      bool isDefendingALockedVault = lockedBankVault.isCombatant(_clanId, _playerIds[i]);
+      if (isDefendingALockedVault) {
+        revert PlayerDefendingLockedVaults();
+      }
+
+      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
+        revert PlayerIdsNotSortedOrDuplicates();
+      }
+      // TODO: Check they are defending a territory
+    }
+  }
+
+  function assignCombatants(
+    uint _clanId,
+    uint64[] calldata _playerIds,
+    uint _leaderPlayerId
+  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
+    _checkCanAssignCombatants(_clanId, _playerIds);
+
+    for (uint i; i < _playerIds.length; ++i) {
+      playerInfos[_playerIds[i]].combatantCooldownTimestamp = uint40(block.timestamp + COMBATANT_COOLDOWN);
+    }
+
+    clanInfos[_clanId].playerIds = _playerIds;
+    clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(
+      block.timestamp + MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
+    );
+    emit AssignCombatants(_clanId, _playerIds, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
+  }
+
   // This needs to call the oracle VRF on-demand and costs some brush
   function attackTerritory(
     uint _clanId,
-    uint64[] calldata _playerIds,
     uint _territoryId,
     uint _leaderPlayerId
   ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
-    _checkCanAttackTerritory(_clanId, _playerIds, _territoryId);
+    _checkCanAttackTerritory(_clanId, _territoryId);
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
     uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
     bool clanUnoccupied = clanIdOccupier == 0;
-
-    for (uint i; i < _playerIds.length; ++i) {
-      playerInfos[_playerIds[i]].attackingCooldownTimestamp = uint40(
-        block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
-      );
-      playerInfos[_playerIds[i]].lastAttackingTerritoryId = uint16(_territoryId);
-      if (!clanUnoccupied) {
-        playerInfos[_playerIds[i]].lastPendingAttackId = _nextPendingAttackId;
-      }
-    }
-
-    for (uint i; i < territories[_territoryId].playerIdDefenders.length; ++i) {
-      uint playerIdDefender = territories[_territoryId].playerIdDefenders[i];
-      playerInfos[playerIdDefender].attackingCooldownTimestamp = uint40(
-        block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
-      );
-    }
 
     clanInfos[_clanId].attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
 
     // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
     // which are set here to reduce amount of gas used by oracle callback
     if (clanUnoccupied) {
-      _claimTerritory(_territoryId, _clanId, _playerIds);
-      emit ClaimUnoccupiedTerritory(_territoryId, _clanId, _playerIds);
+      _claimTerritory(_territoryId, _clanId);
+      emit ClaimUnoccupiedTerritory(_territoryId, _clanId);
     } else {
+      clanInfos[_clanId].currentlyAttacking = true;
       clanInfos[clanIdOccupier].attackingCooldownTimestamp = uint40(
         block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
       );
 
       pendingAttacks[_nextPendingAttackId] = PendingAttack({
-        playerIds: _playerIds,
         clanId: uint40(_clanId),
         territoryId: uint16(_territoryId),
         timestamp: uint40(block.timestamp),
@@ -276,42 +316,24 @@ contract Territories is
       uint requestId = _requestRandomWords();
       requestToPendingAttackIds[requestId] = _nextPendingAttackId;
 
-      emit AttackTerritory(_clanId, _playerIds, _territoryId, _leaderPlayerId, requestId, _nextPendingAttackId);
+      emit AttackTerritory(_clanId, _territoryId, _leaderPlayerId, requestId, _nextPendingAttackId);
     }
   }
 
+  // Remove a player combatant if they are currently assigned in this clan
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
-    // Remove from the player defenders if they are in there
-    if (playerInfos[_playerId].lastAttackingTerritoryId != 0) {
-      Territory storage territory = territories[playerInfos[_playerId].lastAttackingTerritoryId];
-      // Does this territory still have the same clan defending it?
-      if (territory.clanIdOccupier == _clanId) {
-        // Check if this player is in the defenders list and remove them if so
-        uint searchIndex = EstforLibrary.binarySearch(territory.playerIdDefenders, _playerId);
-        if (searchIndex != type(uint).max) {
-          // Not shifting it for gas reasons
-          delete territory.playerIdDefenders[searchIndex];
-          emit RemoveDefender(_playerId, _clanId, territory.territoryId);
-        }
-      }
-
-      uint pendingAttackId = playerInfos[_playerId].lastPendingAttackId;
-      if (
-        pendingAttackId != 0 &&
-        pendingAttacks[pendingAttackId].attackInProgress &&
-        pendingAttacks[pendingAttackId].clanId == _clanId
-      ) {
-        // Remove from the pending attack
-        uint searchIndex = EstforLibrary.binarySearch(pendingAttacks[pendingAttackId].playerIds, _playerId);
-        if (searchIndex != type(uint).max) {
-          // Not shifting it for gas reasons
-          delete pendingAttacks[pendingAttackId].playerIds[searchIndex];
-        }
+    // Check if this player is in the defenders list and remove them if so
+    if (clanInfos[_clanId].playerIds.length > 0) {
+      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+      if (searchIndex != type(uint).max) {
+        // Not shifting it for gas reasons
+        delete clanInfos[_clanId].playerIds[searchIndex];
+        emit RemoveCombatant(_playerId, _clanId);
       }
     }
   }
 
-  function _checkCanAttackTerritory(uint _clanId, uint64[] calldata _playerIds, uint _territoryId) private view {
+  function _checkCanAttackTerritory(uint _clanId, uint _territoryId) private view {
     if (territories[_territoryId].territoryId != _territoryId) {
       revert InvalidTerritory();
     }
@@ -320,37 +342,8 @@ contract Territories is
       revert AlreadyOwnATerritory();
     }
 
-    if (_playerIds.length == 0) {
-      revert NoAttackers();
-    }
-
-    if (_playerIds.length > MAX_CLAN_ATTACKERS) {
-      revert TooManyAttackers();
-    }
-
-    // Check the cooldown periods on attacking (because they might have just joined another clan)
-    for (uint i; i < _playerIds.length; ++i) {
-      if (playerInfos[_playerIds[i]].attackingCooldownTimestamp > block.timestamp) {
-        revert PlayerAttackingCooldown();
-      }
-
-      // Check they are part of the clan
-      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
-        revert NotMemberOfClan();
-      }
-
-      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
-        revert PlayerIdsNotSortedOrDuplicates();
-      }
-      // TODO: Check they are defending a territory
-    }
-
     if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
       revert ClanAttackingCooldown();
-    }
-
-    if (territories[_territoryId].clanIdOccupier == 0) {
-      return;
     }
   }
 
@@ -366,10 +359,9 @@ contract Territories is
     emit RequestSent(requestId, NUM_WORDS);
   }
 
-  function _claimTerritory(uint _territoryId, uint _attackingClanId, uint64[] memory _playerIdAttackers) private {
+  function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
     // Assign them the new stuff
     territories[_territoryId].clanIdOccupier = uint32(_attackingClanId);
-    territories[_territoryId].playerIdDefenders = _playerIdAttackers;
     clanInfos[_attackingClanId].ownsTerritoryId = uint16(_territoryId);
   }
 
@@ -379,13 +371,11 @@ contract Territories is
     }
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
-    uint64[] storage playerIdAttackers = pendingAttack.playerIds;
-    uint16 territoryId = pendingAttack.territoryId;
-    uint64[] storage playerIdDefenders = territories[territoryId].playerIdDefenders;
-
-    // Does this territory still have the same clan defenders?
     uint attackingClanId = pendingAttack.clanId;
+    uint64[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
+    uint16 territoryId = pendingAttack.territoryId;
     uint defendingClanId = territories[territoryId].clanIdOccupier;
+    uint64[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
 
     Skill[] memory randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
     for (uint i; i < randomSkills.length; ++i) {
@@ -403,9 +393,10 @@ contract Territories is
 
     uint timestamp = pendingAttack.timestamp;
     pendingAttack.attackInProgress = false;
+    clanInfos[attackingClanId].currentlyAttacking = false;
 
     if (didAttackersWin) {
-      _claimTerritory(territoryId, attackingClanId, playerIdAttackers);
+      _claimTerritory(territoryId, attackingClanId);
       // Update old clan
       clanInfos[defendingClanId].ownsTerritoryId = 0;
     }
@@ -467,7 +458,6 @@ contract Territories is
 
   function _addTerritories(TerritoryInput[] calldata _territories) private {
     uint _totalEmissionPercentage = totalEmissionPercentage;
-    uint64[] memory playerIdDefenders;
     uint _nextTerritoryId = nextTerritoryId;
     for (uint i; i < _territories.length; ++i) {
       TerritoryInput calldata territoryInput = _territories[i];
@@ -481,8 +471,7 @@ contract Territories is
         clanIdOccupier: 0,
         percentageEmissions: territoryInput.percentageEmissions,
         unclaimedEmissions: 0,
-        lastClaimTime: 0,
-        playerIdDefenders: playerIdDefenders
+        lastClaimTime: 0
       });
       _totalEmissionPercentage += territoryInput.percentageEmissions;
     }
@@ -505,36 +494,20 @@ contract Territories is
     return _territories;
   }
 
+  function getClanInfo(uint _clanId) external view returns (ClanInfo memory clanInfo) {
+    return clanInfos[_clanId];
+  }
+
   function getPendingAttack(uint _pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
     return pendingAttacks[_pendingAttackId];
   }
 
-  function isDefendingATerritoryOrInAPendingAttack(uint _clanId, uint _playerId) external view override returns (bool) {
-    if (playerInfos[_playerId].lastAttackingTerritoryId != 0) {
-      Territory storage territory = territories[playerInfos[_playerId].lastAttackingTerritoryId];
-      // Does this territory still have the same clan defending it?
-      if (territory.clanIdOccupier == _clanId) {
-        // Check if this player is in the defenders list and remove him if so
-        uint searchIndex = EstforLibrary.binarySearch(territory.playerIdDefenders, _playerId);
-        if (searchIndex != type(uint).max) {
-          return true;
-        }
-      } else {
-        uint pendingAttackId = playerInfos[_playerId].lastPendingAttackId;
-        if (
-          pendingAttackId != 0 &&
-          pendingAttacks[pendingAttackId].attackInProgress &&
-          pendingAttacks[pendingAttackId].clanId == _clanId
-        ) {
-          // Remove from the pending attack
-          uint searchIndex = EstforLibrary.binarySearch(pendingAttacks[pendingAttackId].playerIds, _playerId);
-          if (searchIndex != type(uint).max) {
-            return true;
-          }
-        }
-      }
+  function isCombatant(uint _clanId, uint _playerId) external view returns (bool combatant) {
+    // Check if this player is in the defenders list and remove them if so
+    if (clanInfos[_clanId].playerIds.length > 0) {
+      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+      combatant = searchIndex != type(uint).max;
     }
-    return false;
   }
 
   function addTerritories(TerritoryInput[] calldata _territories) external onlyOwner {
@@ -583,10 +556,7 @@ contract Territories is
     emit SetComparableSkills(_skills);
   }
 
-  function clearAttackingCooldown(uint _clanId, uint[] memory _playerIds) public isAdminAndBeta {
-    for (uint i; i < _playerIds.length; ++i) {
-      playerInfos[_playerIds[i]].attackingCooldownTimestamp = 0;
-    }
+  function clearAttackingCooldown(uint _clanId) public isAdminAndBeta {
     clanInfos[_clanId].attackingCooldownTimestamp = 0;
   }
 
