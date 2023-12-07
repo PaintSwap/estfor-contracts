@@ -48,9 +48,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint combatantCooldownTimestamp);
 
   error PlayerOnTerritory();
-  error TooManyAttackers();
-  error NoDefenders();
-  error NoAttackers();
+  error NoCombatants();
   error TooManyCombatants();
   error NotOwnerOfPlayerAndActive();
   error NotLeader();
@@ -263,7 +261,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     }
 
     if (_playerIds.length == 0) {
-      revert NoDefenders();
+      revert NoCombatants();
     }
 
     if (_playerIds.length > MAX_CLAN_COMBATANTS) {

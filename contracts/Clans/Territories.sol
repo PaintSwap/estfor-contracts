@@ -63,7 +63,6 @@ contract Territories is
   error NotLeader();
   error ClanAttackingCooldown();
   error NotMemberOfClan();
-  error InvalidBrushCost();
   error InvalidSkill(Skill skill);
   error LengthMismatch();
   error OnlyClans();
@@ -71,8 +70,6 @@ contract Territories is
   error NotOwnerOfPlayerAndActive();
   error HarvestingTooSoon();
   error NotAdminAndBeta();
-  error TooManyAttackers();
-  error NoAttackers();
   error CurrentlyOwnATerritory();
   error NoCombatants();
   error TooManyCombatants();
