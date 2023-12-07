@@ -16,4 +16,8 @@ contract MockTerritories is ITerritories {
     brush.transferFrom(msg.sender, address(this), _amount);
     ++addUnclaimedEmissionsCBCount;
   }
+
+  function isDefendingATerritoryOrInAPendingAttack(uint, uint) external pure override returns (bool) {
+    return false;
+  }
 }

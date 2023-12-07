@@ -12,9 +12,9 @@ import {IClans} from "../interfaces/IClans.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IBank} from "../interfaces/IBank.sol";
 
+import {LockedBankVault} from "./LockedBankVault.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 
 import {ClanRank, MAX_CLAN_ATTACKERS} from "../globals/clans.sol";
@@ -98,7 +98,6 @@ contract Territories is
   struct ClanInfo {
     uint16 ownsTerritoryId;
     uint40 attackingCooldownTimestamp;
-    address bank;
   }
 
   struct PlayerInfo {
@@ -123,6 +122,7 @@ contract Territories is
   uint64 public nextPendingAttackId;
   IClans public clans;
   AdminAccess public adminAccess;
+  LockedBankVault public lockedBankVault;
   bool isBeta;
 
   mapping(uint clanId => ClanInfo clanInfo) public clanInfos;
@@ -194,7 +194,7 @@ contract Territories is
     address _players,
     IClans _clans,
     IBrushToken _brush,
-    IBankFactory _bankFactory,
+    LockedBankVault _lockedBankVault,
     Skill[] calldata _comparableSkills,
     VRFCoordinatorV2Interface _coordinator,
     uint64 _subscriptionId,
@@ -206,7 +206,7 @@ contract Territories is
     __Ownable_init();
     clans = _clans;
     brush = _brush;
-    bankFactory = _bankFactory;
+    lockedBankVault = _lockedBankVault;
     players = _players;
     nextTerritoryId = 1;
     nextPendingAttackId = 1;
@@ -218,6 +218,9 @@ contract Territories is
     callbackGasLimit = 400_000; // TODO: See how much this actually costs
 
     setComparableSkills(_comparableSkills);
+
+    brush.approve(address(_lockedBankVault), type(uint).max);
+
     _addTerritories(_territories);
   }
 
@@ -431,34 +434,18 @@ contract Territories is
 
     uint unclaimedEmissions = territory.unclaimedEmissions;
 
-    // Cache some values for next time
-    if (clanInfos[clanId].bank == address(0)) {
-      address bankAddress = bankFactory.bankAddress(clanId);
-      brush.approve(bankAddress, type(uint).max);
-      clanInfos[clanId].bank = bankAddress;
-    }
-
     if (territory.lastClaimTime + HARVESTING_COOLDOWN > block.timestamp) {
       revert HarvestingTooSoon();
     }
 
     territory.lastClaimTime = uint40(block.timestamp);
 
-    // TODO: Deposting directly to the bank, but the idea is to freeze the funds first.
-    IBank(clanInfos[clanId].bank).depositToken(0, address(brush), unclaimedEmissions);
-
-    // TODO Frozen funds, here or in bank?
-    //    clans.;
+    lockedBankVault.lockFunds(clanId, unclaimedEmissions);
   }
 
   function pendingEmissions(uint _territoryId) external {
     // get pending from masterchef * 2 ?
   }
-
-  // If a transfer of assets
-  //  function _callAddUnclaimedEmissions() private {
-  //    _artGallery.
-  //  }
 
   function addUnclaimedEmissions(uint _amount) external {
     if (!brush.transferFrom(msg.sender, address(this), _amount)) {
@@ -520,6 +507,34 @@ contract Territories is
 
   function getPendingAttack(uint _pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
     return pendingAttacks[_pendingAttackId];
+  }
+
+  function isDefendingATerritoryOrInAPendingAttack(uint _clanId, uint _playerId) external view override returns (bool) {
+    if (playerInfos[_playerId].lastAttackingTerritoryId != 0) {
+      Territory storage territory = territories[playerInfos[_playerId].lastAttackingTerritoryId];
+      // Does this territory still have the same clan defending it?
+      if (territory.clanIdOccupier == _clanId) {
+        // Check if this player is in the defenders list and remove him if so
+        uint searchIndex = EstforLibrary.binarySearch(territory.playerIdDefenders, _playerId);
+        if (searchIndex != type(uint).max) {
+          return true;
+        }
+      } else {
+        uint pendingAttackId = playerInfos[_playerId].lastPendingAttackId;
+        if (
+          pendingAttackId != 0 &&
+          pendingAttacks[pendingAttackId].attackInProgress &&
+          pendingAttacks[pendingAttackId].clanId == _clanId
+        ) {
+          // Remove from the pending attack
+          uint searchIndex = EstforLibrary.binarySearch(pendingAttacks[pendingAttackId].playerIds, _playerId);
+          if (searchIndex != type(uint).max) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   function addTerritories(TerritoryInput[] calldata _territories) external onlyOwner {

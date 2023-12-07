@@ -26,6 +26,7 @@ let playersImplMisc1;
 let players;
 let instantActions;
 let clanBattleLibrary;
+let lockedBankVault;
 let territories;
 let decoratorProvider;
 
@@ -56,6 +57,7 @@ if (!isBeta) {
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
   clanBattleLibrary = "";
+  lockedBankVault = "";
   territories = "";
   decoratorProvider = "";
 } else {
@@ -86,6 +88,7 @@ if (!isBeta) {
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
   clanBattleLibrary = "";
+  lockedBankVault = "";
   territories = "";
   decoratorProvider = "";
 }
@@ -120,6 +123,7 @@ export const PLAYERS_ADDRESS = players;
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
 
 export const CLAN_BATTLE_LIBRARY_ADDRESS = clanBattleLibrary;
+export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVault;
 export const TERRITORIES_ADDRESS = territories;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 

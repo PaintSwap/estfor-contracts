@@ -29,7 +29,7 @@ export async function clanFixture() {
   const telegram = "fantomfoundation";
 
   // Figure out what the address would be
-  const newContactAddr = ethers.utils.getContractAddress({
+  const bankAddress = ethers.utils.getContractAddress({
     from: bankFactory.address,
     nonce: clanId,
   });
@@ -38,8 +38,8 @@ export async function clanFixture() {
     .to.emit(clans, "ClanCreated")
     .withArgs(clanId, playerId, [clanName, discord, telegram], imageId, tierId)
     .and.to.emit(bankFactory, "BankContractCreated")
-    .withArgs(alice.address, clanId, newContactAddr);
+    .withArgs(alice.address, clanId, bankAddress);
 
   const editNameCost = await clans.editNameCost();
-  return {...fixture, clans, clanName, discord, telegram, tierId, imageId, clanId, tier, editNameCost};
+  return {...fixture, clans, clanName, discord, telegram, tierId, imageId, clanId, tier, editNameCost, bankAddress};
 }

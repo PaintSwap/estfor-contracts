@@ -269,7 +269,7 @@ describe("Territories", function () {
       .attackTerritory(bobClanId, [bobPlayerId, charliePlayerId, erinPlayerId], territoryId, bobPlayerId);
     await fulfillRandomWords(1, territories, mockOracleClient);
 
-    territory = await territories.territories(territoryId);
+    territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(bobClanId);
   });
 
@@ -452,7 +452,7 @@ describe("Territories", function () {
   });
 
   it("Occupied territories should emit brush", async () => {
-    const {clanId, playerId, territories, brush, alice, bankFactory} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, brush, alice, bankFactory, lockedBankVault} = await loadFixture(clanFixture);
 
     const territoryId = 1;
     await territories.connect(alice).attackTerritory(clanId, [playerId], territoryId, playerId);
@@ -463,13 +463,15 @@ describe("Territories", function () {
 
     expect((await territories.territories(territoryId)).unclaimedEmissions).to.eq(ethers.utils.parseEther("100"));
 
-    const bankAddress = await bankFactory.bankAddress(clanId);
-    expect((await territories.clanInfos(clanId)).bank).to.eq(ethers.constants.AddressZero);
+    //    const bankAddress = await bankFactory.bankAddress(clanId);
+    //    expect((await territories.clanInfos(clanId)).bank).to.eq(ethers.constants.AddressZero);
     await territories.connect(alice).harvest(territoryId);
     // After harvesting the clan bank address should be set on clans object
-    expect((await territories.clanInfos(clanId)).bank).to.eq(bankAddress);
+    //    expect((await territories.clanInfos(clanId)).bank).to.eq(bankAddress);
 
-    expect(await brush.balanceOf(bankAddress)).to.eq(ethers.utils.parseEther("100"));
+    expect(await brush.balanceOf(lockedBankVault.address)).to.eq(ethers.utils.parseEther("100"));
+    expect((await lockedBankVault.getClanInfo(clanId)).totalBrushLocked).to.eq(ethers.utils.parseEther("100"));
+    //    expect((await lockedBankVault.clanInfos(clanId)).bank).to.eq(bankAddress);
   });
 
   it("Can only claim emissions once every 8 hours", async () => {
@@ -554,6 +556,8 @@ describe("Territories", function () {
     // Check the others haven't changed
     expect((await territories.territories(territoryId + 1)).percentageEmissions).to.eq(100);
   });
+
+  it("Cannot be used to attack a territory if you are defending a locked bank vault", async () => {});
 
   it("Leaving clan during a pending attack before oracle is called (can you join another clan and do anything?)", async () => {});
 

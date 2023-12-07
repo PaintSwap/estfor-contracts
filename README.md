@@ -77,6 +77,11 @@ BankFactory [0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4](https://ftmscan.com/add
 
 InstantActions [0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe](https://ftmscan.com/address/0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe)
 
+ClanBattleLibrary [](https://ftmscan.com/address/)
+LockedBankVault [](https://ftmscan.com/address/)
+Territories [](https://ftmscan.com/address/)
+DecoratorProvider [](https://ftmscan.com/address/)
+
 ### Fantom mainnet beta deployed contract addresses:
 
 WorldLibrary [0x8e18dba6eba3e1e959a011695027ddb2b468e2f9](https://ftmscan.com/address/0x8e18dba6eba3e1e959a011695027ddb2b468e2f9)  
@@ -108,6 +113,11 @@ BankProxy [0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb](https://ftmscan.com/addre
 BankFactory [0x7b8197e7d7352e8910a7af79a9184f50290403da](https://ftmscan.com/address/0x7b8197e7d7352e8910a7af79a9184f50290403da)
 
 InstantActions [0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76](https://ftmscan.com/address/0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76)
+
+ClanBattleLibrary [](https://ftmscan.com/address/)
+LockedBankVault [](https://ftmscan.com/address/)
+Territories [](https://ftmscan.com/address/)
+DecoratorProvider [](https://ftmscan.com/address/)
 
 ### Other addresses:
 
