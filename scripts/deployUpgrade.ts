@@ -20,6 +20,7 @@ import {
   CLAN_BATTLE_LIBRARY_ADDRESS,
   TERRITORIES_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
+  LOCKED_BANK_VAULT_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -210,6 +211,16 @@ async function main() {
   }
   console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
 
+  const LockedBankVault = await ethers.getContractFactory("LockedBankVault", {
+    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
+  });
+  const lockedBankVault = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVault, {
+    kind: "uups",
+    timeout,
+  });
+  await lockedBankVault.deployed();
+  console.log(`lockedBankVault = "${lockedBankVault.address.toLowerCase()}"`);
+
   const Territories = await ethers.getContractFactory("Territories", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
@@ -240,6 +251,7 @@ async function main() {
   await verifyContracts([wishingWell.address]);
   await verifyContracts([promotions.address]);
   await verifyContracts([instantActions.address]);
+  await verifyContracts([lockedBankVault.address]);
   await verifyContracts([territories.address]);
   await verifyContracts([decoratorProvider.address]);
 }
