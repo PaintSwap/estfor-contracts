@@ -15,7 +15,7 @@ import {ITerritories} from "../interfaces/ITerritories.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 
-import {ClanRank, MAX_CLAN_ATTACKERS} from "../globals/clans.sol";
+import {ClanRank, MAX_CLAN_COMBATANTS} from "../globals/clans.sol";
 import {Skill} from "../globals/misc.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
@@ -45,12 +45,13 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   event RequestSent(uint requestId, uint numWords);
   event RemoveDefender(uint playerId, uint clanId);
   event ClaimFunds(uint clanId, uint amount, uint numLocksClaimed);
+  event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint combatantCooldownTimestamp);
 
   error PlayerDefendingTerritory();
   error TooManyAttackers();
   error NoDefenders();
   error NoAttackers();
-  error TooManyDefenders();
+  error TooManyCombatants();
   error NotOwnerOfPlayerAndActive();
   error NotLeader();
   error InvalidSkill(Skill skill);
@@ -59,13 +60,13 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   error PlayerIdsNotSortedOrDuplicates();
   error NotMemberOfClan();
   error PlayerAttackingCooldown();
-  error PlayerDefendingCooldown();
+  error PlayerCombatantCooldownTimestamp();
   error LengthMismatch();
   error NoBrushToAttack();
   error CannotAttackSelf();
   error OnlyClans();
   error TransferFailed();
-  error ClanDefendersChangeCooldown();
+  error ClanCombatantsChangeCooldown();
   error CannotChangeCombatantsDuringAttack();
   error NothingToClaim();
 
@@ -91,9 +92,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   }
 
   struct PlayerInfo {
-    uint40 attackingCooldownTimestamp;
-    uint40 defendersCooldownTimestamp;
-    uint64 lastPendingAttackId;
+    uint40 combatantCooldownTimestamp;
   }
 
   struct PendingAttack {
@@ -136,7 +135,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   uint public constant ATTACKING_COOLDOWN = 4 hours;
   uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
-  uint public constant DEFENDERS_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
+  uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
 
   uint public constant LOCK_PERIOD = 7 days;
 
@@ -268,19 +267,19 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       revert NoDefenders();
     }
 
-    if (_playerIds.length > MAX_CLAN_ATTACKERS) {
-      revert TooManyDefenders();
+    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
+      revert TooManyCombatants();
     }
 
     // Can only change defenders every so often
     if (clanInfos[_clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
-      revert ClanDefendersChangeCooldown();
+      revert ClanCombatantsChangeCooldown();
     }
 
     // Check the cooldown periods on attacking (because they might have just joined from another clan)
     for (uint i; i < _playerIds.length; ++i) {
-      if (playerInfos[_playerIds[i]].defendersCooldownTimestamp > block.timestamp) {
-        revert PlayerDefendingCooldown();
+      if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
+        revert PlayerCombatantCooldownTimestamp();
       }
 
       // Check they are part of the clan
@@ -308,13 +307,14 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     _checkCanAssignCombatants(_clanId, _playerIds);
 
     for (uint i; i < _playerIds.length; ++i) {
-      playerInfos[_playerIds[i]].defendersCooldownTimestamp = uint40(block.timestamp + DEFENDERS_COOLDOWN);
+      playerInfos[_playerIds[i]].combatantCooldownTimestamp = uint40(block.timestamp + COMBATANT_COOLDOWN);
     }
 
     clanInfos[_clanId].playerIds = _playerIds;
     clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(
       block.timestamp + MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
     );
+    emit AssignCombatants(_clanId, _playerIds, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
   }
 
   // This needs to call the oracle VRF on-demand and costs some brush
@@ -326,16 +326,11 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     // Get all the defenders
     uint64[] memory _playerIds = clanInfos[_clanId].playerIds;
 
-    _checkCanAttackVault(_clanId, _playerIds, _defendingClanId);
+    _checkCanAttackVault(_clanId, _defendingClanId);
 
     clanInfos[_clanId].currentlyAttacking = true;
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
-
-    for (uint i; i < _playerIds.length; ++i) {
-      playerInfos[_playerIds[i]].attackingCooldownTimestamp = uint40(block.timestamp + ATTACKING_COOLDOWN);
-      playerInfos[_playerIds[i]].lastPendingAttackId = _nextPendingAttackId;
-    }
 
     clanInfos[_clanId].attackingCooldownTimestamp = uint40(block.timestamp + ATTACKING_COOLDOWN);
 
@@ -433,7 +428,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     );
   }
 
-  function _checkCanAttackVault(uint _clanId, uint64[] memory _playerIds, uint _defendingClanId) private view {
+  function _checkCanAttackVault(uint _clanId, uint _defendingClanId) private view {
     // Check this clan exists?
     //    if (territories[_territoryId].territoryId != _territoryId) {
     //      revert InvalidTerritory();
@@ -446,14 +441,6 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     // Does this clan have any brush to even attack?
     if (clanInfos[_defendingClanId].totalBrushLocked == 0) {
       revert NoBrushToAttack();
-    }
-
-    if (_playerIds.length == 0) {
-      revert NoAttackers();
-    }
-
-    if (_playerIds.length > MAX_CLAN_ATTACKERS) {
-      revert TooManyAttackers();
     }
 
     if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
@@ -473,28 +460,6 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
         lastClanBattles[lowerClanId][_defendingClanId].lastOtherClanIdAttackClanIdCooldownTimestamp > block.timestamp
       ) {
         revert ClanAttackingSameClanCooldown();
-      }
-    }
-
-    // Check the cooldown periods on attacking (because they might have just joined another clan)
-    for (uint i; i < _playerIds.length; ++i) {
-      if (playerInfos[_playerIds[i]].attackingCooldownTimestamp > block.timestamp) {
-        revert PlayerAttackingCooldown();
-      }
-
-      // Check they are part of the clan
-      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
-        revert NotMemberOfClan();
-      }
-
-      // Check they are not defending a territory
-      bool isDefendingATerritory = territories.isDefendingATerritoryOrInAPendingAttack(_clanId, _playerIds[i]);
-      if (isDefendingATerritory) {
-        revert PlayerDefendingTerritory();
-      }
-
-      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
-        revert PlayerIdsNotSortedOrDuplicates();
       }
     }
   }

@@ -10,4 +10,4 @@ enum ClanRank {
   OWNER // Can do everything and transfer ownership
 }
 
-uint constant MAX_CLAN_ATTACKERS = 20;
+uint constant MAX_CLAN_COMBATANTS = 20;

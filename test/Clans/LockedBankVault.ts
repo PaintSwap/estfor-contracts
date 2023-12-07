@@ -54,29 +54,27 @@ describe("LockedBankVault", function () {
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
 
-    // Nominate defenders
     await lockedBankVault.connect(alice).assignCombatants(clanId, [playerId, ownerPlayerId], playerId);
     expect((await lockedBankVault.getClanInfo(clanId)).playerIds).to.deep.eq([playerId, ownerPlayerId]);
     await clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
     expect((await lockedBankVault.getClanInfo(clanId)).playerIds).to.deep.eq([playerId, 0]);
   });
 
-  it("Cannot only change defenders after the cooldown change deadline has passed", async function () {
+  it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
     const {lockedBankVault, clanId, playerId, alice} = await loadFixture(clanFixture);
 
-    // Nominate defenders
     await lockedBankVault.connect(alice).assignCombatants(clanId, [playerId], playerId);
 
     await expect(
       lockedBankVault.connect(alice).assignCombatants(clanId, [playerId], playerId)
-    ).to.be.revertedWithCustomError(lockedBankVault, "ClanDefendersChangeCooldown");
+    ).to.be.revertedWithCustomError(lockedBankVault, "ClanCombatantsChangeCooldown");
 
     // Update time by MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
     const MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = await lockedBankVault.MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN();
     await ethers.provider.send("evm_increaseTime", [MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN.toNumber() - 5]);
     await expect(
       lockedBankVault.connect(alice).assignCombatants(clanId, [playerId], playerId)
-    ).to.be.revertedWithCustomError(lockedBankVault, "ClanDefendersChangeCooldown");
+    ).to.be.revertedWithCustomError(lockedBankVault, "ClanCombatantsChangeCooldown");
     await ethers.provider.send("evm_increaseTime", [5]);
     await lockedBankVault.connect(alice).assignCombatants(clanId, [playerId], playerId);
   });
