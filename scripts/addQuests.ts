@@ -8,15 +8,18 @@ async function main() {
   console.log(`Add quests using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const quests = await ethers.getContractAt("Quests", QUESTS_ADDRESS);
-  const questIndex = allQuests.findIndex((q) => q.questId === EstforConstants.QUEST_ENTER_THE_VEIL);
-  if (questIndex === -1 || allQuestsMinRequirements.length <= questIndex) {
-    console.error("Could not find this quest");
+  const questIndexes = allQuests
+    .map((q, index) =>
+      q.questId === EstforConstants.QUEST_ENTER_THE_VEIL || q.questId === EstforConstants.QUEST_FORGE_AHEAD ? index : ""
+    )
+    .filter(String) as number[];
+  if (questIndexes.length != 2) {
+    console.error("Could not find these quests");
     return;
   }
 
-  const quest = allQuests[questIndex] as QuestInput;
-  const newQuests = [quest];
-  const minRequirements: MinRequirementArray[] = [allQuestsMinRequirements[questIndex]];
+  const newQuests: QuestInput[] = questIndexes.map((index) => allQuests[index]);
+  const minRequirements: MinRequirementArray[] = questIndexes.map((index) => allQuestsMinRequirements[index]);
   await quests.addQuests(newQuests, minRequirements);
 }
 
