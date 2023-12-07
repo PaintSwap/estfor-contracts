@@ -6,10 +6,7 @@ import {Skill} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit actions using account: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(`Edit actions using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const World = (await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}})).connect(
     owner
@@ -27,14 +24,11 @@ async function main() {
 
   const actions = allActions.filter(
     (action) =>
-      action.actionId === EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE ||
-      action.actionId === EstforConstants.ACTION_COMBAT_ROCKHAWK ||
-      action.actionId === EstforConstants.ACTION_COMBAT_QRAKUR ||
       action.actionId === EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON ||
       action.actionId === EstforConstants.ACTION_COMBAT_ERKAD
   );
 
-  if (actions.length !== 5) {
+  if (actions.length !== 2) {
     console.log("Cannot find actions");
   } else {
     const tx = await world.editActions(actions);

@@ -35,12 +35,11 @@ async function main() {
     await deployPlayerImplementations(playersLibrary.address);
   /*
   // Single
-  const PlayersImpl = await ethers.getContractFactory("PlayersImplMisc", {
+  const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  const playersImpl = await PlayersImpl.deploy();
-  console.log(`PlayersImplMisc = "${playersImpl.address.toLowerCase()}"`);
-  await playersImpl.deployed();
+  console.log(`PlayersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
+  await playersImplQueueActions.deployed();
   */
 
   // Set the implementations
