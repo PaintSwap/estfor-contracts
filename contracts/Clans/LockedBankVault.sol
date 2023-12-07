@@ -22,6 +22,15 @@ import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
 contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IClanMemberLeftCB {
+  event AttackVault(
+    uint clanId,
+    uint64[] playerIds,
+    uint defendingClanId,
+    uint leaderPlayerId,
+    uint requestId,
+    uint pendingAttackId,
+    uint attackingCooldownTimestamp
+  );
   event SetComparableSkills(Skill[] skills);
   event BattleResult(
     uint requestId,
@@ -34,18 +43,10 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint[] randomWords,
     uint attackingTimestamp
   );
-  event AttackVault(
-    uint clanId,
-    uint64[] playerIds,
-    uint defendingClanId,
-    uint leaderPlayerId,
-    uint requestId,
-    uint pendingAttackId
-  );
-  event RequestSent(uint requestId, uint numWords);
-  event RemoveDefender(uint playerId, uint clanId);
-  event ClaimFunds(uint clanId, uint amount, uint numLocksClaimed);
+
   event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint combatantCooldownTimestamp);
+  event RemoveCombatant(uint playerId, uint clanId);
+  event ClaimFunds(uint clanId, uint amount, uint numLocksClaimed);
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -245,7 +246,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       if (searchIndex != type(uint).max) {
         // Not shifting it for gas reasons
         delete clanInfos[_clanId].playerIds[searchIndex];
-        emit RemoveDefender(_playerId, _clanId);
+        emit RemoveCombatant(_playerId, _clanId);
       }
     }
   }
@@ -329,7 +330,8 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
 
-    clanInfos[_clanId].attackingCooldownTimestamp = uint40(block.timestamp + ATTACKING_COOLDOWN);
+    uint40 attackingCooldownTimestamp = uint40(block.timestamp + ATTACKING_COOLDOWN);
+    clanInfos[_clanId].attackingCooldownTimestamp = attackingCooldownTimestamp;
 
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
     if (lowerClanId == _clanId) {
@@ -354,7 +356,15 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint requestId = _requestRandomWords();
     requestToPendingAttackIds[requestId] = _nextPendingAttackId;
 
-    emit AttackVault(_clanId, _playerIds, _defendingClanId, _leaderPlayerId, requestId, _nextPendingAttackId);
+    emit AttackVault(
+      _clanId,
+      _playerIds,
+      _defendingClanId,
+      _leaderPlayerId,
+      requestId,
+      _nextPendingAttackId,
+      attackingCooldownTimestamp
+    );
   }
 
   function fulfillRandomWords(uint _requestId, uint[] memory _randomWords) internal override {
@@ -469,8 +479,6 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       callbackGasLimit,
       NUM_WORDS
     );
-
-    emit RequestSent(requestId, NUM_WORDS);
   }
 
   function getClanInfo(uint _clanId) external view returns (ClanInfo memory) {

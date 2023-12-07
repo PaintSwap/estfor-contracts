@@ -33,11 +33,14 @@ contract Territories is
   event AddTerritories(TerritoryInput[] territories);
   event EditTerritories(TerritoryInput[] territories);
   event RemoveTerritories(uint[] territoryIds);
-  event Deposit(uint amount);
-  event BrushAttackingCost(uint brushCost);
-  event SetComparableSkills(Skill[] skills);
-  event RequestFulfilled(uint requestId, uint[] randomWords);
-  event AttackTerritory(uint clanId, uint territoryId, uint leaderPlayerId, uint requestId, uint pendingAttackId);
+  event AttackTerritory(
+    uint clanId,
+    uint territoryId,
+    uint leaderPlayerId,
+    uint requestId,
+    uint pendingAttackId,
+    uint attackingCooldownTimestamp
+  );
   event BattleResult(
     uint requestId,
     uint[] winnerPlayerIds,
@@ -49,10 +52,11 @@ contract Territories is
     uint[] randomWords,
     uint attackingTimestamp
   );
+  event Deposit(uint amount);
+  event SetComparableSkills(Skill[] skills);
   event ClaimUnoccupiedTerritory(uint territoryId, uint clanId);
-  event RemoveCombatant(uint playerId, uint clanId);
-  event RequestSent(uint requestId, uint numWords);
   event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint cooldownTimestamp);
+  event RemoveCombatant(uint playerId, uint clanId);
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -86,7 +90,7 @@ contract Territories is
     uint16 percentageEmissions; // Is multiplied by PERCENTAGE_EMISSION_MUL
     uint40 clanIdOccupier;
     uint88 unclaimedEmissions;
-    uint40 lastClaimTime;
+    uint40 lastClaimTimestamp;
   }
 
   struct ClanInfo {
@@ -291,7 +295,8 @@ contract Territories is
     uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
     bool clanUnoccupied = clanIdOccupier == 0;
 
-    clanInfos[_clanId].attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
+    uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
+    clanInfos[_clanId].attackingCooldownTimestamp = attackingCooldownTimestamp;
 
     // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
     // which are set here to reduce amount of gas used by oracle callback
@@ -313,7 +318,14 @@ contract Territories is
       uint requestId = _requestRandomWords();
       requestToPendingAttackIds[requestId] = _nextPendingAttackId;
 
-      emit AttackTerritory(_clanId, _territoryId, _leaderPlayerId, requestId, _nextPendingAttackId);
+      emit AttackTerritory(
+        _clanId,
+        _territoryId,
+        _leaderPlayerId,
+        requestId,
+        _nextPendingAttackId,
+        attackingCooldownTimestamp
+      );
     }
   }
 
@@ -352,8 +364,6 @@ contract Territories is
       callbackGasLimit,
       NUM_WORDS
     );
-
-    emit RequestSent(requestId, NUM_WORDS);
   }
 
   function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
@@ -422,11 +432,11 @@ contract Territories is
 
     uint unclaimedEmissions = territory.unclaimedEmissions;
 
-    if (territory.lastClaimTime + HARVESTING_COOLDOWN > block.timestamp) {
+    if (territory.lastClaimTimestamp + HARVESTING_COOLDOWN > block.timestamp) {
       revert HarvestingTooSoon();
     }
 
-    territory.lastClaimTime = uint40(block.timestamp);
+    territory.lastClaimTimestamp = uint40(block.timestamp);
 
     lockedBankVault.lockFunds(clanId, unclaimedEmissions);
   }
@@ -468,7 +478,7 @@ contract Territories is
         clanIdOccupier: 0,
         percentageEmissions: territoryInput.percentageEmissions,
         unclaimedEmissions: 0,
-        lastClaimTime: 0
+        lastClaimTimestamp: 0
       });
       _totalEmissionPercentage += territoryInput.percentageEmissions;
     }
