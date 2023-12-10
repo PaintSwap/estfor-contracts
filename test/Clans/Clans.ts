@@ -640,7 +640,7 @@ describe("Clans", function () {
         "ERC20: insufficient allowance"
       );
       const brushAmount = (await clans.tiers(2)).price;
-      await brush.mint(alice.address, brushAmount - 1);
+      await brush.mint(alice.address, brushAmount.sub(1));
       await brush.connect(alice).approve(clans.address, brushAmount);
       await expect(clans.connect(alice).upgradeClan(clanId, playerId, 2)).to.be.revertedWith(
         "ERC20: transfer amount exceeds balance"
