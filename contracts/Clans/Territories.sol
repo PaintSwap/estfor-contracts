@@ -51,7 +51,8 @@ contract Territories is
     uint attackingClanId,
     uint defendingClanId,
     uint[] randomWords,
-    uint attackingTimestamp
+    uint attackingTimestamp,
+    uint territoryId
   );
   event Deposit(uint amount);
   event SetComparableSkills(Skill[] skills);
@@ -424,7 +425,8 @@ contract Territories is
       attackingClanId,
       defendingClanId,
       _randomWords,
-      timestamp
+      timestamp,
+      territoryId
     );
   }
 
