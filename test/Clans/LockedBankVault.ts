@@ -168,6 +168,7 @@ describe.only("LockedBankVault", function () {
       bob,
       charlie,
       erin,
+      frank,
       clanName,
       discord,
       telegram,
@@ -213,6 +214,21 @@ describe.only("LockedBankVault", function () {
     const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
     await clans.connect(erin).requestToJoin(clanId, erinPlayerId, 0);
     await clans.connect(alice).acceptJoinRequest(clanId, erinPlayerId, playerId);
+    // Extend member capacity
+    await clans.editTiers([
+      {
+        id: 1,
+        maxMemberCapacity: 4,
+        maxBankCapacity: 3,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+
+    const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 5, true);
+    await clans.connect(frank).requestToJoin(clanId, frankPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequest(clanId, frankPlayerId, playerId);
 
     // But have to wait for the cooldown and not just the generic attack cooldown, the same clan attacking cooldown
     await expect(lockedBankVault.connect(alice).attackVault(clanId, bobClanId, playerId)).to.be.revertedWithCustomError(
@@ -230,7 +246,9 @@ describe.only("LockedBankVault", function () {
       (await lockedBankVault.MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN()).toNumber(),
     ]);
 
-    await lockedBankVault.connect(alice).assignCombatants(clanId, [playerId, ownerPlayerId, erinPlayerId], playerId);
+    await lockedBankVault
+      .connect(alice)
+      .assignCombatants(clanId, [playerId, ownerPlayerId, erinPlayerId, frankPlayerId], playerId);
     await lockedBankVault.connect(alice).attackVault(clanId, bobClanId, playerId);
     await fulfillRandomWords(3, lockedBankVault, mockOracleClient);
     const {timestamp: NOW2} = await ethers.provider.getBlock("latest");

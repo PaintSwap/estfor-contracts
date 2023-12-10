@@ -44,14 +44,13 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint defendingClanId,
     uint[] randomWords,
     uint attackingTimestamp,
-    uint lockPeriod,
     uint percentageToTake
   );
 
   event AssignCombatants(uint clanId, uint64[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
   event ClaimFunds(uint clanId, address from, uint playerId, uint amount, uint numLocksClaimed);
-  event LockFunds(uint clanId, address from, uint playerId, uint amount, uint lockPeriod);
+  event LockFunds(uint clanId, address from, uint playerId, uint amount, uint lockingTimestamp);
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -203,15 +202,14 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
     clanInfos[_clanId].totalBrushLocked += uint96(_amount);
-    clanInfos[_clanId].defendingData.push(
-      DefendingData({timestamp: uint40(block.timestamp + LOCK_PERIOD), amount: uint32(_amount)})
-    );
+    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
+    clanInfos[_clanId].defendingData.push(DefendingData({timestamp: lockingTimestamp, amount: uint80(_amount)}));
 
     if (!brush.transferFrom(msg.sender, address(this), _amount)) {
       revert TransferFailed();
     }
 
-    emit LockFunds(_clanId, _from, _playerId, _amount, LOCK_PERIOD);
+    emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
   }
 
   function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
@@ -410,8 +408,10 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     clanInfos[attackingClanId].currentlyAttacking = false;
 
     uint percentageToTake = 10;
+    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
     if (didAttackersWin) {
       // Go through all the defendingData
+      uint totalWon;
       for (uint i; i < clanInfos[defendingClanId].defendingData.length; ++i) {
         uint defendingTimestamp = clanInfos[defendingClanId].defendingData[i].timestamp;
         if (defendingTimestamp <= block.timestamp) {
@@ -424,13 +424,14 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
         uint stealAmount = amount / percentageToTake;
         clanInfos[defendingClanId].defendingData[i].amount = uint80(amount - stealAmount);
         clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount);
-
-        // Create a new one for the attacking clan
-        clanInfos[attackingClanId].defendingData.push(
-          DefendingData({timestamp: uint40(block.timestamp + LOCK_PERIOD), amount: uint32(stealAmount)})
-        );
-        clanInfos[attackingClanId].totalBrushLocked += uint96(stealAmount);
+        totalWon += stealAmount;
       }
+      // Create a new one for the attacking clan
+      clanInfos[attackingClanId].defendingData.push(
+        DefendingData({timestamp: lockingTimestamp, amount: uint80(totalWon)})
+      );
+      clanInfos[attackingClanId].totalBrushLocked += uint80(totalWon);
+      emit LockFunds(attackingClanId, address(0), 0, totalWon, lockingTimestamp);
     }
 
     emit BattleResult(
@@ -443,17 +444,11 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       defendingClanId,
       _randomWords,
       timestamp,
-      LOCK_PERIOD,
       percentageToTake
     );
   }
 
   function _checkCanAttackVault(uint _clanId, uint _defendingClanId) private view {
-    // Check this clan exists?
-    //    if (territories[_territoryId].territoryId != _territoryId) {
-    //      revert InvalidTerritory();
-    //    }
-
     if (_clanId == _defendingClanId) {
       revert CannotAttackSelf();
     }
