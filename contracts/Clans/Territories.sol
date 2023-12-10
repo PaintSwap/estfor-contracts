@@ -36,6 +36,7 @@ contract Territories is
   event AttackTerritory(
     uint clanId,
     uint territoryId,
+    address from,
     uint leaderPlayerId,
     uint requestId,
     uint pendingAttackId,
@@ -54,8 +55,8 @@ contract Territories is
   );
   event Deposit(uint amount);
   event SetComparableSkills(Skill[] skills);
-  event ClaimUnoccupiedTerritory(uint territoryId, uint clanId);
-  event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint cooldownTimestamp);
+  event ClaimUnoccupiedTerritory(uint territoryId, uint clanId, address from, uint leaderPlayerId);
+  event AssignCombatants(uint clanId, uint64[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
 
   error InvalidTerritory();
@@ -282,7 +283,7 @@ contract Territories is
     clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(
       block.timestamp + MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
     );
-    emit AssignCombatants(_clanId, _playerIds, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
+    emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
   }
 
   // This needs to call the oracle VRF on-demand and costs some brush
@@ -304,7 +305,7 @@ contract Territories is
     // which are set here to reduce amount of gas used by oracle callback
     if (clanUnoccupied) {
       _claimTerritory(_territoryId, _clanId);
-      emit ClaimUnoccupiedTerritory(_territoryId, _clanId);
+      emit ClaimUnoccupiedTerritory(_territoryId, _clanId, msg.sender, _leaderPlayerId);
     } else {
       clanInfos[_clanId].currentlyAttacking = true;
       clanInfos[clanIdOccupier].attackingCooldownTimestamp = uint40(
@@ -323,6 +324,7 @@ contract Territories is
       emit AttackTerritory(
         _clanId,
         _territoryId,
+        msg.sender,
         _leaderPlayerId,
         requestId,
         _nextPendingAttackId,
