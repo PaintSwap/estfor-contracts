@@ -25,7 +25,7 @@ const lockFundsForClan = async (
   await lockedBankVault.setTerritories(territories.address); // Set it back after locking funds
 };
 
-describe.only("LockedBankVault", function () {
+describe("LockedBankVault", function () {
   it("Lock funds", async () => {
     const {lockedBankVault, clanId, playerId, brush, alice} = await loadFixture(clanFixture);
 
