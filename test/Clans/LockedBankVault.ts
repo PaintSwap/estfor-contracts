@@ -144,13 +144,13 @@ describe.only("LockedBankVault", function () {
     expect((await lockedBankVault.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
 
     const LOCK_PERIOD = (await lockedBankVault.LOCK_PERIOD()).toNumber();
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData.length).to.eq(1);
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData[0].amount).to.eq(900);
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData[0].timestamp).to.eq(NOW + LOCK_PERIOD - 1);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults.length).to.eq(1);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(900);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(NOW + LOCK_PERIOD - 1);
 
-    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingData.length).to.eq(1);
-    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingData[0].amount).to.eq(100);
-    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingData[0].timestamp).to.eq(NOW1 + LOCK_PERIOD);
+    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingVaults.length).to.eq(1);
+    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingVaults[0].amount).to.eq(100);
+    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingVaults[0].timestamp).to.eq(NOW1 + LOCK_PERIOD);
   });
 
   it("Attack back, lose and then win", async () => {
@@ -258,15 +258,15 @@ describe.only("LockedBankVault", function () {
     expect((await lockedBankVault.getClanInfo(bobClanId)).totalBrushLocked).to.eq(90);
 
     const LOCK_PERIOD = (await lockedBankVault.LOCK_PERIOD()).toNumber();
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData.length).to.eq(2);
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData[0].amount).to.eq(900);
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData[0].timestamp).to.eq(NOW + LOCK_PERIOD - 1);
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData[1].amount).to.eq(10);
-    expect((await lockedBankVault.getClanInfo(clanId)).defendingData[1].timestamp).to.eq(NOW2 + LOCK_PERIOD);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults.length).to.eq(2);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(900);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(NOW + LOCK_PERIOD - 1);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults[1].amount).to.eq(10);
+    expect((await lockedBankVault.getClanInfo(clanId)).defendingVaults[1].timestamp).to.eq(NOW2 + LOCK_PERIOD);
 
-    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingData.length).to.eq(1);
-    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingData[0].amount).to.eq(90);
-    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingData[0].timestamp).to.eq(NOW1 + LOCK_PERIOD);
+    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingVaults.length).to.eq(1);
+    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingVaults[0].amount).to.eq(90);
+    expect((await lockedBankVault.getClanInfo(bobClanId)).defendingVaults[0].timestamp).to.eq(NOW1 + LOCK_PERIOD);
   });
 
   it("Claim rewards when the deadline has expired", async () => {

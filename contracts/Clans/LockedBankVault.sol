@@ -79,7 +79,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   }
 
   // TODO Can store multiple in this
-  struct DefendingData {
+  struct Vault {
     uint40 timestamp;
     uint80 amount;
   }
@@ -91,7 +91,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
     uint64[] playerIds;
-    DefendingData[] defendingData; // TODO may need to update this. Have a max of 30? What about slicing?
+    Vault[] defendingVaults; // TODO may need to update this. Have a max of 30? What about slicing?
   }
 
   struct PlayerInfo {
@@ -201,15 +201,10 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   }
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
-    clanInfos[_clanId].totalBrushLocked += uint96(_amount);
-    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
-    clanInfos[_clanId].defendingData.push(DefendingData({timestamp: lockingTimestamp, amount: uint80(_amount)}));
-
+    _lockFunds(_clanId, _from, _playerId, _amount);
     if (!brush.transferFrom(msg.sender, address(this), _amount)) {
       revert TransferFailed();
     }
-
-    emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
   }
 
   function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
@@ -223,14 +218,14 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
     uint total;
     uint numLocksClaimed;
-    for (uint i; i < clanInfos[_clanId].defendingData.length; ++i) {
-      uint defendingTimestamp = clanInfos[_clanId].defendingData[i].timestamp;
+    for (uint i; i < clanInfos[_clanId].defendingVaults.length; ++i) {
+      uint defendingTimestamp = clanInfos[_clanId].defendingVaults[i].timestamp;
       if (defendingTimestamp > block.timestamp) {
         break;
       }
 
-      total += clanInfos[_clanId].defendingData[i].amount;
-      delete clanInfos[_clanId].defendingData[i];
+      total += clanInfos[_clanId].defendingVaults[i].amount;
+      delete clanInfos[_clanId].defendingVaults[i];
       ++numLocksClaimed;
     }
 
@@ -257,6 +252,13 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
         emit RemoveCombatant(_playerId, _clanId);
       }
     }
+  }
+
+  function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
+    clanInfos[_clanId].totalBrushLocked += uint96(_amount);
+    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
+    clanInfos[_clanId].defendingVaults.push(Vault({timestamp: lockingTimestamp, amount: uint80(_amount)}));
+    emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
   }
 
   function _checkCanAssignCombatants(uint _clanId, uint64[] calldata _playerIds) private view {
@@ -408,30 +410,25 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     clanInfos[attackingClanId].currentlyAttacking = false;
 
     uint percentageToTake = 10;
-    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
     if (didAttackersWin) {
       // Go through all the defendingData
       uint totalWon;
-      for (uint i; i < clanInfos[defendingClanId].defendingData.length; ++i) {
-        uint defendingTimestamp = clanInfos[defendingClanId].defendingData[i].timestamp;
+      for (uint i; i < clanInfos[defendingClanId].defendingVaults.length; ++i) {
+        uint defendingTimestamp = clanInfos[defendingClanId].defendingVaults[i].timestamp;
         if (defendingTimestamp <= block.timestamp) {
           // This one is safe
           continue;
         }
 
         // How much to take? 10-15% (TODO)
-        uint amount = clanInfos[defendingClanId].defendingData[i].amount;
+        uint amount = clanInfos[defendingClanId].defendingVaults[i].amount;
         uint stealAmount = amount / percentageToTake;
-        clanInfos[defendingClanId].defendingData[i].amount = uint80(amount - stealAmount);
+        clanInfos[defendingClanId].defendingVaults[i].amount = uint80(amount - stealAmount);
         clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount);
         totalWon += stealAmount;
       }
-      // Create a new one for the attacking clan
-      clanInfos[attackingClanId].defendingData.push(
-        DefendingData({timestamp: lockingTimestamp, amount: uint80(totalWon)})
-      );
-      clanInfos[attackingClanId].totalBrushLocked += uint80(totalWon);
-      emit LockFunds(attackingClanId, address(0), 0, totalWon, lockingTimestamp);
+
+      _lockFunds(attackingClanId, address(0), 0, totalWon);
     }
 
     emit BattleResult(
