@@ -12,13 +12,15 @@ import {IPaintSwapArtGallery} from "./interfaces/IPaintSwapArtGallery.sol";
 
 contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   event Deposit(uint amount);
-  event Harvest(uint amount);
+  event Harvest(uint amount, uint nextHarvestAllowedTimestamp);
   event SetPID(uint pid);
   event UnlockFromArtGallery(uint amount);
 
   error InvalidPool();
   error ZeroBalance();
   error TransferFailed();
+  error HarvestingTooSoon();
+  error HarvestingTooMuch();
 
   IPaintSwapDecorator public decorator;
   IPaintSwapArtGallery public artGallery;
@@ -27,6 +29,11 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   address public dev;
   IERC20 public lpToken;
   uint16 public pid;
+  uint40 public nextHarvestAllowedTimestamp;
+  uint16 public numUnclaimedHarvests;
+
+  uint public constant MAX_UNCLAIMED_HARVESTS = 600;
+  uint public constant MIN_HARVEST_INTERVAL = 3 hours + 45 minutes;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -65,6 +72,19 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function harvest() external {
+    // Max harvest once every 30 minutes
+    uint _nextHarvestAllowedTimestamp = nextHarvestAllowedTimestamp;
+    if (block.timestamp < _nextHarvestAllowedTimestamp) {
+      revert HarvestingTooSoon();
+    }
+
+    // Can not go above 600 unclaimed harvests
+    if (numUnclaimedHarvests > MAX_UNCLAIMED_HARVESTS) {
+      revert HarvestingTooMuch();
+    }
+
+    nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
+    ++numUnclaimedHarvests;
     uint amountBrush = decorator.pendingBrush(pid, address(this));
     if (amountBrush == 0) {
       revert ZeroBalance();
@@ -72,12 +92,18 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     decorator.deposit(pid, 0);
     uint fullBrushAmount = amountBrush * 2; // There will be funds here which are used to offset the art gallery rewards
     territories.addUnclaimedEmissions(fullBrushAmount);
-    emit Harvest(fullBrushAmount);
+    emit Harvest(fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
   }
 
   function unlockFromArtGallery() external {
-    (, , , uint256 unlockableAmount, , ) = artGallery.inspect(address(this));
+    (, , uint256 unlockableCount, uint256 unlockableAmount, , ) = artGallery.inspect(address(this));
+    if (unlockableAmount == 0) {
+      revert ZeroBalance();
+    }
+
     artGallery.unlock();
+    numUnclaimedHarvests -= uint16(unlockableCount);
+    // Dev address gets the funds because it is using it to offset art gallery rewards currently
     brush.transfer(dev, unlockableAmount);
     emit UnlockFromArtGallery(unlockableAmount);
   }

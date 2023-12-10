@@ -132,7 +132,7 @@ async function main() {
       );
       paintSwapArtGallery = await TestPaintSwapArtGallery.attach("0x9076C96e01F6F13e1eC4832354dF970d245e124F");
       paintSwapDecorator = await TestPaintSwapDecorator.attach("0xCb80F529724B9620145230A0C866AC2FACBE4e3D");
-      pid = 30; // TODO: Update this later when it's actually added to the masterchef
+      pid = 22;
     } else {
       throw Error("Not a supported network");
     }

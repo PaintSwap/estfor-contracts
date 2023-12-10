@@ -29,7 +29,7 @@ describe("DecoratorProvider", function () {
     return {...fixture, decoratorProvider, pid, lp, mockTerritories};
   }
 
-  it("Deposit LP to decorator", async () => {
+  it("Deposit LP to decorator", async function () {
     const {decorator, decoratorProvider, owner, lp} = await loadFixture(deployContracts);
 
     const amount = 100;
@@ -42,7 +42,7 @@ describe("DecoratorProvider", function () {
     expect(await lp.balanceOf(owner.address)).to.eq(0);
   });
 
-  it("Harvest rewards", async () => {
+  it("Harvest rewards", async function () {
     const {mockTerritories, decoratorProvider, artGallery, brush, brushPerSecond, owner, lp} = await loadFixture(
       deployContracts
     );
@@ -63,7 +63,7 @@ describe("DecoratorProvider", function () {
     expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(1);
   });
 
-  it("Retrieve art gallery rewards", async () => {
+  it("Retrieve art gallery rewards", async function () {
     const {decoratorProvider, brush, owner, lp, dev, brushPerSecond, artGalleryLockPeriod} = await loadFixture(
       deployContracts
     );
@@ -84,10 +84,8 @@ describe("DecoratorProvider", function () {
     expect(await brush.balanceOf(dev.address)).to.eq(brushPerSecond);
   });
 
-  it("Set a new PID", async () => {
-    const {decorator, decoratorProvider, brush, owner, dev, brushPerSecond, artGalleryLockPeriod} = await loadFixture(
-      deployContracts
-    );
+  it("Set a new PID", async function () {
+    const {decorator, decoratorProvider, owner} = await loadFixture(deployContracts);
 
     // Add an lp token
     const lp = await ethers.deployContract("MockBrushToken");
@@ -105,4 +103,28 @@ describe("DecoratorProvider", function () {
     expect(await lp.balanceOf(decorator.address)).to.eq(amount);
     expect(await lp.balanceOf(owner.address)).to.eq(0);
   });
+
+  it("Cannot re-harvest too quickly", async function () {
+    const {decoratorProvider, brush, brushPerSecond, owner, lp} = await loadFixture(deployContracts);
+
+    const amount = 100;
+    await lp.mint(owner.address, amount);
+    await lp.approve(decoratorProvider.address, amount);
+    await decoratorProvider.deposit();
+
+    await ethers.provider.send("evm_increaseTime", [1]);
+
+    // Will fail until we need it double the rewards
+    const minInterval = (await decoratorProvider.MIN_HARVEST_INTERVAL()).toNumber();
+    await brush.mint(decoratorProvider.address, brushPerSecond.mul(minInterval + 10));
+    await decoratorProvider.harvest();
+
+    await ethers.provider.send("evm_increaseTime", [1]);
+    await expect(decoratorProvider.harvest()).to.be.revertedWithCustomError(decoratorProvider, "HarvestingTooSoon");
+
+    await ethers.provider.send("evm_increaseTime", [minInterval]);
+    await expect(decoratorProvider.harvest()).to.not.be.reverted;
+  });
+
+  it("TODO test HarvestingTooMuch error", async function () {});
 });
