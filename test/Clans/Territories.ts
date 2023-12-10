@@ -8,7 +8,7 @@ import {fulfillRandomWords} from "../utils";
 import {getXPFromLevel} from "../Players/utils";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 
-describe("Territories", function () {
+describe.only("Territories", function () {
   it("Check defaults", async () => {
     const {territories} = await loadFixture(clanFixture);
 
@@ -441,7 +441,7 @@ describe("Territories", function () {
 
     //    const bankAddress = await bankFactory.bankAddress(clanId);
     //    expect((await territories.getClanInfo(clanId)).bank).to.eq(ethers.constants.AddressZero);
-    await territories.connect(alice).harvest(territoryId);
+    await territories.connect(alice).harvest(territoryId, playerId);
     // After harvesting the clan bank address should be set on clans object
     //    expect((await territories.getClanInfo(clanId)).bank).to.eq(bankAddress);
 
@@ -460,16 +460,16 @@ describe("Territories", function () {
     await brush.mint(alice.address, ethers.utils.parseEther("1000"));
     await brush.connect(alice).approve(territories.address, ethers.utils.parseEther("1000"));
     await territories.connect(alice).addUnclaimedEmissions(ethers.utils.parseEther("500"));
-    await territories.connect(alice).harvest(territoryId);
+    await territories.connect(alice).harvest(territoryId, playerId);
     await territories.connect(alice).addUnclaimedEmissions(ethers.utils.parseEther("500"));
-    await expect(territories.connect(alice).harvest(territoryId)).to.be.revertedWithCustomError(
+    await expect(territories.connect(alice).harvest(territoryId, playerId)).to.be.revertedWithCustomError(
       territories,
       "HarvestingTooSoon"
     );
 
     // increase time by territories.HARVESTING_COOLDOWN()
     await ethers.provider.send("evm_increaseTime", [(await territories.HARVESTING_COOLDOWN()).toNumber()]);
-    await expect(territories.connect(alice).harvest(territoryId)).to.not.be.reverted;
+    await expect(territories.connect(alice).harvest(territoryId, playerId)).to.not.be.reverted;
   });
 
   it("Add new territory", async () => {

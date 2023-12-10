@@ -26,27 +26,32 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint clanId,
     uint64[] playerIds,
     uint defendingClanId,
+    address from,
     uint leaderPlayerId,
     uint requestId,
     uint pendingAttackId,
-    uint attackingCooldownTimestamp
+    uint attackingCooldownTimestamp,
+    uint reattackingCooldownTimestamp
   );
   event SetComparableSkills(Skill[] skills);
   event BattleResult(
     uint requestId,
     uint[] winnerPlayerIds,
     uint[] loserPlayerIds,
-    Skill[] skills,
+    Skill[] randomSkills,
     bool didAttackersWin,
     uint attackingClanId,
     uint defendingClanId,
     uint[] randomWords,
-    uint attackingTimestamp
+    uint attackingTimestamp,
+    uint lockPeriod,
+    uint percentageToTake
   );
 
-  event AssignCombatants(uint clanId, uint64[] playerIds, uint leaderPlayerId, uint combatantCooldownTimestamp);
+  event AssignCombatants(uint clanId, uint64[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
-  event ClaimFunds(uint clanId, uint amount, uint numLocksClaimed);
+  event ClaimFunds(uint clanId, address from, uint playerId, uint amount, uint numLocksClaimed);
+  event LockFunds(uint clanId, address from, uint playerId, uint amount, uint lockPeriod);
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -63,6 +68,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   error NoBrushToAttack();
   error CannotAttackSelf();
   error OnlyClans();
+  error OnlyTerritories();
   error TransferFailed();
   error ClanCombatantsChangeCooldown();
   error CannotChangeCombatantsDuringAttack();
@@ -134,6 +140,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
+  uint public constant MAX_VAULTS = 100;
 
   uint public constant LOCK_PERIOD = 7 days;
 
@@ -154,6 +161,13 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   modifier onlyClans() {
     if (msg.sender != address(clans)) {
       revert OnlyClans();
+    }
+    _;
+  }
+
+  modifier onlyTerritories() {
+    if (msg.sender != address(territories)) {
+      revert OnlyTerritories();
     }
     _;
   }
@@ -187,25 +201,21 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     setComparableSkills(_comparableSkills);
   }
 
-  function lockFunds(uint _clanId, uint _amount) external {
-    // TODO: Have a minimum unless it's from territories?
-    //    if (address(territories) == msg.sender) {
-    //    }
-
-    // Start the 7 day cooldown
+  function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
     clanInfos[_clanId].totalBrushLocked += uint96(_amount);
+    clanInfos[_clanId].defendingData.push(
+      DefendingData({timestamp: uint40(block.timestamp + LOCK_PERIOD), amount: uint32(_amount)})
+    );
 
     if (!brush.transferFrom(msg.sender, address(this), _amount)) {
       revert TransferFailed();
     }
 
-    clanInfos[_clanId].defendingData.push(
-      DefendingData({timestamp: uint40(block.timestamp + LOCK_PERIOD), amount: uint32(_amount)})
-    );
+    emit LockFunds(_clanId, _from, _playerId, _amount, LOCK_PERIOD);
   }
 
-  function claimFunds(uint _clanId) external {
-    // Cache some values for next time
+  function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    // Cache some values for next time if not called already
     address bankAddress = address(clanInfos[_clanId].bank);
     if (bankAddress == address(0)) {
       bankAddress = bankFactory.bankAddress(_clanId);
@@ -235,7 +245,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     if (!brush.transfer(bankAddress, total)) {
       revert TransferFailed();
     }
-    emit ClaimFunds(_clanId, total, numLocksClaimed);
+    emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
   }
 
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
@@ -312,7 +322,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(
       block.timestamp + MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
     );
-    emit AssignCombatants(_clanId, _playerIds, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
+    emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
   }
 
   // This needs to call the oracle VRF on-demand and costs some brush
@@ -334,14 +344,12 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     clanInfos[_clanId].attackingCooldownTimestamp = attackingCooldownTimestamp;
 
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
+    uint40 reattackingCooldown = uint40(block.timestamp + MIN_REATTACKING_COOLDOWN);
+    ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][_defendingClanId];
     if (lowerClanId == _clanId) {
-      lastClanBattles[lowerClanId][_defendingClanId].lastClanIdAttackOtherClanIdCooldownTimestamp = uint40(
-        block.timestamp + MIN_REATTACKING_COOLDOWN
-      );
+      battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp = reattackingCooldown;
     } else {
-      lastClanBattles[lowerClanId][_defendingClanId].lastOtherClanIdAttackClanIdCooldownTimestamp = uint40(
-        block.timestamp + MIN_REATTACKING_COOLDOWN
-      );
+      battleInfo.lastOtherClanIdAttackClanIdCooldownTimestamp = reattackingCooldown;
     }
 
     // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
@@ -360,10 +368,12 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       _clanId,
       _playerIds,
       _defendingClanId,
+      msg.sender,
       _leaderPlayerId,
       requestId,
       _nextPendingAttackId,
-      attackingCooldownTimestamp
+      attackingCooldownTimestamp,
+      reattackingCooldown
     );
   }
 
@@ -399,6 +409,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     pendingAttack.attackInProgress = false;
     clanInfos[attackingClanId].currentlyAttacking = false;
 
+    uint percentageToTake = 10;
     if (didAttackersWin) {
       // Go through all the defendingData
       for (uint i; i < clanInfos[defendingClanId].defendingData.length; ++i) {
@@ -410,7 +421,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
         // How much to take? 10-15% (TODO)
         uint amount = clanInfos[defendingClanId].defendingData[i].amount;
-        uint stealAmount = amount / 10;
+        uint stealAmount = amount / percentageToTake;
         clanInfos[defendingClanId].defendingData[i].amount = uint80(amount - stealAmount);
         clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount);
 
@@ -431,7 +442,9 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       attackingClanId,
       defendingClanId,
       _randomWords,
-      timestamp
+      timestamp,
+      LOCK_PERIOD,
+      percentageToTake
     );
   }
 

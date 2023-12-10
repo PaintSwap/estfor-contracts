@@ -79,6 +79,8 @@ contract Territories is
   error TooManyCombatants();
   error PlayerCombatantCooldownTimestamp();
   error PlayerDefendingLockedVaults();
+  error CannotChangeCombatantsDuringAttack();
+  error NoEmissionsToHarvest();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -347,6 +349,10 @@ contract Territories is
       revert InvalidTerritory();
     }
 
+    if (clanInfos[_clanId].currentlyAttacking) {
+      revert CannotChangeCombatantsDuringAttack();
+    }
+
     if (clanInfos[_clanId].ownsTerritoryId != 0) {
       revert AlreadyOwnATerritory();
     }
@@ -421,7 +427,7 @@ contract Territories is
   }
 
   // Any harvest automatically does a claim as well beforehand
-  function harvest(uint _territoryId) external {
+  function harvest(uint _territoryId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     //    _callAddUnclaimedEmissions();
 
     Territory storage territory = territories[_territoryId];
@@ -437,8 +443,10 @@ contract Territories is
     }
 
     territory.lastClaimTimestamp = uint40(block.timestamp);
-
-    lockedBankVault.lockFunds(clanId, unclaimedEmissions);
+    if (unclaimedEmissions == 0) {
+      revert NoEmissionsToHarvest();
+    }
+    lockedBankVault.lockFunds(clanId, msg.sender, _playerId, unclaimedEmissions);
   }
 
   function pendingEmissions(uint _territoryId) external {
