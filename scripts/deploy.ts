@@ -220,8 +220,7 @@ async function main() {
   }
 
   // Create NFT contract which contains all items
-  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  const itemNFTLibrary = await ItemNFTLibrary.deploy();
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
   await itemNFTLibrary.deployed();
   console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
@@ -238,8 +237,7 @@ async function main() {
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
   // Create NFT contract which contains all the players
-  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-  const estforLibrary = await EstforLibrary.deploy();
+  const estforLibrary = await ethers.deployContract("EstforLibrary");
   await estforLibrary.deployed();
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -268,6 +266,7 @@ async function main() {
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  await promotionsLibrary.deployed();
   const Promotions = await ethers.getContractFactory("Promotions", {
     libraries: {PromotionsLibrary: promotionsLibrary.address},
   });
