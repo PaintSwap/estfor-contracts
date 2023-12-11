@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {clanFixture} from "./utils";
-import {allTerritories, allTerritorySkills} from "../../scripts/data/terrorities";
+import {allTerritories, allTerritorySkills} from "../../scripts/data/territories";
 import {ethers} from "hardhat";
 import {createPlayer} from "../../scripts/utils";
 import {fulfillRandomWords} from "../utils";

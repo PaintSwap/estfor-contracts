@@ -62,7 +62,7 @@ import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
-import {allTerritories, allTerritorySkills} from "./data/terrorities";
+import {allTerritories, allTerritorySkills} from "./data/territories";
 
 async function main() {
   const [owner] = await ethers.getSigners();

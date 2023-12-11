@@ -1,6 +1,6 @@
 import {ethers} from "hardhat";
 import {TERRITORIES_ADDRESS} from "./contractAddresses";
-import {allTerritories} from "./data/terrorities";
+import {allTerritories} from "./data/territories";
 
 async function main() {
   const [owner] = await ethers.getSigners();

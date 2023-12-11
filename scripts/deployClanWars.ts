@@ -11,7 +11,7 @@ import {
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
-import {allTerritories, allTerritorySkills} from "./data/terrorities";
+import {allTerritories, allTerritorySkills} from "./data/territories";
 import {verifyContracts} from "./utils";
 import {BankRegistry, DecoratorProvider} from "../typechain-types";
 

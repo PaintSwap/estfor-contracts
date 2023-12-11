@@ -242,7 +242,7 @@ contract Territories is
       revert TooManyCombatants();
     }
 
-    // Check the cooldown periods on attacking (because they might have just joined another clan)
+    // Check the cooldown periods on player combatants (because they might have just joined another clan)
     for (uint i; i < _playerIds.length; ++i) {
       if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
         revert PlayerCombatantCooldownTimestamp();

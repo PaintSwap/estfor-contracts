@@ -26,7 +26,7 @@ import {
   WorldLibrary,
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
-import {allTerritories, allTerritorySkills} from "../../scripts/data/terrorities";
+import {allTerritories, allTerritorySkills} from "../../scripts/data/territories";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
