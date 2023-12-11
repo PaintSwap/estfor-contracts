@@ -59,6 +59,7 @@ contract Territories is
   event ClaimUnoccupiedTerritory(uint territoryId, uint clanId, address from, uint leaderPlayerId);
   event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
+  event Harvest(uint territoryId, address from, uint playerId, uint cooldownTimestamp, uint amount);
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -456,6 +457,7 @@ contract Territories is
       revert NoEmissionsToHarvest();
     }
     lockedBankVault.lockFunds(clanId, msg.sender, _playerId, unclaimedEmissions);
+    emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }
 
   function pendingEmissions(uint _territoryId) external {

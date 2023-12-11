@@ -204,6 +204,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     COORDINATOR = _coordinator;
     subscriptionId = _subscriptionId;
     callbackGasLimit = 400_000; // TODO: See how much this actually costs
+    nextPendingAttackId = 1;
 
     setComparableSkills(_comparableSkills);
   }
