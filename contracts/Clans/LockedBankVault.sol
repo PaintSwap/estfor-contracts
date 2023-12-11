@@ -22,9 +22,8 @@ import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
 contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IClanMemberLeftCB {
-  event AttackVault(
+  event AttackVaults(
     uint clanId,
-    uint64[] playerIds,
     uint defendingClanId,
     address from,
     uint leaderPlayerId,
@@ -47,7 +46,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint percentageToTake
   );
 
-  event AssignCombatants(uint clanId, uint64[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
+  event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
   event ClaimFunds(uint clanId, address from, uint playerId, uint amount, uint numLocksClaimed);
   event LockFunds(uint clanId, address from, uint playerId, uint amount, uint lockingTimestamp);
@@ -72,6 +71,8 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   error ClanCombatantsChangeCooldown();
   error CannotChangeCombatantsDuringAttack();
   error NothingToClaim();
+  error CannotAttackWhileStillAttacking();
+  error NotAdminAndBeta();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -90,7 +91,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint40 attackingCooldownTimestamp;
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
-    uint64[] playerIds;
+    uint48[] playerIds;
     Vault[] defendingVaults; // TODO may need to update this. Have a max of 30? What about slicing?
   }
 
@@ -171,6 +172,13 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     _;
   }
 
+  modifier isAdminAndBeta() {
+    if (!territories.isBetaAndAdmin(msg.sender)) {
+      revert NotAdminAndBeta();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -243,7 +251,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
     // Remove from the player defenders if they are in there
-    uint64[] storage playerIds = clanInfos[_clanId].playerIds;
+    uint48[] storage playerIds = clanInfos[_clanId].playerIds;
     if (playerIds.length > 0) {
       uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
       if (searchIndex != type(uint).max) {
@@ -261,12 +269,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
   }
 
-  function _checkCanAssignCombatants(uint _clanId, uint64[] calldata _playerIds) private view {
-    // Check this clan exists
-    //    if (territories[_territoryId].territoryId != _territoryId) {
-    //      revert InvalidTerritory();
-    //    }
-
+  function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
     if (clanInfos[_clanId].currentlyAttacking) {
       revert CannotChangeCombatantsDuringAttack();
     }
@@ -309,7 +312,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
   function assignCombatants(
     uint _clanId,
-    uint64[] calldata _playerIds,
+    uint48[] calldata _playerIds,
     uint _leaderPlayerId
   ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
     _checkCanAssignCombatants(_clanId, _playerIds);
@@ -326,15 +329,13 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   }
 
   // This needs to call the oracle VRF on-demand and costs some brush
-  function attackVault(
+  function attackVaults(
     uint _clanId,
     uint _defendingClanId,
     uint _leaderPlayerId
   ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
     // Get all the defenders
-    uint64[] memory _playerIds = clanInfos[_clanId].playerIds;
-
-    _checkCanAttackVault(_clanId, _defendingClanId);
+    _checkCanAttackVaults(_clanId, _defendingClanId);
 
     clanInfos[_clanId].currentlyAttacking = true;
 
@@ -364,9 +365,8 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     uint requestId = _requestRandomWords();
     requestToPendingAttackIds[requestId] = _nextPendingAttackId;
 
-    emit AttackVault(
+    emit AttackVaults(
       _clanId,
-      _playerIds,
       _defendingClanId,
       msg.sender,
       _leaderPlayerId,
@@ -386,10 +386,10 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
     uint40 attackingClanId = pendingAttack.clanId;
-    uint64[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
+    uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
     uint defendingClanId = pendingAttack.defendingClanId;
 
-    uint64[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
+    uint48[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
 
     Skill[] memory randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
     for (uint i; i < randomSkills.length; ++i) {
@@ -445,7 +445,12 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     );
   }
 
-  function _checkCanAttackVault(uint _clanId, uint _defendingClanId) private view {
+  function _checkCanAttackVaults(uint _clanId, uint _defendingClanId) private view {
+    // Must have at least 1 combatant
+    if (clanInfos[_clanId].playerIds.length == 0) {
+      revert NoCombatants();
+    }
+
     if (_clanId == _defendingClanId) {
       revert CannotAttackSelf();
     }
@@ -459,6 +464,10 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       revert ClanAttackingCooldown();
     }
 
+    if (clanInfos[_clanId].currentlyAttacking) {
+      revert CannotAttackWhileStillAttacking();
+    }
+
     // Cannot attack same clan within the timeframe (TODO: Unless they have an item?)
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
     if (lowerClanId == _clanId) {
@@ -468,9 +477,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
         revert ClanAttackingSameClanCooldown();
       }
     } else {
-      if (
-        lastClanBattles[lowerClanId][_defendingClanId].lastOtherClanIdAttackClanIdCooldownTimestamp > block.timestamp
-      ) {
+      if (lastClanBattles[lowerClanId][_clanId].lastOtherClanIdAttackClanIdCooldownTimestamp > block.timestamp) {
         revert ClanAttackingSameClanCooldown();
       }
     }
@@ -491,7 +498,7 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
   }
 
   function isCombatant(uint _clanId, uint _playerId) external view returns (bool) {
-    uint64[] storage playerIds = clanInfos[_clanId].playerIds;
+    uint48[] storage playerIds = clanInfos[_clanId].playerIds;
     if (playerIds.length == 0) {
       return false;
     }
@@ -513,6 +520,20 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
 
   function setTerritories(ITerritories _territories) external onlyOwner {
     territories = _territories;
+  }
+
+  function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) public isAdminAndBeta {
+    clanInfos[_clanId].attackingCooldownTimestamp = 0;
+    clanInfos[_clanId].assignCombatantsCooldownTimestamp = 0;
+    for (uint i; i < clanInfos[_clanId].playerIds.length; ++i) {
+      playerInfos[clanInfos[_clanId].playerIds[i]].combatantCooldownTimestamp = 0;
+    }
+
+    for (uint i; i < _otherClanIds.length; ++i) {
+      uint lowerClanId = _clanId < _otherClanIds[i] ? _clanId : _otherClanIds[i];
+      uint higherClanId = _clanId < _otherClanIds[i] ? _otherClanIds[i] : _clanId;
+      delete lastClanBattles[lowerClanId][higherClanId];
+    }
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -11,11 +11,11 @@ import {IPlayers} from "../interfaces/IPlayers.sol";
 import "../globals/all.sol";
 
 library ClanBattleLibrary {
-  function shuffleArray(uint64[] memory _array, uint _randomNumber) public pure returns (uint64[] memory) {
+  function shuffleArray(uint48[] memory _array, uint _randomNumber) public pure returns (uint48[] memory) {
     for (uint i; i < _array.length; ++i) {
       uint n = i + (_randomNumber % (_array.length - i));
       if (i != n) {
-        uint64 temp = _array[n];
+        uint48 temp = _array[n];
         _array[n] = _array[i];
         _array[i] = temp;
       }
@@ -25,8 +25,8 @@ library ClanBattleLibrary {
 
   function doBattleLib(
     address _players,
-    uint64[] memory _clanMembersA,
-    uint64[] memory _clanMembersB,
+    uint48[] memory _clanMembersA,
+    uint48[] memory _clanMembersB,
     uint8[] memory _skills,
     uint _randomWordA,
     uint _randomWordB
@@ -41,8 +41,8 @@ library ClanBattleLibrary {
   // winners & losers are always the same length, if there is not a valid playerId then it pushes 0
   function doBattle(
     address _players,
-    uint64[] memory _clanMembersA,
-    uint64[] memory _clanMembersB,
+    uint48[] memory _clanMembersA,
+    uint48[] memory _clanMembersB,
     Skill[] memory _skills,
     uint _randomWordA,
     uint _randomWordB
@@ -113,7 +113,7 @@ library ClanBattleLibrary {
       }
     } else if (_clanMembersA.length > _clanMembersB.length) {
       numWinnersA += _clanMembersA.length - _clanMembersB.length;
-      for (uint i = baseClanMembersCount; i < _clanMembersB.length; ++i) {
+      for (uint i = baseClanMembersCount; i < _clanMembersA.length; ++i) {
         winners[i] = _clanMembersA[i];
         losers[i] = 0;
       }

@@ -6,7 +6,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 describe("DecoratorProvider", function () {
   async function deployContracts() {
     const fixture = await loadFixture(playersFixture);
-    const {decorator, brush, artGallery, dev} = fixture;
+    const {decorator, brush, artGallery, playerNFT, dev} = fixture;
 
     // Add an lp token
     const lp = await ethers.deployContract("MockBrushToken");
@@ -22,6 +22,7 @@ describe("DecoratorProvider", function () {
       artGallery.address,
       mockTerritories.address,
       brush.address,
+      playerNFT.address,
       dev.address,
       pid,
     ]);
@@ -43,9 +44,8 @@ describe("DecoratorProvider", function () {
   });
 
   it("Harvest rewards", async function () {
-    const {mockTerritories, decoratorProvider, artGallery, brush, brushPerSecond, owner, lp} = await loadFixture(
-      deployContracts
-    );
+    const {mockTerritories, decoratorProvider, artGallery, brush, brushPerSecond, owner, lp, alice, playerId} =
+      await loadFixture(deployContracts);
 
     const amount = 100;
     await lp.mint(owner.address, amount);
@@ -55,18 +55,19 @@ describe("DecoratorProvider", function () {
     await ethers.provider.send("evm_increaseTime", [1]);
 
     // Will fail until we need it double the rewards
-    await expect(decoratorProvider.harvest()).to.be.revertedWith("ERC20: transfer amount exceeds balance");
+    await expect(decoratorProvider.connect(alice).harvest(playerId)).to.be.revertedWith(
+      "ERC20: transfer amount exceeds balance"
+    );
     await brush.mint(decoratorProvider.address, brushPerSecond.mul(3).div(2));
-    await decoratorProvider.harvest();
+    await decoratorProvider.connect(alice).harvest(playerId);
     expect(await brush.balanceOf(artGallery.address)).to.eq(brushPerSecond.mul(3).div(2));
 
     expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(1);
   });
 
   it("Retrieve art gallery rewards", async function () {
-    const {decoratorProvider, brush, owner, lp, dev, brushPerSecond, artGalleryLockPeriod} = await loadFixture(
-      deployContracts
-    );
+    const {decoratorProvider, brush, owner, lp, dev, brushPerSecond, artGalleryLockPeriod, alice, playerId} =
+      await loadFixture(deployContracts);
 
     const amount = 100;
     await lp.mint(owner.address, amount);
@@ -75,7 +76,7 @@ describe("DecoratorProvider", function () {
 
     await ethers.provider.send("evm_increaseTime", [1]);
     await brush.mint(decoratorProvider.address, brushPerSecond);
-    await decoratorProvider.harvest();
+    await decoratorProvider.connect(alice).harvest(playerId);
 
     await ethers.provider.send("evm_increaseTime", [artGalleryLockPeriod]);
     await decoratorProvider.unlockFromArtGallery();
@@ -105,7 +106,7 @@ describe("DecoratorProvider", function () {
   });
 
   it("Cannot re-harvest too quickly", async function () {
-    const {decoratorProvider, brush, brushPerSecond, owner, lp} = await loadFixture(deployContracts);
+    const {decoratorProvider, brush, brushPerSecond, owner, lp, alice, playerId} = await loadFixture(deployContracts);
 
     const amount = 100;
     await lp.mint(owner.address, amount);
@@ -117,13 +118,16 @@ describe("DecoratorProvider", function () {
     // Will fail until we need it double the rewards
     const minInterval = (await decoratorProvider.MIN_HARVEST_INTERVAL()).toNumber();
     await brush.mint(decoratorProvider.address, brushPerSecond.mul(minInterval + 10));
-    await decoratorProvider.harvest();
+    await decoratorProvider.connect(alice).harvest(playerId);
 
     await ethers.provider.send("evm_increaseTime", [1]);
-    await expect(decoratorProvider.harvest()).to.be.revertedWithCustomError(decoratorProvider, "HarvestingTooSoon");
+    await expect(decoratorProvider.connect(alice).harvest(playerId)).to.be.revertedWithCustomError(
+      decoratorProvider,
+      "HarvestingTooSoon"
+    );
 
     await ethers.provider.send("evm_increaseTime", [minInterval]);
-    await expect(decoratorProvider.harvest()).to.not.be.reverted;
+    await expect(decoratorProvider.connect(alice).harvest(playerId)).to.not.be.reverted;
   });
 
   it("TODO test HarvestingTooMuch error", async function () {});

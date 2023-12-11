@@ -87,9 +87,9 @@ if (!isBeta) {
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
-  clanBattleLibrary = "0xfe975aecd5a10aade85c2f2cc8f5d52b148bd0d3";
-  lockedBankVault = "0x49c8f367ef32c2d949028e6f151c0388283c7984";
+  clanBattleLibrary = "0x32a15Fba8dC1a18a33BA14595Bb74F54efEa3072";
   territories = "0xe2c9ce95ad783bf37201c07bec443eb518637ccc";
+  lockedBankVault = "0x49c8f367ef32c2d949028e6f151c0388283c7984";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
 }
 
@@ -132,3 +132,4 @@ export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";
 export const WFTM_ADDRESS = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
 export const FAKE_BRUSH_ADDRESS = "0x8F85Ad0Ed1C6Cf23B82378efF7f71a7Df6A61071";
 export const FAKE_BRUSH_WFTM_LP_ADDRESS = "0xb3209C979b90436f0a43ED817CD36c4c908604fD";
+export const DECORATOR_ADDRESS = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";

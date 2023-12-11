@@ -5,4 +5,6 @@ interface ITerritories {
   function addUnclaimedEmissions(uint amount) external;
 
   function isCombatant(uint clanId, uint playerId) external view returns (bool);
+
+  function isBetaAndAdmin(address admin) external view returns (bool);
 }

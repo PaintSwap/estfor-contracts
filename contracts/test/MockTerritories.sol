@@ -20,4 +20,8 @@ contract MockTerritories is ITerritories {
   function isCombatant(uint /* _clanId */, uint /* _playerId */) external pure override returns (bool) {
     return false;
   }
+
+  function isBetaAndAdmin(address) external pure override returns (bool) {
+    return true;
+  }
 }

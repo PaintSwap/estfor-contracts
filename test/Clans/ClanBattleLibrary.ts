@@ -71,7 +71,10 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB
     );
+
     expect(res.didAWin).to.be.true;
+    expect(res.winners[0]).to.eq(playerId);
+    expect(res.losers[0]).to.eq(0);
 
     clanMembersA = [];
     clanMembersB = [playerId];
@@ -84,6 +87,8 @@ describe("ClanBattleLibrary", function () {
       randomWordB
     );
     expect(res.didAWin).to.be.false;
+    expect(res.winners[0]).to.eq(playerId);
+    expect(res.losers[0]).to.eq(0);
   });
 
   it("Player ids of 0 is an automatic win for the other side", async () => {

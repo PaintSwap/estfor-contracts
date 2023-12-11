@@ -48,6 +48,7 @@ describe("Territories", function () {
     const {clanId, playerId, territories, alice} = await loadFixture(clanFixture);
 
     const territoryId = 1;
+    await territories.connect(alice).assignCombatants(clanId, [playerId], playerId);
     await territories.connect(alice).attackTerritory(clanId, territoryId, playerId);
 
     await ethers.provider.send("evm_increaseTime", [86400]);
@@ -60,6 +61,7 @@ describe("Territories", function () {
     const {clanId, playerId, territories, alice} = await loadFixture(clanFixture);
 
     const territoryId = 1;
+    await territories.connect(alice).assignCombatants(clanId, [playerId], playerId);
     await territories.connect(alice).attackTerritory(clanId, territoryId, playerId);
 
     await ethers.provider.send("evm_increaseTime", [86400]);
@@ -231,7 +233,12 @@ describe("Territories", function () {
     await clans.createClan(ownerPlayerId, clanName + 2, discord, telegram, imageId, tierId);
     const ownerClanId = 3;
 
-    // Free to attack another territory as you are no longer a defender
+    // Free to attack another territory as you are no longer a defender (but only after player cooldown timestamp)
+    await expect(
+      territories.assignCombatants(ownerClanId, [ownerPlayerId], ownerPlayerId)
+    ).to.be.revertedWithCustomError(territories, "PlayerCombatantCooldownTimestamp");
+    await ethers.provider.send("evm_increaseTime", [(await territories.COMBATANT_COOLDOWN()).toNumber()]);
+    await territories.assignCombatants(ownerClanId, [ownerPlayerId], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId);
 
     // TODO: Rejoining the old clan does not add you back as a defender

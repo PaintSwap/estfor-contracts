@@ -57,7 +57,7 @@ contract Territories is
   event Deposit(uint amount);
   event SetComparableSkills(Skill[] skills);
   event ClaimUnoccupiedTerritory(uint territoryId, uint clanId, address from, uint leaderPlayerId);
-  event AssignCombatants(uint clanId, uint64[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
+  event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
 
   error InvalidTerritory();
@@ -83,6 +83,7 @@ contract Territories is
   error PlayerDefendingLockedVaults();
   error CannotChangeCombatantsDuringAttack();
   error NoEmissionsToHarvest();
+  error CannotAttackWhileStillAttacking();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -102,7 +103,7 @@ contract Territories is
     uint40 attackingCooldownTimestamp;
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
-    uint64[] playerIds;
+    uint48[] playerIds;
   }
 
   struct PlayerInfo {
@@ -181,7 +182,7 @@ contract Territories is
   }
 
   modifier isAdminAndBeta() {
-    if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
+    if (!isBetaAndAdmin(msg.sender)) {
       revert NotAdminAndBeta();
     }
     _;
@@ -227,12 +228,7 @@ contract Territories is
     _addTerritories(_territories);
   }
 
-  function _checkCanAssignCombatants(uint _clanId, uint64[] calldata _playerIds) private view {
-    // Check this clan exists
-    //    if (territories[_territoryId].territoryId != _territoryId) {
-    //      revert InvalidTerritory();
-    //    }
-
+  function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
     if (clanInfos[_clanId].ownsTerritoryId != 0) {
       revert CurrentlyOwnATerritory();
     }
@@ -271,7 +267,7 @@ contract Territories is
 
   function assignCombatants(
     uint _clanId,
-    uint64[] calldata _playerIds,
+    uint48[] calldata _playerIds,
     uint _leaderPlayerId
   ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
     _checkCanAssignCombatants(_clanId, _playerIds);
@@ -352,6 +348,11 @@ contract Territories is
       revert InvalidTerritory();
     }
 
+    // Must have at least 1 combatant
+    if (clanInfos[_clanId].playerIds.length == 0) {
+      revert NoCombatants();
+    }
+
     if (clanInfos[_clanId].currentlyAttacking) {
       revert CannotChangeCombatantsDuringAttack();
     }
@@ -362,6 +363,10 @@ contract Territories is
 
     if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
       revert ClanAttackingCooldown();
+    }
+
+    if (clanInfos[_clanId].currentlyAttacking) {
+      revert CannotAttackWhileStillAttacking();
     }
   }
 
@@ -388,10 +393,10 @@ contract Territories is
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
     uint attackingClanId = pendingAttack.clanId;
-    uint64[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
+    uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
     uint16 territoryId = pendingAttack.territoryId;
     uint defendingClanId = territories[territoryId].clanIdOccupier;
-    uint64[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
+    uint48[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
 
     Skill[] memory randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
     for (uint i; i < randomSkills.length; ++i) {
@@ -529,6 +534,10 @@ contract Territories is
     }
   }
 
+  function isBetaAndAdmin(address _from) public view override returns (bool) {
+    return adminAccess.isAdmin(_from) && isBeta;
+  }
+
   function addTerritories(TerritoryInput[] calldata _territories) external onlyOwner {
     _addTerritories(_territories);
   }
@@ -575,8 +584,12 @@ contract Territories is
     emit SetComparableSkills(_skills);
   }
 
-  function clearAttackingCooldown(uint _clanId) public isAdminAndBeta {
+  function clearCooldowns(uint _clanId) external isAdminAndBeta {
     clanInfos[_clanId].attackingCooldownTimestamp = 0;
+    clanInfos[_clanId].assignCombatantsCooldownTimestamp = 0;
+    for (uint i; i < clanInfos[_clanId].playerIds.length; ++i) {
+      playerInfos[clanInfos[_clanId].playerIds[i]].combatantCooldownTimestamp = 0;
+    }
   }
 
   // solhint-disable-next-line no-empty-blocks

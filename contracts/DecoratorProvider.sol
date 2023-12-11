@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {ITerritories} from "./interfaces/ITerritories.sol";
@@ -12,7 +13,7 @@ import {IPaintSwapArtGallery} from "./interfaces/IPaintSwapArtGallery.sol";
 
 contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   event Deposit(uint amount);
-  event Harvest(uint amount, uint nextHarvestAllowedTimestamp);
+  event Harvest(address from, uint playerId, uint amount, uint nextHarvestAllowedTimestamp);
   event SetPID(uint pid);
   event UnlockFromArtGallery(uint amount);
 
@@ -21,19 +22,28 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   error TransferFailed();
   error HarvestingTooSoon();
   error HarvestingTooMuch();
+  error NotOwnerOfPlayer();
 
   IPaintSwapDecorator public decorator;
   IPaintSwapArtGallery public artGallery;
   ITerritories public territories;
   IBrushToken public brush;
   address public dev;
-  IERC20 public lpToken;
+  IERC1155 public playerNFT;
   uint16 public pid;
   uint40 public nextHarvestAllowedTimestamp;
   uint16 public numUnclaimedHarvests;
+  IERC20 public lpToken;
 
   uint public constant MAX_UNCLAIMED_HARVESTS = 600;
   uint public constant MIN_HARVEST_INTERVAL = 3 hours + 45 minutes;
+
+  modifier isOwnerOfPlayer(uint _playerId) {
+    if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
+      revert NotOwnerOfPlayer();
+    }
+    _;
+  }
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -45,12 +55,14 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     IPaintSwapArtGallery _artGallery,
     ITerritories _territories,
     IBrushToken _brush,
+    IERC1155 _playerNFT,
     address _dev,
     uint _pid
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
     territories = _territories;
+    playerNFT = _playerNFT;
     brush = _brush;
     artGallery = _artGallery;
     decorator = _decorator;
@@ -71,7 +83,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     emit Deposit(balance);
   }
 
-  function harvest() external {
+  function harvest(uint _playerId) external isOwnerOfPlayer(_playerId) {
     // Max harvest once every 30 minutes
     uint _nextHarvestAllowedTimestamp = nextHarvestAllowedTimestamp;
     if (block.timestamp < _nextHarvestAllowedTimestamp) {
@@ -85,14 +97,15 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
 
     nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
     ++numUnclaimedHarvests;
+    decorator.updatePool(pid);
     uint amountBrush = decorator.pendingBrush(pid, address(this));
     if (amountBrush == 0) {
       revert ZeroBalance();
     }
-    decorator.deposit(pid, 0);
+    decorator.deposit(pid, 0); // get rewards
     uint fullBrushAmount = amountBrush * 2; // There will be funds here which are used to offset the art gallery rewards
     territories.addUnclaimedEmissions(fullBrushAmount);
-    emit Harvest(fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
+    emit Harvest(msg.sender, _playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
   }
 
   function unlockFromArtGallery() external {

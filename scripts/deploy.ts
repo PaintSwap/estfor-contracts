@@ -51,7 +51,7 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
+import {BRUSH_ADDRESS, DECORATOR_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
@@ -131,7 +131,7 @@ async function main() {
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
       );
       paintSwapArtGallery = await TestPaintSwapArtGallery.attach("0x9076C96e01F6F13e1eC4832354dF970d245e124F");
-      paintSwapDecorator = await TestPaintSwapDecorator.attach("0xCb80F529724B9620145230A0C866AC2FACBE4e3D");
+      paintSwapDecorator = await TestPaintSwapDecorator.attach(DECORATOR_ADDRESS);
       pid = 22;
     } else {
       throw Error("Not a supported network");
@@ -462,6 +462,7 @@ async function main() {
     paintSwapArtGallery.address,
     territories.address,
     brush.address,
+    playerNFT.address,
     devAddress,
     pid,
   ]);

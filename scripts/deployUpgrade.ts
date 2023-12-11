@@ -21,6 +21,7 @@ import {
   TERRITORIES_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
+  PLAYERS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -185,7 +186,6 @@ async function main() {
     kind: "uups",
     timeout,
     unsafeAllow: ["external-library-linking"],
-    unsafeSkipStorageCheck: true,
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
@@ -200,14 +200,18 @@ async function main() {
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
   const newClanBattleLibrary = false;
-  const ClanBattleLibrary = await ethers.getContractFactory("ClanBattleLibrary");
   let clanBattleLibrary: ClanBattleLibrary;
   if (newClanBattleLibrary) {
-    clanBattleLibrary = await ClanBattleLibrary.deploy();
-    await estforLibrary.deployed();
+    clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary", {
+      libraries: {PlayersLibrary: PLAYERS_LIBRARY_ADDRESS},
+    })) as ClanBattleLibrary;
+    await clanBattleLibrary.deployed();
     await verifyContracts([clanBattleLibrary.address]);
   } else {
-    clanBattleLibrary = await ClanBattleLibrary.attach(CLAN_BATTLE_LIBRARY_ADDRESS);
+    clanBattleLibrary = (await ethers.getContractAt(
+      "ClanBattleLibrary",
+      CLAN_BATTLE_LIBRARY_ADDRESS
+    )) as ClanBattleLibrary;
   }
   console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
 
@@ -216,6 +220,7 @@ async function main() {
   });
   const lockedBankVault = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVault, {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
     timeout,
   });
   await lockedBankVault.deployed();
@@ -226,6 +231,7 @@ async function main() {
   });
   const territories = await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
     timeout,
   });
   await territories.deployed();

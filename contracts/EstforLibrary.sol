@@ -199,7 +199,7 @@ library EstforLibrary {
   }
 
   // This should match the one below, mainly used for testing the algorithm
-  function binarySearchMemory(uint64[] calldata _arr, uint _target) external pure returns (uint) {
+  function binarySearchMemory(uint48[] calldata _arr, uint _target) external pure returns (uint) {
     uint low = 0;
     uint high = _arr.length - 1;
 
@@ -249,7 +249,7 @@ library EstforLibrary {
   }
 
   // This should match the one above
-  function binarySearch(uint64[] storage _arr, uint _target) internal view returns (uint) {
+  function binarySearch(uint48[] storage _arr, uint _target) internal view returns (uint) {
     uint low = 0;
     uint high = _arr.length - 1;
 
