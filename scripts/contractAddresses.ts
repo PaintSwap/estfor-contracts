@@ -87,7 +87,7 @@ if (!isBeta) {
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
-  clanBattleLibrary = "0x32a15Fba8dC1a18a33BA14595Bb74F54efEa3072";
+  clanBattleLibrary = "0x32a15fba8dc1a18a33ba14595bb74f54efea3072";
   territories = "0xe2c9ce95ad783bf37201c07bec443eb518637ccc";
   lockedBankVault = "0x49c8f367ef32c2d949028e6f151c0388283c7984";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
