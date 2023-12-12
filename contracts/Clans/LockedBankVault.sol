@@ -209,108 +209,6 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
     setComparableSkills(_comparableSkills);
   }
 
-  function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
-    _lockFunds(_clanId, _from, _playerId, _amount);
-    if (!brush.transferFrom(msg.sender, address(this), _amount)) {
-      revert TransferFailed();
-    }
-  }
-
-  function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    // Cache some values for next time if not called already
-    address bankAddress = address(clanInfos[_clanId].bank);
-    if (bankAddress == address(0)) {
-      bankAddress = bankFactory.bankAddress(_clanId);
-      brush.approve(bankAddress, type(uint).max);
-      clanInfos[_clanId].bank = IBank(bankAddress);
-    }
-
-    uint total;
-    uint numLocksClaimed;
-    for (uint i; i < clanInfos[_clanId].defendingVaults.length; ++i) {
-      uint defendingTimestamp = clanInfos[_clanId].defendingVaults[i].timestamp;
-      if (defendingTimestamp > block.timestamp) {
-        break;
-      }
-
-      total += clanInfos[_clanId].defendingVaults[i].amount;
-      delete clanInfos[_clanId].defendingVaults[i];
-      ++numLocksClaimed;
-    }
-
-    if (total == 0) {
-      revert NothingToClaim();
-    }
-
-    clanInfos[_clanId].totalBrushLocked -= uint96(total);
-
-    if (!brush.transfer(bankAddress, total)) {
-      revert TransferFailed();
-    }
-    emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
-  }
-
-  function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
-    // Remove from the player defenders if they are in there
-    uint48[] storage playerIds = clanInfos[_clanId].playerIds;
-    if (playerIds.length > 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
-      if (searchIndex != type(uint).max) {
-        // Not shifting it for gas reasons
-        delete clanInfos[_clanId].playerIds[searchIndex];
-        emit RemoveCombatant(_playerId, _clanId);
-      }
-    }
-  }
-
-  function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
-    clanInfos[_clanId].totalBrushLocked += uint96(_amount);
-    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
-    clanInfos[_clanId].defendingVaults.push(Vault({timestamp: lockingTimestamp, amount: uint80(_amount)}));
-    emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
-  }
-
-  function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
-    if (clanInfos[_clanId].currentlyAttacking) {
-      revert CannotChangeCombatantsDuringAttack();
-    }
-
-    if (_playerIds.length == 0) {
-      revert NoCombatants();
-    }
-
-    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
-      revert TooManyCombatants();
-    }
-
-    // Can only change defenders every so often
-    if (clanInfos[_clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
-      revert ClanCombatantsChangeCooldown();
-    }
-
-    // Check the cooldown periods on attacking (because they might have just joined from another clan)
-    for (uint i; i < _playerIds.length; ++i) {
-      if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
-        revert PlayerCombatantCooldownTimestamp();
-      }
-
-      // Check they are part of the clan
-      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
-        revert NotMemberOfClan();
-      }
-
-      // Check they are not defending a territory
-      bool isTerritoryCombatant = territories.isCombatant(_clanId, _playerIds[i]);
-      if (isTerritoryCombatant) {
-        revert PlayerOnTerritory();
-      }
-
-      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
-        revert PlayerIdsNotSortedOrDuplicates();
-      }
-    }
-  }
-
   function assignCombatants(
     uint _clanId,
     uint48[] calldata _playerIds,
@@ -444,6 +342,106 @@ contract LockedBankVault is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, Ownab
       timestamp,
       percentageToTake
     );
+  }
+
+  function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    // Cache some values for next time if not called already
+    address bankAddress = address(clanInfos[_clanId].bank);
+    if (bankAddress == address(0)) {
+      bankAddress = bankFactory.bankAddress(_clanId);
+      brush.approve(bankAddress, type(uint).max);
+      clanInfos[_clanId].bank = IBank(bankAddress);
+    }
+
+    uint total;
+    uint numLocksClaimed;
+    for (uint i; i < clanInfos[_clanId].defendingVaults.length; ++i) {
+      uint defendingTimestamp = clanInfos[_clanId].defendingVaults[i].timestamp;
+      if (defendingTimestamp > block.timestamp) {
+        break;
+      }
+
+      total += clanInfos[_clanId].defendingVaults[i].amount;
+      delete clanInfos[_clanId].defendingVaults[i];
+      ++numLocksClaimed;
+    }
+
+    if (total == 0) {
+      revert NothingToClaim();
+    }
+
+    clanInfos[_clanId].totalBrushLocked -= uint96(total);
+
+    IBank(bankAddress).depositToken(msg.sender, _playerId, address(brush), total);
+    emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
+  }
+
+  function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
+    _lockFunds(_clanId, _from, _playerId, _amount);
+    if (!brush.transferFrom(msg.sender, address(this), _amount)) {
+      revert TransferFailed();
+    }
+  }
+
+  function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
+    // Remove from the player defenders if they are in there
+    uint48[] storage playerIds = clanInfos[_clanId].playerIds;
+    if (playerIds.length > 0) {
+      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+      if (searchIndex != type(uint).max) {
+        // Not shifting it for gas reasons
+        delete clanInfos[_clanId].playerIds[searchIndex];
+        emit RemoveCombatant(_playerId, _clanId);
+      }
+    }
+  }
+
+  function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
+    clanInfos[_clanId].totalBrushLocked += uint96(_amount);
+    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
+    clanInfos[_clanId].defendingVaults.push(Vault({timestamp: lockingTimestamp, amount: uint80(_amount)}));
+    emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
+  }
+
+  function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
+    if (clanInfos[_clanId].currentlyAttacking) {
+      revert CannotChangeCombatantsDuringAttack();
+    }
+
+    if (_playerIds.length == 0) {
+      revert NoCombatants();
+    }
+
+    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
+      revert TooManyCombatants();
+    }
+
+    // Can only change defenders every so often
+    if (clanInfos[_clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
+      revert ClanCombatantsChangeCooldown();
+    }
+
+    // Check the cooldown periods on attacking (because they might have just joined from another clan)
+    for (uint i; i < _playerIds.length; ++i) {
+      if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
+        revert PlayerCombatantCooldownTimestamp();
+      }
+
+      // Check they are part of the clan
+      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
+        revert NotMemberOfClan();
+      }
+
+      // Check they are not defending a territory
+      bool isTerritoryCombatant = territories.isCombatant(_clanId, _playerIds[i]);
+      if (isTerritoryCombatant) {
+        revert PlayerOnTerritory();
+      }
+
+      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
+        revert PlayerIdsNotSortedOrDuplicates();
+      }
+    }
   }
 
   function _checkCanAttackVaults(uint _clanId, uint _defendingClanId) private view {

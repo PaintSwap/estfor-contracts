@@ -223,12 +223,11 @@ describe("Bank", function () {
 
     const bank = await Bank.attach(clanBankAddress);
 
-    await expect(bank.connect(alice).depositToken(playerId.add(1), brush.address, 1000)).to.be.revertedWithCustomError(
-      bank,
-      "NotOwnerOfPlayer"
-    );
+    await expect(
+      bank.connect(alice).depositToken(alice.address, playerId.add(1), brush.address, 1000)
+    ).to.be.revertedWithCustomError(bank, "NotOwnerOfPlayer");
 
-    await expect(bank.connect(alice).depositToken(playerId, brush.address, 1000))
+    await expect(bank.connect(alice).depositToken(alice.address, playerId, brush.address, 1000))
       .to.emit(bank, "DepositToken")
       .withArgs(alice.address, playerId, brush.address, 1000);
 

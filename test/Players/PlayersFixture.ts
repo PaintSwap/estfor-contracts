@@ -338,6 +338,8 @@ export const playersFixture = async function () {
   await itemNFT.setPromotions(promotions.address);
   await itemNFT.setInstantActions(instantActions.address);
 
+  await bankRegistry.setLockedBankVault(lockedBankVault.address);
+
   await clans.setTerritoriesAndLockedBankVault(territories.address, lockedBankVault.address);
   await lockedBankVault.setTerritories(territories.address);
 

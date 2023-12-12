@@ -8,18 +8,21 @@ import {
   CLANS_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
   FAKE_BRUSH_WFTM_LP_ADDRESS,
+  LOCKED_BANK_VAULT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {allTerritories, allTerritorySkills} from "./data/territories";
 import {verifyContracts} from "./utils";
-import {BankRegistry, DecoratorProvider} from "../typechain-types";
+import {DecoratorProvider} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Deploying clan wars contracts: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const timeout = 600 * 1000; // 10 minutes
+  const isBeta = process.env.IS_BETA == "true";
+
   // Clan
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
@@ -63,7 +66,6 @@ async function main() {
   await lockedBankVault.deployed();
   console.log(`lockedBankVault = "${lockedBankVault.address.toLowerCase()}"`);
 
-  const isBeta = process.env.IS_BETA == "true";
   const Territories = await ethers.getContractFactory("Territories", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
@@ -117,13 +119,25 @@ async function main() {
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
   console.log("bankImplAddress", bankImplAddress);
 
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
+    kind: "uups",
+    timeout,
+  });
+  await bankRegistry.deployed();
+  console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
+
+  let tx = await bankRegistry.setLockedBankVault(LOCKED_BANK_VAULT_ADDRESS); // lockedBankVault.address);
+  await tx.wait();
+  console.log("bankRegistry.setLockedBankVault");
   if (isBeta) {
     // Also update the old first week's beta clans
-    const bankRegistry = (await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS)) as BankRegistry;
-    await bankRegistry.setBankImpl(bankImplAddress);
+    tx = await bankRegistry.setBankImpl(bankImplAddress);
+    await tx.wait();
+    console.log("bankRegistry.setBankImpl");
   }
 
-  let tx = await clans.setTerritoriesAndLockedBankVault(territories.address, lockedBankVault.address);
+  tx = await clans.setTerritoriesAndLockedBankVault(territories.address, lockedBankVault.address);
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVault");
   tx = await lockedBankVault.setTerritories(territories.address);
@@ -147,6 +161,8 @@ async function main() {
     lockedBankVault.address,
     territories.address,
     clanBattleLibrary.address,
+    bankRegistry.address,
+    bankImplAddress,
   ]);
 }
 

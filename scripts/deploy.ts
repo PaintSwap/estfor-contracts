@@ -559,6 +559,10 @@ async function main() {
   await tx.wait();
   console.log("lockedBankVault.setTerritories");
 
+  tx = await bankRegistry.setLockedBankVault(lockedBankVault.address);
+  await tx.wait();
+  console.log("bankRegistry.setLockedBankVault");
+
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();
   console.log("Set daily rewards enabled");

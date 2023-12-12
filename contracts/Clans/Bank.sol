@@ -153,11 +153,13 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     emit WithdrawFTM(msg.sender, _to, _playerId, _amount);
   }
 
-  function depositToken(uint _playerId, address _token, uint _amount) external {
-    if (_playerId != 0) {
-      if (bankRegistry.playerNFT().balanceOf(msg.sender, _playerId) != 1) {
-        revert NotOwnerOfPlayer();
-      }
+  function depositToken(address _from, uint _playerId, address _token, uint _amount) external {
+    if (_from != msg.sender && msg.sender != address(bankRegistry.lockedBankVault())) {
+      revert NotOwnerOfPlayer();
+    }
+
+    if (bankRegistry.playerNFT().balanceOf(_from, _playerId) != 1) {
+      revert NotOwnerOfPlayer();
     }
 
     bool success = IERC20(_token).transferFrom(msg.sender, address(this), _amount);
@@ -165,7 +167,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       revert DepositFailed();
     }
 
-    emit DepositToken(msg.sender, _playerId, _token, _amount);
+    emit DepositToken(_from, _playerId, _token, _amount);
   }
 
   function withdrawToken(
