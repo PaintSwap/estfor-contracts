@@ -85,6 +85,7 @@ contract Territories is
   error CannotChangeCombatantsDuringAttack();
   error NoEmissionsToHarvest();
   error CannotAttackWhileStillAttacking();
+  error AmountTooLow();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -229,43 +230,6 @@ contract Territories is
     _addTerritories(_territories);
   }
 
-  function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
-    if (clanInfos[_clanId].ownsTerritoryId != 0) {
-      revert CurrentlyOwnATerritory();
-    }
-
-    if (_playerIds.length == 0) {
-      revert NoCombatants();
-    }
-
-    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
-      revert TooManyCombatants();
-    }
-
-    // Check the cooldown periods on player combatants (because they might have just joined another clan)
-    for (uint i; i < _playerIds.length; ++i) {
-      if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
-        revert PlayerCombatantCooldownTimestamp();
-      }
-
-      // Check they are part of the clan
-      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
-        revert NotMemberOfClan();
-      }
-
-      // Check they are not combatants in locked vaults
-      bool isDefendingALockedVault = lockedBankVault.isCombatant(_clanId, _playerIds[i]);
-      if (isDefendingALockedVault) {
-        revert PlayerDefendingLockedVaults();
-      }
-
-      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
-        revert PlayerIdsNotSortedOrDuplicates();
-      }
-      // TODO: Check they are defending a territory
-    }
-  }
-
   function assignCombatants(
     uint _clanId,
     uint48[] calldata _playerIds,
@@ -331,62 +295,6 @@ contract Territories is
     }
   }
 
-  // Remove a player combatant if they are currently assigned in this clan
-  function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
-    // Check if this player is in the defenders list and remove them if so
-    if (clanInfos[_clanId].playerIds.length > 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
-      if (searchIndex != type(uint).max) {
-        // Not shifting it for gas reasons
-        delete clanInfos[_clanId].playerIds[searchIndex];
-        emit RemoveCombatant(_playerId, _clanId);
-      }
-    }
-  }
-
-  function _checkCanAttackTerritory(uint _clanId, uint _territoryId) private view {
-    if (territories[_territoryId].territoryId != _territoryId) {
-      revert InvalidTerritory();
-    }
-
-    // Must have at least 1 combatant
-    if (clanInfos[_clanId].playerIds.length == 0) {
-      revert NoCombatants();
-    }
-
-    if (clanInfos[_clanId].currentlyAttacking) {
-      revert CannotChangeCombatantsDuringAttack();
-    }
-
-    if (clanInfos[_clanId].ownsTerritoryId != 0) {
-      revert AlreadyOwnATerritory();
-    }
-
-    if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
-      revert ClanAttackingCooldown();
-    }
-
-    if (clanInfos[_clanId].currentlyAttacking) {
-      revert CannotAttackWhileStillAttacking();
-    }
-  }
-
-  function _requestRandomWords() private returns (uint requestId) {
-    requestId = COORDINATOR.requestRandomWords(
-      KEY_HASH,
-      subscriptionId,
-      REQUEST_CONFIRMATIONS,
-      callbackGasLimit,
-      NUM_WORDS
-    );
-  }
-
-  function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
-    // Assign them the new stuff
-    territories[_territoryId].clanIdOccupier = uint32(_attackingClanId);
-    clanInfos[_attackingClanId].ownsTerritoryId = uint16(_territoryId);
-  }
-
   function fulfillRandomWords(uint _requestId, uint[] memory _randomWords) internal override {
     if (_randomWords.length != NUM_WORDS) {
       revert LengthMismatch();
@@ -438,8 +346,6 @@ contract Territories is
 
   // Any harvest automatically does a claim as well beforehand
   function harvest(uint _territoryId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    //    _callAddUnclaimedEmissions();
-
     Territory storage territory = territories[_territoryId];
     uint clanId = territory.clanIdOccupier;
     if (clanId == 0) {
@@ -460,20 +366,112 @@ contract Territories is
     emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }
 
-  function pendingEmissions(uint _territoryId) external {
-    // get pending from masterchef * 2 ?
-  }
-
   function addUnclaimedEmissions(uint _amount) external {
-    if (!brush.transferFrom(msg.sender, address(this), _amount)) {
-      revert TransferFailed();
+    if (_amount < totalEmissionPercentage) {
+      revert AmountTooLow();
     }
+
     for (uint i = 1; i < nextTerritoryId; ++i) {
       territories[i].unclaimedEmissions += uint88(
         (_amount * territories[i].percentageEmissions) / totalEmissionPercentage
       );
     }
+
+    if (!brush.transferFrom(msg.sender, address(this), _amount)) {
+      revert TransferFailed();
+    }
     emit Deposit(_amount);
+  }
+
+  // Remove a player combatant if they are currently assigned in this clan
+  function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
+    // Check if this player is in the defenders list and remove them if so
+    if (clanInfos[_clanId].playerIds.length > 0) {
+      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+      if (searchIndex != type(uint).max) {
+        // Not shifting it for gas reasons
+        delete clanInfos[_clanId].playerIds[searchIndex];
+        emit RemoveCombatant(_playerId, _clanId);
+      }
+    }
+  }
+
+  function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
+    if (clanInfos[_clanId].ownsTerritoryId != 0) {
+      revert CurrentlyOwnATerritory();
+    }
+
+    if (_playerIds.length == 0) {
+      revert NoCombatants();
+    }
+
+    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
+      revert TooManyCombatants();
+    }
+
+    // Check the cooldown periods on player combatants (because they might have just joined another clan)
+    for (uint i; i < _playerIds.length; ++i) {
+      if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
+        revert PlayerCombatantCooldownTimestamp();
+      }
+
+      // Check they are part of the clan
+      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
+        revert NotMemberOfClan();
+      }
+
+      // Check they are not combatants in locked vaults
+      bool isDefendingALockedVault = lockedBankVault.isCombatant(_clanId, _playerIds[i]);
+      if (isDefendingALockedVault) {
+        revert PlayerDefendingLockedVaults();
+      }
+
+      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
+        revert PlayerIdsNotSortedOrDuplicates();
+      }
+    }
+  }
+
+  function _checkCanAttackTerritory(uint _clanId, uint _territoryId) private view {
+    if (territories[_territoryId].territoryId != _territoryId) {
+      revert InvalidTerritory();
+    }
+
+    // Must have at least 1 combatant
+    if (clanInfos[_clanId].playerIds.length == 0) {
+      revert NoCombatants();
+    }
+
+    if (clanInfos[_clanId].currentlyAttacking) {
+      revert CannotChangeCombatantsDuringAttack();
+    }
+
+    if (clanInfos[_clanId].ownsTerritoryId != 0) {
+      revert AlreadyOwnATerritory();
+    }
+
+    if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
+      revert ClanAttackingCooldown();
+    }
+
+    if (clanInfos[_clanId].currentlyAttacking) {
+      revert CannotAttackWhileStillAttacking();
+    }
+  }
+
+  function _requestRandomWords() private returns (uint requestId) {
+    requestId = COORDINATOR.requestRandomWords(
+      KEY_HASH,
+      subscriptionId,
+      REQUEST_CONFIRMATIONS,
+      callbackGasLimit,
+      NUM_WORDS
+    );
+  }
+
+  function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
+    territories[_territoryId].clanIdOccupier = uint32(_attackingClanId);
+    clanInfos[_attackingClanId].ownsTerritoryId = uint16(_territoryId);
   }
 
   function _checkTerritory(TerritoryInput calldata _territory) private pure {
