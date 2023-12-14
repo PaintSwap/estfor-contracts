@@ -117,7 +117,7 @@ describe("LockedBankVault", function () {
       imageId,
       tierId,
       brush,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVault, clanId, brush, alice, playerId, 1000, territories);
@@ -137,7 +137,7 @@ describe("LockedBankVault", function () {
     // Attack
     await lockedBankVault.connect(bob).assignCombatants(bobClanId, [bobPlayerId, charliePlayerId], bobPlayerId);
     await lockedBankVault.connect(bob).attackVaults(bobClanId, clanId, bobPlayerId);
-    await fulfillRandomWords(1, lockedBankVault, mockOracleClient);
+    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
     // Should win as they have more players
     expect((await lockedBankVault.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
@@ -215,7 +215,7 @@ describe("LockedBankVault", function () {
       imageId,
       tierId,
       brush,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVault, clanId, brush, alice, playerId, 1000, territories);
@@ -236,12 +236,12 @@ describe("LockedBankVault", function () {
     // Attack
     await lockedBankVault.connect(bob).assignCombatants(bobClanId, [bobPlayerId, charliePlayerId], bobPlayerId);
     await lockedBankVault.connect(bob).attackVaults(bobClanId, clanId, bobPlayerId);
-    await fulfillRandomWords(1, lockedBankVault, mockOracleClient);
+    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
 
     // Alice's clan can attack back because they haven't attacked anything yet but will lose.
     await lockedBankVault.connect(alice).attackVaults(clanId, bobClanId, playerId);
-    await fulfillRandomWords(2, lockedBankVault, mockOracleClient);
+    await fulfillRandomWords(2, lockedBankVault, mockAPI3OracleClient);
     // Unchanged
     expect((await lockedBankVault.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
     expect((await lockedBankVault.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
@@ -288,7 +288,7 @@ describe("LockedBankVault", function () {
       .connect(alice)
       .assignCombatants(clanId, [playerId, ownerPlayerId, erinPlayerId, frankPlayerId], playerId);
     await lockedBankVault.connect(alice).attackVaults(clanId, bobClanId, playerId);
-    await fulfillRandomWords(3, lockedBankVault, mockOracleClient);
+    await fulfillRandomWords(3, lockedBankVault, mockAPI3OracleClient);
     const {timestamp: NOW2} = await ethers.provider.getBlock("latest");
 
     // Wait another day (check it's not just the clan cooldown)

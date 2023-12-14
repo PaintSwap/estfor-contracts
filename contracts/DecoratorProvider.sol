@@ -84,7 +84,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function harvest(uint _playerId) external isOwnerOfPlayer(_playerId) {
-    // Max harvest once every 30 minutes
+    // Max harvest once every few hours
     uint _nextHarvestAllowedTimestamp = nextHarvestAllowedTimestamp;
     if (block.timestamp < _nextHarvestAllowedTimestamp) {
       revert HarvestingTooSoon();
@@ -131,6 +131,15 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     pid = uint16(_pid);
     lpToken.approve(address(decorator), type(uint256).max);
     emit SetPID(_pid);
+  }
+
+  function setTerritories(ITerritories _territories) external onlyOwner {
+    territories = _territories;
+    brush.approve(address(_territories), type(uint256).max);
+  }
+
+  function clearHarvestCooldownTimestamp() external onlyOwner {
+    nextHarvestAllowedTimestamp = 0;
   }
 
   // solhint-disable-next-line no-empty-blocks

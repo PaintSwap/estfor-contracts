@@ -7,6 +7,8 @@
   "license": "MIT",
   "devDependencies": {
     "@0xdoublesharp/unsafe-math": "0.0.16",
+    "@api3/airnode-admin": "^0.13.0",
+    "@api3/airnode-protocol": "^0.13.0",
     "@chainlink/contracts": "^0.6.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5",

@@ -12,6 +12,8 @@ import {
   InstantActions,
   ItemNFT,
   LockedBankVault,
+  MockBrushToken,
+  MockOracleClient,
   MockRouter,
   PlayerNFT,
   Players,
@@ -31,11 +33,8 @@ import {allTerritories, allTerritorySkills} from "../../scripts/data/territories
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
 
-  const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-  const brush = await MockBrushToken.deploy();
-
-  const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-  const mockOracleClient = await MockOracleClient.deploy();
+  const brush = (await ethers.deployContract("MockBrushToken")) as MockBrushToken;
+  const mockOracleClient = (await ethers.deployContract("MockOracleClient")) as MockOracleClient;
 
   // Add some dummy blocks so that world can access previous blocks for random numbers
   for (let i = 0; i < 5; ++i) {
@@ -278,6 +277,11 @@ export const playersFixture = async function () {
 
   await artGallery.transferOwnership(decorator.address);
 
+  const mockAPI3OracleClient = (await ethers.deployContract("MockAPI3OracleClient")) as MockOracleClient;
+  const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
+  const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
+  const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
+
   const LockedBankVault = await ethers.getContractFactory("LockedBankVault", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
@@ -289,8 +293,12 @@ export const playersFixture = async function () {
       brush.address,
       bankFactory.address,
       allTerritorySkills,
-      mockOracleClient.address,
-      subscriptionId,
+      mockAPI3OracleClient.address,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
+      adminAccess.address,
+      isBeta,
     ],
     {
       kind: "uups",
@@ -312,8 +320,10 @@ export const playersFixture = async function () {
       brush.address,
       lockedBankVault.address,
       allTerritorySkills,
-      mockOracleClient.address,
-      subscriptionId,
+      mockAPI3OracleClient.address,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
       adminAccess.address,
       isBeta,
     ],
@@ -406,6 +416,7 @@ export const playersFixture = async function () {
     artGalleryLockPeriod,
     decorator,
     brushPerSecond,
+    mockAPI3OracleClient,
     lockedBankVault,
     territories,
     terrorityBrushAttackingCost,

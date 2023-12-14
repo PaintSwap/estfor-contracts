@@ -26,9 +26,11 @@ let playersImplMisc1;
 let players;
 let instantActions;
 let clanBattleLibrary;
-let lockedBankVault;
 let territories;
+let lockedBankVault;
 let decoratorProvider;
+let sponsorWalletLockedVault;
+let sponsorWalletTerritories;
 
 if (!isBeta) {
   worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
@@ -57,9 +59,11 @@ if (!isBeta) {
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
   clanBattleLibrary = "";
-  lockedBankVault = "";
   territories = "";
+  lockedBankVault = "";
   decoratorProvider = "";
+  sponsorWalletLockedVault = "";
+  sponsorWalletTerritories = "";
 } else {
   worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -87,10 +91,12 @@ if (!isBeta) {
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
-  clanBattleLibrary = "0x32a15fba8dc1a18a33ba14595bb74f54efea3072";
-  territories = "0xe2c9ce95ad783bf37201c07bec443eb518637ccc";
-  lockedBankVault = "0x49c8f367ef32c2d949028e6f151c0388283c7984";
+  clanBattleLibrary = "0x0354de76fd99e6a7ea9ec96a0607269c2ed9e949";
+  territories = "0x9403dea8c26026b66aea4f08514aa17074e23560";
+  lockedBankVault = "0x6fe73aa10ab61ff107b7b242144c48f570717951";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
+  sponsorWalletLockedVault = "0x3065abbee7711e0895e215556f9dc1bf74a3b862";
+  sponsorWalletTerritories = "0x95ef4cce191c287ec2da3558f4d58e7d4f60e3ba";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -123,8 +129,10 @@ export const PLAYERS_ADDRESS = players;
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
 
 export const CLAN_BATTLE_LIBRARY_ADDRESS = clanBattleLibrary;
-export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVault;
 export const TERRITORIES_ADDRESS = territories;
+export const SPONSOR_WALLET_TERRITORIES_ADDRESS = sponsorWalletTerritories;
+export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVault;
+export const SPONSOR_WALLET_LOCKED_VAULT_ADDRESS = sponsorWalletLockedVault;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 
 // Only chain 250 (ftm)

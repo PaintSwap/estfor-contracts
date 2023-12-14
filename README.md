@@ -78,9 +78,12 @@ BankFactory [0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4](https://ftmscan.com/add
 InstantActions [0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe](https://ftmscan.com/address/0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe)
 
 ClanBattleLibrary [](https://ftmscan.com/address/)  
-LockedBankVault [](https://ftmscan.com/address/)  
 Territories [](https://ftmscan.com/address/)  
+LockedBankVault [](https://ftmscan.com/address/)  
 DecoratorProvider [](https://ftmscan.com/address/)
+
+Sponsor wallet - LockedVault [](https://ftmscan.com/address/)  
+Sponsor wallet - Territories [](https://ftmscan.com/address/)
 
 ### Fantom mainnet beta deployed contract addresses:
 
@@ -114,11 +117,14 @@ BankFactory [0x7b8197e7d7352e8910a7af79a9184f50290403da](https://ftmscan.com/add
 
 InstantActions [0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76](https://ftmscan.com/address/0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76)
 
-ClanBattleLibrary [0x32a15fba8dc1a18a33ba14595bb74f54efea3072](https://ftmscan.com/address/0x32a15fba8dc1a18a33ba14595bb74f54efea3072)  
-LockedBankVault [0x49c8f367ef32c2d949028e6f151c0388283c7984](https://ftmscan.com/address/0x49c8f367ef32c2d949028e6f151c0388283c7984)  
-Territories [0xe2c9ce95ad783bf37201c07bec443eb518637ccc](https://ftmscan.com/address/0xe2c9ce95ad783bf37201c07bec443eb518637ccc)  
+ClanBattleLibrary [0x0354de76fd99e6a7ea9ec96a0607269c2ed9e949](https://ftmscan.com/address/0x0354de76fd99e6a7ea9ec96a0607269c2ed9e949)  
+Territories [0x9403dea8c26026b66aea4f08514aa17074e23560](https://ftmscan.com/address/0x9403dea8c26026b66aea4f08514aa17074e23560)  
+LockedBankVault [0x6fe73aa10ab61ff107b7b242144c48f570717951](https://ftmscan.com/address/0x6fe73aa10ab61ff107b7b242144c48f570717951)  
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
+
+Sponsor wallet - LockedVault [0x3065abbee7711e0895e215556f9dc1bf74a3b862](https://ftmscan.com/address/0x3065abbee7711e0895e215556f9dc1bf74a3b862)  
+Sponsor wallet - Territories [0x95ef4cce191c287ec2da3558f4d58e7d4f60e3ba](https://ftmscan.com/address/0x95ef4cce191c287ec2da3558f4d58e7d4f60e3ba)
 
 ### Other addresses:
 
-BRUSH [0x85dec8c4b2680793661bca91a8f129607571863d](https://ftmscan.com/address/0x85dec8c4b2680793661bca91a8f129607571863d)
+Brush [0x85dec8c4b2680793661bca91a8f129607571863d](https://ftmscan.com/address/0x85dec8c4b2680793661bca91a8f129607571863d)

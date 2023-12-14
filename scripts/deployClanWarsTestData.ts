@@ -1,4 +1,4 @@
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 import {
   BRUSH_ADDRESS,
   DECORATOR_ADDRESS,
@@ -34,6 +34,8 @@ async function main() {
   )) as DecoratorProvider;
 
   const pid = 22;
+  const playerId = 1;
+
   const pendingBrush = await decorator.pendingBrush(pid, decoratorProvider.address);
   console.log("Pending", pendingBrush);
 
@@ -41,7 +43,6 @@ async function main() {
   await tx.wait();
   console.log("Transferred brush");
 
-  const playerId = 1;
   tx = await decoratorProvider.connect(owner).harvest(playerId);
   await tx.wait();
   console.log("Harvest");

@@ -5,8 +5,7 @@ import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol"
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import {VRFConsumerBaseV2Upgradeable} from "../VRFConsumerBaseV2Upgradeable.sol";
+import {RrpRequesterV0Upgradeable} from "../RrpRequesterV0Upgradeable.sol";
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
@@ -24,7 +23,7 @@ import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
 contract Territories is
-  VRFConsumerBaseV2Upgradeable,
+  RrpRequesterV0Upgradeable,
   UUPSUpgradeable,
   OwnableUpgradeable,
   ITerritories,
@@ -86,6 +85,7 @@ contract Territories is
   error NoEmissionsToHarvest();
   error CannotAttackWhileStillAttacking();
   error AmountTooLow();
+  error RequestIdNotKnown();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -120,15 +120,15 @@ contract Territories is
   }
 
   mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
-  mapping(uint requestId => uint pendingAttackId) public requestToPendingAttackIds;
+  mapping(bytes32 requestId => uint pendingAttackId) public requestToPendingAttackIds;
   mapping(uint territoryId => Territory territory) public territories;
   address public players;
   uint16 public nextTerritoryId;
   uint64 public nextPendingAttackId;
   IClans public clans;
   AdminAccess public adminAccess;
-  LockedBankVault public lockedBankVault;
   bool isBeta;
+  LockedBankVault public lockedBankVault;
 
   mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
   uint16 public totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
@@ -138,28 +138,23 @@ contract Territories is
 
   Skill[] private comparableSkills;
 
-  // solhint-disable-next-line var-name-mixedcase
-  VRFCoordinatorV2Interface private COORDINATOR;
+  address public airnode; // The address of the QRNG Airnode
+  bytes32 public endpointIdUint256; // The endpoint ID for requesting a single random number
+  bytes32 public endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
+  address public sponsorWallet; // The wallet that will cover the gas costs of the request
 
-  // Your subscription ID.
-  uint64 private subscriptionId;
+  mapping(bytes32 => bool) public expectingRequestWithIdToBeFulfilled;
+  uint public constant WINDOW_SIZE = 4;
 
-  uint24 private callbackGasLimit;
-
-  // The gas lane to use, which specifies the maximum gas price to bump to.
-  // For a list of available gas lanes on each network, this is 10000gwei
-  // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
-  bytes32 private constant KEY_HASH = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
-
-  uint16 private constant REQUEST_CONFIRMATIONS = 1;
-  // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-  uint32 private constant NUM_WORDS = 2;
-
+  uint64[WINDOW_SIZE] private prices;
+  uint8 public index;
+  uint64 public movingAverage;
+  uint private constant NUM_WORDS = 2;
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
-  uint constant PERCENTAGE_EMISSION_MUL = 10;
+  uint public constant PERCENTAGE_EMISSION_MUL = 10;
   uint public constant HARVESTING_COOLDOWN = 8 hours;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -184,7 +179,7 @@ contract Territories is
   }
 
   modifier isAdminAndBeta() {
-    if (!isBetaAndAdmin(msg.sender)) {
+    if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
       revert NotAdminAndBeta();
     }
     _;
@@ -202,12 +197,14 @@ contract Territories is
     IBrushToken _brush,
     LockedBankVault _lockedBankVault,
     Skill[] calldata _comparableSkills,
-    VRFCoordinatorV2Interface _coordinator,
-    uint64 _subscriptionId,
+    address _airnodeRrp,
+    address _airnode,
+    bytes32 _endpointIdUint256,
+    bytes32 _endpointIdUint256Array,
     AdminAccess _adminAccess,
     bool _isBeta
   ) external initializer {
-    __VRFConsumerBaseV2_init(address(_coordinator));
+    __RrpRequesterV0_init(_airnodeRrp);
     __UUPSUpgradeable_init();
     __Ownable_init();
     clans = _clans;
@@ -219,9 +216,13 @@ contract Territories is
     adminAccess = _adminAccess;
     isBeta = _isBeta;
 
-    COORDINATOR = _coordinator;
-    subscriptionId = _subscriptionId;
-    callbackGasLimit = 400_000; // TODO: See how much this actually costs
+    airnode = _airnode;
+    endpointIdUint256 = _endpointIdUint256;
+    endpointIdUint256Array = _endpointIdUint256Array;
+
+    for (uint i; i < WINDOW_SIZE; ++i) {
+      prices[i] = uint64(tx.gasprice);
+    }
 
     setComparableSkills(_comparableSkills);
 
@@ -280,7 +281,7 @@ contract Territories is
         timestamp: uint40(block.timestamp),
         attackInProgress: true
       });
-      uint requestId = _requestRandomWords();
+      bytes32 requestId = _requestRandomWords();
       requestToPendingAttackIds[requestId] = _nextPendingAttackId;
 
       emit AttackTerritory(
@@ -288,15 +289,21 @@ contract Territories is
         _territoryId,
         msg.sender,
         _leaderPlayerId,
-        requestId,
+        uint(requestId),
         _nextPendingAttackId,
         attackingCooldownTimestamp
       );
     }
   }
 
-  function fulfillRandomWords(uint _requestId, uint[] memory _randomWords) internal override {
-    if (_randomWords.length != NUM_WORDS) {
+  /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
+  function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrp {
+    if (!expectingRequestWithIdToBeFulfilled[_requestId]) {
+      revert RequestIdNotKnown();
+    }
+    expectingRequestWithIdToBeFulfilled[_requestId] = false;
+    uint[] memory randomWords = abi.decode(_data, (uint[]));
+    if (randomWords.length != NUM_WORDS) {
       revert LengthMismatch();
     }
 
@@ -309,7 +316,7 @@ contract Territories is
 
     Skill[] memory randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
     for (uint i; i < randomSkills.length; ++i) {
-      randomSkills[i] = comparableSkills[uint8(_randomWords[0] >> (i * 8)) % comparableSkills.length];
+      randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
     }
 
     (uint[] memory winners, uint[] memory losers, bool didAttackersWin) = ClanBattleLibrary.doBattle(
@@ -317,8 +324,8 @@ contract Territories is
       playerIdAttackers,
       playerIdDefenders,
       randomSkills,
-      _randomWords[0],
-      _randomWords[1]
+      randomWords[0],
+      randomWords[1]
     );
 
     uint timestamp = pendingAttack.timestamp;
@@ -331,20 +338,19 @@ contract Territories is
       clanInfos[defendingClanId].ownsTerritoryId = 0;
     }
     emit BattleResult(
-      _requestId,
+      uint(_requestId),
       winners,
       losers,
       randomSkills,
       didAttackersWin,
       attackingClanId,
       defendingClanId,
-      _randomWords,
+      randomWords,
       timestamp,
       territoryId
     );
   }
 
-  // Any harvest automatically does a claim as well beforehand
   function harvest(uint _territoryId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     Territory storage territory = territories[_territoryId];
     uint clanId = territory.clanIdOccupier;
@@ -459,14 +465,18 @@ contract Territories is
     }
   }
 
-  function _requestRandomWords() private returns (uint requestId) {
-    requestId = COORDINATOR.requestRandomWords(
-      KEY_HASH,
-      subscriptionId,
-      REQUEST_CONFIRMATIONS,
-      callbackGasLimit,
-      NUM_WORDS
+  function _requestRandomWords() private returns (bytes32 requestId) {
+    requestId = airnodeRrp.makeFullRequest(
+      airnode,
+      endpointIdUint256Array,
+      address(this),
+      sponsorWallet,
+      address(this),
+      this.fulfillRandomWords.selector,
+      // Using Airnode ABI to encode the parameters
+      abi.encode(bytes32("1u"), bytes32("size"), NUM_WORDS)
     );
+    expectingRequestWithIdToBeFulfilled[requestId] = true;
   }
 
   function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
@@ -534,10 +544,6 @@ contract Territories is
     }
   }
 
-  function isBetaAndAdmin(address _from) public view override returns (bool) {
-    return adminAccess.isAdmin(_from) && isBeta;
-  }
-
   function addTerritories(TerritoryInput[] calldata _territories) external onlyOwner {
     _addTerritories(_territories);
   }
@@ -582,6 +588,10 @@ contract Territories is
       comparableSkills.push(_skills[i]);
     }
     emit SetComparableSkills(_skills);
+  }
+
+  function setSponsorWallet(address _sponsorWallet) external onlyOwner {
+    sponsorWallet = _sponsorWallet;
   }
 
   function clearCooldowns(uint _clanId) external isAdminAndBeta {

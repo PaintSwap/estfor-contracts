@@ -5,6 +5,7 @@ import {
   Clans,
   InstantActions,
   ItemNFT,
+  MockAPI3OracleClient,
   MockBrushToken,
   MockOracleClient,
   MockPaintSwapMarketplaceWhitelist,
@@ -74,6 +75,7 @@ async function main() {
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
   let oracle: MockOracleClient;
+  let api3Oracle: MockAPI3OracleClient;
   let router: MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   let paintSwapDecorator: TestPaintSwapDecorator;
@@ -85,6 +87,7 @@ async function main() {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
+    const MockAPI3OracleClient = await ethers.getContractFactory("MockAPI3OracleClient");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
     const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
@@ -96,6 +99,8 @@ async function main() {
       console.log("Minted brush");
       oracle = await MockOracleClient.deploy();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
+      api3Oracle = await MockAPI3OracleClient.deploy();
+      console.log(`mockAPI3OracleClient = "${api3Oracle.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
@@ -114,6 +119,8 @@ async function main() {
       oracle = await MockOracleClient.deploy();
       await oracle.deployed();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
+      api3Oracle = await MockAPI3OracleClient.deploy();
+      console.log(`mockAPI3OracleClient = "${api3Oracle.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
@@ -126,6 +133,7 @@ async function main() {
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
       oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
+      api3Oracle = await MockAPI3OracleClient.attach("0xa0AD79D995DdeeB18a14eAef56A549A04e3Aa1Bd");
       router = await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d");
       paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.attach(
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
@@ -408,7 +416,10 @@ async function main() {
   });
   console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
 
-  const battlesSubscriptionId = 97;
+  const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
+  const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
+  const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
+
   const LockedBankVault = await ethers.getContractFactory("LockedBankVault", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
@@ -420,8 +431,12 @@ async function main() {
       brush.address,
       bankFactory.address,
       allTerritorySkills,
-      oracle.address,
-      battlesSubscriptionId,
+      api3Oracle.address,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
+      adminAccess.address,
+      isBeta,
     ],
     {
       kind: "uups",
@@ -443,8 +458,10 @@ async function main() {
       brush.address,
       lockedBankVault.address,
       allTerritorySkills,
-      oracle.address,
-      battlesSubscriptionId,
+      api3Oracle.address,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
       adminAccess.address,
       isBeta,
     ],

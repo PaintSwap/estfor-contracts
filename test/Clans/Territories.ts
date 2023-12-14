@@ -87,7 +87,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -108,7 +108,7 @@ describe("Territories", function () {
     await territories.connect(bob).attackTerritory(clanId + 1, territoryId, bobPlayerId);
     let {timestamp: battleTimestamp} = await ethers.provider.getBlock("latest");
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockOracleClient);
+    await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
 
     const territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(clanId + 1);
@@ -137,7 +137,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -157,7 +157,7 @@ describe("Territories", function () {
     await territories.connect(bob).attackTerritory(clanId + 1, territoryId, bobPlayerId);
     let {timestamp: battleTimestamp} = await ethers.provider.getBlock("latest");
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockOracleClient);
+    await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
 
     const territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(clanId);
@@ -189,7 +189,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -248,7 +248,7 @@ describe("Territories", function () {
       .connect(bob)
       .assignCombatants(bobClanId, [bobPlayerId, charliePlayerId, erinPlayerId], bobPlayerId);
     await territories.connect(bob).attackTerritory(bobClanId, territoryId, bobPlayerId);
-    await fulfillRandomWords(1, territories, mockOracleClient);
+    await fulfillRandomWords(1, territories, mockAPI3OracleClient);
 
     territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(bobClanId);
@@ -271,7 +271,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -300,7 +300,7 @@ describe("Territories", function () {
     expect(clanInfo.playerIds.length).eq(1);
     expect(clanInfo.playerIds[0]).to.eq(0); // player id is removed
 
-    await fulfillRandomWords(1, territories, mockOracleClient);
+    await fulfillRandomWords(1, territories, mockAPI3OracleClient);
     const territory = await territories.territories(territoryId);
     expect(territory.clanIdOccupier).eq(clanId);
   });
@@ -321,7 +321,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -345,7 +345,7 @@ describe("Territories", function () {
     expect(clanInfo.playerIds.length).eq(1);
     expect(clanInfo.playerIds[0]).to.eq(0); // player id is removed
 
-    await fulfillRandomWords(1, territories, mockOracleClient);
+    await fulfillRandomWords(1, territories, mockAPI3OracleClient);
     const territory = await territories.territories(territoryId);
     expect(territory.clanIdOccupier).eq(clanId);
   });
@@ -366,7 +366,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockOracleClient,
+      mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -380,7 +380,7 @@ describe("Territories", function () {
     const bobClanId = 2;
     await territories.connect(bob).assignCombatants(bobClanId, [bobPlayerId], bobPlayerId);
     await territories.connect(bob).attackTerritory(bobClanId, territoryId, bobPlayerId);
-    await fulfillRandomWords(1, territories, mockOracleClient);
+    await fulfillRandomWords(1, territories, mockAPI3OracleClient);
 
     const territory = await territories.territories(territoryId);
     expect(territory.clanIdOccupier).eq(bobClanId);

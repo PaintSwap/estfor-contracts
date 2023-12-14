@@ -6,15 +6,18 @@ import {
   BANK_REGISTRY_ADDRESS,
   BRUSH_ADDRESS,
   CLANS_ADDRESS,
+  DECORATOR_PROVIDER_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
   FAKE_BRUSH_WFTM_LP_ADDRESS,
-  LOCKED_BANK_VAULT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {allTerritories, allTerritorySkills} from "./data/territories";
 import {verifyContracts} from "./utils";
 import {DecoratorProvider} from "../typechain-types";
+import "dotenv/config";
+import {execSync} from "child_process";
+import path from "path";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -41,11 +44,33 @@ async function main() {
   await clanBattleLibrary.deployed();
   console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
 
-  const oracleAddress = "0xd5d517abe5cf79b7e95ec98db0f0277788aff634";
-  const battlesSubscriptionId = 97;
-  const LockedBankVault = await ethers.getContractFactory("LockedBankVault", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const airnodeRrpAddress = "0xa0AD79D995DdeeB18a14eAef56A549A04e3Aa1Bd";
+  const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
+  const xpub =
+    "xpub6CyZcaXvbnbqGfqqZWvWNUbGvdd5PAJRrBeAhy9rz1bbnFmpVLg2wPj1h6TyndFrWLUG3kHWBYpwacgCTGWAHFTbUrXEg6LdLxoEBny2YDz";
+  const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
+  const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
+
+  // Had issues deploying locked bank vault & territories without manually increasing gas limit.
+  // TODO: If upgrading OZ can use txOverrides for gas limit
+  const FEE_DATA = {
+    maxFeePerGas: ethers.utils.parseUnits("200", "gwei"),
+    maxPriorityFeePerGas: ethers.utils.parseUnits("200", "gwei"),
+  };
+
+  const provider = new ethers.providers.FallbackProvider([ethers.provider], 1);
+  provider.getFeeData = async () => FEE_DATA;
+
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string, provider);
+  signer.estimateGas = async (transaction) => {
+    return ethers.BigNumber.from(5_000_000);
+  };
+
+  const LockedBankVault = (
+    await ethers.getContractFactory("LockedBankVault", {
+      libraries: {ClanBattleLibrary: clanBattleLibrary.address},
+    })
+  ).connect(signer);
   const lockedBankVault = await upgrades.deployProxy(
     LockedBankVault,
     [
@@ -54,8 +79,12 @@ async function main() {
       BRUSH_ADDRESS,
       BANK_FACTORY_ADDRESS,
       allTerritorySkills,
-      oracleAddress,
-      battlesSubscriptionId,
+      airnodeRrpAddress,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
+      ADMIN_ACCESS_ADDRESS,
+      isBeta,
     ],
     {
       kind: "uups",
@@ -66,9 +95,11 @@ async function main() {
   await lockedBankVault.deployed();
   console.log(`lockedBankVault = "${lockedBankVault.address.toLowerCase()}"`);
 
-  const Territories = await ethers.getContractFactory("Territories", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const Territories = (
+    await ethers.getContractFactory("Territories", {
+      libraries: {ClanBattleLibrary: clanBattleLibrary.address},
+    })
+  ).connect(signer);
   const territories = await upgrades.deployProxy(
     Territories,
     [
@@ -78,8 +109,10 @@ async function main() {
       BRUSH_ADDRESS,
       lockedBankVault.address,
       allTerritorySkills,
-      oracleAddress,
-      battlesSubscriptionId,
+      airnodeRrpAddress,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
       ADMIN_ACCESS_ADDRESS,
       isBeta,
     ],
@@ -127,7 +160,7 @@ async function main() {
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
 
-  let tx = await bankRegistry.setLockedBankVault(LOCKED_BANK_VAULT_ADDRESS); // lockedBankVault.address);
+  let tx = await bankRegistry.setLockedBankVault(lockedBankVault.address);
   await tx.wait();
   console.log("bankRegistry.setLockedBankVault");
   if (isBeta) {
@@ -152,6 +185,30 @@ async function main() {
   tx = await decoratorProvider.deposit();
   await tx.wait();
   console.log("Deposit lp to decorator provider");
+
+  const sponsorWalletCallers = [territories, lockedBankVault];
+  for (const sponsorWalletCaller of sponsorWalletCallers) {
+    const command = `${path.join(
+      "node_modules",
+      ".bin",
+      "airnode-admin"
+    )} derive-sponsor-wallet-address  --airnode-address ${airnode} --airnode-xpub ${xpub} --sponsor-address ${
+      sponsorWalletCaller.address
+    }`;
+
+    try {
+      const result = execSync(command, {encoding: "utf-8"});
+      const arr = result.split(": ");
+      // Extract the wallet address from the output
+      const sponsorWallet = arr[1].slice(0, 42);
+
+      tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
+      await tx.wait();
+      console.log(`setSponsorWallet, ${sponsorWallet}`);
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  }
 
   await verifyContracts([
     clans.address,
