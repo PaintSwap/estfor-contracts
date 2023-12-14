@@ -98,12 +98,11 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
     ++numUnclaimedHarvests;
     decorator.updatePool(pid);
-    uint amountBrush = decorator.pendingBrush(pid, address(this));
-    if (amountBrush == 0) {
+    uint fullBrushAmount = pendingBrushInclArtGallery();
+    if (fullBrushAmount == 0) {
       revert ZeroBalance();
     }
     decorator.deposit(pid, 0); // get rewards
-    uint fullBrushAmount = amountBrush * 2; // There will be funds here which are used to offset the art gallery rewards
     territories.addUnclaimedEmissions(fullBrushAmount);
     emit Harvest(msg.sender, _playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
   }
@@ -119,6 +118,10 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     // Dev address gets the funds because it is using it to offset art gallery rewards currently
     brush.transfer(dev, unlockableAmount);
     emit UnlockFromArtGallery(unlockableAmount);
+  }
+
+  function pendingBrushInclArtGallery() public view returns (uint) {
+    return decorator.pendingBrush(pid, address(this)) * 2;
   }
 
   function setPID(uint _pid) public onlyOwner {

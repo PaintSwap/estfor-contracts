@@ -3,7 +3,7 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {playersFixture} from "./Players/PlayersFixture";
 
-describe("DecoratorProvider", function () {
+describe.only("DecoratorProvider", function () {
   async function deployContracts() {
     const fixture = await loadFixture(playersFixture);
     const {decorator, brush, artGallery, playerNFT, dev} = fixture;
@@ -128,6 +128,19 @@ describe("DecoratorProvider", function () {
 
     await ethers.provider.send("evm_increaseTime", [minInterval]);
     await expect(decoratorProvider.connect(alice).harvest(playerId)).to.not.be.reverted;
+  });
+
+  it("pendingBrushInclArtGallery", async function () {
+    const {decoratorProvider, brushPerSecond, owner, lp} = await loadFixture(deployContracts);
+
+    const amount = 100;
+    await lp.mint(owner.address, amount);
+    await lp.approve(decoratorProvider.address, amount);
+    await decoratorProvider.deposit();
+
+    await ethers.provider.send("evm_increaseTime", [1]);
+    await ethers.provider.send("evm_mine", []);
+    expect(await decoratorProvider.pendingBrushInclArtGallery()).to.eq(brushPerSecond);
   });
 
   it("TODO test HarvestingTooMuch error", async function () {});
