@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-interface ITerritories {
-  function addUnclaimedEmissions(uint amount) external;
+import {ICombatants} from "./ICombatants.sol";
 
-  function isCombatant(uint clanId, uint playerId) external view returns (bool);
+interface ITerritories is ICombatants {
+  function addUnclaimedEmissions(uint amount) external;
 }

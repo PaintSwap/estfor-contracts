@@ -11,6 +11,7 @@ import {
   FAKE_BRUSH_WFTM_LP_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
+  PLAYER_NFT_ADDRESS,
 } from "./contractAddresses";
 import {allTerritories, allTerritorySkills} from "./data/territories";
 import {verifyContracts} from "./utils";
@@ -125,23 +126,60 @@ async function main() {
   await territories.deployed();
   console.log(`territories = "${territories.address.toLowerCase()}"`);
 
+  const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
+  });
+  const combatantsHelper = await upgrades.deployProxy(
+    CombatantsHelper,
+    [PLAYERS_ADDRESS, clans.address, territories.address, lockedBankVault.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+  await combatantsHelper.deployed();
+  console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);
+
   const paintSwapArtGallery = "0x9076C96e01F6F13e1eC4832354dF970d245e124F";
   const paintSwapDecorator = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
 
   const pid = 22;
   let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
 
-  const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
-  const decoratorProvider = (await upgrades.deployProxy(DecoratorProvider, [
-    paintSwapDecorator,
-    paintSwapArtGallery,
-    territories.address,
-    BRUSH_ADDRESS,
-    devAddress,
-    pid,
-  ])) as DecoratorProvider;
-  await decoratorProvider.deployed();
-  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+  const newDecoratorProvider = false;
+  let decoratorProvider: DecoratorProvider;
+  if (newDecoratorProvider) {
+    const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
+    decoratorProvider = (await upgrades.deployProxy(DecoratorProvider, [
+      paintSwapDecorator,
+      paintSwapArtGallery,
+      territories.address,
+      BRUSH_ADDRESS,
+      PLAYER_NFT_ADDRESS,
+      devAddress,
+      pid,
+    ])) as DecoratorProvider;
+    await decoratorProvider.deployed();
+    console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+
+    // deposit
+    const lp = await ethers.getContractAt("MockBrushToken", FAKE_BRUSH_WFTM_LP_ADDRESS);
+    let tx = await lp.approve(decoratorProvider.address, ethers.constants.MaxUint256);
+    console.log("Approve lp for decorator provider");
+    await tx.wait();
+    tx = await decoratorProvider.deposit();
+    await tx.wait();
+    console.log("Deposit lp to decorator provider");
+  } else {
+    decoratorProvider = (await ethers.getContractAt(
+      "DecoratorProvider",
+      DECORATOR_PROVIDER_ADDRESS
+    )) as DecoratorProvider;
+    const tx = await decoratorProvider.setTerritories(territories.address);
+    await tx.wait();
+    console.log("decoratorProvider.setTerritories");
+  }
 
   // Bank
   const Bank = await ethers.getContractFactory("Bank");
@@ -150,7 +188,7 @@ async function main() {
   await bank.deployed();
 
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
-  console.log("bankImplAddress", bankImplAddress);
+  console.log(`bankImplAddress = "${bankImplAddress}"`);
 
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
@@ -174,17 +212,6 @@ async function main() {
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVault");
   tx = await lockedBankVault.setTerritories(territories.address);
-  await tx.wait();
-  console.log("lockedBankVault.setTerritories");
-
-  // deposit
-  const lp = await ethers.getContractAt("MockBrushToken", FAKE_BRUSH_WFTM_LP_ADDRESS);
-  tx = await lp.approve(decoratorProvider.address, ethers.constants.MaxUint256);
-  console.log("Approve lp for decorator provider");
-  await tx.wait();
-  tx = await decoratorProvider.deposit();
-  await tx.wait();
-  console.log("Deposit lp to decorator provider");
 
   const sponsorWalletCallers = [territories, lockedBankVault];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
@@ -202,24 +229,28 @@ async function main() {
       // Extract the wallet address from the output
       const sponsorWallet = arr[1].slice(0, 42);
 
+      tx = await sponsorWalletCaller.setCombatantsHelper(combatantsHelper.address);
+      await tx.wait();
+      console.log("setCombatantsHelper");
       tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
       await tx.wait();
-      console.log(`setSponsorWallet, ${sponsorWallet}`);
+      console.log(`setSponsorWallet = "${sponsorWallet}"`);
     } catch (error) {
       console.error(`Error: ${error}`);
     }
   }
 
   await verifyContracts([
+    decoratorProvider.address,
     clans.address,
     bank.address,
     bankImplAddress,
-    decoratorProvider.address,
     lockedBankVault.address,
     territories.address,
     clanBattleLibrary.address,
     bankRegistry.address,
     bankImplAddress,
+    combatantsHelper.address,
   ]);
 }
 

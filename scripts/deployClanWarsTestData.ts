@@ -1,17 +1,17 @@
 import {ethers, upgrades} from "hardhat";
 import {
   BRUSH_ADDRESS,
+  COMBATANTS_HELPER_ADDRESS,
   DECORATOR_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
   TERRITORIES_ADDRESS,
 } from "./contractAddresses";
 import {
-  Clans,
+  CombatantsHelper,
   DecoratorProvider,
   LockedBankVault,
   MockBrushToken,
-  Players,
   Territories,
   TestPaintSwapDecorator,
 } from "../typechain-types";
@@ -27,6 +27,10 @@ async function main() {
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
   const lockedBankVault = (await ethers.getContractAt("LockedBankVault", LOCKED_BANK_VAULT_ADDRESS)) as LockedBankVault;
   const decorator = (await ethers.getContractAt("TestPaintSwapDecorator", DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
+  const combatantsHelper = (await ethers.getContractAt(
+    "CombatantsHelper",
+    COMBATANTS_HELPER_ADDRESS
+  )) as CombatantsHelper;
 
   const decoratorProvider = (await ethers.getContractAt(
     "DecoratorProvider",
@@ -61,11 +65,12 @@ async function main() {
   await tx.wait();
   console.log("SetTerritories");
 
+  let territoryAttackCost = await territories.attackCost();
   // Claim the territory
-  tx = await territories.connect(owner).assignCombatants(1, [1], 1);
+  tx = await combatantsHelper.connect(owner).assignCombatants(1, true, [1], false, [], 1);
   await tx.wait();
   console.log("assign combatants for territories");
-  tx = await territories.connect(owner).attackTerritory(1, 1, 1); // Unclaimed
+  tx = await territories.connect(owner).attackTerritory(1, 1, 1, {value: territoryAttackCost}); // Unclaimed
   await tx.wait();
   console.log("attack territory");
 
@@ -73,24 +78,25 @@ async function main() {
   await tx.wait();
   console.log("Harvest unclaimed emissions from the territory");
 
-  tx = await lockedBankVault.connect(alice).assignCombatants(26, [2], 2);
-  await tx.wait();
-  console.log("assign combatants for territories");
-
   const aliceClanId = 26;
+
+  tx = await combatantsHelper.connect(alice).assignCombatants(aliceClanId, true, [532], true, [2], 2);
+  await tx.wait();
+  console.log("assign combatants for territories & locked bank vaults");
 
   tx = await lockedBankVault.connect(alice).clearCooldowns(aliceClanId, [1]);
   await tx.wait();
   console.log("clear cooldowns");
-  tx = await lockedBankVault.connect(alice).attackVaults(aliceClanId, 1, 2);
+  const vaultAttackCost = await territories.attackCost();
+  tx = await lockedBankVault.connect(alice).attackVaults(aliceClanId, 1, 2, {value: vaultAttackCost});
   await tx.wait();
   console.log("attack vaults");
 
-  tx = await territories.connect(alice).assignCombatants(aliceClanId, [532], 2);
   await tx.wait();
   console.log("assign combatants for territories");
 
-  tx = await territories.connect(alice).attackTerritory(aliceClanId, 1, 2);
+  territoryAttackCost = await territories.attackCost();
+  tx = await territories.connect(alice).attackTerritory(aliceClanId, 1, 2, {value: territoryAttackCost});
   await tx.wait();
   console.log("attack territory");
 }

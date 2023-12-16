@@ -64,6 +64,8 @@ import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allTerritorySkills} from "./data/territories";
+import {execSync} from "child_process";
+import path from "path";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -417,6 +419,8 @@ async function main() {
   console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
 
   const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
+  const xpub =
+    "xpub6CyZcaXvbnbqGfqqZWvWNUbGvdd5PAJRrBeAhy9rz1bbnFmpVLg2wPj1h6TyndFrWLUG3kHWBYpwacgCTGWAHFTbUrXEg6LdLxoEBny2YDz";
   const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
   const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
 
@@ -473,6 +477,19 @@ async function main() {
   );
   console.log(`territories = "${territories.address.toLowerCase()}"`);
 
+  const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  const combatantsHelper = await upgrades.deployProxy(
+    CombatantsHelper,
+    [players.address, clans.address, territories.address, lockedBankVault.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+
   const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
   const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
     paintSwapDecorator.address,
@@ -517,6 +534,7 @@ async function main() {
         clanBattleLibrary.address,
         territories.address,
         decoratorProvider.address,
+        combatantsHelper.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -575,6 +593,33 @@ async function main() {
   tx = await lockedBankVault.setTerritories(territories.address);
   await tx.wait();
   console.log("lockedBankVault.setTerritories");
+
+  const sponsorWalletCallers = [territories, lockedBankVault];
+  for (const sponsorWalletCaller of sponsorWalletCallers) {
+    const command = `${path.join(
+      "node_modules",
+      ".bin",
+      "airnode-admin"
+    )} derive-sponsor-wallet-address  --airnode-address ${airnode} --airnode-xpub ${xpub} --sponsor-address ${
+      sponsorWalletCaller.address
+    }`;
+
+    try {
+      const result = execSync(command, {encoding: "utf-8"});
+      const arr = result.split(": ");
+      // Extract the wallet address from the output
+      const sponsorWallet = arr[1].slice(0, 42);
+
+      tx = await sponsorWalletCaller.setCombatantsHelper(combatantsHelper.address);
+      await tx.wait();
+      console.log("setCombatantsHelper");
+      tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
+      await tx.wait();
+      console.log(`setSponsorWallet: ${sponsorWallet.toLowerCase()}`);
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  }
 
   tx = await bankRegistry.setLockedBankVault(lockedBankVault.address);
   await tx.wait();

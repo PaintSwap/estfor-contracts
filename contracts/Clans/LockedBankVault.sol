@@ -17,7 +17,7 @@ import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 
 import {AdminAccess} from "../AdminAccess.sol";
 
-import {ClanRank, MAX_CLAN_COMBATANTS} from "../globals/clans.sol";
+import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
 import {Skill} from "../globals/misc.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
@@ -52,6 +52,9 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   event RemoveCombatant(uint playerId, uint clanId);
   event ClaimFunds(uint clanId, address from, uint playerId, uint amount, uint numLocksClaimed);
   event LockFunds(uint clanId, address from, uint playerId, uint amount, uint lockingTimestamp);
+  event UpdateMovingAverage(uint64 movingAverage);
+  event SetExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill);
+  event SetBaseAttackCost(uint88 baseAttackCost);
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -69,13 +72,14 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   error CannotAttackSelf();
   error OnlyClans();
   error OnlyTerritories();
+  error OnlyCombatantsHelper();
   error TransferFailed();
   error ClanCombatantsChangeCooldown();
   error CannotChangeCombatantsDuringAttack();
   error NothingToClaim();
   error CannotAttackWhileStillAttacking();
   error NotAdminAndBeta();
-  error RequestIdNotKnown();
+  error NotEnoughFTM();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -94,6 +98,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     uint40 attackingCooldownTimestamp;
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
+    uint88 gasPaid;
     uint48[] playerIds;
     Vault[] defendingVaults; // TODO may need to update this. Have a max of 30? What about slicing?
   }
@@ -121,28 +126,27 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   IBrushToken public brush;
   ITerritories public territories;
   AdminAccess public adminAccess;
-  bool isBeta;
+  bool public isBeta;
   IBankFactory public bankFactory;
+  address public combatantsHelper;
 
   address public airnode; // The address of the QRNG Airnode
+  address public sponsorWallet; // The wallet that will cover the gas costs of the request
   bytes32 public endpointIdUint256; // The endpoint ID for requesting a single random number
   bytes32 public endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
-  address public sponsorWallet; // The wallet that will cover the gas costs of the request
 
-  mapping(bytes32 => bool) public expectingRequestWithIdToBeFulfilled;
-  uint public constant WINDOW_SIZE = 4;
+  uint8 public indexGasPrice;
+  uint64 public movingAverageGasPrice;
+  uint88 public baseAttackCost; // To offset gas costs in response
+  uint24 public expectedGasLimitFulfill;
+  uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
-  uint64[WINDOW_SIZE] private prices;
-  uint8 public index;
-  uint64 public movingAverage;
   uint private constant NUM_WORDS = 2;
-
   uint public constant ATTACKING_COOLDOWN = 4 hours;
   uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
   uint public constant MAX_VAULTS = 100;
-
   uint public constant LOCK_PERIOD = 7 days;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -152,7 +156,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     _;
   }
 
-  modifier isLeaderOfClan(uint _clanId, uint _playerId) {
+  modifier isAtLeastLeaderOfClan(uint _clanId, uint _playerId) {
     if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
       revert NotLeader();
     }
@@ -176,6 +180,13 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   modifier isAdminAndBeta() {
     if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
       revert NotAdminAndBeta();
+    }
+    _;
+  }
+
+  modifier onlyCombatantsHelper() {
+    if (msg.sender != combatantsHelper) {
+      revert OnlyCombatantsHelper();
     }
     _;
   }
@@ -213,9 +224,12 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     endpointIdUint256 = _endpointIdUint256;
     endpointIdUint256Array = _endpointIdUint256Array;
 
-    for (uint i; i < WINDOW_SIZE; ++i) {
+    for (uint i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
       prices[i] = uint64(tx.gasprice);
     }
+    _updateMovingAverageGasPrice(uint64(tx.gasprice));
+    setBaseAttackCost(0.05 ether);
+    setExpectedGasLimitFulfill(300_000);
 
     setComparableSkills(_comparableSkills);
   }
@@ -224,7 +238,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     uint _clanId,
     uint48[] calldata _playerIds,
     uint _leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
+  ) external onlyCombatantsHelper {
     _checkCanAssignCombatants(_clanId, _playerIds);
 
     for (uint i; i < _playerIds.length; ++i) {
@@ -243,7 +257,17 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     uint _clanId,
     uint _defendingClanId,
     uint _leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
+  ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
+    // Check they are paying enough
+    if (msg.value < attackCost()) {
+      revert NotEnoughFTM();
+    }
+
+    (bool success, ) = sponsorWallet.call{value: msg.value}("");
+    if (!success) {
+      revert TransferFailed();
+    }
+
     // Get all the defenders
     _checkCanAttackVaults(_clanId, _defendingClanId);
 
@@ -253,6 +277,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
 
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + ATTACKING_COOLDOWN);
     clanInfos[_clanId].attackingCooldownTimestamp = attackingCooldownTimestamp;
+    clanInfos[_clanId].gasPaid = uint88(msg.value);
 
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
     uint40 reattackingCooldown = uint40(block.timestamp + MIN_REATTACKING_COOLDOWN);
@@ -289,10 +314,6 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
 
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
   function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrp {
-    if (!expectingRequestWithIdToBeFulfilled[_requestId]) {
-      revert RequestIdNotKnown();
-    }
-    expectingRequestWithIdToBeFulfilled[_requestId] = false;
     uint[] memory randomWords = abi.decode(_data, (uint[]));
     if (randomWords.length != NUM_WORDS) {
       revert LengthMismatch();
@@ -344,6 +365,8 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
 
       _lockFunds(attackingClanId, address(0), 0, totalWon);
     }
+
+    _updateAverageGasPrice();
 
     emit BattleResult(
       uint(_requestId),
@@ -411,11 +434,28 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     }
   }
 
+  function _updateAverageGasPrice() private {
+    uint sum = 0;
+    prices[indexGasPrice] = uint64(tx.gasprice);
+    indexGasPrice = uint8((indexGasPrice + 1) % CLAN_WARS_GAS_PRICE_WINDOW_SIZE);
+
+    for (uint i = 0; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
+      sum += prices[i];
+    }
+
+    _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
+  }
+
   function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
     clanInfos[_clanId].totalBrushLocked += uint96(_amount);
     uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
     clanInfos[_clanId].defendingVaults.push(Vault({timestamp: lockingTimestamp, amount: uint80(_amount)}));
     emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
+  }
+
+  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
+    movingAverageGasPrice = _movingAverageGasPrice;
+    emit UpdateMovingAverage(_movingAverageGasPrice);
   }
 
   function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
@@ -445,12 +485,6 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
       // Check they are part of the clan
       if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
         revert NotMemberOfClan();
-      }
-
-      // Check they are not defending a territory
-      bool isTerritoryCombatant = territories.isCombatant(_clanId, _playerIds[i]);
-      if (isTerritoryCombatant) {
-        revert PlayerOnTerritory();
       }
 
       if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
@@ -508,7 +542,10 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
       // Using Airnode ABI to encode the parameters
       abi.encode(bytes32("1u"), bytes32("size"), NUM_WORDS)
     );
-    expectingRequestWithIdToBeFulfilled[requestId] = true;
+  }
+
+  function attackCost() public view returns (uint) {
+    return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
   }
 
   function getClanInfo(uint _clanId) external view returns (ClanInfo memory) {
@@ -540,8 +577,22 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     territories = _territories;
   }
 
+  function setCombatantsHelper(address _combatantsHelper) external onlyOwner {
+    combatantsHelper = _combatantsHelper;
+  }
+
   function setSponsorWallet(address _sponsorWallet) external onlyOwner {
     sponsorWallet = _sponsorWallet;
+  }
+
+  function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
+    baseAttackCost = _baseAttackCost;
+    emit SetBaseAttackCost(_baseAttackCost);
+  }
+
+  function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
+    expectedGasLimitFulfill = _expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) public isAdminAndBeta {

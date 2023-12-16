@@ -11,3 +11,4 @@ enum ClanRank {
 }
 
 uint constant MAX_CLAN_COMBATANTS = 20;
+uint constant CLAN_WARS_GAS_PRICE_WINDOW_SIZE = 4;

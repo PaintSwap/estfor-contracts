@@ -22,6 +22,7 @@ import {
   DECORATOR_PROVIDER_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
+  COMBATANTS_HELPER_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -245,6 +246,17 @@ async function main() {
   await decoratorProvider.deployed();
   console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
 
+  const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  const combatantsHelper = await upgrades.upgradeProxy(COMBATANTS_HELPER_ADDRESS, CombatantsHelper, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout,
+  });
+  await combatantsHelper.deployed();
+  console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);
+
   await verifyContracts([players.address]);
   await verifyContracts([playerNFT.address]);
   await verifyContracts([itemNFT.address]);
@@ -260,6 +272,7 @@ async function main() {
   await verifyContracts([lockedBankVault.address]);
   await verifyContracts([territories.address]);
   await verifyContracts([decoratorProvider.address]);
+  await verifyContracts([combatantsHelper.address]);
 }
 
 main().catch((error) => {

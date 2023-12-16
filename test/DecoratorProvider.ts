@@ -3,7 +3,7 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {playersFixture} from "./Players/PlayersFixture";
 
-describe.only("DecoratorProvider", function () {
+describe("DecoratorProvider", function () {
   async function deployContracts() {
     const fixture = await loadFixture(playersFixture);
     const {decorator, brush, artGallery, playerNFT, dev} = fixture;

@@ -20,4 +20,6 @@ contract MockTerritories is ITerritories {
   function isCombatant(uint /* _clanId */, uint /* _playerId */) external pure override returns (bool) {
     return false;
   }
+
+  function assignCombatants(uint clanId, uint48[] calldata playerIds, uint leaderPlayerId) external override {}
 }

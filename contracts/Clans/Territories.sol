@@ -16,7 +16,7 @@ import {IBank} from "../interfaces/IBank.sol";
 import {LockedBankVault} from "./LockedBankVault.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 
-import {ClanRank, MAX_CLAN_COMBATANTS} from "../globals/clans.sol";
+import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
 import {Skill} from "../globals/misc.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
@@ -59,6 +59,9 @@ contract Territories is
   event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
   event Harvest(uint territoryId, address from, uint playerId, uint cooldownTimestamp, uint amount);
+  event UpdateMovingAverage(uint64 movingAverage);
+  event SetExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill);
+  event SetBaseAttackCost(uint88 baseAttackCost);
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -72,6 +75,7 @@ contract Territories is
   error InvalidSkill(Skill skill);
   error LengthMismatch();
   error OnlyClans();
+  error OnlyCombatantsHelper();
   error PlayerIdsNotSortedOrDuplicates();
   error NotOwnerOfPlayerAndActive();
   error HarvestingTooSoon();
@@ -85,7 +89,7 @@ contract Territories is
   error NoEmissionsToHarvest();
   error CannotAttackWhileStillAttacking();
   error AmountTooLow();
-  error RequestIdNotKnown();
+  error NotEnoughFTM();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -105,6 +109,7 @@ contract Territories is
     uint40 attackingCooldownTimestamp;
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
+    uint88 gasPaid;
     uint48[] playerIds;
   }
 
@@ -127,7 +132,7 @@ contract Territories is
   uint64 public nextPendingAttackId;
   IClans public clans;
   AdminAccess public adminAccess;
-  bool isBeta;
+  bool public isBeta;
   LockedBankVault public lockedBankVault;
 
   mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
@@ -138,17 +143,19 @@ contract Territories is
 
   Skill[] private comparableSkills;
 
+  address public combatantsHelper;
+
   address public airnode; // The address of the QRNG Airnode
+  address public sponsorWallet; // The wallet that will cover the gas costs of the request
   bytes32 public endpointIdUint256; // The endpoint ID for requesting a single random number
   bytes32 public endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
-  address public sponsorWallet; // The wallet that will cover the gas costs of the request
 
-  mapping(bytes32 => bool) public expectingRequestWithIdToBeFulfilled;
-  uint public constant WINDOW_SIZE = 4;
+  uint8 public indexGasPrice;
+  uint64 public movingAverageGasPrice;
+  uint88 public baseAttackCost; // To offset gas costs in response
+  uint24 public expectedGasLimitFulfill;
+  uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
-  uint64[WINDOW_SIZE] private prices;
-  uint8 public index;
-  uint64 public movingAverage;
   uint private constant NUM_WORDS = 2;
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
@@ -164,7 +171,7 @@ contract Territories is
     _;
   }
 
-  modifier isLeaderOfClan(uint _clanId, uint _playerId) {
+  modifier isAtLeastLeaderOfClan(uint _clanId, uint _playerId) {
     if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
       revert NotLeader();
     }
@@ -181,6 +188,13 @@ contract Territories is
   modifier isAdminAndBeta() {
     if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
       revert NotAdminAndBeta();
+    }
+    _;
+  }
+
+  modifier onlyCombatantsHelper() {
+    if (msg.sender != combatantsHelper) {
+      revert OnlyCombatantsHelper();
     }
     _;
   }
@@ -220,9 +234,12 @@ contract Territories is
     endpointIdUint256 = _endpointIdUint256;
     endpointIdUint256Array = _endpointIdUint256Array;
 
-    for (uint i; i < WINDOW_SIZE; ++i) {
+    for (uint i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
       prices[i] = uint64(tx.gasprice);
     }
+    _updateMovingAverageGasPrice(uint64(tx.gasprice));
+    setBaseAttackCost(0.05 ether);
+    setExpectedGasLimitFulfill(300_000);
 
     setComparableSkills(_comparableSkills);
 
@@ -235,7 +252,7 @@ contract Territories is
     uint _clanId,
     uint48[] calldata _playerIds,
     uint _leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
+  ) external onlyCombatantsHelper {
     _checkCanAssignCombatants(_clanId, _playerIds);
 
     for (uint i; i < _playerIds.length; ++i) {
@@ -254,8 +271,18 @@ contract Territories is
     uint _clanId,
     uint _territoryId,
     uint _leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isLeaderOfClan(_clanId, _leaderPlayerId) {
+  ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
     _checkCanAttackTerritory(_clanId, _territoryId);
+
+    // Check they are paying enough
+    if (msg.value < attackCost()) {
+      revert NotEnoughFTM();
+    }
+
+    (bool success, ) = sponsorWallet.call{value: msg.value}("");
+    if (!success) {
+      revert TransferFailed();
+    }
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
     uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
@@ -263,6 +290,7 @@ contract Territories is
 
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
     clanInfos[_clanId].attackingCooldownTimestamp = attackingCooldownTimestamp;
+    clanInfos[_clanId].gasPaid = uint88(msg.value);
 
     // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
     // which are set here to reduce amount of gas used by oracle callback
@@ -298,10 +326,6 @@ contract Territories is
 
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
   function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrp {
-    if (!expectingRequestWithIdToBeFulfilled[_requestId]) {
-      revert RequestIdNotKnown();
-    }
-    expectingRequestWithIdToBeFulfilled[_requestId] = false;
     uint[] memory randomWords = abi.decode(_data, (uint[]));
     if (randomWords.length != NUM_WORDS) {
       revert LengthMismatch();
@@ -337,6 +361,9 @@ contract Territories is
       // Update old clan
       clanInfos[defendingClanId].ownsTerritoryId = 0;
     }
+
+    _updateAverageGasPrice();
+
     emit BattleResult(
       uint(_requestId),
       winners,
@@ -402,6 +429,18 @@ contract Territories is
     }
   }
 
+  function _updateAverageGasPrice() private {
+    uint sum = 0;
+    prices[indexGasPrice] = uint64(tx.gasprice);
+    indexGasPrice = uint8((indexGasPrice + 1) % CLAN_WARS_GAS_PRICE_WINDOW_SIZE);
+
+    for (uint i = 0; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
+      sum += prices[i];
+    }
+
+    _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
+  }
+
   function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
     if (clanInfos[_clanId].ownsTerritoryId != 0) {
       revert CurrentlyOwnATerritory();
@@ -424,12 +463,6 @@ contract Territories is
       // Check they are part of the clan
       if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
         revert NotMemberOfClan();
-      }
-
-      // Check they are not combatants in locked vaults
-      bool isDefendingALockedVault = lockedBankVault.isCombatant(_clanId, _playerIds[i]);
-      if (isDefendingALockedVault) {
-        revert PlayerDefendingLockedVaults();
       }
 
       if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
@@ -476,7 +509,11 @@ contract Territories is
       // Using Airnode ABI to encode the parameters
       abi.encode(bytes32("1u"), bytes32("size"), NUM_WORDS)
     );
-    expectingRequestWithIdToBeFulfilled[requestId] = true;
+  }
+
+  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
+    movingAverageGasPrice = _movingAverageGasPrice;
+    emit UpdateMovingAverage(_movingAverageGasPrice);
   }
 
   function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
@@ -518,6 +555,10 @@ contract Territories is
 
     totalEmissionPercentage = uint16(_totalEmissionPercentage);
     emit AddTerritories(_territories);
+  }
+
+  function attackCost() public view returns (uint) {
+    return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
   }
 
   function getTerrorities() external view returns (Territory[] memory) {
@@ -590,8 +631,22 @@ contract Territories is
     emit SetComparableSkills(_skills);
   }
 
+  function setCombatantsHelper(address _combatantsHelper) external onlyOwner {
+    combatantsHelper = _combatantsHelper;
+  }
+
   function setSponsorWallet(address _sponsorWallet) external onlyOwner {
     sponsorWallet = _sponsorWallet;
+  }
+
+  function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
+    baseAttackCost = _baseAttackCost;
+    emit SetBaseAttackCost(_baseAttackCost);
+  }
+
+  function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
+    expectedGasLimitFulfill = _expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
   function clearCooldowns(uint _clanId) external isAdminAndBeta {

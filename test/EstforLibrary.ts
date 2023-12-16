@@ -70,7 +70,16 @@ describe("EstforLibrary", function () {
   it("Binary search", async () => {
     const {estforLibrary} = await loadFixture(deployContracts);
 
-    let res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 4);
+    let res = await estforLibrary.binarySearchMemory([1], 4);
+    expect(res).to.eq(ethers.constants.MaxUint256);
+
+    res = await estforLibrary.binarySearchMemory([1], 1);
+    expect(res).to.eq(0);
+
+    res = await estforLibrary.binarySearchMemory([2], 1);
+    expect(res).to.eq(ethers.constants.MaxUint256);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 4);
     expect(res).to.eq(2);
 
     res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 5);
@@ -82,7 +91,8 @@ describe("EstforLibrary", function () {
     res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 12);
     expect(res).to.eq(4);
 
-    await expect(estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 0)).to.be.reverted;
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 0);
+    expect(res).to.eq(ethers.constants.MaxUint256);
   });
 
   it("Binary search with 0s inbetween", async () => {
@@ -103,6 +113,7 @@ describe("EstforLibrary", function () {
     res = await estforLibrary.binarySearchMemory([1, 12, 0, 0, 0, 16, 0, 0, 0, 20, 0, 0], 12);
     expect(res).to.eq(1);
 
-    await expect(estforLibrary.binarySearchMemory([1, 12, 0, 0, 0, 16, 0, 0, 0, 20, 0, 0], 0)).to.be.reverted;
+    res = await estforLibrary.binarySearchMemory([1, 12, 0, 0, 0, 16, 0, 0, 0, 20, 0, 0], 0);
+    expect(res).to.eq(ethers.constants.MaxUint256);
   });
 });

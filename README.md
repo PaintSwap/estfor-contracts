@@ -78,8 +78,9 @@ BankFactory [0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4](https://ftmscan.com/add
 InstantActions [0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe](https://ftmscan.com/address/0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe)
 
 ClanBattleLibrary [](https://ftmscan.com/address/)  
-Territories [](https://ftmscan.com/address/)  
 LockedBankVault [](https://ftmscan.com/address/)  
+Territories [](https://ftmscan.com/address/)  
+CombatantsHelper [](https://ftmscan.com/address/)
 DecoratorProvider [](https://ftmscan.com/address/)
 
 Sponsor wallet - LockedVault [](https://ftmscan.com/address/)  
@@ -117,13 +118,14 @@ BankFactory [0x7b8197e7d7352e8910a7af79a9184f50290403da](https://ftmscan.com/add
 
 InstantActions [0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76](https://ftmscan.com/address/0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76)
 
-ClanBattleLibrary [0x0354de76fd99e6a7ea9ec96a0607269c2ed9e949](https://ftmscan.com/address/0x0354de76fd99e6a7ea9ec96a0607269c2ed9e949)  
-Territories [0x9403dea8c26026b66aea4f08514aa17074e23560](https://ftmscan.com/address/0x9403dea8c26026b66aea4f08514aa17074e23560)  
-LockedBankVault [0x6fe73aa10ab61ff107b7b242144c48f570717951](https://ftmscan.com/address/0x6fe73aa10ab61ff107b7b242144c48f570717951)  
+ClanBattleLibrary [0x586058bcd42ceaf157a45c5e1b0709f02557d035](https://ftmscan.com/address/0x586058bcd42ceaf157a45c5e1b0709f02557d035)  
+LockedBankVault [0x087a1b6c1beb61797978b40b88944adfa88f57da](https://ftmscan.com/address/0x087a1b6c1beb61797978b40b88944adfa88f57da)  
+Territories [0x4872213430bd4f4ef625f6ca52b2d4806b537cd9](https://ftmscan.com/address/0x4872213430bd4f4ef625f6ca52b2d4806b537cd9)  
+CombatantsHelper [0x4b252cea30ab03c23ccb9983365ff4a7fe572e94](https://ftmscan.com/address/0x4b252cea30ab03c23ccb9983365ff4a7fe572e94)
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
-Sponsor wallet - LockedVault [0x3065abbee7711e0895e215556f9dc1bf74a3b862](https://ftmscan.com/address/0x3065abbee7711e0895e215556f9dc1bf74a3b862)  
-Sponsor wallet - Territories [0x95ef4cce191c287ec2da3558f4d58e7d4f60e3ba](https://ftmscan.com/address/0x95ef4cce191c287ec2da3558f4d58e7d4f60e3ba)
+Sponsor wallet - Territories [0x7b13b5c29cb5918ac0a8e2c50e2436c10f838487 ](https://ftmscan.com/address/0x7b13b5c29cb5918ac0a8e2c50e2436c10f838487)  
+Sponsor wallet - LockedVault [0xa511185cd603343fdbdfbc4189522441ea87b0b6](https://ftmscan.com/address/0xa511185cd603343fdbdfbc4189522441ea87b0b6)
 
 ### Other addresses:
 

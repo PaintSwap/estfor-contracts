@@ -8,6 +8,7 @@ import {
   BankRegistry,
   ClanBattleLibrary,
   Clans,
+  CombatantsHelper,
   EstforLibrary,
   InstantActions,
   ItemNFT,
@@ -309,8 +310,6 @@ export const playersFixture = async function () {
   const Territories = await ethers.getContractFactory("Territories", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
-  const terrorityBrushAttackingCost = ethers.utils.parseEther("1");
-
   const territories = (await upgrades.deployProxy(
     Territories,
     [
@@ -333,6 +332,18 @@ export const playersFixture = async function () {
     }
   )) as Territories;
 
+  const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  const combatantsHelper = (await upgrades.deployProxy(
+    CombatantsHelper,
+    [players.address, clans.address, territories.address, lockedBankVault.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+    }
+  )) as CombatantsHelper;
+
   await world.setQuests(quests.address);
   await world.setWishingWell(wishingWell.address);
 
@@ -352,6 +363,8 @@ export const playersFixture = async function () {
 
   await clans.setTerritoriesAndLockedBankVault(territories.address, lockedBankVault.address);
   await lockedBankVault.setTerritories(territories.address);
+  await territories.setCombatantsHelper(combatantsHelper.address);
+  await lockedBankVault.setCombatantsHelper(combatantsHelper.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -419,6 +432,6 @@ export const playersFixture = async function () {
     mockAPI3OracleClient,
     lockedBankVault,
     territories,
-    terrorityBrushAttackingCost,
+    combatantsHelper,
   };
 };
