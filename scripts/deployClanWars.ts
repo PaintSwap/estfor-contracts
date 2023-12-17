@@ -235,6 +235,9 @@ async function main() {
       tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
       await tx.wait();
       console.log(`setSponsorWallet = "${sponsorWallet}"`);
+      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")});
+      await tx.wait();
+      console.log();
     } catch (error) {
       console.error(`Error: ${error}`);
     }
