@@ -52,9 +52,9 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   event RemoveCombatant(uint playerId, uint clanId);
   event ClaimFunds(uint clanId, address from, uint playerId, uint amount, uint numLocksClaimed);
   event LockFunds(uint clanId, address from, uint playerId, uint amount, uint lockingTimestamp);
-  event UpdateMovingAverage(uint64 movingAverage);
-  event SetExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill);
-  event SetBaseAttackCost(uint88 baseAttackCost);
+  event UpdateMovingAverageGasPrice(uint movingAverage);
+  event SetExpectedGasLimitFulfill(uint expectedGasLimitFulfill);
+  event SetBaseAttackCost(uint baseAttackCost);
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -455,7 +455,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
 
   function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
     movingAverageGasPrice = _movingAverageGasPrice;
-    emit UpdateMovingAverage(_movingAverageGasPrice);
+    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
   }
 
   function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {

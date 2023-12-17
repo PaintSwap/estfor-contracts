@@ -59,9 +59,9 @@ contract Territories is
   event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
   event Harvest(uint territoryId, address from, uint playerId, uint cooldownTimestamp, uint amount);
-  event UpdateMovingAverage(uint64 movingAverage);
-  event SetExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill);
-  event SetBaseAttackCost(uint88 baseAttackCost);
+  event UpdateMovingAverageGasPrice(uint movingAverage);
+  event SetExpectedGasLimitFulfill(uint expectedGasLimitFulfill);
+  event SetBaseAttackCost(uint baseAttackCost);
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -513,7 +513,7 @@ contract Territories is
 
   function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
     movingAverageGasPrice = _movingAverageGasPrice;
-    emit UpdateMovingAverage(_movingAverageGasPrice);
+    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
   }
 
   function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
