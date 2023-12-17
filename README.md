@@ -124,8 +124,8 @@ Territories [0x4872213430bd4f4ef625f6ca52b2d4806b537cd9](https://ftmscan.com/add
 CombatantsHelper [0x4b252cea30ab03c23ccb9983365ff4a7fe572e94](https://ftmscan.com/address/0x4b252cea30ab03c23ccb9983365ff4a7fe572e94)
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
-Sponsor wallet - Territories [0x7b13b5c29cb5918ac0a8e2c50e2436c10f838487 ](https://ftmscan.com/address/0x7b13b5c29cb5918ac0a8e2c50e2436c10f838487)  
-Sponsor wallet - LockedVault [0xa511185cd603343fdbdfbc4189522441ea87b0b6](https://ftmscan.com/address/0xa511185cd603343fdbdfbc4189522441ea87b0b6)
+Sponsor wallet - LockedVault [0xa511185cd603343fdbdfbc4189522441ea87b0b6](https://ftmscan.com/address/0xa511185cd603343fdbdfbc4189522441ea87b0b6)  
+Sponsor wallet - Territories [0x7b13b5c29cb5918ac0a8e2c50e2436c10f838487 ](https://ftmscan.com/address/0x7b13b5c29cb5918ac0a8e2c50e2436c10f838487)
 
 ### Other addresses:
 

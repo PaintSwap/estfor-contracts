@@ -213,7 +213,7 @@ async function main() {
   console.log("clans.setTerritoriesAndLockedBankVault");
   tx = await lockedBankVault.setTerritories(territories.address);
 
-  const sponsorWalletCallers = [territories, lockedBankVault];
+  const sponsorWalletCallers = [lockedBankVault, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
     const command = `${path.join(
       "node_modules",

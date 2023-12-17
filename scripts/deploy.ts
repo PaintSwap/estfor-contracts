@@ -594,7 +594,7 @@ async function main() {
   await tx.wait();
   console.log("lockedBankVault.setTerritories");
 
-  const sponsorWalletCallers = [territories, lockedBankVault];
+  const sponsorWalletCallers = [lockedBankVault, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
     const command = `${path.join(
       "node_modules",
