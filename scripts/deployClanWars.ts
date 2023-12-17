@@ -27,9 +27,13 @@ async function main() {
   const timeout = 600 * 1000; // 10 minutes
   const isBeta = process.env.IS_BETA == "true";
 
+  const estforLibrary = await ethers.deployContract("EstforLibrary");
+  await estforLibrary.deployed();
+  console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
+
   // Clan
   const Clans = await ethers.getContractFactory("Clans", {
-    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
+    libraries: {EstforLibrary: estforLibrary.address},
   });
   const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
@@ -127,7 +131,7 @@ async function main() {
   console.log(`territories = "${territories.address.toLowerCase()}"`);
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
-    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
+    libraries: {EstforLibrary: estforLibrary.address},
   });
   const combatantsHelper = await upgrades.deployProxy(
     CombatantsHelper,
@@ -147,7 +151,7 @@ async function main() {
   const pid = 22;
   let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
 
-  const newDecoratorProvider = false;
+  const newDecoratorProvider = true;
   let decoratorProvider: DecoratorProvider;
   if (newDecoratorProvider) {
     const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
@@ -234,7 +238,7 @@ async function main() {
       console.log("setCombatantsHelper");
       tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
       await tx.wait();
-      console.log(`setSponsorWallet = "${sponsorWallet}"`);
+      console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
       tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")});
       await tx.wait();
       console.log();

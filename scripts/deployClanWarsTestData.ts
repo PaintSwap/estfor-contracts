@@ -1,4 +1,4 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers} from "hardhat";
 import {
   BRUSH_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,

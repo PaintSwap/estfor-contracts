@@ -615,7 +615,7 @@ async function main() {
       console.log("setCombatantsHelper");
       tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
       await tx.wait();
-      console.log(`setSponsorWallet: ${sponsorWallet.toLowerCase()}`);
+      console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
       tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")});
       await tx.wait();
       console.log();

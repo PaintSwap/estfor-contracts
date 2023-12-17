@@ -99,17 +99,17 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
 
   function _checkAssignCombatants(
     ICombatants _combatants,
-    bool _set,
+    bool _setCombatants,
     uint48[] calldata _playerIds,
     ICombatants _otherCombatants,
-    bool _set1,
+    bool _setOtherCombantants,
     uint48[] calldata _otherPlayerIds,
     uint _clanId,
     uint _leaderPlayerId
   ) private {
-    if (_set) {
+    if (_setCombatants) {
       // Check they are not being placed as a locked vault combatant
-      if (_set1) {
+      if (_setOtherCombantants) {
         for (uint i; i < _playerIds.length; ++i) {
           uint searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
           if (searchIndex != type(uint).max) {
