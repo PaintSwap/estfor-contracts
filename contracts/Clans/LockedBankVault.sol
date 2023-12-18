@@ -463,20 +463,16 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
       revert CannotChangeCombatantsDuringAttack();
     }
 
-    if (_playerIds.length == 0) {
-      revert NoCombatants();
-    }
-
     if (_playerIds.length > MAX_CLAN_COMBATANTS) {
       revert TooManyCombatants();
     }
 
-    // Can only change defenders every so often
+    // Can only change combatants every so often
     if (clanInfos[_clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
       revert ClanCombatantsChangeCooldown();
     }
 
-    // Check the cooldown periods on attacking (because they might have just joined from another clan)
+    // Check the cooldown periods on combatant assignment (because they might have just joined from another clan after being assigned)
     for (uint i; i < _playerIds.length; ++i) {
       if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
         revert PlayerCombatantCooldownTimestamp();

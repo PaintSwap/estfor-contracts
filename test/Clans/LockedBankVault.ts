@@ -62,7 +62,7 @@ describe("LockedBankVault", function () {
     ).to.be.revertedWithCustomError(lockedBankVault, "CannotAttackSelf");
   });
 
-  it("Leaving clan removes you as a defender", async function () {
+  it("Leaving clan removes you as a combatant", async function () {
     const {
       lockedBankVault,
       combatantsHelper,

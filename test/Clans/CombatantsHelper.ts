@@ -38,4 +38,10 @@ describe("CombatantsHelper", function () {
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerAlreadyExistingCombatant");
   });
+
+  it("Assigning 0 combatants is ok", async function () {
+    const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
+    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [], true, [], playerId)).to.not.be
+      .reverted;
+  });
 });

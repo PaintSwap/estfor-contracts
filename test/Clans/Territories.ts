@@ -530,6 +530,25 @@ describe("Territories", function () {
     await expect(territories.connect(alice).harvest(territoryId, playerId)).to.not.be.reverted;
   });
 
+  it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
+    const {territories, combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+
+    await expect(
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
+    ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
+
+    // Update time by MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
+    const MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = await territories.MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN();
+    await ethers.provider.send("evm_increaseTime", [MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN.toNumber() - 5]);
+    await expect(
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
+    ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
+    await ethers.provider.send("evm_increaseTime", [5]);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+  });
+
   it("Add new territory", async () => {
     const {territories} = await loadFixture(clanFixture);
 

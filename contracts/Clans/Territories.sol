@@ -89,6 +89,7 @@ contract Territories is
   error NoEmissionsToHarvest();
   error CannotAttackWhileStillAttacking();
   error AmountTooLow();
+  error ClanCombatantsChangeCooldown();
   error NotEnoughFTM();
 
   struct TerritoryInput {
@@ -446,15 +447,16 @@ contract Territories is
       revert CurrentlyOwnATerritory();
     }
 
-    if (_playerIds.length == 0) {
-      revert NoCombatants();
-    }
-
     if (_playerIds.length > MAX_CLAN_COMBATANTS) {
       revert TooManyCombatants();
     }
 
-    // Check the cooldown periods on player combatants (because they might have just joined another clan)
+    // Can only change combatants every so often
+    if (clanInfos[_clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
+      revert ClanCombatantsChangeCooldown();
+    }
+
+    // Check the cooldown periods on combatant assignment (because they might have just joined another clan)
     for (uint i; i < _playerIds.length; ++i) {
       if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
         revert PlayerCombatantCooldownTimestamp();
