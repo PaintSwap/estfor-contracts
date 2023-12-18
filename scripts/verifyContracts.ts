@@ -25,6 +25,7 @@ import {
   TERRITORIES_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
   CLAN_BATTLE_LIBRARY_ADDRESS,
+  COMBATANTS_HELPER_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -56,6 +57,7 @@ async function main() {
     DECORATOR_PROVIDER_ADDRESS,
     TERRITORIES_ADDRESS,
     LOCKED_BANK_VAULT_ADDRESS,
+    COMBATANTS_HELPER_ADDRESS,
   ];
 
   await verifyContracts(addresses);
