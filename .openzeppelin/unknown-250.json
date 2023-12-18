@@ -19771,6 +19771,450 @@
           }
         }
       }
+    },
+    "9332b4e01eef57ab0b511da3f7ae9bfa801198c60caca8ab234bb953a0e4f82c": {
+      "address": "0x9d102485a51EBFDa39ecFB5a305ea361A1ED98d6",
+      "txHash": "0xb30ff7ec8de8c3806d2297108cc3f4fc2d17073c55c5a002c9d918797a94365a",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "users",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:84"
+          },
+          {
+            "label": "adminAccess",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(AdminAccess)6434",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:85"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_contract(ItemNFT)9672",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:86"
+          },
+          {
+            "label": "playerNFT",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_contract(PlayerNFT)11380",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:87"
+          },
+          {
+            "label": "isBeta",
+            "offset": 20,
+            "slot": "204",
+            "type": "t_bool",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:88"
+          },
+          {
+            "label": "singlePlayerPromotionsCompleted",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_uint256,t_struct(BitMap)6054_storage)",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:89"
+          },
+          {
+            "label": "activePromotions",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_enum(Promotion)20610,t_struct(PromotionInfo)20754_storage)",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:90"
+          },
+          {
+            "label": "multidayPlayerPromotionsCompleted",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_uint256,t_mapping(t_enum(Promotion)20610,t_array(t_uint8)32_storage))",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:91"
+          },
+          {
+            "label": "userPromotionsClaimed",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_mapping(t_address,t_struct(BitMap)6054_storage)",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:95"
+          },
+          {
+            "label": "playerPromotionsClaimed",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_mapping(t_uint256,t_struct(BitMap)6054_storage)",
+            "contract": "Promotions",
+            "src": "contracts\\Promotions.sol:96"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint16)dyn_storage": {
+            "label": "uint16[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint32)dyn_storage": {
+            "label": "uint32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint8)32_storage": {
+            "label": "uint8[32]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(AdminAccess)6434": {
+            "label": "contract AdminAccess",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)9672": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PlayerNFT)11380": {
+            "label": "contract PlayerNFT",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Promotion)20610": {
+            "label": "enum Promotion",
+            "members": [
+              "NONE",
+              "STARTER",
+              "HALLOWEEN_2023",
+              "XMAS_2023",
+              "HOLIDAY3",
+              "HOLIDAY4",
+              "HOLIDAY5",
+              "HOLIDAY6",
+              "HOLIDAY7",
+              "HOLIDAY8",
+              "HOLIDAY9",
+              "HOLIDAY10"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(BitMap)6054_storage)": {
+            "label": "mapping(address => struct BitMaps.BitMap)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(Promotion)20610,t_array(t_uint8)32_storage)": {
+            "label": "mapping(enum Promotion => uint8[32])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(Promotion)20610,t_struct(PromotionInfo)20754_storage)": {
+            "label": "mapping(enum Promotion => struct PromotionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_enum(Promotion)20610,t_array(t_uint8)32_storage))": {
+            "label": "mapping(uint256 => mapping(enum Promotion => uint8[32]))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(BitMap)6054_storage)": {
+            "label": "mapping(uint256 => struct BitMaps.BitMap)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(BitMap)6054_storage": {
+            "label": "struct BitMaps.BitMap",
+            "members": [
+              {
+                "label": "_data",
+                "type": "t_mapping(t_uint256,t_uint256)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromotionInfo)20754_storage": {
+            "label": "struct PromotionInfo",
+            "members": [
+              {
+                "label": "promotion",
+                "type": "t_enum(Promotion)20610",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "startTime",
+                "type": "t_uint40",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "numDays",
+                "type": "t_uint8",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "numDailyRandomItemsToPick",
+                "type": "t_uint8",
+                "offset": 7,
+                "slot": "0"
+              },
+              {
+                "label": "minTotalXP",
+                "type": "t_uint40",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "brushCost",
+                "type": "t_uint24",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "redeemCodeLength",
+                "type": "t_uint8",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "adminOnly",
+                "type": "t_bool",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "promotionTiedToUser",
+                "type": "t_bool",
+                "offset": 18,
+                "slot": "0"
+              },
+              {
+                "label": "promotionTiedToPlayer",
+                "type": "t_bool",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "promotionMustOwnPlayer",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "evolvedHeroOnly",
+                "type": "t_bool",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "isMultiday",
+                "type": "t_bool",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "brushCostMissedDay",
+                "type": "t_uint8",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "numDaysHitNeededForStreakBonus",
+                "type": "t_uint8",
+                "offset": 24,
+                "slot": "0"
+              },
+              {
+                "label": "numDaysClaimablePeriodStreakBonus",
+                "type": "t_uint8",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "numRandomStreakBonusItemsToPick1",
+                "type": "t_uint8",
+                "offset": 26,
+                "slot": "0"
+              },
+              {
+                "label": "numRandomStreakBonusItemsToPick2",
+                "type": "t_uint8",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "randomStreakBonusItemTokenIds1",
+                "type": "t_array(t_uint16)dyn_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "randomStreakBonusAmounts1",
+                "type": "t_array(t_uint32)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "randomStreakBonusItemTokenIds2",
+                "type": "t_array(t_uint16)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "randomStreakBonusAmounts2",
+                "type": "t_array(t_uint32)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "guaranteedStreakBonusItemTokenIds",
+                "type": "t_array(t_uint16)dyn_storage",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "guaranteedStreakBonusAmounts",
+                "type": "t_array(t_uint16)dyn_storage",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "guaranteedItemTokenIds",
+                "type": "t_array(t_uint16)dyn_storage",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "guaranteedAmounts",
+                "type": "t_array(t_uint32)dyn_storage",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "randomItemTokenIds",
+                "type": "t_array(t_uint16)dyn_storage",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "randomAmounts",
+                "type": "t_array(t_uint32)dyn_storage",
+                "offset": 0,
+                "slot": "10"
+              }
+            ],
+            "numberOfBytes": "352"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
     }
   }
 }

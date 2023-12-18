@@ -26,6 +26,7 @@ import {
   LOCKED_BANK_VAULT_ADDRESS,
   CLAN_BATTLE_LIBRARY_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
+  PROMOTIONS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -41,6 +42,7 @@ async function main() {
     PLAYERS_LIBRARY_ADDRESS,
     CLANS_ADDRESS,
     PROMOTIONS_ADDRESS,
+    PROMOTIONS_LIBRARY_ADDRESS,
     QUESTS_ADDRESS,
     BANK_ADDRESS,
     await upgrades.beacon.getImplementationAddress(BANK_ADDRESS),

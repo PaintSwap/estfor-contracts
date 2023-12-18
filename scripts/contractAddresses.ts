@@ -44,7 +44,7 @@ if (!isBeta) {
   estforLibrary = "0x4ab5ccd48c4f64a2dd64b1417394415879eedd02";
   playerNFT = "0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9";
   promotions = "0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4";
-  promotionsLibrary = "0x861718E0c56b6A76D95a92A818DeeAFF5FfBCa36";
+  promotionsLibrary = "0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95";
   quests = "0x17c59f0d2d4f80FD0F906Df53a28272736c7b455";
   clans = "0x334caa8907bdf49470f7b085380c25431ef96f6d";
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
@@ -77,7 +77,7 @@ if (!isBeta) {
   estforLibrary = "0x4500f0c90bed71ff9e1a8c5b7cb404922ce6f047";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
-  promotionsLibrary = "0xFB1F5dEeE960C1e841Ba54919da6628588d7A541";
+  promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";

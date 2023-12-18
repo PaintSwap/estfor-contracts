@@ -277,6 +277,7 @@ async function main() {
 
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
   await promotionsLibrary.deployed();
+  console.log(`promotionsLibrary = "${promotionsLibrary.address.toLowerCase()}"`);
   const Promotions = await ethers.getContractFactory("Promotions", {
     libraries: {PromotionsLibrary: promotionsLibrary.address},
   });
