@@ -290,8 +290,9 @@ contract Territories is
     bool clanUnoccupied = clanIdOccupier == 0;
 
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
-    clanInfos[_clanId].attackingCooldownTimestamp = attackingCooldownTimestamp;
-    clanInfos[_clanId].gasPaid = uint88(msg.value);
+    ClanInfo storage clanInfo = clanInfos[_clanId];
+    clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
+    clanInfo.gasPaid = uint88(msg.value);
 
     // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
     // which are set here to reduce amount of gas used by oracle callback
@@ -299,7 +300,7 @@ contract Territories is
       _claimTerritory(_territoryId, _clanId);
       emit ClaimUnoccupiedTerritory(_territoryId, _clanId, msg.sender, _leaderPlayerId);
     } else {
-      clanInfos[_clanId].currentlyAttacking = true;
+      clanInfo.currentlyAttacking = true;
       clanInfos[clanIdOccupier].attackingCooldownTimestamp = uint40(
         block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
       );
@@ -420,11 +421,12 @@ contract Territories is
   // Remove a player combatant if they are currently assigned in this clan
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
     // Check if this player is in the defenders list and remove them if so
-    if (clanInfos[_clanId].playerIds.length > 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+    ClanInfo storage clanInfo = clanInfos[_clanId];
+    if (clanInfo.playerIds.length > 0) {
+      uint searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, _playerId);
       if (searchIndex != type(uint).max) {
         // Not shifting it for gas reasons
-        delete clanInfos[_clanId].playerIds[searchIndex];
+        delete clanInfo.playerIds[searchIndex];
         emit RemoveCombatant(_playerId, _clanId);
       }
     }
@@ -478,24 +480,25 @@ contract Territories is
       revert InvalidTerritory();
     }
 
+    ClanInfo storage clanInfo = clanInfos[_clanId];
     // Must have at least 1 combatant
-    if (clanInfos[_clanId].playerIds.length == 0) {
+    if (clanInfo.playerIds.length == 0) {
       revert NoCombatants();
     }
 
-    if (clanInfos[_clanId].currentlyAttacking) {
+    if (clanInfo.currentlyAttacking) {
       revert CannotChangeCombatantsDuringAttack();
     }
 
-    if (clanInfos[_clanId].ownsTerritoryId != 0) {
+    if (clanInfo.ownsTerritoryId != 0) {
       revert AlreadyOwnATerritory();
     }
 
-    if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
+    if (clanInfo.attackingCooldownTimestamp > block.timestamp) {
       revert ClanAttackingCooldown();
     }
 
-    if (clanInfos[_clanId].currentlyAttacking) {
+    if (clanInfo.currentlyAttacking) {
       revert CannotAttackWhileStillAttacking();
     }
   }
@@ -652,10 +655,11 @@ contract Territories is
   }
 
   function clearCooldowns(uint _clanId) external isAdminAndBeta {
-    clanInfos[_clanId].attackingCooldownTimestamp = 0;
-    clanInfos[_clanId].assignCombatantsCooldownTimestamp = 0;
-    for (uint i; i < clanInfos[_clanId].playerIds.length; ++i) {
-      playerInfos[clanInfos[_clanId].playerIds[i]].combatantCooldownTimestamp = 0;
+    ClanInfo storage clanInfo = clanInfos[_clanId];
+    clanInfo.attackingCooldownTimestamp = 0;
+    clanInfo.assignCombatantsCooldownTimestamp = 0;
+    for (uint i; i < clanInfo.playerIds.length; ++i) {
+      playerInfos[clanInfo.playerIds[i]].combatantCooldownTimestamp = 0;
     }
   }
 
