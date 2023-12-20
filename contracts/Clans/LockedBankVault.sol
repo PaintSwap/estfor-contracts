@@ -80,6 +80,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   error CannotAttackWhileStillAttacking();
   error NotAdminAndBeta();
   error NotEnoughFTM();
+  error MaxLockedVaultsReached();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -150,6 +151,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
+  uint public constant MAX_LOCKED_VAULTS = 70;
   uint public constant LOCK_PERIOD = 7 days;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -478,22 +480,25 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   }
 
   function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
-    clanInfos[_clanId].totalBrushLocked += uint96(_amount);
+    if (_amount == 0) {
+      return;
+    }
+    ClanInfo storage clanInfo = clanInfos[_clanId];
+    clanInfo.totalBrushLocked += uint96(_amount);
     uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
-    uint length = clanInfos[_clanId].defendingVaults.length;
+    uint length = clanInfo.defendingVaults.length;
     if (
       length == 0 ||
-      (clanInfos[_clanId].defendingVaults[length - 1].timestamp != 0 &&
-        clanInfos[_clanId].defendingVaults[length - 1].timestamp1 != 0)
+      (clanInfo.defendingVaults[length - 1].timestamp != 0 && clanInfo.defendingVaults[length - 1].timestamp1 != 0)
     ) {
       // Start a new one
-      clanInfos[_clanId].defendingVaults.push(
+      clanInfo.defendingVaults.push(
         Vault({claimed: false, timestamp: lockingTimestamp, amount: uint80(_amount), timestamp1: 0, amount1: 0})
       );
     } else {
       // Update existing storage slot
-      clanInfos[_clanId].defendingVaults[length - 1].timestamp1 = lockingTimestamp;
-      clanInfos[_clanId].defendingVaults[length - 1].amount1 = uint80(_amount);
+      clanInfo.defendingVaults[length - 1].timestamp1 = lockingTimestamp;
+      clanInfo.defendingVaults[length - 1].amount1 = uint80(_amount);
     }
 
     emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
@@ -537,7 +542,8 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
 
   function _checkCanAttackVaults(uint _clanId, uint _defendingClanId) private view {
     // Must have at least 1 combatant
-    if (clanInfos[_clanId].playerIds.length == 0) {
+    ClanInfo storage clanInfo = clanInfos[_clanId];
+    if (clanInfo.playerIds.length == 0) {
       revert NoCombatants();
     }
 
@@ -550,12 +556,19 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
       revert NoBrushToAttack();
     }
 
-    if (clanInfos[_clanId].attackingCooldownTimestamp > block.timestamp) {
+    if (clanInfo.attackingCooldownTimestamp > block.timestamp) {
       revert ClanAttackingCooldown();
     }
 
-    if (clanInfos[_clanId].currentlyAttacking) {
+    if (clanInfo.currentlyAttacking) {
       revert CannotAttackWhileStillAttacking();
+    }
+
+    // There are 2 vaults per offset
+    uint length = clanInfo.defendingVaults.length;
+    uint defendingVaultsOffset = clanInfo.defendingVaultsOffset;
+    if (length - defendingVaultsOffset > MAX_LOCKED_VAULTS / 2) {
+      revert MaxLockedVaultsReached();
     }
 
     // Cannot attack same clan within the timeframe (TODO: Unless they have an item?)
@@ -638,10 +651,12 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) public isAdminAndBeta {
-    clanInfos[_clanId].attackingCooldownTimestamp = 0;
-    clanInfos[_clanId].assignCombatantsCooldownTimestamp = 0;
-    for (uint i; i < clanInfos[_clanId].playerIds.length; ++i) {
-      playerInfos[clanInfos[_clanId].playerIds[i]].combatantCooldownTimestamp = 0;
+    ClanInfo storage clanInfo = clanInfos[_clanId];
+    clanInfo.attackingCooldownTimestamp = 0;
+    clanInfo.assignCombatantsCooldownTimestamp = 0;
+    clanInfo.currentlyAttacking = false;
+    for (uint i; i < clanInfo.playerIds.length; ++i) {
+      playerInfos[clanInfo.playerIds[i]].combatantCooldownTimestamp = 0;
     }
 
     for (uint i; i < _otherClanIds.length; ++i) {

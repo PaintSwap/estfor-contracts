@@ -41,7 +41,7 @@ describe("LockedBankVault", function () {
   });
 
   it("Only territories contract can lock funds", async () => {
-    const {lockedBankVault, clanId, playerId, alice, bob, brush} = await loadFixture(clanFixture);
+    const {lockedBankVault, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
 
     await brush.mint(alice.address, 100);
     await brush.connect(alice).approve(lockedBankVault.address, 100);
@@ -563,8 +563,60 @@ describe("LockedBankVault", function () {
     expect((await lockedBankVault.getClanInfo(clanId)).defendingVaultsOffset).to.eq(3);
   });
 
+  it("Max locked vaults, cannot attack if reached", async () => {
+    const {
+      clans,
+      lockedBankVault,
+      combatantsHelper,
+      territories,
+      clanId,
+      playerId,
+      brush,
+      alice,
+      bob,
+      playerNFT,
+      avatarId,
+      origName,
+      clanName,
+      discord,
+      telegram,
+      imageId,
+      tierId,
+      mockAPI3OracleClient,
+    } = await loadFixture(clanFixture);
+
+    const MAX_LOCKED_VAULTS = (await lockedBankVault.MAX_LOCKED_VAULTS()).toNumber();
+    for (let i = 0; i < MAX_LOCKED_VAULTS - 1; ++i) {
+      await lockFundsForClan(lockedBankVault, clanId, brush, alice, playerId, 400, territories);
+    }
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+
+    // Create a new clan to defend
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    const bobClanId = 2;
+
+    await lockFundsForClan(lockedBankVault, bobClanId, brush, bob, bobPlayerId, 400, territories);
+
+    // Attack
+    await lockedBankVault
+      .connect(alice)
+      .attackVaults(clanId, bobClanId, playerId, {value: await lockedBankVault.attackCost()});
+    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient);
+    await lockedBankVault.clearCooldowns(clanId, [bobClanId]);
+
+    await lockFundsForClan(lockedBankVault, clanId, brush, alice, playerId, 400, territories);
+
+    await expect(
+      lockedBankVault
+        .connect(alice)
+        .attackVaults(clanId, bobClanId, playerId, {value: await lockedBankVault.attackCost()})
+    ).to.be.revertedWithCustomError(lockedBankVault, "MaxLockedVaultsReached");
+  });
+
   // Have to remove the restriction about duplicate combatants (TODO: update test to use many different combatants)
-  it.skip("Max locked vaults", async () => {
+  it.skip("Check gas limits for maximum locked vaults", async () => {
     // Test it for gas usage
     const {
       clans,
@@ -588,7 +640,8 @@ describe("LockedBankVault", function () {
       mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
-    for (let i = 0; i < 60; ++i) {
+    const MAX_LOCKED_VAULTS = (await lockedBankVault.MAX_LOCKED_VAULTS()).toNumber();
+    for (let i = 0; i < MAX_LOCKED_VAULTS; ++i) {
       await lockFundsForClan(lockedBankVault, clanId, brush, alice, playerId, 400, territories);
     }
 
