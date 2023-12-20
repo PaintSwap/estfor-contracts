@@ -86,10 +86,13 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     uint40 lastOtherClanIdAttackClanIdCooldownTimestamp;
   }
 
-  // TODO Can store multiple in this
+  // Packed for gas efficiency
   struct Vault {
+    bool claimed; // Only applies to the first one, if it's claimed without the second one being claimed
     uint40 timestamp;
     uint80 amount;
+    uint40 timestamp1;
+    uint80 amount1;
   }
 
   struct ClanInfo {
@@ -99,8 +102,9 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
     uint88 gasPaid;
+    uint24 defendingVaultsOffset;
     uint48[] playerIds;
-    Vault[] defendingVaults; // TODO may need to update this. Have a max of 30? What about slicing?
+    Vault[] defendingVaults; // Append only, and use defendingVaultsOffset to decide where the real start is
   }
 
   struct PlayerInfo {
@@ -146,7 +150,6 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
-  uint public constant MAX_VAULTS = 100;
   uint public constant LOCK_PERIOD = 7 days;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -229,7 +232,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     }
     _updateMovingAverageGasPrice(uint64(tx.gasprice));
     setBaseAttackCost(0.05 ether);
-    setExpectedGasLimitFulfill(300_000);
+    setExpectedGasLimitFulfill(1_000_000);
 
     setComparableSkills(_comparableSkills);
   }
@@ -252,7 +255,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
   }
 
-  // This needs to call the oracle VRF on-demand and costs some brush
+  // This needs to call the oracle VRF on-demand and costs some ftm
   function attackVaults(
     uint _clanId,
     uint _defendingClanId,
@@ -287,9 +290,6 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     } else {
       battleInfo.lastOtherClanIdAttackClanIdCooldownTimestamp = reattackingCooldown;
     }
-
-    // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
-    // which are set here to reduce amount of gas used by oracle callback
 
     pendingAttacks[_nextPendingAttackId] = PendingAttack({
       clanId: uint40(_clanId),
@@ -346,21 +346,27 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
 
     uint percentageToTake = 10;
     if (didAttackersWin) {
-      // Go through all the defendingData
+      // Go through all the defendingVaults
       uint totalWon;
-      for (uint i; i < clanInfos[defendingClanId].defendingVaults.length; ++i) {
-        uint defendingTimestamp = clanInfos[defendingClanId].defendingVaults[i].timestamp;
-        if (defendingTimestamp <= block.timestamp) {
-          // This one is safe
-          continue;
+      uint vaultOffset = clanInfos[defendingClanId].defendingVaultsOffset;
+      uint length = clanInfos[defendingClanId].defendingVaults.length;
+      for (uint i = vaultOffset; i < length; ++i) {
+        Vault storage defendingVault = clanInfos[defendingClanId].defendingVaults[i];
+        if (defendingVault.timestamp > block.timestamp) {
+          uint amount = defendingVault.amount;
+          uint stealAmount = amount / percentageToTake;
+          defendingVault.amount = uint80(amount - stealAmount);
+          clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount);
+          totalWon += stealAmount;
         }
 
-        // How much to take? 10-15% (TODO)
-        uint amount = clanInfos[defendingClanId].defendingVaults[i].amount;
-        uint stealAmount = amount / percentageToTake;
-        clanInfos[defendingClanId].defendingVaults[i].amount = uint80(amount - stealAmount);
-        clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount);
-        totalWon += stealAmount;
+        if (defendingVault.timestamp1 > block.timestamp) {
+          uint amount1 = defendingVault.amount1;
+          uint stealAmount1 = amount1 / percentageToTake;
+          defendingVault.amount1 = uint80(amount1 - stealAmount1);
+          clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount1);
+          totalWon += stealAmount1;
+        }
       }
 
       _lockFunds(attackingClanId, address(0), 0, totalWon);
@@ -393,15 +399,40 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
 
     uint total;
     uint numLocksClaimed;
-    for (uint i; i < clanInfos[_clanId].defendingVaults.length; ++i) {
-      uint defendingTimestamp = clanInfos[_clanId].defendingVaults[i].timestamp;
-      if (defendingTimestamp > block.timestamp) {
+    uint defendingVaultsOffset = clanInfos[_clanId].defendingVaultsOffset;
+    // There a few cases to consider here:
+    // 1. The first one is not expired, so we can't claim anything
+    // 2. The first one is expired, but the second one is not, so we can claim the first one
+    // 3. The first one is expired, and the second one is expired, so we can claim both
+    // We don't need to set claimed = true unless we know
+    for (uint i = defendingVaultsOffset; i < clanInfos[_clanId].defendingVaults.length; ++i) {
+      Vault storage defendingVault = clanInfos[_clanId].defendingVaults[i];
+      if (defendingVault.timestamp > block.timestamp) {
+        // Has not expired yet
         break;
       }
 
-      total += clanInfos[_clanId].defendingVaults[i].amount;
-      delete clanInfos[_clanId].defendingVaults[i];
-      ++numLocksClaimed;
+      if (defendingVault.timestamp != 0 && !defendingVault.claimed) {
+        total += defendingVault.amount;
+        ++numLocksClaimed;
+      }
+
+      if (defendingVault.timestamp1 > block.timestamp) {
+        // Has not expired yet
+        defendingVault.amount = 0; // Clear the first one so that we don't try to use it again
+        defendingVault.timestamp = 0;
+        defendingVault.claimed = true; // First one is claimed at least
+        break;
+      }
+
+      if (defendingVault.timestamp1 != 0) {
+        total += defendingVault.amount1;
+        ++numLocksClaimed;
+        ++defendingVaultsOffset;
+      } else {
+        // First one is claimed, second one is not set yet, so need to make sure we don't try and claim it again
+        defendingVault.claimed = true;
+      }
     }
 
     if (total == 0) {
@@ -409,7 +440,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     }
 
     clanInfos[_clanId].totalBrushLocked -= uint96(total);
-
+    clanInfos[_clanId].defendingVaultsOffset = uint24(defendingVaultsOffset);
     IBank(bankAddress).depositToken(msg.sender, _playerId, address(brush), total);
     emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
   }
@@ -449,7 +480,22 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
     clanInfos[_clanId].totalBrushLocked += uint96(_amount);
     uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
-    clanInfos[_clanId].defendingVaults.push(Vault({timestamp: lockingTimestamp, amount: uint80(_amount)}));
+    uint length = clanInfos[_clanId].defendingVaults.length;
+    if (
+      length == 0 ||
+      (clanInfos[_clanId].defendingVaults[length - 1].timestamp != 0 &&
+        clanInfos[_clanId].defendingVaults[length - 1].timestamp1 != 0)
+    ) {
+      // Start a new one
+      clanInfos[_clanId].defendingVaults.push(
+        Vault({claimed: false, timestamp: lockingTimestamp, amount: uint80(_amount), timestamp1: 0, amount1: 0})
+      );
+    } else {
+      // Update existing storage slot
+      clanInfos[_clanId].defendingVaults[length - 1].timestamp1 = lockingTimestamp;
+      clanInfos[_clanId].defendingVaults[length - 1].amount1 = uint80(_amount);
+    }
+
     emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
   }
 

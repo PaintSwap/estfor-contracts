@@ -267,7 +267,7 @@ contract Territories is
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
   }
 
-  // This needs to call the oracle VRF on-demand and costs some brush
+  // This needs to call the oracle VRF on-demand and costs some ftm
   function attackTerritory(
     uint _clanId,
     uint _territoryId,
