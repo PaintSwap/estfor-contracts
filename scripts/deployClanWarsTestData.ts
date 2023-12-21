@@ -10,7 +10,7 @@ import {
 import {
   CombatantsHelper,
   DecoratorProvider,
-  LockedBankVault,
+  LockedBankVaults,
   MockBrushToken,
   Territories,
   TestPaintSwapDecorator,
@@ -25,7 +25,10 @@ async function main() {
   const brush = (await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS)) as MockBrushToken;
 
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
-  const lockedBankVault = (await ethers.getContractAt("LockedBankVault", LOCKED_BANK_VAULT_ADDRESS)) as LockedBankVault;
+  const lockedBankVaults = (await ethers.getContractAt(
+    "LockedBankVaults",
+    LOCKED_BANK_VAULT_ADDRESS
+  )) as LockedBankVaults;
   const decorator = (await ethers.getContractAt("TestPaintSwapDecorator", DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
   const combatantsHelper = (await ethers.getContractAt(
     "CombatantsHelper",
@@ -52,16 +55,16 @@ async function main() {
   console.log("Harvest");
 
   // Lock some brush in a vault
-  tx = await lockedBankVault.connect(owner).setTerritories(owner.address);
+  tx = await lockedBankVaults.connect(owner).setTerritories(owner.address);
   await tx.wait();
   console.log("set territories");
-  tx = await brush.connect(owner).approve(lockedBankVault.address, ethers.utils.parseEther("100"));
+  tx = await brush.connect(owner).approve(lockedBankVaults.address, ethers.utils.parseEther("100"));
   await tx.wait();
   console.log("Approve");
-  tx = await lockedBankVault.connect(owner).lockFunds(1, owner.address, 1, ethers.utils.parseEther("100"));
+  tx = await lockedBankVaults.connect(owner).lockFunds(1, owner.address, 1, ethers.utils.parseEther("100"));
   await tx.wait();
   console.log("LockFunds");
-  tx = await lockedBankVault.connect(owner).setTerritories(territories.address);
+  tx = await lockedBankVaults.connect(owner).setTerritories(territories.address);
   await tx.wait();
   console.log("SetTerritories");
 
@@ -84,11 +87,11 @@ async function main() {
   await tx.wait();
   console.log("assign combatants for territories & locked bank vaults");
 
-  tx = await lockedBankVault.connect(alice).clearCooldowns(aliceClanId, [1]);
+  tx = await lockedBankVaults.connect(alice).clearCooldowns(aliceClanId, [1]);
   await tx.wait();
   console.log("clear cooldowns");
   const vaultAttackCost = await territories.attackCost();
-  tx = await lockedBankVault.connect(alice).attackVaults(aliceClanId, 1, 2, {value: vaultAttackCost});
+  tx = await lockedBankVaults.connect(alice).attackVaults(aliceClanId, 1, 2, {value: vaultAttackCost});
   await tx.wait();
   console.log("attack vaults");
 

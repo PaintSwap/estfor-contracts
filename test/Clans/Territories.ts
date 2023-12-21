@@ -480,7 +480,7 @@ describe("Territories", function () {
   });
 
   it("Occupied territories should emit brush", async () => {
-    const {clanId, playerId, territories, combatantsHelper, brush, alice, bankFactory, lockedBankVault} =
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, bankFactory, lockedBankVaults} =
       await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -501,9 +501,9 @@ describe("Territories", function () {
     // After harvesting the clan bank address should be set on clans object
     //    expect((await territories.getClanInfo(clanId)).bank).to.eq(bankAddress);
 
-    expect(await brush.balanceOf(lockedBankVault.address)).to.eq(ethers.utils.parseEther("100"));
-    expect((await lockedBankVault.getClanInfo(clanId)).totalBrushLocked).to.eq(ethers.utils.parseEther("100"));
-    //    expect((await lockedBankVault.getClanInfo(clanId)).bank).to.eq(bankAddress);
+    expect(await brush.balanceOf(lockedBankVaults.address)).to.eq(ethers.utils.parseEther("100"));
+    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(ethers.utils.parseEther("100"));
+    //    expect((await lockedBankVaults.getClanInfo(clanId)).bank).to.eq(bankAddress);
   });
 
   it("Can only claim emissions once every 8 hours", async () => {

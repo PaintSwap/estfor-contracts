@@ -27,7 +27,7 @@ let players;
 let instantActions;
 let clanBattleLibrary;
 let territories;
-let lockedBankVault;
+let lockedBankVaults;
 let decoratorProvider;
 let combatantsHelper;
 let sponsorWalletLockedVault;
@@ -60,7 +60,7 @@ if (!isBeta) {
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
   clanBattleLibrary = "";
-  lockedBankVault = "";
+  lockedBankVaults = "";
   territories = "";
   decoratorProvider = "";
   combatantsHelper = "";
@@ -94,7 +94,7 @@ if (!isBeta) {
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
   clanBattleLibrary = "0x832f74245bc1a3f2fd4e7431b797d9bbc9881312";
-  lockedBankVault = "0xf89304dadcd1012c9c378bd48813e39eba213d0a";
+  lockedBankVaults = "0xf89304dadcd1012c9c378bd48813e39eba213d0a";
   territories = "0x58eaf68a511abc60852dd151030fe63bd36091c2";
   combatantsHelper = "0xf9ca710a7bacb53f63ea51e98c75681057421855";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
@@ -132,7 +132,7 @@ export const PLAYERS_ADDRESS = players;
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
 
 export const CLAN_BATTLE_LIBRARY_ADDRESS = clanBattleLibrary;
-export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVault;
+export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const SPONSOR_WALLET_LOCKED_VAULT_ADDRESS = sponsorWalletLockedVault;
 export const TERRITORIES_ADDRESS = territories;
 export const SPONSOR_WALLET_TERRITORIES_ADDRESS = sponsorWalletTerritories;

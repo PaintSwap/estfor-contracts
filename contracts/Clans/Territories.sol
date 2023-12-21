@@ -13,7 +13,7 @@ import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IBank} from "../interfaces/IBank.sol";
 
-import {LockedBankVault} from "./LockedBankVault.sol";
+import {LockedBankVaults} from "./LockedBankVaults.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 
 import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
@@ -135,7 +135,7 @@ contract Territories is
   IClans public clans;
   AdminAccess public adminAccess;
   bool public isBeta;
-  LockedBankVault public lockedBankVault;
+  LockedBankVaults public lockedBankVaults;
 
   mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
   uint16 public totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
@@ -211,7 +211,7 @@ contract Territories is
     address _players,
     IClans _clans,
     IBrushToken _brush,
-    LockedBankVault _lockedBankVault,
+    LockedBankVaults _lockedBankVaults,
     Skill[] calldata _comparableSkills,
     address _airnodeRrp,
     address _airnode,
@@ -225,7 +225,7 @@ contract Territories is
     __Ownable_init();
     clans = _clans;
     brush = _brush;
-    lockedBankVault = _lockedBankVault;
+    lockedBankVaults = _lockedBankVaults;
     players = _players;
     nextTerritoryId = 1;
     nextPendingAttackId = 1;
@@ -245,7 +245,7 @@ contract Territories is
 
     setComparableSkills(_comparableSkills);
 
-    brush.approve(address(_lockedBankVault), type(uint).max);
+    brush.approve(address(_lockedBankVaults), type(uint).max);
 
     _addTerritories(_territories);
   }
@@ -254,7 +254,7 @@ contract Territories is
     uint _clanId,
     uint48[] calldata _playerIds,
     uint _leaderPlayerId
-  ) external onlyCombatantsHelper {
+  ) external override onlyCombatantsHelper {
     _checkCanAssignCombatants(_clanId, _playerIds);
 
     for (uint i; i < _playerIds.length; ++i) {
@@ -402,7 +402,7 @@ contract Territories is
     if (unclaimedEmissions == 0) {
       revert NoEmissionsToHarvest();
     }
-    lockedBankVault.lockFunds(clanId, msg.sender, _playerId, unclaimedEmissions);
+    lockedBankVaults.lockFunds(clanId, msg.sender, _playerId, unclaimedEmissions);
     emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }
 
@@ -587,7 +587,7 @@ contract Territories is
     return pendingAttacks[_pendingAttackId];
   }
 
-  function isCombatant(uint _clanId, uint _playerId) external view returns (bool combatant) {
+  function isCombatant(uint _clanId, uint _playerId) external view override returns (bool combatant) {
     // Check if this player is in the defenders list and remove them if so
     if (clanInfos[_clanId].playerIds.length > 0) {
       uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);

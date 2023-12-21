@@ -182,7 +182,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(uint clanId => uint40 timestampLeft) public ownerlessClanTimestamps; // timestamp
   address private paintswapMarketplaceWhitelist;
   IClanMemberLeftCB private territories;
-  IClanMemberLeftCB private lockedBankVault;
+  IClanMemberLeftCB private lockedBankVaults;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -797,7 +797,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     player.rank = ClanRank.NONE;
 
     territories.clanMemberLeft(_clanId, _playerId);
-    lockedBankVault.clanMemberLeft(_clanId, _playerId);
+    lockedBankVaults.clanMemberLeft(_clanId, _playerId);
   }
 
   function _claimOwnership(uint _clanId, uint _playerId) private {
@@ -938,12 +938,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
   }
 
-  function setTerritoriesAndLockedBankVault(
+  function setTerritoriesAndLockedBankVaults(
     IClanMemberLeftCB _territories,
-    IClanMemberLeftCB _lockedBankVault
+    IClanMemberLeftCB _lockedBankVaults
   ) external onlyOwner {
     territories = _territories;
-    lockedBankVault = _lockedBankVault;
+    lockedBankVaults = _lockedBankVaults;
   }
 
   function getRank(uint _clanId, uint _playerId) external view returns (ClanRank rank) {

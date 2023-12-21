@@ -14,7 +14,7 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   IERC1155 public playerNFT;
   IClans public clans;
   IPlayers public players;
-  address public lockedBankVault;
+  address public lockedBankVaults;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -37,8 +37,8 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
     bankImpl = _bankImpl;
   }
 
-  function setLockedBankVault(address _lockedBankVault) external onlyOwner {
-    lockedBankVault = _lockedBankVault;
+  function setLockedBankVaults(address _lockedBankVaults) external onlyOwner {
+    lockedBankVaults = _lockedBankVaults;
   }
 
   // solhint-disable-next-line no-empty-blocks

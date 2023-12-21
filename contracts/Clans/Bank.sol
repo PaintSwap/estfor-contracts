@@ -154,7 +154,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   }
 
   function depositToken(address _from, uint _playerId, address _token, uint _amount) external {
-    if (_from != msg.sender && msg.sender != address(bankRegistry.lockedBankVault())) {
+    if (_from != msg.sender && msg.sender != address(bankRegistry.lockedBankVaults())) {
       revert NotOwnerOfPlayer();
     }
 

@@ -12,7 +12,7 @@ import {
   EstforLibrary,
   InstantActions,
   ItemNFT,
-  LockedBankVault,
+  LockedBankVaults,
   MockBrushToken,
   MockOracleClient,
   MockRouter,
@@ -283,11 +283,11 @@ export const playersFixture = async function () {
   const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
   const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
 
-  const LockedBankVault = await ethers.getContractFactory("LockedBankVault", {
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
-  const lockedBankVault = (await upgrades.deployProxy(
-    LockedBankVault,
+  const lockedBankVaults = (await upgrades.deployProxy(
+    LockedBankVaults,
     [
       players.address,
       clans.address,
@@ -305,7 +305,7 @@ export const playersFixture = async function () {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
     }
-  )) as LockedBankVault;
+  )) as LockedBankVaults;
 
   const Territories = await ethers.getContractFactory("Territories", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
@@ -317,7 +317,7 @@ export const playersFixture = async function () {
       players.address,
       clans.address,
       brush.address,
-      lockedBankVault.address,
+      lockedBankVaults.address,
       allTerritorySkills,
       mockAPI3OracleClient.address,
       airnode,
@@ -337,7 +337,7 @@ export const playersFixture = async function () {
   });
   const combatantsHelper = (await upgrades.deployProxy(
     CombatantsHelper,
-    [players.address, clans.address, territories.address, lockedBankVault.address],
+    [players.address, clans.address, territories.address, lockedBankVaults.address],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -359,12 +359,12 @@ export const playersFixture = async function () {
   await itemNFT.setPromotions(promotions.address);
   await itemNFT.setInstantActions(instantActions.address);
 
-  await bankRegistry.setLockedBankVault(lockedBankVault.address);
+  await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
 
-  await clans.setTerritoriesAndLockedBankVault(territories.address, lockedBankVault.address);
-  await lockedBankVault.setTerritories(territories.address);
+  await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await lockedBankVaults.setTerritories(territories.address);
   await territories.setCombatantsHelper(combatantsHelper.address);
-  await lockedBankVault.setCombatantsHelper(combatantsHelper.address);
+  await lockedBankVaults.setCombatantsHelper(combatantsHelper.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -430,7 +430,7 @@ export const playersFixture = async function () {
     decorator,
     brushPerSecond,
     mockAPI3OracleClient,
-    lockedBankVault,
+    lockedBankVaults,
     territories,
     combatantsHelper,
   };

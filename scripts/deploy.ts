@@ -425,11 +425,11 @@ async function main() {
   const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
   const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
 
-  const LockedBankVault = await ethers.getContractFactory("LockedBankVault", {
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
   });
-  const lockedBankVault = await upgrades.deployProxy(
-    LockedBankVault,
+  const lockedBankVaults = await upgrades.deployProxy(
+    LockedBankVaults,
     [
       players.address,
       clans.address,
@@ -449,7 +449,7 @@ async function main() {
       timeout,
     }
   );
-  console.log(`lockedBankVault = "${lockedBankVault.address.toLowerCase()}"`);
+  console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
   const Territories = await ethers.getContractFactory("Territories", {
     libraries: {ClanBattleLibrary: clanBattleLibrary.address},
@@ -461,7 +461,7 @@ async function main() {
       players.address,
       clans.address,
       brush.address,
-      lockedBankVault.address,
+      lockedBankVaults.address,
       allTerritorySkills,
       api3Oracle.address,
       airnode,
@@ -483,7 +483,7 @@ async function main() {
   });
   const combatantsHelper = await upgrades.deployProxy(
     CombatantsHelper,
-    [players.address, clans.address, territories.address, lockedBankVault.address],
+    [players.address, clans.address, territories.address, lockedBankVaults.address],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -588,14 +588,14 @@ async function main() {
   await tx.wait();
   console.log("shop.setItemNFT");
 
-  tx = await clans.setTerritoriesAndLockedBankVault(territories.address, lockedBankVault.address);
+  tx = await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
-  console.log("clans.setTerritoriesAndLockedBankVault");
-  tx = await lockedBankVault.setTerritories(territories.address);
+  console.log("clans.setTerritoriesAndLockedBankVaults");
+  tx = await lockedBankVaults.setTerritories(territories.address);
   await tx.wait();
-  console.log("lockedBankVault.setTerritories");
+  console.log("lockedBankVaults.setTerritories");
 
-  const sponsorWalletCallers = [lockedBankVault, territories];
+  const sponsorWalletCallers = [lockedBankVaults, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
     const command = `${path.join(
       "node_modules",
@@ -625,9 +625,9 @@ async function main() {
     }
   }
 
-  tx = await bankRegistry.setLockedBankVault(lockedBankVault.address);
+  tx = await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
   await tx.wait();
-  console.log("bankRegistry.setLockedBankVault");
+  console.log("bankRegistry.setLockedBankVaults");
 
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();

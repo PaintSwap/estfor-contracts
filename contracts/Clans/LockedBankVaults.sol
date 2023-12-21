@@ -12,6 +12,7 @@ import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
+import {ILockedBankVaults} from "../interfaces/ILockedBankVaults.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 
@@ -23,7 +24,13 @@ import {Skill} from "../globals/misc.sol";
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
-contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IClanMemberLeftCB {
+contract LockedBankVaults is
+  RrpRequesterV0Upgradeable,
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  ILockedBankVaults,
+  IClanMemberLeftCB
+{
   event AttackVaults(
     uint clanId,
     uint defendingClanId,
@@ -244,7 +251,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     uint _clanId,
     uint48[] calldata _playerIds,
     uint _leaderPlayerId
-  ) external onlyCombatantsHelper {
+  ) external override onlyCombatantsHelper {
     _checkCanAssignCombatants(_clanId, _playerIds);
 
     for (uint i; i < _playerIds.length; ++i) {
@@ -611,7 +618,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     return clanInfos[_clanId];
   }
 
-  function isCombatant(uint _clanId, uint _playerId) external view returns (bool) {
+  function isCombatant(uint _clanId, uint _playerId) external view override returns (bool) {
     uint48[] storage playerIds = clanInfos[_clanId].playerIds;
     if (playerIds.length == 0) {
       return false;

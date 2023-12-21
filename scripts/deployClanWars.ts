@@ -71,13 +71,13 @@ async function main() {
     return ethers.BigNumber.from(5_000_000);
   };
 
-  const LockedBankVault = (
-    await ethers.getContractFactory("LockedBankVault", {
+  const LockedBankVaults = (
+    await ethers.getContractFactory("LockedBankVaults", {
       libraries: {ClanBattleLibrary: clanBattleLibrary.address},
     })
   ).connect(signer);
-  const lockedBankVault = await upgrades.deployProxy(
-    LockedBankVault,
+  const lockedBankVaults = await upgrades.deployProxy(
+    LockedBankVaults,
     [
       PLAYERS_ADDRESS,
       CLANS_ADDRESS,
@@ -97,8 +97,8 @@ async function main() {
       timeout,
     }
   );
-  await lockedBankVault.deployed();
-  console.log(`lockedBankVault = "${lockedBankVault.address.toLowerCase()}"`);
+  await lockedBankVaults.deployed();
+  console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
   const Territories = (
     await ethers.getContractFactory("Territories", {
@@ -112,7 +112,7 @@ async function main() {
       PLAYERS_ADDRESS,
       CLANS_ADDRESS,
       BRUSH_ADDRESS,
-      lockedBankVault.address,
+      lockedBankVaults.address,
       allTerritorySkills,
       airnodeRrpAddress,
       airnode,
@@ -135,7 +135,7 @@ async function main() {
   });
   const combatantsHelper = await upgrades.deployProxy(
     CombatantsHelper,
-    [PLAYERS_ADDRESS, clans.address, territories.address, lockedBankVault.address],
+    [PLAYERS_ADDRESS, clans.address, territories.address, lockedBankVaults.address],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -202,9 +202,9 @@ async function main() {
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
 
-  let tx = await bankRegistry.setLockedBankVault(lockedBankVault.address);
+  let tx = await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
   await tx.wait();
-  console.log("bankRegistry.setLockedBankVault");
+  console.log("bankRegistry.setLockedBankVaults");
   if (isBeta) {
     // Also update the old first week's beta clans
     tx = await bankRegistry.setBankImpl(bankImplAddress);
@@ -212,12 +212,12 @@ async function main() {
     console.log("bankRegistry.setBankImpl");
   }
 
-  tx = await clans.setTerritoriesAndLockedBankVault(territories.address, lockedBankVault.address);
+  tx = await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
-  console.log("clans.setTerritoriesAndLockedBankVault");
-  tx = await lockedBankVault.setTerritories(territories.address);
+  console.log("clans.setTerritoriesAndLockedBankVaults");
+  tx = await lockedBankVaults.setTerritories(territories.address);
 
-  const sponsorWalletCallers = [lockedBankVault, territories];
+  const sponsorWalletCallers = [lockedBankVaults, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
     const command = `${path.join(
       "node_modules",
@@ -252,7 +252,7 @@ async function main() {
     clans.address,
     bank.address,
     bankImplAddress,
-    lockedBankVault.address,
+    lockedBankVaults.address,
     territories.address,
     clanBattleLibrary.address,
     bankRegistry.address,

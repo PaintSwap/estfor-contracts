@@ -78,7 +78,7 @@ BankFactory [0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4](https://ftmscan.com/add
 InstantActions [0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe](https://ftmscan.com/address/0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe)
 
 ClanBattleLibrary [](https://ftmscan.com/address/)  
-LockedBankVault [](https://ftmscan.com/address/)  
+LockedBankVaults [](https://ftmscan.com/address/)  
 Territories [](https://ftmscan.com/address/)  
 CombatantsHelper [](https://ftmscan.com/address/)
 DecoratorProvider [](https://ftmscan.com/address/)
@@ -119,7 +119,7 @@ BankFactory [0x7b8197e7d7352e8910a7af79a9184f50290403da](https://ftmscan.com/add
 InstantActions [0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76](https://ftmscan.com/address/0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76)
 
 ClanBattleLibrary [0x832f74245bc1a3f2fd4e7431b797d9bbc9881312](https://ftmscan.com/address/0x832f74245bc1a3f2fd4e7431b797d9bbc9881312)  
-LockedBankVault [0xf89304dadcd1012c9c378bd48813e39eba213d0a](https://ftmscan.com/address/0xf89304dadcd1012c9c378bd48813e39eba213d0a)  
+LockedBankVaults [0xf89304dadcd1012c9c378bd48813e39eba213d0a](https://ftmscan.com/address/0xf89304dadcd1012c9c378bd48813e39eba213d0a)  
 Territories [0x58eaf68a511abc60852dd151030fe63bd36091c2](https://ftmscan.com/address/0x58eaf68a511abc60852dd151030fe63bd36091c2)  
 CombatantsHelper [0xf9ca710a7bacb53f63ea51e98c75681057421855](https://ftmscan.com/address/0xf9ca710a7bacb53f63ea51e98c75681057421855)
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
