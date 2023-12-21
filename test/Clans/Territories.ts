@@ -657,6 +657,8 @@ describe("Territories", function () {
 
     const {gasPrice} = tx;
 
+    // Useful to re-run a battle for testing
+    await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
     expect(await territories.movingAverageGasPrice()).to.eq(0);
 
@@ -664,6 +666,7 @@ describe("Territories", function () {
     const baseAttackCost = await territories.baseAttackCost();
     expect(attackCost).to.eq(baseAttackCost);
 
+    await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient, gasPrice?.add(1000));
     const bigZero = BigNumber.from(0);
     expect(await territories.movingAverageGasPrice()).to.eq(
@@ -678,9 +681,13 @@ describe("Territories", function () {
     const expectedGasLimit = await territories.expectedGasLimitFulfill();
     expect(attackCost).to.eq(baseAttackCost.add((await territories.movingAverageGasPrice()).mul(expectedGasLimit)));
 
+    await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient, gasPrice?.add(900));
+    await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient, gasPrice?.add(800));
+    await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient, gasPrice?.add(500));
+    await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient, gasPrice?.add(200));
 
     expect(await territories.movingAverageGasPrice()).to.eq(

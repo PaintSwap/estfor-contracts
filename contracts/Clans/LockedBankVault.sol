@@ -81,6 +81,7 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
   error NotAdminAndBeta();
   error NotEnoughFTM();
   error MaxLockedVaultsReached();
+  error RequestIdNotKnown();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -273,7 +274,6 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
       revert TransferFailed();
     }
 
-    // Get all the defenders
     _checkCanAttackVaults(_clanId, _defendingClanId);
 
     clanInfos[_clanId].currentlyAttacking = true;
@@ -322,6 +322,10 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
     }
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
+    if (!pendingAttack.attackInProgress) {
+      revert RequestIdNotKnown();
+    }
+
     uint40 attackingClanId = pendingAttack.clanId;
     uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
     uint defendingClanId = pendingAttack.defendingClanId;
@@ -664,6 +668,11 @@ contract LockedBankVault is RrpRequesterV0Upgradeable, UUPSUpgradeable, OwnableU
       uint higherClanId = _clanId < _otherClanIds[i] ? _otherClanIds[i] : _clanId;
       delete lastClanBattles[lowerClanId][higherClanId];
     }
+  }
+
+  // Useful to re-run a battle for testing
+  function setAttackInProgress(uint _requestId) public isAdminAndBeta {
+    pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks

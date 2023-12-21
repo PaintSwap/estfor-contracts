@@ -435,15 +435,16 @@ describe("LockedBankVault", function () {
       .connect(bob)
       .attackVaults(bobClanId, clanId, bobPlayerId, {value: await lockedBankVault.attackCost()});
     const {gasPrice} = tx;
-
-    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient);
+    const requestId = 1;
+    await fulfillRandomWords(requestId, lockedBankVault, mockAPI3OracleClient);
     expect(await lockedBankVault.movingAverageGasPrice()).to.eq(0);
 
     let attackCost = await lockedBankVault.attackCost();
     const baseAttackCost = await lockedBankVault.baseAttackCost();
     expect(attackCost).to.eq(baseAttackCost);
 
-    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(1000));
+    await lockedBankVault.setAttackInProgress(requestId);
+    await fulfillRandomWords(requestId, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(1000));
     const bigZero = BigNumber.from(0);
     expect(await lockedBankVault.movingAverageGasPrice()).to.eq(
       bigZero
@@ -457,10 +458,14 @@ describe("LockedBankVault", function () {
     const expectedGasLimit = await lockedBankVault.expectedGasLimitFulfill();
     expect(attackCost).to.eq(baseAttackCost.add((await lockedBankVault.movingAverageGasPrice()).mul(expectedGasLimit)));
 
-    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(900));
-    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(800));
-    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(500));
-    await fulfillRandomWords(1, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(200));
+    await lockedBankVault.setAttackInProgress(requestId);
+    await fulfillRandomWords(requestId, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(900));
+    await lockedBankVault.setAttackInProgress(requestId);
+    await fulfillRandomWords(requestId, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(800));
+    await lockedBankVault.setAttackInProgress(requestId);
+    await fulfillRandomWords(requestId, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(500));
+    await lockedBankVault.setAttackInProgress(requestId);
+    await fulfillRandomWords(requestId, lockedBankVault, mockAPI3OracleClient, gasPrice?.add(200));
 
     expect(await lockedBankVault.movingAverageGasPrice()).to.eq(
       (gasPrice as BigNumber)

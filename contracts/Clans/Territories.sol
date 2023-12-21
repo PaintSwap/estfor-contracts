@@ -91,6 +91,7 @@ contract Territories is
   error AmountTooLow();
   error ClanCombatantsChangeCooldown();
   error NotEnoughFTM();
+  error RequestIdNotKnown();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -334,6 +335,10 @@ contract Territories is
     }
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
+    if (!pendingAttack.attackInProgress) {
+      revert RequestIdNotKnown();
+    }
+
     uint attackingClanId = pendingAttack.clanId;
     uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
     uint16 territoryId = pendingAttack.territoryId;
@@ -661,6 +666,11 @@ contract Territories is
     for (uint i; i < clanInfo.playerIds.length; ++i) {
       playerInfos[clanInfo.playerIds[i]].combatantCooldownTimestamp = 0;
     }
+  }
+
+  // Useful to re-run a battle for testing
+  function setAttackInProgress(uint _requestId) public isAdminAndBeta {
+    pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks
