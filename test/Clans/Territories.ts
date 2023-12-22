@@ -501,6 +501,10 @@ describe("Territories", function () {
     // After harvesting the clan bank address should be set on clans object
     //    expect((await territories.getClanInfo(clanId)).bank).to.eq(bankAddress);
 
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    expect((await territories.territories(territoryId)).unclaimedEmissions).to.eq(ethers.utils.parseEther("0"));
+    expect((await territories.territories(territoryId)).lastClaimTimestamp).to.eq(NOW);
+
     expect(await brush.balanceOf(lockedBankVaults.address)).to.eq(ethers.utils.parseEther("100"));
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(ethers.utils.parseEther("100"));
     //    expect((await lockedBankVaults.getClanInfo(clanId)).bank).to.eq(bankAddress);

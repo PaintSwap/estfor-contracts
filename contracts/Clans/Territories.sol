@@ -399,6 +399,7 @@ contract Territories is
     }
 
     territory.lastClaimTimestamp = uint40(block.timestamp);
+    territory.unclaimedEmissions = 0;
     if (unclaimedEmissions == 0) {
       revert NoEmissionsToHarvest();
     }
