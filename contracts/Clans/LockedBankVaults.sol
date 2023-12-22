@@ -67,6 +67,7 @@ contract LockedBankVaults is
   event UpdateMovingAverageGasPrice(uint movingAverage);
   event SetExpectedGasLimitFulfill(uint expectedGasLimitFulfill);
   event SetBaseAttackCost(uint baseAttackCost);
+  event BlockingAttacks(uint clanId, uint itemTokenId, uint leaderPlayerId, uint blockAttacksTimestamp);
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -96,6 +97,8 @@ contract LockedBankVaults is
   error RequestIdNotKnown();
   error NotALockedVaultAttackItem();
   error SpecifyingItemWhenNotReattacking();
+  error ClanIsBlockingAttacks();
+  error NotALockedVaultDefenceItem();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -116,11 +119,13 @@ contract LockedBankVaults is
   struct ClanInfo {
     IBank bank;
     uint96 totalBrushLocked;
+    // New storage slot
     uint40 attackingCooldownTimestamp;
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
     uint88 gasPaid;
     uint24 defendingVaultsOffset;
+    uint40 blockAttacksTimestamp;
     uint48[] playerIds;
     Vault[] defendingVaults; // Append only, and use defendingVaultsOffset to decide where the real start is
   }
@@ -182,6 +187,13 @@ contract LockedBankVaults is
   modifier isAtLeastLeaderOfClan(uint _clanId, uint _playerId) {
     if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
       revert NotLeader();
+    }
+    _;
+  }
+
+  modifier isClanMember(uint _clanId, uint _playerId) {
+    if (clans.getRank(_clanId, _playerId) == ClanRank.NONE) {
+      revert NotMemberOfClan();
     }
     _;
   }
@@ -467,6 +479,24 @@ contract LockedBankVaults is
     emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
   }
 
+  function blockAttacks(
+    uint _clanId,
+    uint16 _itemTokenId,
+    uint _leaderPlayerId
+  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isClanMember(_clanId, _leaderPlayerId) {
+    Item memory item = itemNFT.getItem(_itemTokenId);
+    if (item.equipPosition != EquipPosition.LOCKED_VAULT || item.boostType != BoostType.PVP_BLOCK) {
+      revert NotALockedVaultDefenceItem();
+    }
+
+    uint blockAttacksTimestamp = block.timestamp + item.boostDuration;
+    clanInfos[_clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
+
+    itemNFT.burn(msg.sender, _itemTokenId, 1);
+
+    emit BlockingAttacks(_clanId, _itemTokenId, _leaderPlayerId, blockAttacksTimestamp);
+  }
+
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
     _lockFunds(_clanId, _from, _playerId, _amount);
     if (!brush.transferFrom(msg.sender, address(this), _amount)) {
@@ -585,6 +615,10 @@ contract LockedBankVaults is
       revert NoBrushToAttack();
     }
 
+    if (clanInfos[_defendingClanId].blockAttacksTimestamp > block.timestamp) {
+      revert ClanIsBlockingAttacks();
+    }
+
     if (clanInfo.attackingCooldownTimestamp > block.timestamp) {
       revert ClanAttackingCooldown();
     }
@@ -625,10 +659,7 @@ contract LockedBankVaults is
     bool canReattack;
     if (_itemTokenId != 0) {
       Item memory item = itemNFT.getItem(_itemTokenId);
-      if (item.equipPosition != EquipPosition.LOCKED_VAULT) {
-        revert NotALockedVaultAttackItem();
-      }
-      if (item.boostType != BoostType.PVP_REATTACK) {
+      if (item.equipPosition != EquipPosition.LOCKED_VAULT || item.boostType != BoostType.PVP_REATTACK) {
         revert NotALockedVaultAttackItem();
       }
       if (item.boostValue > numReattacks) {

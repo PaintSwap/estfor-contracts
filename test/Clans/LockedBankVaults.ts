@@ -815,6 +815,88 @@ describe("LockedBankVaults", function () {
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanAttackingSameClanCooldown");
   });
 
+  it("Blocking Attacks with item", async () => {
+    const {
+      clans,
+      lockedBankVaults,
+      combatantsHelper,
+      territories,
+      clanId,
+      playerId,
+      playerNFT,
+      itemNFT,
+      avatarId,
+      origName,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      imageId,
+      tierId,
+      brush,
+    } = await loadFixture(clanFixture);
+
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
+
+    // Create a new clan to attack/defend
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    const bobClanId = clanId + 1;
+
+    // Attack
+    await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
+
+    const items = allItems.filter(
+      (inputItem) =>
+        inputItem.tokenId == EstforConstants.PROTECTION_SHIELD || inputItem.tokenId == EstforConstants.MIRROR_SHIELD
+    );
+    await itemNFT.addItems(items);
+    await itemNFT.testMints(alice.address, [EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD], [2, 1]);
+
+    // Wrong item
+    await expect(
+      lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.MIRROR_SHIELD, playerId)
+    ).to.be.revertedWithCustomError(lockedBankVaults, "NotALockedVaultDefenceItem");
+
+    await lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.PROTECTION_SHIELD)).to.eq(1);
+
+    await expect(
+      lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
+        value: await lockedBankVaults.attackCost(),
+      })
+    ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
+
+    // Increase time to items[0].boostDuration
+    await ethers.provider.send("evm_increaseTime", [items[0].boostDuration - 10]);
+
+    await expect(
+      lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
+        value: await lockedBankVaults.attackCost(),
+      })
+    ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
+
+    // Allow extending it even before it finishes
+    await lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId);
+    await ethers.provider.send("evm_increaseTime", [items[0].boostDuration - 10]);
+
+    await expect(
+      lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
+        value: await lockedBankVaults.attackCost(),
+      })
+    ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
+
+    await ethers.provider.send("evm_increaseTime", [10]);
+    await expect(
+      lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
+        value: await lockedBankVaults.attackCost(),
+      })
+    ).to.not.be.reverted;
+
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.PROTECTION_SHIELD)).to.eq(0);
+  });
+
   it("Cannot attack a clan twice within the cooldown", async () => {});
 
   it("Player has an attack cooldown if transferring to another clan", async () => {});
