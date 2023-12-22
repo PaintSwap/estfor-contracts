@@ -293,6 +293,7 @@ export const playersFixture = async function () {
       clans.address,
       brush.address,
       bankFactory.address,
+      itemNFT.address,
       allTerritorySkills,
       mockAPI3OracleClient.address,
       airnode,
@@ -362,6 +363,7 @@ export const playersFixture = async function () {
   await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
 
   await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await lockedBankVaults.setTerritories(territories.address);
   await territories.setCombatantsHelper(combatantsHelper.address);
   await lockedBankVaults.setCombatantsHelper(combatantsHelper.address);

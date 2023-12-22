@@ -91,7 +91,7 @@ async function main() {
   await tx.wait();
   console.log("clear cooldowns");
   const vaultAttackCost = await territories.attackCost();
-  tx = await lockedBankVaults.connect(alice).attackVaults(aliceClanId, 1, 2, {value: vaultAttackCost});
+  tx = await lockedBankVaults.connect(alice).attackVaults(aliceClanId, 1, 0, 2, {value: vaultAttackCost});
   await tx.wait();
   console.log("attack vaults");
 

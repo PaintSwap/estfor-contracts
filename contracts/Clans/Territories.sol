@@ -402,6 +402,7 @@ contract Territories is
     if (unclaimedEmissions == 0) {
       revert NoEmissionsToHarvest();
     }
+
     lockedBankVaults.lockFunds(clanId, msg.sender, _playerId, unclaimedEmissions);
     emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }

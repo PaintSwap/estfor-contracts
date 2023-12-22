@@ -17,12 +17,16 @@ import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 
 import {AdminAccess} from "../AdminAccess.sol";
+import {ItemNFT} from "../ItemNFT.sol";
 
 import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
 import {Skill} from "../globals/misc.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
+
+import {Item, EquipPosition} from "../globals/players.sol";
+import {BoostType} from "../globals/misc.sol";
 
 contract LockedBankVaults is
   RrpRequesterV0Upgradeable,
@@ -39,7 +43,8 @@ contract LockedBankVaults is
     uint requestId,
     uint pendingAttackId,
     uint attackingCooldownTimestamp,
-    uint reattackingCooldownTimestamp
+    uint reattackingCooldownTimestamp,
+    uint itemTokenId
   );
   event SetComparableSkills(Skill[] skills);
   event BattleResult(
@@ -89,10 +94,14 @@ contract LockedBankVaults is
   error NotEnoughFTM();
   error MaxLockedVaultsReached();
   error RequestIdNotKnown();
+  error NotALockedVaultAttackItem();
+  error SpecifyingItemWhenNotReattacking();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
+    uint8 numReattacks;
     uint40 lastOtherClanIdAttackClanIdCooldownTimestamp;
+    uint8 numReattacksOtherClan;
   }
 
   // Packed for gas efficiency
@@ -128,25 +137,26 @@ contract LockedBankVaults is
   }
 
   Skill[] private comparableSkills;
-  uint64 public nextPendingAttackId;
+  uint64 private nextPendingAttackId;
   mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
-  mapping(uint pendingAttackId => PendingAttack pendingAttack) public pendingAttacks;
-  mapping(bytes32 requestId => uint pendingAttackId) public requestToPendingAttackIds;
-  mapping(uint playerId => PlayerInfo playerInfos) public playerInfos;
-  mapping(uint clanId => mapping(uint otherClanId => ClanBattleInfo battleInfo)) public lastClanBattles; // Always ordered from smallest to largest
-  IClans public clans;
-  IPlayers public players;
-  IBrushToken public brush;
-  ITerritories public territories;
-  AdminAccess public adminAccess;
-  bool public isBeta;
-  IBankFactory public bankFactory;
-  address public combatantsHelper;
+  mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
+  mapping(bytes32 requestId => uint pendingAttackId) private requestToPendingAttackIds;
+  mapping(uint playerId => PlayerInfo playerInfos) private playerInfos;
+  mapping(uint clanId => mapping(uint otherClanId => ClanBattleInfo battleInfo)) private lastClanBattles; // Always ordered from smallest to largest
+  IClans private clans;
+  IPlayers private players;
+  IBrushToken private brush;
+  ITerritories private territories;
+  ItemNFT private itemNFT;
+  AdminAccess private adminAccess;
+  bool private isBeta;
+  IBankFactory private bankFactory;
+  address private combatantsHelper;
 
-  address public airnode; // The address of the QRNG Airnode
+  address private airnode; // The address of the QRNG Airnode
   address public sponsorWallet; // The wallet that will cover the gas costs of the request
-  bytes32 public endpointIdUint256; // The endpoint ID for requesting a single random number
-  bytes32 public endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
+  bytes32 private endpointIdUint256; // The endpoint ID for requesting a single random number
+  bytes32 private endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
 
   uint8 public indexGasPrice;
   uint64 public movingAverageGasPrice;
@@ -159,7 +169,7 @@ contract LockedBankVaults is
   uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
-  uint public constant MAX_LOCKED_VAULTS = 70;
+  uint public constant MAX_LOCKED_VAULTS = 100;
   uint public constant LOCK_PERIOD = 7 days;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -214,6 +224,7 @@ contract LockedBankVaults is
     IClans _clans,
     IBrushToken _brush,
     IBankFactory _bankFactory,
+    ItemNFT _itemNFT,
     Skill[] calldata _comparableSkills,
     address _airnodeRrp,
     address _airnode,
@@ -226,9 +237,10 @@ contract LockedBankVaults is
     __UUPSUpgradeable_init();
     __Ownable_init();
     players = _players;
+    clans = _clans;
     brush = _brush;
     bankFactory = _bankFactory;
-    clans = _clans;
+    itemNFT = _itemNFT;
 
     adminAccess = _adminAccess;
     isBeta = _isBeta;
@@ -269,6 +281,7 @@ contract LockedBankVaults is
   function attackVaults(
     uint _clanId,
     uint _defendingClanId,
+    uint16 _itemTokenId,
     uint _leaderPlayerId
   ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
     // Check they are paying enough
@@ -281,7 +294,7 @@ contract LockedBankVaults is
       revert TransferFailed();
     }
 
-    _checkCanAttackVaults(_clanId, _defendingClanId);
+    _checkAndSetCanAttackVaults(_clanId, _defendingClanId, _itemTokenId);
 
     clanInfos[_clanId].currentlyAttacking = true;
 
@@ -317,7 +330,8 @@ contract LockedBankVaults is
       uint(requestId),
       _nextPendingAttackId,
       attackingCooldownTimestamp,
-      reattackingCooldown
+      reattackingCooldown,
+      _itemTokenId
     );
   }
 
@@ -403,12 +417,7 @@ contract LockedBankVaults is
 
   function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     // Cache some values for next time if not called already
-    address bankAddress = address(clanInfos[_clanId].bank);
-    if (bankAddress == address(0)) {
-      bankAddress = bankFactory.bankAddress(_clanId);
-      brush.approve(bankAddress, type(uint).max);
-      clanInfos[_clanId].bank = IBank(bankAddress);
-    }
+    address bankAddress = _getBankAddress(_clanId);
 
     uint total;
     uint numLocksClaimed;
@@ -475,6 +484,15 @@ contract LockedBankVaults is
         delete clanInfos[_clanId].playerIds[searchIndex];
         emit RemoveCombatant(_playerId, _clanId);
       }
+    }
+  }
+
+  function _getBankAddress(uint _clanId) private returns (address bankAddress) {
+    bankAddress = address(clanInfos[_clanId].bank);
+    if (bankAddress == address(0)) {
+      bankAddress = bankFactory.bankAddress(_clanId);
+      brush.approve(bankAddress, type(uint).max);
+      clanInfos[_clanId].bank = IBank(bankAddress);
     }
   }
 
@@ -551,7 +569,7 @@ contract LockedBankVaults is
     }
   }
 
-  function _checkCanAttackVaults(uint _clanId, uint _defendingClanId) private view {
+  function _checkAndSetCanAttackVaults(uint _clanId, uint _defendingClanId, uint16 _itemTokenId) private {
     // Must have at least 1 combatant
     ClanInfo storage clanInfo = clanInfos[_clanId];
     if (clanInfo.playerIds.length == 0) {
@@ -582,18 +600,46 @@ contract LockedBankVaults is
       revert MaxLockedVaultsReached();
     }
 
-    // Cannot attack same clan within the timeframe (TODO: Unless they have an item?)
+    // Check if they are re-attacking this clan and allowed to
+    bool isReattacking;
+    uint numReattacks;
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
+    ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][_defendingClanId];
     if (lowerClanId == _clanId) {
-      if (
-        lastClanBattles[lowerClanId][_defendingClanId].lastClanIdAttackOtherClanIdCooldownTimestamp > block.timestamp
-      ) {
-        revert ClanAttackingSameClanCooldown();
+      if (battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp > block.timestamp) {
+        numReattacks = battleInfo.numReattacks;
+        isReattacking = true;
       }
     } else {
-      if (lastClanBattles[lowerClanId][_clanId].lastOtherClanIdAttackClanIdCooldownTimestamp > block.timestamp) {
-        revert ClanAttackingSameClanCooldown();
+      // TODO Do they the required item and haven't used it in a while?
+      if (battleInfo.lastOtherClanIdAttackClanIdCooldownTimestamp > block.timestamp) {
+        numReattacks = battleInfo.numReattacks;
+        isReattacking = true;
       }
+    }
+
+    if (!isReattacking && _itemTokenId != 0) {
+      revert SpecifyingItemWhenNotReattacking();
+    }
+
+    bool canReattack;
+    if (_itemTokenId != 0) {
+      address bankAddress = _getBankAddress(_clanId);
+      Item memory item = itemNFT.getItem(_itemTokenId);
+      if (item.equipPosition != EquipPosition.LOCKED_VAULT) {
+        revert NotALockedVaultAttackItem();
+      }
+      if (item.boostType != BoostType.PVP_REATTACK) {
+        revert NotALockedVaultAttackItem();
+      }
+      if (item.boostValue > numReattacks) {
+        itemNFT.burn(bankAddress, _itemTokenId, 1);
+        canReattack = true;
+      }
+    }
+
+    if (isReattacking && !canReattack) {
+      revert ClanAttackingSameClanCooldown();
     }
   }
 

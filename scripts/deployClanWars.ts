@@ -7,18 +7,21 @@ import {
   BRUSH_ADDRESS,
   CLANS_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
-  ESTFOR_LIBRARY_ADDRESS,
   FAKE_BRUSH_WFTM_LP_ADDRESS,
+  ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
 } from "./contractAddresses";
 import {allTerritories, allTerritorySkills} from "./data/territories";
 import {verifyContracts} from "./utils";
-import {DecoratorProvider} from "../typechain-types";
+import {DecoratorProvider, ItemNFT} from "../typechain-types";
 import "dotenv/config";
 import {execSync} from "child_process";
 import path from "path";
+import {allItems} from "./data/items";
+import {EstforConstants} from "@paintswap/estfor-definitions";
+import {EquipPosition} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -42,6 +45,15 @@ async function main() {
   });
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
+
+  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout,
+  })) as ItemNFT;
+  await itemNFT.deployed();
+  console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
   const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", {
     libraries: {PlayersLibrary: PLAYERS_LIBRARY_ADDRESS},
@@ -67,7 +79,7 @@ async function main() {
   provider.getFeeData = async () => FEE_DATA;
 
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string, provider);
-  signer.estimateGas = async (transaction) => {
+  signer.estimateGas = async () => {
     return ethers.BigNumber.from(5_000_000);
   };
 
@@ -215,7 +227,33 @@ async function main() {
   tx = await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
+  tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await tx.wait();
+  console.log("itemNFT.setTerritoriesAndLockedBankVaults");
   tx = await lockedBankVaults.setTerritories(territories.address);
+  await tx.wait();
+  console.log("lockedBankVaults.setTerritories");
+
+  // Add the new items (if not added yet)
+  const items = allItems.filter(
+    (item) =>
+      item.tokenId === EstforConstants.PROTECTION_SHIELD ||
+      item.tokenId === EstforConstants.DEVILISH_FINGERS ||
+      item.tokenId === EstforConstants.MIRROR_SHIELD
+  );
+
+  if (items.length !== 3) {
+    console.log("Cannot find all items");
+  } else {
+    const item = await itemNFT.getItem(items[0].tokenId);
+    if (item.equipPosition != EquipPosition.NONE) {
+      tx = await itemNFT.addItems(items);
+      await tx.wait();
+      console.log("itemNFT.addItems");
+    } else {
+      console.log("Items already added");
+    }
+  }
 
   const sponsorWalletCallers = [lockedBankVaults, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
@@ -249,6 +287,7 @@ async function main() {
 
   await verifyContracts([
     decoratorProvider.address,
+    itemNFT.address,
     clans.address,
     bank.address,
     bankImplAddress,

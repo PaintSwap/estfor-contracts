@@ -435,6 +435,7 @@ async function main() {
       clans.address,
       brush.address,
       bankFactory.address,
+      itemNFT.address,
       allTerritorySkills,
       api3Oracle.address,
       airnode,
@@ -591,6 +592,9 @@ async function main() {
   tx = await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
+  tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await tx.wait();
+  console.log("itemNFT.setTerritoriesAndLockedBankVaults");
   tx = await lockedBankVaults.setTerritories(territories.address);
   await tx.wait();
   console.log("lockedBankVaults.setTerritories");
