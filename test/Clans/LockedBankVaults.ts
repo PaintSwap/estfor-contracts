@@ -759,7 +759,6 @@ describe("LockedBankVaults", function () {
       tierId,
       brush,
       mockAPI3OracleClient,
-      bankAddress,
     } = await loadFixture(clanFixture);
 
     // Nominate defenders
@@ -790,7 +789,11 @@ describe("LockedBankVaults", function () {
         inputItem.tokenId == EstforConstants.DEVILISH_FINGERS || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD
     );
     await itemNFT.addItems(items);
-    await itemNFT.testMints(bankAddress, [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD], [1, 1]);
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD],
+      [1, 1]
+    );
 
     // Wrong item
     await expect(

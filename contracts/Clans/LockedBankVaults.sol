@@ -624,7 +624,6 @@ contract LockedBankVaults is
 
     bool canReattack;
     if (_itemTokenId != 0) {
-      address bankAddress = _getBankAddress(_clanId);
       Item memory item = itemNFT.getItem(_itemTokenId);
       if (item.equipPosition != EquipPosition.LOCKED_VAULT) {
         revert NotALockedVaultAttackItem();
@@ -633,7 +632,7 @@ contract LockedBankVaults is
         revert NotALockedVaultAttackItem();
       }
       if (item.boostValue > numReattacks) {
-        itemNFT.burn(bankAddress, _itemTokenId, 1);
+        itemNFT.burn(msg.sender, _itemTokenId, 1);
         canReattack = true;
       }
     }
