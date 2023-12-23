@@ -64,7 +64,14 @@ contract Territories is
   event UpdateMovingAverageGasPrice(uint movingAverage);
   event SetExpectedGasLimitFulfill(uint expectedGasLimitFulfill);
   event SetBaseAttackCost(uint baseAttackCost);
-  event BlockingAttacks(uint clanId, uint itemTokenId, address from, uint leaderPlayerId, uint blockAttacksTimestamp);
+  event BlockingAttacks(
+    uint clanId,
+    uint itemTokenId,
+    address from,
+    uint leaderPlayerId,
+    uint blockAttacksTimestamp,
+    uint blockAttacksCooldownTimestamp
+  );
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -474,7 +481,14 @@ contract Territories is
 
     itemNFT.burn(msg.sender, _itemTokenId, 1);
 
-    emit BlockingAttacks(_clanId, _itemTokenId, msg.sender, _leaderPlayerId, blockAttacksTimestamp);
+    emit BlockingAttacks(
+      _clanId,
+      _itemTokenId,
+      msg.sender,
+      _leaderPlayerId,
+      blockAttacksTimestamp,
+      blockAttacksTimestamp + item.boostValue * 3600
+    );
   }
 
   // Remove a player combatant if they are currently assigned in this clan
