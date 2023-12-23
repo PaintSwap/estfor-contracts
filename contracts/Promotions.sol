@@ -585,8 +585,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       dayToSet = FINAL_PROMOTION_DAY_INDEX;
 
       // Mint the final day bonus
-      // Pick a random item from the list, only supports 1 item atm
-      uint numAvailableItems = promotionInfo.numRandomStreakBonusItemsToPick1;
+      uint numAvailableItems = promotionInfo.randomStreakBonusItemTokenIds1.length;
 
       uint endTime = promotionInfo.startTime + promotionInfo.numDays * 1 days;
       uint oracleTime = (endTime / 1 days) * 1 days - 1;
@@ -594,7 +593,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.ORACLE_NOT_CALLED);
       }
 
-      // The streak bonus random reward should be based on the last day of the promotion
+      // The streak bonus random reward should be based on the last day of the promotion. Pick a random item from the list
       uint randomWord = itemNFT.world().getRandomWord(oracleTime);
       uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
       uint index = modifiedRandomWord % numAvailableItems;
