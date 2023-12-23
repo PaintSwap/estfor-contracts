@@ -21,10 +21,10 @@ import {execSync} from "child_process";
 import path from "path";
 import {allItems} from "./data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {EquipPosition} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
+  // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
   console.log(`Deploying clan wars contracts: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const timeout = 600 * 1000; // 10 minutes
@@ -46,7 +46,12 @@ async function main() {
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
 
-  const ItemNFT = await ethers.getContractFactory("ItemNFT");
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
+  await itemNFTLibrary.deployed();
+  console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {
+    libraries: {ItemNFTLibrary: itemNFTLibrary.address},
+  });
   const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -80,7 +85,7 @@ async function main() {
 
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string, provider);
   signer.estimateGas = async () => {
-    return ethers.BigNumber.from(5_000_000);
+    return ethers.BigNumber.from(6_600_000);
   };
 
   const LockedBankVaults = (
@@ -95,6 +100,7 @@ async function main() {
       CLANS_ADDRESS,
       BRUSH_ADDRESS,
       BANK_FACTORY_ADDRESS,
+      itemNFT.address,
       allTerritorySkills,
       airnodeRrpAddress,
       airnode,
@@ -246,9 +252,10 @@ async function main() {
   if (items.length !== 3) {
     console.log("Cannot find all items");
   } else {
-    const item = await itemNFT.getItem(items[0].tokenId);
-    if (item.equipPosition != EquipPosition.NONE) {
-      tx = await itemNFT.addItems(items);
+    const itemExists = await itemNFT.exists(items[0].tokenId);
+    if (!itemExists) {
+      console.log("Before adding items");
+      const tx = await itemNFT.addItems(items);
       await tx.wait();
       console.log("itemNFT.addItems");
     } else {
