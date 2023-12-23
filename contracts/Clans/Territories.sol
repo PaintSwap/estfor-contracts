@@ -15,9 +15,11 @@ import {IBank} from "../interfaces/IBank.sol";
 
 import {LockedBankVaults} from "./LockedBankVaults.sol";
 import {AdminAccess} from "../AdminAccess.sol";
+import {ItemNFT} from "../ItemNFT.sol";
 
 import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
-import {Skill} from "../globals/misc.sol";
+import {Item, EquipPosition} from "../globals/players.sol";
+import {BoostType, Skill} from "../globals/misc.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
@@ -62,6 +64,7 @@ contract Territories is
   event UpdateMovingAverageGasPrice(uint movingAverage);
   event SetExpectedGasLimitFulfill(uint expectedGasLimitFulfill);
   event SetBaseAttackCost(uint baseAttackCost);
+  event BlockingAttacks(uint clanId, uint itemTokenId, address from, uint leaderPlayerId, uint blockAttacksTimestamp);
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -92,6 +95,9 @@ contract Territories is
   error ClanCombatantsChangeCooldown();
   error NotEnoughFTM();
   error RequestIdNotKnown();
+  error ClanIsBlockingAttacks();
+  error NotATerritoryDefenceItem();
+  error BlockAttacksCooldown();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -112,6 +118,8 @@ contract Territories is
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
     uint88 gasPaid;
+    uint40 blockAttacksTimestamp;
+    uint8 blockAttacksCooldownHours; // Have many hours after blockAttacksTimestamp there is a cooldown for
     uint48[] playerIds;
   }
 
@@ -129,23 +137,24 @@ contract Territories is
   mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
   mapping(bytes32 requestId => uint pendingAttackId) public requestToPendingAttackIds;
   mapping(uint territoryId => Territory territory) public territories;
-  address public players;
+  address private players;
   uint16 public nextTerritoryId;
   uint64 public nextPendingAttackId;
   IClans public clans;
-  AdminAccess public adminAccess;
-  bool public isBeta;
-  LockedBankVaults public lockedBankVaults;
+  AdminAccess private adminAccess;
+  bool private isBeta;
+  LockedBankVaults private lockedBankVaults;
+  ItemNFT private itemNFT;
 
   mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
   uint16 public totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
-  IBrushToken public brush;
+  IBrushToken private brush;
 
   mapping(uint playerId => PlayerInfo playerInfo) public playerInfos;
 
   Skill[] private comparableSkills;
 
-  address public combatantsHelper;
+  address private combatantsHelper;
 
   address public airnode; // The address of the QRNG Airnode
   address public sponsorWallet; // The wallet that will cover the gas costs of the request
@@ -176,6 +185,13 @@ contract Territories is
   modifier isAtLeastLeaderOfClan(uint _clanId, uint _playerId) {
     if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
       revert NotLeader();
+    }
+    _;
+  }
+
+  modifier isClanMember(uint _clanId, uint _playerId) {
+    if (clans.getRank(_clanId, _playerId) == ClanRank.NONE) {
+      revert NotMemberOfClan();
     }
     _;
   }
@@ -212,6 +228,7 @@ contract Territories is
     IClans _clans,
     IBrushToken _brush,
     LockedBankVaults _lockedBankVaults,
+    ItemNFT _itemNFT,
     Skill[] calldata _comparableSkills,
     address _airnodeRrp,
     address _airnode,
@@ -223,10 +240,11 @@ contract Territories is
     __RrpRequesterV0_init(_airnodeRrp);
     __UUPSUpgradeable_init();
     __Ownable_init();
+    players = _players;
     clans = _clans;
     brush = _brush;
     lockedBankVaults = _lockedBankVaults;
-    players = _players;
+    itemNFT = _itemNFT;
     nextTerritoryId = 1;
     nextPendingAttackId = 1;
     adminAccess = _adminAccess;
@@ -274,7 +292,9 @@ contract Territories is
     uint _territoryId,
     uint _leaderPlayerId
   ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
-    _checkCanAttackTerritory(_clanId, _territoryId);
+    uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
+
+    _checkCanAttackTerritory(_clanId, clanIdOccupier, _territoryId);
 
     // Check they are paying enough
     if (msg.value < attackCost()) {
@@ -287,7 +307,6 @@ contract Territories is
     }
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
-    uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
     bool clanUnoccupied = clanIdOccupier == 0;
 
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
@@ -339,25 +358,33 @@ contract Territories is
       revert RequestIdNotKnown();
     }
 
-    uint attackingClanId = pendingAttack.clanId;
-    uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
     uint16 territoryId = pendingAttack.territoryId;
     uint defendingClanId = territories[territoryId].clanIdOccupier;
-    uint48[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
 
-    Skill[] memory randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
-    for (uint i; i < randomSkills.length; ++i) {
-      randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
+    // If the defenders happened to apply a block attacks item before the attack was fulfilled, then the attack is cancelled
+    uint[] memory winners;
+    uint[] memory losers;
+    Skill[] memory randomSkills;
+    bool didAttackersWin;
+    uint attackingClanId = pendingAttack.clanId;
+    if (clanInfos[defendingClanId].blockAttacksTimestamp <= block.timestamp) {
+      uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
+      uint48[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
+
+      randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
+      for (uint i; i < randomSkills.length; ++i) {
+        randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
+      }
+
+      (winners, losers, didAttackersWin) = ClanBattleLibrary.doBattle(
+        players,
+        playerIdAttackers,
+        playerIdDefenders,
+        randomSkills,
+        randomWords[0],
+        randomWords[1]
+      );
     }
-
-    (uint[] memory winners, uint[] memory losers, bool didAttackersWin) = ClanBattleLibrary.doBattle(
-      players,
-      playerIdAttackers,
-      playerIdDefenders,
-      randomSkills,
-      randomWords[0],
-      randomWords[1]
-    );
 
     uint timestamp = pendingAttack.timestamp;
     pendingAttack.attackInProgress = false;
@@ -425,6 +452,31 @@ contract Territories is
     emit Deposit(_amount);
   }
 
+  function blockAttacks(
+    uint _clanId,
+    uint16 _itemTokenId,
+    uint _leaderPlayerId
+  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isClanMember(_clanId, _leaderPlayerId) {
+    Item memory item = itemNFT.getItem(_itemTokenId);
+    if (item.equipPosition != EquipPosition.TERRITORY || item.boostType != BoostType.PVP_BLOCK) {
+      revert NotATerritoryDefenceItem();
+    }
+
+    if (
+      clanInfos[_clanId].blockAttacksTimestamp + clanInfos[_clanId].blockAttacksCooldownHours / 3600 > block.timestamp
+    ) {
+      revert BlockAttacksCooldown();
+    }
+
+    uint blockAttacksTimestamp = block.timestamp + item.boostDuration;
+    clanInfos[_clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
+    clanInfos[_clanId].blockAttacksCooldownHours = uint8(item.boostValue);
+
+    itemNFT.burn(msg.sender, _itemTokenId, 1);
+
+    emit BlockingAttacks(_clanId, _itemTokenId, msg.sender, _leaderPlayerId, blockAttacksTimestamp);
+  }
+
   // Remove a player combatant if they are currently assigned in this clan
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
     // Check if this player is in the defenders list and remove them if so
@@ -482,7 +534,7 @@ contract Territories is
     }
   }
 
-  function _checkCanAttackTerritory(uint _clanId, uint _territoryId) private view {
+  function _checkCanAttackTerritory(uint _clanId, uint _defendingClanId, uint _territoryId) private view {
     if (territories[_territoryId].territoryId != _territoryId) {
       revert InvalidTerritory();
     }
@@ -503,6 +555,10 @@ contract Territories is
 
     if (clanInfo.attackingCooldownTimestamp > block.timestamp) {
       revert ClanAttackingCooldown();
+    }
+
+    if (clanInfos[_defendingClanId].blockAttacksTimestamp > block.timestamp) {
+      revert ClanIsBlockingAttacks();
     }
 
     if (clanInfo.currentlyAttacking) {

@@ -6,8 +6,10 @@ import {ethers} from "hardhat";
 import {createPlayer} from "../../scripts/utils";
 import {fulfillRandomWords} from "../utils";
 import {getXPFromLevel} from "../Players/utils";
-import {ClanRank} from "@paintswap/estfor-definitions/types";
+import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {BigNumber} from "ethers";
+import {allItems} from "../../scripts/data/items";
+import {EstforConstants} from "@paintswap/estfor-definitions";
 
 describe("Territories", function () {
   it("Check defaults", async () => {
@@ -615,7 +617,7 @@ describe("Territories", function () {
     expect((await territories.territories(territoryId + 1)).percentageEmissions).to.eq(100);
   });
 
-  it("Attack territory", async () => {
+  it("Attack territory gas price", async () => {
     const {
       players,
       playerNFT,
@@ -704,6 +706,96 @@ describe("Territories", function () {
     );
     attackCost = await territories.attackCost();
     expect(attackCost).to.eq(baseAttackCost.add((await territories.movingAverageGasPrice()).mul(expectedGasLimit)));
+  });
+
+  it("Blocking Attacks with item", async () => {
+    const {
+      playerNFT,
+      itemNFT,
+      avatarId,
+      clans,
+      clanId,
+      playerId,
+      territories,
+      combatantsHelper,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      tierId,
+      imageId,
+      origName,
+    } = await loadFixture(clanFixture);
+
+    const territoryId = 1;
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await territories
+      .connect(alice)
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+
+    // Create a new player and a new clan
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+
+    const bobClanId = clanId + 1;
+    await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
+
+    const items = allItems.filter(
+      (inputItem) =>
+        inputItem.tokenId == EstforConstants.MIRROR_SHIELD || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD
+    );
+    await itemNFT.addItems(items);
+    await itemNFT.testMints(alice.address, [EstforConstants.MIRROR_SHIELD, EstforConstants.PROTECTION_SHIELD], [2, 1]);
+
+    // Wrong item
+    await expect(
+      territories.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId)
+    ).to.be.revertedWithCustomError(territories, "NotATerritoryDefenceItem");
+
+    await territories.connect(alice).blockAttacks(clanId, EstforConstants.MIRROR_SHIELD, playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MIRROR_SHIELD)).to.eq(1);
+
+    await expect(
+      territories
+        .connect(bob)
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+    ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
+
+    const mirrorShield = items.find((item) => item.tokenId == EstforConstants.MIRROR_SHIELD) as ItemInput;
+    await ethers.provider.send("evm_increaseTime", [mirrorShield.boostDuration - 10]);
+
+    await expect(
+      territories
+        .connect(bob)
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+    ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
+
+    // Cannot apply it until the cooldown is done
+    await expect(
+      territories.connect(alice).blockAttacks(clanId, EstforConstants.MIRROR_SHIELD, playerId)
+    ).to.be.revertedWithCustomError(territories, "BlockAttacksCooldown");
+
+    await ethers.provider.send("evm_increaseTime", [mirrorShield.boostValue * 3600 + 10]);
+    await territories.connect(alice).blockAttacks(clanId, EstforConstants.MIRROR_SHIELD, playerId);
+
+    await ethers.provider.send("evm_increaseTime", [mirrorShield.boostDuration - 10]);
+
+    await expect(
+      territories
+        .connect(bob)
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+    ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
+
+    // Can now attack
+    await ethers.provider.send("evm_increaseTime", [10]);
+    await expect(
+      territories
+        .connect(bob)
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+    ).to.not.be.reverted;
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MIRROR_SHIELD)).to.eq(0);
   });
 
   it("Cannot be used to attack a territory if you are defending a locked bank vault", async () => {});

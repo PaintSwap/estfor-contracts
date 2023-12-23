@@ -319,6 +319,7 @@ export const playersFixture = async function () {
       clans.address,
       brush.address,
       lockedBankVaults.address,
+      itemNFT.address,
       allTerritorySkills,
       mockAPI3OracleClient.address,
       airnode,

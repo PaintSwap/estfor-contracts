@@ -463,6 +463,7 @@ async function main() {
       clans.address,
       brush.address,
       lockedBankVaults.address,
+      itemNFT.address,
       allTerritorySkills,
       api3Oracle.address,
       airnode,

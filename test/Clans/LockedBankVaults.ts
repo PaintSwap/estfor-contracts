@@ -868,8 +868,8 @@ describe("LockedBankVaults", function () {
       })
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
 
-    // Increase time to items[0].boostDuration
-    await ethers.provider.send("evm_increaseTime", [items[0].boostDuration - 10]);
+    const protectionShield = items.find((item) => item.tokenId == EstforConstants.PROTECTION_SHIELD) as ItemInput;
+    await ethers.provider.send("evm_increaseTime", [protectionShield.boostDuration - 10]);
 
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
@@ -879,7 +879,7 @@ describe("LockedBankVaults", function () {
 
     // Allow extending it even before it finishes
     await lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId);
-    await ethers.provider.send("evm_increaseTime", [items[0].boostDuration - 10]);
+    await ethers.provider.send("evm_increaseTime", [protectionShield.boostDuration - 10]);
 
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {

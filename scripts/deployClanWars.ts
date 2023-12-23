@@ -125,6 +125,7 @@ async function main() {
       CLANS_ADDRESS,
       BRUSH_ADDRESS,
       lockedBankVaults.address,
+      itemNFT.address,
       allTerritorySkills,
       airnodeRrpAddress,
       airnode,
