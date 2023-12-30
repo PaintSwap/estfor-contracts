@@ -158,7 +158,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     bytes memory externalURL = abi.encodePacked(
       "https://",
       isBeta ? "beta." : "",
-      "estfor.com/game/journal/",
+      "estfor.com/journal/",
       _playerId.toString()
     );
 
