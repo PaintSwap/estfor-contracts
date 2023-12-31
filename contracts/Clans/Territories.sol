@@ -487,7 +487,7 @@ contract Territories is
       msg.sender,
       _leaderPlayerId,
       blockAttacksTimestamp,
-      blockAttacksTimestamp + item.boostValue * 3600
+      blockAttacksTimestamp + uint(item.boostValue) * 3600
     );
   }
 

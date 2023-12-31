@@ -867,8 +867,9 @@ describe("LockedBankVaults", function () {
       lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.MIRROR_SHIELD, playerId)
     ).to.be.revertedWithCustomError(lockedBankVaults, "NotALockedVaultDefenceItem");
 
-    await lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.PROTECTION_SHIELD)).to.eq(1);
+    const itemTokenId = EstforConstants.PROTECTION_SHIELD;
+    await lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId);
+    expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(1);
 
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
@@ -876,7 +877,7 @@ describe("LockedBankVaults", function () {
       })
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
 
-    const protectionShield = items.find((item) => item.tokenId == EstforConstants.PROTECTION_SHIELD) as ItemInput;
+    const protectionShield = items.find((item) => item.tokenId == itemTokenId) as ItemInput;
     await ethers.provider.send("evm_increaseTime", [protectionShield.boostDuration - 10]);
 
     await expect(
@@ -886,7 +887,7 @@ describe("LockedBankVaults", function () {
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
 
     // Allow extending it even before it finishes
-    await lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId);
+    await lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId);
     await ethers.provider.send("evm_increaseTime", [protectionShield.boostDuration - 10]);
 
     await expect(
@@ -902,7 +903,7 @@ describe("LockedBankVaults", function () {
       })
     ).to.not.be.reverted;
 
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.PROTECTION_SHIELD)).to.eq(0);
+    expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(0);
   });
 
   it("Cannot attack a clan twice within the cooldown", async () => {});

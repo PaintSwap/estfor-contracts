@@ -68,7 +68,14 @@ contract LockedBankVaults is
   event UpdateMovingAverageGasPrice(uint movingAverage);
   event SetExpectedGasLimitFulfill(uint expectedGasLimitFulfill);
   event SetBaseAttackCost(uint baseAttackCost);
-  event BlockingAttacks(uint clanId, uint itemTokenId, uint leaderPlayerId, uint blockAttacksTimestamp);
+  event BlockingAttacks(
+    uint clanId,
+    uint itemTokenId,
+    address from,
+    uint leaderPlayerId,
+    uint blockAttacksTimestamp,
+    uint blockAttacksCooldownTimestamp
+  );
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -512,7 +519,14 @@ contract LockedBankVaults is
 
     itemNFT.burn(msg.sender, _itemTokenId, 1);
 
-    emit BlockingAttacks(_clanId, _itemTokenId, _leaderPlayerId, blockAttacksTimestamp);
+    emit BlockingAttacks(
+      _clanId,
+      _itemTokenId,
+      msg.sender,
+      _leaderPlayerId,
+      blockAttacksTimestamp,
+      blockAttacksTimestamp
+    );
   }
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
