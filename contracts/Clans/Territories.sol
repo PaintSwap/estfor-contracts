@@ -735,6 +735,8 @@ contract Territories is
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.attackingCooldownTimestamp = 0;
     clanInfo.assignCombatantsCooldownTimestamp = 0;
+    clanInfo.blockAttacksTimestamp = 0;
+    clanInfo.blockAttacksCooldownHours = 0;
     for (uint i; i < clanInfo.playerIds.length; ++i) {
       playerInfos[clanInfo.playerIds[i]].combatantCooldownTimestamp = 0;
     }
