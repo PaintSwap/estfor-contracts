@@ -250,7 +250,6 @@ describe("LockedBankVaults", function () {
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
 
-    // Nominate defenders
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
     // Create a new clan to attack/defend
@@ -738,7 +737,7 @@ describe("LockedBankVaults", function () {
     await fulfillRandomWords(1, lockedBankVaults, mockAPI3OracleClient);
   });
 
-  it("Allow re-attacking if the bank has the appropriate item", async () => {
+  it("Allow re-attacking if the user has the appropriate item", async () => {
     const {
       clans,
       lockedBankVaults,
@@ -761,7 +760,6 @@ describe("LockedBankVaults", function () {
       mockAPI3OracleClient,
     } = await loadFixture(clanFixture);
 
-    // Nominate defenders
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
     // Create a new clan to attack/defend
@@ -802,10 +800,18 @@ describe("LockedBankVaults", function () {
       })
     ).to.be.revertedWithCustomError(lockedBankVaults, "NotALockedVaultAttackItem");
 
+    // The re-attacking cooldown should be the same afterwards when using an item
+    let battleInfo = await lockedBankVaults.lastClanBattles(clanId, bobClanId);
+    const beforeCooldownTimestamp = battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp;
+    expect(battleInfo.numReattacks).to.eq(0);
     await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.DEVILISH_FINGERS, playerId, {
       value: await lockedBankVaults.attackCost(),
     });
+
     await fulfillRandomWords(2, lockedBankVaults, mockAPI3OracleClient);
+    battleInfo = await lockedBankVaults.lastClanBattles(clanId, bobClanId);
+    expect(battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp).to.eq(beforeCooldownTimestamp);
+    expect(battleInfo.numReattacks).to.eq(1);
 
     await ethers.provider.send("evm_increaseTime", [(await lockedBankVaults.ATTACKING_COOLDOWN()).toNumber()]);
     await expect(
@@ -813,6 +819,8 @@ describe("LockedBankVaults", function () {
         .connect(alice)
         .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanAttackingSameClanCooldown");
+
+    // TODO: Check other clan
   });
 
   it("Blocking Attacks with item", async () => {
