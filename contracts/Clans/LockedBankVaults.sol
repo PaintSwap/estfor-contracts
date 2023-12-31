@@ -331,7 +331,8 @@ contract LockedBankVaults is
     // Don't change the attacking timestamp if re-attacking
     uint40 reattackingCooldownTimestamp = uint40(block.timestamp + MIN_REATTACKING_COOLDOWN);
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
-    ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][_defendingClanId];
+    uint higherClanId = _clanId < _defendingClanId ? _defendingClanId : _clanId;
+    ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][higherClanId];
     if (lowerClanId == _clanId) {
       if (isReattacking) {
         reattackingCooldownTimestamp = battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -680,7 +681,8 @@ contract LockedBankVaults is
     // Check if they are re-attacking this clan and allowed to
     uint numReattacks;
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
-    ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][_defendingClanId];
+    uint higherClanId = _clanId < _defendingClanId ? _defendingClanId : _clanId;
+    ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][higherClanId];
     if (lowerClanId == _clanId) {
       if (battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp > block.timestamp) {
         numReattacks = battleInfo.numReattacks;
@@ -703,9 +705,7 @@ contract LockedBankVaults is
       if (item.equipPosition != EquipPosition.LOCKED_VAULT || item.boostType != BoostType.PVP_REATTACK) {
         revert NotALockedVaultAttackItem();
       }
-      if (item.boostValue > numReattacks) {
-        canReattack = true;
-      }
+      canReattack = item.boostValue > numReattacks;
     }
 
     if (isReattacking && !canReattack) {
