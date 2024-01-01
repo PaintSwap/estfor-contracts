@@ -487,7 +487,7 @@ async function main() {
   });
   const combatantsHelper = await upgrades.deployProxy(
     CombatantsHelper,
-    [players.address, clans.address, territories.address, lockedBankVaults.address],
+    [players.address, clans.address, territories.address, lockedBankVaults.address, adminAccess.address, isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],

@@ -9,6 +9,8 @@ import {IClans} from "../interfaces/IClans.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {ICombatants} from "../interfaces/ICombatants.sol";
 
+import {AdminAccess} from "../AdminAccess.sol";
+
 import {ClanRank} from "../globals/clans.sol";
 
 import {EstforLibrary} from "../EstforLibrary.sol";
@@ -23,11 +25,24 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   error PlayerAlreadyExistingCombatant();
   error SetCombatantsIncorrectly();
   error NotSettingCombatants();
+  error NotAdminAndBeta();
+  error PlayerCombatantCooldownTimestamp();
+  error PlayerIdsNotSortedOrDuplicates();
+  error NotMemberOfClan();
 
+  struct PlayerInfo {
+    uint40 combatantCooldownTimestamp;
+  }
+
+  mapping(uint playerId => PlayerInfo playerInfos) private playerInfos;
+  AdminAccess private adminAccess;
+  bool private isBeta;
   IClans public clans;
   IPlayers public players;
   ICombatants public territories;
   ICombatants public lockedVaults;
+
+  uint public constant COMBATANT_COOLDOWN = 3 days;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -43,6 +58,13 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     _;
   }
 
+  modifier isAdminAndBeta() {
+    if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
+      revert NotAdminAndBeta();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -52,7 +74,9 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     IPlayers _players,
     IClans _clans,
     ICombatants _territories,
-    ICombatants _lockedVaults
+    ICombatants _lockedVaults,
+    AdminAccess _adminAccess,
+    bool _isBeta
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
@@ -61,6 +85,9 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     clans = _clans;
     territories = _territories;
     lockedVaults = _lockedVaults;
+
+    adminAccess = AdminAccess(_adminAccess);
+    isBeta = _isBeta;
   }
 
   function assignCombatants(
@@ -75,7 +102,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
       revert NotSettingCombatants();
     }
 
-    _checkAssignCombatants(
+    _checkAndSetAssignCombatants(
       territories,
       _setTerritoryCombatants,
       _territoryPlayerIds,
@@ -85,7 +112,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
       _clanId,
       _leaderPlayerId
     );
-    _checkAssignCombatants(
+    _checkAndSetAssignCombatants(
       lockedVaults,
       _setLockedVaultCombatants,
       _lockedVaultPlayerIds,
@@ -97,7 +124,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     );
   }
 
-  function _checkAssignCombatants(
+  function _checkAndSetAssignCombatants(
     ICombatants _combatants,
     bool _setCombatants,
     uint48[] calldata _playerIds,
@@ -108,26 +135,51 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     uint _leaderPlayerId
   ) private {
     if (_setCombatants) {
+      uint newCombatantCooldownTimestamp = block.timestamp + COMBATANT_COOLDOWN;
       // Check they are not being placed as a locked vault combatant
-      if (_setOtherCombantants) {
-        for (uint i; i < _playerIds.length; ++i) {
+      for (uint i; i < _playerIds.length; ++i) {
+        if (_setOtherCombantants) {
           uint searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
           if (searchIndex != type(uint).max) {
             revert PlayerOnTerritoryAndLockedVault();
           }
-        }
-      } else {
-        for (uint i; i < _playerIds.length; ++i) {
+        } else {
           bool isCombatant = _otherCombatants.isCombatant(_clanId, _playerIds[i]);
           if (isCombatant) {
             revert PlayerAlreadyExistingCombatant();
           }
         }
-      }
 
-      _combatants.assignCombatants(_clanId, _playerIds, _leaderPlayerId);
+        // Check the cooldown periods on combatant assignment.
+        // They might have just joined from another clan or assigned from territory to locked vaults
+        if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
+          revert PlayerCombatantCooldownTimestamp();
+        }
+
+        // Check they are part of the clan
+        if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
+          revert NotMemberOfClan();
+        }
+
+        if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
+          revert PlayerIdsNotSortedOrDuplicates();
+        }
+
+        playerInfos[_playerIds[i]].combatantCooldownTimestamp = uint40(newCombatantCooldownTimestamp);
+      }
+      _combatants.assignCombatants(_clanId, _playerIds, newCombatantCooldownTimestamp, _leaderPlayerId);
     } else if (_playerIds.length > 0) {
       revert SetCombatantsIncorrectly();
+    }
+  }
+
+  function clearCooldowns(uint _clanId, uint48[] calldata _playerIds, uint _leaderPlayerId) public isAdminAndBeta {
+    if (clans.getRank(_clanId, _leaderPlayerId) < ClanRank.LEADER) {
+      revert NotLeader();
+    }
+
+    for (uint i; i < _playerIds.length; ++i) {
+      playerInfos[_playerIds[i]].combatantCooldownTimestamp = 0;
     }
   }
 

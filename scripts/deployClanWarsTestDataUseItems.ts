@@ -1,12 +1,11 @@
 import {ethers, upgrades} from "hardhat";
 import {
-  DEV_ADDRESS,
+  COMBATANTS_HELPER_ADDRESS,
   ITEM_NFT_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
-  SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
 } from "./contractAddresses";
-import {ItemNFT, LockedBankVaults, Territories} from "../typechain-types";
+import {CombatantsHelper, ItemNFT, LockedBankVaults, Territories} from "../typechain-types";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
@@ -20,6 +19,10 @@ async function main() {
     "LockedBankVaults",
     LOCKED_BANK_VAULT_ADDRESS
   )) as LockedBankVaults;
+  const combatantsHelper = (await ethers.getContractAt(
+    "CombatantsHelper",
+    COMBATANTS_HELPER_ADDRESS
+  )) as CombatantsHelper;
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)).connect(owner) as ItemNFT;
 
@@ -41,13 +44,6 @@ async function main() {
     [2, 2, 2]
   );
 
-  {
-    // TODO: Remove this bit
-    const tx = await lockedBankVaults.tempSetShop(SHOP_ADDRESS, DEV_ADDRESS);
-    await tx.wait();
-    console.log("set shop and dev");
-  }
-
   let tx = await lockedBankVaults
     .connect(alice)
     .attackVaults(aliceClanId, clanId, 0, alicePlayerId, {value: vaultAttackCost});
@@ -57,6 +53,10 @@ async function main() {
   tx = await lockedBankVaults.connect(alice).clearCooldowns(aliceClanId, []);
   await tx.wait();
   console.log("clear cooldowns");
+
+  tx = await combatantsHelper.connect(alice).clearCooldowns(aliceClanId, [alicePlayerId], alicePlayerId);
+  await tx.wait();
+  console.log("combatantsHelper clear cooldowns");
 
   tx = await lockedBankVaults
     .connect(alice)

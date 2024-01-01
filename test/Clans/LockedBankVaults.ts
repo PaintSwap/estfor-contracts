@@ -101,6 +101,8 @@ describe("LockedBankVaults", function () {
     const {lockedBankVaults, combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+    // Clear player id part so we can hit the custom error we want
+    await combatantsHelper.clearCooldowns(clanId, [playerId], playerId);
 
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId)

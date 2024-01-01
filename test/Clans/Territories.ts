@@ -260,8 +260,8 @@ describe("Territories", function () {
     // Free to attack another territory as you are no longer a defender (but only after player cooldown timestamp)
     await expect(
       combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId)
-    ).to.be.revertedWithCustomError(territories, "PlayerCombatantCooldownTimestamp");
-    await ethers.provider.send("evm_increaseTime", [(await territories.COMBATANT_COOLDOWN()).toNumber()]);
+    ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
+    await ethers.provider.send("evm_increaseTime", [(await combatantsHelper.COMBATANT_COOLDOWN()).toNumber()]);
     await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
       value: await territories.attackCost(),
@@ -441,11 +441,11 @@ describe("Territories", function () {
 
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId, playerId], false, [], playerId)
-    ).to.be.revertedWithCustomError(territories, "PlayerIdsNotSortedOrDuplicates");
+    ).to.be.revertedWithCustomError(combatantsHelper, "PlayerIdsNotSortedOrDuplicates");
 
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId, playerId], false, [], playerId)
-    ).to.be.revertedWithCustomError(territories, "PlayerIdsNotSortedOrDuplicates");
+    ).to.be.revertedWithCustomError(combatantsHelper, "PlayerIdsNotSortedOrDuplicates");
   });
 
   it("Must be a leader to attack a territory", async () => {
@@ -540,6 +540,8 @@ describe("Territories", function () {
     const {territories, combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    // Clear player id part so we can hit the custom error we want
+    await combatantsHelper.clearCooldowns(clanId, [playerId], playerId);
 
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)

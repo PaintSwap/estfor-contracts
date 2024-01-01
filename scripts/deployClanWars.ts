@@ -78,8 +78,8 @@ async function main() {
   // Had issues deploying locked bank vault & territories without manually increasing gas limit.
   // TODO: If upgrading OZ can use txOverrides for gas limit
   const FEE_DATA = {
-    maxFeePerGas: ethers.utils.parseUnits("200", "gwei"),
-    maxPriorityFeePerGas: ethers.utils.parseUnits("200", "gwei"),
+    maxFeePerGas: ethers.utils.parseUnits("35", "gwei"),
+    maxPriorityFeePerGas: ethers.utils.parseUnits("35", "gwei"),
   };
 
   const provider = new ethers.providers.FallbackProvider([ethers.provider], 1);
@@ -158,7 +158,7 @@ async function main() {
   });
   const combatantsHelper = await upgrades.deployProxy(
     CombatantsHelper,
-    [PLAYERS_ADDRESS, clans.address, territories.address, lockedBankVaults.address],
+    [PLAYERS_ADDRESS, clans.address, territories.address, lockedBankVaults.address, ADMIN_ACCESS_ADDRESS, isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],

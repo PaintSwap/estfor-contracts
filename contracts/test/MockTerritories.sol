@@ -21,5 +21,10 @@ contract MockTerritories is ITerritories {
     return false;
   }
 
-  function assignCombatants(uint clanId, uint48[] calldata playerIds, uint leaderPlayerId) external override {}
+  function assignCombatants(
+    uint clanId,
+    uint48[] calldata playerIds,
+    uint combatantCooldownTimestamp,
+    uint leaderPlayerId
+  ) external override {}
 }

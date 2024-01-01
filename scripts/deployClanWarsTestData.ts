@@ -90,6 +90,11 @@ async function main() {
   tx = await lockedBankVaults.connect(alice).clearCooldowns(aliceClanId, [1]);
   await tx.wait();
   console.log("clear cooldowns");
+
+  tx = await combatantsHelper.connect(alice).clearCooldowns(aliceClanId, [532, 2], 2);
+  await tx.wait();
+  console.log("combatantsHelper clear cooldowns");
+
   const vaultAttackCost = await lockedBankVaults.attackCost();
   tx = await lockedBankVaults.connect(alice).attackVaults(aliceClanId, 1, 0, 2, {value: vaultAttackCost});
   await tx.wait();

@@ -72,9 +72,9 @@ if (!isBeta) {
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
-  itemNFTLibrary = "0xb5d3d1d4ad9c873add77646d90bfa5762871e831";
+  itemNFTLibrary = "0xa602bb0d1a05e15ebe79a1c76b4c384eb16b9ff5";
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
-  estforLibrary = "0x9a67c7a13699667359a3807b286c6abd602a88b1";
+  estforLibrary = "0xacc03e8e9bc871abd4823944d5b5b6ffff3de9ba";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
@@ -93,13 +93,13 @@ if (!isBeta) {
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
-  clanBattleLibrary = "0xfa097d99a3f7f28240881e26eea07a523883329f";
-  lockedBankVaults = "0xefc0e8fcdf2cc54953492de921cb0f8e5c278d65";
-  territories = "0x8e570d4bc761eaa59d99238452f3b30525f471f0";
-  combatantsHelper = "0x3669d738d4f2847e00fd6db113d8733ab8a5c0cc";
+  clanBattleLibrary = "0x51af1a29581297a9ea29b75460a4ce3181c06a83";
+  lockedBankVaults = "0xf936ffc8b033502391c1349739c4fdc454eb1f4a";
+  territories = "0x38db4551a160e8c70e916eb787ec042ee42eacd6";
+  combatantsHelper = "0xbda93b6985d510170f32a5490c1433a85752c0f5";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
-  sponsorWalletLockedVault = "0x6e02b53e7cb12f816dd706fb41aa9a86d6b69cf7";
-  sponsorWalletTerritories = "0x31cd5341a1aff015ae0460fa970cfd144b8064f4";
+  sponsorWalletLockedVault = "0x1c789304ac664143578f335e63d0e1924acd6ec4";
+  sponsorWalletTerritories = "0x8ed70bb0f80b531cd241b7053e9233fd172f2bb0";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;

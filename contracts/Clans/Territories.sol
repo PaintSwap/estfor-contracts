@@ -86,14 +86,12 @@ contract Territories is
   error LengthMismatch();
   error OnlyClans();
   error OnlyCombatantsHelper();
-  error PlayerIdsNotSortedOrDuplicates();
   error NotOwnerOfPlayerAndActive();
   error HarvestingTooSoon();
   error NotAdminAndBeta();
   error CurrentlyOwnATerritory();
   error NoCombatants();
   error TooManyCombatants();
-  error PlayerCombatantCooldownTimestamp();
   error PlayerDefendingLockedVaults();
   error CannotChangeCombatantsDuringAttack();
   error NoEmissionsToHarvest();
@@ -130,10 +128,6 @@ contract Territories is
     uint48[] playerIds;
   }
 
-  struct PlayerInfo {
-    uint40 combatantCooldownTimestamp;
-  }
-
   struct PendingAttack {
     uint40 clanId;
     uint16 territoryId;
@@ -157,8 +151,6 @@ contract Territories is
   uint16 public totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
   IBrushToken private brush;
 
-  mapping(uint playerId => PlayerInfo playerInfo) public playerInfos;
-
   Skill[] private comparableSkills;
 
   address private combatantsHelper;
@@ -178,7 +170,6 @@ contract Territories is
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
-  uint public constant COMBATANT_COOLDOWN = MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN;
   uint public constant PERCENTAGE_EMISSION_MUL = 10;
   uint public constant HARVESTING_COOLDOWN = 8 hours;
 
@@ -278,19 +269,16 @@ contract Territories is
   function assignCombatants(
     uint _clanId,
     uint48[] calldata _playerIds,
+    uint _combatantCooldownTimestamp,
     uint _leaderPlayerId
   ) external override onlyCombatantsHelper {
     _checkCanAssignCombatants(_clanId, _playerIds);
-
-    for (uint i; i < _playerIds.length; ++i) {
-      playerInfos[_playerIds[i]].combatantCooldownTimestamp = uint40(block.timestamp + COMBATANT_COOLDOWN);
-    }
 
     clanInfos[_clanId].playerIds = _playerIds;
     clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(
       block.timestamp + MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
     );
-    emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, block.timestamp + COMBATANT_COOLDOWN);
+    emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
   // This needs to call the oracle VRF on-demand and costs some ftm
@@ -463,8 +451,8 @@ contract Territories is
   function blockAttacks(
     uint _clanId,
     uint16 _itemTokenId,
-    uint _leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isClanMember(_clanId, _leaderPlayerId) {
+    uint _playerId
+  ) external isOwnerOfPlayerAndActive(_playerId) isClanMember(_clanId, _playerId) {
     Item memory item = itemNFT.getItem(_itemTokenId);
     if (item.equipPosition != EquipPosition.TERRITORY || item.boostType != BoostType.PVP_BLOCK) {
       revert NotATerritoryDefenceItem();
@@ -486,7 +474,7 @@ contract Territories is
       _clanId,
       _itemTokenId,
       msg.sender,
-      _leaderPlayerId,
+      _playerId,
       blockAttacksTimestamp,
       blockAttacksTimestamp + uint(item.boostValue) * 3600
     );
@@ -530,22 +518,6 @@ contract Territories is
     // Can only change combatants every so often
     if (clanInfos[_clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
       revert ClanCombatantsChangeCooldown();
-    }
-
-    // Check the cooldown periods on combatant assignment (because they might have just joined another clan)
-    for (uint i; i < _playerIds.length; ++i) {
-      if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
-        revert PlayerCombatantCooldownTimestamp();
-      }
-
-      // Check they are part of the clan
-      if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
-        revert NotMemberOfClan();
-      }
-
-      if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
-        revert PlayerIdsNotSortedOrDuplicates();
-      }
     }
   }
 
@@ -738,9 +710,6 @@ contract Territories is
     clanInfo.assignCombatantsCooldownTimestamp = 0;
     clanInfo.blockAttacksTimestamp = 0;
     clanInfo.blockAttacksCooldownHours = 0;
-    for (uint i; i < clanInfo.playerIds.length; ++i) {
-      playerInfos[clanInfo.playerIds[i]].combatantCooldownTimestamp = 0;
-    }
   }
 
   // Useful to re-run a battle for testing
