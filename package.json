@@ -77,7 +77,7 @@
     "editItems": "npx hardhat run scripts/editItems.ts",
     "removeItems": "npx hardhat run scripts/removeItems.ts",
     "mintAllItems": "npx hardhat run scripts/mintAllItems.ts",
-    "addShopItem": "npx hardhat run scripts/addShopItem.ts",
+    "addShopItems": "npx hardhat run scripts/addShopItems.ts",
     "editShopItems": "npx hardhat run scripts/editShopItems.ts",
     "removeShopItem": "npx hardhat run scripts/removeShopItem.ts",
     "editClanTiers": "npx hardhat run scripts/editClanTiers.ts",
