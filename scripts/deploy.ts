@@ -52,7 +52,7 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {BRUSH_ADDRESS, DECORATOR_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
+import {BRUSH_ADDRESS, DECORATOR_ADDRESS, DEV_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
@@ -83,7 +83,7 @@ async function main() {
   let paintSwapDecorator: TestPaintSwapDecorator;
   let paintSwapArtGallery: TestPaintSwapArtGallery;
   let tx;
-  let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
+  let devAddress = DEV_ADDRESS;
   let pid = 0;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
@@ -436,6 +436,8 @@ async function main() {
       brush.address,
       bankFactory.address,
       itemNFT.address,
+      shop.address,
+      devAddress,
       allTerritorySkills,
       api3Oracle.address,
       airnode,

@@ -58,7 +58,8 @@ contract LockedBankVaults is
     uint defendingClanId,
     uint[] randomWords,
     uint attackingTimestamp,
-    uint percentageToTake
+    uint percentageToTake,
+    uint brushBurnt
   );
 
   event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
@@ -165,6 +166,8 @@ contract LockedBankVaults is
   bool private isBeta;
   IBankFactory private bankFactory;
   address private combatantsHelper;
+  address private pool;
+  address private dev;
 
   address private airnode; // The address of the QRNG Airnode
   address public sponsorWallet; // The wallet that will cover the gas costs of the request
@@ -246,6 +249,8 @@ contract LockedBankVaults is
     IBrushToken _brush,
     IBankFactory _bankFactory,
     ItemNFT _itemNFT,
+    address _pool,
+    address _dev,
     Skill[] calldata _comparableSkills,
     address _airnodeRrp,
     address _airnode,
@@ -262,6 +267,8 @@ contract LockedBankVaults is
     brush = _brush;
     bankFactory = _bankFactory;
     itemNFT = _itemNFT;
+    pool = _pool;
+    dev = _dev;
 
     adminAccess = _adminAccess;
     isBeta = _isBeta;
@@ -410,34 +417,45 @@ contract LockedBankVaults is
     clanInfos[attackingClanId].currentlyAttacking = false;
 
     uint percentageToTake = 10;
-    if (didAttackersWin) {
-      // Go through all the defendingVaults
-      uint totalWon;
-      uint vaultOffset = clanInfos[defendingClanId].defendingVaultsOffset;
-      uint length = clanInfos[defendingClanId].defendingVaults.length;
-      for (uint i = vaultOffset; i < length; ++i) {
-        Vault storage defendingVault = clanInfos[defendingClanId].defendingVaults[i];
-        if (defendingVault.timestamp > block.timestamp) {
-          uint amount = defendingVault.amount;
-          uint stealAmount = amount / percentageToTake;
-          defendingVault.amount = uint80(amount - stealAmount);
-          clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount);
-          totalWon += stealAmount;
-        }
+    uint losingClanId = didAttackersWin ? defendingClanId : attackingClanId;
 
-        if (defendingVault.timestamp1 > block.timestamp) {
-          uint amount1 = defendingVault.amount1;
-          uint stealAmount1 = amount1 / percentageToTake;
-          defendingVault.amount1 = uint80(amount1 - stealAmount1);
-          clanInfos[defendingClanId].totalBrushLocked -= uint96(stealAmount1);
-          totalWon += stealAmount1;
-        }
+    // Go through all the defendingVaults of who ever lost and take a percentage from them
+    uint totalWon;
+    uint vaultOffset = clanInfos[losingClanId].defendingVaultsOffset;
+    uint length = clanInfos[losingClanId].defendingVaults.length;
+    for (uint i = vaultOffset; i < length; ++i) {
+      Vault storage losersVault = clanInfos[losingClanId].defendingVaults[i];
+      if (losersVault.timestamp > block.timestamp) {
+        uint amount = losersVault.amount;
+        uint stealAmount = amount / percentageToTake;
+        losersVault.amount = uint80(amount - stealAmount);
+        clanInfos[losingClanId].totalBrushLocked -= uint96(stealAmount);
+        totalWon += stealAmount;
       }
 
-      _lockFunds(attackingClanId, address(0), 0, totalWon);
+      if (losersVault.timestamp1 > block.timestamp) {
+        uint amount1 = losersVault.amount1;
+        uint stealAmount1 = amount1 / percentageToTake;
+        losersVault.amount1 = uint80(amount1 - stealAmount1);
+        clanInfos[losingClanId].totalBrushLocked -= uint96(stealAmount1);
+        totalWon += stealAmount1;
+      }
     }
 
     _updateAverageGasPrice();
+
+    uint brushBurnt;
+    if (!didAttackersWin) {
+      // Lost so take a percentage from the loser's vaults
+      uint amountToTreasure = totalWon / 2;
+      uint amountToDao = totalWon / 4;
+      brushBurnt = totalWon - (amountToTreasure + amountToDao);
+
+      // Send to the treasure
+      brush.transfer(pool, amountToTreasure);
+      brush.transfer(dev, amountToDao);
+      brush.burn(brushBurnt);
+    }
 
     emit BattleResult(
       uint(_requestId),
@@ -449,8 +467,13 @@ contract LockedBankVaults is
       defendingClanId,
       randomWords,
       timestamp,
-      percentageToTake
+      percentageToTake,
+      brushBurnt
     );
+
+    if (didAttackersWin) {
+      _lockFunds(attackingClanId, address(0), 0, totalWon);
+    }
   }
 
   function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
@@ -532,7 +555,7 @@ contract LockedBankVaults is
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
     _lockFunds(_clanId, _from, _playerId, _amount);
-    if (!brush.transferFrom(msg.sender, address(this), _amount)) {
+    if (_amount != 0 && !brush.transferFrom(msg.sender, address(this), _amount)) {
       revert TransferFailed();
     }
   }
@@ -775,6 +798,11 @@ contract LockedBankVaults is
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
     expectedGasLimitFulfill = _expectedGasLimitFulfill;
     emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  }
+
+  function tempSetShop(address _pool, address _dev) external onlyOwner {
+    pool = _pool;
+    dev = _dev;
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) public isAdminAndBeta {

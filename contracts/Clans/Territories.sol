@@ -394,14 +394,6 @@ contract Territories is
     }
 
     uint timestamp = pendingAttack.timestamp;
-    pendingAttack.attackInProgress = false;
-    clanInfos[attackingClanId].currentlyAttacking = false;
-
-    if (didAttackersWin) {
-      _claimTerritory(territoryId, attackingClanId);
-      // Update old clan
-      clanInfos[defendingClanId].ownsTerritoryId = 0;
-    }
 
     _updateAverageGasPrice();
 
@@ -417,6 +409,15 @@ contract Territories is
       timestamp,
       territoryId
     );
+
+    pendingAttack.attackInProgress = false;
+    clanInfos[attackingClanId].currentlyAttacking = false;
+
+    if (didAttackersWin) {
+      _claimTerritory(territoryId, attackingClanId);
+      // Update old clan
+      clanInfos[defendingClanId].ownsTerritoryId = 0;
+    }
   }
 
   function harvest(uint _territoryId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {

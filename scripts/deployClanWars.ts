@@ -7,11 +7,13 @@ import {
   BRUSH_ADDRESS,
   CLANS_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
+  DEV_ADDRESS,
   FAKE_BRUSH_WFTM_LP_ADDRESS,
   ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
+  SHOP_ADDRESS,
 } from "./contractAddresses";
 import {allTerritories, allTerritorySkills} from "./data/territories";
 import {verifyContracts} from "./utils";
@@ -101,6 +103,8 @@ async function main() {
       BRUSH_ADDRESS,
       BANK_FACTORY_ADDRESS,
       itemNFT.address,
+      SHOP_ADDRESS,
+      DEV_ADDRESS,
       allTerritorySkills,
       airnodeRrpAddress,
       airnode,
@@ -168,7 +172,6 @@ async function main() {
   const paintSwapDecorator = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
 
   const pid = 22;
-  let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
 
   const newDecoratorProvider = true;
   let decoratorProvider: DecoratorProvider;
@@ -180,7 +183,7 @@ async function main() {
       territories.address,
       BRUSH_ADDRESS,
       PLAYER_NFT_ADDRESS,
-      devAddress,
+      DEV_ADDRESS,
       pid,
     ])) as DecoratorProvider;
     await decoratorProvider.deployed();
