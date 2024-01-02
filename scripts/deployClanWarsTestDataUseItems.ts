@@ -9,10 +9,10 @@ import {CombatantsHelper, ItemNFT, LockedBankVaults, Territories} from "../typec
 import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
-  //  const [owner, alice] = await ethers.getSigners();
-  //  console.log(`Deploying clan wars test data: ${owner.address} on chain id ${await owner.getChainId()}`);
-  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  const alice = await ethers.getImpersonatedSigner("0xBa00694692267ed0B5154d48Fcb4D435D0B24d3F");
+  const [owner, alice] = await ethers.getSigners();
+  console.log(`Deploying clan wars test data: ${owner.address} on chain id ${await owner.getChainId()}`);
+  // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
+  // const alice = await ethers.getImpersonatedSigner("0xBa00694692267ed0B5154d48Fcb4D435D0B24d3F");
 
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
   const lockedBankVaults = (await ethers.getContractAt(
@@ -33,18 +33,23 @@ async function main() {
   const alicePlayerId = 2;
   const vaultAttackCost = await lockedBankVaults.attackCost();
 
-  await itemNFT.testMints(
+  let tx = await itemNFT.testMints(
     alice.address,
     [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD],
     [2, 2, 2]
   );
-  await itemNFT.testMints(
+  tx = await itemNFT.testMints(
     owner.address,
     [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD],
     [2, 2, 2]
   );
+  console.log("Mints");
 
-  let tx = await lockedBankVaults
+  tx = await lockedBankVaults.connect(alice).clearCooldowns(aliceClanId, [clanId]);
+  await tx.wait();
+  console.log("clear cooldowns");
+
+  tx = await lockedBankVaults
     .connect(alice)
     .attackVaults(aliceClanId, clanId, 0, alicePlayerId, {value: vaultAttackCost});
   await tx.wait();

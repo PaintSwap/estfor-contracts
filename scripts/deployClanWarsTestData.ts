@@ -68,11 +68,11 @@ async function main() {
   await tx.wait();
   console.log("SetTerritories");
 
-  let territoryAttackCost = await territories.attackCost();
   // Claim the territory
   tx = await combatantsHelper.connect(owner).assignCombatants(1, true, [1], false, [], 1);
   await tx.wait();
   console.log("assign combatants for territories");
+  let territoryAttackCost = await territories.attackCost();
   tx = await territories.connect(owner).attackTerritory(1, 1, 1, {value: territoryAttackCost}); // Unclaimed
   await tx.wait();
   console.log("attack territory");

@@ -20,6 +20,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
 import {BoostType, Skill} from "../globals/misc.sol";
+import {BattleResultEnum} from "../globals/clans.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
@@ -45,14 +46,14 @@ contract Territories is
   );
   event BattleResult(
     uint requestId,
-    uint[] winnerPlayerIds,
-    uint[] loserPlayerIds,
+    uint48[] attackingPlayerIds,
+    uint48[] defendingPlayerIds,
+    BattleResultEnum[] battleResults,
     Skill[] randomSkills,
     bool didAttackersWin,
     uint attackingClanId,
     uint defendingClanId,
     uint[] randomWords,
-    uint attackingTimestamp,
     uint territoryId
   );
   event Deposit(uint amount);
@@ -131,7 +132,6 @@ contract Territories is
   struct PendingAttack {
     uint40 clanId;
     uint16 territoryId;
-    uint40 timestamp;
     bool attackInProgress;
   }
 
@@ -323,7 +323,6 @@ contract Territories is
       pendingAttacks[_nextPendingAttackId] = PendingAttack({
         clanId: uint40(_clanId),
         territoryId: uint16(_territoryId),
-        timestamp: uint40(block.timestamp),
         attackInProgress: true
       });
       bytes32 requestId = _requestRandomWords();
@@ -357,44 +356,43 @@ contract Territories is
     uint defendingClanId = territories[territoryId].clanIdOccupier;
 
     // If the defenders happened to apply a block attacks item before the attack was fulfilled, then the attack is cancelled
-    uint[] memory winners;
-    uint[] memory losers;
+    uint48[] memory attackingPlayerIds;
+    uint48[] memory defendingPlayerIds;
+    BattleResultEnum[] memory battleResults;
     Skill[] memory randomSkills;
     bool didAttackersWin;
     uint attackingClanId = pendingAttack.clanId;
     if (clanInfos[defendingClanId].blockAttacksTimestamp <= block.timestamp) {
-      uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
-      uint48[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
+      attackingPlayerIds = clanInfos[attackingClanId].playerIds;
+      defendingPlayerIds = clanInfos[defendingClanId].playerIds;
 
-      randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
+      randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
       for (uint i; i < randomSkills.length; ++i) {
         randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
       }
 
-      (winners, losers, didAttackersWin) = ClanBattleLibrary.doBattle(
+      (battleResults, didAttackersWin) = ClanBattleLibrary.doBattle(
         players,
-        playerIdAttackers,
-        playerIdDefenders,
+        attackingPlayerIds,
+        defendingPlayerIds,
         randomSkills,
         randomWords[0],
         randomWords[1]
       );
     }
 
-    uint timestamp = pendingAttack.timestamp;
-
     _updateAverageGasPrice();
 
     emit BattleResult(
       uint(_requestId),
-      winners,
-      losers,
+      attackingPlayerIds,
+      defendingPlayerIds,
+      battleResults,
       randomSkills,
       didAttackersWin,
       attackingClanId,
       defendingClanId,
       randomWords,
-      timestamp,
       territoryId
     );
 

@@ -30,39 +30,55 @@ library ClanBattleLibrary {
     uint8[] memory _skills,
     uint _randomWordA,
     uint _randomWordB
-  ) external view returns (uint[] memory winners, uint[] memory losers, bool didAWin) {
+  )
+    external
+    view
+    returns (
+      uint8[] memory battleResults,
+      uint48[] memory shuffledClanMembersA,
+      uint48[] memory shuffledClanMembersB,
+      bool didAWin
+    )
+  {
     Skill[] memory skills = new Skill[](_skills.length);
     for (uint i; i < _skills.length; ++i) {
       skills[i] = Skill(_skills[i]);
     }
-    return doBattle(_players, _clanMembersA, _clanMembersB, skills, _randomWordA, _randomWordB);
+
+    BattleResultEnum[] memory battleResultsEnum;
+    (battleResultsEnum, didAWin) = doBattle(_players, _clanMembersA, _clanMembersB, skills, _randomWordA, _randomWordB);
+
+    battleResults = new uint8[](battleResultsEnum.length);
+    for (uint i; i < battleResultsEnum.length; ++i) {
+      battleResults[i] = uint8(battleResultsEnum[i]);
+    }
+
+    shuffledClanMembersA = _clanMembersA;
+    shuffledClanMembersB = _clanMembersB;
   }
 
-  // winners & losers are always the same length, if there is not a valid playerId then it pushes 0
   function doBattle(
     address _players,
-    uint48[] memory _clanMembersA,
-    uint48[] memory _clanMembersB,
+    uint48[] memory _clanMembersA, // [In/Out] gets shuffled
+    uint48[] memory _clanMembersB, // [In/Out] gets shuffled
     Skill[] memory _skills,
     uint _randomWordA,
     uint _randomWordB
-  ) public view returns (uint[] memory winners, uint[] memory losers, bool didAWin) {
+  ) internal view returns (BattleResultEnum[] memory battleResults, bool didAWin) {
     shuffleArray(_clanMembersA, _randomWordA);
     shuffleArray(_clanMembersB, _randomWordB);
-
-    winners = new uint[](Math.max(_clanMembersA.length, _clanMembersB.length));
-    losers = new uint[](Math.max(_clanMembersA.length, _clanMembersB.length));
 
     uint baseClanMembersCount = _clanMembersA.length > _clanMembersB.length
       ? _clanMembersB.length
       : _clanMembersA.length;
+
+    battleResults = new BattleResultEnum[](Math.max(_clanMembersA.length, _clanMembersB.length));
 
     uint numWinnersA;
     uint numWinnersB;
     for (uint i; i < baseClanMembersCount; ++i) {
       uint hitsA;
       uint hitsB;
-
       Skill skill = _skills[i];
 
       // It's possible that there are empty entries if they left the clan
@@ -70,8 +86,8 @@ library ClanBattleLibrary {
         hitsA = _clanMembersA[i] == 0 ? 0 : 1;
         hitsB = _clanMembersB[i] == 0 ? 0 : 1;
       } else {
-        uint levelA = PlayersLibrary.getLevel(IPlayers(_players).xp(_clanMembersA[i], skill));
-        uint levelB = PlayersLibrary.getLevel(IPlayers(_players).xp(_clanMembersB[i], skill));
+        uint levelA = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersA[i], skill));
+        uint levelB = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersB[i], skill));
 
         // Each battle then roll dice where every 20 levels in the skill gets you a d20 dice.
         // The highest number rolled is the outcome.
@@ -96,26 +112,24 @@ library ClanBattleLibrary {
 
       if (hitsA > hitsB) {
         ++numWinnersA;
-        winners[i] = _clanMembersA[i];
-        losers[i] = _clanMembersB[i];
+        battleResults[i] = BattleResultEnum.WIN;
       } else if (hitsB > hitsA) {
         ++numWinnersB;
-        winners[i] = _clanMembersB[i];
-        losers[i] = _clanMembersA[i];
+        battleResults[i] = BattleResultEnum.LOSE;
+      } else {
+        battleResults[i] = BattleResultEnum.DRAW;
       }
     }
 
     if (_clanMembersB.length > _clanMembersA.length) {
       numWinnersB += _clanMembersB.length - _clanMembersA.length;
       for (uint i = baseClanMembersCount; i < _clanMembersB.length; ++i) {
-        winners[i] = _clanMembersB[i];
-        losers[i] = 0;
+        battleResults[i] = BattleResultEnum.LOSE;
       }
     } else if (_clanMembersA.length > _clanMembersB.length) {
       numWinnersA += _clanMembersA.length - _clanMembersB.length;
       for (uint i = baseClanMembersCount; i < _clanMembersA.length; ++i) {
-        winners[i] = _clanMembersA[i];
-        losers[i] = 0;
+        battleResults[i] = BattleResultEnum.WIN;
       }
     }
 

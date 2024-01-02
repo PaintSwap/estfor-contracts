@@ -1,5 +1,5 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {clanFixture} from "./utils";
+import {BattleResult, clanFixture} from "./utils";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber, ethers} from "ethers";
@@ -73,8 +73,7 @@ describe("ClanBattleLibrary", function () {
     );
 
     expect(res.didAWin).to.be.true;
-    expect(res.winners[0]).to.eq(playerId);
-    expect(res.losers[0]).to.eq(0);
+    expect(res.battleResults[0]).to.eq(BattleResult.WIN);
 
     clanMembersA = [];
     clanMembersB = [playerId];
@@ -87,8 +86,7 @@ describe("ClanBattleLibrary", function () {
       randomWordB
     );
     expect(res.didAWin).to.be.false;
-    expect(res.winners[0]).to.eq(playerId);
-    expect(res.losers[0]).to.eq(0);
+    expect(res.battleResults[0]).to.eq(BattleResult.LOSE);
   });
 
   it("Player ids of 0 is an automatic win for the other side", async () => {

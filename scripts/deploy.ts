@@ -414,20 +414,13 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
-  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  });
-  console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
-
   const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
   const xpub =
     "xpub6CyZcaXvbnbqGfqqZWvWNUbGvdd5PAJRrBeAhy9rz1bbnFmpVLg2wPj1h6TyndFrWLUG3kHWBYpwacgCTGWAHFTbUrXEg6LdLxoEBny2YDz";
   const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
   const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
 
-  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -454,9 +447,7 @@ async function main() {
   );
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  const Territories = await ethers.getContractFactory("Territories", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const Territories = await ethers.getContractFactory("Territories");
   const territories = await upgrades.deployProxy(
     Territories,
     [
@@ -536,7 +527,6 @@ async function main() {
         bankRegistry.address,
         bankFactory.address,
         instantActions.address,
-        clanBattleLibrary.address,
         territories.address,
         decoratorProvider.address,
         combatantsHelper.address,

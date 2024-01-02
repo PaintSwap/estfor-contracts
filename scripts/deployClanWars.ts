@@ -62,12 +62,6 @@ async function main() {
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
-  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", {
-    libraries: {PlayersLibrary: PLAYERS_LIBRARY_ADDRESS},
-  });
-  await clanBattleLibrary.deployed();
-  console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
-
   const airnodeRrpAddress = "0xa0AD79D995DdeeB18a14eAef56A549A04e3Aa1Bd";
   const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
   const xpub =
@@ -90,11 +84,7 @@ async function main() {
     return ethers.BigNumber.from(6_600_000);
   };
 
-  const LockedBankVaults = (
-    await ethers.getContractFactory("LockedBankVaults", {
-      libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-    })
-  ).connect(signer);
+  const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults")).connect(signer);
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -122,11 +112,7 @@ async function main() {
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  const Territories = (
-    await ethers.getContractFactory("Territories", {
-      libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-    })
-  ).connect(signer);
+  const Territories = (await ethers.getContractFactory("Territories")).connect(signer);
   const territories = await upgrades.deployProxy(
     Territories,
     [
@@ -304,7 +290,6 @@ async function main() {
     bankImplAddress,
     lockedBankVaults.address,
     territories.address,
-    clanBattleLibrary.address,
     bankRegistry.address,
     bankImplAddress,
     combatantsHelper.address,

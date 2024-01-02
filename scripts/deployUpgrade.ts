@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {ClanBattleLibrary, EstforLibrary, PromotionsLibrary, WorldLibrary} from "../typechain-types";
+import {EstforLibrary, PromotionsLibrary, WorldLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -17,11 +17,9 @@ import {
   INSTANT_ACTIONS_ADDRESS,
   PROMOTIONS_ADDRESS,
   PROMOTIONS_LIBRARY_ADDRESS,
-  CLAN_BATTLE_LIBRARY_ADDRESS,
   TERRITORIES_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
-  PLAYERS_LIBRARY_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
@@ -200,25 +198,7 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
-  const newClanBattleLibrary = false;
-  let clanBattleLibrary: ClanBattleLibrary;
-  if (newClanBattleLibrary) {
-    clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary", {
-      libraries: {PlayersLibrary: PLAYERS_LIBRARY_ADDRESS},
-    })) as ClanBattleLibrary;
-    await clanBattleLibrary.deployed();
-    await verifyContracts([clanBattleLibrary.address]);
-  } else {
-    clanBattleLibrary = (await ethers.getContractAt(
-      "ClanBattleLibrary",
-      CLAN_BATTLE_LIBRARY_ADDRESS
-    )) as ClanBattleLibrary;
-  }
-  console.log(`clanBattleLibrary = "${clanBattleLibrary.address.toLowerCase()}"`);
-
-  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -227,9 +207,7 @@ async function main() {
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  const Territories = await ethers.getContractFactory("Territories", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const Territories = await ethers.getContractFactory("Territories");
   const territories = await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],

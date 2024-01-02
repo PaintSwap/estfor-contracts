@@ -255,9 +255,7 @@ export const playersFixture = async function () {
     kind: "uups",
   })) as InstantActions;
 
-  const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary", {
-    libraries: {PlayersLibrary: playersLibrary.address},
-  })) as ClanBattleLibrary;
+  const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
   const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
   const wftm = await MockWrappedFantom.deploy();
@@ -283,9 +281,7 @@ export const playersFixture = async function () {
   const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
   const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
 
-  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -310,9 +306,7 @@ export const playersFixture = async function () {
     }
   )) as LockedBankVaults;
 
-  const Territories = await ethers.getContractFactory("Territories", {
-    libraries: {ClanBattleLibrary: clanBattleLibrary.address},
-  });
+  const Territories = await ethers.getContractFactory("Territories");
   const territories = (await upgrades.deployProxy(
     Territories,
     [

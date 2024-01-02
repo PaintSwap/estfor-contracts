@@ -43,3 +43,9 @@ export async function clanFixture() {
   const editNameCost = await clans.editNameCost();
   return {...fixture, clans, clanName, discord, telegram, tierId, imageId, clanId, tier, editNameCost, bankAddress};
 }
+
+export enum BattleResult {
+  DRAW,
+  WIN,
+  LOSE,
+}

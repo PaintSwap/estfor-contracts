@@ -19,15 +19,13 @@ import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 
-import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
-import {Skill} from "../globals/misc.sol";
+import {BattleResultEnum, ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
+import {Item, EquipPosition} from "../globals/players.sol";
+import {BoostType, Skill} from "../globals/misc.sol";
+import {NONE} from "../globals/items.sol";
 
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
-
-import {Item, EquipPosition} from "../globals/players.sol";
-import {BoostType} from "../globals/misc.sol";
-import {NONE} from "../globals/items.sol";
 
 contract LockedBankVaults is
   RrpRequesterV0Upgradeable,
@@ -50,14 +48,14 @@ contract LockedBankVaults is
   event SetComparableSkills(Skill[] skills);
   event BattleResult(
     uint requestId,
-    uint[] winnerPlayerIds,
-    uint[] loserPlayerIds,
+    uint48[] attackingPlayerIds,
+    uint48[] defendingPlayerIds,
+    BattleResultEnum[] battleResults,
     Skill[] randomSkills,
     bool didAttackersWin,
     uint attackingClanId,
     uint defendingClanId,
     uint[] randomWords,
-    uint attackingTimestamp,
     uint percentageToTake,
     uint brushBurnt
   );
@@ -140,7 +138,6 @@ contract LockedBankVaults is
   struct PendingAttack {
     uint40 clanId;
     uint40 defendingClanId;
-    uint40 timestamp;
     bool attackInProgress;
   }
 
@@ -350,7 +347,6 @@ contract LockedBankVaults is
     pendingAttacks[_nextPendingAttackId] = PendingAttack({
       clanId: uint40(_clanId),
       defendingClanId: uint40(_defendingClanId),
-      timestamp: uint40(block.timestamp),
       attackInProgress: true
     });
     bytes32 requestId = _requestRandomWords();
@@ -382,26 +378,25 @@ contract LockedBankVaults is
     }
 
     uint40 attackingClanId = pendingAttack.clanId;
-    uint48[] storage playerIdAttackers = clanInfos[attackingClanId].playerIds;
+    uint48[] memory attackingPlayerIds = clanInfos[attackingClanId].playerIds;
+
     uint defendingClanId = pendingAttack.defendingClanId;
+    uint48[] memory defendingPlayerIds = clanInfos[defendingClanId].playerIds;
 
-    uint48[] storage playerIdDefenders = clanInfos[defendingClanId].playerIds;
-
-    Skill[] memory randomSkills = new Skill[](Math.max(playerIdAttackers.length, playerIdDefenders.length));
+    Skill[] memory randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
     for (uint i; i < randomSkills.length; ++i) {
       randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
     }
 
-    (uint[] memory winners, uint[] memory losers, bool didAttackersWin) = ClanBattleLibrary.doBattle(
+    (BattleResultEnum[] memory battleResults, bool didAttackersWin) = ClanBattleLibrary.doBattle(
       address(players),
-      playerIdAttackers,
-      playerIdDefenders,
+      attackingPlayerIds,
+      defendingPlayerIds,
       randomSkills,
       randomWords[0],
       randomWords[1]
     );
 
-    uint timestamp = pendingAttack.timestamp;
     pendingAttack.attackInProgress = false;
     clanInfos[attackingClanId].currentlyAttacking = false;
 
@@ -414,7 +409,7 @@ contract LockedBankVaults is
     uint length = clanInfos[losingClanId].defendingVaults.length;
     for (uint i = vaultOffset; i < length; ++i) {
       Vault storage losersVault = clanInfos[losingClanId].defendingVaults[i];
-      _stealFromVault(losersVault, losingClanId, percentageToTake);
+      totalWon = _stealFromVault(losersVault, losingClanId, percentageToTake);
     }
 
     _updateAverageGasPrice();
@@ -434,14 +429,14 @@ contract LockedBankVaults is
 
     emit BattleResult(
       uint(_requestId),
-      winners,
-      losers,
+      attackingPlayerIds,
+      defendingPlayerIds,
+      battleResults,
       randomSkills,
       didAttackersWin,
       attackingClanId,
       defendingClanId,
       randomWords,
-      timestamp,
       percentageToTake,
       brushBurnt
     );
