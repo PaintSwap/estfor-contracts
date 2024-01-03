@@ -11,7 +11,6 @@ import {
   FAKE_BRUSH_WFTM_LP_ADDRESS,
   ITEM_NFT_ADDRESS,
   PLAYERS_ADDRESS,
-  PLAYERS_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
   SHOP_ADDRESS,
 } from "./contractAddresses";
@@ -23,6 +22,7 @@ import {execSync} from "child_process";
 import path from "path";
 import {allItems} from "./data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -247,6 +247,22 @@ async function main() {
       const tx = await itemNFT.addItems(items);
       await tx.wait();
       console.log("itemNFT.addItems");
+
+      const _allShopItems = isBeta ? allShopItemsBeta : allShopItems;
+      const _shopItems = new Set([
+        EstforConstants.MIRROR_SHIELD,
+        EstforConstants.PROTECTION_SHIELD,
+        EstforConstants.DEVILISH_FINGERS,
+      ]);
+      const shopItems = _allShopItems.filter((shopItem) => _shopItems.has(shopItem.tokenId));
+
+      if (shopItems.length !== 3) {
+        console.log("Cannot find shop items");
+      } else {
+        const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
+        const tx = await shop.addBuyableItems(shopItems);
+        await tx.wait();
+      }
     } else {
       console.log("Items already added");
     }
