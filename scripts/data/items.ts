@@ -7199,30 +7199,7 @@ export const allItems: ItemInput[] = [
     boostDuration: 259500,
     metadataURI: "CLAN_BOOSTER_3.json",
     name: "Clan Booster 3",
-  } /*
-  {
-    combatStats: {
-      melee: 0,
-      magic: 0,
-      ranged: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0,
-    },
-    tokenId: EstforConstants.PASSIVE_SKIP_CHANCE,
-    equipPosition: EquipPosition.PASSIVE_BOOST_VIAL,
-    isTransferable: false,
-    isFullModeOnly: false,
-    skill: Skill.NONE,
-    minXP: 0,
-    healthRestored: 0,
-    boostType: BoostType.PASSIVE_SKIP_CHANCE,
-    boostValue: 10,
-    boostDuration: 0,
-    metadataURI: "PASSIVE_SKIP_CHANCE.json",
-    name: "Passive Skip Boost",
-  }, */,
+  },
   {
     combatStats: {
       melee: 0,
