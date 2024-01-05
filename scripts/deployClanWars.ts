@@ -26,7 +26,7 @@ import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
+  //  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
   console.log(`Deploying clan wars contracts: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const timeout = 600 * 1000; // 10 minutes
@@ -37,9 +37,11 @@ async function main() {
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
 
   // Clan
-  const Clans = await ethers.getContractFactory("Clans", {
-    libraries: {EstforLibrary: estforLibrary.address},
-  });
+  const Clans = (
+    await ethers.getContractFactory("Clans", {
+      libraries: {EstforLibrary: estforLibrary.address},
+    })
+  ).connect(owner);
   const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -51,9 +53,11 @@ async function main() {
   const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
   await itemNFTLibrary.deployed();
   console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
-  const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-    libraries: {ItemNFTLibrary: itemNFTLibrary.address},
-  });
+  const ItemNFT = (
+    await ethers.getContractFactory("ItemNFT", {
+      libraries: {ItemNFTLibrary: itemNFTLibrary.address},
+    })
+  ).connect(owner);
   const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -159,10 +163,10 @@ async function main() {
 
   const pid = 22;
 
-  const newDecoratorProvider = true;
+  const newDecoratorProvider = false;
   let decoratorProvider: DecoratorProvider;
   if (newDecoratorProvider) {
-    const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
+    const DecoratorProvider = (await ethers.getContractFactory("DecoratorProvider")).connect(owner);
     decoratorProvider = (await upgrades.deployProxy(DecoratorProvider, [
       paintSwapDecorator,
       paintSwapArtGallery,
@@ -177,10 +181,10 @@ async function main() {
 
     // deposit
     const lp = await ethers.getContractAt("MockBrushToken", FAKE_BRUSH_WFTM_LP_ADDRESS);
-    let tx = await lp.approve(decoratorProvider.address, ethers.constants.MaxUint256);
+    let tx = await lp.connect(owner).approve(decoratorProvider.address, ethers.constants.MaxUint256);
     console.log("Approve lp for decorator provider");
     await tx.wait();
-    tx = await decoratorProvider.deposit();
+    tx = await decoratorProvider.connect(owner).deposit();
     await tx.wait();
     console.log("Deposit lp to decorator provider");
   } else {
@@ -188,21 +192,21 @@ async function main() {
       "DecoratorProvider",
       DECORATOR_PROVIDER_ADDRESS
     )) as DecoratorProvider;
-    const tx = await decoratorProvider.setTerritories(territories.address);
+    const tx = await decoratorProvider.connect(owner).setTerritories(territories.address);
     await tx.wait();
     console.log("decoratorProvider.setTerritories");
   }
 
   // Bank
-  const Bank = await ethers.getContractFactory("Bank");
+  const Bank = (await ethers.getContractFactory("Bank")).connect(owner);
   const bank = await upgrades.upgradeBeacon(BANK_ADDRESS, Bank);
-  console.log("Deployed bank beacon", bank.address);
+  console.log(`Deployed bank beacon = "${bank.address.toLowerCase()}"`);
   await bank.deployed();
 
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
   console.log(`bankImplAddress = "${bankImplAddress}"`);
 
-  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const BankRegistry = (await ethers.getContractFactory("BankRegistry")).connect(owner);
   const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
     kind: "uups",
     timeout,
@@ -210,23 +214,23 @@ async function main() {
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
 
-  let tx = await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
+  let tx = await bankRegistry.connect(owner).setLockedBankVaults(lockedBankVaults.address);
   await tx.wait();
   console.log("bankRegistry.setLockedBankVaults");
   if (isBeta) {
     // Also update the old first week's beta clans
-    tx = await bankRegistry.setBankImpl(bankImplAddress);
+    tx = await bankRegistry.connect(owner).setBankImpl(bankImplAddress);
     await tx.wait();
     console.log("bankRegistry.setBankImpl");
   }
 
-  tx = await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  tx = await clans.connect(owner).setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
-  tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  tx = await itemNFT.connect(owner).setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
   console.log("itemNFT.setTerritoriesAndLockedBankVaults");
-  tx = await lockedBankVaults.setTerritories(territories.address);
+  tx = await lockedBankVaults.connect(owner).setTerritories(territories.address);
   await tx.wait();
   console.log("lockedBankVaults.setTerritories");
 
@@ -244,7 +248,7 @@ async function main() {
     const itemExists = await itemNFT.exists(items[0].tokenId);
     if (!itemExists) {
       console.log("Before adding items");
-      const tx = await itemNFT.addItems(items);
+      const tx = await itemNFT.connect(owner).addItems(items);
       await tx.wait();
       console.log("itemNFT.addItems");
 
@@ -260,7 +264,7 @@ async function main() {
         console.log("Cannot find shop items");
       } else {
         const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
-        const tx = await shop.addBuyableItems(shopItems);
+        const tx = await shop.connect(owner).addBuyableItems(shopItems);
         await tx.wait();
       }
     } else {
@@ -284,10 +288,10 @@ async function main() {
       // Extract the wallet address from the output
       const sponsorWallet = arr[1].slice(0, 42);
 
-      tx = await sponsorWalletCaller.setCombatantsHelper(combatantsHelper.address);
+      tx = await sponsorWalletCaller.connect(owner).setCombatantsHelper(combatantsHelper.address);
       await tx.wait();
       console.log("setCombatantsHelper");
-      tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
+      tx = await sponsorWalletCaller.connect(owner).setSponsorWallet(sponsorWallet);
       await tx.wait();
       console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
       tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")});
@@ -298,18 +302,20 @@ async function main() {
     }
   }
 
-  await verifyContracts([
-    decoratorProvider.address,
-    itemNFT.address,
-    clans.address,
-    bank.address,
-    bankImplAddress,
-    lockedBankVaults.address,
-    territories.address,
-    bankRegistry.address,
-    bankImplAddress,
-    combatantsHelper.address,
-  ]);
+  if ((await owner.getChainId()) == 250) {
+    await verifyContracts([
+      decoratorProvider.address,
+      itemNFT.address,
+      clans.address,
+      bank.address,
+      bankImplAddress,
+      lockedBankVaults.address,
+      territories.address,
+      bankRegistry.address,
+      bankImplAddress,
+      combatantsHelper.address,
+    ]);
+  }
 }
 
 main().catch((error) => {
