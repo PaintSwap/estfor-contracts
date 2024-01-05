@@ -46,7 +46,16 @@ library ClanBattleLibrary {
     }
 
     BattleResultEnum[] memory battleResultsEnum;
-    (battleResultsEnum, didAWin) = doBattle(_players, _clanMembersA, _clanMembersB, skills, _randomWordA, _randomWordB);
+    uint[] memory rollsA;
+    uint[] memory rollsB;
+    (battleResultsEnum, rollsA, rollsB, didAWin) = doBattle(
+      _players,
+      _clanMembersA,
+      _clanMembersB,
+      skills,
+      _randomWordA,
+      _randomWordB
+    );
 
     battleResults = new uint8[](battleResultsEnum.length);
     for (uint i; i < battleResultsEnum.length; ++i) {
@@ -64,7 +73,11 @@ library ClanBattleLibrary {
     Skill[] memory _skills,
     uint _randomWordA,
     uint _randomWordB
-  ) internal view returns (BattleResultEnum[] memory battleResults, bool didAWin) {
+  )
+    internal
+    view
+    returns (BattleResultEnum[] memory battleResults, uint[] memory rollsA, uint[] memory rollsB, bool didAWin)
+  {
     shuffleArray(_clanMembersA, _randomWordA);
     shuffleArray(_clanMembersB, _randomWordB);
 
@@ -73,18 +86,18 @@ library ClanBattleLibrary {
       : _clanMembersA.length;
 
     battleResults = new BattleResultEnum[](Math.max(_clanMembersA.length, _clanMembersB.length));
+    rollsA = new uint[](Math.max(_clanMembersA.length, _clanMembersB.length));
+    rollsB = new uint[](Math.max(_clanMembersA.length, _clanMembersB.length));
 
     uint numWinnersA;
     uint numWinnersB;
     for (uint i; i < baseClanMembersCount; ++i) {
-      uint hitsA;
-      uint hitsB;
       Skill skill = _skills[i];
 
       // It's possible that there are empty entries if they left the clan
       if (_clanMembersA[i] == 0 || _clanMembersB[i] == 0) {
-        hitsA = _clanMembersA[i] == 0 ? 0 : 1;
-        hitsB = _clanMembersB[i] == 0 ? 0 : 1;
+        rollsA[i] = _clanMembersA[i] == 0 ? 0 : 1;
+        rollsB[i] = _clanMembersB[i] == 0 ? 0 : 1;
       } else {
         uint levelA = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersA[i], skill));
         uint levelB = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersB[i], skill));
@@ -102,18 +115,18 @@ library ClanBattleLibrary {
         bytes1 byteA = bytes32(_randomWordA)[31 - i];
         // Check how many bits are set based on the number of rolls
         for (uint j; j < numRollsA; ++j) {
-          hitsA += uint8(byteA >> j) & 1;
+          rollsA[i] += uint8(byteA >> j) & 1;
         }
         bytes1 byteB = bytes32(_randomWordB)[31 - i];
         for (uint j; j < numRollsB; ++j) {
-          hitsB += uint8(byteB >> j) & 1;
+          rollsB[i] += uint8(byteB >> j) & 1;
         }
       }
 
-      if (hitsA > hitsB) {
+      if (rollsA[i] > rollsB[i]) {
         ++numWinnersA;
         battleResults[i] = BattleResultEnum.WIN;
-      } else if (hitsB > hitsA) {
+      } else if (rollsB[i] > rollsA[i]) {
         ++numWinnersB;
         battleResults[i] = BattleResultEnum.LOSE;
       } else {

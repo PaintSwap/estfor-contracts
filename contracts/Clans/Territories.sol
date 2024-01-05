@@ -48,6 +48,8 @@ contract Territories is
     uint requestId,
     uint48[] attackingPlayerIds,
     uint48[] defendingPlayerIds,
+    uint[] attackingRolls,
+    uint[] defendingRolls,
     BattleResultEnum[] battleResults,
     Skill[] randomSkills,
     bool didAttackersWin,
@@ -359,6 +361,8 @@ contract Territories is
     uint48[] memory attackingPlayerIds;
     uint48[] memory defendingPlayerIds;
     BattleResultEnum[] memory battleResults;
+    uint[] memory attackingRolls;
+    uint[] memory defendingRolls;
     Skill[] memory randomSkills;
     bool didAttackersWin;
     uint attackingClanId = pendingAttack.clanId;
@@ -371,7 +375,7 @@ contract Territories is
         randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
       }
 
-      (battleResults, didAttackersWin) = ClanBattleLibrary.doBattle(
+      (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary.doBattle(
         players,
         attackingPlayerIds,
         defendingPlayerIds,
@@ -387,6 +391,8 @@ contract Territories is
       uint(_requestId),
       attackingPlayerIds,
       defendingPlayerIds,
+      attackingRolls,
+      defendingRolls,
       battleResults,
       randomSkills,
       didAttackersWin,
@@ -474,7 +480,7 @@ contract Territories is
       msg.sender,
       _playerId,
       blockAttacksTimestamp,
-      blockAttacksTimestamp + uint(item.boostValue) * 3600
+      block.timestamp + uint(item.boostValue) * 3600
     );
   }
 

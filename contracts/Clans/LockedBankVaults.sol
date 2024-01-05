@@ -50,6 +50,8 @@ contract LockedBankVaults is
     uint requestId,
     uint48[] attackingPlayerIds,
     uint48[] defendingPlayerIds,
+    uint[] attackingRolls,
+    uint[] defendingRolls,
     BattleResultEnum[] battleResults,
     Skill[] randomSkills,
     bool didAttackersWin,
@@ -388,14 +390,19 @@ contract LockedBankVaults is
       randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
     }
 
-    (BattleResultEnum[] memory battleResults, bool didAttackersWin) = ClanBattleLibrary.doBattle(
-      address(players),
-      attackingPlayerIds,
-      defendingPlayerIds,
-      randomSkills,
-      randomWords[0],
-      randomWords[1]
-    );
+    (
+      BattleResultEnum[] memory battleResults,
+      uint[] memory attackingRolls,
+      uint[] memory defendingRolls,
+      bool didAttackersWin
+    ) = ClanBattleLibrary.doBattle(
+        address(players),
+        attackingPlayerIds,
+        defendingPlayerIds,
+        randomSkills,
+        randomWords[0],
+        randomWords[1]
+      );
 
     pendingAttack.attackInProgress = false;
     clanInfos[attackingClanId].currentlyAttacking = false;
@@ -431,6 +438,8 @@ contract LockedBankVaults is
       uint(_requestId),
       attackingPlayerIds,
       defendingPlayerIds,
+      attackingRolls,
+      defendingRolls,
       battleResults,
       randomSkills,
       didAttackersWin,
@@ -513,7 +522,7 @@ contract LockedBankVaults is
 
     itemNFT.burn(msg.sender, _itemTokenId, 1);
 
-    emit BlockingAttacks(_clanId, _itemTokenId, msg.sender, _playerId, blockAttacksTimestamp, blockAttacksTimestamp);
+    emit BlockingAttacks(_clanId, _itemTokenId, msg.sender, _playerId, blockAttacksTimestamp, block.timestamp);
   }
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
