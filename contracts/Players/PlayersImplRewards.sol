@@ -605,17 +605,17 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   }
 
   function claimRandomRewards(
+    address _from,
     uint _playerId,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
   ) external {
-    address from = msg.sender;
     (
       uint[] memory ids,
       uint[] memory amounts,
       uint[] memory queueIds,
       uint numPastRandomRewardInstancesToRemove
     ) = _claimableRandomRewards(_playerId, _pendingQueuedActionProcessed);
-    _processClaimableRewards(from, _playerId, ids, amounts, queueIds, numPastRandomRewardInstancesToRemove);
+    _processClaimableRewards(_from, _playerId, ids, amounts, queueIds, numPastRandomRewardInstancesToRemove);
   }
 
   function _getRewards(

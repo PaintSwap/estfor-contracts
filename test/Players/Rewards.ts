@@ -1140,7 +1140,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1469,7 +1469,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1578,7 +1578,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1685,7 +1685,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -2579,6 +2579,10 @@ describe("Rewards", function () {
       // Check output
       expect(fractionChancePerRoll).to.be.lt(0.001);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.eq(0);
+    });
+
+    it("TODO: Have some dice, transfer the player, wait a day to be able to cash them in and check that you get them", async function () {
+      // Check commmit that this test was added in for the code changed to test
     });
   });
 

@@ -391,13 +391,14 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     LotteryWinnerInfo memory _lotteryWinner
   ) private {
-    _claimRandomRewards(_playerId, _pendingQueuedActionProcessed);
+    _claimRandomRewards(_from, _playerId, _pendingQueuedActionProcessed);
     _handleDailyRewards(_from, _playerId);
     _handleLotteryWinnings(_from, _playerId, _lotteryWinner);
     _clearPlayerBoostsIfExpired(_playerId);
   }
 
   function _claimRandomRewards(
+    address _from,
     uint _playerId,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
   ) private {
@@ -405,6 +406,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       implRewards,
       abi.encodeWithSelector(
         IPlayersRewardsDelegate.claimRandomRewards.selector,
+        _from,
         _playerId,
         _pendingQueuedActionProcessed
       )
