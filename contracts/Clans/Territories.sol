@@ -60,7 +60,13 @@ contract Territories is
   );
   event Deposit(uint amount);
   event SetComparableSkills(Skill[] skills);
-  event ClaimUnoccupiedTerritory(uint territoryId, uint clanId, address from, uint leaderPlayerId);
+  event ClaimUnoccupiedTerritory(
+    uint territoryId,
+    uint clanId,
+    address from,
+    uint leaderPlayerId,
+    uint cooldownTimestamp
+  );
   event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
   event Harvest(uint territoryId, address from, uint playerId, uint cooldownTimestamp, uint amount);
@@ -315,7 +321,7 @@ contract Territories is
     // which are set here to reduce amount of gas used by oracle callback
     if (clanUnoccupied) {
       _claimTerritory(_territoryId, _clanId);
-      emit ClaimUnoccupiedTerritory(_territoryId, _clanId, msg.sender, _leaderPlayerId);
+      emit ClaimUnoccupiedTerritory(_territoryId, _clanId, msg.sender, _leaderPlayerId, attackingCooldownTimestamp);
     } else {
       clanInfo.currentlyAttacking = true;
       clanInfos[clanIdOccupier].attackingCooldownTimestamp = uint40(
