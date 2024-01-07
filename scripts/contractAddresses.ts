@@ -43,11 +43,11 @@ if (!isBeta) {
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
   bank = "0xe183a43881eac74808c55bdb2a073929602af4db";
   playersLibrary = "0x7f3d2f36b3b3181e01fe4048dd9ba63be3440710";
-  playersImplQueueActions = "0xa84314f52b6811e6e26c25d63b655108d6a16c02";
-  playersImplProcessActions = "0x51bb1f55fe017f0df121c1c1cdd192ae96f32516";
-  playersImplRewards = "0xfa69a967bf8a35b456c56c19d644fc1a819da833";
-  playersImplMisc = "0x5e2a2a50f1b6afff7d588dccac0a4f0252f589fa";
-  playersImplMisc1 = "0x84dacfda4ae5831e388f62692fb697dffc89ca53";
+  playersImplQueueActions = "0x8591df5849c3dcbdf21acfdc02f240b4c2e2cadd";
+  playersImplProcessActions = "0xfd87cdf39e8a4616ab1e8de816efc0c8c41941b5";
+  playersImplRewards = "0xae7ea21aa3e61d4ff7573156a4a51ffee2872ad6";
+  playersImplMisc = "0xe7aa294a6dc066a0378893068c65d6f872e67710";
+  playersImplMisc1 = "0xf0f256be60df2223253b46acb9c24821c4371f9b";
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";

@@ -74,7 +74,11 @@ interface IPlayersProcessActionsDelegate {
 }
 
 interface IPlayersRewardsDelegate {
-  function claimRandomRewards(uint playerId, PendingQueuedActionProcessed memory pendingQueuedActionProcessed) external;
+  function claimRandomRewards(
+    address from,
+    uint playerId,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed
+  ) external;
 }
 
 // External view functions that are in other implementation files
