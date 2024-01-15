@@ -136,6 +136,7 @@ struct PlayerBoostInfo {
   uint16 extraOrLastValue;
   uint16 extraOrLastItemTokenId;
   BoostType extraOrLastBoostType;
+  uint40 cooldown; // Just put here for packing
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.

@@ -7,6 +7,8 @@ import "../globals/players.sol";
 interface IPlayers {
   function clearEverythingBeforeTokenTransfer(address from, uint tokenId) external;
 
+  function beforeTokenTransferTo(address to, uint tokenId) external;
+
   function getURI(
     uint playerId,
     string calldata name,

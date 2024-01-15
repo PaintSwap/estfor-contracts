@@ -1550,6 +1550,53 @@ describe("Players", function () {
     expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(1);
   });
 
+  it("Transferring a player with boost should add a lock", async function () {
+    const {players, playerId, playerNFT, itemNFT, alice, owner} = await loadFixture(playersFixture);
+
+    const boosts = [
+      EstforConstants.COMBAT_BOOST,
+      EstforConstants.XP_BOOST,
+      EstforConstants.SKILL_BOOST,
+      EstforConstants.GATHERING_BOOST,
+    ];
+
+    for (const boost of boosts) {
+      await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+      const receipt = await players.setActivePlayer(playerId);
+      if (boost == boosts[0]) {
+        // First one should not emit
+        expect(receipt).to.not.emit(players, "PlayerUnlocked");
+      } else {
+        expect(receipt).to.emit(players, "PlayerUnlocked");
+      }
+
+      // Add a boost to the receiver, and setting active player if no longer possible
+      await itemNFT.testMint(alice.address, boost, 1);
+      await playerNFT.safeTransferFrom(owner.address, alice.address, playerId, 1, "0x");
+      await expect(players.connect(alice).setActivePlayer(playerId)).to.be.revertedWithCustomError(
+        players,
+        "PlayerLocked"
+      );
+      await itemNFT.connect(alice).burn(alice.address, boost, 1);
+    }
+
+    await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+    await playerNFT.safeTransferFrom(owner.address, alice.address, playerId, 1, "0x");
+    await expect(players.connect(alice).setActivePlayer(playerId)).to.not.be.reverted;
+  });
+
+  it("Transferring a player with boost should add a lock released after some time", async function () {
+    const {players, playerId, playerNFT, itemNFT, alice, owner} = await loadFixture(playersFixture);
+
+    await itemNFT.testMint(owner.address, EstforConstants.COMBAT_BOOST, 1);
+    await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+
+    await expect(players.setActivePlayer(playerId)).to.be.revertedWithCustomError(players, "PlayerLocked");
+    // Wait 1 day and it should now be allowed
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await expect(players.setActivePlayer(playerId)).to.not.be.reverted;
+  });
+
   it.skip("Travelling", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);
