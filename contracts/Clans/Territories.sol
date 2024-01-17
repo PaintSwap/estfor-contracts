@@ -87,7 +87,6 @@ contract Territories is
   error InvalidEmissionPercentage();
   error NoOccupier();
   error TransferFailed();
-  error AlreadyOwnATerritory();
   error NotLeader();
   error ClanAttackingCooldown();
   error NotMemberOfClan();
@@ -112,6 +111,7 @@ contract Territories is
   error ClanIsBlockingAttacks();
   error NotATerritoryDefenceItem();
   error BlockAttacksCooldown();
+  error CannotAttackSelf();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -141,6 +141,9 @@ contract Territories is
     uint40 clanId;
     uint16 territoryId;
     bool attackInProgress;
+    uint40 attackingTimestamp;
+    uint40 leaderPlayerId;
+    address from;
   }
 
   mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
@@ -310,42 +313,34 @@ contract Territories is
     }
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
-    bool clanUnoccupied = clanIdOccupier == 0;
-
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
     clanInfo.gasPaid = uint88(msg.value);
 
-    // In theory this could be done in the fulfill callback, but it's easier to do it here and be consistent witht he player defenders/
-    // which are set here to reduce amount of gas used by oracle callback
-    if (clanUnoccupied) {
-      _claimTerritory(_territoryId, _clanId);
-      emit ClaimUnoccupiedTerritory(_territoryId, _clanId, msg.sender, _leaderPlayerId, attackingCooldownTimestamp);
-    } else {
-      clanInfo.currentlyAttacking = true;
-      clanInfos[clanIdOccupier].attackingCooldownTimestamp = uint40(
-        block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER
-      );
+    clanInfo.currentlyAttacking = true;
+    clanInfos[clanIdOccupier].attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
 
-      pendingAttacks[_nextPendingAttackId] = PendingAttack({
-        clanId: uint40(_clanId),
-        territoryId: uint16(_territoryId),
-        attackInProgress: true
-      });
-      bytes32 requestId = _requestRandomWords();
-      requestToPendingAttackIds[requestId] = _nextPendingAttackId;
+    pendingAttacks[_nextPendingAttackId] = PendingAttack({
+      clanId: uint40(_clanId),
+      territoryId: uint16(_territoryId),
+      attackInProgress: true,
+      attackingTimestamp: uint40(block.timestamp),
+      leaderPlayerId: uint40(_leaderPlayerId),
+      from: msg.sender
+    });
+    bytes32 requestId = _requestRandomWords();
+    requestToPendingAttackIds[requestId] = _nextPendingAttackId;
 
-      emit AttackTerritory(
-        _clanId,
-        _territoryId,
-        msg.sender,
-        _leaderPlayerId,
-        uint(requestId),
-        _nextPendingAttackId,
-        attackingCooldownTimestamp
-      );
-    }
+    emit AttackTerritory(
+      _clanId,
+      _territoryId,
+      msg.sender,
+      _leaderPlayerId,
+      uint(requestId),
+      _nextPendingAttackId,
+      attackingCooldownTimestamp
+    );
   }
 
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
@@ -360,8 +355,26 @@ contract Territories is
       revert RequestIdNotKnown();
     }
 
+    uint attackingClanId = pendingAttack.clanId;
     uint16 territoryId = pendingAttack.territoryId;
     uint defendingClanId = territories[territoryId].clanIdOccupier;
+
+    _updateAverageGasPrice();
+    clanInfos[attackingClanId].currentlyAttacking = false;
+    pendingAttack.attackInProgress = false;
+
+    bool clanUnoccupied = defendingClanId == 0;
+    if (clanUnoccupied) {
+      _claimTerritory(territoryId, attackingClanId);
+      emit ClaimUnoccupiedTerritory(
+        territoryId,
+        attackingClanId,
+        pendingAttack.from,
+        pendingAttack.leaderPlayerId,
+        pendingAttack.attackingTimestamp
+      );
+      return;
+    }
 
     // If the defenders happened to apply a block attacks item before the attack was fulfilled, then the attack is cancelled
     uint48[] memory attackingPlayerIds;
@@ -371,7 +384,6 @@ contract Territories is
     uint[] memory defendingRolls;
     Skill[] memory randomSkills;
     bool didAttackersWin;
-    uint attackingClanId = pendingAttack.clanId;
     if (clanInfos[defendingClanId].blockAttacksTimestamp <= block.timestamp) {
       attackingPlayerIds = clanInfos[attackingClanId].playerIds;
       defendingPlayerIds = clanInfos[defendingClanId].playerIds;
@@ -391,8 +403,6 @@ contract Territories is
       );
     }
 
-    _updateAverageGasPrice();
-
     emit BattleResult(
       uint(_requestId),
       attackingPlayerIds,
@@ -407,9 +417,6 @@ contract Territories is
       randomWords,
       territoryId
     );
-
-    pendingAttack.attackInProgress = false;
-    clanInfos[attackingClanId].currentlyAttacking = false;
 
     if (didAttackersWin) {
       _claimTerritory(territoryId, attackingClanId);
@@ -532,6 +539,10 @@ contract Territories is
   }
 
   function _checkCanAttackTerritory(uint _clanId, uint _defendingClanId, uint _territoryId) private view {
+    if (_clanId == _defendingClanId) {
+      revert CannotAttackSelf();
+    }
+
     if (territories[_territoryId].territoryId != _territoryId) {
       revert InvalidTerritory();
     }
@@ -544,10 +555,6 @@ contract Territories is
 
     if (clanInfo.currentlyAttacking) {
       revert CannotChangeCombatantsDuringAttack();
-    }
-
-    if (clanInfo.ownsTerritoryId != 0) {
-      revert AlreadyOwnATerritory();
     }
 
     if (clanInfo.attackingCooldownTimestamp > block.timestamp) {
@@ -583,6 +590,12 @@ contract Territories is
 
   function _claimTerritory(uint _territoryId, uint _attackingClanId) private {
     territories[_territoryId].clanIdOccupier = uint32(_attackingClanId);
+
+    if (clanInfos[_attackingClanId].ownsTerritoryId != 0) {
+      // This clan already owns a territory, so unclaim that one
+      territories[clanInfos[_attackingClanId].ownsTerritoryId].clanIdOccupier = 0;
+    }
+
     clanInfos[_attackingClanId].ownsTerritoryId = uint16(_territoryId);
   }
 
