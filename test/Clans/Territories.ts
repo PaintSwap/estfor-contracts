@@ -592,7 +592,7 @@ describe("Territories", function () {
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     // Clear player id part so we can hit the custom error we want
-    await combatantsHelper.clearCooldowns(clanId, [playerId], playerId);
+    await combatantsHelper.clearCooldowns([playerId]);
 
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)

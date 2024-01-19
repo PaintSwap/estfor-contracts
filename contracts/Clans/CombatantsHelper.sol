@@ -139,9 +139,11 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
       // Check they are not being placed as a locked vault combatant
       for (uint i; i < _playerIds.length; ++i) {
         if (_setOtherCombantants) {
-          uint searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
-          if (searchIndex != type(uint).max) {
-            revert PlayerOnTerritoryAndLockedVault();
+          if (_otherPlayerIds.length != 0) {
+            uint searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
+            if (searchIndex != type(uint).max) {
+              revert PlayerOnTerritoryAndLockedVault();
+            }
           }
         } else {
           bool isCombatant = _otherCombatants.isCombatant(_clanId, _playerIds[i]);
@@ -173,11 +175,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function clearCooldowns(uint _clanId, uint48[] calldata _playerIds, uint _leaderPlayerId) public isAdminAndBeta {
-    if (clans.getRank(_clanId, _leaderPlayerId) < ClanRank.LEADER) {
-      revert NotLeader();
-    }
-
+  function clearCooldowns(uint48[] calldata _playerIds) public isAdminAndBeta {
     for (uint i; i < _playerIds.length; ++i) {
       playerInfos[_playerIds[i]].combatantCooldownTimestamp = 0;
     }

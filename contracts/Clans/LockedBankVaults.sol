@@ -534,9 +534,9 @@ contract LockedBankVaults is
 
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
     // Remove from the player defenders if they are in there
-    uint48[] storage playerIds = clanInfos[_clanId].playerIds;
-    if (playerIds.length > 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+    ClanInfo storage clanInfo = clanInfos[_clanId];
+    if (clanInfo.playerIds.length > 0) {
+      uint searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, _playerId);
       if (searchIndex != type(uint).max) {
         // Not shifting it for gas reasons
         delete clanInfos[_clanId].playerIds[searchIndex];

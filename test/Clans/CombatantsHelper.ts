@@ -44,4 +44,45 @@ describe("CombatantsHelper", function () {
     await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [], true, [], playerId)).to.not.be
       .reverted;
   });
+
+  it("Assigning 0 combatants while the other is set, territory not set, locked vaults set", async function () {
+    const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
+    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [], true, [playerId], playerId)).not.to
+      .be.reverted;
+  });
+
+  it("Assigning 0 combatants while the other is set, territory set, locked vaults not set", async function () {
+    const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
+    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], true, [], playerId)).not.to
+      .be.reverted;
+  });
+
+  it("Assigning 0 combatants after having some set, while the other is still set", async function () {
+    const {
+      combatantsHelper,
+      territories,
+      lockedBankVaults,
+      clans,
+      clanId,
+      playerNFT,
+      avatarId,
+      owner,
+      origName,
+      playerId,
+      alice,
+    } = await loadFixture(clanFixture);
+
+    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [playerId], playerId);
+
+    await combatantsHelper.clearCooldowns([ownerPlayerId]);
+    await territories.clearCooldowns(clanId);
+    await lockedBankVaults.clearCooldowns(clanId, []);
+
+    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [], playerId)).to
+      .not.be.reverted;
+  });
 });
