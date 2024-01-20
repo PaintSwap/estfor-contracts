@@ -125,6 +125,7 @@ describe("Territories", function () {
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+    let {timestamp: battleTimestampAlice} = await ethers.provider.getBlock("latest");
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
@@ -142,17 +143,17 @@ describe("Territories", function () {
     await territories
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
-    let {timestamp: battleTimestamp} = await ethers.provider.getBlock("latest");
+    let {timestamp: battleTimestampBob} = await ethers.provider.getBlock("latest");
     await fulfillRandomWords(requestId + 1, territories, mockAPI3OracleClient);
 
     const territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(clanId + 1);
 
     const defendingClanInfo = await territories.getClanInfo(clanId);
-    expect(defendingClanInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
+    expect(defendingClanInfo.attackingCooldownTimestamp).eq(battleTimestampAlice + 86400);
 
     const attackingClanInfo = await territories.getClanInfo(clanId + 1);
-    expect(attackingClanInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
+    expect(attackingClanInfo.attackingCooldownTimestamp).eq(battleTimestampBob + 86400);
   });
 
   it("Attack an occupied territory and lose", async () => {
@@ -181,6 +182,7 @@ describe("Territories", function () {
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+    let {timestamp: battleTimestampAlice} = await ethers.provider.getBlock("latest");
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
@@ -198,17 +200,17 @@ describe("Territories", function () {
     await territories
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
-    let {timestamp: battleTimestamp} = await ethers.provider.getBlock("latest");
+    let {timestamp: battleTimestampBob} = await ethers.provider.getBlock("latest");
     await fulfillRandomWords(requestId + 1, territories, mockAPI3OracleClient);
 
     const territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(clanId);
 
     const defendingClanInfo = await territories.getClanInfo(clanId);
-    expect(defendingClanInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
+    expect(defendingClanInfo.attackingCooldownTimestamp).eq(battleTimestampAlice + 86400);
 
     const attackingClanInfo = await territories.getClanInfo(clanId + 1);
-    expect(attackingClanInfo.attackingCooldownTimestamp).eq(battleTimestamp + 86400);
+    expect(attackingClanInfo.attackingCooldownTimestamp).eq(battleTimestampBob + 86400);
   });
 
   it("A player cannot defend multiple territories", async () => {

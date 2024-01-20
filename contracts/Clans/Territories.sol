@@ -319,7 +319,6 @@ contract Territories is
     clanInfo.gasPaid = uint88(msg.value);
 
     clanInfo.currentlyAttacking = true;
-    clanInfos[clanIdOccupier].attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
 
     pendingAttacks[_nextPendingAttackId] = PendingAttack({
       clanId: uint40(_clanId),
