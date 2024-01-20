@@ -97,7 +97,6 @@ contract Territories is
   error NotOwnerOfPlayerAndActive();
   error HarvestingTooSoon();
   error NotAdminAndBeta();
-  error CurrentlyOwnATerritory();
   error NoCombatants();
   error TooManyCombatants();
   error PlayerDefendingLockedVaults();
@@ -523,10 +522,6 @@ contract Territories is
   }
 
   function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
-    if (clanInfos[_clanId].ownsTerritoryId != 0) {
-      revert CurrentlyOwnATerritory();
-    }
-
     if (_playerIds.length > MAX_CLAN_COMBATANTS) {
       revert TooManyCombatants();
     }

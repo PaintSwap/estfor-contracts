@@ -469,8 +469,9 @@ describe("Territories", function () {
   it("Multiple clans should be able to attack an occupied territory", async () => {});
 
   it("Attacking players array should be sorted and without duplicates", async () => {
-    const {playerNFT, avatarId, clans, clanId, playerId, territories, combatantsHelper, owner, alice, origName} =
-      await loadFixture(clanFixture);
+    const {playerNFT, avatarId, clans, clanId, playerId, combatantsHelper, owner, alice, origName} = await loadFixture(
+      clanFixture
+    );
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
@@ -761,6 +762,27 @@ describe("Territories", function () {
     );
     attackCost = await territories.attackCost();
     expect(attackCost).to.eq(baseAttackCost.add((await territories.movingAverageGasPrice()).mul(expectedGasLimit)));
+  });
+
+  it.only("Assigning new combatants is allowed while holding a territory", async () => {
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockAPI3OracleClient} = await loadFixture(
+      clanFixture
+    );
+
+    const territoryId = 1;
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await territories
+      .connect(alice)
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+    const requestId = 1;
+    await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
+    expect((await territories.territories(territoryId)).clanIdOccupier).eq(territoryId);
+
+    const clanInfo = await territories.getClanInfo(clanId);
+    expect(clanInfo.ownsTerritoryId).eq(territoryId);
+    await ethers.provider.send("evm_increaseTime", [(await combatantsHelper.COMBATANT_COOLDOWN()).toNumber()]);
+    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)).to.not
+      .be.reverted;
   });
 
   it("Blocking Attacks with item", async () => {
