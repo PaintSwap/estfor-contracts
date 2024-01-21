@@ -60,13 +60,7 @@ contract Territories is
   );
   event Deposit(uint amount);
   event SetComparableSkills(Skill[] skills);
-  event ClaimUnoccupiedTerritory(
-    uint territoryId,
-    uint clanId,
-    address from,
-    uint leaderPlayerId,
-    uint cooldownTimestamp
-  );
+  event ClaimUnoccupiedTerritoryV2(uint territoryId, uint clanId, address from, uint leaderPlayerId, uint requestId);
   event AssignCombatants(uint clanId, uint48[] playerIds, address from, uint leaderPlayerId, uint cooldownTimestamp);
   event RemoveCombatant(uint playerId, uint clanId);
   event Harvest(uint territoryId, address from, uint playerId, uint cooldownTimestamp, uint amount);
@@ -80,6 +74,15 @@ contract Territories is
     uint leaderPlayerId,
     uint blockAttacksTimestamp,
     uint blockAttacksCooldownTimestamp
+  );
+
+  // Legacy for ABI/old event purposes
+  event ClaimUnoccupiedTerritory(
+    uint territoryId,
+    uint clanId,
+    address from,
+    uint leaderPlayerId,
+    uint cooldownTimestamp
   );
 
   error InvalidTerritory();
@@ -140,7 +143,6 @@ contract Territories is
     uint40 clanId;
     uint16 territoryId;
     bool attackInProgress;
-    uint40 attackingTimestamp;
     uint40 leaderPlayerId;
     address from;
   }
@@ -323,7 +325,6 @@ contract Territories is
       clanId: uint40(_clanId),
       territoryId: uint16(_territoryId),
       attackInProgress: true,
-      attackingTimestamp: uint40(block.timestamp),
       leaderPlayerId: uint40(_leaderPlayerId),
       from: msg.sender
     });
@@ -364,12 +365,12 @@ contract Territories is
     bool clanUnoccupied = defendingClanId == 0;
     if (clanUnoccupied) {
       _claimTerritory(territoryId, attackingClanId);
-      emit ClaimUnoccupiedTerritory(
+      emit ClaimUnoccupiedTerritoryV2(
         territoryId,
         attackingClanId,
         pendingAttack.from,
         pendingAttack.leaderPlayerId,
-        pendingAttack.attackingTimestamp
+        uint(_requestId)
       );
       return;
     }
