@@ -272,8 +272,8 @@ contract LockedBankVaults is
       prices[i] = uint64(tx.gasprice);
     }
     _updateMovingAverageGasPrice(uint64(tx.gasprice));
-    setBaseAttackCost(0.05 ether);
-    setExpectedGasLimitFulfill(1_000_000);
+    setBaseAttackCost(0.01 ether);
+    setExpectedGasLimitFulfill(1_500_000);
 
     setComparableSkills(_comparableSkills);
   }
