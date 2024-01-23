@@ -764,7 +764,7 @@ describe("Territories", function () {
     expect(attackCost).to.eq(baseAttackCost.add((await territories.movingAverageGasPrice()).mul(expectedGasLimit)));
   });
 
-  it.only("Assigning new combatants is allowed while holding a territory", async () => {
+  it("Assigning new combatants is allowed while holding a territory", async () => {
     const {clanId, playerId, territories, combatantsHelper, brush, alice, mockAPI3OracleClient} = await loadFixture(
       clanFixture
     );

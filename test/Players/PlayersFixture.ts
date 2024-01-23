@@ -281,6 +281,8 @@ export const playersFixture = async function () {
   const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
   const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
 
+  const oracleFallbackAddress = dev.address;
+
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
@@ -292,6 +294,7 @@ export const playersFixture = async function () {
       itemNFT.address,
       shop.address,
       dev.address,
+      oracleFallbackAddress,
       allTerritorySkills,
       mockAPI3OracleClient.address,
       airnode,
@@ -316,6 +319,7 @@ export const playersFixture = async function () {
       brush.address,
       lockedBankVaults.address,
       itemNFT.address,
+      oracleFallbackAddress,
       allTerritorySkills,
       mockAPI3OracleClient.address,
       airnode,

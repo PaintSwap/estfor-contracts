@@ -172,6 +172,8 @@ contract LockedBankVaults is
   uint24 public expectedGasLimitFulfill;
   uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
+  address private oracleFallback; // Don't need to pack this with anything else, this is just for the game owner as a last resort if API3 response fails
+
   uint private constant NUM_WORDS = 2;
   uint public constant ATTACKING_COOLDOWN = 4 hours;
   uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
@@ -229,6 +231,16 @@ contract LockedBankVaults is
     _;
   }
 
+  /// @dev Reverts if the caller is not the Airnode RRP contract.
+  /// Use it as a modifier for fulfill and error callback methods, but also
+  /// check `requestId`.
+  modifier onlyAirnodeRrpOrOracleFallback() {
+    if (msg.sender != address(airnodeRrp) && msg.sender != address(oracleFallback)) {
+      revert CallerNotAirnodeRRP();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -242,6 +254,7 @@ contract LockedBankVaults is
     ItemNFT _itemNFT,
     address _pool,
     address _dev,
+    address _oracleFallback,
     Skill[] calldata _comparableSkills,
     address _airnodeRrp,
     address _airnode,
@@ -260,6 +273,7 @@ contract LockedBankVaults is
     itemNFT = _itemNFT;
     pool = _pool;
     dev = _dev;
+    oracleFallback = _oracleFallback;
 
     adminAccess = _adminAccess;
     isBeta = _isBeta;
@@ -368,7 +382,7 @@ contract LockedBankVaults is
   }
 
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
-  function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrp {
+  function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrpOrOracleFallback {
     uint[] memory randomWords = abi.decode(_data, (uint[]));
     if (randomWords.length != NUM_WORDS) {
       revert LengthMismatch();
@@ -416,7 +430,7 @@ contract LockedBankVaults is
     uint length = clanInfos[losingClanId].defendingVaults.length;
     for (uint i = vaultOffset; i < length; ++i) {
       Vault storage losersVault = clanInfos[losingClanId].defendingVaults[i];
-      totalWon = _stealFromVault(losersVault, losingClanId, percentageToTake);
+      totalWon += _stealFromVault(losersVault, losingClanId, percentageToTake);
     }
 
     _updateAverageGasPrice();
@@ -549,13 +563,13 @@ contract LockedBankVaults is
     Vault storage _losersVault,
     uint _clanId,
     uint _percentageToTake
-  ) private returns (uint totalWon) {
+  ) private returns (uint amountWon) {
     if (_losersVault.timestamp > block.timestamp) {
       uint amount = _losersVault.amount;
       uint stealAmount = amount / _percentageToTake;
       _losersVault.amount = uint80(amount - stealAmount);
       clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount);
-      totalWon += stealAmount;
+      amountWon += stealAmount;
     }
 
     if (_losersVault.timestamp1 > block.timestamp) {
@@ -563,7 +577,7 @@ contract LockedBankVaults is
       uint stealAmount1 = amount1 / _percentageToTake;
       _losersVault.amount1 = uint80(amount1 - stealAmount1);
       clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount1);
-      totalWon += stealAmount1;
+      amountWon += stealAmount1;
     }
   }
 
@@ -778,7 +792,7 @@ contract LockedBankVaults is
     emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
-  function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) public isAdminAndBeta {
+  function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.attackingCooldownTimestamp = 0;
     clanInfo.assignCombatantsCooldownTimestamp = 0;
@@ -792,7 +806,7 @@ contract LockedBankVaults is
   }
 
   // Useful to re-run a battle for testing
-  function setAttackInProgress(uint _requestId) public isAdminAndBeta {
+  function setAttackInProgress(uint _requestId) external isAdminAndBeta {
     pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
   }
 

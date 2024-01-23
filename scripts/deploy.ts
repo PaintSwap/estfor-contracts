@@ -52,7 +52,13 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {BRUSH_ADDRESS, DECORATOR_ADDRESS, DEV_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
+import {
+  BRUSH_ADDRESS,
+  DECORATOR_ADDRESS,
+  DEV_ADDRESS,
+  ORACLE_FALLBACK_ADDRESS,
+  WFTM_ADDRESS,
+} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
@@ -83,7 +89,6 @@ async function main() {
   let paintSwapDecorator: TestPaintSwapDecorator;
   let paintSwapArtGallery: TestPaintSwapArtGallery;
   let tx;
-  let devAddress = DEV_ADDRESS;
   let pid = 0;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
@@ -168,7 +173,7 @@ async function main() {
   console.log(`world = "${world.address.toLowerCase()}"`);
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [brush.address, devAddress], {
+  const shop = (await upgrades.deployProxy(Shop, [brush.address, DEV_ADDRESS], {
     kind: "uups",
     timeout,
   })) as Shop;
@@ -180,7 +185,7 @@ async function main() {
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, devAddress, brush.address, buyPath],
+    [router.address, shop.address, DEV_ADDRESS, brush.address, buyPath],
     {
       kind: "uups",
       timeout,
@@ -258,7 +263,7 @@ async function main() {
     [
       brush.address,
       shop.address,
-      devAddress,
+      DEV_ADDRESS,
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
@@ -310,7 +315,7 @@ async function main() {
       brush.address,
       playerNFT.address,
       shop.address,
-      devAddress,
+      DEV_ADDRESS,
       editNameBrushPrice,
       paintSwapMarketplaceWhitelist.address,
     ],
@@ -430,7 +435,8 @@ async function main() {
       bankFactory.address,
       itemNFT.address,
       shop.address,
-      devAddress,
+      DEV_ADDRESS,
+      ORACLE_FALLBACK_ADDRESS,
       allTerritorySkills,
       api3Oracle.address,
       airnode,
@@ -457,6 +463,7 @@ async function main() {
       brush.address,
       lockedBankVaults.address,
       itemNFT.address,
+      ORACLE_FALLBACK_ADDRESS,
       allTerritorySkills,
       api3Oracle.address,
       airnode,
@@ -493,7 +500,7 @@ async function main() {
     territories.address,
     brush.address,
     playerNFT.address,
-    devAddress,
+    DEV_ADDRESS,
     pid,
   ]);
   console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);

@@ -126,6 +126,7 @@ async function main() {
       BRUSH_ADDRESS,
       lockedBankVaults.address,
       itemNFT.address,
+      DEV_ADDRESS,
       allTerritorySkills,
       airnodeRrpAddress,
       airnode,
@@ -294,7 +295,7 @@ async function main() {
       tx = await sponsorWalletCaller.connect(owner).setSponsorWallet(sponsorWallet);
       await tx.wait();
       console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
-      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")});
+      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")}); // TODO: Update this
       await tx.wait();
       console.log();
     } catch (error) {

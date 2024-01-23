@@ -178,6 +178,8 @@ contract Territories is
   uint24 public expectedGasLimitFulfill;
   uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
+  address private oracleFallback; // Don't need to pack this with anything else, this is just for the game owner as a last resort if API3 response fails
+
   uint private constant NUM_WORDS = 2;
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
@@ -227,6 +229,16 @@ contract Territories is
     _;
   }
 
+  /// @dev Reverts if the caller is not the Airnode RRP contract.
+  /// Use it as a modifier for fulfill and error callback methods, but also
+  /// check `requestId`.
+  modifier onlyAirnodeRrpOrOracleFallback() {
+    if (msg.sender != address(airnodeRrp) && msg.sender != address(oracleFallback)) {
+      revert CallerNotAirnodeRRP();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -239,6 +251,7 @@ contract Territories is
     IBrushToken _brush,
     LockedBankVaults _lockedBankVaults,
     ItemNFT _itemNFT,
+    address _oracleFallback,
     Skill[] calldata _comparableSkills,
     address _airnodeRrp,
     address _airnode,
@@ -255,6 +268,7 @@ contract Territories is
     brush = _brush;
     lockedBankVaults = _lockedBankVaults;
     itemNFT = _itemNFT;
+    oracleFallback = _oracleFallback;
     nextTerritoryId = 1;
     nextPendingAttackId = 1;
     adminAccess = _adminAccess;
@@ -731,7 +745,7 @@ contract Territories is
   }
 
   // Useful to re-run a battle for testing
-  function setAttackInProgress(uint _requestId) public isAdminAndBeta {
+  function setAttackInProgress(uint _requestId) external isAdminAndBeta {
     pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
   }
 

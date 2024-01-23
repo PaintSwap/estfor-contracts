@@ -934,7 +934,9 @@ describe("LockedBankVaults", function () {
       shop,
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 100, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -947,6 +949,7 @@ describe("LockedBankVaults", function () {
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
 
+    // Lock
     await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 800, territories);
 
     await combatantsHelper
