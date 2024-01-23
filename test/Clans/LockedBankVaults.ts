@@ -934,9 +934,9 @@ describe("LockedBankVaults", function () {
       shop,
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories);
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 100, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -971,6 +971,61 @@ describe("LockedBankVaults", function () {
     expect(await brush.balanceOf(shop.address)).to.eq(50);
     expect(await brush.balanceOf(dev.address)).to.eq(25);
     expect(await brush.amountBurnt()).to.eq(25);
+  });
+
+  it("Win an attack with some locked vaults", async () => {
+    const {
+      clans,
+      lockedBankVaults,
+      combatantsHelper,
+      territories,
+      clanId,
+      playerId,
+      playerNFT,
+      avatarId,
+      origName,
+      alice,
+      bob,
+      charlie,
+      clanName,
+      discord,
+      telegram,
+      imageId,
+      tierId,
+      brush,
+      mockAPI3OracleClient,
+    } = await loadFixture(clanFixture);
+
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories);
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+
+    // Create a new clan to attack/defend
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+
+    const bobClanId = clanId + 1;
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
+    await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
+    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], bobPlayerId);
+
+    // Bobs's clan attacks and will win.
+    await lockedBankVaults
+      .connect(bob)
+      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+    await fulfillRandomWords(2, lockedBankVaults, mockAPI3OracleClient);
+
+    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900); // lost 10%
+    expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
+
+    // Check totalWon with lockedVault
+    expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].amount).to.eq(100);
   });
 
   it("Cannot attack a clan twice within the cooldown", async () => {});
