@@ -31,6 +31,7 @@ let decoratorProvider;
 let combatantsHelper;
 let sponsorWalletLockedVault;
 let sponsorWalletTerritories;
+let oracleFallback;
 
 if (!isBeta) {
   worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
@@ -64,6 +65,7 @@ if (!isBeta) {
   combatantsHelper = "";
   sponsorWalletLockedVault = "";
   sponsorWalletTerritories = "";
+  oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
 } else {
   worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -97,6 +99,7 @@ if (!isBeta) {
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   sponsorWalletLockedVault = "0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387";
   sponsorWalletTerritories = "0xa519dfa5728f8e91ae8c5657426c5b74176516f7";
+  oracleFallback = "0x28ade840602d0363a2ab675479f1b590b23b0490";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -142,4 +145,4 @@ export const FAKE_BRUSH_ADDRESS = "0x8F85Ad0Ed1C6Cf23B82378efF7f71a7Df6A61071";
 export const FAKE_BRUSH_WFTM_LP_ADDRESS = "0xb3209C979b90436f0a43ED817CD36c4c908604fD";
 export const DECORATOR_ADDRESS = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
 export const DEV_ADDRESS = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
-export const ORACLE_FALLBACK_ADDRESS = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
+export const ORACLE_FALLBACK_ADDRESS = oracleFallback;

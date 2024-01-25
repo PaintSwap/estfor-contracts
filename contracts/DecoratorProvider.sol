@@ -107,6 +107,10 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     emit Harvest(msg.sender, _playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
   }
 
+  function inspectUnlockableAmount() external view returns (uint unlockableAmount) {
+    (, , , unlockableAmount, , ) = artGallery.inspect(address(this));
+  }
+
   function unlockFromArtGallery() external {
     (, , uint256 unlockableCount, uint256 unlockableAmount, , ) = artGallery.inspect(address(this));
     if (unlockableAmount == 0) {
