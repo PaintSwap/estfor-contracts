@@ -79,7 +79,7 @@ InstantActions [0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe](https://ftmscan.com/
 
 LockedBankVaults [](https://ftmscan.com/address/)  
 Territories [](https://ftmscan.com/address/)  
-CombatantsHelper [](https://ftmscan.com/address/)
+CombatantsHelper [](https://ftmscan.com/address/)  
 DecoratorProvider [](https://ftmscan.com/address/)
 
 Sponsor wallet - LockedVault [](https://ftmscan.com/address/)  
@@ -119,7 +119,7 @@ InstantActions [0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76](https://ftmscan.com/
 
 LockedBankVaults [0x40567ad9cd25c56422807ed67f0e66f1825bdb91](https://ftmscan.com/address/0x40567ad9cd25c56422807ed67f0e66f1825bdb91)  
 Territories [0xf31517db9f0987002f3a0fb4f787dfb9e892f184](https://ftmscan.com/address/0xf31517db9f0987002f3a0fb4f787dfb9e892f184)  
-CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.com/address/0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c)
+CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.com/address/0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c)  
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
 Sponsor wallet - LockedVault [0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387](https://ftmscan.com/address/0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387)  
