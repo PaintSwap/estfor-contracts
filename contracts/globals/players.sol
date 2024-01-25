@@ -28,7 +28,10 @@ enum EquipPosition {
   BOOST_VIAL,
   EXTRA_BOOST_VIAL,
   GLOBAL_BOOST_VIAL,
-  CLAN_BOOST_VIAL
+  CLAN_BOOST_VIAL,
+  PASSIVE_BOOST_VIAL,
+  LOCKED_VAULT,
+  TERRITORY
 }
 
 struct Player {
@@ -133,6 +136,7 @@ struct PlayerBoostInfo {
   uint16 extraOrLastValue;
   uint16 extraOrLastItemTokenId;
   BoostType extraOrLastBoostType;
+  uint40 cooldown; // Just put here for packing
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.

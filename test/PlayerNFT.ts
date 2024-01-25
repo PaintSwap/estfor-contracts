@@ -268,7 +268,7 @@ describe("PlayerNFT", function () {
     expect(metadata.attributes[19]).to.have.property("value");
     expect(metadata.attributes[19].value).to.equal(20);
     expect(metadata).to.have.property("external_url");
-    expect(metadata.external_url).to.eq(`https://beta.estfor.com/game/journal/${playerId}`);
+    expect(metadata.external_url).to.eq(`https://beta.estfor.com/journal/${playerId}`);
   });
 
   it("Mint non-existent avatar", async function () {
@@ -380,7 +380,7 @@ describe("PlayerNFT", function () {
 
     const uriNotBeta = await playerNFTNotBeta.uri(playerId);
     const metadataNotBeta = JSON.parse(Buffer.from(uriNotBeta.split(";base64,")[1], "base64").toString());
-    expect(metadataNotBeta.external_url).to.eq(`https://estfor.com/game/journal/${playerId}`);
+    expect(metadataNotBeta.external_url).to.eq(`https://estfor.com/journal/${playerId}`);
   });
 
   describe("supportsInterface", async function () {

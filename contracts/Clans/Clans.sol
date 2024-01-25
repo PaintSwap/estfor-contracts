@@ -14,7 +14,10 @@ import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IMarketplaceWhitelist} from "../interfaces/IMarketplaceWhitelist.sol";
+import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
+
+import {ClanRank} from "../globals/clans.sol";
 
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   using UnsafeMath for U256;
@@ -97,15 +100,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error UnsupportedNFTType();
   error MessageTooLong();
 
-  enum ClanRank {
-    NONE, // Not in a clan
-    COMMONER, // Member of the clan
-    SCOUT, // Invite and kick commoners
-    TREASURER, // Can withdraw from bank
-    LEADER, // Can edit clan details
-    OWNER // Can do everything and transfer ownership
-  }
-
   struct Clan {
     uint80 owner;
     uint16 imageId;
@@ -187,6 +181,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(string name => bool exists) public lowercaseNames;
   mapping(uint clanId => uint40 timestampLeft) public ownerlessClanTimestamps; // timestamp
   address private paintswapMarketplaceWhitelist;
+  IClanMemberLeftCB private territories;
+  IClanMemberLeftCB private lockedBankVaults;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -799,6 +795,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     PlayerInfo storage player = playerInfo[_playerId];
     player.clanId = 0;
     player.rank = ClanRank.NONE;
+
+    territories.clanMemberLeft(_clanId, _playerId);
+    lockedBankVaults.clanMemberLeft(_clanId, _playerId);
   }
 
   function _claimOwnership(uint _clanId, uint _playerId) private {
@@ -939,5 +938,21 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
   }
 
-  function _authorizeUpgrade(address) internal override onlyOwner {}
+  function setTerritoriesAndLockedBankVaults(
+    IClanMemberLeftCB _territories,
+    IClanMemberLeftCB _lockedBankVaults
+  ) external onlyOwner {
+    territories = _territories;
+    lockedBankVaults = _lockedBankVaults;
+  }
+
+  function getRank(uint _clanId, uint _playerId) external view returns (ClanRank rank) {
+    if (playerInfo[_playerId].clanId == _clanId) {
+      return playerInfo[_playerId].rank;
+    }
+    return ClanRank.NONE;
+  }
+
+  // solhint-disable-next-line no-empty-blocks
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

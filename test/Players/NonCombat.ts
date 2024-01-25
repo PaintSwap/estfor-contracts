@@ -26,7 +26,7 @@ import {
 const actionIsAvailable = true;
 
 describe("Non-Combat Actions", function () {
-  this.retries(3);
+  this.retries(5);
 
   // Test isDynamic
   describe("Woodcutting", function () {

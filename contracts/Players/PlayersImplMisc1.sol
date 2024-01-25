@@ -158,7 +158,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     bytes memory externalURL = abi.encodePacked(
       "https://",
       isBeta ? "beta." : "",
-      "estfor.com/game/journal/",
+      "estfor.com/journal/",
       _playerId.toString()
     );
 
@@ -215,7 +215,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
         if (_fullAttireBonus.itemTokenIds[j] == NONE) {
           revert InvalidItemTokenId();
         }
-        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[j]).equipPosition != expectedEquipPositions[j]) {
+        if (itemNFT.getEquipPosition(_fullAttireBonus.itemTokenIds[j]) != expectedEquipPositions[j]) {
           revert InvalidEquipPosition();
         }
       }

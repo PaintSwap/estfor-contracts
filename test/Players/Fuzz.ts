@@ -119,6 +119,7 @@ describe("Fuzz testing", async function () {
       let rightHandEquipmentTokenId = EstforConstants.NONE;
       let leftHandEquipmentTokenId = EstforConstants.NONE;
       let actionChoice = null;
+      let minXP = 0;
       if (action.info.actionChoiceRequired) {
         if (isCombat) {
           const choiceIds = [
@@ -129,24 +130,29 @@ describe("Fuzz testing", async function () {
           ];
           choiceId = choiceIds[Math.floor(Math.random() * choiceIds.length)];
           actionChoice = await world.getActionChoice(NONE, choiceId);
+          minXP = actionChoice.minXP;
           // Sometimes equip food (or scrolls/arrows if magic/ranged)
         } else {
           if (action.info.skill == EstforTypes.Skill.COOKING) {
             const index = Math.floor(Math.random() * allActionChoicesCooking.length);
             choiceId = allActionChoiceIdsCooking[index];
             actionChoice = allActionChoicesCooking[index];
+            minXP = actionChoice.minXPs[0];
           } else if (action.info.skill == EstforTypes.Skill.CRAFTING) {
             const index = Math.floor(Math.random() * allActionChoicesCrafting.length);
             choiceId = allActionChoiceIdsCrafting[index];
             actionChoice = allActionChoicesCrafting[index];
+            minXP = actionChoice.minXPs[0];
           } else if (action.info.skill == EstforTypes.Skill.SMITHING) {
             const index = Math.floor(Math.random() * allActionChoicesSmithing.length);
             choiceId = allActionChoiceIdsSmithing[index];
             actionChoice = allActionChoicesSmithing[index];
+            minXP = actionChoice.minXPs[0];
           } else if (action.info.skill == EstforTypes.Skill.FIREMAKING) {
             const index = Math.floor(Math.random() * allActionChoicesFiremaking.length);
             choiceId = allActionChoiceIdsFiremaking[index];
             actionChoice = allActionChoicesFiremaking[index];
+            minXP = actionChoice.minXPs[0];
           }
         }
       } else {
@@ -209,7 +215,7 @@ describe("Fuzz testing", async function () {
         (action.info.actionChoiceRequired && choiceId != EstforConstants.NONE);
       let hasActionChoiceMinimumRequirements = true;
       if (actionChoice != null) {
-        hasActionChoiceMinimumRequirements = (await players.xp(playerId, actionChoice.skill)).gte(actionChoice.minXP);
+        hasActionChoiceMinimumRequirements = (await players.xp(playerId, actionChoice.skill)).gte(minXP);
       }
 
       const correctCombatStyle = (combatStyle == EstforTypes.CombatStyle.NONE) !== isCombat;

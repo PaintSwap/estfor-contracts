@@ -7,7 +7,11 @@ enum BoostType {
   COMBAT_XP,
   NON_COMBAT_XP,
   GATHERING,
-  ABSENCE
+  ABSENCE,
+  PASSIVE_SKIP_CHANCE,
+  // Clan wars
+  PVP_BLOCK,
+  PVP_REATTACK
 }
 
 struct Equipment {

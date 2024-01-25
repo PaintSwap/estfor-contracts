@@ -357,6 +357,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
         // Burning
         string memory oldName = EstforLibrary.toLower(names[playerId]);
         delete lowercaseNames[oldName];
+      } else if (from != address(0)) {
+        // Not minting
+        players.beforeTokenTransferTo(to, playerId);
       }
     }
   }

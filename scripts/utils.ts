@@ -2,12 +2,18 @@ import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {BigNumber} from "ethers";
 import {ethers, run} from "hardhat";
 import {
+  MockBrushToken,
+  MockPaintSwapMarketplaceWhitelist,
+  MockRouter,
+  MockWrappedFantom,
   PlayerNFT,
   PlayersImplMisc,
   PlayersImplMisc1,
   PlayersImplProcessActions,
   PlayersImplQueueActions,
   PlayersImplRewards,
+  TestPaintSwapArtGallery,
+  TestPaintSwapDecorator,
   World,
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
@@ -122,6 +128,45 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
     playersImplMisc,
     playersImplMisc1,
   };
+};
+
+export const deployMockPaintSwapContracts = async (
+  brush: MockBrushToken,
+  router: MockRouter,
+  wftm: MockWrappedFantom
+): Promise<{
+  paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
+  paintSwapDecorator: TestPaintSwapDecorator;
+  paintSwapArtGallery: TestPaintSwapArtGallery;
+}> => {
+  const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
+  const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
+  const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
+
+  const paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
+  await paintSwapMarketplaceWhitelist.deployed();
+  console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+  const artGalleryLockPeriod = 3600;
+  const brushPerSecond = ethers.utils.parseEther("2");
+  const paintSwapArtGallery = await TestPaintSwapArtGallery.deploy(brush.address, artGalleryLockPeriod);
+  await paintSwapArtGallery.deployed();
+  console.log(`paintSwapArtGallery = "${paintSwapArtGallery.address.toLowerCase()}"`);
+  const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+  const paintSwapDecorator = await TestPaintSwapDecorator.deploy(
+    brush.address,
+    paintSwapArtGallery.address,
+    router.address,
+    wftm.address,
+    brushPerSecond,
+    NOW
+  );
+  await paintSwapDecorator.deployed();
+  console.log(`paintSwapDecorator = "${paintSwapDecorator.address.toLowerCase()}"`);
+  const lp = await ethers.deployContract("MockBrushToken");
+  await paintSwapDecorator.add("2000", lp.address, true);
+  await paintSwapArtGallery.transferOwnership(paintSwapDecorator.address);
+
+  return {paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery};
 };
 
 export const isBeta = process.env.IS_BETA == "true";

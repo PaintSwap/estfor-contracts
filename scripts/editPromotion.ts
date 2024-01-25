@@ -8,6 +8,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit a promotion using account: ${owner.address} on chain id: ${await owner.getChainId()}`);
   const promotions = (await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)) as Promotions;
+
   /*
   // Edit old haloween promotion to use the new structure just cause.
   let tx = await promotions.connect(owner).editPromotion({
@@ -47,13 +48,12 @@ async function main() {
   await tx.wait();
   console.log("edit first one"); */
 
-  const startTime = 1700839686; // fri nov 24th 11:52 UTC
-  const numDays = 3;
-  const offset = 0;
+  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
+  const numDays = 22;
   await promotions.connect(owner).editPromotion({
     promotion: Promotion.XMAS_2023,
-    startTime: startTime - offset * 24 * 3600,
-    endTime: startTime - offset * 24 * 3600 + 24 * 3600 * numDays,
+    startTime,
+    endTime: startTime + 24 * 3600 * numDays,
     minTotalXP: 0,
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
@@ -62,21 +62,17 @@ async function main() {
     redeemCodeLength: 0,
     adminOnly: false,
     promotionTiedToUser: false,
-    promotionTiedToPlayer: false,
-    promotionMustOwnPlayer: false,
+    promotionTiedToPlayer: true,
+    promotionMustOwnPlayer: true,
     evolvedHeroOnly: false,
-    numDaysClaimablePeriodStreakBonus: 2,
-    numDaysHitNeededForStreakBonus: 2,
+    numDaysClaimablePeriodStreakBonus: 9,
+    numDaysHitNeededForStreakBonus: 20,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
-    randomStreakBonusItemTokenIds1: [
-      EstforConstants.HALLOWEEN_BONUS_1,
-      EstforConstants.HALLOWEEN_BONUS_2,
-      EstforConstants.HALLOWEEN_BONUS_3,
-    ],
-    randomStreakBonusAmounts1: [1, 1, 1],
-    randomStreakBonusAmounts2: [],
+    randomStreakBonusItemTokenIds1: [EstforConstants.SECRET_EGG_3, EstforConstants.SECRET_EGG_4],
+    randomStreakBonusAmounts1: [1, 1],
     randomStreakBonusItemTokenIds2: [],
+    randomStreakBonusAmounts2: [],
     guaranteedStreakBonusItemTokenIds: [],
     guaranteedStreakBonusAmounts: [],
     guaranteedItemTokenIds: [],
