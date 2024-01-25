@@ -255,17 +255,17 @@ abstract contract PlayersBase {
     Player storage player = players_[_playerId];
 
     // If ids are the same as existing, then just change the first one. Optimization when just claiming loot
-    bool same = true;
+    bool sameQueueIds = true;
     if (player.actionQueue.length == _queuedActions.length) {
       for (uint i = 0; i < _queuedActions.length; ++i) {
         if (player.actionQueue[i].queueId != _queuedActions[i].queueId) {
-          same = false;
+          sameQueueIds = false;
           break;
         }
       }
     }
 
-    if (same && player.actionQueue.length == _queuedActions.length && _queuedActions.length != 0) {
+    if (sameQueueIds && player.actionQueue.length == _queuedActions.length && _queuedActions.length != 0) {
       player.actionQueue[0] = _queuedActions[0];
     } else {
       // Replace everything

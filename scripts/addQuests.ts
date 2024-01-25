@@ -1,24 +1,26 @@
 import {ethers} from "hardhat";
 import {QUESTS_ADDRESS} from "./contractAddresses";
-import {MinRequirementArray, QuestInput, allQuests, defaultMinRequirements} from "./data/quests";
+import {MinRequirementArray, QuestInput, allQuests, allQuestsMinRequirements} from "./data/quests";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add quests using account: ${owner.address}`);
+  console.log(`Add quests using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  const quests = await ethers.getContractAt("Quests", QUESTS_ADDRESS);
+  const questIndexes = allQuests
+    .map((q, index) =>
+      q.questId === EstforConstants.QUEST_ENTER_THE_VEIL || q.questId === EstforConstants.QUEST_FORGE_AHEAD ? index : ""
+    )
+    .filter(String) as number[];
+  if (questIndexes.length != 2) {
+    console.error("Could not find these quests");
+    return;
+  }
 
-  const Quests = await ethers.getContractFactory("Quests");
-  const quests = await Quests.attach(QUESTS_ADDRESS);
-
-  const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_SO_FLETCH) as QuestInput;
-  const newQuests = [quest];
-  const minRequirements: MinRequirementArray[] = [defaultMinRequirements];
-
-  const tx = await quests.addQuests(newQuests, minRequirements);
-  await tx.wait();
+  const newQuests: QuestInput[] = questIndexes.map((index) => allQuests[index]);
+  const minRequirements: MinRequirementArray[] = questIndexes.map((index) => allQuestsMinRequirements[index]);
+  await quests.addQuests(newQuests, minRequirements);
 }
 
 main().catch((error) => {
