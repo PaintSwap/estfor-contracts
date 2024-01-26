@@ -164,7 +164,7 @@ async function main() {
 
   const pid = 22;
 
-  const newDecoratorProvider = false;
+  const newDecoratorProvider = true;
   let decoratorProvider: DecoratorProvider;
   if (newDecoratorProvider) {
     const DecoratorProvider = (await ethers.getContractFactory("DecoratorProvider")).connect(owner);
@@ -295,7 +295,7 @@ async function main() {
       tx = await sponsorWalletCaller.connect(owner).setSponsorWallet(sponsorWallet);
       await tx.wait();
       console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
-      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")}); // TODO: Update this
+      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("100")});
       await tx.wait();
       console.log();
     } catch (error) {

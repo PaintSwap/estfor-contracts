@@ -277,9 +277,8 @@ describe("Territories", function () {
     territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(clanId);
     const clanInfo = await territories.getClanInfo(clanId);
-    expect(clanInfo.playerIds.length).eq(2);
+    expect(clanInfo.playerIds.length).eq(1);
     expect(clanInfo.playerIds[0]).eq(playerId);
-    expect(clanInfo.playerIds[1]).eq(0); // Still 2 playerIds but the member who left is now 0
 
     // Make your own clan
     await clans.createClan(ownerPlayerId, clanName + 2, discord, telegram, imageId, tierId);
@@ -362,8 +361,7 @@ describe("Territories", function () {
     pendingAttack = await territories.getPendingAttack(2);
     expect(pendingAttack.clanId).to.eq(bobClanId);
     const clanInfo = await territories.getClanInfo(bobClanId);
-    expect(clanInfo.playerIds.length).eq(1);
-    expect(clanInfo.playerIds[0]).to.eq(0); // player id is removed
+    expect(clanInfo.playerIds.length).eq(0);
 
     await fulfillRandomWords(requestId + 1, territories, mockAPI3OracleClient);
     const territory = await territories.territories(territoryId);
@@ -414,8 +412,7 @@ describe("Territories", function () {
     pendingAttack = await territories.getPendingAttack(2);
     expect(pendingAttack.clanId).to.eq(bobClanId);
     const clanInfo = await territories.getClanInfo(bobClanId);
-    expect(clanInfo.playerIds.length).eq(1);
-    expect(clanInfo.playerIds[0]).to.eq(0); // player id is removed
+    expect(clanInfo.playerIds.length).eq(0);
 
     await fulfillRandomWords(requestId + 1, territories, mockAPI3OracleClient);
     const territory = await territories.territories(territoryId);

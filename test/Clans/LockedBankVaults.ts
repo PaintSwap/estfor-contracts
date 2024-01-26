@@ -94,7 +94,7 @@ describe("LockedBankVaults", function () {
       .assignCombatants(clanId, false, [], true, [playerId, ownerPlayerId], playerId);
     expect((await lockedBankVaults.getClanInfo(clanId)).playerIds).to.deep.eq([playerId, ownerPlayerId]);
     await clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
-    expect((await lockedBankVaults.getClanInfo(clanId)).playerIds).to.deep.eq([playerId, 0]);
+    expect((await lockedBankVaults.getClanInfo(clanId)).playerIds).to.deep.eq([playerId]);
   });
 
   it("Cannot only change combatants after the cooldown change deadline has passed", async function () {

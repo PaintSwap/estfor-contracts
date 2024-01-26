@@ -25,6 +25,8 @@ import {BattleResultEnum} from "../globals/clans.sol";
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
+import "../debug/console.sol";
+
 contract Territories is
   RrpRequesterV0Upgradeable,
   UUPSUpgradeable,
@@ -510,15 +512,17 @@ contract Territories is
     );
   }
 
-  // Remove a player combatant if they are currently assigned in this clan
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
-    // Check if this player is in the defenders list and remove them if so
+    // Remove a player combatant if they are currently assigned in this clan
     ClanInfo storage clanInfo = clanInfos[_clanId];
-    if (clanInfo.playerIds.length > 0) {
+    if (clanInfo.playerIds.length != 0) {
       uint searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, _playerId);
       if (searchIndex != type(uint).max) {
-        // Not shifting it for gas reasons
-        delete clanInfo.playerIds[searchIndex];
+        // Shift the whole array to delete the element
+        for (uint i = searchIndex; i < clanInfo.playerIds.length - 1; ++i) {
+          clanInfo.playerIds[i] = clanInfo.playerIds[i + 1];
+        }
+        clanInfo.playerIds.pop();
         emit RemoveCombatant(_playerId, _clanId);
       }
     }
