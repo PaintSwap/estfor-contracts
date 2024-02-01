@@ -865,6 +865,41 @@ describe("Promotions", function () {
         );
       });
 
+      it("Check streak rewards are randomized", async function () {
+        const {promotions, playerNFT, players, itemNFT, alice, playerId, world, mockOracleClient} = await loadFixture(
+          promotionFixture
+        );
+
+        const promotion = {...(await getOriginalPromotion())};
+        promotion.isMultiday = true;
+        promotion.numDaysClaimablePeriodStreakBonus = 1;
+        promotion.numDaysHitNeededForStreakBonus = 1;
+        promotion.numRandomStreakBonusItemsToPick1 = 1;
+        promotion.randomStreakBonusItemTokenIds1 = [EstforConstants.SECRET_EGG_3, EstforConstants.SECRET_EGG_4];
+        promotion.randomStreakBonusAmounts1 = [1, 1];
+        promotion.promotionTiedToPlayer = false;
+        promotion.promotionTiedToUser = false;
+        await promotions.addPromotion(promotion);
+
+        for (let i = 0; i < 25; ++i) {
+          await createPlayer(playerNFT, 1, alice, "name" + i, true);
+          await promotions.connect(alice).mintPromotion(playerId.add(i + 1), Promotion.XMAS_2023);
+        }
+
+        // increase time 1 day
+        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
+        requestAndFulfillRandomWords(world, mockOracleClient);
+
+        // mint the streak bonus
+        for (let i = 0; i < 25; ++i) {
+          await players.connect(alice).setActivePlayer(playerId.add(i + 1));
+          await promotions.connect(alice).mintPromotion(playerId.add(i + 1), Promotion.XMAS_2023);
+        }
+
+        expect((await itemNFT["totalSupply(uint256)"](EstforConstants.SECRET_EGG_3)).toNumber()).to.be.gt(0);
+        expect((await itemNFT["totalSupply(uint256)"](EstforConstants.SECRET_EGG_4)).toNumber()).to.be.gt(0);
+      });
+
       it("Check streak bonus inputs when isMultiday=true", async function () {
         const {promotions, promotionsLibrary} = await loadFixture(promotionFixture);
 

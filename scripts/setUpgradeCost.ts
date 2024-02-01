@@ -8,7 +8,7 @@ async function main() {
   );
 
   const playerNFT = await ethers.getContractAt("PlayerNFT", PLAYER_NFT_ADDRESS);
-  const tx = await playerNFT.setUpgradeCost(ethers.utils.parseEther("2000"));
+  const tx = await playerNFT.setUpgradeCost(ethers.utils.parseEther("1000"));
   await tx.wait();
 }
 

@@ -197,4 +197,56 @@ library EstforLibrary {
     }
     return string(lowerStr);
   }
+
+  // This should match the one below, useful when a calldata array is needed and for external testing
+  function binarySearchMemory(uint48[] calldata _arr, uint _target) external pure returns (uint) {
+    uint low = 0;
+    uint high = _arr.length - 1;
+
+    while (low <= high) {
+      uint mid = low + (high - low) / 2;
+
+      if (_arr[mid] == _target) {
+        return mid; // Element found
+      } else if (_arr[mid] < _target) {
+        low = mid + 1;
+      } else {
+        // Check to prevent underflow
+        if (mid > 0) {
+          high = mid - 1;
+        } else {
+          // If mid is 0 and _arr[mid] is not the target, the element is not in the array
+          break;
+        }
+      }
+    }
+
+    return type(uint).max; // Element not found
+  }
+
+  // This should match the one above
+  function binarySearch(uint48[] storage _arr, uint _target) internal view returns (uint) {
+    uint low = 0;
+    uint high = _arr.length - 1;
+
+    while (low <= high) {
+      uint mid = low + (high - low) / 2;
+
+      if (_arr[mid] == _target) {
+        return mid; // Element found
+      } else if (_arr[mid] < _target) {
+        low = mid + 1;
+      } else {
+        // Check to prevent underflow
+        if (mid > 0) {
+          high = mid - 1;
+        } else {
+          // If mid is 0 and _arr[mid] is not the target, the element is not in the array
+          break;
+        }
+      }
+    }
+
+    return type(uint).max; // Element not found
+  }
 }

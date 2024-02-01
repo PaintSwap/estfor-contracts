@@ -26,10 +26,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   using UnsafeMath for U256;
 
   event GamePaused(bool gamePaused);
+  event LockPlayer(uint playerId, uint cooldownTimestamp);
+  event UnlockPlayer(uint playerId);
 
   error InvalidSelector();
   error GameIsPaused();
   error NotBeta();
+  error PlayerLocked();
 
   modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
     if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -225,7 +228,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
   }
 
-  /// @notice Called by the PlayerNFT contract before a player is transferred
+  /// @notice Called by the PlayerNFT contract before a player is transferred from an account
   /// @param _from The owner of the player being transferred
   /// @param _playerId The id of the player being transferred
   function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
@@ -235,6 +238,34 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (existingActivePlayerId == _playerId) {
       delete activePlayer_[_from];
       emit SetActivePlayer(_from, existingActivePlayerId, 0);
+    }
+  }
+
+  /// @notice Called by the PlayerNFT contract before a player is transferred to an account
+  /// @param _to The new owner of the player
+  /// @param _playerId The id of the player being transferred
+  function beforeTokenTransferTo(address _to, uint _playerId) external override onlyPlayerNFT {
+    // Does this account have any boosts? If so, then set a lock on the player when trying to set it as active
+    uint16[] memory boostItemTokenIds = new uint16[](4);
+    boostItemTokenIds[0] = COMBAT_BOOST;
+    boostItemTokenIds[1] = XP_BOOST;
+    boostItemTokenIds[2] = GATHERING_BOOST;
+    boostItemTokenIds[3] = SKILL_BOOST;
+    uint[] memory balances = itemNFT.balanceOfs(_to, boostItemTokenIds);
+    bool hasBoost;
+    for (uint i; i < balances.length; ++i) {
+      hasBoost = hasBoost || balances[i] != 0;
+    }
+
+    if (hasBoost) {
+      // The account this player is being transferred to has a boost, so lock the player for 1 day.
+      uint40 cooldownTimestamp = uint40(block.timestamp + 1 days);
+      activeBoosts_[_playerId].cooldown = cooldownTimestamp;
+      emit LockPlayer(_playerId, cooldownTimestamp);
+    } else if (activeBoosts_[_playerId].cooldown > block.timestamp) {
+      // Remove the lock when transferring to a player without boosts
+      activeBoosts_[_playerId].cooldown = 0;
+      emit UnlockPlayer(_playerId);
     }
   }
 
@@ -289,6 +320,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (existingActivePlayerId == _playerId) {
       revert PlayerAlreadyActive();
     }
+
+    if (block.timestamp < activeBoosts_[_playerId].cooldown) {
+      revert PlayerLocked();
+    }
+
     if (existingActivePlayerId != 0) {
       _clearEverything(_from, existingActivePlayerId, true);
     }

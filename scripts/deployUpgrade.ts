@@ -17,6 +17,10 @@ import {
   INSTANT_ACTIONS_ADDRESS,
   PROMOTIONS_ADDRESS,
   PROMOTIONS_LIBRARY_ADDRESS,
+  TERRITORIES_ADDRESS,
+  DECORATOR_PROVIDER_ADDRESS,
+  LOCKED_BANK_VAULT_ADDRESS,
+  COMBATANTS_HELPER_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -181,7 +185,6 @@ async function main() {
     kind: "uups",
     timeout,
     unsafeAllow: ["external-library-linking"],
-    unsafeSkipStorageCheck: true,
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
@@ -195,6 +198,43 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
+  const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout,
+  });
+  await lockedBankVaults.deployed();
+  console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
+
+  const Territories = await ethers.getContractFactory("Territories");
+  const territories = await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout,
+  });
+  await territories.deployed();
+  console.log(`territories = "${territories.address.toLowerCase()}"`);
+
+  const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
+  const decoratorProvider = await upgrades.upgradeProxy(DECORATOR_PROVIDER_ADDRESS, DecoratorProvider, {
+    kind: "uups",
+    timeout,
+  });
+  await decoratorProvider.deployed();
+  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+
+  const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  const combatantsHelper = await upgrades.upgradeProxy(COMBATANTS_HELPER_ADDRESS, CombatantsHelper, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout,
+  });
+  await combatantsHelper.deployed();
+  console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);
+
   await verifyContracts([players.address]);
   await verifyContracts([playerNFT.address]);
   await verifyContracts([itemNFT.address]);
@@ -207,6 +247,10 @@ async function main() {
   await verifyContracts([wishingWell.address]);
   await verifyContracts([promotions.address]);
   await verifyContracts([instantActions.address]);
+  await verifyContracts([lockedBankVaults.address]);
+  await verifyContracts([territories.address]);
+  await verifyContracts([decoratorProvider.address]);
+  await verifyContracts([combatantsHelper.address]);
 }
 
 main().catch((error) => {

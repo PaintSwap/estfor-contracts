@@ -75,6 +75,18 @@ export const allShopItems: ShopItem[] = [
     tokenId: EstforConstants.FLUX,
     price: ethers.utils.parseEther("10"),
   },
+  {
+    tokenId: EstforConstants.PROTECTION_SHIELD,
+    price: ethers.utils.parseEther("500"),
+  },
+  {
+    tokenId: EstforConstants.DEVILISH_FINGERS,
+    price: ethers.utils.parseEther("250"),
+  },
+  {
+    tokenId: EstforConstants.MIRROR_SHIELD,
+    price: ethers.utils.parseEther("250"),
+  },
 ];
 
 export const allShopItemsBeta: ShopItem[] = allShopItems.map((shopItem) => {

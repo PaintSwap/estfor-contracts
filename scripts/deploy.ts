@@ -5,6 +5,7 @@ import {
   Clans,
   InstantActions,
   ItemNFT,
+  MockAPI3OracleClient,
   MockBrushToken,
   MockOracleClient,
   MockPaintSwapMarketplaceWhitelist,
@@ -15,9 +16,18 @@ import {
   Promotions,
   Quests,
   Shop,
+  TestPaintSwapArtGallery,
+  TestPaintSwapDecorator,
   World,
 } from "../typechain-types";
-import {deployPlayerImplementations, isBeta, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
+import {
+  deployMockPaintSwapContracts,
+  deployPlayerImplementations,
+  isBeta,
+  isDevNetwork,
+  setDailyAndWeeklyRewards,
+  verifyContracts,
+} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
 import {
@@ -42,7 +52,13 @@ import {
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
-import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
+import {
+  BRUSH_ADDRESS,
+  DECORATOR_ADDRESS,
+  DEV_ADDRESS,
+  ORACLE_FALLBACK_ADDRESS,
+  WFTM_ADDRESS,
+} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
@@ -53,6 +69,9 @@ import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
+import {allTerritories, allTerritorySkills} from "./data/territories";
+import {execSync} from "child_process";
+import path from "path";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -64,16 +83,22 @@ async function main() {
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
   let oracle: MockOracleClient;
+  let api3Oracle: MockAPI3OracleClient;
   let router: MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
+  let paintSwapDecorator: TestPaintSwapDecorator;
+  let paintSwapArtGallery: TestPaintSwapArtGallery;
   let tx;
-  let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
+  let pid = 0;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
+    const MockAPI3OracleClient = await ethers.getContractFactory("MockAPI3OracleClient");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
+    const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
+    const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
@@ -81,32 +106,48 @@ async function main() {
       console.log("Minted brush");
       oracle = await MockOracleClient.deploy();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
+      api3Oracle = await MockAPI3OracleClient.deploy();
+      console.log(`mockAPI3OracleClient = "${api3Oracle.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
-      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
+        brush,
+        router,
+        wftm
+      ));
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
+      await brush.deployed();
       tx = await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       console.log("Minted brush");
       await tx.wait();
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
       oracle = await MockOracleClient.deploy();
+      await oracle.deployed();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
+      api3Oracle = await MockAPI3OracleClient.deploy();
+      console.log(`mockAPI3OracleClient = "${api3Oracle.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
-      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
+        brush,
+        router,
+        wftm
+      ));
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
       oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
+      api3Oracle = await MockAPI3OracleClient.attach("0xa0AD79D995DdeeB18a14eAef56A549A04e3Aa1Bd");
       router = await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d");
       paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.attach(
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
       );
+      paintSwapArtGallery = await TestPaintSwapArtGallery.attach("0x9076C96e01F6F13e1eC4832354dF970d245e124F");
+      paintSwapDecorator = await TestPaintSwapDecorator.attach(DECORATOR_ADDRESS);
+      pid = 22;
     } else {
       throw Error("Not a supported network");
     }
@@ -132,7 +173,7 @@ async function main() {
   console.log(`world = "${world.address.toLowerCase()}"`);
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [brush.address, devAddress], {
+  const shop = (await upgrades.deployProxy(Shop, [brush.address, DEV_ADDRESS], {
     kind: "uups",
     timeout,
   })) as Shop;
@@ -144,7 +185,7 @@ async function main() {
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, devAddress, brush.address, buyPath],
+    [router.address, shop.address, DEV_ADDRESS, brush.address, buyPath],
     {
       kind: "uups",
       timeout,
@@ -194,8 +235,7 @@ async function main() {
   }
 
   // Create NFT contract which contains all items
-  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  const itemNFTLibrary = await ItemNFTLibrary.deploy();
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
   await itemNFTLibrary.deployed();
   console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
@@ -212,8 +252,7 @@ async function main() {
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
   // Create NFT contract which contains all the players
-  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-  const estforLibrary = await EstforLibrary.deploy();
+  const estforLibrary = await ethers.deployContract("EstforLibrary");
   await estforLibrary.deployed();
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -224,7 +263,7 @@ async function main() {
     [
       brush.address,
       shop.address,
-      devAddress,
+      DEV_ADDRESS,
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
@@ -242,6 +281,8 @@ async function main() {
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  await promotionsLibrary.deployed();
+  console.log(`promotionsLibrary = "${promotionsLibrary.address.toLowerCase()}"`);
   const Promotions = await ethers.getContractFactory("Promotions", {
     libraries: {PromotionsLibrary: promotionsLibrary.address},
   });
@@ -274,7 +315,7 @@ async function main() {
       brush.address,
       playerNFT.address,
       shop.address,
-      devAddress,
+      DEV_ADDRESS,
       editNameBrushPrice,
       paintSwapMarketplaceWhitelist.address,
     ],
@@ -378,6 +419,92 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
+  const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
+  const xpub =
+    "xpub6CyZcaXvbnbqGfqqZWvWNUbGvdd5PAJRrBeAhy9rz1bbnFmpVLg2wPj1h6TyndFrWLUG3kHWBYpwacgCTGWAHFTbUrXEg6LdLxoEBny2YDz";
+  const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
+  const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
+
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
+  const lockedBankVaults = await upgrades.deployProxy(
+    LockedBankVaults,
+    [
+      players.address,
+      clans.address,
+      brush.address,
+      bankFactory.address,
+      itemNFT.address,
+      shop.address,
+      DEV_ADDRESS,
+      ORACLE_FALLBACK_ADDRESS,
+      allTerritorySkills,
+      api3Oracle.address,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+  console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
+
+  const Territories = await ethers.getContractFactory("Territories");
+  const territories = await upgrades.deployProxy(
+    Territories,
+    [
+      allTerritories,
+      players.address,
+      clans.address,
+      brush.address,
+      lockedBankVaults.address,
+      itemNFT.address,
+      ORACLE_FALLBACK_ADDRESS,
+      allTerritorySkills,
+      api3Oracle.address,
+      airnode,
+      endpointIdUint256,
+      endpointIdUint256Array,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+  console.log(`territories = "${territories.address.toLowerCase()}"`);
+
+  const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  const combatantsHelper = await upgrades.deployProxy(
+    CombatantsHelper,
+    [players.address, clans.address, territories.address, lockedBankVaults.address, adminAccess.address, isBeta],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+
+  const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
+  const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
+    paintSwapDecorator.address,
+    paintSwapArtGallery.address,
+    territories.address,
+    brush.address,
+    playerNFT.address,
+    DEV_ADDRESS,
+    pid,
+  ]);
+  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {
     try {
@@ -407,6 +534,9 @@ async function main() {
         bankRegistry.address,
         bankFactory.address,
         instantActions.address,
+        territories.address,
+        decoratorProvider.address,
+        combatantsHelper.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -457,7 +587,51 @@ async function main() {
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
-  console.log("setItemNFT");
+  console.log("shop.setItemNFT");
+
+  tx = await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await tx.wait();
+  console.log("clans.setTerritoriesAndLockedBankVaults");
+  tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await tx.wait();
+  console.log("itemNFT.setTerritoriesAndLockedBankVaults");
+  tx = await lockedBankVaults.setTerritories(territories.address);
+  await tx.wait();
+  console.log("lockedBankVaults.setTerritories");
+
+  const sponsorWalletCallers = [lockedBankVaults, territories];
+  for (const sponsorWalletCaller of sponsorWalletCallers) {
+    const command = `${path.join(
+      "node_modules",
+      ".bin",
+      "airnode-admin"
+    )} derive-sponsor-wallet-address  --airnode-address ${airnode} --airnode-xpub ${xpub} --sponsor-address ${
+      sponsorWalletCaller.address
+    }`;
+
+    try {
+      const result = execSync(command, {encoding: "utf-8"});
+      const arr = result.split(": ");
+      // Extract the wallet address from the output
+      const sponsorWallet = arr[1].slice(0, 42);
+
+      tx = await sponsorWalletCaller.setCombatantsHelper(combatantsHelper.address);
+      await tx.wait();
+      console.log("setCombatantsHelper");
+      tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
+      await tx.wait();
+      console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
+      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")});
+      await tx.wait();
+      console.log();
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  }
+
+  tx = await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
+  await tx.wait();
+  console.log("bankRegistry.setLockedBankVaults");
 
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();

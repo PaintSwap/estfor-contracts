@@ -69,6 +69,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   IBankFactory private bankFactory;
   address private promotions;
   address private instantActions;
+  address private territories;
+  address private lockedBankVaults;
 
   modifier onlyPlayersOrShopOrPromotions() {
     if (
@@ -148,7 +150,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     uint16 _item
   ) external view returns (Skill skill, uint32 minXP, EquipPosition equipPosition) {
     (skill, minXP) = _getMinRequirement(_item);
-    equipPosition = _getEquipPosition(_item);
+    equipPosition = getEquipPosition(_item);
   }
 
   function getMinRequirements(
@@ -179,7 +181,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     equipPositions = new EquipPosition[](tokenIdsLength.asUint256());
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      equipPositions[i] = _getEquipPosition(_tokenIds[i]);
+      equipPositions[i] = getEquipPosition(_tokenIds[i]);
     }
   }
 
@@ -187,7 +189,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return (items[_tokenId].skill, items[_tokenId].minXP);
   }
 
-  function _getEquipPosition(uint16 _tokenId) private view returns (EquipPosition) {
+  function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
     if (!exists(_tokenId)) {
       revert ItemDoesNotExist(_tokenId);
     }
@@ -360,7 +362,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       !isApprovedForAll(_from, _msgSender()) &&
       players != _msgSender() &&
       shop != _msgSender() &&
-      instantActions != _msgSender()
+      instantActions != _msgSender() &&
+      territories != _msgSender() &&
+      lockedBankVaults != _msgSender()
     ) {
       revert ERC1155ReceiverNotApproved();
     }
@@ -464,6 +468,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function setInstantActions(address _instantActions) external onlyOwner {
     instantActions = _instantActions;
+  }
+
+  function setTerritoriesAndLockedBankVaults(address _territories, address _lockedBankVaults) external onlyOwner {
+    territories = _territories;
+    lockedBankVaults = _lockedBankVaults;
   }
 
   function setBaseURI(string calldata _baseURI) external onlyOwner {

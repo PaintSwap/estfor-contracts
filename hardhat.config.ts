@@ -74,6 +74,8 @@ const config: HardhatUserConfig = {
     compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, lowestRunsConfig],
     overrides: {
       "contracts/Clans/Clans.sol": mediumRunsConfig,
+      "contracts/Clans/LockedBankVaults.sol": mediumRunsConfig,
+      "contracts/Clans/Territories.sol": mediumRunsConfig,
       "contracts/Players/Players.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
@@ -92,7 +94,7 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("32", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("45", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,
