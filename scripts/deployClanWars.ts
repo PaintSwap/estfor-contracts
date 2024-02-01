@@ -10,6 +10,7 @@ import {
   DEV_ADDRESS,
   FAKE_BRUSH_WFTM_LP_ADDRESS,
   ITEM_NFT_ADDRESS,
+  ORACLE_FALLBACK_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
   SHOP_ADDRESS,
@@ -26,7 +27,7 @@ import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  //  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
+  // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
   console.log(`Deploying clan wars contracts: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const timeout = 600 * 1000; // 10 minutes
@@ -99,6 +100,7 @@ async function main() {
       itemNFT.address,
       SHOP_ADDRESS,
       DEV_ADDRESS,
+      ORACLE_FALLBACK_ADDRESS,
       allTerritorySkills,
       airnodeRrpAddress,
       airnode,
@@ -126,7 +128,7 @@ async function main() {
       BRUSH_ADDRESS,
       lockedBankVaults.address,
       itemNFT.address,
-      DEV_ADDRESS,
+      ORACLE_FALLBACK_ADDRESS,
       allTerritorySkills,
       airnodeRrpAddress,
       airnode,

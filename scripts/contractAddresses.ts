@@ -39,9 +39,9 @@ if (!isBeta) {
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
   royaltyReceiver = "0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b";
   adminAccess = "0xe63b7195b301b9313c9e337df4aceac436c3751e";
-  itemNFTLibrary = "0x91ad699cce43d8c6133d9e97a794d5c381e0fce0";
+  itemNFTLibrary = "0x310ced35c1def687496369222c59d0c93d98cf19";
   itemNFT = "0x4b9c90ebb1fa98d9724db46c4689994b46706f5a";
-  estforLibrary = "0x4ab5ccd48c4f64a2dd64b1417394415879eedd02";
+  estforLibrary = "0x987521c999efe16c2f288211efe5f2678b3bc34a";
   playerNFT = "0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9";
   promotions = "0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4";
   promotionsLibrary = "0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95";
@@ -49,23 +49,23 @@ if (!isBeta) {
   clans = "0x334caa8907bdf49470f7b085380c25431ef96f6d";
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
   bank = "0xe183a43881eac74808c55bdb2a073929602af4db";
-  playersLibrary = "0x7f3d2f36b3b3181e01fe4048dd9ba63be3440710";
-  playersImplQueueActions = "0xa84314f52b6811e6e26c25d63b655108d6a16c02";
-  playersImplProcessActions = "0x51bb1f55fe017f0df121c1c1cdd192ae96f32516";
-  playersImplRewards = "0xfa69a967bf8a35b456c56c19d644fc1a819da833";
-  playersImplMisc = "0x5e2a2a50f1b6afff7d588dccac0a4f0252f589fa";
-  playersImplMisc1 = "0x84dacfda4ae5831e388f62692fb697dffc89ca53";
+  playersLibrary = "0x316342122a9ae36de41b231260579b92f4c8be7f ";
+  playersImplQueueActions = "0x9e2669c43693a0b3c37daa9fbd668d76cfad8cb5";
+  playersImplProcessActions = "0x697a41effb1dca9187bca62dc2f5935a2b6749a3";
+  playersImplRewards = "0x6b9018c89ac74371cdba443192cd8470cb5721aa";
+  playersImplMisc = "0x07c072ed042a688e1db6ab3487c51dbd56318136";
+  playersImplMisc1 = "0xf0ec1644ea866a20ceae87cd669325f32f9eb6ab";
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
-  lockedBankVaults = "";
-  territories = "";
-  decoratorProvider = "";
-  combatantsHelper = "";
-  sponsorWalletLockedVault = "";
-  sponsorWalletTerritories = "";
-  oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
+  lockedBankVaults = "0x65e944795d00cc287bdace77d57571fc4deff3e0";
+  territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
+  combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
+  decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
+  sponsorWalletLockedVault = "0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8";
+  sponsorWalletTerritories = "0xe0d4a3b16a51092b3c1f330c538de47269d1af0f";
+  oracleFallback = "0x28ade840602d0363a2ab675479f1b590b23b0490";
 } else {
   worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -95,11 +95,11 @@ if (!isBeta) {
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
-  combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
+  combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
   sponsorWalletLockedVault = "0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387";
   sponsorWalletTerritories = "0xa519dfa5728f8e91ae8c5657426c5b74176516f7";
-  oracleFallback = "0x28ade840602d0363a2ab675479f1b590b23b0490";
+  oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -135,8 +135,8 @@ export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const SPONSOR_WALLET_LOCKED_VAULT_ADDRESS = sponsorWalletLockedVault;
 export const TERRITORIES_ADDRESS = territories;
 export const SPONSOR_WALLET_TERRITORIES_ADDRESS = sponsorWalletTerritories;
-export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
+export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";
