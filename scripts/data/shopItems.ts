@@ -85,7 +85,7 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.MIRROR_SHIELD,
-    price: ethers.utils.parseEther("300"),
+    price: ethers.utils.parseEther("250"),
   },
 ];
 
