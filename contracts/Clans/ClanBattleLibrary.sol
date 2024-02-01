@@ -105,12 +105,12 @@ library ClanBattleLibrary {
         // Each battle then roll dice where every 20 levels in the skill gets you a d20 dice.
         // The highest number rolled is the outcome.
         // So example skill level 39 vs 97, player 1 would have 2 dice and player 2 would roll 5.
-        if (levelA > 20 * 8 || levelB > 20 * 8) {
+        if (levelA > 20 * 7 || levelB > 20 * 7) {
           assert(false); // Unsupported
         }
 
-        uint numRollsA = (levelA / 20) + 1;
-        uint numRollsB = (levelB / 20) + 1;
+        uint numRollsA = (levelA / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersA[i]) ? 2 : 1);
+        uint numRollsB = (levelB / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersB[i]) ? 2 : 1);
 
         bytes1 byteA = bytes32(_randomWordA)[31 - i];
         // Check how many bits are set based on the number of rolls

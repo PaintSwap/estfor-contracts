@@ -83,7 +83,7 @@ CombatantsHelper [0x8fedf83c55012acff7115b8fa164095721953c39](https://ftmscan.co
 DecoratorProvider [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.com/address/0xba2f8cff9ea18f3687eb685f0c1bcd509b539963)
 
 Sponsor wallet - LockedVault [0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8](https://ftmscan.com/address/0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8)  
-Sponsor wallet - Territories [0xe0d4a3b16a51092b3c1f330c538de47269d1af0f](https://ftmscan.com/address/0xe0d4a3b16a51092b3c1f330c538de47269d1af0f)
+Sponsor wallet - Territories [0xe0d4a3b16a51092b3c1f330c538de47269d1af0f](https://ftmscan.com/address/0xe0d4a3b16a51092b3c1f330c538de47269d1af0f)  
 OracleFallback [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)
 
 ### Fantom mainnet beta deployed contract addresses:
@@ -124,7 +124,7 @@ CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.co
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
 Sponsor wallet - LockedVault [0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387](https://ftmscan.com/address/0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387)  
-Sponsor wallet - Territories [0xa519dfa5728f8e91ae8c5657426c5b74176516f7 ](https://ftmscan.com/address/0xa519dfa5728f8e91ae8c5657426c5b74176516f7)
+Sponsor wallet - Territories [0xa519dfa5728f8e91ae8c5657426c5b74176516f7 ](https://ftmscan.com/address/0xa519dfa5728f8e91ae8c5657426c5b74176516f7)  
 OracleFallback [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)
 
 ### Other addresses:
