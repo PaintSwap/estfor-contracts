@@ -53,6 +53,7 @@ import {
   allActionChoiceIdsFletching,
 } from "./data/actionChoiceIds";
 import {
+  BAZAAR_ADDRESS,
   BRUSH_ADDRESS,
   DECORATOR_ADDRESS,
   DEV_ADDRESS,
@@ -598,6 +599,8 @@ async function main() {
   tx = await lockedBankVaults.setTerritories(territories.address);
   await tx.wait();
   console.log("lockedBankVaults.setTerritories");
+
+  tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
 
   const sponsorWalletCallers = [lockedBankVaults, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {

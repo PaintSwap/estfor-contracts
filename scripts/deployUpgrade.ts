@@ -26,10 +26,9 @@ import {verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Deploying upgradeable contracts with the account: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(
+    `Deploying upgradeable contracts with the account: ${owner.address} on chain ${await owner.getChainId()}`
+  );
 
   const timeout = 600 * 1000; // 10 minutes
   const newEstforLibrary = false;

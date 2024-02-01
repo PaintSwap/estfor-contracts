@@ -32,6 +32,7 @@ let combatantsHelper;
 let sponsorWalletLockedVault;
 let sponsorWalletTerritories;
 let oracleFallback;
+let bazaar;
 
 if (!isBeta) {
   worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
@@ -66,6 +67,7 @@ if (!isBeta) {
   sponsorWalletLockedVault = "0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8";
   sponsorWalletTerritories = "0xe0d4a3b16a51092b3c1f330c538de47269d1af0f";
   oracleFallback = "0x28ade840602d0363a2ab675479f1b590b23b0490";
+  bazaar = "";
 } else {
   worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -100,6 +102,7 @@ if (!isBeta) {
   sponsorWalletLockedVault = "0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387";
   sponsorWalletTerritories = "0xa519dfa5728f8e91ae8c5657426c5b74176516f7";
   oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
+  bazaar = "0xf1839a8546cb4cce4b927c658775ff358579feae";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -146,3 +149,4 @@ export const FAKE_BRUSH_WFTM_LP_ADDRESS = "0xb3209C979b90436f0a43ED817CD36c4c908
 export const DECORATOR_ADDRESS = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
 export const DEV_ADDRESS = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
 export const ORACLE_FALLBACK_ADDRESS = oracleFallback;
+export const BAZAAR_ADDRESS = bazaar;
