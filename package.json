@@ -105,6 +105,7 @@
     "setDonationThresholds": "npx hardhat run scripts/setDonationThresholds.ts",
     "setChainlinkCallbackGasLimit": "npx hardhat run scripts/setChainlinkCallbackGasLimit.ts",
     "setPaintSwapMarketplaceWhitelist": "npx hardhat run scripts/setPaintSwapMarketplaceWhitelist.ts",
+    "setBaseAttackCostAndGasLimitTerritories": "npx hardhat run scripts/setBaseAttackCostAndGasLimitTerritories.ts",
     "setUpgradeCost": "npx hardhat run scripts/setUpgradeCost.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
     "setImageURI": "npx hardhat run scripts/setImageURI.ts",

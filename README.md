@@ -53,9 +53,9 @@ World [0x28866bf156152966b5872bee39bc05b5b5eedb02](https://ftmscan.com/address/0
 Shop [0x7fb574e4fbe876f751fec90e59686c2776df19f9](https://ftmscan.com/address/0x7fb574e4fbe876f751fec90e59686c2776df19f9)  
 RoyaltyReceiver [0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b](https://ftmscan.com/address/0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b)  
 AdminAccess [0xe63b7195b301b9313c9e337df4aceac436c3751e](https://ftmscan.com/address/0xe63b7195b301b9313c9e337df4aceac436c3751e)  
-ItemNFTLibrary [0x91ad699cce43d8c6133d9e97a794d5c381e0fce0](https://ftmscan.com/address/0x91ad699cce43d8c6133d9e97a794d5c381e0fce0)  
+ItemNFTLibrary [0x310ced35c1def687496369222c59d0c93d98cf19](https://ftmscan.com/address/0x310ced35c1def687496369222c59d0c93d98cf19)  
 ItemNFT [0x4b9c90ebb1fa98d9724db46c4689994b46706f5a](https://ftmscan.com/address/0x4b9c90ebb1fa98d9724db46c4689994b46706f5a)  
-EstforLibrary [0x4ab5ccd48c4f64a2dd64b1417394415879eedd02](https://ftmscan.com/address/0x4ab5ccd48c4f64a2dd64b1417394415879eedd02)  
+EstforLibrary [0x987521c999efe16c2f288211efe5f2678b3bc34a](https://ftmscan.com/address/0x987521c999efe16c2f288211efe5f2678b3bc34a)  
 PlayerNFT [0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9](https://ftmscan.com/address/0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9)  
 PromotionsLibrary [0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95](https://ftmscan.com/address/0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95)  
 Promotions [0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4](https://ftmscan.com/address/0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4)  
@@ -64,12 +64,12 @@ Clans [0x334caa8907bdf49470f7b085380c25431ef96f6d](https://ftmscan.com/address/0
 WishingWell [0x0a8d80ce4855666b7d7121d75f2a49aac434a918](https://ftmscan.com/address/0x0a8d80ce4855666b7d7121d75f2a49aac434a918)  
 Bank Beacon [0xe183a43881eac74808c55bdb2a073929602af4db](https://ftmscan.com/address/0xe183a43881eac74808c55bdb2a073929602af4db)
 
-PlayersLibrary [0x7f3d2f36b3b3181e01fe4048dd9ba63be3440710](https://ftmscan.com/address/0x7f3d2f36b3b3181e01fe4048dd9ba63be3440710)  
-PlayersImplQueueActions [0xa84314f52b6811e6e26c25d63b655108d6a16c02](https://ftmscan.com/address/0xa84314f52b6811e6e26c25d63b655108d6a16c02)  
-PlayersImplProcessActions [0x51bb1f55fe017f0df121c1c1cdd192ae96f32516](https://ftmscan.com/address/0x51bb1f55fe017f0df121c1c1cdd192ae96f32516)  
-PlayersImplRewards [0xfa69a967bf8a35b456c56c19d644fc1a819da833](https://ftmscan.com/address/0xfa69a967bf8a35b456c56c19d644fc1a819da833)  
-PlayersImplMisc [0x5e2a2a50f1b6afff7d588dccac0a4f0252f589fa](https://ftmscan.com/address/0x5e2a2a50f1b6afff7d588dccac0a4f0252f589fa)  
-PlayersImplMisc1 [0x84dacfda4ae5831e388f62692fb697dffc89ca53](https://ftmscan.com/address/0x84dacfda4ae5831e388f62692fb697dffc89ca53)  
+PlayersLibrary [0x316342122a9ae36de41b231260579b92f4c8be7f](https://ftmscan.com/address/0x316342122a9ae36de41b231260579b92f4c8be7f)  
+PlayersImplQueueActions [0x9e2669c43693a0b3c37daa9fbd668d76cfad8cb5](https://ftmscan.com/address/0x9e2669c43693a0b3c37daa9fbd668d76cfad8cb5)  
+PlayersImplProcessActions [0x697a41effb1dca9187bca62dc2f5935a2b6749a3](https://ftmscan.com/address/0x697a41effb1dca9187bca62dc2f5935a2b6749a3)  
+PlayersImplRewards [0x6b9018c89ac74371cdba443192cd8470cb5721aa](https://ftmscan.com/address/0x6b9018c89ac74371cdba443192cd8470cb5721aa)  
+PlayersImplMisc [0x07c072ed042a688e1db6ab3487c51dbd56318136](https://ftmscan.com/address/0x07c072ed042a688e1db6ab3487c51dbd56318136)  
+PlayersImplMisc1 [0xf0ec1644ea866a20ceae87cd669325f32f9eb6ab](https://ftmscan.com/address/0xf0ec1644ea866a20ceae87cd669325f32f9eb6ab)  
 Players [0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143](https://ftmscan.com/address/0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143)
 
 BankRegistry [0x55a1b0251e1375bd41dd9778c379322e3863a54e](https://ftmscan.com/address/0x55a1b0251e1375bd41dd9778c379322e3863a54e)  
@@ -77,13 +77,14 @@ BankFactory [0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4](https://ftmscan.com/add
 
 InstantActions [0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe](https://ftmscan.com/address/0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe)
 
-LockedBankVaults [](https://ftmscan.com/address/)  
-Territories [](https://ftmscan.com/address/)  
-CombatantsHelper [](https://ftmscan.com/address/)  
-DecoratorProvider [](https://ftmscan.com/address/)
+LockedBankVaults [0x65e944795d00cc287bdace77d57571fc4deff3e0](https://ftmscan.com/address/0x65e944795d00cc287bdace77d57571fc4deff3e0)  
+Territories [0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170](https://ftmscan.com/address/0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170)  
+CombatantsHelper [0x8fedf83c55012acff7115b8fa164095721953c39](https://ftmscan.com/address/0x8fedf83c55012acff7115b8fa164095721953c39)  
+DecoratorProvider [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.com/address/0xba2f8cff9ea18f3687eb685f0c1bcd509b539963)
 
-Sponsor wallet - LockedVault [](https://ftmscan.com/address/)  
-Sponsor wallet - Territories [](https://ftmscan.com/address/)
+Sponsor wallet - LockedVault [0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8](https://ftmscan.com/address/0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8)  
+Sponsor wallet - Territories [0xe0d4a3b16a51092b3c1f330c538de47269d1af0f](https://ftmscan.com/address/0xe0d4a3b16a51092b3c1f330c538de47269d1af0f)
+OracleFallback [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)
 
 ### Fantom mainnet beta deployed contract addresses:
 
@@ -124,6 +125,7 @@ DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.c
 
 Sponsor wallet - LockedVault [0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387](https://ftmscan.com/address/0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387)  
 Sponsor wallet - Territories [0xa519dfa5728f8e91ae8c5657426c5b74176516f7 ](https://ftmscan.com/address/0xa519dfa5728f8e91ae8c5657426c5b74176516f7)
+OracleFallback [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)
 
 ### Other addresses:
 
