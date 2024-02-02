@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {World} from "../typechain-types";
+import {ItemNFT, World} from "../typechain-types";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
@@ -67,14 +67,14 @@ describe("ItemNFT", function () {
     const itemNFTLibrary = await ItemNFTLibrary.deploy();
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
-    const itemNFT = await upgrades.deployProxy(
+    const itemNFT = (await upgrades.deployProxy(
       ItemNFT,
       [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
       }
-    );
+    )) as ItemNFT;
 
     return {
       itemNFT,
@@ -276,6 +276,20 @@ describe("ItemNFT", function () {
     await expect(
       itemNFT.connect(alice).airdrop([alice.address], EstforConstants.BRONZE_AXE, [3])
     ).to.be.revertedWithCustomError(itemNFT, "CallerIsNotOwner");
+  });
+
+  it("IsApprovedForAll override", async function () {
+    const {itemNFT, owner, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(owner.address, EstforConstants.BRONZE_AXE, 3);
+    await expect(
+      itemNFT.connect(alice).safeTransferFrom(owner.address, alice.address, EstforConstants.BRONZE_AXE, 1, "0x")
+    ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferFromNotApproved");
+
+    await itemNFT.setBazaar(alice.address);
+    await expect(
+      itemNFT.connect(alice).safeTransferFrom(owner.address, alice.address, EstforConstants.BRONZE_AXE, 1, "0x")
+    ).to.not.be.reverted;
   });
 
   it("name & symbol", async function () {

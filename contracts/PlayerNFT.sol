@@ -16,8 +16,6 @@ import {AdminAccess} from "./AdminAccess.sol";
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-import "./debug/console.sol";
-
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
   using UnsafeMath for U256;
