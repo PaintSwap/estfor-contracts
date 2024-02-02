@@ -25,8 +25,6 @@ import {BattleResultEnum} from "../globals/clans.sol";
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
-import "../debug/console.sol";
-
 contract Territories is
   RrpRequesterV0Upgradeable,
   UUPSUpgradeable,
@@ -359,7 +357,7 @@ contract Territories is
   }
 
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
-  function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrp {
+  function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrpOrOracleFallback {
     uint[] memory randomWords = abi.decode(_data, (uint[]));
     if (randomWords.length != NUM_WORDS) {
       revert LengthMismatch();
