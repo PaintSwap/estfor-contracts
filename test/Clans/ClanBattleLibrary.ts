@@ -54,6 +54,44 @@ describe("ClanBattleLibrary", function () {
     expect(res.didAWin).to.be.false;
   });
 
+  it("Evolved hero should get an extra roll", async () => {
+    const {owner, alice, players, playerId, clanBattleLibrary, playerNFT, upgradePlayerBrushPrice, brush, origName} =
+      await loadFixture(clanFixture);
+
+    const clanMembersA = [playerId];
+    const skills = [Skill.FISHING];
+
+    const avatarId = 1;
+    const randomWordA = 3;
+    const randomWordB = 1;
+
+    await createPlayer(playerNFT, avatarId, owner, "New name", true);
+    const clanMembersB = [playerId.add(1)];
+    let res = await clanBattleLibrary.doBattleLib(
+      players.address,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      randomWordA,
+      randomWordB
+    );
+    expect(res.didAWin).to.be.false;
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    const upgrade = true;
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", upgrade);
+    res = await clanBattleLibrary.doBattleLib(
+      players.address,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      randomWordA,
+      randomWordB
+    );
+    expect(res.didAWin).to.be.true;
+  });
+
   it("Mismatch in player counts is an automatic win for those that are not missing", async () => {
     const {alice, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
 
