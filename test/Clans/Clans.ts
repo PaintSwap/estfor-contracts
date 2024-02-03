@@ -7,7 +7,7 @@ import {Tier} from "../../scripts/data/clans";
 import {createPlayer} from "../../scripts/utils";
 import {clanFixture} from "./utils";
 
-describe.only("Clans", function () {
+describe("Clans", function () {
   const NO_GATE_KEEPING_TOKEN_ID = 0;
 
   describe("Create a clan", () => {
