@@ -444,7 +444,7 @@ export const allQuests: QuestInput[] = [
     actionChoiceId: EstforConstants.ACTIONCHOICE_FLETCHING_IRON_ARROW,
     actionChoiceNum: 7200,
     skillReward: Skill.FLETCHING,
-    skillXPGained: 200,
+    skillXPGained: 1800,
     rewardItemTokenId1: NONE,
     rewardAmount1: 0,
     rewardItemTokenId2: NONE,
