@@ -110,7 +110,7 @@ export const allTerritories: TerritoryInput[] = [
   },
 ];
 
-export const allTerritorySkills = [
+export const allBattleSkills = [
   Skill.MELEE,
   Skill.RANGED,
   Skill.MAGIC,

@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {clanFixture} from "./utils";
-import {allTerritories, allTerritorySkills} from "../../scripts/data/territories";
+import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ethers} from "hardhat";
 import {createPlayer} from "../../scripts/utils";
 import {fulfillRandomWords} from "../utils";
@@ -135,8 +135,8 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
 
     // Make the attacking players statistically more powerful.
-    for (let i = 0; i < allTerritorySkills.length; ++i) {
-      await players.testModifyXP(bob.address, bobPlayerId, allTerritorySkills[i], getXPFromLevel(100), true);
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
@@ -192,8 +192,8 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
 
     // Make the defending players statistically more powerful.
-    for (let i = 0; i < allTerritorySkills.length; ++i) {
-      await players.testModifyXP(alice.address, playerId, allTerritorySkills[i], getXPFromLevel(100), true);
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(alice.address, playerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
@@ -253,9 +253,9 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
 
     // The other clan will have 3 players, so if you only have 1 defender you will you lose by default
-    for (let i = 0; i < allTerritorySkills.length; ++i) {
-      await players.testModifyXP(alice.address, playerId, allTerritorySkills[i], getXPFromLevel(100), true);
-      await players.testModifyXP(owner.address, ownerPlayerId, allTerritorySkills[i], getXPFromLevel(100), true);
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(alice.address, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.testModifyXP(owner.address, ownerPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     // Create a clan of 3 players
@@ -703,8 +703,8 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
 
     // Make the attacking players statistically more powerful.
-    for (let i = 0; i < allTerritorySkills.length; ++i) {
-      await players.testModifyXP(bob.address, bobPlayerId, allTerritorySkills[i], getXPFromLevel(100), true);
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);

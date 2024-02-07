@@ -15,7 +15,7 @@ import {
   PLAYER_NFT_ADDRESS,
   SHOP_ADDRESS,
 } from "./contractAddresses";
-import {allTerritories, allTerritorySkills} from "./data/territories";
+import {allTerritories, allBattleSkills} from "./data/territories";
 import {verifyContracts} from "./utils";
 import {DecoratorProvider, ItemNFT} from "../typechain-types";
 import "dotenv/config";
@@ -101,7 +101,7 @@ async function main() {
       SHOP_ADDRESS,
       DEV_ADDRESS,
       ORACLE_FALLBACK_ADDRESS,
-      allTerritorySkills,
+      allBattleSkills,
       airnodeRrpAddress,
       airnode,
       endpointIdUint256,
@@ -129,7 +129,7 @@ async function main() {
       lockedBankVaults.address,
       itemNFT.address,
       ORACLE_FALLBACK_ADDRESS,
-      allTerritorySkills,
+      allBattleSkills,
       airnodeRrpAddress,
       airnode,
       endpointIdUint256,

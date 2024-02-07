@@ -282,8 +282,8 @@ contract Territories is
       prices[i] = uint64(tx.gasprice);
     }
     _updateMovingAverageGasPrice(uint64(tx.gasprice));
-    setBaseAttackCost(0.05 ether);
-    setExpectedGasLimitFulfill(300_000);
+    setBaseAttackCost(0.01 ether);
+    setExpectedGasLimitFulfill(1_500_000);
 
     setComparableSkills(_comparableSkills);
 
@@ -412,7 +412,9 @@ contract Territories is
         defendingPlayerIds,
         randomSkills,
         randomWords[0],
-        randomWords[1]
+        randomWords[1],
+        0,
+        0
       );
     }
 

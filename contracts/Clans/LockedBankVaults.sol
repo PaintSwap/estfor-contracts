@@ -103,9 +103,10 @@ contract LockedBankVaults is
   error MaxLockedVaultsReached();
   error RequestIdNotKnown();
   error NotALockedVaultAttackItem();
-  error SpecifyingItemWhenNotReattacking();
+  error SpecifyingItemWhenNotReattackingOrSuperAttacking();
   error ClanIsBlockingAttacks();
   error NotALockedVaultDefenceItem();
+  error CannotReattackAndSuperAttackSameTime();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -141,6 +142,8 @@ contract LockedBankVaults is
     uint40 clanId;
     uint40 defendingClanId;
     bool attackInProgress;
+    uint8 extraRollsAttacker;
+    uint8 extraRollsDefender;
   }
 
   Skill[] private comparableSkills;
@@ -290,6 +293,7 @@ contract LockedBankVaults is
     setExpectedGasLimitFulfill(1_500_000);
 
     setComparableSkills(_comparableSkills);
+    nextPendingAttackId = 1;
   }
 
   function assignCombatants(
@@ -324,8 +328,8 @@ contract LockedBankVaults is
       revert TransferFailed();
     }
 
-    bool isReattacking = _checkCanAttackVaults(_clanId, _defendingClanId, _itemTokenId);
-    if (isReattacking && _itemTokenId != NONE) {
+    (bool isReattacking, bool isUsingSuperAttack) = _checkCanAttackVaults(_clanId, _defendingClanId, _itemTokenId);
+    if ((isReattacking || isUsingSuperAttack) && _itemTokenId != NONE) {
       itemNFT.burn(msg.sender, _itemTokenId, 1);
     }
 
@@ -363,7 +367,9 @@ contract LockedBankVaults is
     pendingAttacks[_nextPendingAttackId] = PendingAttack({
       clanId: uint40(_clanId),
       defendingClanId: uint40(_defendingClanId),
-      attackInProgress: true
+      attackInProgress: true,
+      extraRollsAttacker: isUsingSuperAttack ? 1 : 0,
+      extraRollsDefender: 0
     });
     bytes32 requestId = _requestRandomWords();
     requestToPendingAttackIds[requestId] = _nextPendingAttackId;
@@ -415,7 +421,9 @@ contract LockedBankVaults is
         defendingPlayerIds,
         randomSkills,
         randomWords[0],
-        randomWords[1]
+        randomWords[1],
+        pendingAttack.extraRollsAttacker,
+        pendingAttack.extraRollsDefender
       );
 
     pendingAttack.attackInProgress = false;
@@ -654,7 +662,7 @@ contract LockedBankVaults is
     uint _clanId,
     uint _defendingClanId,
     uint16 _itemTokenId
-  ) private view returns (bool isReattacking) {
+  ) private view returns (bool isReattacking, bool isUsingSuperAttack) {
     // Must have at least 1 combatant
     ClanInfo storage clanInfo = clanInfos[_clanId];
     if (clanInfo.playerIds.length == 0) {
@@ -688,16 +696,44 @@ contract LockedBankVaults is
       revert MaxLockedVaultsReached();
     }
 
-    return _checkCanReattackVaults(_clanId, _defendingClanId, _itemTokenId);
+    uint numReattacks;
+    (isReattacking, numReattacks) = _checkCanReattackVaults(_clanId, _defendingClanId);
+
+    bool canReattack;
+    if (_itemTokenId != 0) {
+      Item memory item = itemNFT.getItem(_itemTokenId);
+      bool isValidItem = item.equipPosition == EquipPosition.LOCKED_VAULT;
+      if (!isValidItem) {
+        revert NotALockedVaultAttackItem();
+      }
+
+      if (isReattacking) {
+        if (item.boostType != BoostType.PVP_REATTACK) {
+          revert NotALockedVaultAttackItem();
+        }
+        canReattack = item.boostValue > numReattacks;
+      } else {
+        isUsingSuperAttack = item.boostType == BoostType.PVP_SUPER_ATTACK;
+        if (!isUsingSuperAttack) {
+          revert SpecifyingItemWhenNotReattackingOrSuperAttacking();
+        }
+      }
+    }
+
+    if (isReattacking && !canReattack) {
+      revert ClanAttackingSameClanCooldown();
+    }
+
+    if (isReattacking && isUsingSuperAttack) {
+      revert CannotReattackAndSuperAttackSameTime();
+    }
   }
 
   function _checkCanReattackVaults(
     uint _clanId,
-    uint _defendingClanId,
-    uint16 _itemTokenId
-  ) private view returns (bool isReattacking) {
+    uint _defendingClanId
+  ) private view returns (bool isReattacking, uint numReattacks) {
     // Check if they are re-attacking this clan and allowed to
-    uint numReattacks;
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
     uint higherClanId = _clanId < _defendingClanId ? _defendingClanId : _clanId;
     ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][higherClanId];
@@ -711,23 +747,6 @@ contract LockedBankVaults is
         numReattacks = battleInfo.numReattacksOtherClan;
         isReattacking = true;
       }
-    }
-
-    if (!isReattacking && _itemTokenId != 0) {
-      revert SpecifyingItemWhenNotReattacking();
-    }
-
-    bool canReattack;
-    if (_itemTokenId != 0) {
-      Item memory item = itemNFT.getItem(_itemTokenId);
-      if (item.equipPosition != EquipPosition.LOCKED_VAULT || item.boostType != BoostType.PVP_REATTACK) {
-        revert NotALockedVaultAttackItem();
-      }
-      canReattack = item.boostValue > numReattacks;
-    }
-
-    if (isReattacking && !canReattack) {
-      revert ClanAttackingSameClanCooldown();
     }
   }
 
@@ -760,6 +779,10 @@ contract LockedBankVaults is
 
     uint searchIndex = EstforLibrary.binarySearch(playerIds, _playerId);
     return searchIndex != type(uint).max;
+  }
+
+  function getPendingAttack(uint _pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
+    return pendingAttacks[_pendingAttackId];
   }
 
   function setComparableSkills(Skill[] calldata _skills) public onlyOwner {

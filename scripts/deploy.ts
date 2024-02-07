@@ -70,7 +70,7 @@ import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
-import {allTerritories, allTerritorySkills} from "./data/territories";
+import {allTerritories, allBattleSkills} from "./data/territories";
 import {execSync} from "child_process";
 import path from "path";
 
@@ -438,7 +438,7 @@ async function main() {
       shop.address,
       DEV_ADDRESS,
       ORACLE_FALLBACK_ADDRESS,
-      allTerritorySkills,
+      allBattleSkills,
       api3Oracle.address,
       airnode,
       endpointIdUint256,
@@ -465,7 +465,7 @@ async function main() {
       lockedBankVaults.address,
       itemNFT.address,
       ORACLE_FALLBACK_ADDRESS,
-      allTerritorySkills,
+      allBattleSkills,
       api3Oracle.address,
       airnode,
       endpointIdUint256,
