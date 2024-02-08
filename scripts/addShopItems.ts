@@ -9,14 +9,10 @@ async function main() {
   console.log(`Add shop items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const _allShopItems = isBeta ? allShopItemsBeta : allShopItems;
-  const items = new Set([
-    EstforConstants.MIRROR_SHIELD,
-    EstforConstants.PROTECTION_SHIELD,
-    EstforConstants.DEVILISH_FINGERS,
-  ]);
+  const items = new Set([EstforConstants.SHARPENED_CLAW]);
   const shopItems = _allShopItems.filter((shopItem) => items.has(shopItem.tokenId));
 
-  if (shopItems.length !== 3) {
+  if (shopItems.length !== 1) {
     console.log("Cannot find shop items");
   } else {
     const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);

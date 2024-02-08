@@ -7486,7 +7486,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.SUPER_ATTACK,
+    tokenId: EstforConstants.SHARPENED_CLAW,
     equipPosition: EquipPosition.LOCKED_VAULT,
     isTransferable: true,
     isFullModeOnly: false,
@@ -7496,7 +7496,7 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.PVP_SUPER_ATTACK,
     boostValue: 1,
     boostDuration: 86400,
-    metadataURI: "MIRROR_SHIELD.json",
-    name: "Mirror Shield",
+    metadataURI: "SHARPENED_CLAW.json",
+    name: "Sharpened Claw",
   },
 ];
