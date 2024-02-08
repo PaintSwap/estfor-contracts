@@ -77,6 +77,7 @@ contract LockedBankVaults is
     uint blockAttacksTimestamp,
     uint blockAttacksCooldownTimestamp
   );
+  event SuperAttackCooldown(uint clanId, uint cooldownTimestamp);
 
   error PlayerOnTerritory();
   error NoCombatants();
@@ -86,6 +87,7 @@ contract LockedBankVaults is
   error InvalidSkill(Skill skill);
   error ClanAttackingCooldown();
   error ClanAttackingSameClanCooldown();
+  error ClanSuperAttackingCooldown();
   error NotMemberOfClan();
   error LengthMismatch();
   error NoBrushToAttack();
@@ -134,8 +136,10 @@ contract LockedBankVaults is
     uint88 gasPaid;
     uint24 defendingVaultsOffset;
     uint40 blockAttacksTimestamp;
+    // 2 bytes left
     uint48[] playerIds;
     Vault[] defendingVaults; // Append only, and use defendingVaultsOffset to decide where the real start is
+    uint40 superAttackCooldownTimestamp;
   }
 
   struct PendingAttack {
@@ -328,7 +332,11 @@ contract LockedBankVaults is
       revert TransferFailed();
     }
 
-    (bool isReattacking, bool isUsingSuperAttack) = _checkCanAttackVaults(_clanId, _defendingClanId, _itemTokenId);
+    (bool isReattacking, bool isUsingSuperAttack, uint superAttackCooldownTimestamp) = _checkCanAttackVaults(
+      _clanId,
+      _defendingClanId,
+      _itemTokenId
+    );
     if ((isReattacking || isUsingSuperAttack) && _itemTokenId != NONE) {
       itemNFT.burn(msg.sender, _itemTokenId, 1);
     }
@@ -340,6 +348,9 @@ contract LockedBankVaults is
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + ATTACKING_COOLDOWN);
     clanInfos[_clanId].attackingCooldownTimestamp = attackingCooldownTimestamp;
     clanInfos[_clanId].gasPaid = uint88(msg.value);
+    if (isUsingSuperAttack) {
+      clanInfos[_clanId].superAttackCooldownTimestamp = uint40(superAttackCooldownTimestamp);
+    }
 
     // Don't change the attacking timestamp if re-attacking
     uint40 reattackingCooldownTimestamp = uint40(block.timestamp + MIN_REATTACKING_COOLDOWN);
@@ -385,6 +396,10 @@ contract LockedBankVaults is
       reattackingCooldownTimestamp,
       _itemTokenId
     );
+
+    if (isUsingSuperAttack) {
+      emit SuperAttackCooldown(_clanId, superAttackCooldownTimestamp);
+    }
   }
 
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
@@ -662,7 +677,7 @@ contract LockedBankVaults is
     uint _clanId,
     uint _defendingClanId,
     uint16 _itemTokenId
-  ) private view returns (bool isReattacking, bool isUsingSuperAttack) {
+  ) private view returns (bool isReattacking, bool isUsingSuperAttack, uint superAttackCooldownTimestamp) {
     // Must have at least 1 combatant
     ClanInfo storage clanInfo = clanInfos[_clanId];
     if (clanInfo.playerIds.length == 0) {
@@ -717,6 +732,11 @@ contract LockedBankVaults is
         if (!isUsingSuperAttack) {
           revert SpecifyingItemWhenNotReattackingOrSuperAttacking();
         }
+
+        if (clanInfo.superAttackCooldownTimestamp > block.timestamp) {
+          revert ClanSuperAttackingCooldown();
+        }
+        superAttackCooldownTimestamp = block.timestamp + item.boostDuration;
       }
     }
 
@@ -781,10 +801,6 @@ contract LockedBankVaults is
     return searchIndex != type(uint).max;
   }
 
-  function getPendingAttack(uint _pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
-    return pendingAttacks[_pendingAttackId];
-  }
-
   function setComparableSkills(Skill[] calldata _skills) public onlyOwner {
     for (uint i = 0; i < _skills.length; ++i) {
       if (_skills[i] == Skill.NONE || _skills[i] == Skill.COMBAT) {
@@ -823,6 +839,7 @@ contract LockedBankVaults is
     clanInfo.attackingCooldownTimestamp = 0;
     clanInfo.assignCombatantsCooldownTimestamp = 0;
     clanInfo.currentlyAttacking = false;
+    clanInfo.superAttackCooldownTimestamp = 0;
 
     for (uint i; i < _otherClanIds.length; ++i) {
       uint lowerClanId = _clanId < _otherClanIds[i] ? _clanId : _otherClanIds[i];

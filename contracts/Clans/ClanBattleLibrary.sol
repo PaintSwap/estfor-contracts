@@ -108,7 +108,7 @@ library ClanBattleLibrary {
         uint levelA = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersA[i], skill));
         uint levelB = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersB[i], skill));
 
-        if (levelA > 20 * 7 || levelB > 20 * 7) {
+        if (levelA > 20 * 6 || levelB > 20 * 6) {
           assert(false); // Unsupported
         }
 

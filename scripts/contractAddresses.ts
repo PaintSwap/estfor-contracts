@@ -74,7 +74,7 @@ if (!isBeta) {
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
-  itemNFTLibrary = "0x684604fda98ef3756cc90976db150054222791a8";
+  itemNFTLibrary = "0xd24b6994c179817391466372fb2a26440fcc0dd7";
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
   estforLibrary = "0x17f931a2862fa539e7cc5416a2c75daaa5aae5ee";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
