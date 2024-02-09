@@ -540,8 +540,8 @@ contract LockedBankVaults is
 
     clanInfos[_clanId].totalBrushLocked -= uint96(total);
     clanInfos[_clanId].defendingVaultsOffset = uint24(defendingVaultsOffset);
-    IBank(bankAddress).depositToken(msg.sender, _playerId, address(brush), total);
     emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
+    IBank(bankAddress).depositToken(msg.sender, _playerId, address(brush), total);
   }
 
   function blockAttacks(
