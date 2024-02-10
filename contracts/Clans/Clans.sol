@@ -69,6 +69,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error DiscordInvalidCharacters();
   error TelegramTooLong();
   error TelegramInvalidCharacters();
+  error TwitterTooLong();
+  error TwitterInvalidCharacters();
   error ClanDoesNotExist();
   error TierDoesNotExist();
   error CannotDowngradeTier();
@@ -221,6 +223,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     string calldata _name,
     string calldata _discord,
     string calldata _telegram,
+    string calldata _twitter,
     uint16 _imageId,
     uint8 _tierId
   ) external isOwnerOfPlayerAndActive(_playerId) {
@@ -249,8 +252,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     (string memory trimmedName, ) = _setName(clanId, _name);
-    _checkSocials(_discord, _telegram);
-    string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram);
+    _checkSocials(_discord, _telegram, _twitter);
+    string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram, _twitter);
     emit ClanCreated(clanId, _playerId, clanInfo, _imageId, _tierId);
     if (_tierId != 1) {
       _upgradeClan(clanId, _playerId, _tierId);
@@ -266,6 +269,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     string calldata _name,
     string calldata _discord,
     string calldata _telegram,
+    string calldata _twitter,
     uint _imageId,
     uint _playerId
   ) external isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.LEADER) {
@@ -277,8 +281,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       _pay(editNameCost);
     }
 
-    _checkSocials(_discord, _telegram);
-    string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram);
+    _checkSocials(_discord, _telegram, _twitter);
+    string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram, _twitter);
     emit ClanEdited(_clanId, _playerId, clanInfo, _imageId);
   }
 
@@ -704,7 +708,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
   }
 
-  function _checkSocials(string calldata _discord, string calldata _telegram) private pure {
+  function _checkSocials(string calldata _discord, string calldata _telegram, string calldata _twitter) private pure {
     uint discordLength = bytes(_discord).length;
     if (discordLength > 25) {
       revert DiscordTooLong();
@@ -726,17 +730,28 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
       revert TelegramInvalidCharacters();
     }
+
+    uint twitterLength = bytes(_twitter).length;
+    if (twitterLength > 25) {
+      revert TwitterTooLong();
+    }
+
+    if (!EstforLibrary.containsValidTwitterCharacters(_twitter)) {
+      revert TwitterInvalidCharacters();
+    }
   }
 
   function _createClanInfo(
     string memory _trimmedName,
     string calldata _discord,
-    string calldata _telegram
+    string calldata _telegram,
+    string calldata _twitter
   ) private pure returns (string[] memory clanInfo) {
-    clanInfo = new string[](3);
+    clanInfo = new string[](4);
     clanInfo[0] = _trimmedName;
     clanInfo[1] = _discord;
     clanInfo[2] = _telegram;
+    clanInfo[3] = _twitter;
   }
 
   function _checkGateKeeping(uint _clanId, uint _gateKeepTokenId) private view {
