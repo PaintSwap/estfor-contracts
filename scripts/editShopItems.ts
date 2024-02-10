@@ -1,13 +1,13 @@
-import {MEDIUM_NET, PROTECTION_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {ethers} from "hardhat";
 import {SHOP_ADDRESS} from "./contractAddresses";
+import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add shop item using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Edit shop item using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
-  await shop.editItems([{price: ethers.utils.parseEther("5000"), tokenId: PROTECTION_SHIELD}]);
+  await shop.editItems([{price: ethers.utils.parseEther("1000"), tokenId: EstforConstants.PROTECTION_SHIELD}]);
 }
 
 main().catch((error) => {
