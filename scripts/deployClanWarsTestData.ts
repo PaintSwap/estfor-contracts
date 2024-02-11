@@ -91,7 +91,7 @@ async function main() {
   await tx.wait();
   console.log("clear cooldowns");
 
-  tx = await combatantsHelper.connect(alice).clearCooldowns(aliceClanId, [532, 2], 2);
+  tx = await combatantsHelper.connect(alice).clearCooldowns([532, 2]);
   await tx.wait();
   console.log("combatantsHelper clear cooldowns");
 
