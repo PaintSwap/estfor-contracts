@@ -587,6 +587,50 @@ describe("Territories", function () {
     await expect(territories.connect(alice).harvest(territoryId, playerId)).to.not.be.reverted;
   });
 
+  it("Must be member of this clan to harvest", async () => {
+    const {
+      clanId,
+      playerId,
+      territories,
+      combatantsHelper,
+      brush,
+      alice,
+      mockAPI3OracleClient,
+      clans,
+      bob,
+      playerNFT,
+      avatarId,
+      origName,
+      clanName,
+      discord,
+      telegram,
+      imageId,
+      tierId,
+    } = await loadFixture(clanFixture);
+
+    const territoryId = 1;
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await territories
+      .connect(alice)
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+
+    const requestId = 1;
+    await fulfillRandomWords(requestId, territories, mockAPI3OracleClient);
+
+    await brush.mint(alice.address, ethers.utils.parseEther("1000"));
+    await brush.connect(alice).approve(territories.address, ethers.utils.parseEther("1000"));
+    await territories.connect(alice).addUnclaimedEmissions(ethers.utils.parseEther("500"));
+
+    // Create a new player and a new clan
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+
+    await expect(territories.connect(bob).harvest(territoryId, bobPlayerId)).to.revertedWithCustomError(
+      territories,
+      "NotMemberOfClan"
+    );
+  });
+
   it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
     const {territories, combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
 

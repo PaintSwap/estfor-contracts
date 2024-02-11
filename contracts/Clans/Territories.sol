@@ -88,7 +88,6 @@ contract Territories is
   error InvalidTerritory();
   error InvalidTerritoryId();
   error InvalidEmissionPercentage();
-  error NoOccupier();
   error TransferFailed();
   error NotLeader();
   error ClanAttackingCooldown();
@@ -180,7 +179,7 @@ contract Territories is
 
   address private oracleFallback; // Don't need to pack this with anything else, this is just for the game owner as a last resort if API3 response fails
 
-  uint private constant NUM_WORDS = 2;
+  uint private constant NUM_WORDS = 3;
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
@@ -359,9 +358,9 @@ contract Territories is
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
   function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrpOrOracleFallback {
     uint[] memory randomWords = abi.decode(_data, (uint[]));
-    if (randomWords.length != NUM_WORDS) {
-      revert LengthMismatch();
-    }
+    //    if (randomWords.length != NUM_WORDS) {
+    //      revert LengthMismatch();
+    //    }
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
     if (!pendingAttack.attackInProgress) {
@@ -402,8 +401,9 @@ contract Territories is
       defendingPlayerIds = clanInfos[defendingClanId].playerIds;
 
       randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
+      uint randomWordIndex = randomWords.length > 2 ? 2 : 0; // TODO: Remove later after there are no more pending attacks after initial deployment
       for (uint i; i < randomSkills.length; ++i) {
-        randomSkills[i] = comparableSkills[uint8(randomWords[0] >> (i * 8)) % comparableSkills.length];
+        randomSkills[i] = comparableSkills[uint8(randomWords[randomWordIndex] >> (i * 8)) % comparableSkills.length];
       }
 
       (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary.doBattle(
@@ -440,13 +440,11 @@ contract Territories is
     }
   }
 
-  function harvest(uint _territoryId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+  function harvest(
+    uint _territoryId,
+    uint _playerId
+  ) external isOwnerOfPlayerAndActive(_playerId) isClanMember(territories[_territoryId].clanIdOccupier, _playerId) {
     Territory storage territory = territories[_territoryId];
-    uint clanId = territory.clanIdOccupier;
-    if (clanId == 0) {
-      revert NoOccupier();
-    }
-
     uint unclaimedEmissions = territory.unclaimedEmissions;
 
     if (territory.lastClaimTimestamp + HARVESTING_COOLDOWN > block.timestamp) {
@@ -459,7 +457,7 @@ contract Territories is
       revert NoEmissionsToHarvest();
     }
 
-    lockedBankVaults.lockFunds(clanId, msg.sender, _playerId, unclaimedEmissions);
+    lockedBankVaults.lockFunds(territory.clanIdOccupier, msg.sender, _playerId, unclaimedEmissions);
     emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }
 
