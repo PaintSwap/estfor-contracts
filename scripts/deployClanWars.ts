@@ -24,6 +24,7 @@ import path from "path";
 import {allItems} from "./data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
+import {FeeData} from "@ethersproject/providers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -79,7 +80,7 @@ async function main() {
   const FEE_DATA = {
     maxFeePerGas: ethers.utils.parseUnits("35", "gwei"),
     maxPriorityFeePerGas: ethers.utils.parseUnits("35", "gwei"),
-  };
+  } as FeeData;
 
   const provider = new ethers.providers.FallbackProvider([ethers.provider], 1);
   provider.getFeeData = async () => FEE_DATA;
