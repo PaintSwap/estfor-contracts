@@ -882,7 +882,8 @@ describe("LockedBankVaults", function () {
 
       const tx = await fulfillRandomWords(requestId, lockedBankVaults, mockAPI3OracleClient);
       const receipt = await tx.wait();
-      const log = lockedBankVaults.interface.parseLog(receipt.logs[1]);
+      // If the attacker lost then some brush is sent which changes up the event ordering
+      const log = lockedBankVaults.interface.parseLog(receipt.logs.length > 4 ? receipt.logs[4] : receipt.logs[1]);
       highestRoll = highestRoll.gt(log.args["attackingRolls"][0]) ? highestRoll : log.args["attackingRolls"][0];
       await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
     }
@@ -1095,11 +1096,14 @@ describe("LockedBankVaults", function () {
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
 
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
+    const bobClanId = clanId + 1;
+    await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
+    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+
     for (let i = 0; i < allBattleSkills.length; ++i) {
       await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
-
-    const bobClanId = clanId + 1;
 
     // Lock
     await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 800, territories);
