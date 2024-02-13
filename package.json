@@ -106,6 +106,7 @@
     "setChainlinkCallbackGasLimit": "npx hardhat run scripts/setChainlinkCallbackGasLimit.ts",
     "setPaintSwapMarketplaceWhitelist": "npx hardhat run scripts/setPaintSwapMarketplaceWhitelist.ts",
     "setBaseAttackCostAndGasLimitTerritories": "npx hardhat run scripts/setBaseAttackCostAndGasLimitTerritories.ts",
+    "setBaseAttackCostAndGasLimitLockedVaults": "npx hardhat run scripts/setBaseAttackCostAndGasLimitLockedVaults.ts",
     "setBazaar": "npx hardhat run scripts/setBazaar.ts",
     "setUpgradeAndEditNameCost": "npx hardhat run scripts/setUpgradeAndEditNameCost.ts",
     "setBaseURI": "npx hardhat run scripts/setBaseURI.ts",
