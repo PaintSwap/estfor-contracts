@@ -102,7 +102,7 @@ if (!isBeta) {
   sponsorWalletLockedVault = "0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387";
   sponsorWalletTerritories = "0xa519dfa5728f8e91ae8c5657426c5b74176516f7";
   oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
-  bazaar = "0x53811c5afD73e66bDf66630837b0299Da9286D8F";
+  bazaar = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
