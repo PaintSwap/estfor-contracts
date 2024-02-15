@@ -173,7 +173,7 @@ contract LockedBankVaults is
   bytes32 private endpointIdUint256; // The endpoint ID for requesting a single random number
   bytes32 private endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
 
-  uint8 public indexGasPrice;
+  uint8 private indexGasPrice;
   uint64 public movingAverageGasPrice;
   uint88 public baseAttackCost; // To offset gas costs in response
   uint24 public expectedGasLimitFulfill;
@@ -183,11 +183,11 @@ contract LockedBankVaults is
 
   uint private constant NUM_WORDS = 3;
   uint public constant ATTACKING_COOLDOWN = 4 hours;
-  uint public constant MIN_REATTACKING_COOLDOWN = 1 days;
+  uint private constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
-  uint public constant MAX_LOCKED_VAULTS = 100;
+  uint private constant MAX_LOCKED_VAULTS = 100;
   uint public constant LOCK_PERIOD = 7 days;
-  uint public constant NUM_PACKED_VAULTS = 2;
+  uint private constant NUM_PACKED_VAULTS = 2;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -294,7 +294,7 @@ contract LockedBankVaults is
     }
     _updateMovingAverageGasPrice(uint64(tx.gasprice));
     setBaseAttackCost(0.01 ether);
-    setExpectedGasLimitFulfill(1_500_000);
+    _setExpectedGasLimitFulfill(1_500_000);
 
     setComparableSkills(_comparableSkills);
     nextPendingAttackId = 1;
@@ -396,6 +396,17 @@ contract LockedBankVaults is
       reattackingCooldownTimestamp,
       _itemTokenId
     );
+
+    // Rebalance the sponsor wallet usage
+    if (sponsorWallet.balance < 100 ether) {
+      if (expectedGasLimitFulfill != 1_900_000) {
+        _setExpectedGasLimitFulfill(1_900_000);
+      }
+    } else if (sponsorWallet.balance > 200 ether) {
+      if (expectedGasLimitFulfill != 1_600_000) {
+        _setExpectedGasLimitFulfill(1_600_000);
+      }
+    }
 
     if (isUsingSuperAttack) {
       emit SuperAttackCooldown(_clanId, superAttackCooldownTimestamp);
@@ -784,6 +795,11 @@ contract LockedBankVaults is
     );
   }
 
+  function _setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) private {
+    expectedGasLimitFulfill = _expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  }
+
   function attackCost() public view returns (uint) {
     return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
   }
@@ -831,8 +847,7 @@ contract LockedBankVaults is
   }
 
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
-    expectedGasLimitFulfill = _expectedGasLimitFulfill;
-    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+    _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {

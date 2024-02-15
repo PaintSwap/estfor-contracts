@@ -282,7 +282,7 @@ contract Territories is
     }
     _updateMovingAverageGasPrice(uint64(tx.gasprice));
     setBaseAttackCost(0.01 ether);
-    setExpectedGasLimitFulfill(1_500_000);
+    _setExpectedGasLimitFulfill(1_500_000);
 
     setComparableSkills(_comparableSkills);
 
@@ -353,6 +353,17 @@ contract Territories is
       _nextPendingAttackId,
       attackingCooldownTimestamp
     );
+
+    // Rebalance the sponsor wallet usage
+    if (sponsorWallet.balance < 100 ether) {
+      if (expectedGasLimitFulfill != 1_900_000) {
+        _setExpectedGasLimitFulfill(1_900_000);
+      }
+    } else if (sponsorWallet.balance > 200 ether) {
+      if (expectedGasLimitFulfill != 1_600_000) {
+        _setExpectedGasLimitFulfill(1_600_000);
+      }
+    }
   }
 
   /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
@@ -646,6 +657,11 @@ contract Territories is
     emit AddTerritories(_territories);
   }
 
+  function _setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) private {
+    expectedGasLimitFulfill = _expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  }
+
   function attackCost() public view returns (uint) {
     return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
   }
@@ -734,8 +750,7 @@ contract Territories is
   }
 
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
-    expectedGasLimitFulfill = _expectedGasLimitFulfill;
-    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+    _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
   function clearCooldowns(uint _clanId) external isAdminAndBeta {
