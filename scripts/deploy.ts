@@ -5,7 +5,7 @@ import {
   Clans,
   InstantActions,
   ItemNFT,
-  MockAPI3OracleClient,
+  MockSWVRFOracleClient,
   MockBrushToken,
   MockOracleClient,
   MockPaintSwapMarketplaceWhitelist,
@@ -58,6 +58,7 @@ import {
   DECORATOR_ADDRESS,
   DEV_ADDRESS,
   ORACLE_FALLBACK_ADDRESS,
+  SAMWITCH_VRF_ADDRESS,
   WFTM_ADDRESS,
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
@@ -71,8 +72,6 @@ import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills} from "./data/territories";
-import {execSync} from "child_process";
-import path from "path";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -84,7 +83,7 @@ async function main() {
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
   let oracle: MockOracleClient;
-  let api3Oracle: MockAPI3OracleClient;
+  let swvrfOracle: MockSWVRFOracleClient;
   let router: MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   let paintSwapDecorator: TestPaintSwapDecorator;
@@ -95,7 +94,7 @@ async function main() {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-    const MockAPI3OracleClient = await ethers.getContractFactory("MockAPI3OracleClient");
+    const MockSWVRFOracleClient = await ethers.getContractFactory("MockSWVRFOracleClient");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
     const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
@@ -107,8 +106,8 @@ async function main() {
       console.log("Minted brush");
       oracle = await MockOracleClient.deploy();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
-      api3Oracle = await MockAPI3OracleClient.deploy();
-      console.log(`mockAPI3OracleClient = "${api3Oracle.address.toLowerCase()}"`);
+      swvrfOracle = await MockSWVRFOracleClient.deploy();
+      console.log(`mockSWVRFOracleClient = "${swvrfOracle.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
@@ -127,8 +126,8 @@ async function main() {
       oracle = await MockOracleClient.deploy();
       await oracle.deployed();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
-      api3Oracle = await MockAPI3OracleClient.deploy();
-      console.log(`mockAPI3OracleClient = "${api3Oracle.address.toLowerCase()}"`);
+      swvrfOracle = await MockSWVRFOracleClient.deploy();
+      console.log(`mockSWVRFOracleClient = "${swvrfOracle.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
@@ -141,7 +140,7 @@ async function main() {
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
       oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
-      api3Oracle = await MockAPI3OracleClient.attach("0xa0AD79D995DdeeB18a14eAef56A549A04e3Aa1Bd");
+      swvrfOracle = await MockSWVRFOracleClient.attach(SAMWITCH_VRF_ADDRESS);
       router = await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d");
       paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.attach(
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
@@ -420,12 +419,6 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
-  const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
-  const xpub =
-    "xpub6CyZcaXvbnbqGfqqZWvWNUbGvdd5PAJRrBeAhy9rz1bbnFmpVLg2wPj1h6TyndFrWLUG3kHWBYpwacgCTGWAHFTbUrXEg6LdLxoEBny2YDz";
-  const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
-  const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
-
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
@@ -438,11 +431,8 @@ async function main() {
       shop.address,
       DEV_ADDRESS,
       ORACLE_FALLBACK_ADDRESS,
+      swvrfOracle.address,
       allBattleSkills,
-      api3Oracle.address,
-      airnode,
-      endpointIdUint256,
-      endpointIdUint256Array,
       adminAccess.address,
       isBeta,
     ],
@@ -465,11 +455,8 @@ async function main() {
       lockedBankVaults.address,
       itemNFT.address,
       ORACLE_FALLBACK_ADDRESS,
+      swvrfOracle.address,
       allBattleSkills,
-      api3Oracle.address,
-      airnode,
-      endpointIdUint256,
-      endpointIdUint256Array,
       adminAccess.address,
       isBeta,
     ],
@@ -601,32 +588,14 @@ async function main() {
   console.log("lockedBankVaults.setTerritories");
 
   tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
+  console.log("Set Bazaar");
 
   const sponsorWalletCallers = [lockedBankVaults, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
-    const command = `${path.join(
-      "node_modules",
-      ".bin",
-      "airnode-admin"
-    )} derive-sponsor-wallet-address  --airnode-address ${airnode} --airnode-xpub ${xpub} --sponsor-address ${
-      sponsorWalletCaller.address
-    }`;
-
     try {
-      const result = execSync(command, {encoding: "utf-8"});
-      const arr = result.split(": ");
-      // Extract the wallet address from the output
-      const sponsorWallet = arr[1].slice(0, 42);
-
       tx = await sponsorWalletCaller.setCombatantsHelper(combatantsHelper.address);
       await tx.wait();
       console.log("setCombatantsHelper");
-      tx = await sponsorWalletCaller.setSponsorWallet(sponsorWallet);
-      await tx.wait();
-      console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
-      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("1")});
-      await tx.wait();
-      console.log();
     } catch (error) {
       console.error(`Error: ${error}`);
     }

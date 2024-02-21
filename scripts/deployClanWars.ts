@@ -13,6 +13,7 @@ import {
   ORACLE_FALLBACK_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
+  SAMWITCH_VRF_ADDRESS,
   SHOP_ADDRESS,
 } from "./contractAddresses";
 import {allTerritories, allBattleSkills} from "./data/territories";
@@ -68,13 +69,6 @@ async function main() {
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
-  const airnodeRrpAddress = "0xa0AD79D995DdeeB18a14eAef56A549A04e3Aa1Bd";
-  const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
-  const xpub =
-    "xpub6CyZcaXvbnbqGfqqZWvWNUbGvdd5PAJRrBeAhy9rz1bbnFmpVLg2wPj1h6TyndFrWLUG3kHWBYpwacgCTGWAHFTbUrXEg6LdLxoEBny2YDz";
-  const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
-  const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
-
   // Had issues deploying locked bank vault & territories without manually increasing gas limit.
   // TODO: If upgrading OZ can use txOverrides for gas limit
   const FEE_DATA = {
@@ -102,11 +96,8 @@ async function main() {
       SHOP_ADDRESS,
       DEV_ADDRESS,
       ORACLE_FALLBACK_ADDRESS,
+      SAMWITCH_VRF_ADDRESS,
       allBattleSkills,
-      airnodeRrpAddress,
-      airnode,
-      endpointIdUint256,
-      endpointIdUint256Array,
       ADMIN_ACCESS_ADDRESS,
       isBeta,
     ],
@@ -130,11 +121,8 @@ async function main() {
       lockedBankVaults.address,
       itemNFT.address,
       ORACLE_FALLBACK_ADDRESS,
+      SAMWITCH_VRF_ADDRESS,
       allBattleSkills,
-      airnodeRrpAddress,
-      airnode,
-      endpointIdUint256,
-      endpointIdUint256Array,
       ADMIN_ACCESS_ADDRESS,
       isBeta,
     ],
@@ -278,29 +266,10 @@ async function main() {
 
   const sponsorWalletCallers = [lockedBankVaults, territories];
   for (const sponsorWalletCaller of sponsorWalletCallers) {
-    const command = `${path.join(
-      "node_modules",
-      ".bin",
-      "airnode-admin"
-    )} derive-sponsor-wallet-address  --airnode-address ${airnode} --airnode-xpub ${xpub} --sponsor-address ${
-      sponsorWalletCaller.address
-    }`;
-
     try {
-      const result = execSync(command, {encoding: "utf-8"});
-      const arr = result.split(": ");
-      // Extract the wallet address from the output
-      const sponsorWallet = arr[1].slice(0, 42);
-
       tx = await sponsorWalletCaller.connect(owner).setCombatantsHelper(combatantsHelper.address);
       await tx.wait();
       console.log("setCombatantsHelper");
-      tx = await sponsorWalletCaller.connect(owner).setSponsorWallet(sponsorWallet);
-      await tx.wait();
-      console.log(`setSponsorWallet = "${sponsorWallet.toLowerCase()}"`);
-      tx = await owner.sendTransaction({to: sponsorWallet, value: ethers.utils.parseEther("100")});
-      await tx.wait();
-      console.log();
     } catch (error) {
       console.error(`Error: ${error}`);
     }

@@ -15,6 +15,7 @@ import {ITerritories} from "../interfaces/ITerritories.sol";
 import {ILockedBankVaults} from "../interfaces/ILockedBankVaults.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
+import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -109,6 +110,7 @@ contract LockedBankVaults is
   error ClanIsBlockingAttacks();
   error NotALockedVaultDefenceItem();
   error CannotReattackAndSuperAttackSameTime();
+  error CallerNotSamWitchVRF();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -168,6 +170,7 @@ contract LockedBankVaults is
   address private pool;
   address private dev;
 
+  // These 4 are no longer used
   address private airnode; // The address of the QRNG Airnode
   address public sponsorWallet; // The wallet that will cover the gas costs of the request
   bytes32 private endpointIdUint256; // The endpoint ID for requesting a single random number
@@ -179,13 +182,15 @@ contract LockedBankVaults is
   uint24 public expectedGasLimitFulfill;
   uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
-  address private oracleFallback; // Don't need to pack this with anything else, this is just for the game owner as a last resort if API3 response fails
+  address private oracle; // Don't need to pack this with anything else, this is just for the game owner as a last resort if API3 response fails
+  ISamWitchVRF private samWitchVRF;
 
   uint private constant NUM_WORDS = 3;
+  uint private constant CALLBACK_GAS_LIMIT = 3_000_000;
   uint public constant ATTACKING_COOLDOWN = 4 hours;
   uint private constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
-  uint private constant MAX_LOCKED_VAULTS = 100;
+  uint public constant MAX_LOCKED_VAULTS = 100;
   uint public constant LOCK_PERIOD = 7 days;
   uint private constant NUM_PACKED_VAULTS = 2;
 
@@ -238,12 +243,10 @@ contract LockedBankVaults is
     _;
   }
 
-  /// @dev Reverts if the caller is not the Airnode RRP contract.
-  /// Use it as a modifier for fulfill and error callback methods, but also
-  /// check `requestId`.
-  modifier onlyAirnodeRrpOrOracleFallback() {
-    if (msg.sender != address(airnodeRrp) && msg.sender != address(oracleFallback)) {
-      revert CallerNotAirnodeRRP();
+  /// @dev Reverts if the caller is not the SamWitchVRF contract.
+  modifier onlySamWitchVRF() {
+    if (msg.sender != address(samWitchVRF)) {
+      revert CallerNotSamWitchVRF();
     }
     _;
   }
@@ -261,16 +264,12 @@ contract LockedBankVaults is
     ItemNFT _itemNFT,
     address _pool,
     address _dev,
-    address _oracleFallback,
+    address _oracle,
+    ISamWitchVRF _samWitchVRF,
     Skill[] calldata _comparableSkills,
-    address _airnodeRrp,
-    address _airnode,
-    bytes32 _endpointIdUint256,
-    bytes32 _endpointIdUint256Array,
     AdminAccess _adminAccess,
     bool _isBeta
   ) external initializer {
-    __RrpRequesterV0_init(_airnodeRrp);
     __UUPSUpgradeable_init();
     __Ownable_init();
     players = _players;
@@ -280,14 +279,11 @@ contract LockedBankVaults is
     itemNFT = _itemNFT;
     pool = _pool;
     dev = _dev;
-    oracleFallback = _oracleFallback;
+    oracle = _oracle;
+    samWitchVRF = _samWitchVRF;
 
     adminAccess = _adminAccess;
     isBeta = _isBeta;
-
-    airnode = _airnode;
-    endpointIdUint256 = _endpointIdUint256;
-    endpointIdUint256Array = _endpointIdUint256Array;
 
     for (uint i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
       prices[i] = uint64(tx.gasprice);
@@ -315,7 +311,7 @@ contract LockedBankVaults is
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
-  // This needs to call the oracle VRF on-demand and costs some ftm
+  // This needs to call the oracle VRF on-demand and calls the callback
   function attackVaults(
     uint _clanId,
     uint _defendingClanId,
@@ -327,7 +323,7 @@ contract LockedBankVaults is
       revert NotEnoughFTM();
     }
 
-    (bool success, ) = sponsorWallet.call{value: msg.value}("");
+    (bool success, ) = oracle.call{value: msg.value}("");
     if (!success) {
       revert TransferFailed();
     }
@@ -397,28 +393,16 @@ contract LockedBankVaults is
       _itemTokenId
     );
 
-    // Rebalance the sponsor wallet usage
-    if (sponsorWallet.balance < 100 ether) {
-      if (expectedGasLimitFulfill != 1_900_000) {
-        _setExpectedGasLimitFulfill(1_900_000);
-      }
-    } else if (sponsorWallet.balance > 200 ether) {
-      if (expectedGasLimitFulfill != 1_600_000) {
-        _setExpectedGasLimitFulfill(1_600_000);
-      }
-    }
-
     if (isUsingSuperAttack) {
       emit SuperAttackCooldown(_clanId, superAttackCooldownTimestamp);
     }
   }
 
-  /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
-  function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrpOrOracleFallback {
-    uint[] memory randomWords = abi.decode(_data, (uint[]));
-    //    if (randomWords.length != NUM_WORDS) {
-    //      revert LengthMismatch();
-    //    }
+  /// @notice Called by the SamWitchVRF contract to fulfill the request
+  function fulfillRandomWords(bytes32 _requestId, uint[] calldata _randomWords) external onlySamWitchVRF {
+    if (_randomWords.length != NUM_WORDS) {
+      revert LengthMismatch();
+    }
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
     if (!pendingAttack.attackInProgress) {
@@ -432,9 +416,8 @@ contract LockedBankVaults is
     uint48[] memory defendingPlayerIds = clanInfos[defendingClanId].playerIds;
 
     Skill[] memory randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
-    uint randomWordIndex = randomWords.length > 2 ? 2 : 0; // TODO: Remove later after there are no more pending attacks after initial deployment
     for (uint i; i < randomSkills.length; ++i) {
-      randomSkills[i] = comparableSkills[uint8(randomWords[randomWordIndex] >> (i * 8)) % comparableSkills.length];
+      randomSkills[i] = comparableSkills[uint8(_randomWords[2] >> (i * 8)) % comparableSkills.length];
     }
 
     (
@@ -447,8 +430,8 @@ contract LockedBankVaults is
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        randomWords[0],
-        randomWords[1],
+        _randomWords[0],
+        _randomWords[1],
         pendingAttack.extraRollsAttacker,
         pendingAttack.extraRollsDefender
       );
@@ -494,7 +477,7 @@ contract LockedBankVaults is
       didAttackersWin,
       attackingClanId,
       defendingClanId,
-      randomWords,
+      _randomWords,
       percentageToTake,
       brushBurnt
     );
@@ -783,16 +766,7 @@ contract LockedBankVaults is
   }
 
   function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = airnodeRrp.makeFullRequest(
-      airnode,
-      endpointIdUint256Array,
-      address(this),
-      sponsorWallet,
-      address(this),
-      this.fulfillRandomWords.selector,
-      // Using Airnode ABI to encode the parameters
-      abi.encode(bytes32("1u"), bytes32("size"), NUM_WORDS)
-    );
+    requestId = samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
   }
 
   function _setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) private {
@@ -837,10 +811,6 @@ contract LockedBankVaults is
     combatantsHelper = _combatantsHelper;
   }
 
-  function setSponsorWallet(address _sponsorWallet) external onlyOwner {
-    sponsorWallet = _sponsorWallet;
-  }
-
   function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
     baseAttackCost = _baseAttackCost;
     emit SetBaseAttackCost(_baseAttackCost);
@@ -848,6 +818,11 @@ contract LockedBankVaults is
 
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
     _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  }
+
+  // TODO: Can remove later
+  function setSamWitchVRF(ISamWitchVRF _samWitchVRF) external onlyOwner {
+    samWitchVRF = _samWitchVRF;
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {

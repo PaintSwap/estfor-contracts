@@ -12,6 +12,7 @@ import {ITerritories} from "../interfaces/ITerritories.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IBank} from "../interfaces/IBank.sol";
+import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 
 import {LockedBankVaults} from "./LockedBankVaults.sol";
 import {AdminAccess} from "../AdminAccess.sol";
@@ -113,6 +114,7 @@ contract Territories is
   error NotATerritoryDefenceItem();
   error BlockAttacksCooldown();
   error CannotAttackSelf();
+  error CallerNotSamWitchVRF();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -166,6 +168,7 @@ contract Territories is
 
   address private combatantsHelper;
 
+  // These 4 are no longer used
   address public airnode; // The address of the QRNG Airnode
   address public sponsorWallet; // The wallet that will cover the gas costs of the request
   bytes32 public endpointIdUint256; // The endpoint ID for requesting a single random number
@@ -177,9 +180,11 @@ contract Territories is
   uint24 public expectedGasLimitFulfill;
   uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
-  address private oracleFallback; // Don't need to pack this with anything else, this is just for the game owner as a last resort if API3 response fails
+  address private oracle;
+  ISamWitchVRF private samWitchVRF;
 
   uint private constant NUM_WORDS = 3;
+  uint private constant CALLBACK_GAS_LIMIT = 3_000_000;
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
   uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
@@ -228,12 +233,10 @@ contract Territories is
     _;
   }
 
-  /// @dev Reverts if the caller is not the Airnode RRP contract.
-  /// Use it as a modifier for fulfill and error callback methods, but also
-  /// check `requestId`.
-  modifier onlyAirnodeRrpOrOracleFallback() {
-    if (msg.sender != address(airnodeRrp) && msg.sender != address(oracleFallback)) {
-      revert CallerNotAirnodeRRP();
+  /// @dev Reverts if the caller is not the SamWitchVRF contract.
+  modifier onlySamWitchVRF() {
+    if (msg.sender != address(samWitchVRF)) {
+      revert CallerNotSamWitchVRF();
     }
     _;
   }
@@ -250,16 +253,12 @@ contract Territories is
     IBrushToken _brush,
     LockedBankVaults _lockedBankVaults,
     ItemNFT _itemNFT,
-    address _oracleFallback,
+    address _oracle,
+    ISamWitchVRF _samWitchVRF,
     Skill[] calldata _comparableSkills,
-    address _airnodeRrp,
-    address _airnode,
-    bytes32 _endpointIdUint256,
-    bytes32 _endpointIdUint256Array,
     AdminAccess _adminAccess,
     bool _isBeta
   ) external initializer {
-    __RrpRequesterV0_init(_airnodeRrp);
     __UUPSUpgradeable_init();
     __Ownable_init();
     players = _players;
@@ -267,15 +266,12 @@ contract Territories is
     brush = _brush;
     lockedBankVaults = _lockedBankVaults;
     itemNFT = _itemNFT;
-    oracleFallback = _oracleFallback;
+    oracle = _oracle;
+    samWitchVRF = _samWitchVRF;
     nextTerritoryId = 1;
     nextPendingAttackId = 1;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
-
-    airnode = _airnode;
-    endpointIdUint256 = _endpointIdUint256;
-    endpointIdUint256Array = _endpointIdUint256Array;
 
     for (uint i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
       prices[i] = uint64(tx.gasprice);
@@ -306,7 +302,7 @@ contract Territories is
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
-  // This needs to call the oracle VRF on-demand and costs some ftm
+  // This needs to call the oracle VRF on-demand and calls the callback
   function attackTerritory(
     uint _clanId,
     uint _territoryId,
@@ -321,7 +317,7 @@ contract Territories is
       revert NotEnoughFTM();
     }
 
-    (bool success, ) = sponsorWallet.call{value: msg.value}("");
+    (bool success, ) = oracle.call{value: msg.value}("");
     if (!success) {
       revert TransferFailed();
     }
@@ -366,12 +362,11 @@ contract Territories is
     }
   }
 
-  /// @notice Called by the Airnode through the AirnodeRrp contract to fulfill the request
-  function fulfillRandomWords(bytes32 _requestId, bytes calldata _data) external onlyAirnodeRrpOrOracleFallback {
-    uint[] memory randomWords = abi.decode(_data, (uint[]));
-    //    if (randomWords.length != NUM_WORDS) {
-    //      revert LengthMismatch();
-    //    }
+  /// @notice Called by the SamWitchVRF contract to fulfill the request
+  function fulfillRandomWords(bytes32 _requestId, uint[] calldata _randomWords) external onlySamWitchVRF {
+    if (_randomWords.length != NUM_WORDS) {
+      revert LengthMismatch();
+    }
 
     PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
     if (!pendingAttack.attackInProgress) {
@@ -412,9 +407,8 @@ contract Territories is
       defendingPlayerIds = clanInfos[defendingClanId].playerIds;
 
       randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
-      uint randomWordIndex = randomWords.length > 2 ? 2 : 0; // TODO: Remove later after there are no more pending attacks after initial deployment
       for (uint i; i < randomSkills.length; ++i) {
-        randomSkills[i] = comparableSkills[uint8(randomWords[randomWordIndex] >> (i * 8)) % comparableSkills.length];
+        randomSkills[i] = comparableSkills[uint8(_randomWords[2] >> (i * 8)) % comparableSkills.length];
       }
 
       (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary.doBattle(
@@ -422,8 +416,8 @@ contract Territories is
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        randomWords[0],
-        randomWords[1],
+        _randomWords[0],
+        _randomWords[1],
         0,
         0
       );
@@ -440,7 +434,7 @@ contract Territories is
       didAttackersWin,
       attackingClanId,
       defendingClanId,
-      randomWords,
+      _randomWords,
       territoryId
     );
 
@@ -593,16 +587,7 @@ contract Territories is
   }
 
   function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = airnodeRrp.makeFullRequest(
-      airnode,
-      endpointIdUint256Array,
-      address(this),
-      sponsorWallet,
-      address(this),
-      this.fulfillRandomWords.selector,
-      // Using Airnode ABI to encode the parameters
-      abi.encode(bytes32("1u"), bytes32("size"), NUM_WORDS)
-    );
+    requestId = samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
   }
 
   function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
@@ -740,8 +725,9 @@ contract Territories is
     combatantsHelper = _combatantsHelper;
   }
 
-  function setSponsorWallet(address _sponsorWallet) external onlyOwner {
-    sponsorWallet = _sponsorWallet;
+  // TODO: Can remove later
+  function setSamWitchVRF(ISamWitchVRF _samWitchVRF) external onlyOwner {
+    samWitchVRF = _samWitchVRF;
   }
 
   function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
