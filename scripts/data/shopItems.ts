@@ -89,7 +89,7 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.SHARPENED_CLAW,
-    price: ethers.utils.parseEther("500"),
+    price: ethers.utils.parseEther("250"),
   },
 ];
 
