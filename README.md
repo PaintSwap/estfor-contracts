@@ -95,7 +95,7 @@ RoyaltyReceiver [0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e](https://ftmscan.com
 AdminAccess [0xa298f1636dacab0db352fec84d2079814e0ce778](https://ftmscan.com/address/0xa298f1636dacab0db352fec84d2079814e0ce778)  
 ItemNFTLibrary [0xd24b6994c179817391466372fb2a26440fcc0dd7](https://ftmscan.com/address/0xd24b6994c179817391466372fb2a26440fcc0dd7)  
 ItemNFT [0x1dae89b469d15b0ded980007dfdc8e68c363203d](https://ftmscan.com/address/0x1dae89b469d15b0ded980007dfdc8e68c363203d)  
-EstforLibrary [0x17f931a2862fa539e7cc5416a2c75daaa5aae5ee](https://ftmscan.com/address/0x17f931a2862fa539e7cc5416a2c75daaa5aae5ee)  
+EstforLibrary [0x26f6ad6b30bd8e4203d9be780ce05b44275db929](https://ftmscan.com/address/0x26f6ad6b30bd8e4203d9be780ce05b44275db929)  
 PlayerNFT [0xde70e49756322afdf7714d3aca963abcb4547b8d](https://ftmscan.com/address/0xde70e49756322afdf7714d3aca963abcb4547b8d)  
 PromotionsLibrary [0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9](https://ftmscan.com/address/0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9)  
 Promotions [0xf28cab48e29be56fcc68574b5c147b780c35647c](https://ftmscan.com/address/0xf28cab48e29be56fcc68574b5c147b780c35647c)  

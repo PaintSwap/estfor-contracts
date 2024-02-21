@@ -176,7 +176,8 @@ library EstforLibrary {
       bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
       bool isUnderscore = char == 0x5F; // "_"
       bool isPeriod = char == 0x2E; // "."
-      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscore && !isPeriod) {
+      bool isPlus = char == 0x2B; // "+"
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscore && !isPeriod && !isPlus) {
         return false;
       }
     }

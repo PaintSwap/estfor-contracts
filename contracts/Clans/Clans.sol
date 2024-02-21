@@ -714,7 +714,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert DiscordTooShort();
     }
 
-    if (!EstforLibrary.containsValidDiscordCharacters(_discord)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_discord)) {
       revert DiscordInvalidCharacters();
     }
 
@@ -723,7 +723,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert TelegramTooLong();
     }
 
-    if (!EstforLibrary.containsValidTelegramCharacters(_telegram)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
       revert TelegramInvalidCharacters();
     }
   }
