@@ -12,8 +12,7 @@ import {
   WORLD_ADDRESS,
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
-import {Clans} from "../typechain-types";
-import {ClanRank} from "@paintswap/estfor-definitions/types";
+import {Clans, EstforLibrary, ItemNFTLibrary, PlayersLibrary, Quests, Shop, WorldLibrary} from "../typechain-types";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -23,21 +22,18 @@ async function main() {
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
   const player = await ethers.getImpersonatedSigner("0xe13894604b6dc9523a9822dfa2909c2a9cd084a6");
   const playerId = 892;
-  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-  let estforLibrary = await EstforLibrary.deploy();
+  const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
 
   // Players
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.deploy();
+  const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as PlayersLibrary;
 
-  // Set the implementations
-  let Players = await ethers.getContractFactory("Players");
-  Players = Players.connect(owner);
+  const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
 
+  // Set the implementations
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(playersLibrary.address);
 
@@ -53,60 +49,63 @@ async function main() {
   await tx.wait();
 
   // PlayerNFT
-  await estforLibrary.deployed();
-  let PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {EstforLibrary: estforLibrary.address},
-  });
-  PlayerNFT = PlayerNFT.connect(owner);
+  const PlayerNFT = (
+    await ethers.getContractFactory("PlayerNFT", {
+      libraries: {EstforLibrary: estforLibrary.address},
+    })
+  ).connect(owner);
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
 
   // Quests
-  let Quests = await ethers.getContractFactory("Quests");
-  Quests = Quests.connect(owner);
-  const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
+  const Quests = (await ethers.getContractFactory("Quests")).connect(owner);
+  const quests = (await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
     kind: "uups",
-  });
+  })) as Quests;
 
-  let Shop = await ethers.getContractFactory("Shop");
-  Shop = Shop.connect(owner);
-  const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
+  const Shop = (await ethers.getContractFactory("Shop")).connect(owner);
+  const shop = (await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
     kind: "uups",
-  });
+  })) as Shop;
 
   // Create the world
-  const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
-  const worldLibrary = await WorldLibrary.deploy();
+  const worldLibrary = (await ethers.deployContract("WorldLibrary")) as WorldLibrary;
 
-  let World = await ethers.getContractFactory("World", {
-    libraries: {WorldLibrary: worldLibrary.address},
-  });
-  World = World.connect(owner);
+  const World = (
+    await ethers.getContractFactory("World", {
+      libraries: {WorldLibrary: worldLibrary.address},
+    })
+  ).connect(owner);
   const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
 
   // ItemNFT
-  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  const itemNFTLibrary = await ItemNFTLibrary.deploy();
+  const itemNFTLibrary = (await ethers.deployContract("ItemNFTLibrary")) as ItemNFTLibrary;
 
-  let ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
-  ItemNFT = ItemNFT.connect(owner);
+  const ItemNFT = (
+    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
+  ).connect(owner);
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
 
-  let Promotions = await ethers.getContractFactory("Promotions");
-  Promotions = Promotions.connect(owner);
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  const Promotions = (
+    await ethers.getContractFactory("Promotions", {
+      libraries: {PromotionsLibrary: promotionsLibrary.address},
+    })
+  ).connect(owner);
   const promotions = await upgrades.upgradeProxy(PROMOTIONS_ADDRESS, Promotions, {
     kind: "uups",
+    unsafeAllow: ["external-library-linking"],
   });
 
-  let Clans = (
+  const Clans = (
     await ethers.getContractFactory("Clans", {
       libraries: {EstforLibrary: estforLibrary.address},
     })
