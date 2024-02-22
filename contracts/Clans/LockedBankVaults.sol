@@ -182,7 +182,7 @@ contract LockedBankVaults is
   uint24 public expectedGasLimitFulfill;
   uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
-  address private oracle; // Don't need to pack this with anything else, this is just for the game owner as a last resort if API3 response fails
+  address private oracle;
   ISamWitchVRF private samWitchVRF;
 
   uint private constant NUM_WORDS = 3;
@@ -825,6 +825,10 @@ contract LockedBankVaults is
     samWitchVRF = _samWitchVRF;
   }
 
+  function requestWithdrawal() external onlyOwner {
+    dummy.requestWithdrawal(airnode, sponsorWallet);
+  }
+
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.attackingCooldownTimestamp = 0;
@@ -842,6 +846,10 @@ contract LockedBankVaults is
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint _requestId) external isAdminAndBeta {
     pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
+  }
+
+  receive() external payable {
+    dev.call{value: msg.value}("");
   }
 
   // solhint-disable-next-line no-empty-blocks
