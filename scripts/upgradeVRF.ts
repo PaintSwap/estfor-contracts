@@ -5,7 +5,7 @@ import {verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Set setSamWitchVRF using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Upgrading VRF using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const Territories = await ethers.getContractFactory("Territories");

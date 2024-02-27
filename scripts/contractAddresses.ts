@@ -39,9 +39,9 @@ if (!isBeta) {
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
   royaltyReceiver = "0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b";
   adminAccess = "0xe63b7195b301b9313c9e337df4aceac436c3751e";
-  itemNFTLibrary = "0x310ced35c1def687496369222c59d0c93d98cf19";
+  itemNFTLibrary = "0x3054399b4b7a362799774e6c5a30ef57de1df5de";
   itemNFT = "0x4b9c90ebb1fa98d9724db46c4689994b46706f5a";
-  estforLibrary = "0x987521c999efe16c2f288211efe5f2678b3bc34a";
+  estforLibrary = "0x8213fCAD73187A1A4d4cf9a44BF87d919Ca32970";
   playerNFT = "0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9";
   promotions = "0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4";
   promotionsLibrary = "0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95";
@@ -64,9 +64,8 @@ if (!isBeta) {
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
   decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
   oracleFallback = "0x28ade840602d0363a2ab675479f1b590b23b0490";
-  // TODO: Both these need updating
-  samWitchVRF = "0x24d52295343fdb90e32814869109976c1dc05d0c";
-  bazaar = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d";
+  samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
+  bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
 } else {
   worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -99,8 +98,8 @@ if (!isBeta) {
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
   oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
-  samWitchVRF = "0x067FF89B1E3315fc4a11C732339A13Af326730a5";
-  bazaar = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d";
+  samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
+  bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;

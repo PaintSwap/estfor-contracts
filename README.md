@@ -53,9 +53,9 @@ World [0x28866bf156152966b5872bee39bc05b5b5eedb02](https://ftmscan.com/address/0
 Shop [0x7fb574e4fbe876f751fec90e59686c2776df19f9](https://ftmscan.com/address/0x7fb574e4fbe876f751fec90e59686c2776df19f9)  
 RoyaltyReceiver [0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b](https://ftmscan.com/address/0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b)  
 AdminAccess [0xe63b7195b301b9313c9e337df4aceac436c3751e](https://ftmscan.com/address/0xe63b7195b301b9313c9e337df4aceac436c3751e)  
-ItemNFTLibrary [0x310ced35c1def687496369222c59d0c93d98cf19](https://ftmscan.com/address/0x310ced35c1def687496369222c59d0c93d98cf19)  
+ItemNFTLibrary [0x3054399b4b7a362799774e6c5a30ef57de1df5de](https://ftmscan.com/address/0x3054399b4b7a362799774e6c5a30ef57de1df5de)  
 ItemNFT [0x4b9c90ebb1fa98d9724db46c4689994b46706f5a](https://ftmscan.com/address/0x4b9c90ebb1fa98d9724db46c4689994b46706f5a)  
-EstforLibrary [0x987521c999efe16c2f288211efe5f2678b3bc34a](https://ftmscan.com/address/0x987521c999efe16c2f288211efe5f2678b3bc34a)  
+EstforLibrary [0x8213fCAD73187A1A4d4cf9a44BF87d919Ca32970](https://ftmscan.com/address/0x8213fCAD73187A1A4d4cf9a44BF87d919Ca32970)  
 PlayerNFT [0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9](https://ftmscan.com/address/0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9)  
 PromotionsLibrary [0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95](https://ftmscan.com/address/0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95)  
 Promotions [0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4](https://ftmscan.com/address/0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4)  
@@ -85,6 +85,9 @@ DecoratorProvider [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.c
 Sponsor wallet - LockedVault [0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8](https://ftmscan.com/address/0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8)  
 Sponsor wallet - Territories [0xe0d4a3b16a51092b3c1f330c538de47269d1af0f](https://ftmscan.com/address/0xe0d4a3b16a51092b3c1f330c538de47269d1af0f)  
 OracleFallback [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)
+
+VRF [0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2](https://ftmscan.com/address/0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2)
+Bazaar [0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE](https://ftmscan.com/address/0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE)
 
 ### Fantom mainnet beta deployed contract addresses:
 
@@ -126,6 +129,9 @@ DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.c
 Sponsor wallet - LockedVault [0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387](https://ftmscan.com/address/0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387)  
 Sponsor wallet - Territories [0xa519dfa5728f8e91ae8c5657426c5b74176516f7 ](https://ftmscan.com/address/0xa519dfa5728f8e91ae8c5657426c5b74176516f7)  
 OracleFallback [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)
+
+VRF [0x58E9fd2Fae18c861B9F564200510A88106C05756](https://ftmscan.com/address/0x58E9fd2Fae18c861B9F564200510A88106C05756)
+Bazaar [0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191](https://ftmscan.com/address/0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191)
 
 ### Other addresses:
 
