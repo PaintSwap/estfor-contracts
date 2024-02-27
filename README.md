@@ -86,7 +86,7 @@ Sponsor wallet - LockedVault [0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8](https:
 Sponsor wallet - Territories [0xe0d4a3b16a51092b3c1f330c538de47269d1af0f](https://ftmscan.com/address/0xe0d4a3b16a51092b3c1f330c538de47269d1af0f)  
 OracleFallback [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)
 
-VRF [0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2](https://ftmscan.com/address/0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2)
+VRF [0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2](https://ftmscan.com/address/0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2)  
 Bazaar [0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE](https://ftmscan.com/address/0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE)
 
 ### Fantom mainnet beta deployed contract addresses:
@@ -130,7 +130,7 @@ Sponsor wallet - LockedVault [0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387](https:
 Sponsor wallet - Territories [0xa519dfa5728f8e91ae8c5657426c5b74176516f7 ](https://ftmscan.com/address/0xa519dfa5728f8e91ae8c5657426c5b74176516f7)  
 OracleFallback [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)
 
-VRF [0x58E9fd2Fae18c861B9F564200510A88106C05756](https://ftmscan.com/address/0x58E9fd2Fae18c861B9F564200510A88106C05756)
+VRF [0x58E9fd2Fae18c861B9F564200510A88106C05756](https://ftmscan.com/address/0x58E9fd2Fae18c861B9F564200510A88106C05756)  
 Bazaar [0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191](https://ftmscan.com/address/0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191)
 
 ### Other addresses:
