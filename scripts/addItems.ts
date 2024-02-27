@@ -1,17 +1,13 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ethers, upgrades} from "hardhat";
-import {ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses";
 import {allItems} from "./data/items";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  const itemNFTLibrary = await ItemNFTLibrary.deploy();
-  console.log("ItemNFTLibrary deployed to:", itemNFTLibrary.address);
-
-  let ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
