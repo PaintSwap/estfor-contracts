@@ -11,10 +11,10 @@ async function main() {
   );
 
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
-  let tx = await territories.setBaseAttackCost(ethers.utils.parseEther("0.01"));
+  let tx = await territories.setBaseAttackCost(ethers.utils.parseEther("0"));
   await tx.wait();
 
-  tx = await territories.setExpectedGasLimitFulfill(1_500_000);
+  tx = await territories.setExpectedGasLimitFulfill(1_000_000);
 }
 
 main().catch((error) => {

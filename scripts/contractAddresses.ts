@@ -29,9 +29,9 @@ let territories;
 let lockedBankVaults;
 let decoratorProvider;
 let combatantsHelper;
-let sponsorWalletLockedVault;
-let sponsorWalletTerritories;
 let oracleFallback;
+let samWitchVRF;
+let bazaar;
 
 if (!isBeta) {
   worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
@@ -39,16 +39,16 @@ if (!isBeta) {
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
   royaltyReceiver = "0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b";
   adminAccess = "0xe63b7195b301b9313c9e337df4aceac436c3751e";
-  itemNFTLibrary = "0x310ced35c1def687496369222c59d0c93d98cf19";
+  itemNFTLibrary = "0x3054399b4b7a362799774e6c5a30ef57de1df5de";
   itemNFT = "0x4b9c90ebb1fa98d9724db46c4689994b46706f5a";
-  estforLibrary = "0x987521c999efe16c2f288211efe5f2678b3bc34a";
+  estforLibrary = "0x8213fCAD73187A1A4d4cf9a44BF87d919Ca32970";
   playerNFT = "0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9";
   promotions = "0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4";
   promotionsLibrary = "0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95";
   quests = "0x17c59f0d2d4f80FD0F906Df53a28272736c7b455";
   clans = "0x334caa8907bdf49470f7b085380c25431ef96f6d";
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
-  bank = "0xe183a43881eac74808c55bdb2a073929602af4db";
+  bank = "0xe183a43881eac74808c55bdb2a073929602af4db"; // beacon
   playersLibrary = "0x316342122a9ae36de41b231260579b92f4c8be7f";
   playersImplQueueActions = "0x9e2669c43693a0b3c37daa9fbd668d76cfad8cb5";
   playersImplProcessActions = "0x697a41effb1dca9187bca62dc2f5935a2b6749a3";
@@ -63,18 +63,18 @@ if (!isBeta) {
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
   decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
-  sponsorWalletLockedVault = "0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8";
-  sponsorWalletTerritories = "0xe0d4a3b16a51092b3c1f330c538de47269d1af0f";
   oracleFallback = "0x28ade840602d0363a2ab675479f1b590b23b0490";
+  samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
+  bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
 } else {
   worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
-  itemNFTLibrary = "0x684604fda98ef3756cc90976db150054222791a8";
+  itemNFTLibrary = "0xd24b6994c179817391466372fb2a26440fcc0dd7";
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
-  estforLibrary = "0x17f931a2862fa539e7cc5416a2c75daaa5aae5ee";
+  estforLibrary = "0x26f6ad6b30bd8e4203d9be780ce05b44275db929";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
@@ -97,9 +97,9 @@ if (!isBeta) {
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
-  sponsorWalletLockedVault = "0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387";
-  sponsorWalletTerritories = "0xa519dfa5728f8e91ae8c5657426c5b74176516f7";
   oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
+  samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
+  bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -132,9 +132,7 @@ export const PLAYERS_ADDRESS = players;
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
 
 export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
-export const SPONSOR_WALLET_LOCKED_VAULT_ADDRESS = sponsorWalletLockedVault;
 export const TERRITORIES_ADDRESS = territories;
-export const SPONSOR_WALLET_TERRITORIES_ADDRESS = sponsorWalletTerritories;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
 
@@ -146,3 +144,5 @@ export const FAKE_BRUSH_WFTM_LP_ADDRESS = "0xb3209C979b90436f0a43ED817CD36c4c908
 export const DECORATOR_ADDRESS = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
 export const DEV_ADDRESS = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
 export const ORACLE_FALLBACK_ADDRESS = oracleFallback;
+export const SAMWITCH_VRF_ADDRESS = samWitchVRF;
+export const BAZAAR_ADDRESS = bazaar;

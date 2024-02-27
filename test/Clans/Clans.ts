@@ -651,6 +651,32 @@ describe("Clans", function () {
       expect(clan.tierId).to.eq(2);
     });
 
+    it("Pay for tier 1 if it has a cost", async () => {
+      const {clans, clanId, playerId, alice, imageId, tierId, clanName, discord, telegram, brush} = await loadFixture(
+        clanFixture
+      );
+
+      const price = BigNumber.from(1);
+      const tiers: Tier[] = [
+        {
+          id: 1,
+          maxMemberCapacity: 1,
+          maxBankCapacity: 1,
+          maxImageId: 50,
+          price,
+          minimumAge: 0,
+        },
+      ];
+      await clans.editTiers(tiers);
+
+      await brush.mint(alice.address, price);
+      await brush.connect(alice).approve(clans.address, price);
+      await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
+      // Check creating a tier 1 clan that has a cost correctly takes the brush
+      await clans.connect(alice).createClan(playerId, clanName, discord, telegram, imageId, tierId);
+      await expect(await brush.balanceOf(alice.address)).to.eq(0);
+    });
+
     it("Pay the difference for incremental upgrades", async function () {
       const {clans, clanId, alice, playerId, brush} = await loadFixture(upgradedClansFixture);
 

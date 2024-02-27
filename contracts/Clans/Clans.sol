@@ -254,6 +254,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanCreated(clanId, _playerId, clanInfo, _imageId, _tierId);
     if (_tierId != 1) {
       _upgradeClan(clanId, _playerId, _tierId);
+    } else {
+      _pay(tier.price);
     }
 
     bankFactory.createBank(msg.sender, clanId);
@@ -712,7 +714,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert DiscordTooShort();
     }
 
-    if (!EstforLibrary.containsValidDiscordCharacters(_discord)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_discord)) {
       revert DiscordInvalidCharacters();
     }
 
@@ -721,7 +723,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert TelegramTooLong();
     }
 
-    if (!EstforLibrary.containsValidTelegramCharacters(_telegram)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
       revert TelegramInvalidCharacters();
     }
   }

@@ -87,6 +87,10 @@ export const allShopItems: ShopItem[] = [
     tokenId: EstforConstants.MIRROR_SHIELD,
     price: ethers.utils.parseEther("250"),
   },
+  {
+    tokenId: EstforConstants.SHARPENED_CLAW,
+    price: ethers.utils.parseEther("250"),
+  },
 ];
 
 export const allShopItemsBeta: ShopItem[] = allShopItems.map((shopItem) => {

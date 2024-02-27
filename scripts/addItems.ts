@@ -1,18 +1,20 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers} from "hardhat";
-import {ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ethers, upgrades} from "hardhat";
+import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses";
 import {allItems} from "./data/items";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  const items = allItems.filter(
-    (item) => item.tokenId === EstforConstants.SECRET_EGG_3 || item.tokenId === EstforConstants.SECRET_EGG_4
-  );
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
+  const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
 
-  if (items.length !== 2) {
+  const items = allItems.filter((item) => item.tokenId === EstforConstants.SHARPENED_CLAW);
+  if (items.length !== 1) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.addItems(items);

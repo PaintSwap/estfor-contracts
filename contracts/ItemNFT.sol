@@ -71,6 +71,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   address private instantActions;
   address private territories;
   address private lockedBankVaults;
+  address private bazaar;
 
   modifier onlyPlayersOrShopOrPromotions() {
     if (
@@ -356,6 +357,24 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     });
   }
 
+  function _editItem(ItemInput calldata _inputItem) private returns (ItemOutput memory item) {
+    if (!exists(_inputItem.tokenId)) {
+      revert ItemDoesNotExist(_inputItem.tokenId);
+    }
+    EquipPosition oldPosition = items[_inputItem.tokenId].equipPosition;
+    EquipPosition newPosition = _inputItem.equipPosition;
+
+    bool isRightHandPositionSwapWithBothHands = (oldPosition == EquipPosition.RIGHT_HAND &&
+      newPosition == EquipPosition.BOTH_HANDS) ||
+      (oldPosition == EquipPosition.BOTH_HANDS && newPosition == EquipPosition.RIGHT_HAND);
+
+    // Allowed to go from BOTH_HANDS to RIGHT_HAND or RIGHT_HAND to BOTH_HANDS
+    if (oldPosition != newPosition && oldPosition != EquipPosition.NONE && !isRightHandPositionSwapWithBothHands) {
+      revert EquipmentPositionShouldNotChange();
+    }
+    item = _setItem(_inputItem);
+  }
+
   function _checkBurn(address _from) private view {
     if (
       _from != _msgSender() &&
@@ -375,6 +394,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   ) external view returns (BoostType boostType, uint16 boostValue, uint24 boostDuration) {
     Item storage item = _getItem(_tokenId);
     return (item.boostType, item.boostValue, item.boostDuration);
+  }
+
+  /**
+   * @dev See {IERC1155-isApprovedForAll}.
+   */
+  function isApprovedForAll(address _account, address _operator) public view virtual override returns (bool) {
+    return super.isApprovedForAll(_account, _operator) || _operator == bazaar;
   }
 
   function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
@@ -406,24 +432,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
 
     emit AddItemsV2(_items, tokenIds, names);
-  }
-
-  function _editItem(ItemInput calldata _inputItem) private returns (ItemOutput memory item) {
-    if (!exists(_inputItem.tokenId)) {
-      revert ItemDoesNotExist(_inputItem.tokenId);
-    }
-    EquipPosition oldPosition = items[_inputItem.tokenId].equipPosition;
-    EquipPosition newPosition = _inputItem.equipPosition;
-
-    bool isRightHandPositionSwapWithBothHands = (oldPosition == EquipPosition.RIGHT_HAND &&
-      newPosition == EquipPosition.BOTH_HANDS) ||
-      (oldPosition == EquipPosition.BOTH_HANDS && newPosition == EquipPosition.RIGHT_HAND);
-
-    // Allowed to go from BOTH_HANDS to RIGHT_HAND or RIGHT_HAND to BOTH_HANDS
-    if (oldPosition != newPosition && oldPosition != EquipPosition.NONE && !isRightHandPositionSwapWithBothHands) {
-      revert EquipmentPositionShouldNotChange();
-    }
-    item = _setItem(_inputItem);
   }
 
   function editItems(ItemInput[] calldata _inputItems) external onlyOwner {
@@ -477,6 +485,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function setBaseURI(string calldata _baseURI) external onlyOwner {
     baseURI = _baseURI;
+  }
+
+  function setBazaar(address _bazaar) external onlyOwner {
+    bazaar = _bazaar;
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -1,8 +1,7 @@
 import {EstforTypes} from "@paintswap/estfor-definitions";
-import {BaseContract, ContractTransaction} from "ethers";
-import {MockOracleClient, MockAPI3OracleClient, World} from "../typechain-types";
+import {BaseContract, ContractTransaction, ethers} from "ethers";
+import {MockOracleClient, MockSWVRFOracleClient, World} from "../typechain-types";
 import {expect} from "chai";
-import {ethers} from "hardhat";
 
 export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
@@ -46,10 +45,10 @@ export const requestAndFulfillRandomWords = async (world: World, mockOracleClien
 export const fulfillRandomWords = async (
   requestId: number,
   contract: BaseContract,
-  mockOracleClient: MockOracleClient | MockAPI3OracleClient,
+  mockOracleClient: MockOracleClient | MockSWVRFOracleClient,
   gasPrice = ethers.BigNumber.from(0)
-) => {
-  await mockOracleClient.fulfill(requestId, contract.address, {gasPrice});
+): Promise<ContractTransaction> => {
+  return mockOracleClient.fulfill(requestId, contract.address, {gasPrice});
 };
 
 export const bronzeHelmetStats: EstforTypes.CombatStats = {

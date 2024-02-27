@@ -29,7 +29,7 @@ import {
   WorldLibrary,
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
-import {allTerritories, allTerritorySkills} from "../../scripts/data/territories";
+import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
@@ -276,10 +276,7 @@ export const playersFixture = async function () {
 
   await artGallery.transferOwnership(decorator.address);
 
-  const mockAPI3OracleClient = (await ethers.deployContract("MockAPI3OracleClient")) as MockOracleClient;
-  const airnode = "0x224e030f03Cd3440D88BD78C9BF5Ed36458A1A25";
-  const endpointIdUint256 = "0xffd1bbe880e7b2c662f6c8511b15ff22d12a4a35d5c8c17202893a5f10e25284";
-  const endpointIdUint256Array = "0x4554e958a68d68de6a4f6365ff868836780e84ac3cba75ce3f4c78a85faa8047";
+  const mockSWVRFOracleClient = (await ethers.deployContract("MockSWVRFOracleClient")) as MockOracleClient;
 
   const oracleFallbackAddress = dev.address;
 
@@ -295,11 +292,8 @@ export const playersFixture = async function () {
       shop.address,
       dev.address,
       oracleFallbackAddress,
-      allTerritorySkills,
-      mockAPI3OracleClient.address,
-      airnode,
-      endpointIdUint256,
-      endpointIdUint256Array,
+      mockSWVRFOracleClient.address,
+      allBattleSkills,
       adminAccess.address,
       isBeta,
     ],
@@ -320,11 +314,8 @@ export const playersFixture = async function () {
       lockedBankVaults.address,
       itemNFT.address,
       oracleFallbackAddress,
-      allTerritorySkills,
-      mockAPI3OracleClient.address,
-      airnode,
-      endpointIdUint256,
-      endpointIdUint256Array,
+      mockSWVRFOracleClient.address,
+      allBattleSkills,
       adminAccess.address,
       isBeta,
     ],
@@ -432,7 +423,7 @@ export const playersFixture = async function () {
     artGalleryLockPeriod,
     decorator,
     brushPerSecond,
-    mockAPI3OracleClient,
+    mockSWVRFOracleClient,
     lockedBankVaults,
     territories,
     combatantsHelper,

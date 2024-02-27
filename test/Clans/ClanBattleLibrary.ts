@@ -15,6 +15,8 @@ describe("ClanBattleLibrary", function () {
     const skills = [Skill.FISHING];
     let randomWordA = 1;
     let randomWordB = 1;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
 
     let res = await clanBattleLibrary.doBattleLib(
@@ -23,9 +25,11 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
-    expect(res.didAWin).to.be.false;
+    expect(res.didAWin).to.be.true;
 
     randomWordA = 1;
     randomWordB = 0;
@@ -36,7 +40,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
 
@@ -49,7 +55,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
   });
@@ -63,9 +71,12 @@ describe("ClanBattleLibrary", function () {
 
     const avatarId = 1;
     const randomWordA = 3;
-    const randomWordB = 1;
+    const randomWordB = 3;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
 
     await createPlayer(playerNFT, avatarId, owner, "New name", true);
+    await players.testModifyXP(owner.address, playerId.add(1), skills[0], getXPFromLevel(20), true);
     const clanMembersB = [playerId.add(1)];
     let res = await clanBattleLibrary.doBattleLib(
       players.address,
@@ -73,7 +84,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
 
@@ -87,7 +100,51 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.true;
+  });
+
+  it("Check extra rolls work", async () => {
+    const {owner, players, playerId, clanBattleLibrary, playerNFT} = await loadFixture(clanFixture);
+
+    const clanMembersA = [playerId];
+    const skills = [Skill.FISHING];
+
+    const avatarId = 1;
+    const randomWordA = 3;
+    const randomWordB = 3;
+    let extraRollsA = 0;
+    const extraRollsB = 0;
+
+    await createPlayer(playerNFT, avatarId, owner, "New name", true);
+    await players.testModifyXP(owner.address, playerId.add(1), skills[0], getXPFromLevel(20), true);
+    const clanMembersB = [playerId.add(1)];
+    let res = await clanBattleLibrary.doBattleLib(
+      players.address,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      randomWordA,
+      randomWordB,
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.false;
+
+    extraRollsA = 1;
+
+    res = await clanBattleLibrary.doBattleLib(
+      players.address,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      randomWordA,
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
   });
@@ -100,6 +157,8 @@ describe("ClanBattleLibrary", function () {
     const skills = [Skill.FISHING];
     const randomWordA = 1;
     const randomWordB = 3;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
     let res = await clanBattleLibrary.doBattleLib(
       players.address,
@@ -107,7 +166,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
 
     expect(res.didAWin).to.be.true;
@@ -121,7 +182,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
     expect(res.battleResults[0]).to.eq(BattleResult.LOSE);
@@ -135,6 +198,8 @@ describe("ClanBattleLibrary", function () {
     const skills = [Skill.FISHING];
     const randomWordA = 1;
     const randomWordB = 3;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
     let res = await clanBattleLibrary.doBattleLib(
       players.address,
@@ -142,7 +207,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
 
     expect(res.didAWin).to.be.true;
@@ -155,7 +222,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
   });
@@ -168,6 +237,8 @@ describe("ClanBattleLibrary", function () {
     const skills = Array(clanMembersA.length).fill(Skill.FISHING);
     let randomWordA = 3;
     let randomWordB = 1;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], getXPFromLevel(20), true); // Get 2 rolls each
 
     let res = await clanBattleLibrary.doBattleLib(
@@ -176,7 +247,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
 
@@ -192,11 +265,13 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
 
-    randomWordA = 3;
+    randomWordA = 1;
     randomWordB = 3;
 
     clanMembersA = [playerId, playerId];
@@ -207,7 +282,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
   });
@@ -221,19 +298,21 @@ describe("ClanBattleLibrary", function () {
     let clanMembersB = [playerId, newPlayerId];
 
     const skills = [Skill.FISHING, Skill.WOODCUTTING];
-    let randomWordA = 3;
-    let randomWordB = 1;
-    await players.testModifyXP(alice.address, newPlayerId, skills[1], getXPFromLevel(20), true); // Get 2 rolls
+    await players.testModifyXP(alice.address, newPlayerId, skills[1], getXPFromLevel(40), true); // Get 3 rolls
 
-    randomWordA = 7;
-    randomWordB = 7;
+    const randomWordA = 0b110;
+    const randomWordB = 0b111;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
     let res = await clanBattleLibrary.doBattleLib(
       players.address,
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
 
@@ -245,7 +324,9 @@ describe("ClanBattleLibrary", function () {
       clanMembersB,
       skills,
       randomWordA,
-      randomWordB
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
   });
@@ -260,6 +341,8 @@ describe("ClanBattleLibrary", function () {
 
     let numWinsA = 0;
     let numWinsB = 0;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
 
     for (let i = 0; i < 50; ++i) {
       const randomWordA = i;
@@ -271,7 +354,9 @@ describe("ClanBattleLibrary", function () {
         clanMembersB,
         skills,
         randomWordA,
-        randomWordB
+        randomWordB,
+        extraRollsA,
+        extraRollsB
       );
 
       if (res.didAWin) {
@@ -290,6 +375,10 @@ describe("ClanBattleLibrary", function () {
     const skill = Skill.FISHING;
     const avatarId = 1;
     const numMembers = 4;
+    const randomWordA = 1;
+    const randomWordB = 1;
+    const extraRollsA = 0;
+    const extraRollsB = 0;
 
     const clanMembersA = [];
     const levelsA = [99, 5, 3, 3];
@@ -313,8 +402,10 @@ describe("ClanBattleLibrary", function () {
       clanMembersA,
       clanMembersB,
       skills,
-      1,
-      1
+      randomWordA,
+      randomWordB,
+      extraRollsA,
+      extraRollsB
     );
 
     let success = false;
@@ -327,7 +418,9 @@ describe("ClanBattleLibrary", function () {
         clanMembersB,
         skills,
         randomWordA,
-        randomWordB
+        randomWordB,
+        extraRollsA,
+        extraRollsB
       );
 
       if (initialWinner != winner) {

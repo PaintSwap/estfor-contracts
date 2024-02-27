@@ -11,7 +11,8 @@ enum BoostType {
   PASSIVE_SKIP_CHANCE,
   // Clan wars
   PVP_BLOCK,
-  PVP_REATTACK
+  PVP_REATTACK,
+  PVP_SUPER_ATTACK
 }
 
 struct Equipment {

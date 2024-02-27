@@ -221,6 +221,8 @@ export const addTestData = async (
   }
 
   // Create a clan
+  await brush.approve(clans.address, ethers.utils.parseEther("1000"));
+
   const imageId = 2;
   const tierId = 1;
   tx = await clans.createClan(playerId, "Sam test clan", "G4ZgtP52JK", "fantomfoundation", imageId, tierId);
@@ -232,7 +234,7 @@ export const addTestData = async (
     from: bankFactory.address,
     nonce: clanId,
   });
-  // Send some to the bank
+  // Send some item to the bank
   tx = await itemNFT.safeTransferFrom(owner.address, clanBankAddress, EstforConstants.BRONZE_HELMET, 1, "0x");
   await tx.wait();
   console.log("Send an item to the bank");

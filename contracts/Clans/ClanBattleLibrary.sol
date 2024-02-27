@@ -29,7 +29,9 @@ library ClanBattleLibrary {
     uint48[] memory _clanMembersB,
     uint8[] memory _skills,
     uint _randomWordA,
-    uint _randomWordB
+    uint _randomWordB,
+    uint _extraRollsA,
+    uint _extraRollsB
   )
     external
     view
@@ -54,7 +56,9 @@ library ClanBattleLibrary {
       _clanMembersB,
       skills,
       _randomWordA,
-      _randomWordB
+      _randomWordB,
+      _extraRollsA,
+      _extraRollsB
     );
 
     battleResults = new uint8[](battleResultsEnum.length);
@@ -72,7 +76,9 @@ library ClanBattleLibrary {
     uint48[] memory _clanMembersB, // [In/Out] gets shuffled
     Skill[] memory _skills,
     uint _randomWordA,
-    uint _randomWordB
+    uint _randomWordB,
+    uint _extraRollsA,
+    uint _extraRollsB
   )
     internal
     view
@@ -102,15 +108,12 @@ library ClanBattleLibrary {
         uint levelA = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersA[i], skill));
         uint levelB = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersB[i], skill));
 
-        // Each battle then roll dice where every 20 levels in the skill gets you a d20 dice.
-        // The highest number rolled is the outcome.
-        // So example skill level 39 vs 97, player 1 would have 2 dice and player 2 would roll 5.
-        if (levelA > 20 * 7 || levelB > 20 * 7) {
+        if (levelA > 20 * 6 || levelB > 20 * 6) {
           assert(false); // Unsupported
         }
 
-        uint numRollsA = (levelA / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersA[i]) ? 2 : 1);
-        uint numRollsB = (levelB / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersB[i]) ? 2 : 1);
+        uint numRollsA = (levelA / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersA[i]) ? 2 : 1) + _extraRollsA;
+        uint numRollsB = (levelB / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersB[i]) ? 2 : 1) + _extraRollsB;
 
         bytes1 byteA = bytes32(_randomWordA)[31 - i];
         // Check how many bits are set based on the number of rolls
@@ -146,6 +149,6 @@ library ClanBattleLibrary {
       }
     }
 
-    didAWin = numWinnersA > numWinnersB;
+    didAWin = numWinnersA >= numWinnersB;
   }
 }

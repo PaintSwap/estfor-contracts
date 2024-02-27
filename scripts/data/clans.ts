@@ -15,7 +15,7 @@ export const allClanTiers: Tier[] = [
     maxMemberCapacity: 3,
     maxBankCapacity: 5,
     maxImageId: 10000,
-    price: BigNumber.from(0),
+    price: ethers.utils.parseEther("150"),
     minimumAge: 0,
   },
   {
@@ -23,7 +23,7 @@ export const allClanTiers: Tier[] = [
     maxMemberCapacity: 10,
     maxBankCapacity: 20,
     maxImageId: 20000,
-    price: ethers.utils.parseEther("1000"),
+    price: ethers.utils.parseEther("500"),
     minimumAge: 0,
   },
   {
@@ -31,7 +31,7 @@ export const allClanTiers: Tier[] = [
     maxMemberCapacity: 50,
     maxBankCapacity: 75,
     maxImageId: 30000,
-    price: ethers.utils.parseEther("5000"),
+    price: ethers.utils.parseEther("2500"),
     minimumAge: 0,
   },
 ];

@@ -8,7 +8,7 @@ import {LockedBankVaults, MockBrushToken, Territories} from "../../typechain-typ
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {fulfillRandomWords} from "../utils";
 import {BigNumber} from "ethers";
-import {allTerritorySkills} from "../../scripts/data/territories";
+import {allBattleSkills} from "../../scripts/data/territories";
 import {getXPFromLevel} from "../Players/utils";
 import {allItems} from "../../scripts/data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
@@ -140,7 +140,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
@@ -164,7 +164,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
     // Should win as they have more players
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
@@ -246,7 +246,8 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
+      players,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
@@ -262,6 +263,14 @@ describe("LockedBankVaults", function () {
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    // Increase odds of winning
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+    }
+
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(charlie.address, charliePlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+    }
 
     // Attack
     await combatantsHelper
@@ -270,7 +279,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
@@ -279,7 +288,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(2, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810); // lost 10% for losing
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100); // // unchanged
 
@@ -331,7 +340,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(3, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient);
     const {timestamp: NOW2} = await ethers.provider.getBlock("latest");
 
     // Wait another day (check it's not just the clan cooldown)
@@ -417,7 +426,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
@@ -442,7 +451,7 @@ describe("LockedBankVaults", function () {
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
     const {gasPrice} = tx;
     const requestId = 1;
-    await fulfillRandomWords(requestId, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient);
     expect(await lockedBankVaults.movingAverageGasPrice()).to.eq(0);
 
     let attackCost = await lockedBankVaults.attackCost();
@@ -450,7 +459,7 @@ describe("LockedBankVaults", function () {
     expect(attackCost).to.eq(baseAttackCost);
 
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockAPI3OracleClient, gasPrice?.add(1000));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(1000));
     const bigZero = BigNumber.from(0);
     expect(await lockedBankVaults.movingAverageGasPrice()).to.eq(
       bigZero
@@ -467,13 +476,13 @@ describe("LockedBankVaults", function () {
     );
 
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockAPI3OracleClient, gasPrice?.add(900));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(900));
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockAPI3OracleClient, gasPrice?.add(800));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(800));
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockAPI3OracleClient, gasPrice?.add(500));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(500));
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockAPI3OracleClient, gasPrice?.add(200));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(200));
 
     expect(await lockedBankVaults.movingAverageGasPrice()).to.eq(
       (gasPrice as BigNumber)
@@ -597,7 +606,7 @@ describe("LockedBankVaults", function () {
       telegram,
       imageId,
       tierId,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
     } = await loadFixture(clanFixture);
 
     const MAX_LOCKED_VAULTS = (await lockedBankVaults.MAX_LOCKED_VAULTS()).toNumber();
@@ -618,7 +627,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
     await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
@@ -652,7 +661,7 @@ describe("LockedBankVaults", function () {
       telegram,
       imageId,
       tierId,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
     } = await loadFixture(clanFixture);
 
     const MAX_LOCKED_VAULTS = (await lockedBankVaults.MAX_LOCKED_VAULTS()).toNumber();
@@ -697,8 +706,8 @@ describe("LockedBankVaults", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
     const bobClanId = 2;
 
-    for (let i = 0; i < allTerritorySkills.length; ++i) {
-      await players.testModifyXP(bob.address, bobPlayerId, allTerritorySkills[i], getXPFromLevel(100), true);
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     // Attack
@@ -737,7 +746,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
   });
 
   it("Allow re-attacking if the user has the appropriate item", async () => {
@@ -760,7 +769,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
     } = await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -776,7 +785,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
 
     await ethers.provider.send("evm_increaseTime", [(await lockedBankVaults.ATTACKING_COOLDOWN()).toNumber()]);
     await expect(
@@ -811,7 +820,7 @@ describe("LockedBankVaults", function () {
       value: await lockedBankVaults.attackCost(),
     });
 
-    await fulfillRandomWords(2, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
     battleInfo = await lockedBankVaults.lastClanBattles(clanId, bobClanId);
     expect(battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp).to.eq(beforeCooldownTimestamp);
     expect(battleInfo.numReattacks).to.eq(1);
@@ -824,6 +833,148 @@ describe("LockedBankVaults", function () {
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanAttackingSameClanCooldown");
 
     // TODO: Check other clan
+  });
+
+  it("Using a super-attack should give more rolls", async () => {
+    const {
+      clans,
+      lockedBankVaults,
+      combatantsHelper,
+      territories,
+      clanId,
+      playerId,
+      playerNFT,
+      itemNFT,
+      avatarId,
+      origName,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      imageId,
+      tierId,
+      brush,
+      mockSWVRFOracleClient,
+    } = await loadFixture(clanFixture);
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+
+    // Create a new clan to attack/defend
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+
+    const bobClanId = clanId + 1;
+    await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
+
+    const item = allItems.find((inputItem) => inputItem.tokenId == EstforConstants.SHARPENED_CLAW) as ItemInput;
+    await itemNFT.addItems([item]);
+    await itemNFT.testMint(alice.address, EstforConstants.SHARPENED_CLAW, 10);
+
+    let requestId = 1;
+    // Try 10 times
+    let highestRoll = BigNumber.from(0);
+    for (let i = 0; i < 10; ++i, ++requestId) {
+      await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.SHARPENED_CLAW, playerId, {
+        value: await lockedBankVaults.attackCost(),
+      });
+
+      const tx = await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient);
+      const receipt = await tx.wait();
+      // If the attacker lost then some brush is sent which changes up the event ordering
+      const log = lockedBankVaults.interface.parseLog(receipt.logs.length > 4 ? receipt.logs[4] : receipt.logs[1]);
+      highestRoll = highestRoll.gt(log.args["attackingRolls"][0]) ? highestRoll : log.args["attackingRolls"][0];
+      await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
+    }
+
+    expect(highestRoll).to.eq(2);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHARPENED_CLAW)).to.eq(0);
+    expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.be.lte(900); // lost 10%
+  });
+
+  it("Super-attack should have a cooldown", async () => {
+    const {
+      clans,
+      lockedBankVaults,
+      combatantsHelper,
+      territories,
+      clanId,
+      playerId,
+      playerNFT,
+      itemNFT,
+      avatarId,
+      origName,
+      alice,
+      bob,
+      charlie,
+      clanName,
+      discord,
+      telegram,
+      imageId,
+      tierId,
+      brush,
+      mockSWVRFOracleClient,
+    } = await loadFixture(clanFixture);
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+
+    // Create a new clan to defend
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+
+    const bobClanId = clanId + 1;
+    await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
+
+    const item = allItems.find((inputItem) => inputItem.tokenId == EstforConstants.SHARPENED_CLAW) as ItemInput;
+    await itemNFT.addItems([item]);
+    await itemNFT.testMint(alice.address, EstforConstants.SHARPENED_CLAW, 10);
+
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+
+    let requestId = 1;
+    await expect(
+      lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.SHARPENED_CLAW, playerId, {
+        value: await lockedBankVaults.attackCost(),
+      })
+    )
+      .to.emit(lockedBankVaults, "SuperAttackCooldown")
+      .withArgs(clanId, NOW + 86400 + 1);
+
+    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient);
+
+    // Create a new clan to attack/defend
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
+    await clans.connect(charlie).createClan(charliePlayerId, clanName + 2, discord, telegram, imageId, tierId);
+
+    const charlieClanId = bobClanId + 1;
+    await combatantsHelper
+      .connect(charlie)
+      .assignCombatants(charlieClanId, false, [], true, [charliePlayerId], charliePlayerId);
+    await lockFundsForClan(lockedBankVaults, charlieClanId, brush, charlie, charliePlayerId, 1000, territories);
+
+    // Forward by attack cooldown and attack another clan
+    await ethers.provider.send("evm_increaseTime", [(await lockedBankVaults.ATTACKING_COOLDOWN()).toNumber()]);
+
+    // Fails due to cooldown not reached
+    await expect(
+      lockedBankVaults.connect(alice).attackVaults(clanId, charlieClanId, EstforConstants.SHARPENED_CLAW, playerId, {
+        value: await lockedBankVaults.attackCost(),
+      })
+    ).to.be.revertedWithCustomError(lockedBankVaults, "ClanSuperAttackingCooldown");
+
+    await ethers.provider.send("evm_increaseTime", [item.boostDuration]);
+    await ethers.provider.send("evm_mine", []);
+    const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
+    // Cooldown is now reached
+    await expect(
+      lockedBankVaults.connect(alice).attackVaults(clanId, charlieClanId, EstforConstants.SHARPENED_CLAW, playerId, {
+        value: await lockedBankVaults.attackCost(),
+      })
+    )
+      .to.emit(lockedBankVaults, "SuperAttackCooldown")
+      .withArgs(clanId, NOW1 + 86400 + 1);
   });
 
   it("Blocking Attacks with item", async () => {
@@ -930,8 +1081,9 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
       shop,
+      players,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
@@ -944,17 +1096,19 @@ describe("LockedBankVaults", function () {
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
 
-    const bobClanId = clanId + 1;
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
+    const bobClanId = clanId + 1;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+
+    for (let i = 0; i < allBattleSkills.length; ++i) {
+      await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+    }
 
     // Lock
     await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 800, territories);
 
-    await combatantsHelper
-      .connect(bob)
-      .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], bobPlayerId);
+    await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(1000);
 
@@ -962,7 +1116,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(2, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900); // lost 10%
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(800);
@@ -993,7 +1147,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockAPI3OracleClient,
+      mockSWVRFOracleClient,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
@@ -1019,13 +1173,54 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(2, lockedBankVaults, mockAPI3OracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900); // lost 10%
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
 
     // Check totalWon with lockedVault
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].amount).to.eq(100);
+  });
+
+  it("Try fulfill an attack request id that isn't ongoing", async () => {
+    const {
+      clans,
+      lockedBankVaults,
+      combatantsHelper,
+      territories,
+      clanId,
+      playerId,
+      playerNFT,
+      avatarId,
+      origName,
+      alice,
+      bob,
+      charlie,
+      clanName,
+      discord,
+      telegram,
+      imageId,
+      tierId,
+      brush,
+      mockSWVRFOracleClient,
+    } = await loadFixture(clanFixture);
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+
+    // Create a new clan to attack
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    const bobClanId = clanId + 1;
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories);
+
+    await lockedBankVaults
+      .connect(alice)
+      .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()});
+
+    await expect(fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient)).to.revertedWithCustomError(
+      lockedBankVaults,
+      "RequestIdNotKnown"
+    );
   });
 
   it("Cannot attack a clan twice within the cooldown", async () => {});

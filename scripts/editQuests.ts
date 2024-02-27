@@ -13,7 +13,7 @@ async function main() {
   //  await tx.wait();
 
   // Single one
-  const questIndex = allQuests.findIndex((q) => q.questId === EstforConstants.QUEST_FORGE_AHEAD);
+  const questIndex = allQuests.findIndex((q) => q.questId === EstforConstants.QUEST_HEART_STRINGS);
   if (questIndex === -1 || allQuestsMinRequirements.length <= questIndex) {
     console.error("Could not find this quest");
     return;
