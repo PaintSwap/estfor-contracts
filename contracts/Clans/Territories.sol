@@ -725,13 +725,9 @@ contract Territories is
     combatantsHelper = _combatantsHelper;
   }
 
-  // TODO: Can remove later
+  // Can be removed if needed, only needed for new VRF contract
   function setSamWitchVRF(ISamWitchVRF _samWitchVRF) external onlyOwner {
     samWitchVRF = _samWitchVRF;
-  }
-
-  function requestWithdrawal() external onlyOwner {
-    dummy.requestWithdrawal(airnode, sponsorWallet);
   }
 
   function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
@@ -754,10 +750,6 @@ contract Territories is
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint _requestId) external isAdminAndBeta {
     pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
-  }
-
-  receive() external payable {
-    oracle.call{value: msg.value}("");
   }
 
   // solhint-disable-next-line no-empty-blocks

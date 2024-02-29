@@ -39,9 +39,7 @@ async function main() {
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  let tx = await lockedBankVaults.requestWithdrawal();
-  await tx.wait();
-  tx = await lockedBankVaults.setSamWitchVRF(SAMWITCH_VRF_ADDRESS);
+  let tx = await lockedBankVaults.setSamWitchVRF(SAMWITCH_VRF_ADDRESS);
   await tx.wait();
   // Allow attacking again
   tx = await lockedBankVaults.setBaseAttackCost(ethers.utils.parseEther("0.01"));
@@ -57,8 +55,6 @@ async function main() {
   await territories.deployed();
   console.log(`territories = "${territories.address.toLowerCase()}"`);
 
-  tx = await territories.requestWithdrawal();
-  await tx.wait();
   tx = await territories.setSamWitchVRF(SAMWITCH_VRF_ADDRESS);
   await tx.wait();
   // Allow attacking again
