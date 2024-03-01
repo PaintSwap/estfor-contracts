@@ -7,6 +7,7 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {ITerritories} from "./interfaces/ITerritories.sol";
 
 interface Router {
   function swapExactETHForTokens(
@@ -20,21 +21,23 @@ interface Router {
 contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for uint256;
 
+  uint public constant MIN_BRUSH_TO_DISTRIBUTE = 100 ether;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
   error AddressZero();
-  error IncorrectBrushPath();
   error FailedSendToDev();
+  error BrushTooLowToDistribute();
 
   Router public router;
   address public pool;
   IBrushToken public brush;
-  address private buyPath1;
+  address private wNative;
   address private dev;
-
+  ITerritories private territories;
   uint public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
   function initialize(
@@ -42,19 +45,16 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     address _pool,
     address _dev,
     IBrushToken _brush,
-    address[2] calldata _buyPath
+    address _wNative
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    pool = _pool;
     router = _router;
-    brush = _brush;
-    buyPath1 = _buyPath[0];
+    pool = _pool;
     dev = _dev;
-    if (_buyPath[1] != address(_brush)) {
-      revert IncorrectBrushPath();
-    }
+    brush = _brush;
+    wNative = _wNative;
     if (address(_router) == address(0)) {
       revert AddressZero();
     }
@@ -69,10 +69,27 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function buyPath() private view returns (address[] memory _buyPath) {
-    _buyPath = new address[](2);
-    _buyPath[0] = buyPath1;
-    _buyPath[1] = address(brush);
+  function distributeBrush() external {
+    uint balance = brush.balanceOf(address(this));
+    if (balance < MIN_BRUSH_TO_DISTRIBUTE) {
+      revert BrushTooLowToDistribute();
+    }
+    territories.addUnclaimedEmissions(balance);
+  }
+
+  function _buyPath() private view returns (address[] memory buyPath) {
+    buyPath = new address[](2);
+    buyPath[0] = wNative;
+    buyPath[1] = address(brush);
+  }
+
+  function canDistribute() external view returns (bool) {
+    return brush.balanceOf(address(this)) >= MIN_BRUSH_TO_DISTRIBUTE;
+  }
+
+  function setTerritories(ITerritories _territories) external onlyOwner {
+    territories = _territories;
+    brush.approve(address(_territories), type(uint256).max);
   }
 
   receive() external payable {
@@ -87,7 +104,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     // Buy brush and send it to the pool
     uint[] memory amounts = router.swapExactETHForTokens{value: msg.value - third}(
       0,
-      buyPath(),
+      _buyPath(),
       address(this),
       deadline
     );

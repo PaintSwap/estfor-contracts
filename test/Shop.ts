@@ -43,13 +43,11 @@ describe("Shop", function () {
       kind: "uups",
     });
 
-    const buyPath: [string, string] = [alice.address, brush.address];
-    const MockRouter = await ethers.getContractFactory("MockRouter");
-    const router = await MockRouter.deploy();
+    const router = await ethers.deployContract("MockRouter");
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = await upgrades.deployProxy(
       RoyaltyReceiver,
-      [router.address, shop.address, dev.address, brush.address, buyPath],
+      [router.address, shop.address, dev.address, brush.address, alice.address],
       {
         kind: "uups",
       }

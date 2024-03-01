@@ -181,11 +181,10 @@ async function main() {
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
 
-  const buyPath: [string, string] = [wftm.address, brush.address];
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, DEV_ADDRESS, brush.address, buyPath],
+    [router.address, shop.address, DEV_ADDRESS, brush.address, wftm.address],
     {
       kind: "uups",
       timeout,
@@ -298,6 +297,7 @@ async function main() {
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
 
+  const buyPath: [string, string] = [wftm.address, brush.address];
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
@@ -586,6 +586,8 @@ async function main() {
   tx = await lockedBankVaults.setTerritories(territories.address);
   await tx.wait();
   console.log("lockedBankVaults.setTerritories");
+  tx = await royaltyReceiver.setTerritories(territories.address);
+  await tx.wait();
 
   tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
   console.log("Set Bazaar");
