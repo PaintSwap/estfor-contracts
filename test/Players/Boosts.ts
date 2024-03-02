@@ -571,7 +571,7 @@ describe("Boosts", function () {
 
     let tierId = 1;
     const imageId = 1;
-    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
@@ -706,7 +706,7 @@ describe("Boosts", function () {
 
     let tierId = 1;
     const imageId = 1;
-    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
@@ -830,7 +830,7 @@ describe("Boosts", function () {
 
     let tierId = 1;
     const imageId = 1;
-    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 

@@ -570,7 +570,7 @@ describe("Rewards", function () {
 
       let tierId = 1;
       const imageId = 1;
-      await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+      await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
       await players.setDailyRewardsEnabled(true);
 
