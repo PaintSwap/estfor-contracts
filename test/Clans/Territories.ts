@@ -609,6 +609,7 @@ describe("Territories", function () {
       origName,
       clanName,
       discord,
+      twitter,
       telegram,
       imageId,
       tierId,
@@ -629,7 +630,7 @@ describe("Territories", function () {
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     await expect(territories.connect(bob).harvest(territoryId, bobPlayerId)).to.revertedWithCustomError(
       territories,

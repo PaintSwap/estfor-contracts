@@ -239,7 +239,6 @@ async function main() {
   const royaltyReceiver = (await upgrades.upgradeProxy(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    unsafeSkipStorageCheck: true,
     timeout,
   })) as RoyaltyReceiver;
   await royaltyReceiver.deployed();

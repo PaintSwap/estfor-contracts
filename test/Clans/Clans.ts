@@ -863,7 +863,7 @@ describe("Clans", function () {
         await clans.connect(alice).editClan(clanId, clanName, discord, telegram, twitter, imageId + 1, playerId);
       });
 
-      it.only("Edit clan socials", async () => {
+      it("Edit clan socials", async () => {
         const {playerId, clans, alice, clanId, clanName, discord, telegram, twitter, imageId} = await loadFixture(
           clanFixture
         );
