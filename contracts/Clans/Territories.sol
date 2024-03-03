@@ -349,17 +349,6 @@ contract Territories is
       _nextPendingAttackId,
       attackingCooldownTimestamp
     );
-
-    // Rebalance the sponsor wallet usage
-    if (sponsorWallet.balance < 100 ether) {
-      if (expectedGasLimitFulfill != 1_900_000) {
-        _setExpectedGasLimitFulfill(1_900_000);
-      }
-    } else if (sponsorWallet.balance > 200 ether) {
-      if (expectedGasLimitFulfill != 1_600_000) {
-        _setExpectedGasLimitFulfill(1_600_000);
-      }
-    }
   }
 
   /// @notice Called by the SamWitchVRF contract to fulfill the request

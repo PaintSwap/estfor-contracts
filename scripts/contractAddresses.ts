@@ -29,7 +29,7 @@ let territories;
 let lockedBankVaults;
 let decoratorProvider;
 let combatantsHelper;
-let oracleFallback;
+let oracle;
 let samWitchVRF;
 let bazaar;
 
@@ -63,7 +63,7 @@ if (!isBeta) {
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
   decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
-  oracleFallback = "0x28ade840602d0363a2ab675479f1b590b23b0490";
+  oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
 } else {
@@ -97,7 +97,7 @@ if (!isBeta) {
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
-  oracleFallback = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
+  oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
 }
@@ -143,6 +143,6 @@ export const FAKE_BRUSH_ADDRESS = "0x8F85Ad0Ed1C6Cf23B82378efF7f71a7Df6A61071";
 export const FAKE_BRUSH_WFTM_LP_ADDRESS = "0xb3209C979b90436f0a43ED817CD36c4c908604fD";
 export const DECORATOR_ADDRESS = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
 export const DEV_ADDRESS = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
-export const ORACLE_FALLBACK_ADDRESS = oracleFallback;
+export const ORACLE_ADDRESS = oracle;
 export const SAMWITCH_VRF_ADDRESS = samWitchVRF;
 export const BAZAAR_ADDRESS = bazaar;

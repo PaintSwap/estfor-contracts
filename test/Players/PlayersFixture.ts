@@ -278,7 +278,7 @@ export const playersFixture = async function () {
 
   const mockSWVRFOracleClient = (await ethers.deployContract("MockSWVRFOracleClient")) as MockOracleClient;
 
-  const oracleFallbackAddress = dev.address;
+  const oracleAddress = dev.address;
 
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = (await upgrades.deployProxy(
@@ -291,7 +291,7 @@ export const playersFixture = async function () {
       itemNFT.address,
       shop.address,
       dev.address,
-      oracleFallbackAddress,
+      oracleAddress,
       mockSWVRFOracleClient.address,
       allBattleSkills,
       adminAccess.address,
@@ -313,7 +313,7 @@ export const playersFixture = async function () {
       brush.address,
       lockedBankVaults.address,
       itemNFT.address,
-      oracleFallbackAddress,
+      oracleAddress,
       mockSWVRFOracleClient.address,
       allBattleSkills,
       adminAccess.address,
