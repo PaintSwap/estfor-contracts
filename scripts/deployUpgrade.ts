@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {EstforLibrary, PromotionsLibrary, WorldLibrary} from "../typechain-types";
+import {EstforLibrary, PromotionsLibrary, RoyaltyReceiver, WorldLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -21,6 +21,7 @@ import {
   DECORATOR_PROVIDER_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
+  ROYALTY_RECEIVER_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -234,6 +235,15 @@ async function main() {
   await combatantsHelper.deployed();
   console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);
 
+  const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
+  const royaltyReceiver = (await upgrades.upgradeProxy(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout,
+  })) as RoyaltyReceiver;
+  await royaltyReceiver.deployed();
+  console.log(`royaltyReceiver = "${royaltyReceiver.address.toLowerCase()}"`);
+
   await verifyContracts([players.address]);
   await verifyContracts([playerNFT.address]);
   await verifyContracts([itemNFT.address]);
@@ -250,6 +260,7 @@ async function main() {
   await verifyContracts([territories.address]);
   await verifyContracts([decoratorProvider.address]);
   await verifyContracts([combatantsHelper.address]);
+  await verifyContracts([royaltyReceiver.address]);
 }
 
 main().catch((error) => {

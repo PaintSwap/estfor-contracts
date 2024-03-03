@@ -113,6 +113,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -132,7 +133,7 @@ describe("Territories", function () {
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
@@ -171,6 +172,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -189,7 +191,7 @@ describe("Territories", function () {
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     // Make the defending players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
@@ -231,6 +233,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -263,7 +266,7 @@ describe("Territories", function () {
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
     const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
 
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
@@ -281,7 +284,7 @@ describe("Territories", function () {
     expect(clanInfo.playerIds[0]).eq(playerId);
 
     // Make your own clan
-    await clans.createClan(ownerPlayerId, clanName + 2, discord, telegram, imageId, tierId);
+    await clans.createClan(ownerPlayerId, clanName + 2, discord, telegram, twitter, imageId, tierId);
     const ownerClanId = 3;
 
     // Free to attack another territory as you are no longer a defender (but only after player cooldown timestamp)
@@ -325,6 +328,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -344,7 +348,7 @@ describe("Territories", function () {
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
 
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
@@ -382,6 +386,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -397,7 +402,7 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
     await territories
@@ -433,6 +438,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -450,7 +456,7 @@ describe("Territories", function () {
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = 2;
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
@@ -603,6 +609,7 @@ describe("Territories", function () {
       origName,
       clanName,
       discord,
+      twitter,
       telegram,
       imageId,
       tierId,
@@ -623,7 +630,7 @@ describe("Territories", function () {
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     await expect(territories.connect(bob).harvest(territoryId, bobPlayerId)).to.revertedWithCustomError(
       territories,
@@ -729,6 +736,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -744,7 +752,7 @@ describe("Territories", function () {
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
@@ -841,6 +849,7 @@ describe("Territories", function () {
       clanName,
       discord,
       telegram,
+      twitter,
       tierId,
       imageId,
       origName,
@@ -859,7 +868,7 @@ describe("Territories", function () {
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
-    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, imageId, tierId);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);

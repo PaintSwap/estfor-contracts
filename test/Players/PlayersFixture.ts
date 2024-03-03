@@ -62,12 +62,11 @@ export const playersFixture = async function () {
     kind: "uups",
   })) as Shop;
 
-  const buyPath: [string, string] = [alice.address, brush.address];
   const router = (await ethers.deployContract("MockRouter")) as MockRouter;
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = (await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, dev.address, brush.address, buyPath],
+    [router.address, shop.address, dev.address, brush.address, alice.address],
     {
       kind: "uups",
     }
@@ -135,6 +134,7 @@ export const playersFixture = async function () {
     }
   )) as Promotions;
 
+  const buyPath: [string, string] = [alice.address, brush.address];
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",

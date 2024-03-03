@@ -483,7 +483,7 @@ contract LockedBankVaults is
     );
 
     if (didAttackersWin) {
-      _lockFunds(attackingClanId, address(0), 0, totalWon);
+      _lockFunds(attackingClanId, address(0), 0, totalWon, LOCK_PERIOD);
     }
   }
 
@@ -498,7 +498,7 @@ contract LockedBankVaults is
     // 1. The first one is not expired, so we can't claim anything
     // 2. The first one is expired, but the second one is not, so we can claim the first one
     // 3. The first one is expired, and the second one is expired, so we can claim both
-    // We don't need to set claimed = true unless we know
+    // We don't need to set claimed = true unless we know the second one is not expired yet
     for (uint i = defendingVaultsOffset; i < clanInfos[_clanId].defendingVaults.length; ++i) {
       Vault storage defendingVault = clanInfos[_clanId].defendingVaults[i];
       if (defendingVault.timestamp > block.timestamp) {
@@ -558,7 +558,7 @@ contract LockedBankVaults is
   }
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
-    _lockFunds(_clanId, _from, _playerId, _amount);
+    _lockFunds(_clanId, _from, _playerId, _amount, LOCK_PERIOD);
     if (_amount != 0 && !brush.transferFrom(msg.sender, address(this), _amount)) {
       revert TransferFailed();
     }
@@ -623,18 +623,15 @@ contract LockedBankVaults is
     _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
   }
 
-  function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
+  function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount, uint _lockPeriod) private {
     if (_amount == 0) {
       return;
     }
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.totalBrushLocked += uint96(_amount);
-    uint40 lockingTimestamp = uint40(block.timestamp + LOCK_PERIOD);
+    uint40 lockingTimestamp = uint40(block.timestamp + _lockPeriod);
     uint length = clanInfo.defendingVaults.length;
-    if (
-      length == 0 ||
-      (clanInfo.defendingVaults[length - 1].timestamp != 0 && clanInfo.defendingVaults[length - 1].timestamp1 != 0)
-    ) {
+    if (length == 0 || (clanInfo.defendingVaults[length - 1].timestamp1 != 0)) {
       // Start a new one
       clanInfo.defendingVaults.push(
         Vault({claimed: false, timestamp: lockingTimestamp, amount: uint80(_amount), timestamp1: 0, amount1: 0})
@@ -820,13 +817,9 @@ contract LockedBankVaults is
     _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
-  // TODO: Can remove later
+  // Can be removed if needed, only needed for new VRF contract
   function setSamWitchVRF(ISamWitchVRF _samWitchVRF) external onlyOwner {
     samWitchVRF = _samWitchVRF;
-  }
-
-  function requestWithdrawal() external onlyOwner {
-    dummy.requestWithdrawal(airnode, sponsorWallet);
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {
@@ -846,10 +839,6 @@ contract LockedBankVaults is
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint _requestId) external isAdminAndBeta {
     pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
-  }
-
-  receive() external payable {
-    dev.call{value: msg.value}("");
   }
 
   // solhint-disable-next-line no-empty-blocks

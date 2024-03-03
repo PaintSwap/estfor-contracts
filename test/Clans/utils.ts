@@ -27,6 +27,7 @@ export async function clanFixture() {
   const tier = await clans.tiers(tierId);
   const discord = "G4ZgtP52JK";
   const telegram = "fantomfoundation";
+  const twitter = "fantomfdn";
 
   // Figure out what the address would be
   const bankAddress = ethers.utils.getContractAddress({
@@ -34,14 +35,27 @@ export async function clanFixture() {
     nonce: clanId,
   });
 
-  await expect(clans.connect(alice).createClan(playerId, clanName, discord, telegram, imageId, tierId))
+  await expect(clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, imageId, tierId))
     .to.emit(clans, "ClanCreated")
-    .withArgs(clanId, playerId, [clanName, discord, telegram], imageId, tierId)
+    .withArgs(clanId, playerId, [clanName, discord, telegram, twitter], imageId, tierId)
     .and.to.emit(bankFactory, "BankContractCreated")
     .withArgs(alice.address, clanId, bankAddress);
 
   const editNameCost = await clans.editNameCost();
-  return {...fixture, clans, clanName, discord, telegram, tierId, imageId, clanId, tier, editNameCost, bankAddress};
+  return {
+    ...fixture,
+    clans,
+    clanName,
+    discord,
+    telegram,
+    twitter,
+    tierId,
+    imageId,
+    clanId,
+    tier,
+    editNameCost,
+    bankAddress,
+  };
 }
 
 export enum BattleResult {

@@ -9,11 +9,8 @@ describe("ItemNFT", function () {
   async function deployContracts() {
     const [owner, alice, dev] = await ethers.getSigners();
 
-    const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const brush = await MockBrushToken.deploy();
-
-    const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-    const mockOracleClient = await MockOracleClient.deploy();
+    const brush = await ethers.deployContract("MockBrushToken");
+    const mockOracleClient = await ethers.deployContract("MockOracleClient");
 
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
@@ -25,8 +22,7 @@ describe("ItemNFT", function () {
     }
 
     // Create the world
-    const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
-    const worldLibrary = await WorldLibrary.deploy();
+    const worldLibrary = await ethers.deployContract("WorldLibrary");
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
     const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
@@ -41,13 +37,11 @@ describe("ItemNFT", function () {
       kind: "uups",
     });
 
-    const buyPath: [string, string] = [alice.address, brush.address];
-    const MockRouter = await ethers.getContractFactory("MockRouter");
-    const router = await MockRouter.deploy();
+    const router = await ethers.deployContract("MockRouter");
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = await upgrades.deployProxy(
       RoyaltyReceiver,
-      [router.address, shop.address, dev.address, brush.address, buyPath],
+      [router.address, shop.address, dev.address, brush.address, alice.address],
       {
         kind: "uups",
       }
@@ -232,7 +226,7 @@ describe("ItemNFT", function () {
     ).to.be.revertedWithCustomError(itemNFT, "ItemNotTransferable");
 
     // Allow it to be burnt
-    await expect(itemNFT.connect(alice).burn(EstforConstants.BRONZE_AXE, 1));
+    await expect(itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1)).to.not.be.reverted;
   });
 
   it("totalSupply", async function () {
