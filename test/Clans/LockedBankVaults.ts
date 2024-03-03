@@ -1207,7 +1207,6 @@ describe("LockedBankVaults", function () {
       origName,
       alice,
       bob,
-      charlie,
       clanName,
       discord,
       telegram,
@@ -1234,6 +1233,23 @@ describe("LockedBankVaults", function () {
       lockedBankVaults,
       "RequestIdNotKnown"
     );
+  });
+
+  it("Claim with a full packed vault but only the first is claimable, the next lock should start a new segment", async () => {
+    const {lockedBankVaults, territories, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
+
+    // Get one lock
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
+    // Wait a couple days and get another lock
+    await ethers.provider.send("evm_increaseTime", [86400 * 2]);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
+    // Unlock it
+    const LOCK_PERIOD = (await lockedBankVaults.LOCK_PERIOD()).toNumber();
+    await ethers.provider.send("evm_increaseTime", [LOCK_PERIOD - 86400 * 2]);
+    // Claim funds and check the locks are correct
+    await lockedBankVaults.connect(alice).claimFunds(clanId, playerId);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories);
+    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(2);
   });
 
   it("Cannot attack a clan twice within the cooldown", async () => {});
