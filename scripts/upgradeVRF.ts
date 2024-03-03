@@ -34,7 +34,6 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true,
   })) as LockedBankVaults;
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
@@ -50,7 +49,6 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true,
   });
   await territories.deployed();
   console.log(`territories = "${territories.address.toLowerCase()}"`);
