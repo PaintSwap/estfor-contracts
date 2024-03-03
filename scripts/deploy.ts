@@ -57,7 +57,7 @@ import {
   BRUSH_ADDRESS,
   DECORATOR_ADDRESS,
   DEV_ADDRESS,
-  ORACLE_FALLBACK_ADDRESS,
+  ORACLE_ADDRESS,
   SAMWITCH_VRF_ADDRESS,
   WFTM_ADDRESS,
 } from "./contractAddresses";
@@ -430,7 +430,7 @@ async function main() {
       itemNFT.address,
       shop.address,
       DEV_ADDRESS,
-      ORACLE_FALLBACK_ADDRESS,
+      ORACLE_ADDRESS,
       swvrfOracle.address,
       allBattleSkills,
       adminAccess.address,
@@ -454,7 +454,7 @@ async function main() {
       brush.address,
       lockedBankVaults.address,
       itemNFT.address,
-      ORACLE_FALLBACK_ADDRESS,
+      ORACLE_ADDRESS,
       swvrfOracle.address,
       allBattleSkills,
       adminAccess.address,
@@ -592,10 +592,10 @@ async function main() {
   tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
   console.log("Set Bazaar");
 
-  const sponsorWalletCallers = [lockedBankVaults, territories];
-  for (const sponsorWalletCaller of sponsorWalletCallers) {
+  const clanWars = [lockedBankVaults, territories];
+  for (const clanWar of clanWars) {
     try {
-      tx = await sponsorWalletCaller.setCombatantsHelper(combatantsHelper.address);
+      tx = await clanWar.setCombatantsHelper(combatantsHelper.address);
       await tx.wait();
       console.log("setCombatantsHelper");
     } catch (error) {

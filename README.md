@@ -82,10 +82,7 @@ Territories [0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170](https://ftmscan.com/add
 CombatantsHelper [0x8fedf83c55012acff7115b8fa164095721953c39](https://ftmscan.com/address/0x8fedf83c55012acff7115b8fa164095721953c39)  
 DecoratorProvider [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.com/address/0xba2f8cff9ea18f3687eb685f0c1bcd509b539963)
 
-Sponsor wallet - LockedVault [0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8](https://ftmscan.com/address/0xfaae78f2bfdd6e5b4e85d176bad2009e3a9b02e8)  
-Sponsor wallet - Territories [0xe0d4a3b16a51092b3c1f330c538de47269d1af0f](https://ftmscan.com/address/0xe0d4a3b16a51092b3c1f330c538de47269d1af0f)  
-OracleFallback [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)
-
+Oracle [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)
 VRF [0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2](https://ftmscan.com/address/0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2)  
 Bazaar [0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE](https://ftmscan.com/address/0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE)
 
@@ -126,10 +123,7 @@ Territories [0xf31517db9f0987002f3a0fb4f787dfb9e892f184](https://ftmscan.com/add
 CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.com/address/0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c)  
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
-Sponsor wallet - LockedVault [0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387](https://ftmscan.com/address/0xc38dae57fc2d8fbedbd6ccb45491fd7c4da2d387)  
-Sponsor wallet - Territories [0xa519dfa5728f8e91ae8c5657426c5b74176516f7 ](https://ftmscan.com/address/0xa519dfa5728f8e91ae8c5657426c5b74176516f7)  
-OracleFallback [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)
-
+Oracle [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)
 VRF [0x58E9fd2Fae18c861B9F564200510A88106C05756](https://ftmscan.com/address/0x58E9fd2Fae18c861B9F564200510A88106C05756)  
 Bazaar [0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191](https://ftmscan.com/address/0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191)
 
