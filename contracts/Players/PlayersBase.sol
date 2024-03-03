@@ -85,7 +85,6 @@ abstract contract PlayersBase {
   error UnsupportedAttire();
   error UnsupportedChoiceId();
   error InvalidHandEquipment(uint16 itemTokenId);
-  error DoNotHaveEnoughQuantityToEquipToAction();
   error NoActiveBoost();
   error BoostTimeAlreadyStarted();
   error TooManyActionsQueued();
@@ -129,6 +128,7 @@ abstract contract PlayersBase {
   error BuyBrushFailed();
   error NonInstanceConsumeNotSupportedYet();
   error AlreadyUpgraded();
+  error PlayerNotUpgraded();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;

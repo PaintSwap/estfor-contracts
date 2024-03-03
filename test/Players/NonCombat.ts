@@ -2207,9 +2207,9 @@ describe("Non-Combat Actions", function () {
     queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
     queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_AXE;
     await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
-    await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
-    ).to.be.revertedWithCustomError(players, "DoNotHaveEnoughQuantityToEquipToAction");
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE))
+      .to.be.revertedWithCustomError(players, "NoItemBalance")
+      .withArgs(EstforConstants.BRONZE_AXE);
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
 

@@ -12,51 +12,39 @@ async function main() {
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
   const world = await World.attach(WORLD_ADDRESS);
 
-  const newActionChoiceIdsAlchemy = [
-    EstforConstants.ACTIONCHOICE_ALCHEMY_COPPER_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_TIN_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_IRON_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_SAPPHIRE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_COAL_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_EMERALD,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_MITHRIL_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_RUBY,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_ADAMANTINE_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_AMETHYST,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_DIAMOND,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_RUNITE_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_DRAGONSTONE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_TITANIUM_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_ORICHALCUM_ORE,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_FEATHER,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_OAK_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_WILLOW_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_MAPLE_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_REDWOOD_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_MAGICAL_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_ASH_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_ENCHANTED_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_LIVING_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER,
+  const newActionChoiceIds = [
+    EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_HELMET,
+    EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_ARMOR,
+    EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_TASSETS,
+    EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_GAUNTLETS,
+    EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_BOOTS,
+    EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_SHIELD,
+    EstforConstants.ACTIONCHOICE_FORGING_DRAGONSTONE_AMULET,
+    EstforConstants.ACTIONCHOICE_FORGING_MASTER_HAT,
+    EstforConstants.ACTIONCHOICE_FORGING_MASTER_BODY,
+    EstforConstants.ACTIONCHOICE_FORGING_MASTER_TROUSERS,
+    EstforConstants.ACTIONCHOICE_FORGING_MASTER_BRACERS,
+    EstforConstants.ACTIONCHOICE_FORGING_MASTER_BOOTS,
+    EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_SWORD,
+    EstforConstants.ACTIONCHOICE_FORGING_DRAGONSTONE_STAFF,
+    EstforConstants.ACTIONCHOICE_FORGING_GODLY_BOW,
+    EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_COWL,
+    EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_BODY,
+    EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_CHAPS,
+    EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_BRACERS,
+    EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_BOOTS,
   ];
 
-  const newActionChoicesAlchemy: ActionChoiceInput[] = [];
-  allActionChoiceIdsAlchemy.forEach((actionChoiceId, index) => {
-    if (newActionChoiceIdsAlchemy.includes(actionChoiceId)) {
-      newActionChoicesAlchemy.push(allActionChoicesAlchemy[index]);
+  const newActionChoices: ActionChoiceInput[] = [];
+  allActionChoiceIdsForging.forEach((actionChoiceId, index) => {
+    if (newActionChoiceIds.includes(actionChoiceId)) {
+      newActionChoices.push(allActionChoicesAlchemy[index]);
     }
   });
 
-  const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
-  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
   await world
     .connect(owner)
-    .addBulkActionChoices(
-      [alchemyActionId, forgingActionId],
-      [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
-      [newActionChoicesAlchemy, allActionChoicesForging]
-    );
+    .addBulkActionChoices([EstforConstants.ACTION_FORGING_ITEM], [newActionChoiceIds], [newActionChoices]);
 }
 
 main().catch((error) => {

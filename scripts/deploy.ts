@@ -19,6 +19,8 @@ import {
   TestPaintSwapArtGallery,
   TestPaintSwapDecorator,
   World,
+  InstantVRFActions,
+  VRFRequestInfo,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -419,6 +421,26 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
+  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
+  const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
+    kind: "uups",
+    timeout,
+  })) as VRFRequestInfo;
+  await instantActions.deployed();
+  console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
+
+  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+  const instantVRFActions = (await upgrades.deployProxy(
+    InstantVRFActions,
+    [players.address, itemNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
+    {
+      kind: "uups",
+      timeout,
+    }
+  )) as InstantVRFActions;
+  await instantVRFActions.deployed();
+  console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
@@ -572,6 +594,10 @@ async function main() {
   tx = await itemNFT.setInstantActions(instantActions.address);
   await tx.wait();
   console.log("itemNFT setInstantActions");
+
+  tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
+  await tx.wait();
+  console.log("itemNFT setInstantVRFActions");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();

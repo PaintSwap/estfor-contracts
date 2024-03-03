@@ -38,10 +38,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error ItemAlreadyExists();
   error ItemDoesNotExist(uint16);
   error EquipmentPositionShouldNotChange();
-  error OnlyForHardhat();
-  error NotAllowedHardhat();
-  error ERC1155ReceiverNotApproved();
-  error NotPlayersOrShop();
+  error NotMinter();
+  error NotBurner();
   error NotAdminAndBeta();
   error LengthMismatch();
 
@@ -72,12 +70,33 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   address private territories;
   address private lockedBankVaults;
   address private bazaar;
+  address private instantVRFActions;
 
-  modifier onlyPlayersOrShopOrPromotions() {
+  modifier onlyMinters() {
     if (
-      _msgSender() != players && _msgSender() != shop && _msgSender() != promotions && _msgSender() != instantActions
+      _msgSender() != players &&
+      _msgSender() != shop &&
+      _msgSender() != promotions &&
+      _msgSender() != instantActions &&
+      _msgSender() != instantVRFActions
     ) {
-      revert NotPlayersOrShop();
+      revert NotMinter();
+    }
+    _;
+  }
+
+  modifier onlyBurners(address _from) {
+    if (
+      _msgSender() != _from &&
+      !isApprovedForAll(_from, _msgSender()) &&
+      _msgSender() != players &&
+      _msgSender() != shop &&
+      _msgSender() != instantActions &&
+      _msgSender() != instantVRFActions &&
+      _msgSender() != territories &&
+      _msgSender() != lockedBankVaults
+    ) {
+      revert NotBurner();
     }
     _;
   }
@@ -116,11 +135,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   // Can't use Item[] array unfortunately as they don't support array casts
-  function mintBatch(
-    address _to,
-    uint[] calldata _ids,
-    uint[] calldata _amounts
-  ) external onlyPlayersOrShopOrPromotions {
+  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external onlyMinters {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
@@ -149,20 +164,21 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function getEquipPositionAndMinRequirement(
     uint16 _item
-  ) external view returns (Skill skill, uint32 minXP, EquipPosition equipPosition) {
-    (skill, minXP) = _getMinRequirement(_item);
+  ) external view returns (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isFullModeOnly) {
+    (skill, minXP, isFullModeOnly) = _getMinRequirement(_item);
     equipPosition = getEquipPosition(_item);
   }
 
   function getMinRequirements(
     uint16[] calldata _tokenIds
-  ) external view returns (Skill[] memory skills, uint32[] memory minXPs) {
+  ) external view returns (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isFullModeOnly) {
     skills = new Skill[](_tokenIds.length);
     minXPs = new uint32[](_tokenIds.length);
+    isFullModeOnly = new bool[](_tokenIds.length);
     U256 tokenIdsLength = _tokenIds.length.asU256();
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
-      (skills[i], minXPs[i]) = _getMinRequirement(_tokenIds[i]);
+      (skills[i], minXPs[i], isFullModeOnly[i]) = _getMinRequirement(_tokenIds[i]);
     }
   }
 
@@ -186,15 +202,19 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
-  function _getMinRequirement(uint16 _tokenId) private view returns (Skill, uint32) {
-    return (items[_tokenId].skill, items[_tokenId].minXP);
-  }
-
   function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
     if (!exists(_tokenId)) {
       revert ItemDoesNotExist(_tokenId);
     }
     return items[_tokenId].equipPosition;
+  }
+
+  function _getMinRequirement(uint16 _tokenId) private view returns (Skill, uint32, bool isFullModeOnly) {
+    return (items[_tokenId].skill, items[_tokenId].minXP, _isItemFullMode(_tokenId));
+  }
+
+  function _isItemFullMode(uint _tokenId) private view returns (bool) {
+    return uint8(items[_tokenId].packedData >> IS_FULL_MODE_BIT) == 1;
   }
 
   function _premint(uint _tokenId, uint _amount) private returns (uint numNewUniqueItems) {
@@ -231,7 +251,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _mintBatch(_to, _tokenIds, _amounts, "");
   }
 
-  function mint(address _to, uint _tokenId, uint _amount) external onlyPlayersOrShopOrPromotions {
+  function mint(address _to, uint _tokenId, uint _amount) external onlyMinters {
     _mintItem(_to, _tokenId, _amount);
   }
 
@@ -248,13 +268,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
-  function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external {
-    _checkBurn(_from);
+  function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external onlyBurners(_from) {
     _burnBatch(_from, _tokenIds, _amounts);
   }
 
-  function burn(address _from, uint _tokenId, uint _amount) external {
-    _checkBurn(_from);
+  function burn(address _from, uint _tokenId, uint _amount) external onlyBurners(_from) {
     _burn(_from, _tokenId, _amount);
   }
 
@@ -375,20 +393,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     item = _setItem(_inputItem);
   }
 
-  function _checkBurn(address _from) private view {
-    if (
-      _from != _msgSender() &&
-      !isApprovedForAll(_from, _msgSender()) &&
-      players != _msgSender() &&
-      shop != _msgSender() &&
-      instantActions != _msgSender() &&
-      territories != _msgSender() &&
-      lockedBankVaults != _msgSender()
-    ) {
-      revert ERC1155ReceiverNotApproved();
-    }
-  }
-
   function getBoostInfo(
     uint16 _tokenId
   ) external view returns (BoostType boostType, uint16 boostValue, uint24 boostDuration) {
@@ -476,6 +480,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function setInstantActions(address _instantActions) external onlyOwner {
     instantActions = _instantActions;
+  }
+
+  function setInstantVRFActions(address _instantVRFActions) external onlyOwner {
+    instantVRFActions = _instantVRFActions;
   }
 
   function setTerritoriesAndLockedBankVaults(address _territories, address _lockedBankVaults) external onlyOwner {

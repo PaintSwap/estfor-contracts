@@ -16,7 +16,7 @@ async function main() {
   );
 
   if (actions.length !== 3) {
-    console.log("Cannot find all items");
+    console.log("Cannot find all instant actions");
   } else {
     await instantActions.editActions(actions);
   }

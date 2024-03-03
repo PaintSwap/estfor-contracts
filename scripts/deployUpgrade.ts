@@ -22,6 +22,8 @@ import {
   LOCKED_BANK_VAULT_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
+  INSTANT_VRF_ACTIONS_ADDRESS,
+  VRF_REQUEST_INFO_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -198,6 +200,24 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
+  // Instant VRF actions
+  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+  const instantVRFActions = await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
+    kind: "uups",
+    timeout,
+  });
+  await instantVRFActions.deployed();
+  console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+
+  // VRFRequestInfo
+  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
+  const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
+    kind: "uups",
+    timeout,
+  });
+  await vrfRequestInfo.deployed();
+  console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
+
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
     kind: "uups",
@@ -256,6 +276,8 @@ async function main() {
   await verifyContracts([wishingWell.address]);
   await verifyContracts([promotions.address]);
   await verifyContracts([instantActions.address]);
+  await verifyContracts([instantVRFActions.address]);
+  await verifyContracts([vrfRequestInfo.address]);
   await verifyContracts([lockedBankVaults.address]);
   await verifyContracts([territories.address]);
   await verifyContracts([decoratorProvider.address]);

@@ -371,7 +371,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QuestState memory _questState
   ) private view {
     if (_queuedAction.regenerateId != NONE) {
-      (Skill skill, uint32 minXP, ) = itemNFT.getEquipPositionAndMinRequirement(_queuedAction.regenerateId);
+      (Skill skill, uint32 minXP, , ) = itemNFT.getEquipPositionAndMinRequirement(_queuedAction.regenerateId);
       if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
         revert ConsumableMinimumXPNotReached();
       }
@@ -450,8 +450,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       pendingQueuedActionEquipmentStates
     );
     if (itemTokenIds.length != 0) {
-      (Skill[] memory skills, uint32[] memory minXPs) = itemNFT.getMinRequirements(itemTokenIds);
+      (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isItemFullModeOnly) = itemNFT.getMinRequirements(
+        itemTokenIds
+      );
       U256 iter = balances.length.asU256();
+      bool isPlayerUpgraded = _isPlayerFullMode(_playerId);
+
       while (iter.neq(0)) {
         iter = iter.dec();
         uint i = iter.asUint256();
@@ -460,6 +464,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         }
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
+        }
+        if (!isPlayerUpgraded && isItemFullModeOnly[i]) {
+          revert PlayerNotUpgraded();
         }
       }
     }
@@ -501,13 +508,15 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
         uint256 balance = itemNFT.balanceOf(_from, equippedItemTokenId);
         if (balance == 0) {
-          revert DoNotHaveEnoughQuantityToEquipToAction();
+          revert NoItemBalance(equippedItemTokenId);
         }
-        (Skill skill, uint32 minXP, EquipPosition equipPosition) = itemNFT.getEquipPositionAndMinRequirement(
-          equippedItemTokenId
-        );
+        (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isItemFullModeOnly) = itemNFT
+          .getEquipPositionAndMinRequirement(equippedItemTokenId);
         if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
           revert ItemMinimumXPNotReached();
+        }
+        if (isItemFullModeOnly && !_isPlayerFullMode(_playerId)) {
+          revert PlayerNotUpgraded();
         }
         if (isRightHand) {
           if (equipPosition != EquipPosition.RIGHT_HAND && equipPosition != EquipPosition.BOTH_HANDS) {

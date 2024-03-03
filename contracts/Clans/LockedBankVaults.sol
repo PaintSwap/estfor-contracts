@@ -623,6 +623,11 @@ contract LockedBankVaults is
     _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
   }
 
+  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
+    movingAverageGasPrice = _movingAverageGasPrice;
+    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
+  }
+
   function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount, uint _lockPeriod) private {
     if (_amount == 0) {
       return;
@@ -643,11 +648,6 @@ contract LockedBankVaults is
     }
 
     emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
-  }
-
-  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
-    movingAverageGasPrice = _movingAverageGasPrice;
-    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
   }
 
   function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {

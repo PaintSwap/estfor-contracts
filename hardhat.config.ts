@@ -80,6 +80,7 @@ const config: HardhatUserConfig = {
       "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
       "contracts/World.sol": mediumRunsConfig,
+      "contracts/ItemNFT.sol": mediumRunsConfig,
     },
   },
   gasReporter: {
@@ -94,7 +95,7 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("45", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,

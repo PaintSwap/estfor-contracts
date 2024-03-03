@@ -1671,6 +1671,66 @@ describe("Players", function () {
     await expect(players.setActivePlayer(playerId)).to.not.be.reverted;
   });
 
+  it("Check that only upgraded players can equip full mode only items (left/right hand equipment)", async function () {
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    // Cannot equip full mode only items unless you are upgraded
+    await itemNFT.editItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        isFullModeOnly: true,
+      },
+    ]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
+  });
+
+  it("Check that only upgraded players can equip full mode only items (attire)", async function () {
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
+
+    const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {
+      ...queuedActionWoodcutting,
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_HELMET,
+        equipPosition: EstforTypes.EquipPosition.HEAD,
+        isFullModeOnly: true,
+      },
+    ]);
+
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
+  });
+
   it.skip("Travelling", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);
