@@ -12,7 +12,7 @@ import {Players} from "../../typechain-types";
 
 const actionIsAvailable = true;
 
-describe.only("Players", function () {
+describe("Players", function () {
   this.retries(3);
 
   it("New player stats", async function () {
