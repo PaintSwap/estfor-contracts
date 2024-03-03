@@ -508,7 +508,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   // For the various view functions that require delegatecall
   fallback() external {
-    bytes4 selector = bytes4(msg.data);
+    bytes4 selector = msg.sig;
 
     address implementation;
     if (selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector) {
