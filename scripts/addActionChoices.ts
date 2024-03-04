@@ -1,7 +1,7 @@
 import {ethers} from "hardhat";
 import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./contractAddresses";
-import {allActionChoicesAlchemy, allActionChoicesForging} from "./data/actionChoices";
-import {allActionChoiceIdsAlchemy, allActionChoiceIdsForging} from "./data/actionChoiceIds";
+import {allActionChoicesForging} from "./data/actionChoices";
+import {allActionChoiceIdsForging} from "./data/actionChoiceIds";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ActionChoiceInput} from "@paintswap/estfor-definitions/types";
 
@@ -38,7 +38,7 @@ async function main() {
   const newActionChoices: ActionChoiceInput[] = [];
   allActionChoiceIdsForging.forEach((actionChoiceId, index) => {
     if (newActionChoiceIds.includes(actionChoiceId)) {
-      newActionChoices.push(allActionChoicesAlchemy[index]);
+      newActionChoices.push(allActionChoicesForging[index]);
     }
   });
 

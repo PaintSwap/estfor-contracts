@@ -4540,7 +4540,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skillDiff: 0,
     rate: 1 * 1000,
     xpPerHour: 180,
-    inputTokenIds: [EstforConstants.ORICHALCUM_GAUNTLETS, EstforConstants.MEDIUM_ELIXIUM, EstforConstants.COAL],
+    inputTokenIds: [EstforConstants.ORICHALCUM_GAUNTLETS, EstforConstants.MEDIUM_ELIXIUM, EstforConstants.COAL_ORE],
     inputAmounts: [1, 15, 200000],
     outputTokenId: EstforConstants.BLANK_ORICHALCUM_GAUNTLETS,
     outputAmount: 1,

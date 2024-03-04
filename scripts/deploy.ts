@@ -42,6 +42,7 @@ import {
   allActionChoicesRanged,
   allActionChoicesAlchemy,
   allActionChoicesFletching,
+  allActionChoicesForging,
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsFiremaking,
@@ -53,6 +54,7 @@ import {
   allActionChoiceIdsRanged,
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
+  allActionChoiceIdsForging,
 } from "./data/actionChoiceIds";
 import {
   BAZAAR_ADDRESS,
@@ -74,6 +76,7 @@ import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills} from "./data/territories";
+import {allInstantVRFActions} from "./data/instantVRFActions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -544,9 +547,12 @@ async function main() {
         bankRegistry.address,
         bankFactory.address,
         instantActions.address,
+        instantVRFActions.address,
+        lockedBankVaults.address,
         territories.address,
         decoratorProvider.address,
         combatantsHelper.address,
+        vrfRequestInfo.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -647,19 +653,12 @@ async function main() {
 
   const chunkSize = 100;
   for (let i = 0; i < allItems.length; i += chunkSize) {
-    const tokenIds: number[] = [];
-    const amounts: number[] = [];
     const chunk = allItems.slice(i, i + chunkSize);
-    chunk.forEach((item) => {
-      tokenIds.push(item.tokenId);
-      amounts.push(200);
-    });
     tx = await itemNFT.addItems(chunk);
     await tx.wait();
     console.log("Add items chunk ", i);
   }
 
-  // Add full equipment bonuses
   tx = await players.addFullAttireBonuses(allFullAttireBonuses);
   await tx.wait();
   console.log("Add full attire bonuses");
@@ -676,6 +675,7 @@ async function main() {
   const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
   const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM;
   const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
+  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
   const genericCombatActionId = EstforConstants.NONE;
 
   tx = await world.addBulkActionChoices(
@@ -687,11 +687,11 @@ async function main() {
   await tx.wait();
   console.log("Add action choices1");
 
-  // Add new ones here
+  // Add new ones here for gas reasons
   tx = await world.addBulkActionChoices(
-    [fletchingActionId, alchemyActionId],
-    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy],
-    [allActionChoicesFletching, allActionChoicesAlchemy]
+    [fletchingActionId, alchemyActionId, forgingActionId],
+    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
+    [allActionChoicesFletching, allActionChoicesAlchemy, allActionChoicesForging]
   );
 
   await tx.wait();
@@ -722,9 +722,20 @@ async function main() {
   console.log("Add clan tiers");
 
   // Add instant actions
-  tx = await instantActions.addActions(allInstantActions);
-  await tx.wait();
-  console.log("Add instant actions");
+  for (let i = 0; i < allInstantActions.length; i += chunkSize) {
+    const chunk = allInstantActions.slice(i, i + chunkSize);
+    tx = await instantActions.addActions(chunk);
+    await tx.wait();
+    console.log("Add instant actions chunk ", i);
+  }
+
+  // Add instant vrf actions
+  for (let i = 0; i < allInstantVRFActions.length; i += chunkSize) {
+    const chunk = allInstantVRFActions.slice(i, i + chunkSize);
+    tx = await instantVRFActions.addActions(chunk);
+    await tx.wait();
+    console.log("Add instant vrf actions chunk, i");
+  }
 
   // Add test data for the game
   if (isBeta) {
