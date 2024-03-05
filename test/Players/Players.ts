@@ -552,7 +552,7 @@ describe("Players", function () {
         [
           {
             ...defaultActionChoice,
-            skill: EstforTypes.Skill.FIREMAKING,
+            skill: EstforTypes.Skill.ALCHEMY,
             xpPerHour: 3600,
             rate,
             inputTokenIds: [EstforConstants.LOG],
@@ -1729,6 +1729,136 @@ describe("Players", function () {
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
       .not.be.reverted;
+  });
+
+  it("Check that only upgraded players can equip full mode only items (left/right hand equipment)", async function () {
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    // Cannot equip full mode only items unless you are upgraded
+    await itemNFT.editItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        isFullModeOnly: true,
+      },
+    ]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
+  });
+
+  it("Action choice with > 255 input amounts", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const rate = 100 * RATE_MUL; // per hour
+
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.SMITHING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    // Ores go in, bars come out
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.SMITHING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE, EstforConstants.SAPPHIRE],
+          inputAmounts: [1, 256, 6535],
+          outputTokenId: EstforConstants.MITHRIL_BAR,
+          outputAmount: 1,
+        },
+      ]
+    );
+
+    const choiceId = await getActionChoiceId(tx);
+    const timespan = 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.COAL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.MITHRIL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.SAPPHIRE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+    ]);
+
+    const startingBalance = 1000000;
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE, EstforConstants.SAPPHIRE],
+      [startingBalance, startingBalance, startingBalance]
+    );
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
+
+    // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
+      Math.floor((timespan * rate) / (3600 * RATE_MUL))
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ORE)).to.eq(
+      startingBalance - Math.floor((timespan * rate) / (3600 * RATE_MUL))
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COAL_ORE)).to.eq(
+      startingBalance - Math.floor((timespan * rate) / (3600 * RATE_MUL)) * 256
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(
+      startingBalance - Math.floor((timespan * rate) / (3600 * RATE_MUL)) * 6535
+    );
   });
 
   it.skip("Travelling", async function () {

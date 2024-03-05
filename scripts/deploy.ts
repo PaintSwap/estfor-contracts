@@ -734,7 +734,7 @@ async function main() {
     const chunk = allInstantVRFActions.slice(i, i + chunkSize);
     tx = await instantVRFActions.addActions(chunk);
     await tx.wait();
-    console.log("Add instant vrf actions chunk, i");
+    console.log("Add instant vrf actions chunk ", i);
   }
 
   // Add test data for the game

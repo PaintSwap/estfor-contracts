@@ -13,8 +13,6 @@ import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 import {EquipPosition, IS_FULL_MODE_BIT} from "./globals/players.sol";
 import {NONE} from "./globals/items.sol";
 
-import "./debug/console.sol";
-
 contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   event AddInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
   event EditInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
@@ -159,8 +157,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint16[] calldata _actionIds,
     uint[] calldata _actionAmounts
   ) external payable isOwnerOfPlayerAndActive(_playerId) {
-    console.log("sdfdfs");
-
     if (_actionIds.length != _actionAmounts.length) {
       revert LengthMismatch();
     }

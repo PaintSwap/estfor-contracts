@@ -28,10 +28,11 @@ library WorldLibrary {
   error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
   error NotAFactorOf3600();
+  error FirstMinSkillMustBeActionSkill();
 
   function checkActionChoice(ActionChoiceInput calldata _actionChoiceInput) external pure {
     uint16[] calldata inputTokenIds = _actionChoiceInput.inputTokenIds;
-    uint8[] calldata amounts = _actionChoiceInput.inputAmounts;
+    uint24[] calldata amounts = _actionChoiceInput.inputAmounts;
 
     if (inputTokenIds.length > 3) {
       revert TooManyInputItems();
@@ -77,6 +78,11 @@ library WorldLibrary {
     if (minSkills.length != minXPs.length) {
       revert LengthMismatch();
     }
+
+    if (minSkills.length != 0 && minSkills[0] != _actionChoiceInput.skill) {
+      revert FirstMinSkillMustBeActionSkill();
+    }
+
     for (uint i; i < minSkills.length; ++i) {
       if (minSkills[i] == Skill.NONE) {
         revert InvalidSkill();

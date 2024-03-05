@@ -19,7 +19,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   // Players
-  const newPlayersLibrary = false;
+  const newPlayersLibrary = true;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {
@@ -30,17 +30,16 @@ async function main() {
     playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
-
-  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address);
   /*
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
+    await deployPlayerImplementations(playersLibrary.address); */
+
   // Single
-  const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
+  const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  console.log(`PlayersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
-  await playersImplQueueActions.deployed();
-  */
+  console.log(`PlayersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
+  await playersImplMisc.deployed();
 
   // Set the implementations
   const Players = await ethers.getContractFactory("Players");
@@ -54,22 +53,16 @@ async function main() {
   */
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
-    playersImplRewards.address,
+    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
+    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
+    PLAYERS_IMPL_REWARDS_ADDRESS,
     playersImplMisc.address,
-    playersImplMisc1.address
+    PLAYERS_IMPL_MISC1_ADDRESS
   );
   await tx.wait();
 
   if (network.chainId == 250) {
-    await verifyContracts([
-      playersImplQueueActions.address,
-      playersImplProcessActions.address,
-      playersImplRewards.address,
-      playersImplMisc.address,
-      playersImplMisc1.address,
-    ]);
+    await verifyContracts([playersImplMisc.address]);
   }
 }
 

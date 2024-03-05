@@ -261,25 +261,32 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       consumedEquipmentLength = consumedEquipmentLength.inc();
     }
 
+    bool useSecondInputTokens = uint8(
+      _actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
+    ) == 1;
+
     if (baseInputItemsConsumedNum != 0) {
       if (_actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId1,
-          baseInputItemsConsumedNum * _actionChoice.inputAmount1
+          baseInputItemsConsumedNum *
+            (useSecondInputTokens ? _actionChoice.newInputAmount1 : _actionChoice.inputAmount1)
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId2 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId2,
-          baseInputItemsConsumedNum * _actionChoice.inputAmount2
+          baseInputItemsConsumedNum *
+            (useSecondInputTokens ? _actionChoice.newInputAmount2 : _actionChoice.inputAmount2)
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId3 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId3,
-          baseInputItemsConsumedNum * _actionChoice.inputAmount3
+          baseInputItemsConsumedNum *
+            (useSecondInputTokens ? _actionChoice.newInputAmount3 : _actionChoice.inputAmount3)
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }

@@ -51,6 +51,7 @@ async function main() {
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
+    timeout,
   });
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
@@ -271,6 +272,8 @@ async function main() {
   await verifyContracts([quests.address]);
   await verifyContracts([clans.address]);
   await verifyContracts([world.address]);
+  await verifyContracts([worldLibrary.address]);
+  await verifyContracts([estforLibrary.address]);
   await verifyContracts([adminAccess.address]);
   await verifyContracts([bankRegistry.address]);
   await verifyContracts([wishingWell.address]);

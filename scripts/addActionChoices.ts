@@ -8,9 +8,7 @@ import {ActionChoiceInput} from "@paintswap/estfor-definitions/types";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add action choices using account: ${owner.address} on chain id ${await owner.getChainId()}`);
-
-  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
-  const world = await World.attach(WORLD_ADDRESS);
+  const world = await ethers.getContractAt("World", WORLD_ADDRESS);
 
   const newActionChoiceIds = [
     EstforConstants.ACTIONCHOICE_FORGING_ORICHALCUM_HELMET,
