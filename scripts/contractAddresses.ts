@@ -98,7 +98,7 @@ if (!isBeta) {
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
   instantVRFActions = "0x528b2f0cc280f6699d0831bcaee2f6ae611eb794";
-  lockedBankVaults = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d";
+  lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";

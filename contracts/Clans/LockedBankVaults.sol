@@ -439,8 +439,8 @@ contract LockedBankVaults is
     pendingAttack.attackInProgress = false;
     clanInfos[attackingClanId].currentlyAttacking = false;
 
-    uint percentageToTake = 10;
     uint losingClanId = didAttackersWin ? defendingClanId : attackingClanId;
+    uint percentageToTake = didAttackersWin ? 10 : 5;
 
     // Go through all the defendingVaults of who ever lost and take a percentage from them
     uint totalWon;
@@ -587,7 +587,7 @@ contract LockedBankVaults is
   ) private returns (uint amountWon) {
     if (_losersVault.timestamp > block.timestamp) {
       uint amount = _losersVault.amount;
-      uint stealAmount = amount / _percentageToTake;
+      uint stealAmount = (amount * _percentageToTake) / 100;
       _losersVault.amount = uint80(amount - stealAmount);
       clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount);
       amountWon += stealAmount;
@@ -595,7 +595,7 @@ contract LockedBankVaults is
 
     if (_losersVault.timestamp1 > block.timestamp) {
       uint amount1 = _losersVault.amount1;
-      uint stealAmount1 = amount1 / _percentageToTake;
+      uint stealAmount1 = (amount1 * _percentageToTake) / 100;
       _losersVault.amount1 = uint80(amount1 - stealAmount1);
       clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount1);
       amountWon += stealAmount1;
