@@ -16,3 +16,6 @@ artifacts
 
 # sol2uml
 DebugStorageSlots.svg
+
+# exposed to tests
+contracts-exposed

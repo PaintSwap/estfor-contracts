@@ -12,6 +12,7 @@ import "@openzeppelin/hardhat-upgrades";
 import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
 import "hardhat-storage-layout";
+import "hardhat-exposed"; // Access to internal functions for testing
 import "solidity-coverage";
 import {ethers} from "ethers";
 import {SolcUserConfig} from "hardhat/types";
@@ -76,9 +77,11 @@ const config: HardhatUserConfig = {
       "contracts/Clans/Clans.sol": mediumRunsConfig,
       "contracts/Clans/LockedBankVaults.sol": mediumRunsConfig,
       "contracts/Clans/Territories.sol": mediumRunsConfig,
-      "contracts/Players/Players.sol": mediumRunsConfig,
+      "contracts/Players/Players.sol": lowRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplQueueActions.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplRewards.sol": mediumRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
@@ -86,6 +89,7 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     enabled: true,
+    showMethodSig: true,
   },
   networks: {
     hardhat: {
@@ -96,13 +100,21 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("300", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
     },
+  },
+  exposed: {
+    imports: true,
+    initializers: true,
+    include: ["./test/TestERC1155UpgradeableSinglePerToken.sol"],
+    exclude: ["./Promotions.sol", "PromotionsLibrary.sol"],
+    outDir: "contracts-exposed",
+    prefix: "$",
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
