@@ -834,7 +834,7 @@ describe("Territories", function () {
       .be.reverted;
   });
 
-  it("Blocking Attacks with item", async () => {
+  it("Blocking attacks with item", async () => {
     const {
       playerNFT,
       itemNFT,
@@ -909,8 +909,14 @@ describe("Territories", function () {
       territories,
       "BlockAttacksCooldown"
     );
-
-    await ethers.provider.send("evm_increaseTime", [mirrorShield.boostValue * 3600 + 10]);
+    // Go to just before the end
+    await ethers.provider.send("evm_increaseTime", [mirrorShield.boostValue * 3600]);
+    await expect(territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId)).to.be.revertedWithCustomError(
+      territories,
+      "BlockAttacksCooldown"
+    );
+    // Now go past
+    await ethers.provider.send("evm_increaseTime", [10]);
     await territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId);
 
     await ethers.provider.send("evm_increaseTime", [mirrorShield.boostDuration - 10]);

@@ -10,7 +10,7 @@ async function main() {
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
 
-  const items = allItems.filter((item) => item.tokenId === EstforConstants.SHARPENED_CLAW);
+  const items = allItems.filter((item) => item.tokenId === EstforConstants.PROTECTION_SHIELD);
 
   if (items.length !== 1) {
     console.log("Cannot find all items");

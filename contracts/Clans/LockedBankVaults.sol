@@ -111,6 +111,7 @@ contract LockedBankVaults is
   error NotALockedVaultDefenceItem();
   error CannotReattackAndSuperAttackSameTime();
   error CallerNotSamWitchVRF();
+  error BlockAttacksCooldown();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -138,7 +139,8 @@ contract LockedBankVaults is
     uint88 gasPaid;
     uint24 defendingVaultsOffset;
     uint40 blockAttacksTimestamp;
-    // 2 bytes left
+    uint8 blockAttacksCooldownHours;
+    // 1 byte left
     uint48[] playerIds;
     Vault[] defendingVaults; // Append only, and use defendingVaultsOffset to decide where the real start is
     uint40 superAttackCooldownTimestamp;
@@ -549,11 +551,19 @@ contract LockedBankVaults is
       revert NotALockedVaultDefenceItem();
     }
 
+    if (
+      (clanInfos[_clanId].blockAttacksTimestamp + uint(clanInfos[_clanId].blockAttacksCooldownHours) * 3600) >
+      block.timestamp
+    ) {
+      revert BlockAttacksCooldown();
+    }
+
     uint blockAttacksTimestamp = block.timestamp + item.boostDuration;
     clanInfos[_clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
+    clanInfos[_clanId].blockAttacksCooldownHours = uint8(item.boostValue);
 
     itemNFT.burn(msg.sender, _itemTokenId, 1);
-
+    // TODO: Add blockAttacksCooldownHours to a BlockingAttacksV2
     emit BlockingAttacks(_clanId, _itemTokenId, msg.sender, _playerId, blockAttacksTimestamp, block.timestamp);
   }
 
@@ -828,6 +838,8 @@ contract LockedBankVaults is
     clanInfo.assignCombatantsCooldownTimestamp = 0;
     clanInfo.currentlyAttacking = false;
     clanInfo.superAttackCooldownTimestamp = 0;
+    clanInfo.blockAttacksTimestamp = 0;
+    clanInfo.blockAttacksCooldownHours = 0;
 
     for (uint i; i < _otherClanIds.length; ++i) {
       uint lowerClanId = _clanId < _otherClanIds[i] ? _clanId : _otherClanIds[i];

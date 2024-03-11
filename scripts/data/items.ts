@@ -7425,7 +7425,7 @@ export const allItems: ItemInput[] = [
     minXP: 0,
     healthRestored: 0,
     boostType: BoostType.PVP_BLOCK,
-    boostValue: 0,
+    boostValue: 12,
     boostDuration: 172800,
     metadataURI: "PROTECTION_SHIELD.json",
     name: "Protection Shield",

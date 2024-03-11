@@ -987,7 +987,7 @@ describe("LockedBankVaults", function () {
       .withArgs(clanId, NOW1 + 86400 + 1);
   });
 
-  it("Blocking Attacks with item", async () => {
+  it("Blocking attacks with item", async () => {
     const {
       clans,
       lockedBankVaults,
@@ -1051,8 +1051,19 @@ describe("LockedBankVaults", function () {
       })
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
 
-    // Allow extending it even before it finishes
+    // Cannot apply again until the cooldown is done
+    await expect(
+      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId)
+    ).to.be.revertedWithCustomError(lockedBankVaults, "BlockAttacksCooldown");
+    // Go just before the cooldown is done to confirm
+    await ethers.provider.send("evm_increaseTime", [protectionShield.boostValue * 3600]);
+    await expect(
+      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId)
+    ).to.be.revertedWithCustomError(lockedBankVaults, "BlockAttacksCooldown");
+    // Now extend past the cooldown time
+    await ethers.provider.send("evm_increaseTime", [10]);
     await lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId);
+
     await ethers.provider.send("evm_increaseTime", [protectionShield.boostDuration - 10]);
 
     await expect(
