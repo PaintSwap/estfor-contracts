@@ -211,32 +211,23 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     uint16 actionId = _queuedAction.actionId;
-
-    (
-      uint16 handItemTokenIdRangeMin,
-      uint16 handItemTokenIdRangeMax,
-      bool actionChoiceRequired,
-      Skill actionSkill,
-      uint32 actionMinXP,
-      bool actionAvailable
-    ) = world.getPermissibleItemsForAction(actionId);
-
-    if (!actionAvailable) {
+    ActionInfo memory actionInfo = world.getActionInfo(actionId);
+    if (!actionInfo.isAvailable) {
       revert ActionNotAvailable();
     }
 
     if (
-      actionMinXP > 0 &&
-      _getRealXP(actionSkill, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) < actionMinXP
+      actionInfo.minXP > 0 &&
+      _getRealXP(actionInfo.skill, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) < actionInfo.minXP
     ) {
       revert ActionMinimumXPNotReached();
     }
 
-    bool isCombat = actionSkill == Skill.COMBAT;
+    bool isCombat = actionInfo.skill == Skill.COMBAT;
 
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
-    if (actionChoiceRequired) {
+    if (actionInfo.actionChoiceRequired) {
       if (_queuedAction.choiceId == NONE) {
         revert ActionChoiceIdRequired();
       }
@@ -270,13 +261,23 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
-      if (actionSkill == Skill.TRAVELING) {
+      if (actionInfo.skill == Skill.TRAVELING) {
         if (_queuedAction.timespan != (RATE_MUL * 3600) / actionChoice.rate) {
           revert InvalidTravellingTimespan();
         }
       }
+
+      bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+      if (actionChoiceFullModeOnly && !_isPlayerFullMode(_playerId)) {
+        revert PlayerNotUpgraded();
+      }
     } else if (_queuedAction.choiceId != NONE) {
       revert ActionChoiceIdNotRequired();
+    } else {
+      // Check if the action requires full mode. Done here as don't want to check if both action and actionChoice are full mode only
+      if (actionInfo.isFullModeOnly && !_isPlayerFullMode(_playerId)) {
+        revert PlayerNotUpgraded();
+      }
     }
 
     if (_queuedAction.timespan == 0) {
@@ -309,8 +310,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _from,
       _playerId,
       [_queuedAction.leftHandEquipmentTokenId, _queuedAction.rightHandEquipmentTokenId],
-      handItemTokenIdRangeMin,
-      handItemTokenIdRangeMax,
+      actionInfo.handItemTokenIdRangeMin,
+      actionInfo.handItemTokenIdRangeMax,
       isCombat,
       actionChoice,
       _pendingQueuedActionProcessed,

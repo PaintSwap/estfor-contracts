@@ -7,8 +7,16 @@ import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {getXPFromLevel, setupBasicFiremaking, setupBasicFishing, setupBasicWoodcutting, setupTravelling} from "./utils";
+import {
+  getXPFromLevel,
+  setupBasicCooking,
+  setupBasicFiremaking,
+  setupBasicFishing,
+  setupBasicWoodcutting,
+  setupTravelling,
+} from "./utils";
 import {Players} from "../../typechain-types";
+import {ACTION_FISHING_MINNUS} from "@paintswap/estfor-definitions/constants";
 
 const actionIsAvailable = true;
 
@@ -1758,8 +1766,153 @@ describe("Players", function () {
       .not.be.reverted;
   });
 
+  it("Check that only upgraded players can start a full mode only actionChoice, where action is not set to full mode only", async function () {
+    const {playerId, players, itemNFT, world, alice, playerNFT, brush, upgradePlayerBrushPrice, origName} =
+      await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await world.editActionChoices(
+      queuedAction.actionId,
+      [queuedAction.choiceId],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.RAW_MINNUS],
+          inputAmounts: [1],
+          outputTokenId: EstforConstants.COOKED_MINNUS,
+          outputAmount: 1,
+          successPercent,
+          minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
+          minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
+          isFullModeOnly: true,
+        },
+      ]
+    );
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+    // Upgrade and try again
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+  });
+
+  it("Check that only upgraded players can start a full mode only actionChoice, where action is also set to full mode only", async function () {
+    const {playerId, players, itemNFT, world, alice, playerNFT, brush, upgradePlayerBrushPrice, origName} =
+      await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await world.editActions([
+      {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: true,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: true,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+
+    await world.editActionChoices(
+      queuedAction.actionId,
+      [queuedAction.choiceId],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.RAW_MINNUS],
+          inputAmounts: [1],
+          outputTokenId: EstforConstants.COOKED_MINNUS,
+          outputAmount: 1,
+          successPercent,
+          minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
+          minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
+          isFullModeOnly: true,
+        },
+      ]
+    );
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+    // Upgrade and try again
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+  });
+
+  it("Check that only upgraded players can start a full mode only action", async function () {
+    const {playerId, world, players, brush, alice, playerNFT, origName, upgradePlayerBrushPrice} = await loadFixture(
+      playersFixture
+    );
+    const rate = 100 * GUAR_MUL; // per hour
+    const tx = await world.addActions([
+      {
+        actionId: ACTION_FISHING_MINNUS,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.FISHING,
+          isFullModeOnly: true,
+          isAvailable: true,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MINNUS, rate}],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    const timespan = 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+    // Upgrade and try again
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+  });
+
   it("Action choice with > 255 input amounts", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
     const rate = 100 * RATE_MUL; // per hour
 
     let tx = await world.addActions([
@@ -1800,6 +1953,7 @@ describe("Players", function () {
           inputAmounts: [1, 256, 6535],
           outputTokenId: EstforConstants.MITHRIL_BAR,
           outputAmount: 1,
+          isFullModeOnly: true,
         },
       ]
     );
@@ -1841,6 +1995,10 @@ describe("Players", function () {
       [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE, EstforConstants.SAPPHIRE],
       [startingBalance, startingBalance, startingBalance]
     );
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await players.connect(alice).processActions(playerId);

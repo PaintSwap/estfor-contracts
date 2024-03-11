@@ -116,6 +116,9 @@ const config: HardhatUserConfig = {
     outDir: "contracts-exposed",
     prefix: "$",
   },
+  mocha: {
+    timeout: 80 * 1000,
+  },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },

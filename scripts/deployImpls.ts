@@ -13,13 +13,14 @@ import {deployPlayerImplementations, verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Deploying player implementation contracts with the account: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(
+    `Deploying player implementation contracts with the account: ${
+      owner.address
+    } on chain id ${await owner.getChainId()}`
+  );
 
   // Players
-  const newPlayersLibrary = true;
+  const newPlayersLibrary = false;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {

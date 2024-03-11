@@ -293,6 +293,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actionRewards[_actionId];
   }
 
+  // TODO Delete after upgrading the player impls
   function getPermissibleItemsForAction(
     uint _actionId
   )
@@ -316,6 +317,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       actionInfo.minXP,
       actionInfo.isAvailable
     );
+  }
+
+  function getActionInfo(uint _actionId) external view returns (ActionInfo memory info) {
+    return actions[_actionId];
   }
 
   function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint24 xpPerHour) {

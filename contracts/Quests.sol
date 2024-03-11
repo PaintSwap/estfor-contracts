@@ -638,7 +638,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   function _isQuestPackedDataFullMode(bytes1 _packedData) private pure returns (bool) {
-    return _packedData >> IS_FULL_MODE_BIT == bytes1(uint8(0x1));
+    return uint8(_packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _packQuest(QuestInput calldata _questInput) private pure returns (Quest memory quest) {

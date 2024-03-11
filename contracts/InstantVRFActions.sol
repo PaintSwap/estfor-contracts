@@ -391,7 +391,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _isActionFullMode(uint _actionId) private view returns (bool) {
-    return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) == 1;
+    return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _packAction(

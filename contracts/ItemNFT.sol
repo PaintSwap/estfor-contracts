@@ -214,7 +214,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _isItemFullMode(uint _tokenId) private view returns (bool) {
-    return uint8(items[_tokenId].packedData >> IS_FULL_MODE_BIT) == 1;
+    return uint8(items[_tokenId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _premint(uint _tokenId, uint _amount) private returns (uint numNewUniqueItems) {
