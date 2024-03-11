@@ -351,8 +351,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     choice.packedData = actionChoice.packedData;
     // Only read second storage when needed
     if (
-      (uint8(choice.packedData >> ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT) == 1) ||
-      (uint8(choice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT) == 1)
+      (uint8(choice.packedData >> ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT) & 1 == 1) ||
+      (uint8(choice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT) & 1 == 1)
     ) {
       choice.minSkill2 = actionChoice.minSkill2;
       choice.minXP2 = actionChoice.minXP2;

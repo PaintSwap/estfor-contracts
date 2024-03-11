@@ -263,7 +263,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
     bool useSecondInputTokens = uint8(
       _actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
-    ) == 1;
+    ) &
+      1 ==
+      1;
 
     if (baseInputItemsConsumedNum != 0) {
       if (_actionChoice.inputTokenId1 != NONE) {
