@@ -13,11 +13,8 @@ import {deployPlayerImplementations, verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(
-    `Deploying player implementation contracts with the account: ${
-      owner.address
-    } on chain id ${await owner.getChainId()}`
-  );
+  const chainId = await owner.getChainId();
+  console.log(`Deploying player implementation contracts with the account: ${owner.address} on chain id ${chainId}`);
 
   // Players
   const newPlayersLibrary = false;
@@ -62,7 +59,7 @@ async function main() {
   );
   await tx.wait();
 
-  if (network.chainId == 250) {
+  if (chainId == 250) {
     await verifyContracts([playersImplMisc.address]);
   }
 }
