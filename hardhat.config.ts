@@ -12,7 +12,6 @@ import "@openzeppelin/hardhat-upgrades";
 import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
 import "hardhat-storage-layout";
-import "hardhat-exposed"; // Access to internal functions for testing
 import "solidity-coverage";
 import {ethers} from "ethers";
 import {SolcUserConfig} from "hardhat/types";
@@ -107,14 +106,6 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
     },
-  },
-  exposed: {
-    imports: true,
-    initializers: true,
-    include: ["./test/TestERC1155UpgradeableSinglePerToken.sol"],
-    exclude: ["./Promotions.sol", "PromotionsLibrary.sol"],
-    outDir: "contracts-exposed",
-    prefix: "$",
   },
   mocha: {
     timeout: 80 * 1000,
