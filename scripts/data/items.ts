@@ -9809,7 +9809,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_ORICHALCUM_HELMET,
+    tokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9819,8 +9819,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_ORICHALCUM_HELMET.json",
-    name: "Blank Orichalcum Helmet",
+    metadataURI: "INFUSED_ORICHALCUM_HELMET.json",
+    name: "Infused Orichalcum Helmet",
   },
   {
     combatStats: {
@@ -9832,7 +9832,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_ORICHALCUM_ARMOR,
+    tokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9842,8 +9842,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_ORICHALCUM_ARMOR.json",
-    name: "Blank Orichalcum Armor",
+    metadataURI: "INFUSED_ORICHALCUM_ARMOR.json",
+    name: "Infused Orichalcum Armor",
   },
   {
     combatStats: {
@@ -9855,7 +9855,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_ORICHALCUM_TASSETS,
+    tokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9865,8 +9865,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_ORICHALCUM_TASSETS.json",
-    name: "Blank Orichalcum Tassets",
+    metadataURI: "INFUSED_ORICHALCUM_TASSETS.json",
+    name: "Infused Orichalcum Tassets",
   },
   {
     combatStats: {
@@ -9878,7 +9878,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_ORICHALCUM_GAUNTLETS,
+    tokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9888,8 +9888,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_ORICHALCUM_GAUNTLETS.json",
-    name: "Blank Orichalcum Gauntlets",
+    metadataURI: "INFUSED_ORICHALCUM_GAUNTLETS.json",
+    name: "Infused Orichalcum Gauntlets",
   },
   {
     combatStats: {
@@ -9901,7 +9901,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_ORICHALCUM_BOOTS,
+    tokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9911,8 +9911,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_ORICHALCUM_BOOTS.json",
-    name: "Blank Orichalcum Boots",
+    metadataURI: "INFUSED_ORICHALCUM_BOOTS.json",
+    name: "Infused Orichalcum Boots",
   },
   {
     combatStats: {
@@ -9924,7 +9924,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_ORICHALCUM_SHIELD,
+    tokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9934,8 +9934,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_ORICHALCUM_SHIELD.json",
-    name: "Blank Orichalcum Shield",
+    metadataURI: "INFUSED_ORICHALCUM_SHIELD.json",
+    name: "Infused Orichalcum Shield",
   },
   {
     combatStats: {
@@ -9947,7 +9947,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_DRAGONSTONE_AMULET,
+    tokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9957,8 +9957,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_DRAGONSTONE_AMULET.json",
-    name: "Blank Dragonstone Amulet",
+    metadataURI: "INFUSED_DRAGONSTONE_AMULET.json",
+    name: "Infused Dragonstone Amulet",
   },
   {
     combatStats: {
@@ -9970,7 +9970,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_MASTER_HAT,
+    tokenId: EstforConstants.INFUSED_MASTER_HAT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -9980,8 +9980,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_MASTER_HAT.json",
-    name: "Blank Master Hat",
+    metadataURI: "INFUSED_MASTER_HAT.json",
+    name: "Infused Master Hat",
   },
   {
     combatStats: {
@@ -9993,7 +9993,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_MASTER_BODY,
+    tokenId: EstforConstants.INFUSED_MASTER_BODY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10003,8 +10003,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_MASTER_BODY.json",
-    name: "Blank Master Body",
+    metadataURI: "INFUSED_MASTER_BODY.json",
+    name: "Infused Master Body",
   },
   {
     combatStats: {
@@ -10016,7 +10016,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_MASTER_TROUSERS,
+    tokenId: EstforConstants.INFUSED_MASTER_TROUSERS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10026,8 +10026,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_MASTER_TROUSERS.json",
-    name: "Blank Master Trousers",
+    metadataURI: "INFUSED_MASTER_TROUSERS.json",
+    name: "Infused Master Trousers",
   },
   {
     combatStats: {
@@ -10039,7 +10039,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_MASTER_BRACERS,
+    tokenId: EstforConstants.INFUSED_MASTER_BRACERS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10049,8 +10049,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_MASTER_BRACERS.json",
-    name: "Blank Master Bracers",
+    metadataURI: "INFUSED_MASTER_BRACERS.json",
+    name: "Infused Master Bracers",
   },
   {
     combatStats: {
@@ -10062,7 +10062,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_MASTER_BOOTS,
+    tokenId: EstforConstants.INFUSED_MASTER_BOOTS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10072,8 +10072,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_MASTER_BOOTS.json",
-    name: "Blank Master Boots",
+    metadataURI: "INFUSED_MASTER_BOOTS.json",
+    name: "Infused Master Boots",
   },
   {
     combatStats: {
@@ -10085,7 +10085,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_ORICHALCUM_SWORD,
+    tokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10095,8 +10095,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_ORICHALCUM_SWORD.json",
-    name: "Blank Orichalcum Sword",
+    metadataURI: "INFUSED_ORICHALCUM_SWORD.json",
+    name: "Infused Orichalcum Sword",
   },
   {
     combatStats: {
@@ -10108,7 +10108,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_DRAGONSTONE_STAFF,
+    tokenId: EstforConstants.INFUSED_DRAGONSTONE_STAFF,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10118,8 +10118,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_DRAGONSTONE_STAFF.json",
-    name: "Blank Dragonstone Staff",
+    metadataURI: "INFUSED_DRAGONSTONE_STAFF.json",
+    name: "Infused Dragonstone Staff",
   },
   {
     combatStats: {
@@ -10131,7 +10131,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_GODLY_BOW,
+    tokenId: EstforConstants.INFUSED_GODLY_BOW,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10141,8 +10141,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_GODLY_BOW.json",
-    name: "Blank Godly Bow",
+    metadataURI: "INFUSED_GODLY_BOW.json",
+    name: "Infused Godly Bow",
   },
   {
     combatStats: {
@@ -10154,7 +10154,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_SCORCHING_COWL,
+    tokenId: EstforConstants.INFUSED_SCORCHING_COWL,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10164,8 +10164,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_SCORCHING_COWL.json",
-    name: "Blank Scorching Cowl",
+    metadataURI: "INFUSED_SCORCHING_COWL.json",
+    name: "Infused Scorching Cowl",
   },
   {
     combatStats: {
@@ -10177,7 +10177,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_SCORCHING_BODY,
+    tokenId: EstforConstants.INFUSED_SCORCHING_BODY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10187,8 +10187,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_SCORCHING_BODY.json",
-    name: "Blank Scorching Body",
+    metadataURI: "INFUSED_SCORCHING_BODY.json",
+    name: "Infused Scorching Body",
   },
   {
     combatStats: {
@@ -10200,7 +10200,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_SCORCHING_CHAPS,
+    tokenId: EstforConstants.INFUSED_SCORCHING_CHAPS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10210,8 +10210,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_SCORCHING_CHAPS.json",
-    name: "Blank Scorching Chaps",
+    metadataURI: "INFUSED_SCORCHING_CHAPS.json",
+    name: "Infused Scorching Chaps",
   },
   {
     combatStats: {
@@ -10223,7 +10223,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_SCORCHING_BRACERS,
+    tokenId: EstforConstants.INFUSED_SCORCHING_BRACERS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10233,8 +10233,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_SCORCHING_BRACERS.json",
-    name: "Blank Scorching Bracers",
+    metadataURI: "INFUSED_SCORCHING_BRACERS.json",
+    name: "Infused Scorching Bracers",
   },
   {
     combatStats: {
@@ -10246,7 +10246,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.BLANK_SCORCHING_BOOTS,
+    tokenId: EstforConstants.INFUSED_SCORCHING_BOOTS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10256,7 +10256,7 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "BLANK_SCORCHING_BOOTS.json",
-    name: "Blank Scorching Boots",
+    metadataURI: "INFUSED_SCORCHING_BOOTS.json",
+    name: "Infused Scorching Boots",
   },
 ];

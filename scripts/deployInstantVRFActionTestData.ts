@@ -15,7 +15,7 @@ async function main() {
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  let tx = await itemNFT.connect(owner).testMint(owner.address, EstforConstants.BLANK_ORICHALCUM_HELMET, 1);
+  let tx = await itemNFT.connect(owner).testMint(owner.address, EstforConstants.INFUSED_ORICHALCUM_HELMET, 1);
   tx.wait();
 
   const playerId = 1;

@@ -1,9 +1,9 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {InstantVRFActionInput} from "@paintswap/estfor-definitions/types";
+import {InstantVRFActionInput, InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 export const allInstantVRFActions: InstantVRFActionInput[] = [
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_HELMET,
-    inputTokenIds: [EstforConstants.BLANK_ORICHALCUM_HELMET],
+    inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_HELMET],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -33,10 +33,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_ARMOR,
-    inputTokenIds: [EstforConstants.BLANK_ORICHALCUM_ARMOR],
+    inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_ARMOR],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -66,10 +67,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_TASSETS,
-    inputTokenIds: [EstforConstants.BLANK_ORICHALCUM_TASSETS],
+    inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_TASSETS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -99,10 +101,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_GAUNTLETS,
-    inputTokenIds: [EstforConstants.BLANK_ORICHALCUM_GAUNTLETS],
+    inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -132,10 +135,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_BOOTS,
-    inputTokenIds: [EstforConstants.BLANK_ORICHALCUM_BOOTS],
+    inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_BOOTS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -165,10 +169,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_SHIELD,
-    inputTokenIds: [EstforConstants.BLANK_ORICHALCUM_SHIELD],
+    inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_SHIELD],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -198,10 +203,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_DRAGONSTONE_AMULET,
-    inputTokenIds: [EstforConstants.BLANK_DRAGONSTONE_AMULET],
+    inputTokenIds: [EstforConstants.INFUSED_DRAGONSTONE_AMULET],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -231,10 +237,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_HAT,
-    inputTokenIds: [EstforConstants.BLANK_MASTER_HAT],
+    inputTokenIds: [EstforConstants.INFUSED_MASTER_HAT],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -264,10 +271,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BODY,
-    inputTokenIds: [EstforConstants.BLANK_MASTER_BODY],
+    inputTokenIds: [EstforConstants.INFUSED_MASTER_BODY],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -297,10 +305,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_TROUSERS,
-    inputTokenIds: [EstforConstants.BLANK_MASTER_TROUSERS],
+    inputTokenIds: [EstforConstants.INFUSED_MASTER_TROUSERS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -330,10 +339,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BRACERS,
-    inputTokenIds: [EstforConstants.BLANK_MASTER_BRACERS],
+    inputTokenIds: [EstforConstants.INFUSED_MASTER_BRACERS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -363,10 +373,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BOOTS,
-    inputTokenIds: [EstforConstants.BLANK_MASTER_BOOTS],
+    inputTokenIds: [EstforConstants.INFUSED_MASTER_BOOTS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -396,10 +407,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_SWORD,
-    inputTokenIds: [EstforConstants.BLANK_ORICHALCUM_SWORD],
+    inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_SWORD],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -429,10 +441,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_DRAGONSTONE_STAFF,
-    inputTokenIds: [EstforConstants.BLANK_DRAGONSTONE_STAFF],
+    inputTokenIds: [EstforConstants.INFUSED_DRAGONSTONE_STAFF],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -462,10 +475,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_GODLY_BOW,
-    inputTokenIds: [EstforConstants.BLANK_GODLY_BOW],
+    inputTokenIds: [EstforConstants.INFUSED_GODLY_BOW],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -495,10 +509,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_COWL,
-    inputTokenIds: [EstforConstants.BLANK_SCORCHING_COWL],
+    inputTokenIds: [EstforConstants.INFUSED_SCORCHING_COWL],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -528,10 +543,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BODY,
-    inputTokenIds: [EstforConstants.BLANK_SCORCHING_BODY],
+    inputTokenIds: [EstforConstants.INFUSED_SCORCHING_BODY],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -561,10 +577,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_CHAPS,
-    inputTokenIds: [EstforConstants.BLANK_SCORCHING_CHAPS],
+    inputTokenIds: [EstforConstants.INFUSED_SCORCHING_CHAPS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -594,10 +611,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BRACERS,
-    inputTokenIds: [EstforConstants.BLANK_SCORCHING_BRACERS],
+    inputTokenIds: [EstforConstants.INFUSED_SCORCHING_BRACERS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -627,10 +645,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BOOTS,
-    inputTokenIds: [EstforConstants.BLANK_SCORCHING_BOOTS],
+    inputTokenIds: [EstforConstants.INFUSED_SCORCHING_BOOTS],
     inputAmounts: [1],
     randomRewards: [
       {
@@ -660,5 +679,6 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       },
     ],
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
   },
 ];
