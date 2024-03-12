@@ -17,6 +17,8 @@ import NONE, {
 } from "@paintswap/estfor-definitions/constants";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {fulfillRandomWords} from "./utils";
+import {ethers} from "hardhat";
+import {ERC1155HolderRogue} from "../typechain-types";
 
 describe("Instant VRF actions", function () {
   const defaultInstantVRFActionInput: InstantVRFActionInput = {
@@ -484,6 +486,32 @@ describe("Instant VRF actions", function () {
     ).to.deep.eq([4, 2, 0, 4]);
   });
 
+  it("CompletedInstantVRFActions event should be emitted with correct produced item output", async function () {
+    const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
+
+    const instantVRFActionInput: InstantVRFActionInput = {
+      ...defaultInstantVRFActionInput,
+      inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
+      inputAmounts: [1, 2, 3],
+      randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}],
+    };
+
+    await instantVRFActions.addActions([instantVRFActionInput]);
+    await itemNFT.testMints(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+
+    const actionAmount = 2;
+    await instantVRFActions
+      .connect(alice)
+      .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
+        value: await instantVRFActions.requestCost(actionAmount),
+      });
+
+    const requestId = 1;
+    await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
+      .to.emit(instantVRFActions, "CompletedInstantVRFActions")
+      .withArgs(alice.address, playerId, requestId, [RUNITE_ARROW], [2]);
+  });
+
   it("Cannot make another request until the ongoing one is fulfilled", async function () {
     const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
 
@@ -544,6 +572,43 @@ describe("Instant VRF actions", function () {
     await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
       .to.emit(instantVRFActions, "CompletedInstantVRFActions")
       .withArgs(alice.address, playerId, requestId, [], []);
+  });
+
+  it("Reverting in the contract receiving the NFTs should not revert the oracle callback", async function () {
+    const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, playerNFT, players, alice} = await loadFixture(
+      playersFixture
+    );
+
+    const instantVRFActionInput: InstantVRFActionInput = {
+      ...defaultInstantVRFActionInput,
+      inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
+      inputAmounts: [1, 2, 3],
+    };
+
+    await instantVRFActions.addActions([instantVRFActionInput]);
+
+    const erc1155HolderRogue = (await ethers.deployContract("ERC1155HolderRogue")) as ERC1155HolderRogue;
+    await playerNFT.connect(alice).safeTransferFrom(alice.address, erc1155HolderRogue.address, playerId, 1, "0x00");
+    await itemNFT.testMints(erc1155HolderRogue.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+
+    const actionAmount = 2;
+    await erc1155HolderRogue.doInstantVRFActions(
+      players.address,
+      instantVRFActions.address,
+      playerId,
+      [instantVRFActionInput.actionId],
+      [actionAmount],
+      {
+        value: await instantVRFActions.requestCost(actionAmount),
+      }
+    );
+
+    await erc1155HolderRogue.setRevertOnReceive(true);
+
+    const requestId = 1;
+    await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
+      .to.emit(instantVRFActions, "CompletedInstantVRFActions")
+      .withArgs(erc1155HolderRogue.address, playerId, requestId, [], []);
   });
 
   it("Add multiple actions", async function () {

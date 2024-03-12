@@ -263,9 +263,14 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     delete requestIdToPlayer[_requestId]; // Not strictly necessary
 
     if (producedItemTokenIds.length != 0) {
-      itemNFT.mintBatch(from, producedItemTokenIds, producedAmounts);
+      try itemNFT.mintBatch(from, producedItemTokenIds, producedAmounts) {} catch {
+        // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
+        assembly ("memory-safe") {
+          mstore(producedItemTokenIds, 0)
+          mstore(producedAmounts, 0)
+        }
+      }
     }
-
     emit CompletedInstantVRFActions(from, playerId, uint(_requestId), producedItemTokenIds, producedAmounts);
   }
 
