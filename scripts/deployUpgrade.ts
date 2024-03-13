@@ -24,6 +24,8 @@ import {
   ROYALTY_RECEIVER_ADDRESS,
   INSTANT_VRF_ACTIONS_ADDRESS,
   VRF_REQUEST_INFO_ADDRESS,
+  GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+  EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -210,6 +212,31 @@ async function main() {
   await instantVRFActions.deployed();
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
 
+  // Instant VRF strategies
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = await upgrades.upgradeProxy(
+    GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+    GenericInstantVRFActionStrategy,
+    {
+      kind: "uups",
+      timeout,
+    }
+  );
+  await genericInstantVRFActionStrategy.deployed();
+  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
+
+  // EggInstantVRFActionStrategy
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const eggInstantVRFActionStrategy = await upgrades.upgradeProxy(
+    EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+    EggInstantVRFActionStrategy,
+    {
+      kind: "uups",
+      timeout,
+    }
+  );
+  console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
+
   // VRFRequestInfo
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
   const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
@@ -281,6 +308,8 @@ async function main() {
   await verifyContracts([instantActions.address]);
   await verifyContracts([instantVRFActions.address]);
   await verifyContracts([vrfRequestInfo.address]);
+  await verifyContracts([genericInstantVRFActionStrategy.address]);
+  await verifyContracts([eggInstantVRFActionStrategy.address]);
   await verifyContracts([lockedBankVaults.address]);
   await verifyContracts([territories.address]);
   await verifyContracts([decoratorProvider.address]);

@@ -460,5 +460,6 @@ export const playersFixture = async function () {
     vrfRequestInfo,
     instantVRFActions,
     genericInstantVRFActionStrategy,
+    oracleAddress,
   };
 };

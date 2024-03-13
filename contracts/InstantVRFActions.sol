@@ -33,9 +33,9 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint playerId,
     uint requestId,
     uint[] producedItemTokenIds,
-    uint[] producedAmounts
+    uint[] producedItemAmounts
   );
-  event SetStrategies(InstantVRFActionType[] actionTypes, address[] strategies);
+  event AddStrategies(InstantVRFActionType[] actionTypes, address[] strategies);
 
   error ActionIdZeroNotAllowed();
   error ActionDoesNotExist();
@@ -57,6 +57,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   error TransferFailed();
   error NotDoingAnyActions();
   error InvalidStrategy();
+  error StrategyAlreadyExists();
 
   struct PlayerActionInfo {
     uint16[10] actionIdAmountPairs; // actionId, amount
@@ -134,7 +135,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     samWitchVRF = _samWitchVRF;
     vrfRequestInfo = _vrfRequestInfo;
     setGasCostPerUnit(25_000);
-    setStrategies(_actionTypes, _strategies);
+    addStrategies(_actionTypes, _strategies);
   }
 
   function doInstantVRFActions(
@@ -240,7 +241,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       revert RequestDoesNotExist();
     }
 
-    (uint[] memory producedItemTokenIds, uint[] memory producedAmounts) = _getRewards(playerId, _randomWords);
+    (uint[] memory producedItemTokenIds, uint[] memory producedItemAmounts) = _getRewards(playerId, _randomWords);
 
     vrfRequestInfo.updateAverageGasPrice();
 
@@ -248,15 +249,16 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     delete requestIdToPlayer[_requestId]; // Not strictly necessary
 
     if (producedItemTokenIds.length != 0) {
-      try itemNFT.mintBatch(from, producedItemTokenIds, producedAmounts) {} catch {
+      try itemNFT.mintBatch(from, producedItemTokenIds, producedItemAmounts) {} catch {
         // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
         assembly ("memory-safe") {
           mstore(producedItemTokenIds, 0)
-          mstore(producedAmounts, 0)
+          mstore(producedItemAmounts, 0)
         }
       }
     }
-    emit CompletedInstantVRFActions(from, playerId, uint(_requestId), producedItemTokenIds, producedAmounts);
+
+    emit CompletedInstantVRFActions(from, playerId, uint(_requestId), producedItemTokenIds, producedItemAmounts);
   }
 
   function _getRewards(
@@ -392,7 +394,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     return baseRequestCost + (movingAverageGasPrice * _actionAmounts * gasCostPerUnit);
   }
 
-  function setStrategies(
+  function addStrategies(
     InstantVRFActionType[] calldata _instantVRFActionTypes,
     address[] calldata _strategies
   ) public onlyOwner {
@@ -404,9 +406,13 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
         revert InvalidStrategy();
       }
 
+      if (strategies[_instantVRFActionTypes[i]] != address(0)) {
+        revert StrategyAlreadyExists();
+      }
+
       strategies[_instantVRFActionTypes[i]] = _strategies[i];
     }
-    emit SetStrategies(_instantVRFActionTypes, _strategies);
+    emit AddStrategies(_instantVRFActionTypes, _strategies);
   }
 
   function addActions(InstantVRFActionInput[] calldata _instantVRFActionInputs) external onlyOwner {

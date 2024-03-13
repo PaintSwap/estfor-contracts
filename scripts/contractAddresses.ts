@@ -26,15 +26,16 @@ let playersImplMisc1;
 let players;
 let instantActions;
 let instantVRFActions;
+let vrfRequestInfo;
+let genericInstantVRFActionStrategy;
+let eggInstantVRFActionStrategy;
 let territories;
 let lockedBankVaults;
 let decoratorProvider;
 let combatantsHelper;
 let oracle;
-let vrfRequestInfo;
 let samWitchVRF;
 let bazaar;
-let genericInstantVRFActionStrategy;
 
 if (!isBeta) {
   worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
@@ -63,15 +64,16 @@ if (!isBeta) {
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
   instantVRFActions = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
+  vrfRequestInfo = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
+  genericInstantVRFActionStrategy = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
+  eggInstantVRFActionStrategy = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
   lockedBankVaults = "0x65e944795d00cc287bdace77d57571fc4deff3e0";
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
   decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
   oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
-  vrfRequestInfo = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
-  genericInstantVRFActionStrategy = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
 } else {
   worldLibrary = "0x10f6512db26681700a027b5bd8e3f852351000c4";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -102,6 +104,7 @@ if (!isBeta) {
   instantVRFActions = "0xfab118935cbcc71b2f7c56000890534ad60aff7e";
   vrfRequestInfo = "0x3e2f4a5ea3b5c9ff04329a3a3a579d30dfd1c18a";
   genericInstantVRFActionStrategy = "0x13bc79d0b7d50e4fa0fa56024c69d9f14abe852a";
+  eggInstantVRFActionStrategy = "";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
@@ -142,6 +145,7 @@ export const INSTANT_ACTIONS_ADDRESS = instantActions;
 export const INSTANT_VRF_ACTIONS_ADDRESS = instantVRFActions;
 export const VRF_REQUEST_INFO_ADDRESS = vrfRequestInfo;
 export const GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = genericInstantVRFActionStrategy;
+export const EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = eggInstantVRFActionStrategy;
 
 export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const TERRITORIES_ADDRESS = territories;

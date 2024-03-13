@@ -18,8 +18,8 @@ import NONE, {
 } from "@paintswap/estfor-definitions/constants";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {fulfillRandomWords} from "./utils";
-import {ethers} from "hardhat";
-import {ERC1155HolderRogue} from "../typechain-types";
+import {ethers, upgrades} from "hardhat";
+import {ERC1155HolderRogue, InstantVRFActions} from "../typechain-types";
 
 describe("Instant VRF actions", function () {
   describe("Shared", function () {
@@ -629,15 +629,40 @@ describe("Instant VRF actions", function () {
     });
 
     describe("Strategies", function () {
-      it("Set strategies", async function () {
-        const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
+      it("Add strategies", async function () {
+        const {
+          players,
+          itemNFT,
+          oracleAddress,
+          mockSWVRFOracleClient,
+          vrfRequestInfo,
+          genericInstantVRFActionStrategy,
+        } = await loadFixture(playersFixture);
+
+        const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+        const instantVRFActions = (await upgrades.deployProxy(
+          InstantVRFActions,
+          [
+            players.address,
+            itemNFT.address,
+            oracleAddress,
+            mockSWVRFOracleClient.address,
+            vrfRequestInfo.address,
+            [],
+            [],
+          ],
+          {
+            kind: "uups",
+          }
+        )) as InstantVRFActions;
+
         await expect(
-          instantVRFActions.setStrategies(
+          instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
             [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
           )
         )
-          .to.emit(instantVRFActions, "SetStrategies")
+          .to.emit(instantVRFActions, "AddStrategies")
           .withArgs(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
             [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
@@ -652,52 +677,131 @@ describe("Instant VRF actions", function () {
         expect(await instantVRFActions.strategies(InstantVRFActionType.EGG)).to.eq(ethers.constants.AddressZero);
       });
 
-      it("Unuequal length of arrays should revert", async function () {
+      it("Adding same strategy should revert", async function () {
         const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
         await expect(
-          instantVRFActions.setStrategies(
-            [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
-            [genericInstantVRFActionStrategy.address]
-          )
-        ).to.be.revertedWithCustomError(instantVRFActions, "LengthMismatch");
+          instantVRFActions.addStrategies([InstantVRFActionType.FORGING], [genericInstantVRFActionStrategy.address])
+        ).to.be.revertedWithCustomError(instantVRFActions, "StrategyAlreadyExists");
+      });
+
+      it("Unuequal length of arrays should revert", async function () {
+        const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
+        await expect(instantVRFActions.addStrategies([InstantVRFActionType.EGG], [])).to.be.revertedWithCustomError(
+          instantVRFActions,
+          "LengthMismatch"
+        );
       });
 
       it("Zero address or NONE InstantVRFActionType should revert", async function () {
-        const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
+        const {
+          players,
+          itemNFT,
+          oracleAddress,
+          mockSWVRFOracleClient,
+          vrfRequestInfo,
+          genericInstantVRFActionStrategy,
+        } = await loadFixture(playersFixture);
+
+        const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+        const instantVRFActions = (await upgrades.deployProxy(
+          InstantVRFActions,
+          [
+            players.address,
+            itemNFT.address,
+            oracleAddress,
+            mockSWVRFOracleClient.address,
+            vrfRequestInfo.address,
+            [],
+            [],
+          ],
+          {
+            kind: "uups",
+          }
+        )) as InstantVRFActions;
 
         await expect(
-          instantVRFActions.setStrategies(
+          instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
             [genericInstantVRFActionStrategy.address, ethers.constants.AddressZero]
           )
         ).to.be.revertedWithCustomError(instantVRFActions, "InvalidStrategy");
 
         await expect(
-          instantVRFActions.setStrategies(
+          instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.NONE],
             [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
           )
         ).to.be.revertedWithCustomError(instantVRFActions, "InvalidStrategy");
 
         await expect(
-          instantVRFActions.setStrategies(
+          instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
             [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
           )
         ).to.not.be.reverted;
       });
 
-      it("Set strategies, must be called by the owner", async function () {
-        const {instantVRFActions, alice, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
+      it("Add strategies, must be called by the owner", async function () {
+        const {
+          players,
+          itemNFT,
+          oracleAddress,
+          mockSWVRFOracleClient,
+          vrfRequestInfo,
+          genericInstantVRFActionStrategy,
+          alice,
+        } = await loadFixture(playersFixture);
+
+        const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+        const instantVRFActions = (await upgrades.deployProxy(
+          InstantVRFActions,
+          [
+            players.address,
+            itemNFT.address,
+            oracleAddress,
+            mockSWVRFOracleClient.address,
+            vrfRequestInfo.address,
+            [],
+            [],
+          ],
+          {
+            kind: "uups",
+          }
+        )) as InstantVRFActions;
+
         await expect(
           instantVRFActions
             .connect(alice)
-            .setStrategies([InstantVRFActionType.FORGING], [genericInstantVRFActionStrategy.address])
+            .addStrategies([InstantVRFActionType.FORGING], [genericInstantVRFActionStrategy.address])
         ).to.be.revertedWithCustomError(instantVRFActions, "CallerIsNotOwner");
 
         await expect(
-          instantVRFActions.setStrategies([InstantVRFActionType.FORGING], [genericInstantVRFActionStrategy.address])
+          instantVRFActions.addStrategies([InstantVRFActionType.FORGING], [genericInstantVRFActionStrategy.address])
         ).to.not.be.reverted;
+      });
+
+      it("Must add strategy before it can be used", async function () {
+        const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
+
+        const instantVRFActionInput: InstantVRFActionInput = {
+          ...defaultInstantVRFActionInput,
+          inputTokenIds: [BRONZE_ARROW],
+          inputAmounts: [1],
+          randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 1}],
+          actionType: EstforTypes.InstantVRFActionType.EGG,
+        };
+
+        await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
+          instantVRFActions,
+          "InvalidStrategy"
+        );
+
+        await expect(
+          instantVRFActions.addStrategies([InstantVRFActionType.EGG], [genericInstantVRFActionStrategy.address])
+        )
+          .to.emit(instantVRFActions, "AddStrategies")
+          .withArgs([InstantVRFActionType.EGG], [genericInstantVRFActionStrategy.address]);
+        await expect(instantVRFActions.addActions([instantVRFActionInput])).to.not.be.reverted;
       });
     });
   });
@@ -770,18 +874,22 @@ describe("Instant VRF actions", function () {
         "RandomRewardItemNoDuplicates"
       );
 
-      (instantVRFActionInput.randomRewards = [
+      instantVRFActionInput.randomRewards = [
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 10, amount: 1},
         {itemTokenId: EstforConstants.ORICHALCUM_ARROW, chance: 9, amount: 1},
         {itemTokenId: EstforConstants.BRONZE_ARROW, chance: 8, amount: 1},
         {itemTokenId: EstforConstants.IRON_ARROW, chance: 7, amount: 1},
         {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 6, amount: 1},
         {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 5, amount: 1},
-      ]),
-        await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
-          genericInstantVRFActionStrategy,
-          "TooManyRandomRewards"
-        );
+      ];
+
+      await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
+        genericInstantVRFActionStrategy,
+        "TooManyRandomRewards"
+      );
+
+      instantVRFActionInput.randomRewards.pop();
+      await expect(instantVRFActions.addActions([instantVRFActionInput])).to.not.be.reverted;
     });
 
     it("Check random rewards (many)", async function () {
@@ -858,5 +966,16 @@ describe("Instant VRF actions", function () {
       expect(balances[instantVRFActionInput.randomRewards.length - 1]).to.be.lte(Math.floor(expectedBalance * 1.15)); // 15% of the time we should get more than 50% of the reward
     });
   });
-  describe("Egg hatching random rewards", function () {});
+
+  describe("Egg hatching random rewards", function () {
+    const defaultInstantVRFActionInput: InstantVRFActionInput = {
+      ..._defaultInstantVRFActionInput,
+      actionId: 1,
+      inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
+      inputAmounts: [1, 2, 3],
+      randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}], // 100% chance of 2 runite arrows
+      isFullModeOnly: false,
+      actionType: EstforTypes.InstantVRFActionType.EGG,
+    };
+  });
 });

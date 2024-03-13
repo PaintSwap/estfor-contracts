@@ -42,7 +42,6 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
 
     if (randomRewards.length != 0) {
       bytes memory randomBytes = abi.encodePacked(_randomWords[_randomWordStartIndex:]);
-      // The first set has an increased mint multiplier as the tickets spill over
       for (uint i; i < _actionAmount; ++i) {
         uint16 rand = _getSlice(randomBytes, i);
 

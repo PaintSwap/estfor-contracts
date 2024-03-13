@@ -76,7 +76,9 @@ BankRegistry [0x55a1b0251e1375bd41dd9778c379322e3863a54e](https://ftmscan.com/ad
 BankFactory [0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4](https://ftmscan.com/address/0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4)
 
 InstantActions [0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe](https://ftmscan.com/address/0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe)  
-InstantVRFActions [](https://ftmscan.com/address/)
+InstantVRFActions [](https://ftmscan.com/address/)  
+GenericInstantVRFActionStrategy [](https://ftmscan.com/address/)  
+VRFRequestInfo [](https://ftmscan.com/address/)
 
 LockedBankVaults [0x65e944795d00cc287bdace77d57571fc4deff3e0](https://ftmscan.com/address/0x65e944795d00cc287bdace77d57571fc4deff3e0)  
 Territories [0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170](https://ftmscan.com/address/0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170)  
@@ -118,14 +120,15 @@ BankProxy [0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb](https://ftmscan.com/addre
 BankFactory [0x7b8197e7d7352e8910a7af79a9184f50290403da](https://ftmscan.com/address/0x7b8197e7d7352e8910a7af79a9184f50290403da)
 
 InstantActions [0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76](https://ftmscan.com/address/0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76)  
-InstantVRFActions [0x528b2f0cc280f6699d0831bcaee2f6ae611eb794](https://ftmscan.com/address/0x528b2f0cc280f6699d0831bcaee2f6ae611eb794)
+InstantVRFActions [0xfab118935cbcc71b2f7c56000890534ad60aff7e](https://ftmscan.com/address/0xfab118935cbcc71b2f7c56000890534ad60aff7e)  
+GenericInstantVRFActionStrategy [0x13bc79d0b7d50e4fa0fa56024c69d9f14abe852a](https://ftmscan.com/address/0x13bc79d0b7d50e4fa0fa56024c69d9f14abe852a)  
+VRFRequestInfo [0x3e2f4a5ea3b5c9ff04329a3a3a579d30dfd1c18a](https://ftmscan.com/address/0x3e2f4a5ea3b5c9ff04329a3a3a579d30dfd1c18a)
 
 LockedBankVaults [0x40567ad9cd25c56422807ed67f0e66f1825bdb91](https://ftmscan.com/address/0x40567ad9cd25c56422807ed67f0e66f1825bdb91)  
 Territories [0xf31517db9f0987002f3a0fb4f787dfb9e892f184](https://ftmscan.com/address/0xf31517db9f0987002f3a0fb4f787dfb9e892f184)  
 CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.com/address/0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c)  
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
-RequestVRFInfo [0x2c44d5e0cd0039c83c9c4c24ac5631cfb0219b37](https://ftmscan.com/address/0x2c44d5e0cd0039c83c9c4c24ac5631cfb0219b37)  
 Oracle [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)  
 VRF [0x58E9fd2Fae18c861B9F564200510A88106C05756](https://ftmscan.com/address/0x58E9fd2Fae18c861B9F564200510A88106C05756)  
 Bazaar [0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191](https://ftmscan.com/address/0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191)
