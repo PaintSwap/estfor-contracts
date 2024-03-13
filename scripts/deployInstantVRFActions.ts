@@ -7,9 +7,10 @@ import {
   PLAYERS_ADDRESS,
   SAMWITCH_VRF_ADDRESS,
 } from "./contractAddresses";
-import {InstantVRFActions, VRFRequestInfo} from "../typechain-types";
+import {GenericInstantVRFActionStrategy, InstantVRFActions, VRFRequestInfo} from "../typechain-types";
 import {verifyContracts} from "./utils";
 import {FeeData} from "@ethersproject/providers";
+import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -39,10 +40,24 @@ async function main() {
   await vrfRequestInfo.deployed();
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
 
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(GenericInstantVRFActionStrategy, [], {
+    kind: "uups",
+  })) as GenericInstantVRFActionStrategy;
+  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
+
   const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(signer);
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [PLAYERS_ADDRESS, ITEM_NFT_ADDRESS, ORACLE_ADDRESS, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
+    [
+      PLAYERS_ADDRESS,
+      ITEM_NFT_ADDRESS,
+      ORACLE_ADDRESS,
+      SAMWITCH_VRF_ADDRESS,
+      vrfRequestInfo.address,
+      [InstantVRFActionType.FORGING],
+      [genericInstantVRFActionStrategy.address],
+    ],
     {
       kind: "uups",
       timeout,
@@ -66,7 +81,12 @@ async function main() {
   console.log("itemNFT.setInstantVRFActions");
 
   if ((await owner.getChainId()) == 250) {
-    await verifyContracts([itemNFT.address, instantVRFActions.address, vrfRequestInfo.address]);
+    await verifyContracts([
+      itemNFT.address,
+      instantVRFActions.address,
+      vrfRequestInfo.address,
+      genericInstantVRFActionStrategy.address,
+    ]);
   }
 }
 

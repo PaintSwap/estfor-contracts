@@ -21,6 +21,7 @@ import {
   World,
   InstantVRFActions,
   VRFRequestInfo,
+  GenericInstantVRFActionStrategy,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -77,6 +78,7 @@ import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills} from "./data/territories";
 import {allInstantVRFActions} from "./data/instantVRFActions";
+import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -432,10 +434,23 @@ async function main() {
   await instantActions.deployed();
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
 
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(GenericInstantVRFActionStrategy, [], {
+    kind: "uups",
+  })) as GenericInstantVRFActionStrategy;
+
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [players.address, itemNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
+    [
+      players.address,
+      itemNFT.address,
+      oracle.address,
+      SAMWITCH_VRF_ADDRESS,
+      vrfRequestInfo.address,
+      [InstantVRFActionType.FORGING],
+      [genericInstantVRFActionStrategy.address],
+    ],
     {
       kind: "uups",
       timeout,

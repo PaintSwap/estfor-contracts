@@ -16,7 +16,8 @@ async function main() {
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
   let tx = await itemNFT.connect(owner).testMint(owner.address, EstforConstants.INFUSED_ORICHALCUM_HELMET, 1);
-  tx.wait();
+  await tx.wait();
+  console.log("test Mint");
 
   const playerId = 1;
   tx = await instantVRFActions

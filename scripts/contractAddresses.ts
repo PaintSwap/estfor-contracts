@@ -31,9 +31,10 @@ let lockedBankVaults;
 let decoratorProvider;
 let combatantsHelper;
 let oracle;
+let vrfRequestInfo;
 let samWitchVRF;
 let bazaar;
-let vrfRequestInfo;
+let genericInstantVRFActionStrategy;
 
 if (!isBeta) {
   worldLibrary = "0xd582da91d0449f93ba7ba477a55dd82689301f1f";
@@ -70,6 +71,7 @@ if (!isBeta) {
   vrfRequestInfo = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
+  genericInstantVRFActionStrategy = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
 } else {
   worldLibrary = "0x10f6512db26681700a027b5bd8e3f852351000c4";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -97,13 +99,14 @@ if (!isBeta) {
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
-  instantVRFActions = "0x528b2f0cc280f6699d0831bcaee2f6ae611eb794";
+  instantVRFActions = "0xfab118935cbcc71b2f7c56000890534ad60aff7e";
+  vrfRequestInfo = "0x3e2f4a5ea3b5c9ff04329a3a3a579d30dfd1c18a";
+  genericInstantVRFActionStrategy = "0x13bc79d0b7d50e4fa0fa56024c69d9f14abe852a";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
-  vrfRequestInfo = "0x2c44d5e0cd0039c83c9c4c24ac5631cfb0219b37";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
 }
@@ -137,12 +140,13 @@ export const PLAYERS_ADDRESS = players;
 
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
 export const INSTANT_VRF_ACTIONS_ADDRESS = instantVRFActions;
+export const VRF_REQUEST_INFO_ADDRESS = vrfRequestInfo;
+export const GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = genericInstantVRFActionStrategy;
 
 export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const TERRITORIES_ADDRESS = territories;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
-export const VRF_REQUEST_INFO_ADDRESS = vrfRequestInfo;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

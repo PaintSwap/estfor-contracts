@@ -1,4 +1,4 @@
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {InstantVRFActionType, Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {
@@ -10,6 +10,7 @@ import {
   Clans,
   CombatantsHelper,
   EstforLibrary,
+  GenericInstantVRFActionStrategy,
   InstantActions,
   InstantVRFActions,
   ItemNFT,
@@ -265,10 +266,23 @@ export const playersFixture = async function () {
     kind: "uups",
   })) as VRFRequestInfo;
 
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(GenericInstantVRFActionStrategy, [], {
+    kind: "uups",
+  })) as GenericInstantVRFActionStrategy;
+
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [players.address, itemNFT.address, oracleAddress, mockSWVRFOracleClient.address, vrfRequestInfo.address],
+    [
+      players.address,
+      itemNFT.address,
+      oracleAddress,
+      mockSWVRFOracleClient.address,
+      vrfRequestInfo.address,
+      [InstantVRFActionType.FORGING],
+      [genericInstantVRFActionStrategy.address],
+    ],
     {
       kind: "uups",
     }
@@ -445,5 +459,6 @@ export const playersFixture = async function () {
     combatantsHelper,
     vrfRequestInfo,
     instantVRFActions,
+    genericInstantVRFActionStrategy,
   };
 };
