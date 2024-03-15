@@ -99,7 +99,7 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("300", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("100", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,
@@ -109,9 +109,6 @@ const config: HardhatUserConfig = {
   },
   mocha: {
     timeout: 80 * 1000,
-  },
-  mocha: {
-    timeout: 80000,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
