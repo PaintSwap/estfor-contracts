@@ -271,11 +271,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
     uint[] memory petTokenIds;
     if (petBaseIds.length != 0) {
-      try petNFT.mintBatch(from, petBaseIds, randomWords) returns (uint[] memory newPetTokenIds) {
+      /*      try petNFT.mintBatch(from, petBaseIds, randomWords) returns (uint[] memory newPetTokenIds) {
         petTokenIds = newPetTokenIds;
       } catch {
         // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
-      }
+      } */
     }
 
     emit CompletedInstantVRFActions(from, playerId, uint(_requestId), itemTokenIds, itemAmounts, petTokenIds);
