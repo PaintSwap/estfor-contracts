@@ -7520,7 +7520,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_1.json",
-    name: "Orichalcum Helmet Level 1",
+    name: "Orichalcum Helmet Lvl 1",
   },
   {
     combatStats: {
@@ -7543,7 +7543,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_1.json",
-    name: "Orichalcum Armor Level 1",
+    name: "Orichalcum Armor Lvl 1",
   },
   {
     combatStats: {
@@ -7566,7 +7566,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_1.json",
-    name: "Orichalcum Tassets Level 1",
+    name: "Orichalcum Tassets Lvl 1",
   },
   {
     combatStats: {
@@ -7589,7 +7589,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_1.json",
-    name: "Orichalcum Gauntlets Level 1",
+    name: "Orichalcum Gauntlets Lvl 1",
   },
   {
     combatStats: {
@@ -7612,7 +7612,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_1.json",
-    name: "Orichalcum Boots Level 1",
+    name: "Orichalcum Boots Lvl 1",
   },
   {
     combatStats: {
@@ -7635,7 +7635,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_1.json",
-    name: "Orichalcum Shield Level 1",
+    name: "Orichalcum Shield Lvl 1",
   },
   {
     combatStats: {
@@ -7658,7 +7658,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_1.json",
-    name: "Dragonstone Amulet Level 1",
+    name: "Dragonstone Amulet Lvl 1",
   },
   {
     combatStats: {
@@ -7681,7 +7681,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_1.json",
-    name: "Master Hat Level 1",
+    name: "Master Hat Lvl 1",
   },
   {
     combatStats: {
@@ -7704,7 +7704,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_1.json",
-    name: "Master Body Level 1",
+    name: "Master Body Lvl 1",
   },
   {
     combatStats: {
@@ -7727,7 +7727,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_1.json",
-    name: "Master Trousers Level 1",
+    name: "Master Trousers Lvl 1",
   },
   {
     combatStats: {
@@ -7750,7 +7750,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_1.json",
-    name: "Master Bracers Level 1",
+    name: "Master Bracers Lvl 1",
   },
   {
     combatStats: {
@@ -7773,7 +7773,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_1.json",
-    name: "Master Boots Level 1",
+    name: "Master Boots Lvl 1",
   },
   {
     combatStats: {
@@ -7796,7 +7796,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_1.json",
-    name: "Orichalcum Sword Level 1",
+    name: "Orichalcum Sword Lvl 1",
   },
   {
     combatStats: {
@@ -7819,7 +7819,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_1.json",
-    name: "Dragonstone Staff Level 1",
+    name: "Dragonstone Staff Lvl 1",
   },
   {
     combatStats: {
@@ -7842,7 +7842,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_1.json",
-    name: "Godly Bow Level 1",
+    name: "Godly Bow Lvl 1",
   },
   {
     combatStats: {
@@ -7865,7 +7865,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_1.json",
-    name: "Scorching Cowl Level 1",
+    name: "Scorching Cowl Lvl 1",
   },
   {
     combatStats: {
@@ -7888,7 +7888,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_1.json",
-    name: "Scorching Body Level 1",
+    name: "Scorching Body Lvl 1",
   },
   {
     combatStats: {
@@ -7911,7 +7911,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_1.json",
-    name: "Scorching Chaps Level 1",
+    name: "Scorching Chaps Lvl 1",
   },
   {
     combatStats: {
@@ -7934,7 +7934,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_1.json",
-    name: "Scorching Bracers Level 1",
+    name: "Scorching Bracers Lvl 1",
   },
   {
     combatStats: {
@@ -7957,7 +7957,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_1.json",
-    name: "Scorching Boots Level 1",
+    name: "Scorching Boots Lvl 1",
   },
   {
     combatStats: {
@@ -7980,7 +7980,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_2.json",
-    name: "Orichalcum Helmet Level 2",
+    name: "Orichalcum Helmet Lvl 2",
   },
   {
     combatStats: {
@@ -8003,7 +8003,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_2.json",
-    name: "Orichalcum Armor Level 2",
+    name: "Orichalcum Armor Lvl 2",
   },
   {
     combatStats: {
@@ -8026,7 +8026,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_2.json",
-    name: "Orichalcum Tassets Level 2",
+    name: "Orichalcum Tassets Lvl 2",
   },
   {
     combatStats: {
@@ -8049,7 +8049,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_2.json",
-    name: "Orichalcum Gauntlets Level 2",
+    name: "Orichalcum Gauntlets Lvl 2",
   },
   {
     combatStats: {
@@ -8072,7 +8072,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_2.json",
-    name: "Orichalcum Boots Level 2",
+    name: "Orichalcum Boots Lvl 2",
   },
   {
     combatStats: {
@@ -8095,7 +8095,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_2.json",
-    name: "Orichalcum Shield Level 2",
+    name: "Orichalcum Shield Lvl 2",
   },
   {
     combatStats: {
@@ -8118,7 +8118,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_2.json",
-    name: "Dragonstone Amulet Level 2",
+    name: "Dragonstone Amulet Lvl 2",
   },
   {
     combatStats: {
@@ -8141,7 +8141,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_2.json",
-    name: "Master Hat Level 2",
+    name: "Master Hat Lvl 2",
   },
   {
     combatStats: {
@@ -8164,7 +8164,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_2.json",
-    name: "Master Body Level 2",
+    name: "Master Body Lvl 2",
   },
   {
     combatStats: {
@@ -8187,7 +8187,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_2.json",
-    name: "Master Trousers Level 2",
+    name: "Master Trousers Lvl 2",
   },
   {
     combatStats: {
@@ -8210,7 +8210,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_2.json",
-    name: "Master Bracers Level 2",
+    name: "Master Bracers Lvl 2",
   },
   {
     combatStats: {
@@ -8233,7 +8233,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_2.json",
-    name: "Master Boots Level 2",
+    name: "Master Boots Lvl 2",
   },
   {
     combatStats: {
@@ -8256,7 +8256,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_2.json",
-    name: "Orichalcum Sword Level 2",
+    name: "Orichalcum Sword Lvl 2",
   },
   {
     combatStats: {
@@ -8279,7 +8279,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_2.json",
-    name: "Dragonstone Staff Level 2",
+    name: "Dragonstone Staff Lvl 2",
   },
   {
     combatStats: {
@@ -8302,7 +8302,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_2.json",
-    name: "Godly Bow Level 2",
+    name: "Godly Bow Lvl 2",
   },
   {
     combatStats: {
@@ -8325,7 +8325,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_2.json",
-    name: "Scorching Cowl Level 2",
+    name: "Scorching Cowl Lvl 2",
   },
   {
     combatStats: {
@@ -8348,7 +8348,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_2.json",
-    name: "Scorching Body Level 2",
+    name: "Scorching Body Lvl 2",
   },
   {
     combatStats: {
@@ -8371,7 +8371,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_2.json",
-    name: "Scorching Chaps Level 2",
+    name: "Scorching Chaps Lvl 2",
   },
   {
     combatStats: {
@@ -8394,7 +8394,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_2.json",
-    name: "Scorching Bracers Level 2",
+    name: "Scorching Bracers Lvl 2",
   },
   {
     combatStats: {
@@ -8417,7 +8417,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_2.json",
-    name: "Scorching Boots Level 2",
+    name: "Scorching Boots Lvl 2",
   },
   {
     combatStats: {
@@ -8440,7 +8440,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_3.json",
-    name: "Orichalcum Helmet Level 3",
+    name: "Orichalcum Helmet Lvl 3",
   },
   {
     combatStats: {
@@ -8463,7 +8463,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_3.json",
-    name: "Orichalcum Armor Level 3",
+    name: "Orichalcum Armor Lvl 3",
   },
   {
     combatStats: {
@@ -8486,7 +8486,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_3.json",
-    name: "Orichalcum Tassets Level 3",
+    name: "Orichalcum Tassets Lvl 3",
   },
   {
     combatStats: {
@@ -8509,7 +8509,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_3.json",
-    name: "Orichalcum Gauntlets Level 3",
+    name: "Orichalcum Gauntlets Lvl 3",
   },
   {
     combatStats: {
@@ -8532,7 +8532,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_3.json",
-    name: "Orichalcum Boots Level 3",
+    name: "Orichalcum Boots Lvl 3",
   },
   {
     combatStats: {
@@ -8555,7 +8555,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_3.json",
-    name: "Orichalcum Shield Level 3",
+    name: "Orichalcum Shield Lvl 3",
   },
   {
     combatStats: {
@@ -8578,7 +8578,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_3.json",
-    name: "Dragonstone Amulet Level 3",
+    name: "Dragonstone Amulet Lvl 3",
   },
   {
     combatStats: {
@@ -8601,7 +8601,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_3.json",
-    name: "Master Hat Level 3",
+    name: "Master Hat Lvl 3",
   },
   {
     combatStats: {
@@ -8624,7 +8624,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_3.json",
-    name: "Master Body Level 3",
+    name: "Master Body Lvl 3",
   },
   {
     combatStats: {
@@ -8647,7 +8647,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_3.json",
-    name: "Master Trousers Level 3",
+    name: "Master Trousers Lvl 3",
   },
   {
     combatStats: {
@@ -8670,7 +8670,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_3.json",
-    name: "Master Bracers Level 3",
+    name: "Master Bracers Lvl 3",
   },
   {
     combatStats: {
@@ -8693,7 +8693,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_3.json",
-    name: "Master Boots Level 3",
+    name: "Master Boots Lvl 3",
   },
   {
     combatStats: {
@@ -8716,7 +8716,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_3.json",
-    name: "Orichalcum Sword Level 3",
+    name: "Orichalcum Sword Lvl 3",
   },
   {
     combatStats: {
@@ -8739,7 +8739,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_3.json",
-    name: "Dragonstone Staff Level 3",
+    name: "Dragonstone Staff Lvl 3",
   },
   {
     combatStats: {
@@ -8762,7 +8762,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_3.json",
-    name: "Godly Bow Level 3",
+    name: "Godly Bow Lvl 3",
   },
   {
     combatStats: {
@@ -8785,7 +8785,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_3.json",
-    name: "Scorching Cowl Level 3",
+    name: "Scorching Cowl Lvl 3",
   },
   {
     combatStats: {
@@ -8808,7 +8808,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_3.json",
-    name: "Scorching Body Level 3",
+    name: "Scorching Body Lvl 3",
   },
   {
     combatStats: {
@@ -8831,7 +8831,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_3.json",
-    name: "Scorching Chaps Level 3",
+    name: "Scorching Chaps Lvl 3",
   },
   {
     combatStats: {
@@ -8854,7 +8854,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_3.json",
-    name: "Scorching Bracers Level 3",
+    name: "Scorching Bracers Lvl 3",
   },
   {
     combatStats: {
@@ -8877,7 +8877,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_3.json",
-    name: "Scorching Boots Level 3",
+    name: "Scorching Boots Lvl 3",
   },
   {
     combatStats: {
@@ -8900,7 +8900,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_4.json",
-    name: "Orichalcum Helmet Level 4",
+    name: "Orichalcum Helmet Lvl 4",
   },
   {
     combatStats: {
@@ -8923,7 +8923,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_4.json",
-    name: "Orichalcum Armor Level 4",
+    name: "Orichalcum Armor Lvl 4",
   },
   {
     combatStats: {
@@ -8946,7 +8946,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_4.json",
-    name: "Orichalcum Tassets Level 4",
+    name: "Orichalcum Tassets Lvl 4",
   },
   {
     combatStats: {
@@ -8969,7 +8969,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_4.json",
-    name: "Orichalcum Gauntlets Level 4",
+    name: "Orichalcum Gauntlets Lvl 4",
   },
   {
     combatStats: {
@@ -8992,7 +8992,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_4.json",
-    name: "Orichalcum Boots Level 4",
+    name: "Orichalcum Boots Lvl 4",
   },
   {
     combatStats: {
@@ -9015,7 +9015,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_4.json",
-    name: "Orichalcum Shield Level 4",
+    name: "Orichalcum Shield Lvl 4",
   },
   {
     combatStats: {
@@ -9038,7 +9038,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_4.json",
-    name: "Dragonstone Amulet Level 4",
+    name: "Dragonstone Amulet Lvl 4",
   },
   {
     combatStats: {
@@ -9061,7 +9061,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_4.json",
-    name: "Master Hat Level 4",
+    name: "Master Hat Lvl 4",
   },
   {
     combatStats: {
@@ -9084,7 +9084,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_4.json",
-    name: "Master Body Level 4",
+    name: "Master Body Lvl 4",
   },
   {
     combatStats: {
@@ -9107,7 +9107,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_4.json",
-    name: "Master Trousers Level 4",
+    name: "Master Trousers Lvl 4",
   },
   {
     combatStats: {
@@ -9130,7 +9130,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_4.json",
-    name: "Master Bracers Level 4",
+    name: "Master Bracers Lvl 4",
   },
   {
     combatStats: {
@@ -9153,7 +9153,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_4.json",
-    name: "Master Boots Level 4",
+    name: "Master Boots Lvl 4",
   },
   {
     combatStats: {
@@ -9176,7 +9176,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_4.json",
-    name: "Orichalcum Sword Level 4",
+    name: "Orichalcum Sword Lvl 4",
   },
   {
     combatStats: {
@@ -9199,7 +9199,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_4.json",
-    name: "Dragonstone Staff Level 4",
+    name: "Dragonstone Staff Lvl 4",
   },
   {
     combatStats: {
@@ -9222,7 +9222,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_4.json",
-    name: "Godly Bow Level 4",
+    name: "Godly Bow Lvl 4",
   },
   {
     combatStats: {
@@ -9245,7 +9245,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_4.json",
-    name: "Scorching Cowl Level 4",
+    name: "Scorching Cowl Lvl 4",
   },
   {
     combatStats: {
@@ -9268,7 +9268,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_4.json",
-    name: "Scorching Body Level 4",
+    name: "Scorching Body Lvl 4",
   },
   {
     combatStats: {
@@ -9291,7 +9291,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_4.json",
-    name: "Scorching Chaps Level 4",
+    name: "Scorching Chaps Lvl 4",
   },
   {
     combatStats: {
@@ -9314,7 +9314,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_4.json",
-    name: "Scorching Bracers Level 4",
+    name: "Scorching Bracers Lvl 4",
   },
   {
     combatStats: {
@@ -9337,7 +9337,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_4.json",
-    name: "Scorching Boots Level 4",
+    name: "Scorching Boots Lvl 4",
   },
   {
     combatStats: {
@@ -9360,7 +9360,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_5.json",
-    name: "Orichalcum Helmet Level 5",
+    name: "Orichalcum Helmet Lvl 5",
   },
   {
     combatStats: {
@@ -9383,7 +9383,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_5.json",
-    name: "Orichalcum Armor Level 5",
+    name: "Orichalcum Armor Lvl 5",
   },
   {
     combatStats: {
@@ -9406,7 +9406,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_5.json",
-    name: "Orichalcum Tassets Level 5",
+    name: "Orichalcum Tassets Lvl 5",
   },
   {
     combatStats: {
@@ -9429,7 +9429,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_5.json",
-    name: "Orichalcum Gauntlets Level 5",
+    name: "Orichalcum Gauntlets Lvl 5",
   },
   {
     combatStats: {
@@ -9452,7 +9452,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_5.json",
-    name: "Orichalcum Boots Level 5",
+    name: "Orichalcum Boots Lvl 5",
   },
   {
     combatStats: {
@@ -9475,7 +9475,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_5.json",
-    name: "Orichalcum Shield Level 5",
+    name: "Orichalcum Shield Lvl 5",
   },
   {
     combatStats: {
@@ -9498,7 +9498,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_5.json",
-    name: "Dragonstone Amulet Level 5",
+    name: "Dragonstone Amulet Lvl 5",
   },
   {
     combatStats: {
@@ -9521,7 +9521,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_5.json",
-    name: "Master Hat Level 5",
+    name: "Master Hat Lvl 5",
   },
   {
     combatStats: {
@@ -9544,7 +9544,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_5.json",
-    name: "Master Body Level 5",
+    name: "Master Body Lvl 5",
   },
   {
     combatStats: {
@@ -9567,7 +9567,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_5.json",
-    name: "Master Trousers Level 5",
+    name: "Master Trousers Lvl 5",
   },
   {
     combatStats: {
@@ -9590,7 +9590,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_5.json",
-    name: "Master Bracers Level 5",
+    name: "Master Bracers Lvl 5",
   },
   {
     combatStats: {
@@ -9613,7 +9613,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_5.json",
-    name: "Master Boots Level 5",
+    name: "Master Boots Lvl 5",
   },
   {
     combatStats: {
@@ -9636,7 +9636,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_5.json",
-    name: "Orichalcum Sword Level 5",
+    name: "Orichalcum Sword Lvl 5",
   },
   {
     combatStats: {
@@ -9659,7 +9659,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_5.json",
-    name: "Dragonstone Staff Level 5",
+    name: "Dragonstone Staff Lvl 5",
   },
   {
     combatStats: {
@@ -9682,7 +9682,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_5.json",
-    name: "Godly Bow Level 5",
+    name: "Godly Bow Lvl 5",
   },
   {
     combatStats: {
@@ -9705,7 +9705,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_5.json",
-    name: "Scorching Cowl Level 5",
+    name: "Scorching Cowl Lvl 5",
   },
   {
     combatStats: {
@@ -9728,7 +9728,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_5.json",
-    name: "Scorching Body Level 5",
+    name: "Scorching Body Lvl 5",
   },
   {
     combatStats: {
@@ -9751,7 +9751,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_5.json",
-    name: "Scorching Chaps Level 5",
+    name: "Scorching Chaps Lvl 5",
   },
   {
     combatStats: {
@@ -9774,7 +9774,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_5.json",
-    name: "Scorching Bracers Level 5",
+    name: "Scorching Bracers Lvl 5",
   },
   {
     combatStats: {
@@ -9797,7 +9797,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_5.json",
-    name: "Scorching Boots Level 5",
+    name: "Scorching Boots Lvl 5",
   },
   {
     combatStats: {
