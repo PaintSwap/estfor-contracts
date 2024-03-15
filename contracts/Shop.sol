@@ -28,8 +28,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event Sell(address seller, uint tokenId, uint quantity, uint price);
   event SellBatch(address seller, uint[] tokenIds, uint[] quantities, uint[] prices);
   event NewAllocation(uint16 tokenId, uint allocation);
-  event AddUnsellableItems(uint16[] tokenId);
-  event RemoveUnsellableItems(uint16[] tokenId);
+  event AddUnsellableItems(uint16[] tokenIds);
+  event RemoveUnsellableItems(uint16[] tokenIds);
 
   error LengthMismatch();
   error LengthEmpty();

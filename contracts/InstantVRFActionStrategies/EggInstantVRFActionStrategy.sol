@@ -17,10 +17,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     uint _actionAmount,
     uint[] calldata _randomWords,
     uint _randomWordStartIndex
-  ) external view override returns (uint[] memory ids, uint[] memory amounts) {
-    ids = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
-    amounts = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
-  }
+  ) external view override returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory) {}
 
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

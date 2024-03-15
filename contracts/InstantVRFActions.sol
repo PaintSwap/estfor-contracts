@@ -14,7 +14,6 @@ import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 import {Skill, EquipPosition, IS_FULL_MODE_BIT} from "./globals/players.sol";
 import {InstantVRFActionInput, InstantVRFActionType, RandomReward, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "./globals/rewards.sol";
 import {NONE} from "./globals/items.sol";
-import {Skin, PetEnhancementType} from "./globals/pets.sol";
 
 contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   event AddInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);

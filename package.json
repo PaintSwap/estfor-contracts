@@ -105,6 +105,7 @@
     "editTerritories": "npx hardhat run scripts/editTerritories.ts",
     "removeTerritories": "npx hardhat run scripts/removeTerritories.ts",
     "addUnsellableShopItems": "npx hardhat run scripts/addUnsellableShopItems.ts",
+    "removeUnsellableShopItems": "npx hardhat run scripts/removeUnsellableShopItems.ts",
     "setDailyRewards": "npx hardhat run scripts/setDailyRewards.ts",
     "setDonationThresholds": "npx hardhat run scripts/setDonationThresholds.ts",
     "setChainlinkCallbackGasLimit": "npx hardhat run scripts/setChainlinkCallbackGasLimit.ts",
