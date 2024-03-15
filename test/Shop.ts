@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {World} from "../typechain-types";
+import {AdminAccess, ItemNFT, RoyaltyReceiver, Shop, World} from "../typechain-types";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
 
 describe("Shop", function () {
@@ -11,11 +11,8 @@ describe("Shop", function () {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
 
-    const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const brush = await MockBrushToken.deploy();
-
-    const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-    const mockOracleClient = await MockOracleClient.deploy();
+    const brush = await ethers.deployContract("MockBrushToken");
+    const mockOracleClient = await ethers.deployContract("MockOracleClient");
 
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
@@ -39,26 +36,26 @@ describe("Shop", function () {
     await setDailyAndWeeklyRewards(world);
 
     const Shop = await ethers.getContractFactory("Shop");
-    const shop = await upgrades.deployProxy(Shop, [brush.address, dev.address], {
+    const shop = (await upgrades.deployProxy(Shop, [brush.address, dev.address], {
       kind: "uups",
-    });
+    })) as Shop;
 
     const router = await ethers.deployContract("MockRouter");
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-    const royaltyReceiver = await upgrades.deployProxy(
+    const royaltyReceiver = (await upgrades.deployProxy(
       RoyaltyReceiver,
       [router.address, shop.address, dev.address, brush.address, alice.address],
       {
         kind: "uups",
       }
-    );
+    )) as RoyaltyReceiver;
     await royaltyReceiver.deployed();
 
     const admins = [owner.address, alice.address];
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
-    const adminAccess = await upgrades.deployProxy(AdminAccess, [admins, admins], {
+    const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, admins], {
       kind: "uups",
-    });
+    })) as AdminAccess;
     await adminAccess.deployed();
 
     const isBeta = true;
@@ -66,14 +63,14 @@ describe("Shop", function () {
     const itemNFTLibrary = await ItemNFTLibrary.deploy();
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
-    const itemNFT = await upgrades.deployProxy(
+    const itemNFT = (await upgrades.deployProxy(
       ItemNFT,
       [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
       }
-    );
+    )) as ItemNFT;
 
     await shop.setItemNFT(itemNFT.address);
 
@@ -296,10 +293,10 @@ describe("Shop", function () {
     const priceShield = splitBrush / 200;
     expect((await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).toNumber()).to.eq(priceShield);
 
-    const priceBronzeNecklace = splitBrush / 100;
+    const priceSapphireAmulet = splitBrush / 100;
     expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
       ethers.BigNumber.from(priceShield),
-      ethers.BigNumber.from(priceBronzeNecklace),
+      ethers.BigNumber.from(priceSapphireAmulet),
     ]);
     await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, priceShield))
@@ -326,9 +323,9 @@ describe("Shop", function () {
 
     const splitBrush = 600;
     const priceShield = splitBrush / 200;
-    const priceBronzeNecklace = splitBrush / 100;
+    const priceSapphireAmulet = splitBrush / 100;
 
-    const expectedTotal = priceShield + 2 * priceBronzeNecklace;
+    const expectedTotal = priceShield + 2 * priceSapphireAmulet;
     await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
     await expect(
       shop
@@ -340,7 +337,7 @@ describe("Shop", function () {
         alice.address,
         [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
         [1, 2],
-        [priceShield, priceBronzeNecklace]
+        [priceShield, priceSapphireAmulet]
       );
 
     expect(await itemNFT.itemBalances(EstforConstants.BRONZE_SHIELD)).to.eq(200 - 1);
@@ -363,9 +360,9 @@ describe("Shop", function () {
 
     const splitBrush = 600;
     const priceShield = splitBrush / 200;
-    const priceBronzeNecklace = splitBrush / 100;
+    const priceSapphireAmulet = splitBrush / 100;
 
-    const expectedTotal = priceShield + 2 * priceBronzeNecklace;
+    const expectedTotal = priceShield + 2 * priceSapphireAmulet;
     await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
 
     // Asking for too much
@@ -436,30 +433,30 @@ describe("Shop", function () {
     const totalBrush = ethers.utils.parseEther("1");
     await brush.mint(shop.address, totalBrush);
 
-    let tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    let tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
     expect(tokenAllocation.allocationRemaining).to.eq(0);
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0))
       .to.emit(shop, "NewAllocation")
       .withArgs(EstforConstants.BRONZE_SHIELD, totalBrush.div(2));
-    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
+    tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD);
     expect(tokenAllocation.allocationRemaining).to.eq(
       ethers.utils.parseEther("0.5").sub(ethers.utils.parseEther("0.5").div(1000))
     );
-    expect((await shop.tokenAllocations(EstforConstants.BARRAGE_SCROLL)).allocationRemaining).to.eq(0); // shouldn't have changed
+    expect((await shop.tokenInfos(EstforConstants.BARRAGE_SCROLL)).allocationRemaining).to.eq(0); // shouldn't have changed
 
     const tokenPrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
     expect(tokenPrice).to.be.gt(0);
 
     // Sell all but 1, should be minimal allocation left
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 997, 0)).to.not.emit(shop, "NewAllocation");
-    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
+    tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD);
     let allocationRemaining = tokenPrice.mul(2);
     expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining);
 
     // Not enough to have a price
     expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.be.eq(0);
     await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
-    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD);
+    tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD);
     expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining); // Remains unchanged
 
     // Mint some, should fail to sell any as allocation is used up
@@ -480,11 +477,11 @@ describe("Shop", function () {
     const totalBrush = ethers.utils.parseEther("1");
     await brush.mint(shop.address, totalBrush);
 
-    let tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    let tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
     expect(tokenAllocation.allocationRemaining).to.eq(0);
     await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
-    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
     expect(tokenAllocation.allocationRemaining).to.eq(
       ethers.utils.parseEther("0.5").sub(ethers.utils.parseEther("0.5").div(1000))
     );
@@ -492,7 +489,7 @@ describe("Shop", function () {
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
-    tokenAllocation = await shop.tokenAllocations(EstforConstants.BRONZE_SHIELD); // Empty
+    tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
     expect(tokenAllocation.checkpointTimestamp).to.eq(Math.floor(NOW1 / 86400) * 86400);
     expect(tokenAllocation.allocationRemaining).to.eq("499249749749749750");
   });
@@ -534,5 +531,112 @@ describe("Shop", function () {
     await shop.removeItem(BRONZE_SHIELD);
     expect(await shop.shopItems(BRONZE_SHIELD)).eq(0);
     await expect(shop.removeItem(BRONZE_SHIELD)).to.be.revertedWithCustomError(shop, "ShopItemDoesNotExist");
+  });
+
+  describe("Unsellable items", async function () {
+    it("Cannot add an item which doesn't exist", async function () {
+      const {itemNFT, shop} = await loadFixture(deployContracts);
+
+      await expect(shop.addUnsellableItems([EstforConstants.ORICHALCUM_ARMOR])).to.be.revertedWithCustomError(
+        shop,
+        "ItemDoesNotExist"
+      );
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.ORICHALCUM_ARMOR,
+          equipPosition: EstforTypes.EquipPosition.BODY,
+        },
+      ]);
+      await expect(shop.addUnsellableItems([EstforConstants.ORICHALCUM_ARMOR])).to.not.be.reverted;
+    });
+
+    it("Cannot add an which is already unsellable", async function () {
+      const {shop} = await loadFixture(deployContracts);
+      await shop.addUnsellableItems([EstforConstants.BRONZE_SHIELD]);
+      await expect(shop.addUnsellableItems([EstforConstants.BRONZE_SHIELD])).to.be.revertedWithCustomError(
+        shop,
+        "AlreadyUnsellable"
+      );
+    });
+
+    it("Cannot remove an item which is already sellable", async function () {
+      const {itemNFT, shop} = await loadFixture(deployContracts);
+      await expect(shop.removeUnsellableItems([EstforConstants.BRONZE_SHIELD])).to.be.revertedWithCustomError(
+        shop,
+        "AlreadySellable"
+      );
+    });
+
+    it("Cannot be sold", async function () {
+      const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
+
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
+      await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
+
+      // Give the contract some brush to assign to the items
+      const totalBrush = 1200;
+      await brush.mint(shop.address, totalBrush);
+
+      await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
+      await shop.addUnsellableItems([EstforConstants.BRONZE_SHIELD]);
+      await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, totalBrush))
+        .to.be.revertedWithCustomError(shop, "ItemNotSellable")
+        .withArgs(EstforConstants.BRONZE_SHIELD);
+    });
+
+    it("Should not affect the liquidation price", async function () {
+      const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
+
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 200);
+      await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 100);
+
+      // Give the contract some brush to assign to the items
+      const totalBrush = 1200;
+      await brush.mint(shop.address, totalBrush);
+
+      const splitBrush = 600;
+      const priceShield = splitBrush / 200;
+      expect((await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).toNumber()).to.eq(priceShield);
+
+      const priceSapphireAmulet = splitBrush / 100;
+      expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
+        ethers.BigNumber.from(priceShield),
+        ethers.BigNumber.from(priceSapphireAmulet),
+      ]);
+      await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
+
+      // Add amulet as unsellable so it can't be sold, bronze shield should now have all the allocation from the treasure
+      await shop.addUnsellableItems([EstforConstants.SAPPHIRE_AMULET]);
+      const priceShieldAfterUnsellable = totalBrush / 200;
+      expect((await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).toNumber()).to.eq(priceShieldAfterUnsellable);
+      expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
+        ethers.BigNumber.from(priceShieldAfterUnsellable),
+        ethers.BigNumber.from(0),
+      ]);
+    });
+
+    it("Should not affect the total allocation for selling", async function () {
+      const {itemNFT, shop, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
+
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
+      await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 1000);
+      await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
+
+      // Give the contract some brush to assign to the items
+      const totalBrush = ethers.utils.parseEther("1");
+      await brush.mint(shop.address, totalBrush);
+      await shop.addUnsellableItems([EstforConstants.SAPPHIRE_AMULET]);
+
+      let tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
+      expect(tokenAllocation.allocationRemaining).to.eq(0);
+      await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0))
+        .to.emit(shop, "NewAllocation")
+        .withArgs(EstforConstants.BRONZE_SHIELD, totalBrush);
+      tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD);
+      expect(tokenAllocation.allocationRemaining).to.eq(
+        ethers.utils.parseEther("1").sub(ethers.utils.parseEther("1").div(1000))
+      );
+    });
   });
 });
