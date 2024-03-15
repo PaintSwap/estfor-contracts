@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {InstantVRFActionInput} from "../globals/rewards.sol";
+import {InstantVRFActionInput, InstantVRFActionType} from "../globals/rewards.sol";
+
+import {Skill} from "../globals/players.sol";
 
 interface IInstantVRFActionStrategy {
   function getRandomRewards(
@@ -9,7 +11,15 @@ interface IInstantVRFActionStrategy {
     uint actionAmount,
     uint[] calldata randomWords,
     uint randomWordStartIndex
-  ) external view returns (uint256[] memory producedItemTokenIds, uint[] memory producedAmounts);
+  )
+    external
+    view
+    returns (
+      uint[] memory producedItemTokenIds,
+      uint[] memory producedItemsAmounts,
+      uint[] memory producedPetBaseIds,
+      uint[] memory producedPetRandomWords
+    );
 
   function setAction(uint16 actionId, InstantVRFActionInput calldata input) external;
 }

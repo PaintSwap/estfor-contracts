@@ -6,7 +6,8 @@ import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol
 
 import {IInstantVRFActionStrategy} from "./IInstantVRFActionStrategy.sol";
 
-import {InstantVRFActionInput, RandomReward, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "../globals/rewards.sol";
+import {Skill} from "../globals/players.sol";
+import {InstantVRFActionInput, InstantVRFActionType, RandomReward, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "../globals/rewards.sol";
 import {NONE} from "../globals/items.sol";
 
 contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
@@ -24,8 +25,9 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   mapping(uint actionId => InstantVRFAction action) private actions;
 
   function setAction(uint16 _actionId, InstantVRFActionInput calldata _input) external override {
-    _checkRandomRewards(_input);
-    actions[_actionId] = _packAction(_input);
+    (, RandomReward[] memory randomRewards) = abi.decode(_input.data, (uint8, RandomReward[]));
+    _checkRandomRewards(randomRewards);
+    actions[_actionId] = _packAction(randomRewards);
   }
 
   function getRandomRewards(
@@ -33,11 +35,14 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     uint _actionAmount,
     uint[] calldata _randomWords,
     uint _randomWordStartIndex
-  ) external view override returns (uint[] memory ids, uint[] memory amounts) {
-    ids = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
-    amounts = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
-    uint actualLength;
-
+  )
+    external
+    view
+    override
+    returns (uint[] memory producedItemTokenIds, uint[] memory producedItemsAmounts, uint[] memory, uint[] memory)
+  {
+    producedItemTokenIds = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
+    producedItemsAmounts = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
     RandomReward[] memory randomRewards = _setupRandomRewards(_actionId);
 
     if (randomRewards.length != 0) {
@@ -53,15 +58,9 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
           randomReward = randomRewards[j];
         }
 
-        // This random reward's chance was hit, so add it to the hits
-        ids[actualLength] = randomReward.itemTokenId;
-        amounts[actualLength] = randomReward.amount;
-        ++actualLength;
+        producedItemTokenIds[i] = randomReward.itemTokenId;
+        producedItemsAmounts[i] = randomReward.amount;
       }
-    }
-    assembly ("memory-safe") {
-      mstore(ids, actualLength)
-      mstore(amounts, actualLength)
     }
   }
 
@@ -93,29 +92,29 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     }
   }
 
-  function _checkRandomRewards(InstantVRFActionInput calldata _actionInput) private pure {
+  function _checkRandomRewards(RandomReward[] memory _randomRewards) private pure {
     // Check random rewards are correct
-    if (_actionInput.randomRewards.length > 5) {
+    if (_randomRewards.length > 5) {
       revert TooManyRandomRewards();
     }
 
-    for (uint i; i < _actionInput.randomRewards.length; ++i) {
-      if (_actionInput.randomRewards[i].itemTokenId == 0) {
+    for (uint i; i < _randomRewards.length; ++i) {
+      if (_randomRewards[i].itemTokenId == 0) {
         revert RandomRewardSpecifiedWithoutTokenId();
       }
-      if (_actionInput.randomRewards[i].chance == 0) {
+      if (_randomRewards[i].chance == 0) {
         revert RandomRewardSpecifiedWithoutChance();
       }
-      if (_actionInput.randomRewards[i].amount == 0) {
+      if (_randomRewards[i].amount == 0) {
         revert RandomRewardSpecifiedWithoutAmount();
       }
 
-      if (i != _actionInput.randomRewards.length - 1) {
-        if (_actionInput.randomRewards[i].chance <= _actionInput.randomRewards[i + 1].chance) {
+      if (i != _randomRewards.length - 1) {
+        if (_randomRewards[i].chance <= _randomRewards[i + 1].chance) {
           revert RandomRewardChanceMustBeInOrder();
         }
-        for (uint j; j < _actionInput.randomRewards.length; ++j) {
-          if (j != i && _actionInput.randomRewards[i].itemTokenId == _actionInput.randomRewards[j].itemTokenId) {
+        for (uint j; j < _randomRewards.length; ++j) {
+          if (j != i && _randomRewards[i].itemTokenId == _randomRewards[j].itemTokenId) {
             revert RandomRewardItemNoDuplicates();
           }
         }
@@ -124,25 +123,25 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   }
 
   function _packAction(
-    InstantVRFActionInput calldata _actionInput
+    RandomReward[] memory _randomRewards
   ) private pure returns (InstantVRFAction memory instantVRFAction) {
     instantVRFAction = InstantVRFAction({
       randomRewardInfo: [
-        _actionInput.randomRewards.length > 0 ? _actionInput.randomRewards[0].itemTokenId : NONE,
-        _actionInput.randomRewards.length > 0 ? _actionInput.randomRewards[0].chance : 0,
-        _actionInput.randomRewards.length > 0 ? _actionInput.randomRewards[0].amount : 0,
-        _actionInput.randomRewards.length > 1 ? _actionInput.randomRewards[1].itemTokenId : NONE,
-        _actionInput.randomRewards.length > 1 ? _actionInput.randomRewards[1].chance : 0,
-        _actionInput.randomRewards.length > 1 ? _actionInput.randomRewards[1].amount : 0,
-        _actionInput.randomRewards.length > 2 ? _actionInput.randomRewards[2].itemTokenId : NONE,
-        _actionInput.randomRewards.length > 2 ? _actionInput.randomRewards[2].chance : 0,
-        _actionInput.randomRewards.length > 2 ? _actionInput.randomRewards[2].amount : 0,
-        _actionInput.randomRewards.length > 3 ? _actionInput.randomRewards[3].itemTokenId : NONE,
-        _actionInput.randomRewards.length > 3 ? _actionInput.randomRewards[3].chance : 0,
-        _actionInput.randomRewards.length > 3 ? _actionInput.randomRewards[3].amount : 0,
-        _actionInput.randomRewards.length > 4 ? _actionInput.randomRewards[4].itemTokenId : NONE,
-        _actionInput.randomRewards.length > 4 ? _actionInput.randomRewards[4].chance : 0,
-        _actionInput.randomRewards.length > 4 ? _actionInput.randomRewards[4].amount : 0
+        _randomRewards.length > 0 ? _randomRewards[0].itemTokenId : NONE,
+        _randomRewards.length > 0 ? _randomRewards[0].chance : 0,
+        _randomRewards.length > 0 ? _randomRewards[0].amount : 0,
+        _randomRewards.length > 1 ? _randomRewards[1].itemTokenId : NONE,
+        _randomRewards.length > 1 ? _randomRewards[1].chance : 0,
+        _randomRewards.length > 1 ? _randomRewards[1].amount : 0,
+        _randomRewards.length > 2 ? _randomRewards[2].itemTokenId : NONE,
+        _randomRewards.length > 2 ? _randomRewards[2].chance : 0,
+        _randomRewards.length > 2 ? _randomRewards[2].amount : 0,
+        _randomRewards.length > 3 ? _randomRewards[3].itemTokenId : NONE,
+        _randomRewards.length > 3 ? _randomRewards[3].chance : 0,
+        _randomRewards.length > 3 ? _randomRewards[3].amount : 0,
+        _randomRewards.length > 4 ? _randomRewards[4].itemTokenId : NONE,
+        _randomRewards.length > 4 ? _randomRewards[4].chance : 0,
+        _randomRewards.length > 4 ? _randomRewards[4].amount : 0
       ]
     });
   }

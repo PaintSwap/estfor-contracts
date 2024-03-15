@@ -7,12 +7,14 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 import {IInstantVRFActionStrategy} from "./InstantVRFActionStrategies/IInstantVRFActionStrategy.sol";
 import {ItemNFT} from "./ItemNFT.sol";
+//import {PetNFT} from "./PetNFT.sol";
 import {Players} from "./Players/Players.sol";
 import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 
-import {EquipPosition, IS_FULL_MODE_BIT} from "./globals/players.sol";
+import {Skill, EquipPosition, IS_FULL_MODE_BIT} from "./globals/players.sol";
 import {InstantVRFActionInput, InstantVRFActionType, RandomReward, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "./globals/rewards.sol";
 import {NONE} from "./globals/items.sol";
+import {Skin, PetEnhancementType} from "./globals/pets.sol";
 
 contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   event AddInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
@@ -33,7 +35,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint playerId,
     uint requestId,
     uint[] producedItemTokenIds,
-    uint[] producedItemAmounts
+    uint[] producedItemAmounts,
+    uint[] producedPetTokenIds
   );
   event AddStrategies(InstantVRFActionType[] actionTypes, address[] strategies);
 
@@ -93,6 +96,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
   address private oracle;
   ISamWitchVRF private samWitchVRF;
+  //  address private petNFT;
 
   uint public constant MAX_ACTION_AMOUNT = 96;
   uint private constant CALLBACK_GAS_LIMIT = 2_000_000;
@@ -121,6 +125,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   function initialize(
     Players _players,
     ItemNFT _itemNFT,
+    //    PetNFT _petNFT,
     address _oracle,
     ISamWitchVRF _samWitchVRF,
     VRFRequestInfo _vrfRequestInfo,
@@ -131,6 +136,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     __Ownable_init();
     players = _players;
     itemNFT = _itemNFT;
+    //    petNFT = _petNFT;
     oracle = _oracle;
     samWitchVRF = _samWitchVRF;
     vrfRequestInfo = _vrfRequestInfo;
@@ -241,36 +247,62 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       revert RequestDoesNotExist();
     }
 
-    (uint[] memory producedItemTokenIds, uint[] memory producedItemAmounts) = _getRewards(playerId, _randomWords);
+    (
+      uint[] memory itemTokenIds,
+      uint[] memory itemAmounts,
+      uint[] memory petBaseIds,
+      uint[] memory randomWords
+    ) = _getRewards(playerId, _randomWords);
 
     vrfRequestInfo.updateAverageGasPrice();
 
     delete playerActionInfos[playerId]; // Allows another request to be made
     delete requestIdToPlayer[_requestId]; // Not strictly necessary
 
-    if (producedItemTokenIds.length != 0) {
-      try itemNFT.mintBatch(from, producedItemTokenIds, producedItemAmounts) {} catch {
+    if (itemTokenIds.length != 0) {
+      try itemNFT.mintBatch(from, itemTokenIds, itemAmounts) {} catch {
         // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
         assembly ("memory-safe") {
-          mstore(producedItemTokenIds, 0)
-          mstore(producedItemAmounts, 0)
+          mstore(itemTokenIds, 0)
+          mstore(itemAmounts, 0)
         }
       }
     }
 
-    emit CompletedInstantVRFActions(from, playerId, uint(_requestId), producedItemTokenIds, producedItemAmounts);
+    uint[] memory petTokenIds;
+    if (petBaseIds.length != 0) {
+      try petNFT.mintBatch(from, petBaseIds, randomWords) returns (uint[] memory newPetTokenIds) {
+        petTokenIds = newPetTokenIds;
+      } catch {
+        // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
+      }
+    }
+
+    emit CompletedInstantVRFActions(from, playerId, uint(_requestId), itemTokenIds, itemAmounts, petTokenIds);
   }
 
   function _getRewards(
     uint _playerId,
     uint[] calldata _randomWords
-  ) private view returns (uint[] memory tokenIds, uint[] memory amounts) {
+  )
+    private
+    view
+    returns (
+      uint[] memory itemTokenIds,
+      uint[] memory itemAmounts,
+      uint[] memory petBaseIds,
+      uint[] memory petRandomWords
+    )
+  {
     uint16[10] storage _playerActionInfos = playerActionInfos[_playerId].actionIdAmountPairs;
     uint playerActionInfoLength = _playerActionInfos.length;
-    tokenIds = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
-    amounts = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
+    itemTokenIds = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
+    itemAmounts = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
+    petBaseIds = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
+    petRandomWords = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
 
-    uint actualLength;
+    uint actualItemLength;
+    uint actualPetLength;
     uint randomWordStartIndex;
     for (uint i; i < playerActionInfoLength / 2; ++i) {
       // Need to handle async nature if this action no longer exists by the time it is called
@@ -280,24 +312,36 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
         continue;
       }
 
-      (uint[] memory randomIds, uint[] memory randomAmounts) = IInstantVRFActionStrategy(actions[actionId].strategy)
-        .getRandomRewards(actionId, actionAmount, _randomWords, randomWordStartIndex);
+      (
+        uint[] memory producedItemTokenIds,
+        uint[] memory producedItemsAmounts,
+        uint[] memory producedPetBaseIds,
+        uint[] memory producedPetRandomWords
+      ) = IInstantVRFActionStrategy(actions[actionId].strategy).getRandomRewards(
+          actionId,
+          actionAmount,
+          _randomWords,
+          randomWordStartIndex
+        );
 
-      if (randomIds.length != 0) {
-        // Copy into main arrays
-        for (uint j = 0; j < randomIds.length; ++j) {
-          tokenIds[actualLength] = randomIds[j];
-          amounts[actualLength] = randomAmounts[j];
-          ++actualLength;
-        }
+      // Copy into main arrays
+      for (uint j = 0; j < producedItemTokenIds.length; ++j) {
+        itemTokenIds[actualItemLength] = producedItemTokenIds[j];
+        itemAmounts[actualItemLength++] = producedItemsAmounts[j];
+      }
+      for (uint j = 0; j < producedPetBaseIds.length; ++j) {
+        petBaseIds[actualPetLength] = producedPetBaseIds[j];
+        petRandomWords[actualPetLength] = producedPetRandomWords[j];
       }
 
       randomWordStartIndex += actionAmount / 16 + (actionAmount % 16) == 0 ? 0 : 1;
     }
 
     assembly ("memory-safe") {
-      mstore(tokenIds, actualLength)
-      mstore(amounts, actualLength)
+      mstore(itemTokenIds, actualItemLength)
+      mstore(itemAmounts, actualItemLength)
+      mstore(petBaseIds, actualPetLength)
+      mstore(petRandomWords, actualPetLength)
     }
   }
 
@@ -452,6 +496,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     emit SetGasCostPerUnit(_gasCostPerUnit);
   }
 
+  /*
+  function setPetNFT(PetNFT _petNFT) external onlyOwner {
+    petNFT = _petNFT;
+  }
+*/
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

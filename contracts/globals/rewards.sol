@@ -66,7 +66,7 @@ struct InstantVRFActionInput {
   uint16 actionId;
   uint16[] inputTokenIds;
   uint24[] inputAmounts;
-  RandomReward[] randomRewards;
+  bytes data;
   InstantVRFActionType actionType;
   bool isFullModeOnly;
 }

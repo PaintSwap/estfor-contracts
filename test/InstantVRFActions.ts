@@ -28,7 +28,10 @@ describe("Instant VRF actions", function () {
       actionId: 1,
       inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
       inputAmounts: [1, 2, 3],
-      randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}], // 100% chance of 2 runite arrows
+      data: ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]]
+      ), // 100% chance of 2 runite arrows
       isFullModeOnly: false,
       actionType: EstforTypes.InstantVRFActionType.FORGING,
     };
@@ -404,9 +407,6 @@ describe("Instant VRF actions", function () {
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
-        inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
-        randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}],
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -432,9 +432,6 @@ describe("Instant VRF actions", function () {
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
-        inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
-        randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}],
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -450,7 +447,7 @@ describe("Instant VRF actions", function () {
       const requestId = 1;
       await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
         .to.emit(instantVRFActions, "CompletedInstantVRFActions")
-        .withArgs(alice.address, playerId, requestId, [RUNITE_ARROW], [2]);
+        .withArgs(alice.address, playerId, requestId, [RUNITE_ARROW], [2], []);
     });
 
     it("Cannot make another request until the ongoing one is fulfilled", async function () {
@@ -458,9 +455,6 @@ describe("Instant VRF actions", function () {
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
-        inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
-        randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}],
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -516,7 +510,7 @@ describe("Instant VRF actions", function () {
       const requestId = 1;
       await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
         .to.emit(instantVRFActions, "CompletedInstantVRFActions")
-        .withArgs(alice.address, playerId, requestId, [], []);
+        .withArgs(alice.address, playerId, requestId, [], [], []);
     });
 
     it("Reverting in the contract receiving the NFTs should not revert the oracle callback", async function () {
@@ -552,7 +546,7 @@ describe("Instant VRF actions", function () {
       const requestId = 1;
       await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
         .to.emit(instantVRFActions, "CompletedInstantVRFActions")
-        .withArgs(erc1155HolderRogue.address, playerId, requestId, [], []);
+        .withArgs(erc1155HolderRogue.address, playerId, requestId, [], [], []);
     });
 
     it("Add multiple actions", async function () {
@@ -633,6 +627,7 @@ describe("Instant VRF actions", function () {
         const {
           players,
           itemNFT,
+          petNFT,
           oracleAddress,
           mockSWVRFOracleClient,
           vrfRequestInfo,
@@ -645,6 +640,7 @@ describe("Instant VRF actions", function () {
           [
             players.address,
             itemNFT.address,
+            petNFT.address,
             oracleAddress,
             mockSWVRFOracleClient.address,
             vrfRequestInfo.address,
@@ -696,6 +692,7 @@ describe("Instant VRF actions", function () {
         const {
           players,
           itemNFT,
+          petNFT,
           oracleAddress,
           mockSWVRFOracleClient,
           vrfRequestInfo,
@@ -708,6 +705,7 @@ describe("Instant VRF actions", function () {
           [
             players.address,
             itemNFT.address,
+            petNFT.address,
             oracleAddress,
             mockSWVRFOracleClient.address,
             vrfRequestInfo.address,
@@ -745,6 +743,7 @@ describe("Instant VRF actions", function () {
         const {
           players,
           itemNFT,
+          petNFT,
           oracleAddress,
           mockSWVRFOracleClient,
           vrfRequestInfo,
@@ -758,6 +757,7 @@ describe("Instant VRF actions", function () {
           [
             players.address,
             itemNFT.address,
+            petNFT.address,
             oracleAddress,
             mockSWVRFOracleClient.address,
             vrfRequestInfo.address,
@@ -787,7 +787,10 @@ describe("Instant VRF actions", function () {
           ...defaultInstantVRFActionInput,
           inputTokenIds: [BRONZE_ARROW],
           inputAmounts: [1],
-          randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 1}],
+          data: ethers.utils.defaultAbiCoder.encode(
+            ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+            [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 1}]]
+          ),
           actionType: EstforTypes.InstantVRFActionType.EGG,
         };
 
@@ -810,9 +813,6 @@ describe("Instant VRF actions", function () {
     const defaultInstantVRFActionInput: InstantVRFActionInput = {
       ..._defaultInstantVRFActionInput,
       actionId: 1,
-      inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-      inputAmounts: [1, 2, 3],
-      randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}], // 100% chance of 2 runite arrows
       isFullModeOnly: false,
       actionType: EstforTypes.InstantVRFActionType.FORGING,
     };
@@ -820,11 +820,15 @@ describe("Instant VRF actions", function () {
     it("Random reward validation", async function () {
       const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
 
+      let randomRewards = [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 0}];
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
         inputAmounts: [1, 2, 3],
-        randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 0}],
+        data: ethers.utils.defaultAbiCoder.encode(
+          ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+          [0, randomRewards]
+        ), // 100% chance of 2 runite arrows
       };
 
       // Must have an amount out that is greater than 0
@@ -833,48 +837,76 @@ describe("Instant VRF actions", function () {
         "RandomRewardSpecifiedWithoutAmount"
       );
 
-      instantVRFActionInput.randomRewards[0].amount = 1;
-      instantVRFActionInput.randomRewards[0].itemTokenId = NONE;
+      randomRewards[0].amount = 1;
+      randomRewards[0].itemTokenId = NONE;
+
+      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, randomRewards]
+      );
+
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
         "RandomRewardSpecifiedWithoutTokenId"
       );
 
-      instantVRFActionInput.randomRewards[0].itemTokenId = EstforConstants.RUNITE_ARROW;
-      instantVRFActionInput.randomRewards[0].chance = 0;
+      randomRewards[0].itemTokenId = EstforConstants.RUNITE_ARROW;
+      randomRewards[0].chance = 0;
+
+      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, randomRewards]
+      );
+
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
         "RandomRewardSpecifiedWithoutChance"
       );
 
-      instantVRFActionInput.randomRewards = [
+      randomRewards = [
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 1},
         {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 2, amount: 1},
       ];
+
+      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, randomRewards]
+      );
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
         "RandomRewardChanceMustBeInOrder"
       );
       // Equal chance not allowed either
-      instantVRFActionInput.randomRewards = [
+      randomRewards = [
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 1},
         {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 1, amount: 1},
       ];
+      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, randomRewards]
+      );
+
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
         "RandomRewardChanceMustBeInOrder"
       );
 
-      instantVRFActionInput.randomRewards = [
+      randomRewards = [
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 2, amount: 1},
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 1},
       ];
+
+      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, randomRewards]
+      );
+
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
         "RandomRewardItemNoDuplicates"
       );
 
-      instantVRFActionInput.randomRewards = [
+      randomRewards = [
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 10, amount: 1},
         {itemTokenId: EstforConstants.ORICHALCUM_ARROW, chance: 9, amount: 1},
         {itemTokenId: EstforConstants.BRONZE_ARROW, chance: 8, amount: 1},
@@ -883,12 +915,22 @@ describe("Instant VRF actions", function () {
         {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 5, amount: 1},
       ];
 
+      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, randomRewards]
+      );
+
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
         "TooManyRandomRewards"
       );
 
-      instantVRFActionInput.randomRewards.pop();
+      randomRewards.pop();
+      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, randomRewards]
+      );
+
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.not.be.reverted;
     });
 
@@ -897,16 +939,21 @@ describe("Instant VRF actions", function () {
       this.retries(3);
       this.timeout(100000); // 100 seconds, this test might take a while on CI
 
+      const randomRewards = [
+        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}, // 30% chance of 2 runite arrows
+        {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 45874, amount: 2}, // 20% chance of 2 runite arrows
+        {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 32767, amount: 2}, // 40% chance of 2 runite arrows
+        {itemTokenId: EstforConstants.ORICHALCUM_ARROW, chance: 6553, amount: 2}, // 10% chance of orichalcum arrows]]
+      ];
+
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW],
         inputAmounts: [1],
-        randomRewards: [
-          {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}, // 30% chance of 2 runite arrows
-          {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 45874, amount: 2}, // 20% chance of 2 runite arrows
-          {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 32767, amount: 2}, // 40% chance of 2 runite arrows
-          {itemTokenId: EstforConstants.ORICHALCUM_ARROW, chance: 6553, amount: 2}, // 10% chance of orichalcum arrows
-        ],
+        data: ethers.utils.defaultAbiCoder.encode(
+          ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+          [0, randomRewards]
+        ),
       };
 
       // Add it twice, just to get this tested
@@ -941,12 +988,9 @@ describe("Instant VRF actions", function () {
         EstforConstants.ORICHALCUM_ARROW,
       ]);
 
-      for (let i = 0; i < instantVRFActionInput.randomRewards.length - 1; ++i) {
-        const chance =
-          instantVRFActionInput.randomRewards[i].chance - instantVRFActionInput.randomRewards[i + 1].chance;
-        const expectedBalance = Math.floor(
-          (actionAmount * numRepeats * instantVRFActionInput.randomRewards[i].amount * chance) / 65535
-        );
+      for (let i = 0; i < randomRewards.length - 1; ++i) {
+        const chance = randomRewards[i].chance - randomRewards[i + 1].chance;
+        const expectedBalance = Math.floor((actionAmount * numRepeats * randomRewards[i].amount * chance) / 65535);
         expect(balances[i]).to.not.eq(expectedBalance); // Very unlikely to be exact, but possible. This checks there is at least some randomness
         expect(balances[i]).to.be.gte(Math.floor(expectedBalance * 0.85)); // Within 15% below
         expect(balances[i]).to.be.lte(Math.floor(expectedBalance * 1.15)); // 15% of the time we should get more than 50% of the reward
@@ -956,14 +1000,14 @@ describe("Instant VRF actions", function () {
       const expectedBalance = Math.floor(
         (actionAmount *
           numRepeats *
-          instantVRFActionInput.randomRewards[instantVRFActionInput.randomRewards.length - 1].amount *
-          instantVRFActionInput.randomRewards[instantVRFActionInput.randomRewards.length - 1].chance) /
+          randomRewards[randomRewards.length - 1].amount *
+          randomRewards[randomRewards.length - 1].chance) /
           65535
       );
 
-      expect(balances[instantVRFActionInput.randomRewards.length - 1]).to.not.eq(expectedBalance); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-      expect(balances[instantVRFActionInput.randomRewards.length - 1]).to.be.gte(Math.floor(expectedBalance * 0.85)); // Within 15% below
-      expect(balances[instantVRFActionInput.randomRewards.length - 1]).to.be.lte(Math.floor(expectedBalance * 1.15)); // 15% of the time we should get more than 50% of the reward
+      expect(balances[randomRewards.length - 1]).to.not.eq(expectedBalance); // Very unlikely to be exact, but possible. This checks there is at least some randomness
+      expect(balances[randomRewards.length - 1]).to.be.gte(Math.floor(expectedBalance * 0.85)); // Within 15% below
+      expect(balances[randomRewards.length - 1]).to.be.lte(Math.floor(expectedBalance * 1.15)); // 15% of the time we should get more than 50% of the reward
     });
   });
 
@@ -973,7 +1017,10 @@ describe("Instant VRF actions", function () {
       actionId: 1,
       inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
       inputAmounts: [1, 2, 3],
-      randomRewards: [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}], // 100% chance of 2 runite arrows
+      data: ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+        [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]]
+      ),
       isFullModeOnly: false,
       actionType: EstforTypes.InstantVRFActionType.EGG,
     };
