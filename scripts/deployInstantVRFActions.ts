@@ -40,24 +40,10 @@ async function main() {
   await vrfRequestInfo.deployed();
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
 
-  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
-  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(GenericInstantVRFActionStrategy, [], {
-    kind: "uups",
-  })) as GenericInstantVRFActionStrategy;
-  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
-
   const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(signer);
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [
-      PLAYERS_ADDRESS,
-      ITEM_NFT_ADDRESS,
-      ORACLE_ADDRESS,
-      SAMWITCH_VRF_ADDRESS,
-      vrfRequestInfo.address,
-      [InstantVRFActionType.FORGING],
-      [genericInstantVRFActionStrategy.address],
-    ],
+    [PLAYERS_ADDRESS, ITEM_NFT_ADDRESS, ORACLE_ADDRESS, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
     {
       kind: "uups",
       timeout,
@@ -65,6 +51,17 @@ async function main() {
   )) as InstantVRFActions;
   await instantVRFActions.deployed();
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
+    GenericInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+      timeout,
+    }
+  )) as GenericInstantVRFActionStrategy;
+  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
 
   // Upgrade ItemNFT
   const ItemNFT = (
@@ -79,6 +76,10 @@ async function main() {
   let tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
   await tx.wait();
   console.log("itemNFT.setInstantVRFActions");
+
+  tx = await instantVRFActions.addStrategies([InstantVRFActionType.FORGING], [genericInstantVRFActionStrategy.address]);
+  await tx.wait();
+  console.log("instantVRFActions.addStrategies");
 
   if ((await owner.getChainId()) == 250) {
     await verifyContracts([

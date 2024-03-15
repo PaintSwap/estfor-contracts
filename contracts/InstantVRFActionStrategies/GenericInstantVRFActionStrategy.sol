@@ -17,14 +17,35 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   error RandomRewardSpecifiedWithoutAmount();
   error RandomRewardChanceMustBeInOrder();
   error RandomRewardItemNoDuplicates();
+  error OnlyInstantVRFActions();
 
   struct InstantVRFAction {
     uint16[15] randomRewardInfo; // Can have up to 5 different random reward tokens. Order is tokenId, chance, amount etc
   }
 
   mapping(uint actionId => InstantVRFAction action) private actions;
+  address private instantVRFActions;
 
-  function setAction(uint16 _actionId, InstantVRFActionInput calldata _input) external override {
+  modifier onlyInstantVRFActions() {
+    if (instantVRFActions != _msgSender()) {
+      revert OnlyInstantVRFActions();
+    }
+    _;
+  }
+
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
+  function initialize(address _instantVRFActions) external initializer {
+    __UUPSUpgradeable_init();
+    __Ownable_init();
+
+    instantVRFActions = _instantVRFActions;
+  }
+
+  function setAction(uint16 _actionId, InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {
     (, RandomReward[] memory randomRewards) = abi.decode(_input.data, (uint8, RandomReward[]));
     _checkRandomRewards(randomRewards);
     actions[_actionId] = _packAction(randomRewards);

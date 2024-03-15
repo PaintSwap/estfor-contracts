@@ -18,10 +18,20 @@ import NONE, {
 } from "@paintswap/estfor-definitions/constants";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {fulfillRandomWords} from "./utils";
-import {ethers, upgrades} from "hardhat";
-import {ERC1155HolderRogue, InstantVRFActions} from "../typechain-types";
+import {ethers} from "hardhat";
+import {ERC1155HolderRogue} from "../typechain-types";
 
 describe("Instant VRF actions", function () {
+  const forgingFixture = async function () {
+    const fixture = {...(await loadFixture(playersFixture))};
+
+    await fixture.instantVRFActions.addStrategies(
+      [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
+      [fixture.genericInstantVRFActionStrategy.address, fixture.genericInstantVRFActionStrategy.address]
+    );
+    return fixture;
+  };
+
   describe("Shared", function () {
     const defaultInstantVRFActionInput: InstantVRFActionInput = {
       ..._defaultInstantVRFActionInput,
@@ -37,7 +47,7 @@ describe("Instant VRF actions", function () {
     };
 
     it("Check input item order", async function () {
-      const {instantVRFActions} = await loadFixture(playersFixture);
+      const {instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -68,7 +78,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Check input item validation", async function () {
-      const {instantVRFActions} = await loadFixture(playersFixture);
+      const {instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -95,7 +105,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Any inputs should be burnt (do multiple)", async function () {
-      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -119,7 +129,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Cannot use greater than MAX_ACTION_AMOUNT for the combined action amounts", async function () {
-      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -154,7 +164,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Do multiple instant actions at once", async function () {
-      const {playerId, instantVRFActions, itemNFT, mockSWVRFOracleClient, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, itemNFT, mockSWVRFOracleClient, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -208,7 +218,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Not paying the request cost", async function () {
-      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -240,7 +250,7 @@ describe("Instant VRF actions", function () {
         origName,
         brush,
         alice,
-      } = await loadFixture(playersFixture);
+      } = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -278,7 +288,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Cannot add same instant action twice", async function () {
-      const {instantVRFActions} = await loadFixture(playersFixture);
+      const {instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -292,7 +302,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Must be owner to add an action", async function () {
-      const {instantVRFActions, alice} = await loadFixture(playersFixture);
+      const {instantVRFActions, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -306,7 +316,7 @@ describe("Instant VRF actions", function () {
 
     describe("Edit", function () {
       it("Must be owner to edit an action", async function () {
-        const {instantVRFActions, alice} = await loadFixture(playersFixture);
+        const {instantVRFActions, alice} = await loadFixture(forgingFixture);
 
         const instantVRFActionInput: InstantVRFActionInput = {
           ...defaultInstantVRFActionInput,
@@ -319,7 +329,7 @@ describe("Instant VRF actions", function () {
       });
 
       it("Edited action must exist", async function () {
-        const {instantVRFActions} = await loadFixture(playersFixture);
+        const {instantVRFActions} = await loadFixture(forgingFixture);
 
         const instantVRFActionInput: InstantVRFActionInput = {
           ...defaultInstantVRFActionInput,
@@ -345,7 +355,7 @@ describe("Instant VRF actions", function () {
 
     describe("Remove", function () {
       it("Must be owner to removed an action", async function () {
-        const {instantVRFActions, alice} = await loadFixture(playersFixture);
+        const {instantVRFActions, alice} = await loadFixture(forgingFixture);
 
         const instantVRFActionInput: InstantVRFActionInput = {
           ...defaultInstantVRFActionInput,
@@ -360,7 +370,7 @@ describe("Instant VRF actions", function () {
       });
 
       it("Removed action must exist", async function () {
-        const {instantVRFActions} = await loadFixture(playersFixture);
+        const {instantVRFActions} = await loadFixture(forgingFixture);
         await expect(instantVRFActions.removeActions([1])).to.be.revertedWithCustomError(
           instantVRFActions,
           "ActionDoesNotExist"
@@ -380,7 +390,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Must be owner of player to do instant actions", async function () {
-      const {playerId, instantVRFActions} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -396,14 +406,14 @@ describe("Instant VRF actions", function () {
     });
 
     it("Cannot do an action which does not exist", async function () {
-      const {playerId, instantVRFActions, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, alice} = await loadFixture(forgingFixture);
       await expect(
         instantVRFActions.connect(alice).doInstantVRFActions(playerId, [0], [1])
       ).to.be.revertedWithCustomError(instantVRFActions, "ActionDoesNotExist");
     });
 
     it("Check amount > 1 burns and mints as expected", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -428,7 +438,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("CompletedInstantVRFActions event should be emitted with correct produced item output", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -451,7 +461,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Cannot make another request until the ongoing one is fulfilled", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -488,7 +498,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Deleting an action before fulfillment should not revert", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -515,7 +525,7 @@ describe("Instant VRF actions", function () {
 
     it("Reverting in the contract receiving the NFTs should not revert the oracle callback", async function () {
       const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, playerNFT, players, alice} =
-        await loadFixture(playersFixture);
+        await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -550,7 +560,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Add multiple actions", async function () {
-      const {instantVRFActions} = await loadFixture(playersFixture);
+      const {instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -580,7 +590,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Check packed data", async function () {
-      const {instantVRFActions} = await loadFixture(playersFixture);
+      const {instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -592,7 +602,7 @@ describe("Instant VRF actions", function () {
 
     it("Check full mode requirements", async function () {
       const {playerId, instantVRFActions, brush, upgradePlayerBrushPrice, playerNFT, origName, itemNFT, alice} =
-        await loadFixture(playersFixture);
+        await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -624,33 +634,7 @@ describe("Instant VRF actions", function () {
 
     describe("Strategies", function () {
       it("Add strategies", async function () {
-        const {
-          players,
-          itemNFT,
-          petNFT,
-          oracleAddress,
-          mockSWVRFOracleClient,
-          vrfRequestInfo,
-          genericInstantVRFActionStrategy,
-        } = await loadFixture(playersFixture);
-
-        const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
-        const instantVRFActions = (await upgrades.deployProxy(
-          InstantVRFActions,
-          [
-            players.address,
-            itemNFT.address,
-            petNFT.address,
-            oracleAddress,
-            mockSWVRFOracleClient.address,
-            vrfRequestInfo.address,
-            [],
-            [],
-          ],
-          {
-            kind: "uups",
-          }
-        )) as InstantVRFActions;
+        const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
 
         await expect(
           instantVRFActions.addStrategies(
@@ -675,6 +659,10 @@ describe("Instant VRF actions", function () {
 
       it("Adding same strategy should revert", async function () {
         const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
+        await instantVRFActions.addStrategies(
+          [InstantVRFActionType.FORGING],
+          [genericInstantVRFActionStrategy.address]
+        );
         await expect(
           instantVRFActions.addStrategies([InstantVRFActionType.FORGING], [genericInstantVRFActionStrategy.address])
         ).to.be.revertedWithCustomError(instantVRFActions, "StrategyAlreadyExists");
@@ -689,33 +677,7 @@ describe("Instant VRF actions", function () {
       });
 
       it("Zero address or NONE InstantVRFActionType should revert", async function () {
-        const {
-          players,
-          itemNFT,
-          petNFT,
-          oracleAddress,
-          mockSWVRFOracleClient,
-          vrfRequestInfo,
-          genericInstantVRFActionStrategy,
-        } = await loadFixture(playersFixture);
-
-        const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
-        const instantVRFActions = (await upgrades.deployProxy(
-          InstantVRFActions,
-          [
-            players.address,
-            itemNFT.address,
-            petNFT.address,
-            oracleAddress,
-            mockSWVRFOracleClient.address,
-            vrfRequestInfo.address,
-            [],
-            [],
-          ],
-          {
-            kind: "uups",
-          }
-        )) as InstantVRFActions;
+        const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
 
         await expect(
           instantVRFActions.addStrategies(
@@ -740,34 +702,7 @@ describe("Instant VRF actions", function () {
       });
 
       it("Add strategies, must be called by the owner", async function () {
-        const {
-          players,
-          itemNFT,
-          petNFT,
-          oracleAddress,
-          mockSWVRFOracleClient,
-          vrfRequestInfo,
-          genericInstantVRFActionStrategy,
-          alice,
-        } = await loadFixture(playersFixture);
-
-        const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
-        const instantVRFActions = (await upgrades.deployProxy(
-          InstantVRFActions,
-          [
-            players.address,
-            itemNFT.address,
-            petNFT.address,
-            oracleAddress,
-            mockSWVRFOracleClient.address,
-            vrfRequestInfo.address,
-            [],
-            [],
-          ],
-          {
-            kind: "uups",
-          }
-        )) as InstantVRFActions;
+        const {instantVRFActions, genericInstantVRFActionStrategy, alice} = await loadFixture(playersFixture);
 
         await expect(
           instantVRFActions
@@ -818,7 +753,7 @@ describe("Instant VRF actions", function () {
     };
 
     it("Random reward validation", async function () {
-      const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
+      const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(forgingFixture);
 
       let randomRewards = [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 0}];
       const instantVRFActionInput: InstantVRFActionInput = {
@@ -935,7 +870,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Check random rewards (many)", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
+      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
       this.retries(3);
       this.timeout(100000); // 100 seconds, this test might take a while on CI
 
@@ -1012,6 +947,16 @@ describe("Instant VRF actions", function () {
   });
 
   describe("Egg hatching random rewards", function () {
+    const eggFixture = async function () {
+      const fixture = {...(await loadFixture(playersFixture))};
+
+      await fixture.instantVRFActions.addStrategies(
+        [InstantVRFActionType.EGG],
+        [fixture.genericInstantVRFActionStrategy.address] // TODO: Update
+      );
+      return fixture;
+    };
+
     const defaultInstantVRFActionInput: InstantVRFActionInput = {
       ..._defaultInstantVRFActionInput,
       actionId: 1,

@@ -10,7 +10,30 @@ import {InstantVRFActionInput, RandomReward, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_
 
 // Just an example so far, use for eggs later
 contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
-  function setAction(uint16 _actionId, InstantVRFActionInput calldata _input) external override {}
+  error OnlyInstantVRFActions();
+
+  address private instantVRFActions;
+
+  modifier onlyInstantVRFActions() {
+    if (instantVRFActions != _msgSender()) {
+      revert OnlyInstantVRFActions();
+    }
+    _;
+  }
+
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
+  function initialize(address _instantVRFActions) external initializer {
+    __UUPSUpgradeable_init();
+    __Ownable_init();
+
+    instantVRFActions = _instantVRFActions;
+  }
+
+  function setAction(uint16 _actionId, InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {}
 
   function getRandomRewards(
     uint _actionId,

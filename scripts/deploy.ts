@@ -434,23 +434,10 @@ async function main() {
   await instantActions.deployed();
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
 
-  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
-  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(GenericInstantVRFActionStrategy, [], {
-    kind: "uups",
-  })) as GenericInstantVRFActionStrategy;
-
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [
-      players.address,
-      itemNFT.address,
-      oracle.address,
-      SAMWITCH_VRF_ADDRESS,
-      vrfRequestInfo.address,
-      [InstantVRFActionType.FORGING],
-      [genericInstantVRFActionStrategy.address],
-    ],
+    [players.address, itemNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
     {
       kind: "uups",
       timeout,
@@ -458,6 +445,16 @@ async function main() {
   )) as InstantVRFActions;
   await instantVRFActions.deployed();
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
+    GenericInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as GenericInstantVRFActionStrategy;
+  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
 
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.deployProxy(
@@ -653,6 +650,13 @@ async function main() {
   tx = await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
   await tx.wait();
   console.log("bankRegistry.setLockedBankVaults");
+
+  tx = await instantVRFActions.addStrategies(
+    [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING],
+    [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
+  );
+  await tx.wait();
+  console.log("instantVRFActions.addStrategies");
 
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();

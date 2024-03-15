@@ -120,9 +120,9 @@ BankProxy [0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb](https://ftmscan.com/addre
 BankFactory [0x7b8197e7d7352e8910a7af79a9184f50290403da](https://ftmscan.com/address/0x7b8197e7d7352e8910a7af79a9184f50290403da)
 
 InstantActions [0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76](https://ftmscan.com/address/0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76)  
-InstantVRFActions [0xbde211941ef875c1d90e304ae4a4bc6cbd1463dc](https://ftmscan.com/address/0xbde211941ef875c1d90e304ae4a4bc6cbd1463dc)  
-GenericInstantVRFActionStrategy [0xcf633207b055bb97eac4cd95a800350c89610742](https://ftmscan.com/address/0xcf633207b055bb97eac4cd95a800350c89610742)  
-VRFRequestInfo [0x1ab13ea940fa7ffb03782334f9c7a67775732db5](https://ftmscan.com/address/0x1ab13ea940fa7ffb03782334f9c7a67775732db5)
+InstantVRFActions [0xe297508ff83ba7a984ec8778ea67d82e049eda58](https://ftmscan.com/address/0xe297508ff83ba7a984ec8778ea67d82e049eda58)  
+GenericInstantVRFActionStrategy [0x2ea7d26184188ec7495acaa84a7de1292e8a1794](https://ftmscan.com/address/0x2ea7d26184188ec7495acaa84a7de1292e8a1794)  
+VRFRequestInfo [0x9bcf94e6c067c575dd6a748e45330b4ae4dc0483](https://ftmscan.com/address/0x9bcf94e6c067c575dd6a748e45330b4ae4dc0483)
 
 LockedBankVaults [0x40567ad9cd25c56422807ed67f0e66f1825bdb91](https://ftmscan.com/address/0x40567ad9cd25c56422807ed67f0e66f1825bdb91)  
 Territories [0xf31517db9f0987002f3a0fb4f787dfb9e892f184](https://ftmscan.com/address/0xf31517db9f0987002f3a0fb4f787dfb9e892f184)  

@@ -266,27 +266,23 @@ export const playersFixture = async function () {
     kind: "uups",
   })) as VRFRequestInfo;
 
-  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
-  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(GenericInstantVRFActionStrategy, [], {
-    kind: "uups",
-  })) as GenericInstantVRFActionStrategy;
-
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [
-      players.address,
-      itemNFT.address,
-      oracleAddress,
-      mockSWVRFOracleClient.address,
-      vrfRequestInfo.address,
-      [InstantVRFActionType.FORGING],
-      [genericInstantVRFActionStrategy.address],
-    ],
+    [players.address, itemNFT.address, oracleAddress, mockSWVRFOracleClient.address, vrfRequestInfo.address],
     {
       kind: "uups",
     }
   )) as InstantVRFActions;
+
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
+    GenericInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as GenericInstantVRFActionStrategy;
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 

@@ -127,9 +127,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     //    PetNFT _petNFT,
     address _oracle,
     ISamWitchVRF _samWitchVRF,
-    VRFRequestInfo _vrfRequestInfo,
-    InstantVRFActionType[] calldata _actionTypes,
-    address[] calldata _strategies
+    VRFRequestInfo _vrfRequestInfo
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
@@ -140,7 +138,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     samWitchVRF = _samWitchVRF;
     vrfRequestInfo = _vrfRequestInfo;
     setGasCostPerUnit(25_000);
-    addStrategies(_actionTypes, _strategies);
   }
 
   function doInstantVRFActions(
