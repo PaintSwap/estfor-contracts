@@ -21,5 +21,5 @@ interface IInstantVRFActionStrategy {
       uint[] memory producedPetRandomWords
     );
 
-  function setAction(uint16 actionId, InstantVRFActionInput calldata input) external;
+  function setAction(InstantVRFActionInput calldata input) external;
 }

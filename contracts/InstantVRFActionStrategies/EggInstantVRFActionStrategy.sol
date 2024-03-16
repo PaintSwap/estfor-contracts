@@ -33,7 +33,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     instantVRFActions = _instantVRFActions;
   }
 
-  function setAction(uint16 _actionId, InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {}
+  function setAction(InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {}
 
   function getRandomRewards(
     uint _actionId,

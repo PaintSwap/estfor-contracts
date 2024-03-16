@@ -45,10 +45,10 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     instantVRFActions = _instantVRFActions;
   }
 
-  function setAction(uint16 _actionId, InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {
+  function setAction(InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {
     (, RandomReward[] memory randomRewards) = abi.decode(_input.data, (uint8, RandomReward[]));
     _checkRandomRewards(randomRewards);
-    actions[_actionId] = _packAction(randomRewards);
+    actions[_input.actionId] = _packAction(randomRewards);
   }
 
   function getRandomRewards(

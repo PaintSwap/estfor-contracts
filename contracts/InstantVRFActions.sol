@@ -353,10 +353,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _checkInputs(_instantVRFActionInput);
     actions[_instantVRFActionInput.actionId] = _packAction(_instantVRFActionInput);
 
-    IInstantVRFActionStrategy(strategies[_instantVRFActionInput.actionType]).setAction(
-      _instantVRFActionInput.actionId,
-      _instantVRFActionInput
-    );
+    IInstantVRFActionStrategy(strategies[_instantVRFActionInput.actionType]).setAction(_instantVRFActionInput);
   }
 
   function _requestRandomWords(uint numRandomWords) private returns (bytes32 requestId) {
