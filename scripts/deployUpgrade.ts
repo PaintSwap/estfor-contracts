@@ -36,7 +36,6 @@ async function main() {
   );
 
   const timeout = 600 * 1000; // 10 minutes
-  /*
   const newEstforLibrary = false;
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
   let estforLibrary: EstforLibrary;
@@ -203,7 +202,7 @@ async function main() {
   });
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
-*/
+
   // Instant VRF actions
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
@@ -225,7 +224,7 @@ async function main() {
   );
   await genericInstantVRFActionStrategy.deployed();
   console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
-  /*
+
   // EggInstantVRFActionStrategy
   const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
   const eggInstantVRFActionStrategy = await upgrades.upgradeProxy(
@@ -307,15 +306,15 @@ async function main() {
   await verifyContracts([wishingWell.address]);
   await verifyContracts([promotions.address]);
   await verifyContracts([instantActions.address]);
-  await verifyContracts([vrfRequestInfo.address]); */
+  await verifyContracts([vrfRequestInfo.address]);
   await verifyContracts([instantVRFActions.address]);
-  await verifyContracts([genericInstantVRFActionStrategy.address]); /*
+  await verifyContracts([genericInstantVRFActionStrategy.address]);
   await verifyContracts([eggInstantVRFActionStrategy.address]);
   await verifyContracts([lockedBankVaults.address]);
   await verifyContracts([territories.address]);
   await verifyContracts([decoratorProvider.address]);
   await verifyContracts([combatantsHelper.address]);
-  await verifyContracts([royaltyReceiver.address]); */
+  await verifyContracts([royaltyReceiver.address]);
 }
 
 main().catch((error) => {
