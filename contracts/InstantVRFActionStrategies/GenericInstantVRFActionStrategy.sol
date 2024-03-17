@@ -7,7 +7,7 @@ import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol
 import {IInstantVRFActionStrategy} from "./IInstantVRFActionStrategy.sol";
 
 import {Skill} from "../globals/players.sol";
-import {InstantVRFActionInput, InstantVRFActionType, RandomReward, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "../globals/rewards.sol";
+import {InstantVRFActionInput, InstantVRFActionType, RandomReward} from "../globals/rewards.sol";
 import {NONE} from "../globals/items.sol";
 
 contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
@@ -60,14 +60,20 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     external
     view
     override
-    returns (uint[] memory producedItemTokenIds, uint[] memory producedItemsAmounts, uint[] memory, uint[] memory)
+    returns (
+      uint[] memory producedItemTokenIds,
+      uint[] memory producedItemsAmounts,
+      uint[] memory producedPetBaseIds,
+      uint[] memory producedPetRandomWords
+    )
   {
-    producedItemTokenIds = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
-    producedItemsAmounts = new uint[](MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION * _actionAmount);
+    producedItemTokenIds = new uint[](_actionAmount);
+    producedItemsAmounts = new uint[](_actionAmount);
     RandomReward[] memory randomRewards = _setupRandomRewards(_actionId);
 
     if (randomRewards.length != 0) {
-      bytes memory randomBytes = abi.encodePacked(_randomWords[_randomWordStartIndex:]);
+      uint numWords = _actionAmount / 16 + ((_actionAmount % 16) == 0 ? 0 : 1);
+      bytes memory randomBytes = abi.encodePacked(_randomWords[_randomWordStartIndex:_randomWordStartIndex + numWords]);
       for (uint i; i < _actionAmount; ++i) {
         uint16 rand = _getSlice(randomBytes, i);
 

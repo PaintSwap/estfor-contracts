@@ -128,6 +128,45 @@ describe("Instant VRF actions", function () {
       ]);
     });
 
+    it("Cannot use greater than MAX_ACTION_AMOUNT for a single action", async function () {
+      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
+
+      const instantVRFActionInput: InstantVRFActionInput = {
+        ...defaultInstantVRFActionInput,
+        inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
+        inputAmounts: [1, 2, 3],
+      };
+
+      const instantVRFActionInput1: InstantVRFActionInput = {
+        ...defaultInstantVRFActionInput,
+        inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
+        inputAmounts: [1, 2, 3],
+        actionId: 2,
+      };
+
+      await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
+      await itemNFT.testMints(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [1000, 1000, 1000]);
+
+      const MAX_ACTION_AMOUNT = await instantVRFActions.MAX_ACTION_AMOUNT();
+
+      const actionAmount = MAX_ACTION_AMOUNT.add(1);
+      await expect(
+        instantVRFActions
+          .connect(alice)
+          .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
+            value: await instantVRFActions.requestCost(actionAmount),
+          })
+      ).to.be.revertedWithCustomError(instantVRFActions, "TooManyActionAmounts");
+
+      await expect(
+        instantVRFActions
+          .connect(alice)
+          .doInstantVRFActions(playerId, [instantVRFActionInput1.actionId], [MAX_ACTION_AMOUNT], {
+            value: await instantVRFActions.requestCost(MAX_ACTION_AMOUNT),
+          })
+      ).to.not.be.reverted;
+    });
+
     it("Cannot use greater than MAX_ACTION_AMOUNT for the combined action amounts", async function () {
       const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
 
@@ -150,7 +189,7 @@ describe("Instant VRF actions", function () {
       const MAX_ACTION_AMOUNT = await instantVRFActions.MAX_ACTION_AMOUNT();
 
       const actionAmount = MAX_ACTION_AMOUNT.sub(2);
-      const actionAmount1 = 3;
+      let actionAmount1 = 3;
       await expect(
         instantVRFActions
           .connect(alice)
@@ -161,6 +200,18 @@ describe("Instant VRF actions", function () {
             {value: await instantVRFActions.requestCost(actionAmount)}
           )
       ).to.be.revertedWithCustomError(instantVRFActions, "TooManyActionAmounts");
+
+      actionAmount1 = 1;
+      await expect(
+        instantVRFActions
+          .connect(alice)
+          .doInstantVRFActions(
+            playerId,
+            [instantVRFActionInput.actionId, instantVRFActionInput1.actionId],
+            [actionAmount, actionAmount1],
+            {value: await instantVRFActions.requestCost(actionAmount)}
+          )
+      ).to.not.be.reverted;
     });
 
     it("Do multiple instant actions at once", async function () {
