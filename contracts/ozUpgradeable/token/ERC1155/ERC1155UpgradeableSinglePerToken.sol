@@ -375,7 +375,7 @@ contract ERC1155UpgradeableSinglePerToken is
 
     _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
-    for (uint256 i = 0; i < ids.length; i++) {
+    for (uint256 i = 0; i < ids.length; ++i) {
       if (amounts[i] > 1 || totalSupply(ids[i]) != 0) {
         revert ERC1155MintingMoreThanOneSameNFT();
       }

@@ -250,4 +250,42 @@ library EstforLibrary {
 
     return type(uint).max; // Element not found
   }
+
+  function skillToString(Skill _skill) external pure returns (string memory) {
+    if (_skill == Skill.MELEE) {
+      return "Melee";
+    } else if (_skill == Skill.RANGED) {
+      return "Ranged";
+    } else if (_skill == Skill.MAGIC) {
+      return "Magic";
+    } else if (_skill == Skill.DEFENCE) {
+      return "Defence";
+    } else if (_skill == Skill.HEALTH) {
+      return "Health";
+    } else if (_skill == Skill.MINING) {
+      return "Mining";
+    } else if (_skill == Skill.WOODCUTTING) {
+      return "Woodcutting";
+    } else if (_skill == Skill.FISHING) {
+      return "Fishing";
+    } else if (_skill == Skill.SMITHING) {
+      return "Smithing";
+    } else if (_skill == Skill.THIEVING) {
+      return "Thieving";
+    } else if (_skill == Skill.CRAFTING) {
+      return "Crafting";
+    } else if (_skill == Skill.COOKING) {
+      return "Cooking";
+    } else if (_skill == Skill.FIREMAKING) {
+      return "Firemaking";
+    } else if (_skill == Skill.ALCHEMY) {
+      return "Alchemy";
+    } else if (_skill == Skill.FLETCHING) {
+      return "Fletching";
+    } else if (_skill == Skill.FORGING) {
+      return "Forging";
+    } else {
+      return "None";
+    }
+  }
 }

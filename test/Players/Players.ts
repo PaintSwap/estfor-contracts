@@ -230,7 +230,7 @@ describe("Players", function () {
     const choiceId = await getActionChoiceId(tx);
     const timespan = 3600;
 
-    const queuedAction: EstforTypes.QueuedActionInput = {
+    const queuedAction: EstforTypes.QueuedActionInputV2 = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
       actionId,
       combatStyle: EstforTypes.CombatStyle.ATTACK,
@@ -239,6 +239,7 @@ describe("Players", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: 0,
     };
 
     await itemNFT.addItems([
@@ -1438,6 +1439,7 @@ describe("Players", function () {
 
     await expect(
       playersImplMisc1.initialize(
+        ethers.constants.AddressZero,
         ethers.constants.AddressZero,
         ethers.constants.AddressZero,
         ethers.constants.AddressZero,

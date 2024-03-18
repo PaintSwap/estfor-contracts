@@ -314,12 +314,12 @@ describe("PlayerNFT", function () {
       clans,
       wishingWell,
       bankFactory,
+      petNFT,
+      estforLibrary,
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
     const isBeta = false;
-    const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-    const estforLibrary = await EstforLibrary.deploy();
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
       libraries: {EstforLibrary: estforLibrary.address},
     });
@@ -350,6 +350,7 @@ describe("PlayerNFT", function () {
       [
         itemNFT.address,
         playerNFTNotBeta.address,
+        petNFT.address,
         world.address,
         adminAccess.address,
         quests.address,
@@ -386,34 +387,34 @@ describe("PlayerNFT", function () {
   describe("supportsInterface", async function () {
     it("IERC165", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
-      expect(await playerNFT.supportsInterface("0x01ffc9a7")).to.equal(true);
+      expect(await playerNFT.supportsInterface("0x01ffc9a7")).to.be.true;
     });
 
     it("IERC1155", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
-      expect(await playerNFT.supportsInterface("0xd9b67a26")).to.equal(true);
+      expect(await playerNFT.supportsInterface("0xd9b67a26")).to.be.true;
     });
 
     it("IERC1155Metadata", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
-      expect(await playerNFT.supportsInterface("0x0e89341c")).to.equal(true);
+      expect(await playerNFT.supportsInterface("0x0e89341c")).to.be.true;
     });
 
     it("IERC2981 royalties", async function () {
       const {playerNFT} = await loadFixture(deployContracts);
-      expect(await playerNFT.supportsInterface("0x2a55205a")).to.equal(true);
+      expect(await playerNFT.supportsInterface("0x2a55205a")).to.be.true;
     });
   });
 
   it("name & symbol", async function () {
-    const {playerNFT, adminAccess, brush, shop, dev, royaltyReceiver} = await loadFixture(deployContracts);
+    const {playerNFT, adminAccess, brush, shop, dev, royaltyReceiver, estforLibrary} = await loadFixture(
+      deployContracts
+    );
     expect(await playerNFT.name()).to.be.eq("Estfor Players (Beta)");
     expect(await playerNFT.symbol()).to.be.eq("EK_PB");
 
     const isBeta = false;
     // Create NFT contract which contains all the players
-    const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-    const estforLibrary = await EstforLibrary.deploy();
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
       libraries: {EstforLibrary: estforLibrary.address},
     });

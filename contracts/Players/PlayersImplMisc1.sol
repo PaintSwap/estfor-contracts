@@ -12,6 +12,7 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
 import {World} from "../World.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
@@ -40,6 +41,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   function initialize(
     ItemNFT _itemNFT,
     PlayerNFT _playerNFT,
+    PetNFT _petNFT,
     World _world,
     AdminAccess _adminAccess,
     Quests _quests,
@@ -58,6 +60,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
 
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
+    petNFT = _petNFT;
     world = _world;
     adminAccess = _adminAccess;
     quests = _quests;

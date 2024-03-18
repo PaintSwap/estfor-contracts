@@ -193,7 +193,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (_from != _msgSender() && !isApprovedForAll(_from, _msgSender())) {
       revert ERC1155BurnForbidden();
     }
-    ++numBurned;
     _burn(_from, _playerId, 1);
   }
 
@@ -357,6 +356,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
         // Burning
         string memory oldName = EstforLibrary.toLower(names[playerId]);
         delete lowercaseNames[oldName];
+        ++numBurned;
       } else if (from != address(0)) {
         // Not minting
         players.beforeTokenTransferTo(to, playerId);
@@ -374,7 +374,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   /**
-   * @dev Returns whether `playerId` exists.
+   * @dev Returns whether `_tokenId` exists.
    *
    * Tokens can be managed by their owner or approved accounts via {setApprovalForAll}.
    *

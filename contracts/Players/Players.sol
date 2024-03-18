@@ -9,6 +9,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
@@ -78,6 +79,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function initialize(
     ItemNFT _itemNFT,
     PlayerNFT _playerNFT,
+    PetNFT _petNFT,
     World _world,
     AdminAccess _adminAccess,
     Quests _quests,
@@ -100,6 +102,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         IPlayersDelegate.initialize.selector,
         _itemNFT,
         _playerNFT,
+        _petNFT,
         _world,
         _adminAccess,
         _quests,
@@ -120,12 +123,60 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _queuedActions Actions to queue
   /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
+  function startActionsV2(
+    uint _playerId,
+    QueuedActionInputV2[] calldata _queuedActions,
+    ActionQueueStatus _queueStatus
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+    _startActions(_playerId, _queuedActions, NONE, uint40(block.timestamp), 0, 0, _queueStatus);
+  }
+
+  /// @notice Start actions for a player
+  /// @param _playerId Id for the player
+  /// @param _queuedActions Actions to queue
+  /// @param _boostItemTokenId Which boost to consume, can be NONE
+  /// @param _boostStartTime (Not used yet)
+  /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
+  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
+  function startActionsExtraV2(
+    uint _playerId,
+    QueuedActionInputV2[] calldata _queuedActions,
+    uint16 _boostItemTokenId,
+    uint40 _boostStartTime, // Not used yet (always current time)
+    uint _questId,
+    uint _donationAmount,
+    ActionQueueStatus _queueStatus
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+    _startActions(
+      _playerId,
+      _queuedActions,
+      _boostItemTokenId,
+      uint40(block.timestamp),
+      _questId,
+      _donationAmount,
+      _queueStatus
+    );
+  }
+
+  /// @notice Start actions for a player
+  /// @param _playerId Id for the player
+  /// @param _queuedActions Actions to queue
+  /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
+  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
   function startActions(
     uint _playerId,
     QueuedActionInput[] calldata _queuedActions,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
-    _startActions(_playerId, _queuedActions, NONE, uint40(block.timestamp), 0, 0, _queueStatus);
+    _startActions(
+      _playerId,
+      _convertQueuedActionInputV1ToV2(_queuedActions),
+      NONE,
+      uint40(block.timestamp),
+      0,
+      0,
+      _queueStatus
+    );
   }
 
   /// @notice Start actions for a player
@@ -146,7 +197,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _startActions(
       _playerId,
-      _queuedActions,
+      _convertQueuedActionInputV1ToV2(_queuedActions),
       _boostItemTokenId,
       uint40(block.timestamp),
       _questId,
@@ -284,7 +335,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function _startActions(
     uint _playerId,
-    QueuedActionInput[] memory _queuedActions,
+    QueuedActionInputV2[] memory _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
     uint _questId,
@@ -331,6 +382,26 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     emit SetActivePlayer(_from, existingActivePlayerId, _playerId);
   }
 
+  function _convertQueuedActionInputV1ToV2(
+    QueuedActionInput[] calldata _queuedActions
+  ) private pure returns (QueuedActionInputV2[] memory) {
+    QueuedActionInputV2[] memory queuedActions = new QueuedActionInputV2[](_queuedActions.length);
+    for (uint i; i < _queuedActions.length; ++i) {
+      queuedActions[i] = QueuedActionInputV2(
+        _queuedActions[i].attire,
+        _queuedActions[i].actionId,
+        _queuedActions[i].regenerateId,
+        _queuedActions[i].choiceId,
+        _queuedActions[i].rightHandEquipmentTokenId,
+        _queuedActions[i].leftHandEquipmentTokenId,
+        _queuedActions[i].timespan,
+        _queuedActions[i].combatStyle,
+        0
+      );
+    }
+    return queuedActions;
+  }
+
   function setActivePlayer(uint _playerId) external isOwnerOfPlayerMod(_playerId) {
     _setActivePlayer(msg.sender, _playerId);
   }
@@ -353,7 +424,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function validateActions(
     address _owner,
     uint _playerId,
-    QueuedActionInput[] calldata _queuedActions
+    QueuedActionInputV2[] calldata _queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
     bytes memory data = _staticcall(
       address(this),
@@ -467,6 +538,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     implRewards = _implRewards;
     implMisc = _implMisc;
     implMisc1 = _implMisc1;
+  }
+
+  // TODO: Can remove after integrated on live contracts
+  function setPetNFT(PetNFT _petNFT) external onlyOwner {
+    petNFT = _petNFT;
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {

@@ -28,7 +28,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function startActions(
     uint _playerId,
-    QueuedActionInput[] memory _queuedActions,
+    QueuedActionInputV2[] memory _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
     uint _questId,
@@ -86,8 +86,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _clearCurrentActionProcessed(_playerId);
     }
 
-    uint prevEndTime = block.timestamp.add(totalTimespan);
-
     U256 queueId = nextQueueId.asU256();
     U256 queuedActionsLength = _queuedActions.length.asU256();
 
@@ -97,6 +95,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       player.currentActionStartTime = 0;
     }
 
+    uint startTimeNewActions = block.timestamp - totalTimespan;
     for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
 
@@ -116,11 +115,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         _queuedActions[i].timespan = uint24(MAX_TIME_.add(remainder).sub(totalTimespan));
       }
 
-      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint64());
+      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint64(), uint40(startTimeNewActions));
 
       queueId = queueId.inc();
       totalTimespan += _queuedActions[i].timespan;
-      prevEndTime += _queuedActions[i].timespan;
+      startTimeNewActions += _queuedActions[i].timespan;
     }
 
     // Create an array from remainingAttire and queuedActions passed in
@@ -194,7 +193,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function checkAddToQueue(
     address _from,
     uint _playerId,
-    QueuedActionInput memory _queuedAction,
+    QueuedActionInputV2 memory _queuedAction,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _pendingQuestState
   ) public view returns (bool setAttire) {
@@ -319,6 +318,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     );
 
     _checkFood(_playerId, _queuedAction, _pendingQueuedActionProcessed, _pendingQuestState);
+
+    _checkPet(_from, _queuedAction.petId);
   }
 
   // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
@@ -344,7 +345,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function _addToQueue(address _from, uint _playerId, QueuedActionInput memory _queuedAction, uint64 _queueId) private {
+  function _addToQueue(
+    address _from,
+    uint _playerId,
+    QueuedActionInputV2 memory _queuedAction,
+    uint64 _queueId,
+    uint40 _startTime
+  ) private {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed; // Empty
     QuestState memory pendingQuestState; // Empty
     bool setAttire = checkAddToQueue(_from, _playerId, _queuedAction, pendingQueuedActionProcessed, pendingQuestState);
@@ -352,7 +359,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire_[_playerId][_queueId] = _queuedAction.attire;
     }
 
-    QueuedAction memory queuedAction;
+    QueuedAction storage queuedAction = players_[_playerId].actionQueue.push();
     queuedAction.isValid = true;
     queuedAction.timespan = _queuedAction.timespan;
     queuedAction.queueId = _queueId;
@@ -362,12 +369,18 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     queuedAction.rightHandEquipmentTokenId = _queuedAction.rightHandEquipmentTokenId;
     queuedAction.leftHandEquipmentTokenId = _queuedAction.leftHandEquipmentTokenId;
     queuedAction.combatStyle = _queuedAction.combatStyle;
-    players_[_playerId].actionQueue.push(queuedAction);
+
+    // Only set variables in the second storage slot if it's necessary
+    if (_queuedAction.petId != 0) {
+      queuedAction.hasPet = true;
+      queuedAction.petId = _queuedAction.petId;
+      petNFT.assignPet(_from, _queuedAction.petId, _startTime);
+    }
   }
 
   function _checkFood(
     uint _playerId,
-    QueuedActionInput memory _queuedAction,
+    QueuedActionInputV2 memory _queuedAction,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _questState
   ) private view {
@@ -376,6 +389,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
         revert ConsumableMinimumXPNotReached();
       }
+    }
+  }
+
+  function _checkPet(address _from, uint _petId) private view {
+    if (_petId != 0 && petNFT.balanceOf(_from, _petId) == 0) {
+      revert PetNotOwned();
     }
   }
 
@@ -593,7 +612,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function validateActionsImpl(
     address owner,
     uint _playerId,
-    QueuedActionInput[] memory _queuedActions
+    QueuedActionInputV2[] memory _queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
     PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(owner, _playerId);
     successes = new bool[](_queuedActions.length);

@@ -5,6 +5,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
@@ -129,6 +130,8 @@ abstract contract PlayersBase {
   error NonInstanceConsumeNotSupportedYet();
   error AlreadyUpgraded();
   error PlayerNotUpgraded();
+  error PetNotOwned();
+  error SecondSkillNotHandledYet();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -188,6 +191,8 @@ abstract contract PlayersBase {
   mapping(uint clanId => PlayerBoostInfo clanBoost) internal clanBoosts_; // Clan specific boosts
 
   mapping(address user => WalletDailyInfo walletDailyInfo) internal walletDailyInfo;
+
+  PetNFT internal petNFT;
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {

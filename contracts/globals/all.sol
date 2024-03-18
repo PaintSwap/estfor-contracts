@@ -9,3 +9,4 @@ import "./rewards.sol";
 import "./quests.sol";
 import "./promotions.sol";
 import "./clans.sol";
+import "./pets.sol";
