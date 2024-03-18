@@ -43,7 +43,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAdminAndBeta();
   error LengthMismatch();
 
-  World public world;
+  World public world; // Used by the promotions contract....
   bool private isBeta;
   string private baseURI;
 
@@ -134,79 +134,21 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     isBeta = _isBeta;
   }
 
+  function mint(address _to, uint _tokenId, uint _amount) external onlyMinters {
+    _mintItem(_to, _tokenId, _amount);
+  }
+
   // Can't use Item[] array unfortunately as they don't support array casts
   function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external onlyMinters {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
-  function uri(uint _tokenId) public view virtual override returns (string memory) {
-    if (!exists(_tokenId)) {
-      revert ItemDoesNotExist(uint16(_tokenId));
-    }
-    return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
+  function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external onlyBurners(_from) {
+    _burnBatch(_from, _tokenIds, _amounts);
   }
 
-  function exists(uint _tokenId) public view returns (bool) {
-    return items[_tokenId].packedData != 0;
-  }
-
-  function totalSupply(uint _tokenId) external view returns (uint) {
-    return itemBalances[_tokenId];
-  }
-
-  function totalSupply() external view returns (uint) {
-    return totalSupplyAll_;
-  }
-
-  function getItem(uint16 _tokenId) external view returns (Item memory) {
-    return _getItem(_tokenId);
-  }
-
-  function getEquipPositionAndMinRequirement(
-    uint16 _item
-  ) external view returns (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isFullModeOnly) {
-    (skill, minXP, isFullModeOnly) = _getMinRequirement(_item);
-    equipPosition = getEquipPosition(_item);
-  }
-
-  function getMinRequirements(
-    uint16[] calldata _tokenIds
-  ) external view returns (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isFullModeOnly) {
-    skills = new Skill[](_tokenIds.length);
-    minXPs = new uint32[](_tokenIds.length);
-    isFullModeOnly = new bool[](_tokenIds.length);
-    U256 tokenIdsLength = _tokenIds.length.asU256();
-    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      (skills[i], minXPs[i], isFullModeOnly[i]) = _getMinRequirement(_tokenIds[i]);
-    }
-  }
-
-  function getItems(uint16[] calldata _tokenIds) external view returns (Item[] memory _items) {
-    U256 tokenIdsLength = _tokenIds.length.asU256();
-    _items = new Item[](tokenIdsLength.asUint256());
-    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      _items[i] = _getItem(_tokenIds[i]);
-    }
-  }
-
-  function getEquipPositions(
-    uint16[] calldata _tokenIds
-  ) external view returns (EquipPosition[] memory equipPositions) {
-    U256 tokenIdsLength = _tokenIds.length.asU256();
-    equipPositions = new EquipPosition[](tokenIdsLength.asUint256());
-    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      equipPositions[i] = getEquipPosition(_tokenIds[i]);
-    }
-  }
-
-  function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
-    if (!exists(_tokenId)) {
-      revert ItemDoesNotExist(_tokenId);
-    }
-    return items[_tokenId].equipPosition;
+  function burn(address _from, uint _tokenId, uint _amount) external onlyBurners(_from) {
+    _burn(_from, _tokenId, _amount);
   }
 
   function _getMinRequirement(uint16 _tokenId) private view returns (Skill, uint32, bool isFullModeOnly) {
@@ -249,39 +191,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       totalSupplyAll_ = uint16(totalSupplyAll_.add(numNewItems.asUint16()));
     }
     _mintBatch(_to, _tokenIds, _amounts, "");
-  }
-
-  function mint(address _to, uint _tokenId, uint _amount) external onlyMinters {
-    _mintItem(_to, _tokenId, _amount);
-  }
-
-  /**
-   * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
-   */
-  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint[] memory batchBalances) {
-    U256 iter = _ids.length.asU256();
-    batchBalances = new uint[](iter.asUint256());
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint i = iter.asUint256();
-      batchBalances[i] = balanceOf(_account, _ids[i]);
-    }
-  }
-
-  function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external onlyBurners(_from) {
-    _burnBatch(_from, _tokenIds, _amounts);
-  }
-
-  function burn(address _from, uint _tokenId, uint _amount) external onlyBurners(_from) {
-    _burn(_from, _tokenId, _amount);
-  }
-
-  function royaltyInfo(
-    uint /*_tokenId*/,
-    uint _salePrice
-  ) external view override returns (address receiver, uint royaltyAmount) {
-    uint amount = (_salePrice * royaltyFee) / 1000;
-    return (royaltyReceiver, amount);
   }
 
   function _getItem(uint16 _tokenId) private view returns (Item storage) {
@@ -391,6 +300,97 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       revert EquipmentPositionShouldNotChange();
     }
     item = _setItem(_inputItem);
+  }
+
+  function uri(uint _tokenId) public view virtual override returns (string memory) {
+    if (!exists(_tokenId)) {
+      revert ItemDoesNotExist(uint16(_tokenId));
+    }
+    return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
+  }
+
+  function exists(uint _tokenId) public view returns (bool) {
+    return items[_tokenId].packedData != 0;
+  }
+
+  function totalSupply(uint _tokenId) external view returns (uint) {
+    return itemBalances[_tokenId];
+  }
+
+  function totalSupply() external view returns (uint) {
+    return totalSupplyAll_;
+  }
+
+  function getItem(uint16 _tokenId) external view returns (Item memory) {
+    return _getItem(_tokenId);
+  }
+
+  function getEquipPositionAndMinRequirement(
+    uint16 _item
+  ) external view returns (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isFullModeOnly) {
+    (skill, minXP, isFullModeOnly) = _getMinRequirement(_item);
+    equipPosition = getEquipPosition(_item);
+  }
+
+  function getMinRequirements(
+    uint16[] calldata _tokenIds
+  ) external view returns (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isFullModeOnly) {
+    skills = new Skill[](_tokenIds.length);
+    minXPs = new uint32[](_tokenIds.length);
+    isFullModeOnly = new bool[](_tokenIds.length);
+    U256 tokenIdsLength = _tokenIds.length.asU256();
+    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      (skills[i], minXPs[i], isFullModeOnly[i]) = _getMinRequirement(_tokenIds[i]);
+    }
+  }
+
+  function getItems(uint16[] calldata _tokenIds) external view returns (Item[] memory _items) {
+    U256 tokenIdsLength = _tokenIds.length.asU256();
+    _items = new Item[](tokenIdsLength.asUint256());
+    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      _items[i] = _getItem(_tokenIds[i]);
+    }
+  }
+
+  function getEquipPositions(
+    uint16[] calldata _tokenIds
+  ) external view returns (EquipPosition[] memory equipPositions) {
+    U256 tokenIdsLength = _tokenIds.length.asU256();
+    equipPositions = new EquipPosition[](tokenIdsLength.asUint256());
+    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      equipPositions[i] = getEquipPosition(_tokenIds[i]);
+    }
+  }
+
+  function getEquipPosition(uint16 _tokenId) public view returns (EquipPosition) {
+    if (!exists(_tokenId)) {
+      revert ItemDoesNotExist(_tokenId);
+    }
+    return items[_tokenId].equipPosition;
+  }
+
+  /**
+   * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
+   */
+  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint[] memory batchBalances) {
+    U256 iter = _ids.length.asU256();
+    batchBalances = new uint[](iter.asUint256());
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      batchBalances[i] = balanceOf(_account, _ids[i]);
+    }
+  }
+
+  function royaltyInfo(
+    uint /*_tokenId*/,
+    uint _salePrice
+  ) external view override returns (address receiver, uint royaltyAmount) {
+    uint amount = (_salePrice * royaltyFee) / 1000;
+    return (royaltyReceiver, amount);
   }
 
   function getBoostInfo(

@@ -164,6 +164,23 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         actionChoice
       );
 
+      uint prevProcessedTime = queuedAction.prevProcessedTime;
+      uint veryStartTime = startTime.sub(prevProcessedTime);
+
+      // Update combat stats from the pet if it is still valid
+      if (queuedAction.hasPet) {
+        Pet memory pet = petNFT.getPet(queuedAction.petId);
+        if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
+          _updateCombatStatsFromPet(
+            combatStats,
+            pet.skillEnhancement1,
+            pet.skillEnhancementPercent1,
+            pet.skillEnhancement2,
+            pet.skillEnhancementPercent2
+          );
+        }
+      }
+
       if (missingRequiredHandEquipment) {
         if (i == 0) {
           // Clear the state and make sure the next queued action can finish
@@ -335,8 +352,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       }
 
       uint pointsAccruedExclBaseBoost;
-      uint prevProcessedTime = queuedAction.prevProcessedTime;
-      uint veryStartTime = startTime.sub(prevProcessedTime);
       uint prevPointsAccrued;
       uint prevPointsAccruedExclBaseBoost;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
@@ -888,7 +903,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     Skill _skill,
     uint _xpElapsedTime,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  ) internal view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
+  ) private view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     (pointsAccrued, pointsAccruedExclBaseBoost) = PlayersLibrary.getPointsAccrued(
       _from,
       players_[_playerId],
@@ -1062,12 +1077,53 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   function _getHealthPointsFromCombat(
     uint _playerId,
     uint _combatPoints
-  ) internal view returns (uint32 healthPointsAccured) {
+  ) private view returns (uint32 healthPointsAccured) {
     // Get 1/3 of the combat points as health
     healthPointsAccured = uint32(_combatPoints / 3);
     // Get bonus health points from avatar starting skills
     uint bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(players_[_playerId], Skill.HEALTH);
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
+  }
+
+  function _updateCombatStatsFromPet(
+    CombatStats memory _combatStats,
+    Skill _skillEnhancement1,
+    uint8 _skillEnhancementPercent1,
+    Skill _skillEnhancement2,
+    uint8 _skillEnhancementPercent2
+  ) private pure {
+    bool handledSecondSkillAlready = false;
+    // For combinations of the combat attack skill and defence, makes it only apply to the same defence (i,e)
+    if (_skillEnhancement1 == Skill.HEALTH) {
+      _combatStats.health += int16(uint16(_combatStats.health) * _skillEnhancementPercent1) / 100;
+    } else if (_skillEnhancement1 == Skill.MELEE) {
+      _combatStats.melee += int16(uint16(_combatStats.melee) * _skillEnhancementPercent1) / 100;
+      if (_skillEnhancement2 == Skill.DEFENCE) {
+        _combatStats.meleeDefence += int16(uint16(_combatStats.meleeDefence) * _skillEnhancementPercent2) / 100;
+        handledSecondSkillAlready = true;
+      }
+    } else if (_skillEnhancement1 == Skill.RANGED) {
+      _combatStats.ranged += int16(uint16(_combatStats.ranged) * _skillEnhancementPercent1) / 100;
+      if (_skillEnhancement2 == Skill.DEFENCE) {
+        _combatStats.rangedDefence += int16(uint16(_combatStats.rangedDefence) * _skillEnhancementPercent2) / 100;
+        handledSecondSkillAlready = true;
+      }
+    } else if (_skillEnhancement1 == Skill.MAGIC) {
+      _combatStats.magic += int16(uint16(_combatStats.magic) * _skillEnhancementPercent1) / 100;
+      if (_skillEnhancement2 == Skill.DEFENCE) {
+        _combatStats.magicDefence += int16(uint16(_combatStats.magicDefence) * _skillEnhancementPercent2) / 100;
+        handledSecondSkillAlready = true;
+      }
+    } else if (_skillEnhancement1 == Skill.DEFENCE) {
+      _combatStats.meleeDefence += int16(uint16(_combatStats.meleeDefence) * _skillEnhancementPercent1) / 100;
+      _combatStats.rangedDefence += int16(uint16(_combatStats.rangedDefence) * _skillEnhancementPercent1) / 100;
+      _combatStats.magicDefence += int16(uint16(_combatStats.magicDefence) * _skillEnhancementPercent1) / 100;
+    }
+
+    if (handledSecondSkillAlready && _skillEnhancement2 != Skill.NONE) {
+      // Not handled yet
+      revert SecondSkillNotHandledYet();
+    }
   }
 
   function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private pure {
@@ -1085,7 +1141,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   function _dailyRewardsView(
     address _from,
     uint _playerId
-  ) internal view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
+  ) private view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(IPlayersMiscDelegateView.dailyRewardsViewImpl.selector, _from, _playerId)

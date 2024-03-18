@@ -22,6 +22,7 @@ import {
   InstantVRFActions,
   VRFRequestInfo,
   GenericInstantVRFActionStrategy,
+  PetNFT,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -216,7 +217,9 @@ async function main() {
 
   let itemsUri: string;
   let heroImageBaseUri: string;
+  let petImageBaseUri: string;
   let editNameBrushPrice: BigNumber;
+  let editPetNameBrushPrice: BigNumber;
   let upgradePlayerBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
@@ -224,7 +227,9 @@ async function main() {
   if (isBeta) {
     itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
     heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
+    petImageBaseUri = "ipfs://TODO/";
     editNameBrushPrice = ethers.utils.parseEther("1");
+    editPetNameBrushPrice = ethers.utils.parseEther("1");
     upgradePlayerBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
@@ -233,7 +238,9 @@ async function main() {
     // live version
     itemsUri = "ipfs://QmQvWjU5KqNSjHipYdvGvF1wZh7kj2kkvbmEyv9zgbzhPK/";
     heroImageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
+    petImageBaseUri = "ipfs://TODO/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
+    editPetNameBrushPrice = ethers.utils.parseEther("100");
     upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
@@ -362,8 +369,28 @@ async function main() {
   await bank.deployed();
   console.log(`bank = "${bank.address.toLowerCase()}"`);
 
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.deploy();
+  const PetNFT = await ethers.getContractFactory("PetNFT", {libraries: {EstforLibrary: estforLibrary.address}});
+  const petNFT = (await upgrades.deployProxy(
+    PetNFT,
+    [
+      brush.address,
+      royaltyReceiver.address,
+      petImageBaseUri,
+      DEV_ADDRESS,
+      editPetNameBrushPrice,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+      timeout,
+    }
+  )) as PetNFT;
+  await petNFT.deployed();
+  console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
+
+  const playersLibrary = await ethers.deployContract("PlayersLibrary");
   await playersLibrary.deployed();
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
@@ -377,6 +404,7 @@ async function main() {
     [
       itemNFT.address,
       playerNFT.address,
+      petNFT.address,
       world.address,
       adminAccess.address,
       quests.address,
@@ -437,7 +465,7 @@ async function main() {
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [players.address, itemNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
+    [players.address, itemNFT.address, petNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
     {
       kind: "uups",
       timeout,
@@ -546,6 +574,7 @@ async function main() {
         wishingWell.address,
         itemNFTLibrary.address,
         itemNFT.address,
+        petNFT.address,
         adminAccess.address,
         shop.address,
         worldLibrary.address,
@@ -588,6 +617,9 @@ async function main() {
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
   console.log("playerNFT setPlayers");
+  tx = await petNFT.setPlayers(players.address);
+  await tx.wait();
+  console.log("petNFT setPlayers");
   tx = await quests.setPlayers(players.address);
   await tx.wait();
   console.log("quests setPlayers");
@@ -632,6 +664,10 @@ async function main() {
   console.log("lockedBankVaults.setTerritories");
   tx = await royaltyReceiver.setTerritories(territories.address);
   await tx.wait();
+  console.log("royaltyReceiver.setTerritories");
+  tx = await petNFT.setTerritories(territories.address);
+  await tx.wait();
+  console.log("petNFT.setTerritories");
 
   tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
   console.log("Set Bazaar");
