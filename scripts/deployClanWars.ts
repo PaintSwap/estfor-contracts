@@ -20,6 +20,8 @@ import {allTerritories, allBattleSkills} from "./data/territories";
 import {verifyContracts} from "./utils";
 import {DecoratorProvider, ItemNFT} from "../typechain-types";
 import "dotenv/config";
+import {execSync} from "child_process";
+import path from "path";
 import {allItems} from "./data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";

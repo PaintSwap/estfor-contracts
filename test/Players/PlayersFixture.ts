@@ -1,4 +1,4 @@
-import {InstantVRFActionType, Skill} from "@paintswap/estfor-definitions/types";
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {
@@ -10,9 +10,7 @@ import {
   Clans,
   CombatantsHelper,
   EstforLibrary,
-  GenericInstantVRFActionStrategy,
   InstantActions,
-  InstantVRFActions,
   ItemNFT,
   LockedBankVaults,
   MockBrushToken,
@@ -26,7 +24,6 @@ import {
   RoyaltyReceiver,
   Shop,
   Territories,
-  VRFRequestInfo,
   WishingWell,
   World,
   WorldLibrary,
@@ -258,32 +255,6 @@ export const playersFixture = async function () {
     kind: "uups",
   })) as InstantActions;
 
-  const mockSWVRFOracleClient = (await ethers.deployContract("MockSWVRFOracleClient")) as MockOracleClient;
-  const oracleAddress = dev.address;
-
-  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
-  const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
-    kind: "uups",
-  })) as VRFRequestInfo;
-
-  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
-  const instantVRFActions = (await upgrades.deployProxy(
-    InstantVRFActions,
-    [players.address, itemNFT.address, oracleAddress, mockSWVRFOracleClient.address, vrfRequestInfo.address],
-    {
-      kind: "uups",
-    }
-  )) as InstantVRFActions;
-
-  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
-  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
-    GenericInstantVRFActionStrategy,
-    [instantVRFActions.address],
-    {
-      kind: "uups",
-    }
-  )) as GenericInstantVRFActionStrategy;
-
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
   const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
@@ -304,6 +275,10 @@ export const playersFixture = async function () {
   ]);
 
   await artGallery.transferOwnership(decorator.address);
+
+  const mockSWVRFOracleClient = (await ethers.deployContract("MockSWVRFOracleClient")) as MockOracleClient;
+
+  const oracleAddress = dev.address;
 
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = (await upgrades.deployProxy(
@@ -376,7 +351,6 @@ export const playersFixture = async function () {
 
   await itemNFT.setPromotions(promotions.address);
   await itemNFT.setInstantActions(instantActions.address);
-  await itemNFT.setInstantVRFActions(instantVRFActions.address);
 
   await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
 
@@ -453,9 +427,5 @@ export const playersFixture = async function () {
     lockedBankVaults,
     territories,
     combatantsHelper,
-    vrfRequestInfo,
-    instantVRFActions,
-    genericInstantVRFActionStrategy,
-    oracleAddress,
   };
 };

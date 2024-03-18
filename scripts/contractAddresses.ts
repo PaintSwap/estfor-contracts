@@ -25,10 +25,6 @@ let playersImplMisc;
 let playersImplMisc1;
 let players;
 let instantActions;
-let instantVRFActions;
-let vrfRequestInfo;
-let genericInstantVRFActionStrategy;
-let eggInstantVRFActionStrategy;
 let territories;
 let lockedBankVaults;
 let decoratorProvider;
@@ -63,10 +59,6 @@ if (!isBeta) {
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
-  instantVRFActions = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
-  vrfRequestInfo = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
-  genericInstantVRFActionStrategy = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
-  eggInstantVRFActionStrategy = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
   lockedBankVaults = "0x65e944795d00cc287bdace77d57571fc4deff3e0";
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
@@ -75,7 +67,7 @@ if (!isBeta) {
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
 } else {
-  worldLibrary = "0x10f6512db26681700a027b5bd8e3f852351000c4";
+  worldLibrary = "0x8e18dba6eba3e1e959a011695027ddb2b468e2f9";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
@@ -90,21 +82,17 @@ if (!isBeta) {
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
-  playersLibrary = "0x4f672d0ada398e4cb8c87d01362616223254d3eb";
-  playersImplQueueActions = "0xff96dd0a32e12004c5f23dd00fd9c842315fe493";
-  playersImplProcessActions = "0x521fd120a5bd5b80d6764c9da10b0cf6a3d87019";
-  playersImplRewards = "0x0338981446c868028f19d1f776a1e0e0afdd8867";
-  playersImplMisc = "0x29fc437bfba1238be711b48a407871184365cf8a";
-  playersImplMisc1 = "0x4a84c8ff6039823cca4a226bbc531e348f7bdfb2";
+  playersLibrary = "0x30267dab4833af17624b7c6c3ec7c58a5e0a3fda";
+  playersImplQueueActions = "0x68e2542c46957f2ff999bc3d6dac33e29fa3709c";
+  playersImplProcessActions = "0xb644dd7e6ee1aca750394555a9310f7035f718fa";
+  playersImplRewards = "0xeacaa4d3e1afd034c2d91ea84c0a94ad8e70752b";
+  playersImplMisc = "0xc1e7d4fa974f46d906296c90b6c0ce3ac0145483";
+  playersImplMisc1 = "0x9551f0bb149f5cdbdf56a732fd4784630bf4dd20";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
-  instantVRFActions = "0xe297508ff83ba7a984ec8778ea67d82e049eda58";
-  vrfRequestInfo = "0x9bcf94e6c067c575dd6a748e45330b4ae4dc0483";
-  genericInstantVRFActionStrategy = "0x2ea7d26184188ec7495acaa84a7de1292e8a1794";
-  eggInstantVRFActionStrategy = "";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
@@ -142,10 +130,6 @@ export const PLAYERS_IMPL_MISC1_ADDRESS = playersImplMisc1;
 export const PLAYERS_ADDRESS = players;
 
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
-export const INSTANT_VRF_ACTIONS_ADDRESS = instantVRFActions;
-export const VRF_REQUEST_INFO_ADDRESS = vrfRequestInfo;
-export const GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = genericInstantVRFActionStrategy;
-export const EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = eggInstantVRFActionStrategy;
 
 export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const TERRITORIES_ADDRESS = territories;

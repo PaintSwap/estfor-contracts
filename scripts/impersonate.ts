@@ -12,7 +12,7 @@ import {
   WORLD_ADDRESS,
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
-import {Clans, EstforLibrary, PlayersLibrary, Quests, Shop, WorldLibrary} from "../typechain-types";
+import {Clans, EstforLibrary, ItemNFTLibrary, PlayersLibrary, Quests, Shop, WorldLibrary} from "../typechain-types";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -84,7 +84,7 @@ async function main() {
   });
 
   // ItemNFT
-  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
+  const itemNFTLibrary = (await ethers.deployContract("ItemNFTLibrary")) as ItemNFTLibrary;
 
   const ItemNFT = (
     await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})

@@ -11,7 +11,7 @@ struct GuaranteedReward {
 struct RandomReward {
   uint16 itemTokenId;
   uint16 chance; // out of 65535
-  uint16 amount; // out of 255
+  uint8 amount; // out of 255
 }
 
 struct PendingRandomReward {
@@ -36,7 +36,7 @@ struct ActionRewards {
   uint16 guaranteedRewardRate3;
   // Random chance rewards
   uint16 randomRewardTokenId1;
-  uint16 randomRewardChance1; // out of 65535
+  uint16 randomRewardChance1; // out of 65335
   uint8 randomRewardAmount1; // out of 255
   uint16 randomRewardTokenId2;
   uint16 randomRewardChance2;
@@ -55,28 +55,11 @@ struct XPThresholdReward {
   Equipment[] rewards;
 }
 
-enum InstantVRFActionType {
-  NONE,
-  GENERIC,
-  FORGING,
-  EGG
-}
-
-struct InstantVRFActionInput {
-  uint16 actionId;
-  uint16[] inputTokenIds;
-  uint24[] inputAmounts;
-  bytes data;
-  InstantVRFActionType actionType;
-  bool isFullModeOnly;
-}
-
 uint constant MAX_GUARANTEED_REWARDS_PER_ACTION = 3;
 uint constant MAX_RANDOM_REWARDS_PER_ACTION = 4;
 uint constant MAX_REWARDS_PER_ACTION = MAX_GUARANTEED_REWARDS_PER_ACTION + MAX_RANDOM_REWARDS_PER_ACTION;
 uint constant MAX_CONSUMED_PER_ACTION = 3;
 uint constant MAX_QUEST_REWARDS = 2;
-uint constant MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION = 1;
 
 uint constant TIER_1_DAILY_REWARD_START_XP = 0;
 uint constant TIER_2_DAILY_REWARD_START_XP = 7_650;

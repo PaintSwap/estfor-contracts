@@ -13,8 +13,10 @@ import {deployPlayerImplementations, verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  const chainId = await owner.getChainId();
-  console.log(`Deploying player implementation contracts with the account: ${owner.address} on chain id ${chainId}`);
+  console.log(`Deploying player implementation contracts with the account: ${owner.address}`);
+
+  const network = await ethers.provider.getNetwork();
+  console.log(`ChainId: ${network.chainId}`);
 
   // Players
   const newPlayersLibrary = false;
@@ -28,16 +30,17 @@ async function main() {
     playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
-  /*
-  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address); */
 
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
+    await deployPlayerImplementations(playersLibrary.address);
+  /*
   // Single
-  const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
+  const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  console.log(`PlayersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
-  await playersImplMisc.deployed();
+  console.log(`PlayersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
+  await playersImplQueueActions.deployed();
+  */
 
   // Set the implementations
   const Players = await ethers.getContractFactory("Players");
@@ -51,16 +54,22 @@ async function main() {
   */
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
-    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_REWARDS_ADDRESS,
+    playersImplQueueActions.address,
+    playersImplProcessActions.address,
+    playersImplRewards.address,
     playersImplMisc.address,
-    PLAYERS_IMPL_MISC1_ADDRESS
+    playersImplMisc1.address
   );
   await tx.wait();
 
-  if (chainId == 250) {
-    await verifyContracts([playersImplMisc.address]);
+  if (network.chainId == 250) {
+    await verifyContracts([
+      playersImplQueueActions.address,
+      playersImplProcessActions.address,
+      playersImplRewards.address,
+      playersImplMisc.address,
+      playersImplMisc1.address,
+    ]);
   }
 }
 

@@ -28,11 +28,10 @@ library WorldLibrary {
   error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
   error NotAFactorOf3600();
-  error FirstMinSkillMustBeActionSkill();
 
   function checkActionChoice(ActionChoiceInput calldata _actionChoiceInput) external pure {
     uint16[] calldata inputTokenIds = _actionChoiceInput.inputTokenIds;
-    uint24[] calldata amounts = _actionChoiceInput.inputAmounts;
+    uint8[] calldata amounts = _actionChoiceInput.inputAmounts;
 
     if (inputTokenIds.length > 3) {
       revert TooManyInputItems();
@@ -78,11 +77,6 @@ library WorldLibrary {
     if (minSkills.length != minXPs.length) {
       revert LengthMismatch();
     }
-
-    if (minSkills.length != 0 && minSkills[0] != _actionChoiceInput.skill) {
-      revert FirstMinSkillMustBeActionSkill();
-    }
-
     for (uint i; i < minSkills.length; ++i) {
       if (minSkills[i] == Skill.NONE) {
         revert InvalidSkill();
@@ -114,12 +108,12 @@ library WorldLibrary {
     if (randomRewardsLength != 0) {
       actionReward.randomRewardTokenId1 = _action.randomRewards[0].itemTokenId;
       actionReward.randomRewardChance1 = _action.randomRewards[0].chance;
-      actionReward.randomRewardAmount1 = uint8(_action.randomRewards[0].amount);
+      actionReward.randomRewardAmount1 = _action.randomRewards[0].amount;
     }
     if (randomRewardsLength > 1) {
       actionReward.randomRewardTokenId2 = _action.randomRewards[1].itemTokenId;
       actionReward.randomRewardChance2 = _action.randomRewards[1].chance;
-      actionReward.randomRewardAmount2 = uint8(_action.randomRewards[1].amount);
+      actionReward.randomRewardAmount2 = _action.randomRewards[1].amount;
 
       if (actionReward.randomRewardChance2 > actionReward.randomRewardChance1) {
         revert RandomRewardsMustBeInOrder(_action.randomRewards[0].chance, _action.randomRewards[1].chance);
@@ -131,7 +125,7 @@ library WorldLibrary {
     if (randomRewardsLength > 2) {
       actionReward.randomRewardTokenId3 = _action.randomRewards[2].itemTokenId;
       actionReward.randomRewardChance3 = _action.randomRewards[2].chance;
-      actionReward.randomRewardAmount3 = uint8(_action.randomRewards[2].amount);
+      actionReward.randomRewardAmount3 = _action.randomRewards[2].amount;
 
       if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
         revert RandomRewardsMustBeInOrder(_action.randomRewards[1].chance, _action.randomRewards[2].chance);
@@ -148,7 +142,7 @@ library WorldLibrary {
     if (_action.randomRewards.length > 3) {
       actionReward.randomRewardTokenId4 = _action.randomRewards[3].itemTokenId;
       actionReward.randomRewardChance4 = _action.randomRewards[3].chance;
-      actionReward.randomRewardAmount4 = uint8(_action.randomRewards[3].amount);
+      actionReward.randomRewardAmount4 = _action.randomRewards[3].amount;
       if (actionReward.randomRewardChance4 > actionReward.randomRewardChance3) {
         revert RandomRewardsMustBeInOrder(_action.randomRewards[2].chance, _action.randomRewards[3].chance);
       }

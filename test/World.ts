@@ -490,7 +490,7 @@ describe("World", function () {
       const choiceId = 1;
       const actionChoiceInput: ActionChoiceInput = {
         ...defaultActionChoice,
-        skill: EstforTypes.Skill.WOODCUTTING,
+        skill: EstforTypes.Skill.MAGIC,
         skillDiff: 2,
         xpPerHour: 0,
         rate: 1 * RATE_MUL,
@@ -599,82 +599,7 @@ describe("World", function () {
       expect(actionChoice.inputAmount1).to.eq(10);
     });
 
-    it("First minimum skill should match skill of action choice", async function () {
-      const {world, worldLibrary} = await loadFixture(deployContracts);
-      const choiceId = 1;
-      await expect(
-        world.addActionChoices(
-          EstforConstants.NONE,
-          [choiceId],
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 2,
-              xpPerHour: 0,
-              rate: 1 * RATE_MUL,
-              inputTokenIds: [EstforConstants.BRONZE_ARROW],
-              inputAmounts: [1],
-              minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-              minXPs: [1, 2, 3],
-            },
-          ]
-        )
-      ).to.be.revertedWithCustomError(worldLibrary, "FirstMinSkillMustBeActionSkill");
-
-      await expect(
-        world.addActionChoices(
-          EstforConstants.NONE,
-          [choiceId],
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.WOODCUTTING,
-              skillDiff: 2,
-              xpPerHour: 0,
-              rate: 1 * RATE_MUL,
-              inputTokenIds: [EstforConstants.BRONZE_ARROW],
-              inputAmounts: [1],
-              minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-              minXPs: [1, 2, 3],
-            },
-          ]
-        )
-      ).to.not.be.reverted;
-    });
-
     it("Multiple minimum skills check packed data", async function () {
-      const {world} = await loadFixture(deployContracts);
-      const choiceId = 1;
-      await world.addActionChoices(
-        EstforConstants.NONE,
-        [choiceId],
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.WOODCUTTING,
-            skillDiff: 2,
-            xpPerHour: 0,
-            rate: 1 * RATE_MUL,
-            inputTokenIds: [EstforConstants.BRONZE_ARROW],
-            inputAmounts: [1],
-            minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-            minXPs: [1, 2, 3],
-          },
-        ]
-      );
-
-      const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
-      expect(actionChoice.packedData).to.eq("0x40");
-      expect(actionChoice.skill).to.eq(Skill.WOODCUTTING);
-      expect(actionChoice.minXP).to.eq(1);
-      expect(actionChoice.minSkill2).to.eq(Skill.FIREMAKING);
-      expect(actionChoice.minXP2).to.eq(2);
-      expect(actionChoice.minSkill3).to.eq(Skill.CRAFTING);
-      expect(actionChoice.minXP3).to.eq(3);
-    });
-
-    it("Using any input amount above 255 should update packed data & newInputAmount*s", async function () {
       const {world} = await loadFixture(deployContracts);
       const choiceId = 1;
       await world.addActionChoices(
@@ -687,20 +612,16 @@ describe("World", function () {
             skillDiff: 2,
             xpPerHour: 0,
             rate: 1 * RATE_MUL,
-            inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.MITHRIL_ARROW],
-            inputAmounts: [1, 256, 6553],
+            inputTokenIds: [EstforConstants.BRONZE_ARROW],
+            inputAmounts: [1],
+            minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
+            minXPs: [1, 1, 1],
           },
         ]
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
-      expect(actionChoice.packedData).to.eq("0x20");
-      expect(actionChoice.inputAmount1).to.eq(0);
-      expect(actionChoice.inputAmount2).to.eq(0);
-      expect(actionChoice.inputAmount3).to.eq(0);
-      expect(actionChoice.newInputAmount1).to.eq(1);
-      expect(actionChoice.newInputAmount2).to.eq(256);
-      expect(actionChoice.newInputAmount3).to.eq(6553);
+      expect(actionChoice.packedData).to.eq("0x40");
     });
   });
 

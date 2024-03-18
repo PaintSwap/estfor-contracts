@@ -483,8 +483,7 @@ contract Territories is
     }
 
     if (
-      (clanInfos[_clanId].blockAttacksTimestamp + uint(clanInfos[_clanId].blockAttacksCooldownHours) * 3600) >
-      block.timestamp
+      clanInfos[_clanId].blockAttacksTimestamp + clanInfos[_clanId].blockAttacksCooldownHours / 3600 > block.timestamp
     ) {
       revert BlockAttacksCooldown();
     }
@@ -501,7 +500,7 @@ contract Territories is
       msg.sender,
       _playerId,
       blockAttacksTimestamp,
-      blockAttacksTimestamp + uint(item.boostValue) * 3600
+      block.timestamp + uint(item.boostValue) * 3600
     );
   }
 

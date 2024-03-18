@@ -269,7 +269,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _isActionFullMode(InstantAction memory _instantAction) private pure returns (bool) {
-    return uint8(_instantAction.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+    return uint8(_instantAction.packedData >> IS_FULL_MODE_BIT) == 1;
   }
 
   function _packAction(

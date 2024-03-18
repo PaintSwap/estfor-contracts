@@ -30,7 +30,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error NotEnoughBrush();
   error OracleNotCalledYet();
   error MinimumOneBrush();
-  error NotPlayers();
+  error OnlyPlayers();
   error OnlyWorld();
 
   struct ClanInfo {
@@ -74,7 +74,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   modifier onlyPlayers() {
     if (address(players) != msg.sender) {
-      revert NotPlayers();
+      revert OnlyPlayers();
     }
     _;
   }

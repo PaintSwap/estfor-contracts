@@ -147,23 +147,6 @@ struct ActionChoiceInput {
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
   uint16[] inputTokenIds;
-  uint24[] inputAmounts;
-  uint16 outputTokenId;
-  uint8 outputAmount;
-  uint8 successPercent; // 0-100
-  uint16 handItemTokenIdRangeMin; // Inclusive
-  uint16 handItemTokenIdRangeMax; // Inclusive
-  bool isFullModeOnly;
-  Skill[] minSkills; // Skills required to do this action choice
-  uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
-}
-
-struct ActionChoiceInputV3 {
-  Skill skill; // Skill that this action choice is related to
-  int16 skillDiff; // How much the skill is increased/decreased by this action choice
-  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
-  uint24 xpPerHour;
-  uint16[] inputTokenIds;
   uint8[] inputAmounts;
   uint16 outputTokenId;
   uint8 outputAmount;
@@ -212,19 +195,13 @@ struct ActionChoice {
   uint8 successPercent; // 0-100
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
-  // FullMode is last bit, first 6 bits is worldLocation,
-  // 2nd last bit is if there are other skills in next storage slot to check,
-  // 3rd last bit if the input amounts should be used
-  bytes1 packedData;
+  bytes1 packedData; // FullMode is last bit, first 6 bits is worldLocation, 2nd last bit is if there are other skills in next storage slot to check
   bytes1 reserved;
   // Second storage slot
   Skill minSkill2;
   uint32 minXP2;
   Skill minSkill3;
   uint32 minXP3;
-  uint24 newInputAmount1; // alternative inputAmount1
-  uint24 newInputAmount2; // alternative inputAmount2
-  uint24 newInputAmount3; // alternative inputAmount3
 }
 
 struct ActionChoiceV2 {

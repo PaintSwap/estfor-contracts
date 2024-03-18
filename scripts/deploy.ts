@@ -19,9 +19,6 @@ import {
   TestPaintSwapArtGallery,
   TestPaintSwapDecorator,
   World,
-  InstantVRFActions,
-  VRFRequestInfo,
-  GenericInstantVRFActionStrategy,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -43,7 +40,6 @@ import {
   allActionChoicesRanged,
   allActionChoicesAlchemy,
   allActionChoicesFletching,
-  allActionChoicesForging,
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsFiremaking,
@@ -55,7 +51,6 @@ import {
   allActionChoiceIdsRanged,
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
-  allActionChoiceIdsForging,
 } from "./data/actionChoiceIds";
 import {
   BAZAAR_ADDRESS,
@@ -77,8 +72,6 @@ import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills} from "./data/territories";
-import {allInstantVRFActions} from "./data/instantVRFActions";
-import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -426,36 +419,6 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
-  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
-  const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
-    kind: "uups",
-    timeout,
-  })) as VRFRequestInfo;
-  await instantActions.deployed();
-  console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
-
-  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
-  const instantVRFActions = (await upgrades.deployProxy(
-    InstantVRFActions,
-    [players.address, itemNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
-    {
-      kind: "uups",
-      timeout,
-    }
-  )) as InstantVRFActions;
-  await instantVRFActions.deployed();
-  console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
-
-  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
-  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
-    GenericInstantVRFActionStrategy,
-    [instantVRFActions.address],
-    {
-      kind: "uups",
-    }
-  )) as GenericInstantVRFActionStrategy;
-  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
-
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
@@ -559,12 +522,9 @@ async function main() {
         bankRegistry.address,
         bankFactory.address,
         instantActions.address,
-        instantVRFActions.address,
-        lockedBankVaults.address,
         territories.address,
         decoratorProvider.address,
         combatantsHelper.address,
-        vrfRequestInfo.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -613,10 +573,6 @@ async function main() {
   await tx.wait();
   console.log("itemNFT setInstantActions");
 
-  tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
-  await tx.wait();
-  console.log("itemNFT setInstantVRFActions");
-
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
   console.log("shop.setItemNFT");
@@ -651,13 +607,6 @@ async function main() {
   await tx.wait();
   console.log("bankRegistry.setLockedBankVaults");
 
-  tx = await instantVRFActions.addStrategies(
-    [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING],
-    [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
-  );
-  await tx.wait();
-  console.log("instantVRFActions.addStrategies");
-
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();
   console.log("Set daily rewards enabled");
@@ -672,12 +621,19 @@ async function main() {
 
   const chunkSize = 100;
   for (let i = 0; i < allItems.length; i += chunkSize) {
+    const tokenIds: number[] = [];
+    const amounts: number[] = [];
     const chunk = allItems.slice(i, i + chunkSize);
+    chunk.forEach((item) => {
+      tokenIds.push(item.tokenId);
+      amounts.push(200);
+    });
     tx = await itemNFT.addItems(chunk);
     await tx.wait();
     console.log("Add items chunk ", i);
   }
 
+  // Add full equipment bonuses
   tx = await players.addFullAttireBonuses(allFullAttireBonuses);
   await tx.wait();
   console.log("Add full attire bonuses");
@@ -694,7 +650,6 @@ async function main() {
   const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
   const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM;
   const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
-  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
   const genericCombatActionId = EstforConstants.NONE;
 
   tx = await world.addBulkActionChoices(
@@ -706,11 +661,11 @@ async function main() {
   await tx.wait();
   console.log("Add action choices1");
 
-  // Add new ones here for gas reasons
+  // Add new ones here
   tx = await world.addBulkActionChoices(
-    [fletchingActionId, alchemyActionId, forgingActionId],
-    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
-    [allActionChoicesFletching, allActionChoicesAlchemy, allActionChoicesForging]
+    [fletchingActionId, alchemyActionId],
+    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy],
+    [allActionChoicesFletching, allActionChoicesAlchemy]
   );
 
   await tx.wait();
@@ -741,20 +696,9 @@ async function main() {
   console.log("Add clan tiers");
 
   // Add instant actions
-  for (let i = 0; i < allInstantActions.length; i += chunkSize) {
-    const chunk = allInstantActions.slice(i, i + chunkSize);
-    tx = await instantActions.addActions(chunk);
-    await tx.wait();
-    console.log("Add instant actions chunk ", i);
-  }
-
-  // Add instant vrf actions
-  for (let i = 0; i < allInstantVRFActions.length; i += chunkSize) {
-    const chunk = allInstantVRFActions.slice(i, i + chunkSize);
-    tx = await instantVRFActions.addActions(chunk);
-    await tx.wait();
-    console.log("Add instant vrf actions chunk ", i);
-  }
+  tx = await instantActions.addActions(allInstantActions);
+  await tx.wait();
+  console.log("Add instant actions");
 
   // Add test data for the game
   if (isBeta) {

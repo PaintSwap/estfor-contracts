@@ -122,19 +122,12 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _baseInputItemsConsumedNum;
-
-    bool useSecondInputTokens = uint8(
-      _actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
-    ) &
-      1 ==
-      1;
-
     if (_baseInputItemsConsumedNum != 0) {
       if (_actionChoice.inputTokenId1 != 0) {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId1,
-          useSecondInputTokens ? _actionChoice.newInputAmount1 : _actionChoice.inputAmount1,
+          _actionChoice.inputAmount1,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -144,7 +137,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId2,
-          useSecondInputTokens ? _actionChoice.newInputAmount2 : _actionChoice.inputAmount2,
+          _actionChoice.inputAmount2,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -154,7 +147,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId3,
-          useSecondInputTokens ? _actionChoice.newInputAmount3 : _actionChoice.inputAmount3,
+          _actionChoice.inputAmount3,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -166,7 +159,7 @@ library PlayersLibrary {
   function _getMaxRequiredRatioPartial(
     address _from,
     uint16 _inputTokenId,
-    uint _inputAmount,
+    uint16 _inputAmount,
     uint _prevConsumeMaxRatio,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
@@ -938,7 +931,7 @@ library PlayersLibrary {
     bool bothSet = _player.skillBoosted1 != Skill.NONE && _player.skillBoosted2 != Skill.NONE;
     bonusPercent = bothSet ? 5 : 10;
     // Upgraded characters get double base bonus stats
-    bool isUpgraded = uint8(_player.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+    bool isUpgraded = _player.packedData >> IS_FULL_MODE_BIT == bytes1(uint8(0x1));
     bonusPercent = isUpgraded ? bonusPercent * 2 : bonusPercent;
   }
 

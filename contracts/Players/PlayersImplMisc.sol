@@ -261,34 +261,25 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       consumedEquipmentLength = consumedEquipmentLength.inc();
     }
 
-    bool useSecondInputTokens = uint8(
-      _actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
-    ) &
-      1 ==
-      1;
-
     if (baseInputItemsConsumedNum != 0) {
       if (_actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId1,
-          baseInputItemsConsumedNum *
-            (useSecondInputTokens ? _actionChoice.newInputAmount1 : _actionChoice.inputAmount1)
+          baseInputItemsConsumedNum * _actionChoice.inputAmount1
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId2 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId2,
-          baseInputItemsConsumedNum *
-            (useSecondInputTokens ? _actionChoice.newInputAmount2 : _actionChoice.inputAmount2)
+          baseInputItemsConsumedNum * _actionChoice.inputAmount2
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
       if (_actionChoice.inputTokenId3 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           _actionChoice.inputTokenId3,
-          baseInputItemsConsumedNum *
-            (useSecondInputTokens ? _actionChoice.newInputAmount3 : _actionChoice.inputAmount3)
+          baseInputItemsConsumedNum * _actionChoice.inputAmount3
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
@@ -599,7 +590,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
   function buyBrushQuest(address _to, uint _playerId, uint _questId, bool _useExactETH) external payable {
     // This is a one off quest
-    (uint[] memory itemTokenIds /*uint[] memory amounts*/, , Skill skillGained, uint32 xpGained) = quests
+    (uint[] memory itemTokenIds, uint[] memory amounts, Skill skillGained, uint32 xpGained) = quests
       .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
     // Must update before the call to buyBrushQuest so the indexer can remove the in-progress XP update
     _updateXP(msg.sender, _playerId, skillGained, xpGained);

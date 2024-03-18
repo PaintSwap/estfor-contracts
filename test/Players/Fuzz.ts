@@ -46,7 +46,13 @@ describe("Fuzz testing", async function () {
     await players.addXPThresholdRewards(allXPThresholdRewards);
     const chunkSize = 100;
     for (let i = 0; i < allItems.length; i += chunkSize) {
+      const tokenIds: number[] = [];
+      const amounts: number[] = [];
       const chunk = allItems.slice(i, i + chunkSize);
+      chunk.forEach((item) => {
+        tokenIds.push(item.tokenId);
+        amounts.push(200);
+      });
       await itemNFT.addItems(chunk);
     }
 

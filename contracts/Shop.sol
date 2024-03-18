@@ -28,8 +28,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event Sell(address seller, uint tokenId, uint quantity, uint price);
   event SellBatch(address seller, uint[] tokenIds, uint[] quantities, uint[] prices);
   event NewAllocation(uint16 tokenId, uint allocation);
-  event AddUnsellableItems(uint16[] tokenIds);
-  event RemoveUnsellableItems(uint16[] tokenIds);
 
   error LengthMismatch();
   error LengthEmpty();
@@ -43,9 +41,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   error LiquidatePriceIsHigherThanShop(uint tokenId);
   error SellingTooQuicklyAfterItemIntroduction();
   error NotEnoughAllocationRemaining(uint tokenId, uint totalSold, uint allocationRemaining);
-  error AlreadyUnsellable();
-  error AlreadySellable();
-  error ItemNotSellable(uint tokenId);
 
   struct ShopItem {
     uint16 tokenId;
@@ -54,18 +49,16 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   uint public constant SELLING_CUTOFF_DURATION = 2 days;
 
-  struct TokenInfo {
+  struct TokenAllocation {
     uint80 allocationRemaining;
     uint80 price;
     uint40 checkpointTimestamp; // 00:00 UTC
-    bool unsellable;
   }
 
-  mapping(uint tokenId => TokenInfo) public tokenInfos;
+  mapping(uint tokenId => TokenAllocation) public tokenAllocations;
 
   IBrushToken public brush;
   ItemNFT public itemNFT;
-  uint16 private numUnsellableItems;
   address public dev;
   mapping(uint itemId => uint price) public shopItems;
 
@@ -83,7 +76,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function liquidatePrice(uint16 _tokenId) public view returns (uint80 price) {
     uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / (itemNFT.totalSupply() - numUnsellableItems);
+    uint totalBrushForItem = totalBrush / itemNFT.totalSupply();
     return _liquidatePrice(_tokenId, totalBrushForItem);
   }
 
@@ -94,7 +87,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
 
     uint totalBrush = brush.balanceOf(address(this));
-    uint totalBrushForItem = totalBrush / (itemNFT.totalSupply() - numUnsellableItems);
+    uint totalBrushForItem = totalBrush / itemNFT.totalSupply();
 
     prices = new uint[](iter.asUint256());
     while (iter.neq(0)) {
@@ -159,10 +152,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   function sell(uint16 _tokenId, uint _quantity, uint _minExpectedBrush) external {
     uint price = liquidatePrice(_tokenId);
     uint totalBrush = price * _quantity;
-    _sell(_tokenId, _quantity, price);
     if (totalBrush < _minExpectedBrush) {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
+    _sell(_tokenId, _quantity, price);
     brush.transfer(msg.sender, totalBrush);
     emit Sell(msg.sender, _tokenId, _quantity, price);
   }
@@ -203,44 +196,40 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert SellingTooQuicklyAfterItemIntroduction();
     }
 
-    // Check if tokenInfo checkpoint is older than 24 hours
-    TokenInfo storage tokenInfo = tokenInfos[_tokenId];
-    if (tokenInfo.unsellable) {
-      revert ItemNotSellable(_tokenId);
-    }
-
+    // Check if tokenAllocation checkpoint is older than 24 hours
+    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
     uint allocationRemaining;
-    if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
+    if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
       // New day, reset max allocation can be sold
-      allocationRemaining = uint80(brush.balanceOf(address(this)) / (itemNFT.totalSupply() - numUnsellableItems));
-      tokenInfo.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
-      tokenInfo.price = uint80(_sellPrice);
+      allocationRemaining = uint80(brush.balanceOf(address(this)) / itemNFT.totalSupply());
+      tokenAllocation.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
+      tokenAllocation.price = uint80(_sellPrice);
       emit NewAllocation(uint16(_tokenId), allocationRemaining);
     } else {
-      allocationRemaining = tokenInfo.allocationRemaining;
+      allocationRemaining = tokenAllocation.allocationRemaining;
     }
 
     uint totalSold = _quantity * _sellPrice;
     if (allocationRemaining < totalSold) {
       revert NotEnoughAllocationRemaining(_tokenId, totalSold, allocationRemaining);
     }
-    tokenInfo.allocationRemaining = uint80(allocationRemaining - totalSold);
+    tokenAllocation.allocationRemaining = uint80(allocationRemaining - totalSold);
     itemNFT.burn(msg.sender, _tokenId, _quantity);
   }
 
   function _liquidatePrice(uint16 _tokenId, uint _totalBrushPerItem) private view returns (uint80 price) {
-    TokenInfo storage tokenInfo = tokenInfos[_tokenId];
+    TokenAllocation storage tokenAllocation = tokenAllocations[_tokenId];
     uint totalOfThisItem = itemNFT.itemBalances(_tokenId);
-    if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
+    if (_hasNewDailyData(tokenAllocation.checkpointTimestamp)) {
       if (totalOfThisItem != 0) {
         price = uint80(_totalBrushPerItem / totalOfThisItem);
       }
     } else {
-      price = uint80(tokenInfo.price);
+      price = uint80(tokenAllocation.price);
     }
 
-    if (totalOfThisItem < 100 || tokenInfo.unsellable) {
-      // Needs to have a minimum of an item before any can be sold, and the item must be sellable
+    if (totalOfThisItem < 100) {
+      // Needs to have a minimum of an item before any can be sold.
       price = 0;
     }
   }
@@ -300,31 +289,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     }
     delete shopItems[_tokenId];
     emit RemoveShopItem(_tokenId);
-  }
-
-  function addUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
-    for (uint i = 0; i < itemTokenIds.length; ++i) {
-      if (tokenInfos[itemTokenIds[i]].unsellable) {
-        revert AlreadyUnsellable();
-      }
-      if (!itemNFT.exists(itemTokenIds[i])) {
-        revert ItemDoesNotExist();
-      }
-      tokenInfos[itemTokenIds[i]].unsellable = true;
-    }
-    numUnsellableItems += uint16(itemTokenIds.length);
-    emit AddUnsellableItems(itemTokenIds);
-  }
-
-  function removeUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
-    for (uint i = 0; i < itemTokenIds.length; ++i) {
-      if (!tokenInfos[itemTokenIds[i]].unsellable) {
-        revert AlreadySellable();
-      }
-      tokenInfos[itemTokenIds[i]].unsellable = false;
-    }
-    numUnsellableItems -= uint16(itemTokenIds.length);
-    emit RemoveUnsellableItems(itemTokenIds);
   }
 
   function setItemNFT(ItemNFT _itemNFT) external onlyOwner {
