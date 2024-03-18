@@ -191,7 +191,7 @@ describe("Players", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
   });
 
-  it("validateActions", async function () {
+  it("validateActionsV2", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     let tx = await world.addActions([
@@ -260,7 +260,7 @@ describe("Players", function () {
 
     let {successes, reasons} = await players
       .connect(alice)
-      .validateActions(alice.address, playerId, [queuedAction, queuedActionCorrect, queuedAction]);
+      .validateActionsV2(alice.address, playerId, [queuedAction, queuedActionCorrect, queuedAction]);
 
     const InvalidEquipPositionSelector = "0x9378eb35";
     expect(successes.length).to.eq(3);
@@ -274,19 +274,100 @@ describe("Players", function () {
 
     ({successes, reasons} = await players
       .connect(alice)
-      .validateActions(alice.address, playerId, [queuedActionCorrect]));
+      .validateActionsV2(alice.address, playerId, [queuedActionCorrect]));
 
     expect(successes.length).to.eq(1);
     expect(reasons.length).to.eq(1);
     expect(successes[0]).to.eq(true);
     expect(reasons[0]).to.eq("0x");
 
-    ({successes, reasons} = await players.connect(alice).validateActions(alice.address, playerId, [queuedAction]));
+    ({successes, reasons} = await players.connect(alice).validateActionsV2(alice.address, playerId, [queuedAction]));
 
     expect(successes.length).to.eq(1);
     expect(reasons.length).to.eq(1);
     expect(successes[0]).to.eq(false);
     expect(reasons[0]).to.eq(InvalidEquipPositionSelector);
+  });
+
+  it("ValidateActions", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 1 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
+      ]
+    );
+    const choiceId = await getActionChoiceId(tx);
+    const timespan = 3600;
+
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
+      choiceId,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_GAUNTLETS,
+        combatStats: EstforTypes.emptyCombatStats,
+        equipPosition: EstforTypes.EquipPosition.ARMS,
+      },
+    ]);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
+
+    const queuedActionCorrect = {...queuedAction, attire: {...EstforTypes.noAttire}};
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
+
+    let {successes, reasons} = await players
+      .connect(alice)
+      .validateActions(alice.address, playerId, [queuedAction, queuedActionCorrect, queuedAction]);
+
+    const InvalidEquipPositionSelector = "0x9378eb35";
+    expect(successes.length).to.eq(3);
+    expect(reasons.length).to.eq(3);
+    expect(successes[0]).to.eq(false);
+    expect(reasons[0]).to.eq(InvalidEquipPositionSelector);
+    expect(successes[1]).to.eq(true);
+    expect(reasons[1]).to.eq("0x");
+    expect(successes[2]).to.eq(false);
+    expect(reasons[2]).to.eq(InvalidEquipPositionSelector);
   });
 
   it("Queueing after 1 action is completely finished", async function () {

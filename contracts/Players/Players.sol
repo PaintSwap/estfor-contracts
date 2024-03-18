@@ -418,10 +418,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bool[7]));
   }
 
-  /// @notice Validate if these actions can occur
-  /// @param _playerId Id for the player
-  /// @param _queuedActions Actions to queue
-  function validateActions(
+  function validateActionsV2(
     address _owner,
     uint _playerId,
     QueuedActionInputV2[] calldata _queuedActions
@@ -433,6 +430,26 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         _owner,
         _playerId,
         _queuedActions
+      )
+    );
+    return abi.decode(data, (bool[], bytes[]));
+  }
+
+  /// @notice Validate if these actions can occur
+  /// @param _playerId Id for the player
+  /// @param _queuedActions Actions to queue
+  function validateActions(
+    address _owner,
+    uint _playerId,
+    QueuedActionInput[] calldata _queuedActions
+  ) external view returns (bool[] memory successes, bytes[] memory reasons) {
+    bytes memory data = _staticcall(
+      address(this),
+      abi.encodeWithSelector(
+        IPlayersQueuedActionsDelegateView.validateActionsImpl.selector,
+        _owner,
+        _playerId,
+        _convertQueuedActionInputV1ToV2(_queuedActions)
       )
     );
     return abi.decode(data, (bool[], bytes[]));
