@@ -85,7 +85,6 @@ abstract contract PlayersBase {
   error UnsupportedAttire();
   error UnsupportedChoiceId();
   error InvalidHandEquipment(uint16 itemTokenId);
-  error DoNotHaveEnoughQuantityToEquipToAction();
   error NoActiveBoost();
   error BoostTimeAlreadyStarted();
   error TooManyActionsQueued();
@@ -129,6 +128,7 @@ abstract contract PlayersBase {
   error BuyBrushFailed();
   error NonInstanceConsumeNotSupportedYet();
   error AlreadyUpgraded();
+  error PlayerNotUpgraded();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -231,7 +231,7 @@ abstract contract PlayersBase {
   }
 
   function _isPlayerFullMode(uint _playerId) internal view returns (bool) {
-    return players_[_playerId].packedData >> IS_FULL_MODE_BIT == bytes1(uint8(0x1));
+    return uint8(players_[_playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _getElapsedTime(uint _startTime, uint _endTime) internal view returns (uint elapsedTime) {

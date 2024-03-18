@@ -22,6 +22,10 @@ import {
   LOCKED_BANK_VAULT_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
+  INSTANT_VRF_ACTIONS_ADDRESS,
+  VRF_REQUEST_INFO_ADDRESS,
+  GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+  EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -49,6 +53,7 @@ async function main() {
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
+    timeout,
   });
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
@@ -198,6 +203,49 @@ async function main() {
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
+  // Instant VRF actions
+  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+  const instantVRFActions = await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
+    kind: "uups",
+    timeout,
+  });
+  await instantVRFActions.deployed();
+  console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+
+  // Instant VRF strategies
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = await upgrades.upgradeProxy(
+    GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+    GenericInstantVRFActionStrategy,
+    {
+      kind: "uups",
+      timeout,
+    }
+  );
+  await genericInstantVRFActionStrategy.deployed();
+  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
+
+  // EggInstantVRFActionStrategy
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const eggInstantVRFActionStrategy = await upgrades.upgradeProxy(
+    EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+    EggInstantVRFActionStrategy,
+    {
+      kind: "uups",
+      timeout,
+    }
+  );
+  console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
+
+  // VRFRequestInfo
+  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
+  const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
+    kind: "uups",
+    timeout,
+  });
+  await vrfRequestInfo.deployed();
+  console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
+
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
     kind: "uups",
@@ -251,11 +299,17 @@ async function main() {
   await verifyContracts([quests.address]);
   await verifyContracts([clans.address]);
   await verifyContracts([world.address]);
+  await verifyContracts([worldLibrary.address]);
+  await verifyContracts([estforLibrary.address]);
   await verifyContracts([adminAccess.address]);
   await verifyContracts([bankRegistry.address]);
   await verifyContracts([wishingWell.address]);
   await verifyContracts([promotions.address]);
   await verifyContracts([instantActions.address]);
+  await verifyContracts([vrfRequestInfo.address]);
+  await verifyContracts([instantVRFActions.address]);
+  await verifyContracts([genericInstantVRFActionStrategy.address]);
+  await verifyContracts([eggInstantVRFActionStrategy.address]);
   await verifyContracts([lockedBankVaults.address]);
   await verifyContracts([territories.address]);
   await verifyContracts([decoratorProvider.address]);
