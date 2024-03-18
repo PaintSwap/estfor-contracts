@@ -72,6 +72,7 @@ async function main() {
     unsafeAllow: ["external-library-linking"],
     timeout,
   });
+  console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
   let tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
   await tx.wait();
