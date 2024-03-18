@@ -111,6 +111,7 @@ contract LockedBankVaults is
   error NotALockedVaultDefenceItem();
   error CannotReattackAndSuperAttackSameTime();
   error CallerNotSamWitchVRF();
+  error BlockAttacksCooldown();
 
   struct ClanBattleInfo {
     uint40 lastClanIdAttackOtherClanIdCooldownTimestamp;
@@ -138,7 +139,8 @@ contract LockedBankVaults is
     uint88 gasPaid;
     uint24 defendingVaultsOffset;
     uint40 blockAttacksTimestamp;
-    // 2 bytes left
+    uint8 blockAttacksCooldownHours;
+    // 1 byte left
     uint48[] playerIds;
     Vault[] defendingVaults; // Append only, and use defendingVaultsOffset to decide where the real start is
     uint40 superAttackCooldownTimestamp;
@@ -439,8 +441,8 @@ contract LockedBankVaults is
     pendingAttack.attackInProgress = false;
     clanInfos[attackingClanId].currentlyAttacking = false;
 
-    uint percentageToTake = 10;
     uint losingClanId = didAttackersWin ? defendingClanId : attackingClanId;
+    uint percentageToTake = didAttackersWin ? 10 : 5;
 
     // Go through all the defendingVaults of who ever lost and take a percentage from them
     uint totalWon;
@@ -549,11 +551,19 @@ contract LockedBankVaults is
       revert NotALockedVaultDefenceItem();
     }
 
+    if (
+      (clanInfos[_clanId].blockAttacksTimestamp + uint(clanInfos[_clanId].blockAttacksCooldownHours) * 3600) >
+      block.timestamp
+    ) {
+      revert BlockAttacksCooldown();
+    }
+
     uint blockAttacksTimestamp = block.timestamp + item.boostDuration;
     clanInfos[_clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
+    clanInfos[_clanId].blockAttacksCooldownHours = uint8(item.boostValue);
 
     itemNFT.burn(msg.sender, _itemTokenId, 1);
-
+    // TODO: Add blockAttacksCooldownHours to a BlockingAttacksV2
     emit BlockingAttacks(_clanId, _itemTokenId, msg.sender, _playerId, blockAttacksTimestamp, block.timestamp);
   }
 
@@ -587,7 +597,7 @@ contract LockedBankVaults is
   ) private returns (uint amountWon) {
     if (_losersVault.timestamp > block.timestamp) {
       uint amount = _losersVault.amount;
-      uint stealAmount = amount / _percentageToTake;
+      uint stealAmount = (amount * _percentageToTake) / 100;
       _losersVault.amount = uint80(amount - stealAmount);
       clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount);
       amountWon += stealAmount;
@@ -595,7 +605,7 @@ contract LockedBankVaults is
 
     if (_losersVault.timestamp1 > block.timestamp) {
       uint amount1 = _losersVault.amount1;
-      uint stealAmount1 = amount1 / _percentageToTake;
+      uint stealAmount1 = (amount1 * _percentageToTake) / 100;
       _losersVault.amount1 = uint80(amount1 - stealAmount1);
       clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount1);
       amountWon += stealAmount1;
@@ -623,6 +633,11 @@ contract LockedBankVaults is
     _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
   }
 
+  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
+    movingAverageGasPrice = _movingAverageGasPrice;
+    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
+  }
+
   function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount, uint _lockPeriod) private {
     if (_amount == 0) {
       return;
@@ -643,11 +658,6 @@ contract LockedBankVaults is
     }
 
     emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
-  }
-
-  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
-    movingAverageGasPrice = _movingAverageGasPrice;
-    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
   }
 
   function _checkCanAssignCombatants(uint _clanId, uint48[] calldata _playerIds) private view {
@@ -828,6 +838,8 @@ contract LockedBankVaults is
     clanInfo.assignCombatantsCooldownTimestamp = 0;
     clanInfo.currentlyAttacking = false;
     clanInfo.superAttackCooldownTimestamp = 0;
+    clanInfo.blockAttacksTimestamp = 0;
+    clanInfo.blockAttacksCooldownHours = 0;
 
     for (uint i; i < _otherClanIds.length; ++i) {
       uint lowerClanId = _clanId < _otherClanIds[i] ? _clanId : _otherClanIds[i];

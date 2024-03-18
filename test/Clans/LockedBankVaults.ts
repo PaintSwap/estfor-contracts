@@ -225,6 +225,7 @@ describe("LockedBankVaults", function () {
     ).to.be.revertedWithCustomError(lockedBankVaults, "NoCombatants");
   });
 
+  // Losing 5% of the locked funds if losing and if winning get 10%
   it("Attack back, lose and then win", async () => {
     const {
       clans,
@@ -292,7 +293,7 @@ describe("LockedBankVaults", function () {
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
     await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
-    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810); // lost 10% for losing
+    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(855); // lost 5% for losing
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100); // // unchanged
 
     // Let's give them more players so they can win
@@ -347,12 +348,12 @@ describe("LockedBankVaults", function () {
     const {timestamp: NOW2} = await ethers.provider.getBlock("latest");
 
     // Wait another day (check it's not just the clan cooldown)
-    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810 + 10);
+    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(855 + 10);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(90);
 
     const LOCK_PERIOD = (await lockedBankVaults.LOCK_PERIOD()).toNumber();
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(1);
-    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(810);
+    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(855);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(NOW + LOCK_PERIOD - 1);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(10);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(NOW2 + LOCK_PERIOD);
@@ -986,7 +987,7 @@ describe("LockedBankVaults", function () {
       .withArgs(clanId, NOW1 + 86400 + 1);
   });
 
-  it("Blocking Attacks with item", async () => {
+  it("Blocking attacks with item", async () => {
     const {
       clans,
       lockedBankVaults,
@@ -1050,8 +1051,19 @@ describe("LockedBankVaults", function () {
       })
     ).to.be.revertedWithCustomError(lockedBankVaults, "ClanIsBlockingAttacks");
 
-    // Allow extending it even before it finishes
+    // Cannot apply again until the cooldown is done
+    await expect(
+      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId)
+    ).to.be.revertedWithCustomError(lockedBankVaults, "BlockAttacksCooldown");
+    // Go just before the cooldown is done to confirm
+    await ethers.provider.send("evm_increaseTime", [protectionShield.boostValue * 3600]);
+    await expect(
+      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId)
+    ).to.be.revertedWithCustomError(lockedBankVaults, "BlockAttacksCooldown");
+    // Now extend past the cooldown time
+    await ethers.provider.send("evm_increaseTime", [10]);
     await lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId);
+
     await ethers.provider.send("evm_increaseTime", [protectionShield.boostDuration - 10]);
 
     await expect(
@@ -1129,13 +1141,13 @@ describe("LockedBankVaults", function () {
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
     await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
 
-    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900); // lost 10%
+    expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(950); // lost 5%
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(800);
 
     // Check it went to the correct places
-    expect(await brush.balanceOf(shop.address)).to.eq(50);
-    expect(await brush.balanceOf(dev.address)).to.eq(25);
-    expect(await brush.amountBurnt()).to.eq(25);
+    expect(await brush.balanceOf(shop.address)).to.eq(25);
+    expect(await brush.balanceOf(dev.address)).to.eq(12);
+    expect(await brush.amountBurnt()).to.eq(13);
   });
 
   it("Win an attack with some locked vaults", async () => {
