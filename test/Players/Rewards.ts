@@ -1035,7 +1035,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1249,7 +1249,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1353,7 +1353,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {

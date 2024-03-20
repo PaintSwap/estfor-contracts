@@ -117,7 +117,7 @@ describe("WishingWell", function () {
     const {wishingWell, alice} = await loadFixture(deployContracts);
     await expect(wishingWell.connect(alice).donate(alice.address, 0, 100)).to.be.revertedWithCustomError(
       wishingWell,
-      "OnlyPlayers"
+      "NotPlayers"
     );
   });
 

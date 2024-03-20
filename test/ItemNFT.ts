@@ -57,8 +57,7 @@ describe("ItemNFT", function () {
     await adminAccess.deployed();
 
     const isBeta = true;
-    const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-    const itemNFTLibrary = await ItemNFTLibrary.deploy();
+    const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
     const itemNFT = (await upgrades.deployProxy(
@@ -80,28 +79,29 @@ describe("ItemNFT", function () {
       shop,
       royaltyReceiver,
       adminAccess,
+      itemNFTLibrary,
     };
   }
 
   describe("supportsInterface", async function () {
     it("IERC165", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0x01ffc9a7")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0x01ffc9a7")).to.be.true;
     });
 
     it("IERC1155", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0xd9b67a26")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0xd9b67a26")).to.be.true;
     });
 
     it("IERC1155Metadata", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0x0e89341c")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0x0e89341c")).to.be.true;
     });
 
     it("IERC2981 royalties", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0x2a55205a")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0x2a55205a")).to.be.true;
     });
   });
 
@@ -287,13 +287,11 @@ describe("ItemNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {itemNFT, world, shop, royaltyReceiver, adminAccess} = await loadFixture(deployContracts);
+    const {itemNFT, world, shop, royaltyReceiver, adminAccess, itemNFTLibrary} = await loadFixture(deployContracts);
     expect(await itemNFT.name()).to.be.eq("Estfor Items (Beta)");
     expect(await itemNFT.symbol()).to.be.eq("EK_IB");
 
     const isBeta = false;
-    const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-    const itemNFTLibrary = await ItemNFTLibrary.deploy();
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
     const itemNFTNotBeta = await upgrades.deployProxy(

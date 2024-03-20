@@ -834,7 +834,7 @@ describe("Territories", function () {
       .be.reverted;
   });
 
-  it("Blocking Attacks with item", async () => {
+  it("Blocking attacks with item", async () => {
     const {
       playerNFT,
       itemNFT,
@@ -885,8 +885,23 @@ describe("Territories", function () {
       territories.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId)
     ).to.be.revertedWithCustomError(territories, "NotATerritoryDefenceItem");
 
+    // Correct item
     const itemTokenId = EstforConstants.MIRROR_SHIELD;
-    await territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId);
+    const mirrorShield = items.find((item) => item.tokenId == itemTokenId) as ItemInput;
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const blockAttacksTimestamp = NOW + mirrorShield.boostDuration + 1;
+
+    await expect(territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId))
+      .to.emit(territories, "BlockingAttacks")
+      .withArgs(
+        clanId,
+        itemTokenId,
+        alice.address,
+        playerId,
+        blockAttacksTimestamp,
+        blockAttacksTimestamp + mirrorShield.boostValue * 3600
+      );
+
     expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(1);
 
     await expect(
@@ -895,7 +910,6 @@ describe("Territories", function () {
         .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
     ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
 
-    const mirrorShield = items.find((item) => item.tokenId == itemTokenId) as ItemInput;
     await ethers.provider.send("evm_increaseTime", [mirrorShield.boostDuration - 10]);
 
     await expect(
@@ -909,8 +923,14 @@ describe("Territories", function () {
       territories,
       "BlockAttacksCooldown"
     );
-
-    await ethers.provider.send("evm_increaseTime", [mirrorShield.boostValue * 3600 + 10]);
+    // Go to just before the end
+    await ethers.provider.send("evm_increaseTime", [mirrorShield.boostValue * 3600]);
+    await expect(territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId)).to.be.revertedWithCustomError(
+      territories,
+      "BlockAttacksCooldown"
+    );
+    // Now go past
+    await ethers.provider.send("evm_increaseTime", [10]);
     await territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId);
 
     await ethers.provider.send("evm_increaseTime", [mirrorShield.boostDuration - 10]);

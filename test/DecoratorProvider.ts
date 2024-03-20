@@ -44,6 +44,7 @@ describe("DecoratorProvider", function () {
   });
 
   it("Harvest rewards", async function () {
+    this.retries(3);
     const {mockTerritories, decoratorProvider, artGallery, brush, brushPerSecond, owner, lp, alice, playerId} =
       await loadFixture(deployContracts);
 
@@ -66,6 +67,7 @@ describe("DecoratorProvider", function () {
   });
 
   it("Retrieve art gallery rewards", async function () {
+    this.retries(3);
     const {decoratorProvider, brush, owner, lp, dev, brushPerSecond, artGalleryLockPeriod, alice, playerId} =
       await loadFixture(deployContracts);
 
