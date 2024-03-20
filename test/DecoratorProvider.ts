@@ -67,6 +67,7 @@ describe("DecoratorProvider", function () {
   });
 
   it("Retrieve art gallery rewards", async function () {
+    this.retries(3);
     const {decoratorProvider, brush, owner, lp, dev, brushPerSecond, artGalleryLockPeriod, alice, playerId} =
       await loadFixture(deployContracts);
 

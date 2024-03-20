@@ -7,7 +7,9 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
+  const ItemNFT = (
+    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}})
+  ).connect(owner);
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
