@@ -46,8 +46,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
-        QueuedAction[] memory queuedActions;
-        player.actionQueue = queuedActions;
+        delete player.actionQueue;
       }
       // Don't care about remaining actions
       assembly ("memory-safe") {
@@ -95,6 +94,16 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       player.currentActionStartTime = 0;
     }
 
+    uint totalLength = remainingQueuedActions.length + _queuedActionInputs.length;
+    QueuedAction[] memory queuedActions = new QueuedAction[](totalLength);
+
+    QueuedActionExtra[] memory _queuedActionsExtra = new QueuedActionExtra[](totalLength);
+
+    for (uint i; i != remainingQueuedActions.length; ++i) {
+      queuedActions[i] = remainingQueuedActions[i];
+      _queuedActionsExtra[i] = queuedActionsExtra[i];
+    }
+
     uint startTimeNewActions = block.timestamp - totalTimespan;
     for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
@@ -115,7 +124,15 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         _queuedActionInputs[i].timespan = uint24(MAX_TIME_.add(remainder).sub(totalTimespan));
       }
 
-      _addToQueue(from, _playerId, _queuedActionInputs[i], queueId.asUint64(), uint40(startTimeNewActions));
+      (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) = _addToQueue(
+        from,
+        _playerId,
+        _queuedActionInputs[i],
+        queueId.asUint64(),
+        uint40(startTimeNewActions)
+      );
+      queuedActions[remainingQueuedActions.length.add(i)] = queuedAction;
+      _queuedActionsExtra[remainingQueuedActions.length.add(i)] = queuedActionExtra;
 
       queueId = queueId.inc();
       totalTimespan += _queuedActionInputs[i].timespan;
@@ -132,7 +149,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire[i + remainingQueuedActions.length] = _queuedActionInputs[i].attire;
     }
 
-    emit SetActionQueue(from, _playerId, player.actionQueue, attire, player.currentActionStartTime);
+    emit SetActionQueueV2(from, _playerId, queuedActions, attire, player.currentActionStartTime, _queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
     nextQueueId = queueId.asUint64();
@@ -351,7 +368,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QueuedActionInputV2 memory _queuedActionInput,
     uint64 _queueId,
     uint40 _startTime
-  ) private {
+  ) private returns (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed; // Empty
     QuestState memory pendingQuestState; // Empty
     bool setAttire = checkAddToQueue(
@@ -365,7 +382,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire_[_playerId][_queueId] = _queuedActionInput.attire;
     }
 
-    QueuedAction storage queuedAction = players_[_playerId].actionQueue.push();
     queuedAction.timespan = _queuedActionInput.timespan;
     queuedAction.queueId = _queueId;
     queuedAction.actionId = _queuedActionInput.actionId;
@@ -376,11 +392,16 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     queuedAction.combatStyle = _queuedActionInput.combatStyle;
 
     // Only set variables in the second storage slot if it's necessary
-    if (_queuedAction.petId != 0) {
-      queuedAction.hasPet = true;
-      queuedAction.petId = _queuedAction.petId;
-      petNFT.assignPet(_from, _queuedAction.petId, _startTime);
+    bytes1 packed = bytes1(uint8(1)); // isValid
+    // Only set variables in the second storage slot if it's necessary
+    if (_queuedActionInput.petId != 0) {
+      packed |= bytes1(uint8(1 << HAS_PET_BIT));
+      queuedActionExtra.petId = _queuedActionInput.petId;
+      queuedActionsExtra[_queueId] = queuedActionExtra;
+      petNFT.assignPet(_from, _queuedActionInput.petId, _startTime);
     }
+    queuedAction.packed = packed;
+    players_[_playerId].actionQueue.push(queuedAction);
   }
 
   function _checkFood(
@@ -572,9 +593,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _clearActionQueue(address _from, uint _playerId) private {
     QueuedAction[] memory queuedActions;
+    QueuedActionExtra[] memory queuedActionsExtra;
     Attire[] memory attire;
     uint startTime = 0;
-    _setActionQueue(_from, _playerId, queuedActions, attire, startTime);
+    _setActionQueue(_from, _playerId, queuedActions, queuedActionsExtra, attire, startTime);
   }
 
   function _clearCurrentActionProcessed(uint _playerId) private {

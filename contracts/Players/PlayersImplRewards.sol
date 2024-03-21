@@ -168,8 +168,8 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint veryStartTime = startTime.sub(prevProcessedTime);
 
       // Update combat stats from the pet if it is still valid
-      if (queuedAction.hasPet) {
-        Pet memory pet = petNFT.getPet(queuedAction.petId);
+      if (_hasPet(queuedAction.packed)) {
+        Pet memory pet = petNFT.getPet(queuedActionsExtra[queuedAction.queueId].petId);
         if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
           _updateCombatStatsFromPet(
             combatStats,

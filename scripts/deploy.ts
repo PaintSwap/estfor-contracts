@@ -23,6 +23,7 @@ import {
   VRFRequestInfo,
   GenericInstantVRFActionStrategy,
   PetNFT,
+  EggInstantVRFActionStrategy,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -484,6 +485,15 @@ async function main() {
   )) as GenericInstantVRFActionStrategy;
   console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
 
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
+    EggInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as EggInstantVRFActionStrategy;
+
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
@@ -688,8 +698,12 @@ async function main() {
   console.log("bankRegistry.setLockedBankVaults");
 
   tx = await instantVRFActions.addStrategies(
-    [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING],
-    [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
+    [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],
+    [
+      genericInstantVRFActionStrategy.address,
+      genericInstantVRFActionStrategy.address,
+      eggInstantVRFActionStrategy.address,
+    ]
   );
   await tx.wait();
   console.log("instantVRFActions.addStrategies");

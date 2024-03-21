@@ -410,3 +410,7 @@ struct ItemInput {
 }
 
 uint constant IS_FULL_MODE_BIT = 7;
+
+// Queued action
+uint constant IS_VALID_BIT = 0;
+uint constant HAS_PET_BIT = 1;
