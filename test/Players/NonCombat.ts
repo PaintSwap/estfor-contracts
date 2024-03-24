@@ -2010,6 +2010,43 @@ describe("Non-Combat Actions", function () {
     });
   });
 
+  // This test checks a bug found by Chopps where doing 24 hours of alchemizing enhanted logs was pruning the output
+  it("Output amount is greater than 65535 should work", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const outputAmount = 255;
+    const rate = 300 * RATE_MUL;
+    const {queuedAction} = await setupBasicAlchemy(itemNFT, world, rate, outputAmount);
+
+    const startingAmount = 1000000;
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.SHADOW_SCROLL, EstforConstants.NATURE_SCROLL, EstforConstants.PAPER],
+      [startingAmount, startingAmount, startingAmount]
+    );
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.ALCHEMY)).to.eq(queuedAction.timespan);
+
+    // Check the inputs/output are as expected
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(
+      startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
+      startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.PAPER)).to.eq(
+      startingAmount - Math.floor((queuedAction.timespan * rate * 2) / (3600 * RATE_MUL))
+    );
+    const outputBalance = await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL);
+    console.log(outputBalance);
+    expect(outputBalance).to.eq(Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * RATE_MUL)));
+    expect(outputBalance).to.be.greaterThan(65535);
+  });
+
   // Very similar to crafting
   describe("Fletching", function () {
     it("Finish 1 item", async function () {
