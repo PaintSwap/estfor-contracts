@@ -12,7 +12,7 @@ import {Players} from "./Players/Players.sol";
 import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 
 import {Skill, EquipPosition, IS_FULL_MODE_BIT} from "./globals/players.sol";
-import {InstantVRFActionInput, InstantVRFActionType, RandomReward} from "./globals/rewards.sol";
+import {InstantVRFActionInput, InstantVRFActionType} from "./globals/rewards.sol";
 import {NONE} from "./globals/items.sol";
 
 contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {

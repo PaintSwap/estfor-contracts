@@ -5,7 +5,7 @@ import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, getActionId, requestAndFulfillRandomWords} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking} from "./utils";
+import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking, setupBasicAlchemy} from "./utils";
 import {defaultActionInfo, noAttire} from "@paintswap/estfor-definitions/types";
 import {createPlayer} from "../../scripts/utils";
 
@@ -1605,5 +1605,66 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
       Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))
     );
+  });
+
+  it("Gathering boost, output > 65535", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const boostValue = 10;
+    const boostDuration = 3600;
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.GATHERING_BOOST,
+        equipPosition: EstforTypes.EquipPosition.BOOST_VIAL,
+        // Boost
+        boostType: EstforTypes.BoostType.GATHERING,
+        boostValue,
+        boostDuration,
+        isTransferable: false,
+      },
+    ]);
+
+    const outputAmount = 255;
+    const rate = 300 * RATE_MUL;
+    const {queuedAction} = await setupBasicAlchemy(itemNFT, world, rate, outputAmount);
+
+    const startingAmount = 1000000;
+    await itemNFT.testMints(
+      alice.address,
+      [
+        EstforConstants.SHADOW_SCROLL,
+        EstforConstants.NATURE_SCROLL,
+        EstforConstants.PAPER,
+        EstforConstants.GATHERING_BOOST,
+      ],
+      [startingAmount, startingAmount, startingAmount, 1]
+    );
+
+    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    await players
+      .connect(alice)
+      .startActionsExtra(
+        playerId,
+        [queuedAction],
+        EstforConstants.GATHERING_BOOST,
+        NOW,
+        0,
+        NO_DONATION_AMOUNT,
+        EstforTypes.ActionQueueStatus.NONE
+      );
+
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.ALCHEMY)).to.eq(queuedAction.timespan);
+
+    const outputBalance = await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL)).to.eq(
+      Math.floor(
+        (queuedAction.timespan * rate * outputAmount) / (3600 * RATE_MUL) +
+          (boostDuration * boostValue * rate * outputAmount) / (100 * RATE_MUL * 3600)
+      )
+    );
+    expect(outputBalance).to.be.greaterThan(65535);
   });
 });

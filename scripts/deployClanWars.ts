@@ -31,7 +31,6 @@ async function main() {
   console.log(`Deploying clan wars contracts: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const timeout = 600 * 1000; // 10 minutes
-  const isBeta = process.env.IS_BETA == "true";
 
   const estforLibrary = await ethers.deployContract("EstforLibrary");
   await estforLibrary.deployed();
@@ -81,6 +80,8 @@ async function main() {
   signer.estimateGas = async () => {
     return ethers.BigNumber.from(6_600_000);
   };
+
+  const isBeta = process.env.IS_BETA == "true";
 
   const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults")).connect(signer);
   const lockedBankVaults = await upgrades.deployProxy(

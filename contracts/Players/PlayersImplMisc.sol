@@ -296,6 +296,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
     if (_actionChoice.outputTokenId != 0) {
       uint8 successPercent = 100;
+      // Some might be burnt when cooking for instance
       if (_actionChoice.successPercent != 100) {
         uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
         uint skillLevel = PlayersLibrary.getLevel(
@@ -306,8 +307,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost));
       }
 
-      // Some might be burnt cooking for instance
-      uint16 numProduced = uint16(
+      uint24 numProduced = uint24(
         (uint(baseInputItemsConsumedNum) * _actionChoice.outputAmount * successPercent) / 100
       );
 
@@ -321,7 +321,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           activeBoost.duration
         );
         if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-          numProduced += uint16((boostedTime * numProduced * activeBoost.value) / (_xpElapsedTime * 100));
+          numProduced += uint24((boostedTime * numProduced * activeBoost.value) / (_xpElapsedTime * 100));
         }
       }
 

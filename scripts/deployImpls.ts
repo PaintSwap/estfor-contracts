@@ -23,24 +23,26 @@ async function main() {
   if (newPlayersLibrary) {
     playersLibrary = await PlayersLibrary.deploy();
     await playersLibrary.deployed();
-    await verifyContracts([playersLibrary.address]);
+    if (chainId == 250) {
+      await verifyContracts([playersLibrary.address]);
+    }
   } else {
     playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
-  /*
+
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address); */
+    await deployPlayerImplementations(playersLibrary.address);
 
   // Single
-  const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
+  /*  const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
   console.log(`PlayersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
-  await playersImplMisc.deployed();
+  await playersImplMisc.deployed(); */
 
   // Set the implementations
-  const Players = await ethers.getContractFactory("Players");
+  const Players = (await ethers.getContractFactory("Players")).connect(owner);
 
   /* Use these when keeping old implementations
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
@@ -51,11 +53,11 @@ async function main() {
   */
   const players = Players.attach(PLAYERS_ADDRESS);
   const tx = await players.setImpls(
-    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_REWARDS_ADDRESS,
+    playersImplQueueActions.address,
+    playersImplProcessActions.address,
+    playersImplRewards.address,
     playersImplMisc.address,
-    PLAYERS_IMPL_MISC1_ADDRESS
+    playersImplMisc1.address
   );
   await tx.wait();
 

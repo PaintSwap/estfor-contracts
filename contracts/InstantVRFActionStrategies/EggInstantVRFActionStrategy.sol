@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol
 
 import {IInstantVRFActionStrategy} from "./IInstantVRFActionStrategy.sol";
 import {Skill} from "../globals/players.sol";
-import {InstantVRFActionInput, InstantVRFActionType, RandomReward} from "../globals/rewards.sol";
+import {InstantVRFActionInput} from "../globals/rewards.sol";
 
 contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
   error OnlyInstantVRFActions();

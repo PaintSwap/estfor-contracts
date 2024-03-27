@@ -265,7 +265,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       emit DailyReward(
         _from,
         _playerId,
-        uint16(pendingQueuedActionState.dailyRewardItemTokenIds[0]),
+        pendingQueuedActionState.dailyRewardItemTokenIds[0],
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
 
@@ -273,7 +273,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         emit WeeklyReward(
           _from,
           _playerId,
-          uint16(pendingQueuedActionState.dailyRewardItemTokenIds[1]),
+          pendingQueuedActionState.dailyRewardItemTokenIds[1],
           pendingQueuedActionState.dailyRewardAmounts[1]
         );
       }

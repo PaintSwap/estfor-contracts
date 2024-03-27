@@ -7,7 +7,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add instant actions using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
+  const instantActions = (await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)).connect(owner);
 
   const actionIds = new Set([
     EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_1,

@@ -1,20 +1,14 @@
 import {ethers} from "hardhat";
-import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./contractAddresses";
+import {WORLD_ADDRESS} from "./contractAddresses";
 import {allActionChoicesForging} from "./data/actionChoices";
 import {allActionChoiceIdsForging} from "./data/actionChoiceIds";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit action choices using account: ${owner.address}`);
+  console.log(`Edit action choices using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
-
-  const World = (await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}})).connect(
-    owner
-  );
-  const world = await World.attach(WORLD_ADDRESS);
+  const world = await ethers.getContractAt("World", WORLD_ADDRESS);
 
   // Single
   /*  const index = await allActionChoiceIdsFletching.findIndex(

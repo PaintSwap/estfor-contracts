@@ -806,6 +806,33 @@ async function main() {
     console.log("Add instant vrf actions chunk ", i);
   }
 
+  // Add unsellable items
+  const items = [
+    EstforConstants.INFUSED_ORICHALCUM_HELMET,
+    EstforConstants.INFUSED_ORICHALCUM_ARMOR,
+    EstforConstants.INFUSED_ORICHALCUM_TASSETS,
+    EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS,
+    EstforConstants.INFUSED_ORICHALCUM_BOOTS,
+    EstforConstants.INFUSED_ORICHALCUM_SHIELD,
+    EstforConstants.INFUSED_DRAGONSTONE_AMULET,
+    EstforConstants.INFUSED_MASTER_HAT,
+    EstforConstants.INFUSED_MASTER_BODY,
+    EstforConstants.INFUSED_MASTER_TROUSERS,
+    EstforConstants.INFUSED_MASTER_BRACERS,
+    EstforConstants.INFUSED_MASTER_BOOTS,
+    EstforConstants.INFUSED_ORICHALCUM_SWORD,
+    EstforConstants.INFUSED_DRAGONSTONE_STAFF,
+    EstforConstants.INFUSED_GODLY_BOW,
+    EstforConstants.INFUSED_SCORCHING_COWL,
+    EstforConstants.INFUSED_SCORCHING_BODY,
+    EstforConstants.INFUSED_SCORCHING_CHAPS,
+    EstforConstants.INFUSED_SCORCHING_BRACERS,
+    EstforConstants.INFUSED_SCORCHING_BOOTS,
+  ];
+
+  // Only works if not trying to sell anything
+  //  await shop.addUnsellableItems(items);
+
   // Add test data for the game
   if (isBeta) {
     await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory);

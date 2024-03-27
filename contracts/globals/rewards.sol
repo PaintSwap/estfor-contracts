@@ -11,7 +11,7 @@ struct GuaranteedReward {
 struct RandomReward {
   uint16 itemTokenId;
   uint16 chance; // out of 65535
-  uint16 amount; // out of 255
+  uint8 amount; // out of 255
 }
 
 struct PendingRandomReward {
@@ -69,6 +69,12 @@ struct InstantVRFActionInput {
   bytes data;
   InstantVRFActionType actionType;
   bool isFullModeOnly;
+}
+
+struct InstantVRFRandomReward {
+  uint16 itemTokenId;
+  uint16 chance; // out of 65535
+  uint16 amount; // out of 65535
 }
 
 uint constant MAX_GUARANTEED_REWARDS_PER_ACTION = 3;

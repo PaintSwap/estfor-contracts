@@ -6,7 +6,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add unsellable shop items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
+  const shop = (await ethers.getContractAt("Shop", SHOP_ADDRESS)).connect(owner);
 
   const items = [
     EstforConstants.INFUSED_ORICHALCUM_HELMET,

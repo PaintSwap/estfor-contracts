@@ -7,7 +7,7 @@ import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol
 import {IInstantVRFActionStrategy} from "./IInstantVRFActionStrategy.sol";
 
 import {Skill} from "../globals/players.sol";
-import {InstantVRFActionInput, InstantVRFActionType, RandomReward} from "../globals/rewards.sol";
+import {InstantVRFActionInput, InstantVRFActionType, InstantVRFRandomReward} from "../globals/rewards.sol";
 import {NONE} from "../globals/items.sol";
 
 contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {
@@ -46,7 +46,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   }
 
   function setAction(InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {
-    (, RandomReward[] memory randomRewards) = abi.decode(_input.data, (uint8, RandomReward[]));
+    (, InstantVRFRandomReward[] memory randomRewards) = abi.decode(_input.data, (uint8, InstantVRFRandomReward[]));
     _checkRandomRewards(randomRewards);
     actions[_input.actionId] = _packAction(randomRewards);
   }
@@ -69,7 +69,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   {
     producedItemTokenIds = new uint[](_actionAmount);
     producedItemsAmounts = new uint[](_actionAmount);
-    RandomReward[] memory randomRewards = _setupRandomRewards(_actionId);
+    InstantVRFRandomReward[] memory randomRewards = _setupRandomRewards(_actionId);
 
     if (randomRewards.length != 0) {
       uint numWords = _actionAmount / 16 + ((_actionAmount % 16) == 0 ? 0 : 1);
@@ -77,7 +77,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
       for (uint i; i < _actionAmount; ++i) {
         uint16 rand = _getSlice(randomBytes, i);
 
-        RandomReward memory randomReward;
+        InstantVRFRandomReward memory randomReward;
         for (uint j; j < randomRewards.length; ++j) {
           if (rand > randomRewards[j].chance) {
             break;
@@ -96,17 +96,17 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
   }
 
-  function _setupRandomRewards(uint _actionId) private view returns (RandomReward[] memory randomRewards) {
+  function _setupRandomRewards(uint _actionId) private view returns (InstantVRFRandomReward[] memory randomRewards) {
     // Read the strategy from the actionId
     InstantVRFAction storage action = actions[_actionId];
 
-    randomRewards = new RandomReward[](action.randomRewardInfo.length / 3);
+    randomRewards = new InstantVRFRandomReward[](action.randomRewardInfo.length / 3);
     uint randomRewardLength;
     for (uint i; i < action.randomRewardInfo.length / 3; ++i) {
       if (action.randomRewardInfo[i * 3] == 0) {
         break;
       }
-      randomRewards[randomRewardLength] = RandomReward(
+      randomRewards[randomRewardLength] = InstantVRFRandomReward(
         action.randomRewardInfo[i * 3],
         action.randomRewardInfo[i * 3 + 1],
         action.randomRewardInfo[i * 3 + 2]
@@ -119,7 +119,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     }
   }
 
-  function _checkRandomRewards(RandomReward[] memory _randomRewards) private pure {
+  function _checkRandomRewards(InstantVRFRandomReward[] memory _randomRewards) private pure {
     // Check random rewards are correct
     if (_randomRewards.length > 5) {
       revert TooManyRandomRewards();
@@ -150,7 +150,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   }
 
   function _packAction(
-    RandomReward[] memory _randomRewards
+    InstantVRFRandomReward[] memory _randomRewards
   ) private pure returns (InstantVRFAction memory instantVRFAction) {
     instantVRFAction = InstantVRFAction({
       randomRewardInfo: [
