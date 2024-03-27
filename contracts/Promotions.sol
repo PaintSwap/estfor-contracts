@@ -167,7 +167,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     amounts[2] = 200;
     itemTokenIds[3] = SHADOW_SCROLL; // 300x Shadow Scrolls
     amounts[3] = 300;
-    itemTokenIds[4] = SECRET_EGG_2; // 1x Special Egg
+    itemTokenIds[4] = SECRET_EGG_2_TIER1; // 1x Special Egg
     amounts[4] = 1;
 
     userPromotionsClaimed[_to].set(uint8(Promotion.STARTER));

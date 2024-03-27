@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol
 
 import {IInstantVRFActionStrategy} from "./IInstantVRFActionStrategy.sol";
 
-import {InstantVRFActionInput, RandomReward, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "../globals/rewards.sol";
+import {InstantVRFActionInput, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "../globals/rewards.sol";
 
 // Just an example so far, use for eggs later
 contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IInstantVRFActionStrategy {

@@ -96,7 +96,7 @@ describe("Promotions", function () {
         EstforConstants.SKILL_BOOST,
         EstforConstants.COOKED_FEOLA,
         EstforConstants.SHADOW_SCROLL,
-        EstforConstants.SECRET_EGG_2,
+        EstforConstants.SECRET_EGG_2_TIER1,
       ]);
 
       expect(balances).to.deep.eq([5, 3, 200, 300, 1]);
@@ -875,7 +875,10 @@ describe("Promotions", function () {
         promotion.numDaysClaimablePeriodStreakBonus = 1;
         promotion.numDaysHitNeededForStreakBonus = 1;
         promotion.numRandomStreakBonusItemsToPick1 = 1;
-        promotion.randomStreakBonusItemTokenIds1 = [EstforConstants.SECRET_EGG_3, EstforConstants.SECRET_EGG_4];
+        promotion.randomStreakBonusItemTokenIds1 = [
+          EstforConstants.SECRET_EGG_3_TIER1,
+          EstforConstants.SECRET_EGG_4_TIER1,
+        ];
         promotion.randomStreakBonusAmounts1 = [1, 1];
         promotion.promotionTiedToPlayer = false;
         promotion.promotionTiedToUser = false;
@@ -896,8 +899,8 @@ describe("Promotions", function () {
           await promotions.connect(alice).mintPromotion(playerId.add(i + 1), Promotion.XMAS_2023);
         }
 
-        expect((await itemNFT["totalSupply(uint256)"](EstforConstants.SECRET_EGG_3)).toNumber()).to.be.gt(0);
-        expect((await itemNFT["totalSupply(uint256)"](EstforConstants.SECRET_EGG_4)).toNumber()).to.be.gt(0);
+        expect((await itemNFT["totalSupply(uint256)"](EstforConstants.SECRET_EGG_3_TIER1)).toNumber()).to.be.gt(0);
+        expect((await itemNFT["totalSupply(uint256)"](EstforConstants.SECRET_EGG_4_TIER1)).toNumber()).to.be.gt(0);
       });
 
       it("Check streak bonus inputs when isMultiday=true", async function () {
