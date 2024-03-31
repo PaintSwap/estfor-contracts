@@ -1,20 +1,40 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ethers} from "hardhat";
-import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {allItems} from "./data/items";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add item using account: ${owner.address}`);
+  console.log(`Add items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
-  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
-  const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
-  const items = allItems.filter((item) => item.tokenId === EstforConstants.CLAN_BOOSTER);
+  const itemIds = new Set([
+    EstforConstants.EGG_TIER1,
+    EstforConstants.EGG_TIER2,
+    EstforConstants.EGG_TIER3,
+    EstforConstants.EGG_TIER4,
+    EstforConstants.EGG_TIER5,
+    EstforConstants.SECRET_EGG_1_TIER2,
+    EstforConstants.SECRET_EGG_1_TIER3,
+    EstforConstants.SECRET_EGG_1_TIER4,
+    EstforConstants.SECRET_EGG_1_TIER5,
+    EstforConstants.SECRET_EGG_2_TIER2,
+    EstforConstants.SECRET_EGG_2_TIER3,
+    EstforConstants.SECRET_EGG_2_TIER4,
+    EstforConstants.SECRET_EGG_2_TIER5,
+    EstforConstants.SECRET_EGG_3_TIER2,
+    EstforConstants.SECRET_EGG_3_TIER3,
+    EstforConstants.SECRET_EGG_3_TIER4,
+    EstforConstants.SECRET_EGG_3_TIER5,
+    EstforConstants.SECRET_EGG_4_TIER2,
+    EstforConstants.SECRET_EGG_4_TIER3,
+    EstforConstants.SECRET_EGG_4_TIER4,
+    EstforConstants.SECRET_EGG_4_TIER5,
+  ]);
 
-  if (items.length !== 1) {
+  const items = allItems.filter((item) => itemIds.has(item.tokenId));
+  if (items.length !== itemIds.size) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.addItems(items);

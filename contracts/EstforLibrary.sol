@@ -155,8 +155,29 @@ library EstforLibrary {
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
       bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function containsBaselineSocialNameCharacters(string calldata _socialMediaName) external pure returns (bool) {
+    bytes memory socialMediaName = bytes(_socialMediaName);
+    U256 iter = socialMediaName.length.asU256();
+    while (iter.neq(0)) {
+      iter = iter.dec();
+      uint i = iter.asUint256();
+      bytes1 char = socialMediaName[i];
+
+      bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
+      bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
+      bool isDigit = (char >= 0x30) && (char <= 0x39); // 0-9
       bool isUnderscore = char == 0x5F; // "_"
-      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscore) {
+      bool isPeriod = char == 0x2E; // "."
+      bool isPlus = char == 0x2B; // "+"
+      if (!isUpperCaseLetter && !isLowerCaseLetter && !isDigit && !isUnderscore && !isPeriod && !isPlus) {
         return false;
       }
     }
@@ -176,5 +197,57 @@ library EstforLibrary {
       }
     }
     return string(lowerStr);
+  }
+
+  // This should match the one below, useful when a calldata array is needed and for external testing
+  function binarySearchMemory(uint48[] calldata _arr, uint _target) external pure returns (uint) {
+    uint low = 0;
+    uint high = _arr.length - 1;
+
+    while (low <= high) {
+      uint mid = low + (high - low) / 2;
+
+      if (_arr[mid] == _target) {
+        return mid; // Element found
+      } else if (_arr[mid] < _target) {
+        low = mid + 1;
+      } else {
+        // Check to prevent underflow
+        if (mid > 0) {
+          high = mid - 1;
+        } else {
+          // If mid is 0 and _arr[mid] is not the target, the element is not in the array
+          break;
+        }
+      }
+    }
+
+    return type(uint).max; // Element not found
+  }
+
+  // This should match the one above
+  function binarySearch(uint48[] storage _arr, uint _target) internal view returns (uint) {
+    uint low = 0;
+    uint high = _arr.length - 1;
+
+    while (low <= high) {
+      uint mid = low + (high - low) / 2;
+
+      if (_arr[mid] == _target) {
+        return mid; // Element found
+      } else if (_arr[mid] < _target) {
+        low = mid + 1;
+      } else {
+        // Check to prevent underflow
+        if (mid > 0) {
+          high = mid - 1;
+        } else {
+          // If mid is 0 and _arr[mid] is not the target, the element is not in the array
+          break;
+        }
+      }
+    }
+
+    return type(uint).max; // Element not found
   }
 }

@@ -120,8 +120,6 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   mapping(uint actionId => ActionRewards) private actionRewards;
   mapping(uint playerId => ActivePassiveInfo activePassiveInfo) private activePassiveActions;
 
-  uint constant IS_FULL_MODE_BIT = 7;
-
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
       revert NotOwnerOfPlayerAndActive();
@@ -518,7 +516,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     WorldLibrary.setActionRandomRewards(_passiveActionInput.randomRewards, actionReward);
   }
 
-  function _checkInfo(PassiveActionInfoInput calldata _actionInfo) private view {
+  function _checkInfo(PassiveActionInfoInput calldata _actionInfo) private pure {
     uint16[] calldata inputTokenIds = _actionInfo.inputTokenIds;
     uint16[] calldata amounts = _actionInfo.inputAmounts;
 

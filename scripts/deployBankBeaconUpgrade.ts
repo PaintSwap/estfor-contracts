@@ -1,13 +1,15 @@
 import {ethers, upgrades} from "hardhat";
 import {BANK_ADDRESS, BANK_REGISTRY_ADDRESS} from "./contractAddresses";
-import {verifyContracts} from "./utils";
+import {isBeta, verifyContracts} from "./utils";
+import {BankRegistry} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Deploying upgradeable contracts with the account: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(
+    `Deploying upgradeable bank beacon contract with the account: ${
+      owner.address
+    } on chain id ${await owner.getChainId()}`
+  );
 
   const Bank = await ethers.getContractFactory("Bank");
   const bank = await upgrades.upgradeBeacon(BANK_ADDRESS, Bank);
@@ -18,11 +20,9 @@ async function main() {
   console.log("bankImplAddress", bankImplAddress);
   await verifyContracts([bankImplAddress]);
 
-  const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
     // Also update the old first week's beta clans
-    const BankRegistry = await ethers.getContractFactory("BankRegistry");
-    const bankRegistry = await BankRegistry.attach(BANK_REGISTRY_ADDRESS);
+    const bankRegistry = (await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS)) as BankRegistry;
     await bankRegistry.setBankImpl(bankImplAddress);
   }
 }

@@ -20,7 +20,7 @@ import {
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
 import {allActions} from "../../scripts/data/actions";
-import {Quest, allQuests, defaultMinRequirements} from "../../scripts/data/quests";
+import {QuestInput, allQuests, defaultMinRequirements} from "../../scripts/data/quests";
 
 const actionIsAvailable = true;
 
@@ -668,7 +668,7 @@ describe("Combat Actions", function () {
       };
 
       // Activate a quest
-      const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+      const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as QuestInput;
       const quest = {
         ...quest1,
         actionId1: queuedAction.actionId,
@@ -676,7 +676,7 @@ describe("Combat Actions", function () {
         burnItemTokenId: EstforConstants.NATUOW_HIDE,
         burnAmount: 5,
       };
-      await quests.addQuests([quest], [false], [defaultMinRequirements]);
+      await quests.addQuests([quest], [defaultMinRequirements]);
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
 
@@ -785,7 +785,7 @@ describe("Combat Actions", function () {
       };
 
       // Activate a quest
-      const _quest = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as Quest;
+      const _quest = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as QuestInput;
       const quest = {
         ..._quest,
         actionId1: queuedAction.actionId,
@@ -815,7 +815,6 @@ describe("Combat Actions", function () {
       };
       await quests.addQuests(
         [quest, questMelee, questMagic, questWoodcutting, questHealth],
-        [false, false, false, false, false],
         [
           defaultMinRequirements,
           defaultMinRequirements,
@@ -1134,22 +1133,18 @@ describe("Combat Actions", function () {
       );
 
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 2,
-              rate: scrollsConsumedRate,
-              inputTokenId1: EstforConstants.SHADOW_SCROLL,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.AIR_SCROLL,
-              inputAmount2: 2,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            rate: scrollsConsumedRate,
+            inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
+            inputAmounts: [1, 2],
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -1301,22 +1296,18 @@ describe("Combat Actions", function () {
 
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 5,
-              rate: scrollsConsumedRate,
-              inputTokenId1: EstforConstants.SHADOW_SCROLL,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.AIR_SCROLL,
-              inputAmount2: 2,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 5,
+            rate: scrollsConsumedRate,
+            inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
+            inputAmounts: [1, 2],
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -1455,22 +1446,18 @@ describe("Combat Actions", function () {
 
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 5,
-              rate: scrollsConsumedRate,
-              inputTokenId1: EstforConstants.SHADOW_SCROLL,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.AIR_SCROLL,
-              inputAmount2: 2,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 5,
+            rate: scrollsConsumedRate,
+            inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
+            inputAmounts: [1, 2],
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -1555,7 +1542,7 @@ describe("Combat Actions", function () {
         imageURI: "1234.png",
         startSkills: [Skill.WOODCUTTING, Skill.NONE],
       };
-      await playerNFT.setAvatars(avatarId, [avatarInfo]);
+      await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
       const noSkillPlayerId = await createPlayer(playerNFT, avatarId, alice, "fakename123", true);
       await players.connect(alice).startActions(noSkillPlayerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -1828,32 +1815,26 @@ describe("Combat Actions", function () {
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
 
       let choiceId = 2;
-      const tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[choiceId, choiceId + 1]],
+      const tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [choiceId, choiceId + 1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 2,
-              rate: scrollsConsumedRate,
-              inputTokenId1: EstforConstants.AIR_SCROLL,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.SHADOW_SCROLL,
-              inputAmount2: 1,
-            },
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 2,
-              rate: scrollsConsumedRate,
-              inputTokenId1: EstforConstants.SHADOW_SCROLL,
-              inputAmount1: 1,
-              inputTokenId2: EstforConstants.AIR_SCROLL,
-              inputAmount2: 3,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            rate: scrollsConsumedRate,
+            inputTokenIds: [EstforConstants.AIR_SCROLL, EstforConstants.SHADOW_SCROLL],
+            inputAmounts: [1, 1],
+          },
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            rate: scrollsConsumedRate,
+            inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
+            inputAmounts: [1, 3],
+          },
         ]
       );
 
@@ -2170,10 +2151,8 @@ describe("Combat Actions", function () {
             skill: EstforTypes.Skill.MAGIC,
             skillDiff: 2,
             rate: scrollsConsumedRate,
-            inputTokenId1: EstforConstants.SHADOW_SCROLL,
-            inputAmount1: 1,
-            inputTokenId2: EstforConstants.AIR_SCROLL,
-            inputAmount2: 2,
+            inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
+            inputAmounts: [1, 2],
           },
         ]
       );
@@ -2287,7 +2266,7 @@ describe("Combat Actions", function () {
         imageURI: "1234.png",
         startSkills: [Skill.RANGED, Skill.NONE],
       };
-      await playerNFT.setAvatars(avatarId, [avatarInfo]);
+      await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
       // Create player
       const origName = "0xSamWitch1";
@@ -2341,22 +2320,21 @@ describe("Combat Actions", function () {
       );
 
       const arrowsConsumedRate = 1 * RATE_MUL; // per hour
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
+
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.RANGED,
-              skillDiff: 2,
-              rate: arrowsConsumedRate,
-              inputTokenId1: EstforConstants.BRONZE_ARROW,
-              inputAmount1: 1,
-              handItemTokenIdRangeMin: EstforConstants.BASIC_BOW,
-              handItemTokenIdRangeMax: EstforConstants.BASIC_BOW,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.RANGED,
+            skillDiff: 2,
+            rate: arrowsConsumedRate,
+            inputTokenIds: [EstforConstants.BRONZE_ARROW],
+            inputAmounts: [1],
+            handItemTokenIdRangeMin: EstforConstants.BASIC_BOW,
+            handItemTokenIdRangeMax: EstforConstants.BASIC_BOW,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2649,16 +2627,14 @@ describe("Combat Actions", function () {
     ]);
 
     const timespan = 3600 * 3; // 3 hours
-    tx = await world.addBulkActionChoices(
-      [EstforConstants.NONE],
-      [[1]],
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -2772,16 +2748,14 @@ describe("Combat Actions", function () {
     ]);
 
     const timespan = 3600 * 24; // 3 hours
-    tx = await world.addBulkActionChoices(
-      [EstforConstants.NONE],
-      [[1]],
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -2876,16 +2850,14 @@ describe("Combat Actions", function () {
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
     await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 2);
     const timespan = 3600 * 3; // 3 hours
-    tx = await world.addBulkActionChoices(
-      [EstforConstants.NONE],
-      [[1]],
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);

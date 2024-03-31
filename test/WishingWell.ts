@@ -117,7 +117,7 @@ describe("WishingWell", function () {
     const {wishingWell, alice} = await loadFixture(deployContracts);
     await expect(wishingWell.connect(alice).donate(alice.address, 0, 100)).to.be.revertedWithCustomError(
       wishingWell,
-      "OnlyPlayers"
+      "NotPlayers"
     );
   });
 
@@ -210,7 +210,7 @@ describe("WishingWell", function () {
 
     let tierId = 1;
     const imageId = 1;
-    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
@@ -358,7 +358,7 @@ describe("WishingWell", function () {
 
     let tierId = 1;
     const imageId = 1;
-    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     await brush.mint(bob.address, totalBrush);
     await brush.connect(bob).approve(wishingWell.address, totalBrush);
@@ -618,7 +618,7 @@ describe("WishingWell", function () {
 
     let tierId = 1;
     const imageId = 1;
-    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+    await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
     await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
     expect(ethers.utils.parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
       raffleEntryCost.mul(2)

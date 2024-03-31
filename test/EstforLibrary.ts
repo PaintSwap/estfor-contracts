@@ -66,4 +66,35 @@ describe("EstforLibrary", function () {
       expect(await estforLibrary.containsValidTelegramCharacters(char)).to.be.false;
     }
   });
+
+  it("Binary search", async () => {
+    const {estforLibrary} = await loadFixture(deployContracts);
+
+    let res = await estforLibrary.binarySearchMemory([1], 4);
+    expect(res).to.eq(ethers.constants.MaxUint256);
+
+    res = await estforLibrary.binarySearchMemory([1], 1);
+    expect(res).to.eq(0);
+
+    res = await estforLibrary.binarySearchMemory([2], 1);
+    expect(res).to.eq(ethers.constants.MaxUint256);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 4);
+    expect(res).to.eq(2);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 5);
+    expect(res).to.eq(ethers.constants.MaxUint256);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 1);
+    expect(res).to.eq(0);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 12);
+    expect(res).to.eq(4);
+
+    res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 0);
+    expect(res).to.eq(ethers.constants.MaxUint256);
+
+    res = await estforLibrary.binarySearchMemory([0, 1, 2, 4, 7, 12], 0);
+    expect(res).to.eq(0);
+  });
 });

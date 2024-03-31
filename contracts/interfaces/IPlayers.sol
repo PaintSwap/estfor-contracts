@@ -7,6 +7,8 @@ import "../globals/players.sol";
 interface IPlayers {
   function clearEverythingBeforeTokenTransfer(address from, uint tokenId) external;
 
+  function beforeTokenTransferTo(address to, uint tokenId) external;
+
   function getURI(
     uint playerId,
     string calldata name,
@@ -33,6 +35,10 @@ interface IPlayers {
   function activePlayer(address owner) external view returns (uint playerId);
 
   function xp(uint playerId, Skill skill) external view returns (uint xp);
+
+  function level(uint playerId, Skill skill) external view returns (uint level);
+
+  function totalXP(uint playerId) external view returns (uint xp);
 
   function activeBoost(uint playerId) external view returns (PlayerBoostInfo memory);
 }

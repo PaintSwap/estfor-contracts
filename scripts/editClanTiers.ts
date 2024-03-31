@@ -1,24 +1,14 @@
 import {ethers} from "hardhat";
-import {CLANS_ADDRESS, ESTFOR_LIBRARY_ADDRESS, PLAYER_NFT_ADDRESS} from "./contractAddresses";
+import {CLANS_ADDRESS} from "./contractAddresses";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
+import {isBeta} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit clan tiers using account: ${owner.address}`);
+  console.log(`Edit clan tiers using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
-
-  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
-  });
-  const playerNFT = PlayerNFT.attach(PLAYER_NFT_ADDRESS);
-  const isBeta = await playerNFT.isBeta();
   const clanTiers = isBeta ? allClanTiersBeta : allClanTiers;
-
-  const Clans = await ethers.getContractFactory("Clans", {libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS}});
-  const clans = Clans.attach(CLANS_ADDRESS);
-
+  const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);
   const tx = await clans.editTiers(clanTiers);
   await tx.wait();
 }

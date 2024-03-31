@@ -7,8 +7,16 @@ import {ethers} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {getXPFromLevel, setupBasicFiremaking, setupBasicFishing, setupBasicWoodcutting, setupTravelling} from "./utils";
+import {
+  getXPFromLevel,
+  setupBasicCooking,
+  setupBasicFiremaking,
+  setupBasicFishing,
+  setupBasicWoodcutting,
+  setupTravelling,
+} from "./utils";
 import {Players} from "../../typechain-types";
+import {ACTION_FISHING_MINNUS} from "@paintswap/estfor-definitions/constants";
 
 const actionIsAvailable = true;
 
@@ -25,14 +33,14 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.FIREMAKING, Skill.NONE],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "Name", true);
 
     expect(await players.xp(playerId, Skill.FIREMAKING)).to.eq(START_XP);
 
     avatarInfo.startSkills = [Skill.FIREMAKING, Skill.HEALTH];
 
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
     expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP / 2);
     expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(START_XP / 2);
@@ -121,16 +129,14 @@ describe("Players", function () {
     ]);
     const actionId = await getActionId(tx);
 
-    tx = await world.addBulkActionChoices(
-      [EstforConstants.NONE],
-      [[1]],
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -185,7 +191,7 @@ describe("Players", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
   });
 
-  it("validateActions", async function () {
+  it("validateActionsV2", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     let tx = await world.addActions([
@@ -211,16 +217,112 @@ describe("Players", function () {
     ]);
     const actionId = await getActionId(tx);
 
-    tx = await world.addBulkActionChoices(
-      [EstforConstants.NONE],
-      [[1]],
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.MELEE,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
+      ]
+    );
+    const choiceId = await getActionChoiceId(tx);
+    const timespan = 3600;
+
+    const queuedAction: EstforTypes.QueuedActionInputV2 = {
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.ATTACK,
+      choiceId,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: 0,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_GAUNTLETS,
+        combatStats: EstforTypes.emptyCombatStats,
+        equipPosition: EstforTypes.EquipPosition.ARMS,
+      },
+    ]);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_GAUNTLETS, 1);
+
+    const queuedActionCorrect = {...queuedAction, attire: {...EstforTypes.noAttire}};
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
+
+    let {successes, reasons} = await players
+      .connect(alice)
+      .validateActionsV2(alice.address, playerId, [queuedAction, queuedActionCorrect, queuedAction]);
+
+    const InvalidEquipPositionSelector = "0x9378eb35";
+    expect(successes.length).to.eq(3);
+    expect(reasons.length).to.eq(3);
+    expect(successes[0]).to.eq(false);
+    expect(reasons[0]).to.eq(InvalidEquipPositionSelector);
+    expect(successes[1]).to.eq(true);
+    expect(reasons[1]).to.eq("0x");
+    expect(successes[2]).to.eq(false);
+    expect(reasons[2]).to.eq(InvalidEquipPositionSelector);
+
+    ({successes, reasons} = await players
+      .connect(alice)
+      .validateActionsV2(alice.address, playerId, [queuedActionCorrect]));
+
+    expect(successes.length).to.eq(1);
+    expect(reasons.length).to.eq(1);
+    expect(successes[0]).to.eq(true);
+    expect(reasons[0]).to.eq("0x");
+
+    ({successes, reasons} = await players.connect(alice).validateActionsV2(alice.address, playerId, [queuedAction]));
+
+    expect(successes.length).to.eq(1);
+    expect(reasons.length).to.eq(1);
+    expect(successes[0]).to.eq(false);
+    expect(reasons[0]).to.eq(InvalidEquipPositionSelector);
+  });
+
+  it("ValidateActions", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.COMBAT,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          numSpawned: 1 * SPAWN_MUL,
+          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    tx = await world.addActionChoices(
+      EstforConstants.NONE,
+      [1],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.MELEE,
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -266,22 +368,6 @@ describe("Players", function () {
     expect(reasons[1]).to.eq("0x");
     expect(successes[2]).to.eq(false);
     expect(reasons[2]).to.eq(InvalidEquipPositionSelector);
-
-    ({successes, reasons} = await players
-      .connect(alice)
-      .validateActions(alice.address, playerId, [queuedActionCorrect]));
-
-    expect(successes.length).to.eq(1);
-    expect(reasons.length).to.eq(1);
-    expect(successes[0]).to.eq(true);
-    expect(reasons[0]).to.eq("0x");
-
-    ({successes, reasons} = await players.connect(alice).validateActions(alice.address, playerId, [queuedAction]));
-
-    expect(successes.length).to.eq(1);
-    expect(reasons.length).to.eq(1);
-    expect(successes[0]).to.eq(false);
-    expect(reasons[0]).to.eq(InvalidEquipPositionSelector);
   });
 
   it("Queueing after 1 action is completely finished", async function () {
@@ -535,12 +621,88 @@ describe("Players", function () {
         players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
-      // Update firemamking level, check it works
+      // Update firemaking level, check it works
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, minXP, false);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
         .not.be.reverted;
+    });
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    it("Min XP multiple skills", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const minXP1 = getXPFromLevel(70);
+      const minXP2 = getXPFromLevel(80);
+      const minXP3 = getXPFromLevel(90);
+      const {queuedAction: queuedActionBase, actionId, rate} = await setupBasicFiremaking(itemNFT, world);
+
+      // Logs go in, nothing comes out
+      let tx = await world.addActionChoices(
+        actionId,
+        [2],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.ALCHEMY,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+            minSkills: [EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.FIREMAKING],
+            minXPs: [minXP1, minXP2],
+          },
+        ]
+      );
+      let choiceId = await getActionChoiceId(tx);
+      let queuedAction = {...queuedActionBase, choiceId};
+
+      // 2 skills
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      // Update alchemy level, should not work yet
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.ALCHEMY, minXP1, false);
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      // Update firemaking but not to correct level
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, minXP1, false);
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, minXP2, false);
+      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+        .not.be.reverted;
+
+      // 3 skills
+      tx = await world.addActionChoices(
+        actionId,
+        [3],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+            minSkills: [EstforTypes.Skill.FIREMAKING, EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.COOKING],
+            minXPs: [minXP2, minXP1, minXP3],
+          },
+        ]
+      );
+      choiceId = await getActionChoiceId(tx);
+      queuedAction = {...queuedActionBase, choiceId};
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
+
+      // Update cooking to correct level
+      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.COOKING, minXP3, true);
+      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+        .not.be.reverted;
     });
 
     it("Output number > 1", async function () {
@@ -549,22 +711,20 @@ describe("Players", function () {
 
       // Logs go in, oak logs come out suprisingly!
       const outputAmount = 2;
-      const tx = await world.addBulkActionChoices(
-        [actionId],
-        [[2]],
+      const tx = await world.addActionChoices(
+        actionId,
+        [2],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.FIREMAKING,
-              xpPerHour: 3600,
-              rate,
-              inputTokenId1: EstforConstants.LOG,
-              inputAmount1: 1,
-              outputTokenId: EstforConstants.OAK_LOG,
-              outputAmount,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.FIREMAKING,
+            xpPerHour: 3600,
+            rate,
+            inputTokenIds: [EstforConstants.LOG],
+            inputAmounts: [1],
+            outputTokenId: EstforConstants.OAK_LOG,
+            outputAmount,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -613,20 +773,18 @@ describe("Players", function () {
     const actionId = await getActionId(tx);
 
     // Logs go in, nothing comes out
-    tx = await world.addBulkActionChoices(
-      [actionId],
-      [[1]],
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
       [
-        [
-          {
-            ...defaultActionChoice,
-            skill: EstforTypes.Skill.FIREMAKING,
-            xpPerHour: 3600,
-            rate,
-            inputTokenId1: EstforConstants.LOG,
-            inputAmount1: 1,
-          },
-        ],
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.FIREMAKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.LOG],
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx);
@@ -1249,7 +1407,7 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.WOODCUTTING, Skill.NONE],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -1276,7 +1434,7 @@ describe("Players", function () {
       imageURI: "1234.png",
       startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
     };
-    await playerNFT.setAvatars(avatarId, [avatarInfo]);
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -1293,11 +1451,76 @@ describe("Players", function () {
     );
   });
 
+  it("Base XP boost, upgraded", async function () {
+    const {players, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, alice} = await loadFixture(
+      playersFixture
+    );
+
+    const avatarId = 2;
+    const avatarInfo: AvatarInfo = {
+      name: "Name goes here",
+      description: "Hi I'm a description",
+      imageURI: "1234.png",
+      startSkills: [Skill.WOODCUTTING, Skill.NONE],
+    };
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
+    const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    // Upgrade player, should have a 20% boost now
+    await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
+    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.2));
+    await players.connect(alice).processActions(playerId);
+    const startXP = START_XP;
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+      Math.floor(startXP + queuedAction.timespan * 1.2)
+    );
+  });
+
+  it("Base XP boost, 2 skills, upgraded", async function () {
+    const {players, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, alice} = await loadFixture(
+      playersFixture
+    );
+
+    const avatarId = 2;
+    const avatarInfo: AvatarInfo = {
+      name: "Name goes here",
+      description: "Hi I'm a description",
+      imageURI: "1234.png",
+      startSkills: [Skill.THIEVING, Skill.WOODCUTTING],
+    };
+    await playerNFT.setAvatars([avatarId], [avatarInfo]);
+    const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    // Upgrade player, should have a 20% boost now
+    await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
+    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
+    await players.connect(alice).processActions(playerId);
+    const startXP = START_XP / 2;
+    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+      Math.floor(startXP + queuedAction.timespan * 1.1)
+    );
+  });
+
   it("Revert if trying to initialize QueueActionImpl", async function () {
     const {playersImplMisc1} = await loadFixture(playersFixture);
 
     await expect(
       playersImplMisc1.initialize(
+        ethers.constants.AddressZero,
         ethers.constants.AddressZero,
         ethers.constants.AddressZero,
         ethers.constants.AddressZero,
@@ -1324,7 +1547,562 @@ describe("Players", function () {
     ).to.be.revertedWithCustomError(players, "HasQueuedActions");
   });
 
-  it("Travelling", async function () {
+  it("Check max level packed XP", async function () {
+    const {players, playerId, playersLibrary, alice} = await loadFixture(playersFixture);
+
+    let packedXP = await players.packedXP(playerId);
+    const xp = 1109796; // First max level
+    expect(await playersLibrary.getLevel(xp)).to.eq(100); // exactly 100
+
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, xp, false);
+    packedXP = await players.packedXP(playerId);
+    let maxDataAsNum = Number(packedXP.packedDataIsMaxed);
+
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MAGIC, xp, false);
+    packedXP = await players.packedXP(playerId);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed);
+    const MELEE_OFFSET = 0;
+    const RANGED_OFFSET = 2;
+    const MAGIC_OFFSET = 4;
+    const DEFENCE_OFFSET = 6;
+    const HEALTH_OFFSET = 8;
+    const RESERVED_COMBAT_OFFSET = 10;
+    expect((maxDataAsNum >> MELEE_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> RANGED_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> MAGIC_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> DEFENCE_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> HEALTH_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> RESERVED_COMBAT_OFFSET) & 0b11).to.eq(0);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed1);
+    const MINING_OFFSET = 0;
+    const WOODCUTTING_OFFSET = 2;
+    const FISHING_OFFSET = 4;
+    const SMITHING_OFFSET = 6;
+    const THIEVING_OFFSET = 8;
+    const CRAFTING_OFFSET = 10;
+    expect((maxDataAsNum >> MINING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> WOODCUTTING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FISHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> SMITHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> THIEVING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> CRAFTING_OFFSET) & 0b11).to.eq(0);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed2);
+    const COOKING_OFFSET = 0;
+    const FIREMAKING_OFFSET = 2;
+    const AGILITY_OFFSET = 4;
+    const ALCHEMY_OFFSET = 6;
+    const FLETCHING_OFFSET = 8;
+    const FORGING_OFFSET = 10;
+    expect((maxDataAsNum >> COOKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FIREMAKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> AGILITY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> ALCHEMY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FLETCHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(0);
+
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.CRAFTING, xp - 1, false); // 1 below max
+    packedXP = await players.packedXP(playerId);
+    expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(0);
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.CRAFTING, xp, false); // Now max
+    packedXP = await players.packedXP(playerId);
+    expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(1);
+
+    // Set a few more and check the rest
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.SMITHING, xp, false);
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, xp, false);
+    await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FORGING, xp, false);
+
+    packedXP = await players.packedXP(playerId);
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed);
+    expect((maxDataAsNum >> MELEE_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> RANGED_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> MAGIC_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> DEFENCE_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> HEALTH_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> RESERVED_COMBAT_OFFSET) & 0b11).to.eq(0);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed1);
+    expect((maxDataAsNum >> MINING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> WOODCUTTING_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> FISHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> SMITHING_OFFSET) & 0b11).to.eq(1);
+    expect((maxDataAsNum >> THIEVING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> CRAFTING_OFFSET) & 0b11).to.eq(1);
+
+    maxDataAsNum = Number(packedXP.packedDataIsMaxed2);
+    expect((maxDataAsNum >> COOKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FIREMAKING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> AGILITY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> ALCHEMY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FLETCHING_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(1);
+  });
+
+  it("Queued actions exceed max time", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...basicWoodcuttingQueuedAction};
+    queuedAction.timespan = 23 * 3600;
+    await expect(
+      players
+        .connect(alice)
+        .startActions(
+          playerId,
+          [basicWoodcuttingQueuedAction, queuedAction, basicWoodcuttingQueuedAction],
+          EstforTypes.ActionQueueStatus.NONE
+        )
+    ).to.be.revertedWithCustomError(players, "EmptyTimespan");
+
+    basicWoodcuttingQueuedAction.timespan = 2 * 3600;
+    await expect(
+      players
+        .connect(alice)
+        .startActions(
+          playerId,
+          [basicWoodcuttingQueuedAction, queuedAction, basicWoodcuttingQueuedAction],
+          EstforTypes.ActionQueueStatus.NONE
+        )
+    ).to.be.revertedWithCustomError(players, "ActionTimespanExceedsMaxTime");
+
+    // If it's at the end then it trims it
+    await players
+      .connect(alice)
+      .startActions(
+        playerId,
+        [basicWoodcuttingQueuedAction, basicWoodcuttingQueuedAction, queuedAction],
+        EstforTypes.ActionQueueStatus.NONE
+      );
+
+    const actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[2].timespan).to.eq(20 * 3600);
+  });
+
+  it("Queued actions exceed max time with remainder", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...basicWoodcuttingQueuedAction, timespan: 1600};
+    const fullTimeAction = {...basicWoodcuttingQueuedAction, timespan: 24 * 3600};
+    // If it's at the end then it trims it
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedAction, fullTimeAction], EstforTypes.ActionQueueStatus.NONE);
+
+    let actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[0].timespan).to.eq(1600);
+    expect(actionQueue[1].timespan).to.eq(24 * 3600);
+
+    await ethers.provider.send("evm_increaseTime", [23 * 3600]);
+
+    // Now try it keeping remaining queued actions
+    await players
+      .connect(alice)
+      .startActions(playerId, [fullTimeAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+
+    actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[0].timespan).to.eq(1600 + 3600);
+    expect(actionQueue[1].timespan).to.eq(23 * 3600);
+  });
+
+  it("Queued actions exceed max time with remainder", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {...basicWoodcuttingQueuedAction, timespan: 25 * 3600};
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    const actionQueue = await players.getActionQueue(playerId);
+    expect(actionQueue[0].timespan).to.eq(24 * 3600);
+  });
+
+  it("Transferring a player with boost should add a lock", async function () {
+    const {players, playerId, playerNFT, itemNFT, alice, owner} = await loadFixture(playersFixture);
+
+    const boosts = [
+      EstforConstants.COMBAT_BOOST,
+      EstforConstants.XP_BOOST,
+      EstforConstants.SKILL_BOOST,
+      EstforConstants.GATHERING_BOOST,
+    ];
+
+    for (const boost of boosts) {
+      await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+      const receipt = await players.setActivePlayer(playerId);
+      if (boost == boosts[0]) {
+        // First one should not emit
+        expect(receipt).to.not.emit(players, "PlayerUnlocked");
+      } else {
+        expect(receipt).to.emit(players, "PlayerUnlocked");
+      }
+
+      // Add a boost to the receiver, and setting active player if no longer possible
+      await itemNFT.testMint(alice.address, boost, 1);
+      await playerNFT.safeTransferFrom(owner.address, alice.address, playerId, 1, "0x");
+      await expect(players.connect(alice).setActivePlayer(playerId)).to.be.revertedWithCustomError(
+        players,
+        "PlayerLocked"
+      );
+      await itemNFT.connect(alice).burn(alice.address, boost, 1);
+    }
+
+    await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+    await playerNFT.safeTransferFrom(owner.address, alice.address, playerId, 1, "0x");
+    await expect(players.connect(alice).setActivePlayer(playerId)).to.not.be.reverted;
+  });
+
+  it("Transferring a player with boost should add a lock released after some time", async function () {
+    const {players, playerId, playerNFT, itemNFT, alice, owner} = await loadFixture(playersFixture);
+
+    await itemNFT.testMint(owner.address, EstforConstants.COMBAT_BOOST, 1);
+    await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
+
+    await expect(players.setActivePlayer(playerId)).to.be.revertedWithCustomError(players, "PlayerLocked");
+    // Wait 1 day and it should now be allowed
+    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await expect(players.setActivePlayer(playerId)).to.not.be.reverted;
+  });
+
+  it("Check that only upgraded players can equip full mode only items (left/right hand equipment)", async function () {
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    // Cannot equip full mode only items unless you are upgraded
+    await itemNFT.editItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        isFullModeOnly: true,
+      },
+    ]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
+  });
+
+  it("Check that only upgraded players can equip full mode only items (attire)", async function () {
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
+
+    const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+    const queuedAction = {
+      ...queuedActionWoodcutting,
+      attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_HELMET,
+        equipPosition: EstforTypes.EquipPosition.HEAD,
+        isFullModeOnly: true,
+      },
+    ]);
+
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
+  });
+
+  it("Check that only upgraded players can equip full mode only items (left/right hand equipment)", async function () {
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    // Cannot equip full mode only items unless you are upgraded
+    await itemNFT.editItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        isFullModeOnly: true,
+      },
+    ]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
+  });
+
+  it("Check that only upgraded players can start a full mode only actionChoice, where action is not set to full mode only", async function () {
+    const {playerId, players, itemNFT, world, alice, playerNFT, brush, upgradePlayerBrushPrice, origName} =
+      await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await world.editActionChoices(
+      queuedAction.actionId,
+      [queuedAction.choiceId],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.RAW_MINNUS],
+          inputAmounts: [1],
+          outputTokenId: EstforConstants.COOKED_MINNUS,
+          outputAmount: 1,
+          successPercent,
+          minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
+          minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
+          isFullModeOnly: true,
+        },
+      ]
+    );
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+    // Upgrade and try again
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+  });
+
+  it("Check that only upgraded players can start a full mode only actionChoice, where action is also set to full mode only", async function () {
+    const {playerId, players, itemNFT, world, alice, playerNFT, brush, upgradePlayerBrushPrice, origName} =
+      await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await world.editActions([
+      {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: true,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: true,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+
+    await world.editActionChoices(
+      queuedAction.actionId,
+      [queuedAction.choiceId],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.RAW_MINNUS],
+          inputAmounts: [1],
+          outputTokenId: EstforConstants.COOKED_MINNUS,
+          outputAmount: 1,
+          successPercent,
+          minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
+          minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
+          isFullModeOnly: true,
+        },
+      ]
+    );
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+    // Upgrade and try again
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+  });
+
+  it("Check that only upgraded players can start a full mode only action", async function () {
+    const {playerId, world, players, brush, alice, playerNFT, origName, upgradePlayerBrushPrice} = await loadFixture(
+      playersFixture
+    );
+    const rate = 100 * GUAR_MUL; // per hour
+    const tx = await world.addActions([
+      {
+        actionId: ACTION_FISHING_MINNUS,
+        info: {
+          ...defaultActionInfo,
+          skill: EstforTypes.Skill.FISHING,
+          isFullModeOnly: true,
+          isAvailable: true,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MINNUS, rate}],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    const timespan = 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+    // Upgrade and try again
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+  });
+
+  it("Action choice with > 255 input amounts", async function () {
+    const {players, playerId, playerNFT, itemNFT, world, brush, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
+    const rate = 100 * RATE_MUL; // per hour
+
+    let tx = await world.addActions([
+      {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.SMITHING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: actionIsAvailable,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    // Ores go in, bars come out
+    tx = await world.addActionChoices(
+      actionId,
+      [1],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.SMITHING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE, EstforConstants.SAPPHIRE],
+          inputAmounts: [1, 256, 6535],
+          outputTokenId: EstforConstants.MITHRIL_BAR,
+          outputAmount: 1,
+          isFullModeOnly: true,
+        },
+      ]
+    );
+
+    const choiceId = await getActionChoiceId(tx);
+    const timespan = 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.COAL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.MITHRIL_ORE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.SAPPHIRE,
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
+    ]);
+
+    const startingBalance = 1000000;
+    await itemNFT.testMints(
+      alice.address,
+      [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE, EstforConstants.SAPPHIRE],
+      [startingBalance, startingBalance, startingBalance]
+    );
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
+
+    // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
+      Math.floor((timespan * rate) / (3600 * RATE_MUL))
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ORE)).to.eq(
+      startingBalance - Math.floor((timespan * rate) / (3600 * RATE_MUL))
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COAL_ORE)).to.eq(
+      startingBalance - Math.floor((timespan * rate) / (3600 * RATE_MUL)) * 256
+    );
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE)).to.eq(
+      startingBalance - Math.floor((timespan * rate) / (3600 * RATE_MUL)) * 6535
+    );
+  });
+
+  it.skip("Travelling", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);
 

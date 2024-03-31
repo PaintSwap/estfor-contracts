@@ -12,6 +12,7 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
 import {World} from "../World.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
@@ -40,6 +41,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   function initialize(
     ItemNFT _itemNFT,
     PlayerNFT _playerNFT,
+    PetNFT _petNFT,
     World _world,
     AdminAccess _adminAccess,
     Quests _quests,
@@ -58,6 +60,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
 
     itemNFT = _itemNFT;
     playerNFT = _playerNFT;
+    petNFT = _petNFT;
     world = _world;
     adminAccess = _adminAccess;
     quests = _quests;
@@ -98,7 +101,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.COOKING, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FIREMAKING, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.ALCHEMY, packedXP)) +
-      PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP));
+      PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP)) +
+      PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FORGING, packedXP));
 
     string memory attributes = string(
       abi.encodePacked(
@@ -147,6 +151,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
           PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP))
         ),
         ",",
+        _getTraitNumberJSON("Forging level", PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.FORGING, packedXP))),
+        ",",
         _getTraitNumberJSON("Total level", uint16(overallLevel))
       )
     );
@@ -155,7 +161,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     bytes memory externalURL = abi.encodePacked(
       "https://",
       isBeta ? "beta." : "",
-      "estfor.com/game/journal/",
+      "estfor.com/journal/",
       _playerId.toString()
     );
 
@@ -212,7 +218,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
         if (_fullAttireBonus.itemTokenIds[j] == NONE) {
           revert InvalidItemTokenId();
         }
-        if (itemNFT.getItem(_fullAttireBonus.itemTokenIds[j]).equipPosition != expectedEquipPositions[j]) {
+        if (itemNFT.getEquipPosition(_fullAttireBonus.itemTokenIds[j]) != expectedEquipPositions[j]) {
           revert InvalidEquipPosition();
         }
       }

@@ -1,35 +1,39 @@
 import {ethers, upgrades} from "hardhat";
 import {
+  CLANS_ADDRESS,
   ITEM_NFT_ADDRESS,
+  LOCKED_BANK_VAULT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
+  PROMOTIONS_ADDRESS,
   QUESTS_ADDRESS,
   SHOP_ADDRESS,
+  TERRITORIES_ADDRESS,
   WORLD_ADDRESS,
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
+import {Clans, EstforLibrary, PlayersLibrary, Quests, Shop, WorldLibrary} from "../typechain-types";
 
 // When you need to fork a chain and debug
 async function main() {
   const network = await ethers.provider.getNetwork();
   console.log(`ChainId: ${network.chainId}`);
 
-  // Players
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.deploy();
-
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  const player = await ethers.getImpersonatedSigner("0x6dc225f7f21acb842761b8df52ae46208705c942");
-  const playerId = 158;
+  const player = await ethers.getImpersonatedSigner("0xe13894604b6dc9523a9822dfa2909c2a9cd084a6");
+  const playerId = 892;
+  const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
 
-  // Set the implementations
-  let Players = await ethers.getContractFactory("Players");
-  Players = Players.connect(owner);
+  // Players
+  const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as PlayersLibrary;
+
+  const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   });
 
+  // Set the implementations
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(playersLibrary.address);
 
@@ -45,57 +49,86 @@ async function main() {
   await tx.wait();
 
   // PlayerNFT
-  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-  let estforLibrary = await EstforLibrary.deploy();
-  await estforLibrary.deployed();
-  let PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {EstforLibrary: estforLibrary.address},
-  });
-  PlayerNFT = PlayerNFT.connect(owner);
+  const PlayerNFT = (
+    await ethers.getContractFactory("PlayerNFT", {
+      libraries: {EstforLibrary: estforLibrary.address},
+    })
+  ).connect(owner);
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
 
   // Quests
-  let Quests = await ethers.getContractFactory("Quests");
-  Quests = Quests.connect(owner);
-  const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
+  const Quests = (await ethers.getContractFactory("Quests")).connect(owner);
+  const quests = (await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
     kind: "uups",
-  });
+  })) as Quests;
 
-  let Shop = await ethers.getContractFactory("Shop");
-  Shop = Shop.connect(owner);
-  const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
+  const Shop = (await ethers.getContractFactory("Shop")).connect(owner);
+  const shop = (await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
     kind: "uups",
-  });
+  })) as Shop;
 
   // Create the world
-  const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
-  const worldLibrary = await WorldLibrary.deploy();
+  const worldLibrary = (await ethers.deployContract("WorldLibrary")) as WorldLibrary;
 
-  let World = await ethers.getContractFactory("World", {
-    libraries: {WorldLibrary: worldLibrary.address},
-  });
-  World = World.connect(owner);
+  const World = (
+    await ethers.getContractFactory("World", {
+      libraries: {WorldLibrary: worldLibrary.address},
+    })
+  ).connect(owner);
   const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
 
   // ItemNFT
-  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  const itemNFTLibrary = await ItemNFTLibrary.deploy();
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
 
-  let ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
-  ItemNFT = ItemNFT.connect(owner);
+  const ItemNFT = (
+    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
+  ).connect(owner);
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
 
-  const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
-  console.log(pendingQueuedActionState);
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  const Promotions = (
+    await ethers.getContractFactory("Promotions", {
+      libraries: {PromotionsLibrary: promotionsLibrary.address},
+    })
+  ).connect(owner);
+  const promotions = await upgrades.upgradeProxy(PROMOTIONS_ADDRESS, Promotions, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
+
+  const Clans = (
+    await ethers.getContractFactory("Clans", {
+      libraries: {EstforLibrary: estforLibrary.address},
+    })
+  ).connect(owner);
+  const clans = (await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  })) as Clans;
+
+  const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults")).connect(owner);
+  const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
+
+  const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
+  const territories = await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+  });
+
+  //  const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
+  //  console.log(pendingQueuedActionState);
 }
 
 main().catch((error) => {

@@ -570,7 +570,7 @@ describe("Rewards", function () {
 
       let tierId = 1;
       const imageId = 1;
-      await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", imageId, tierId);
+      await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -644,11 +644,11 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let mondayEquipment = await world.getSpecificDailyReward(3, playerId, 0);
+      let mondayEquipment = await world.getSpecificDailyReward(3, playerId, 0, world.thisWeeksRandomWordSegment());
 
       // Double check it is different to the other tiers
-      let dailyRewardsTier1 = await world.getSpecificDailyReward(1, playerId, 0);
-      let dailyRewardsTier2 = await world.getSpecificDailyReward(2, playerId, 0);
+      let dailyRewardsTier1 = await world.getSpecificDailyReward(1, playerId, 0, world.thisWeeksRandomWordSegment());
+      let dailyRewardsTier2 = await world.getSpecificDailyReward(2, playerId, 0, world.thisWeeksRandomWordSegment());
       expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1);
       expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier2);
 
@@ -1035,7 +1035,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1140,7 +1140,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1249,7 +1249,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1353,7 +1353,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1469,7 +1469,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1578,7 +1578,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1685,7 +1685,7 @@ describe("Rewards", function () {
         },
       ]);
 
-      let tx = await world.addActions([
+      await world.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -2027,16 +2027,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2200,16 +2198,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2350,16 +2346,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2498,16 +2492,14 @@ describe("Rewards", function () {
       ]);
       const actionId = await getActionId(tx);
 
-      tx = await world.addBulkActionChoices(
-        [EstforConstants.NONE],
-        [[1]],
+      tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [1],
         [
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MELEE,
-            },
-          ],
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MELEE,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx);
@@ -2587,6 +2579,10 @@ describe("Rewards", function () {
       // Check output
       expect(fractionChancePerRoll).to.be.lt(0.001);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.eq(0);
+    });
+
+    it("TODO: Have some dice, transfer the player, wait a day to be able to cash them in and check that you get them", async function () {
+      // Check commmit that this test was added in for the code changed to test
     });
   });
 

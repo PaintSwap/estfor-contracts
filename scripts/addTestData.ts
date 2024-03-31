@@ -187,7 +187,7 @@ export const addTestData = async (
       tx = await shop.sell(EstforConstants.TITANIUM_ARMOR, 1, 1);
       process.exit(100); // This shouldn't happen as those can't be sold yet
     } catch {
-      console.log("Increase time");
+      console.log("Increase time 5");
       await ethers.provider.send("evm_increaseTime", [86400 * 2]);
       tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);
       await tx.wait();
@@ -221,9 +221,19 @@ export const addTestData = async (
   }
 
   // Create a clan
+  await brush.approve(clans.address, ethers.utils.parseEther("1000"));
+
   const imageId = 2;
   const tierId = 1;
-  tx = await clans.createClan(playerId, "Sam test clan", "G4ZgtP52JK", "fantomfoundation", imageId, tierId);
+  tx = await clans.createClan(
+    playerId,
+    "Sam test clan",
+    "G4ZgtP52JK",
+    "fantomfoundation",
+    "fantomFDN",
+    imageId,
+    tierId
+  );
   await tx.wait();
   console.log("Create clan");
 
@@ -232,7 +242,7 @@ export const addTestData = async (
     from: bankFactory.address,
     nonce: clanId,
   });
-  // Send some to the bank
+  // Send some item to the bank
   tx = await itemNFT.safeTransferFrom(owner.address, clanBankAddress, EstforConstants.BRONZE_HELMET, 1, "0x");
   await tx.wait();
   console.log("Send an item to the bank");
@@ -243,7 +253,7 @@ export const addTestData = async (
   tx = await clans.inviteMember(clanId, alicePlayerId, playerId);
   await tx.wait();
   console.log("Invite Alice");
-  tx = await clans.connect(alice).acceptInvite(clanId, alicePlayerId);
+  tx = await clans.connect(alice).acceptInvite(clanId, alicePlayerId, 0);
   await tx.wait();
   console.log("Accept invite");
 
@@ -256,7 +266,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Re-invite Alice");
 
-  tx = await clans.connect(alice).requestToJoin(clanId, alicePlayerId);
+  tx = await clans.connect(alice).requestToJoin(clanId, alicePlayerId, 0);
   await tx.wait();
   console.log("Request to join as well");
 

@@ -1,6 +1,6 @@
 import {EstforTypes} from "@paintswap/estfor-definitions";
-import {ContractTransaction} from "ethers";
-import {MockOracleClient, World} from "../typechain-types";
+import {BaseContract, ContractTransaction, ethers} from "ethers";
+import {MockOracleClient, MockSWVRFOracleClient, World} from "../typechain-types";
 import {expect} from "chai";
 
 export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
@@ -22,7 +22,7 @@ export const getActionId = async (tx: ContractTransaction): Promise<number> => {
 export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionChoicesV2";
+    return x.event == "AddActionChoicesV4";
   })[0].args;
   return event?.actionChoiceIds[0];
 };
@@ -30,16 +30,25 @@ export const getActionChoiceId = async (tx: ContractTransaction): Promise<number
 export const getActionChoiceIds = async (tx: ContractTransaction): Promise<number[]> => {
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionChoicesV2";
+    return x.event == "AddActionChoicesV4";
   })[0].args;
   return event?.actionChoiceIds;
 };
 
 export const requestAndFulfillRandomWords = async (world: World, mockOracleClient: MockOracleClient) => {
   const tx = await world.requestRandomWords();
-  let requestId = getRequestId(tx);
+  let requestId = await getRequestId(tx);
   expect(requestId).to.not.eq(0);
-  await mockOracleClient.fulfill(requestId, world.address);
+  await fulfillRandomWords(requestId, world, mockOracleClient);
+};
+
+export const fulfillRandomWords = async (
+  requestId: number,
+  contract: BaseContract,
+  mockOracleClient: MockOracleClient | MockSWVRFOracleClient,
+  gasPrice = ethers.BigNumber.from(0)
+): Promise<ContractTransaction> => {
+  return mockOracleClient.fulfill(requestId, contract.address, {gasPrice});
 };
 
 export const bronzeHelmetStats: EstforTypes.CombatStats = {

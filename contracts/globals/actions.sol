@@ -10,6 +10,18 @@ enum ActionQueueStatus {
   KEEP_LAST_IN_PROGRESS
 }
 
+struct QueuedActionInputV2 {
+  Attire attire;
+  uint16 actionId;
+  uint16 regenerateId; // Food (combat), maybe something for non-combat later
+  uint16 choiceId; // Melee/Ranged/Magic (combat), logs, ore (non-combat)
+  uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
+  uint16 leftHandEquipmentTokenId; // Shield, can be empty
+  uint24 timespan; // How long to queue the action for
+  CombatStyle combatStyle; // specific style of combat
+  uint40 petId; // id of the pet (can be empty)
+}
+
 struct QueuedActionInput {
   Attire attire;
   uint16 actionId;
@@ -18,9 +30,14 @@ struct QueuedActionInput {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  CombatStyle combatStyle; // specific style of combat,  can also be used
+  CombatStyle combatStyle; // specific style of combat
 }
 
+struct QueuedActionExtra {
+  uint40 petId; // id of the pet (can be empty)
+}
+
+// Can't extend this due to the actionQueue variable in Player struct
 struct QueuedAction {
   uint16 actionId;
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
@@ -28,7 +45,22 @@ struct QueuedAction {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  CombatStyle combatStyle; // specific style of combat,  can also be used
+  CombatStyle combatStyle; // specific style of combat
+  uint24 prevProcessedTime; // How long the action has been processed for previously
+  uint24 prevProcessedXPTime; // How much XP has been gained for this action so far
+  uint64 queueId; // id of this queued action
+  bytes1 packed; // isValid first bit (not used yet) and hasPet 2nd bit
+  uint24 reserved;
+}
+
+struct QueuedActionV1 {
+  uint16 actionId;
+  uint16 regenerateId; // Food (combat), maybe something for non-combat later
+  uint16 choiceId; // Melee/Ranged/Magic (combat), logs, ore (non-combat)
+  uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
+  uint16 leftHandEquipmentTokenId; // Shield, can be empty
+  uint24 timespan; // How long to queue the action for
+  CombatStyle combatStyle; // specific style of combat
   uint24 prevProcessedTime; // How long the action has been processed for previously
   uint24 prevProcessedXPTime; // How much XP has been gained for this action so far
   uint64 queueId; // id of this queued action
@@ -84,3 +116,6 @@ struct ActionInfoV1 {
 uint constant SPAWN_MUL = 1000;
 uint constant RATE_MUL = 1000;
 uint constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour respawn time)
+
+uint constant ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT = 6;
+uint constant ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT = 5;

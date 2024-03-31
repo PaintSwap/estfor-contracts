@@ -377,8 +377,8 @@ uint16 constant SCROLL_MAX = SCROLL_BASE + 255;
 
 // Eggs
 uint16 constant EGG_BASE = 12544;
-uint16 constant SECRET_EGG_1 = EGG_BASE;
-uint16 constant SECRET_EGG_2 = EGG_BASE + 1;
+uint16 constant SECRET_EGG_1_TIER1 = EGG_BASE;
+uint16 constant SECRET_EGG_2_TIER1 = EGG_BASE + 1;
 uint16 constant EGG_MAX = 12799;
 
 // Boosts

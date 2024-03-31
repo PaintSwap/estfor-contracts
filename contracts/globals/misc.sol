@@ -8,7 +8,11 @@ enum BoostType {
   NON_COMBAT_XP,
   GATHERING,
   ABSENCE,
-  PASSIVE_SKIP_CHANCE
+  PASSIVE_SKIP_CHANCE,
+  // Clan wars
+  PVP_BLOCK,
+  PVP_REATTACK,
+  PVP_SUPER_ATTACK
 }
 
 struct Equipment {
@@ -36,7 +40,7 @@ enum Skill {
   AGILITY,
   ALCHEMY,
   FLETCHING,
-  RESERVED1,
+  FORGING,
   RESERVED2,
   RESERVED3,
   RESERVED4,

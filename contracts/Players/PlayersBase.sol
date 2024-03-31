@@ -5,6 +5,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
@@ -20,8 +21,15 @@ abstract contract PlayersBase {
   using UnsafeMath for uint256;
 
   event ClearAll(address from, uint playerId);
+  event SetActionQueueV2(
+    address from,
+    uint playerId,
+    QueuedAction[] queuedActions,
+    Attire[] attire,
+    uint startTime,
+    QueuedActionExtra[] queuedActionsExtra
+  );
   event AddXP(address from, uint playerId, Skill skill, uint points);
-  event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, Attire[] attire, uint startTime);
   event ConsumeBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
   event ConsumeExtraBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
   event ConsumeGlobalBoostVial(address from, uint playerId, BoostInfo globalBoost);
@@ -64,6 +72,9 @@ abstract contract PlayersBase {
   event LevelUp(address from, uint playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
 
+  // legacy
+  event SetActionQueue(address from, uint playerId, QueuedActionV1[] queuedActions, Attire[] attire, uint startTime);
+
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
     uint8 bonusRewardsPercent; // 3 = 3%
@@ -85,7 +96,6 @@ abstract contract PlayersBase {
   error UnsupportedAttire();
   error UnsupportedChoiceId();
   error InvalidHandEquipment(uint16 itemTokenId);
-  error DoNotHaveEnoughQuantityToEquipToAction();
   error NoActiveBoost();
   error BoostTimeAlreadyStarted();
   error TooManyActionsQueued();
@@ -129,6 +139,9 @@ abstract contract PlayersBase {
   error BuyBrushFailed();
   error NonInstanceConsumeNotSupportedYet();
   error AlreadyUpgraded();
+  error PlayerNotUpgraded();
+  error PetNotOwned();
+  error SkillForPetNotHandledYet();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -137,6 +150,8 @@ abstract contract PlayersBase {
   // The random chance where the odds are increased when there are dice roll overflows.
   // Don't set this above 1747 otherwise it can result in 100% chance for anything around that value
   uint internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1328;
+  uint internal constant MAX_LEVEL = 100; // Original max level
+  uint internal constant MAX_LEVEL_1 = 500; // TODO: Update later
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint internal startSlot;
@@ -185,6 +200,9 @@ abstract contract PlayersBase {
   mapping(uint clanId => PlayerBoostInfo clanBoost) internal clanBoosts_; // Clan specific boosts
 
   mapping(address user => WalletDailyInfo walletDailyInfo) internal walletDailyInfo;
+  mapping(uint queueId => QueuedActionExtra queuedActionExtra) internal queuedActionsExtra;
+
+  PetNFT internal petNFT;
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {
@@ -228,7 +246,7 @@ abstract contract PlayersBase {
   }
 
   function _isPlayerFullMode(uint _playerId) internal view returns (bool) {
-    return players_[_playerId].packedData >> 7 == bytes1(uint8(0x1));
+    return uint8(players_[_playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _getElapsedTime(uint _startTime, uint _endTime) internal view returns (uint elapsedTime) {
@@ -246,32 +264,32 @@ abstract contract PlayersBase {
     address _from,
     uint _playerId,
     QueuedAction[] memory _queuedActions,
+    QueuedActionExtra[] memory _queuedActionsExtra,
     Attire[] memory _attire,
     uint _startTime
   ) internal {
     Player storage player = players_[_playerId];
 
     // If ids are the same as existing, then just change the first one. Optimization when just claiming loot
-    bool same = true;
+    bool sameQueueIds = true;
     if (player.actionQueue.length == _queuedActions.length) {
       for (uint i = 0; i < _queuedActions.length; ++i) {
         if (player.actionQueue[i].queueId != _queuedActions[i].queueId) {
-          same = false;
+          sameQueueIds = false;
           break;
         }
       }
     }
 
-    if (same && player.actionQueue.length == _queuedActions.length && _queuedActions.length != 0) {
+    if (sameQueueIds && player.actionQueue.length == _queuedActions.length && _queuedActions.length != 0) {
       player.actionQueue[0] = _queuedActions[0];
     } else {
-      // Replace everything
       player.actionQueue = _queuedActions;
       for (uint i; i < _attire.length; ++i) {
         attire_[_playerId][player.actionQueue[i].queueId] = _attire[i];
       }
     }
-    emit SetActionQueue(_from, _playerId, _queuedActions, _attire, _startTime);
+    emit SetActionQueueV2(_from, _playerId, _queuedActions, _attire, _startTime, _queuedActionsExtra);
   }
 
   // This does not update player.totalXP!!
@@ -279,34 +297,57 @@ abstract contract PlayersBase {
     PackedXP storage packedXP = xp_[_playerId];
     uint oldPoints = PlayersLibrary.readXP(_skill, packedXP);
     uint newPoints = oldPoints.add(_pointsAccrued);
-    // Intentional new scope to remove stack shuffling errors
-    {
-      if (newPoints > type(uint32).max) {
-        newPoints = type(uint32).max;
-        _pointsAccrued = uint32(newPoints - oldPoints);
-      }
-      if (_pointsAccrued == 0) {
-        return;
-      }
-      uint offset = 2; // Accounts for NONE & COMBAT skills
-      uint skillOffsetted = uint8(_skill) - offset;
-      uint slotNum = skillOffsetted / 6;
-      uint relativePos = skillOffsetted % 6;
 
-      assembly ("memory-safe") {
-        let val := sload(add(packedXP.slot, slotNum))
-        // Clear the 5 bytes containing the old xp
-        val := and(val, not(shl(mul(relativePos, 40), 0xffffffffff)))
-        // Now set new xp
-        val := or(val, shl(mul(relativePos, 40), newPoints))
-        sstore(add(packedXP.slot, slotNum), val)
-      }
+    if (newPoints > type(uint32).max) {
+      newPoints = type(uint32).max;
+      _pointsAccrued = uint32(newPoints - oldPoints);
+    }
+    if (_pointsAccrued == 0) {
+      return;
+    }
+    uint offset = 2; // Accounts for NONE & COMBAT skills
+    uint skillOffsetted = uint8(_skill) - offset;
+    uint slotNum = skillOffsetted / 6;
+    uint relativePos = skillOffsetted % 6;
 
-      emit AddXP(_from, _playerId, _skill, _pointsAccrued);
+    // packedDataIsMaxedBitStart is the starting bit index for packedDataIsMaxed within the 256-bit storage slot
+    uint packedDataIsMaxedBitStart = 240;
+    uint bitsPerSkill = 2; // Two bits to store the max level version for each skill
+    uint actualBitIndex = packedDataIsMaxedBitStart + relativePos * bitsPerSkill;
+
+    uint16 newLevel = PlayersLibrary.getLevel(newPoints);
+
+    // Determine the new max level version for this skill based on newLevel
+    uint newMaxLevelVersion;
+    /*if (newLevel == MAX_LEVEL_1) { // Not used yet
+      newMaxLevelVersion = 2;
+    } else */ if (
+      newLevel == MAX_LEVEL
+    ) {
+      newMaxLevelVersion = 1;
+    } else {
+      newMaxLevelVersion = 0;
     }
 
+    assembly ("memory-safe") {
+      let val := sload(add(packedXP.slot, slotNum))
+
+      // Clear the 5 bytes containing the old xp
+      val := and(val, not(shl(mul(relativePos, 40), 0xffffffffff)))
+      // Now set new xp
+      val := or(val, shl(mul(relativePos, 40), newPoints))
+
+      // Clear the bits for this skill in packedDataIsMaxed
+      val := and(val, not(shl(actualBitIndex, 0x3))) // This shifts 11 (in binary) to the index and then negates it
+      // Set the new max level version for this skill in packedDataIsMaxed
+      val := or(val, shl(actualBitIndex, newMaxLevelVersion))
+
+      sstore(add(packedXP.slot, slotNum), val)
+    }
+
+    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
+
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
-    uint16 newLevel = PlayersLibrary.getLevel(newPoints);
     // Update the player's level
     if (newLevel > oldLevel) {
       emit LevelUp(_from, _playerId, _skill, oldLevel, newLevel);
@@ -439,6 +480,10 @@ abstract contract PlayersBase {
     delete playerBoost.itemTokenId;
     delete playerBoost.boostType;
     emit BoostFinished(_playerId);
+  }
+
+  function _hasPet(bytes1 _packed) internal pure returns (bool) {
+    return uint8(_packed >> HAS_PET_BIT) & 1 == 1;
   }
 
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {

@@ -2,12 +2,18 @@ import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {BigNumber} from "ethers";
 import {ethers, run} from "hardhat";
 import {
+  MockBrushToken,
+  MockPaintSwapMarketplaceWhitelist,
+  MockRouter,
+  MockWrappedFantom,
   PlayerNFT,
   PlayersImplMisc,
   PlayersImplMisc1,
   PlayersImplProcessActions,
   PlayersImplQueueActions,
   PlayersImplRewards,
+  TestPaintSwapArtGallery,
+  TestPaintSwapDecorator,
   World,
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
@@ -25,9 +31,7 @@ export const createPlayer = async (
   telegram = "",
   upgrade = false
 ): Promise<BigNumber> => {
-  const tx = await playerNFT
-    .connect(account)
-    .mintTODOPaint(avatarId, name, discord, twitter, telegram, upgrade, makeActive);
+  const tx = await playerNFT.connect(account).mint(avatarId, name, discord, twitter, telegram, upgrade, makeActive);
   const receipt = await tx.wait();
   const event = receipt?.events?.filter((x) => {
     return x.event == "NewPlayerV2";
@@ -87,38 +91,33 @@ interface IPlayerImpls {
 }
 
 export const deployPlayerImplementations = async (playersLibraryAddress: string): Promise<IPlayerImpls> => {
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
+  const playersImplQueueActions = (await ethers.deployContract("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplQueueActions = await PlayersImplQueueActions.deploy();
+  })) as PlayersImplQueueActions;
   console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
   await playersImplQueueActions.deployed();
 
-  const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
+  const playersImplProcessActions = (await ethers.deployContract("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplProcessActions = await PlayersImplProcessActions.deploy();
+  })) as PlayersImplProcessActions;
   console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
   await playersImplProcessActions.deployed();
 
-  const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
+  const playersImplRewards = (await ethers.deployContract("PlayersImplRewards", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplRewards = await PlayersImplRewards.deploy();
+  })) as PlayersImplRewards;
   console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
   await playersImplRewards.deployed();
 
-  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
+  const playersImplMisc = (await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplMisc = await PlayersImplMisc.deploy();
+  })) as PlayersImplMisc;
   console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
   await playersImplMisc.deployed();
 
-  const PlayersImplMisc1 = await ethers.getContractFactory("PlayersImplMisc1", {
+  const playersImplMisc1 = (await ethers.deployContract("PlayersImplMisc1", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-  });
-  const playersImplMisc1 = await PlayersImplMisc1.deploy();
+  })) as PlayersImplMisc1;
   console.log(`playersImplMisc1 = "${playersImplMisc1.address.toLowerCase()}"`);
   await playersImplMisc1.deployed();
 
@@ -130,3 +129,52 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
     playersImplMisc1,
   };
 };
+
+export const deployMockPaintSwapContracts = async (
+  brush: MockBrushToken,
+  router: MockRouter,
+  wftm: MockWrappedFantom
+): Promise<{
+  paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
+  paintSwapDecorator: TestPaintSwapDecorator;
+  paintSwapArtGallery: TestPaintSwapArtGallery;
+}> => {
+  const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
+  const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
+  const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
+
+  const paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
+  await paintSwapMarketplaceWhitelist.deployed();
+  console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+  const artGalleryLockPeriod = 3600;
+  const brushPerSecond = ethers.utils.parseEther("2");
+  const paintSwapArtGallery = await TestPaintSwapArtGallery.deploy(brush.address, artGalleryLockPeriod);
+  await paintSwapArtGallery.deployed();
+  console.log(`paintSwapArtGallery = "${paintSwapArtGallery.address.toLowerCase()}"`);
+  const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+  const paintSwapDecorator = await TestPaintSwapDecorator.deploy(
+    brush.address,
+    paintSwapArtGallery.address,
+    router.address,
+    wftm.address,
+    brushPerSecond,
+    NOW
+  );
+  await paintSwapDecorator.deployed();
+  console.log(`paintSwapDecorator = "${paintSwapDecorator.address.toLowerCase()}"`);
+  const lp = await ethers.deployContract("MockBrushToken");
+  await paintSwapDecorator.add("2000", lp.address, true);
+  await paintSwapArtGallery.transferOwnership(paintSwapDecorator.address);
+
+  return {paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery};
+};
+
+export const isBeta = process.env.IS_BETA == "true";
+
+// Needs to match that in rewards.sol
+export const TIER_1_DAILY_REWARD_START_XP = 0;
+export const TIER_2_DAILY_REWARD_START_XP = 7_650;
+export const TIER_3_DAILY_REWARD_START_XP = 33_913;
+export const TIER_4_DAILY_REWARD_START_XP = 195_864;
+export const TIER_5_DAILY_REWARD_START_XP = 784_726;
+export const TIER_6_DAILY_REWARD_START_XP = 2_219_451;

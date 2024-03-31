@@ -14,6 +14,7 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   IERC1155 public playerNFT;
   IClans public clans;
   IPlayers public players;
+  address public lockedBankVaults;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -34,6 +35,10 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   // In the first week which did not use the beacon proxy setup, used the now deleted BankProxy.sol
   function setBankImpl(address _bankImpl) external onlyOwner {
     bankImpl = _bankImpl;
+  }
+
+  function setLockedBankVaults(address _lockedBankVaults) external onlyOwner {
+    lockedBankVaults = _lockedBankVaults;
   }
 
   // solhint-disable-next-line no-empty-blocks

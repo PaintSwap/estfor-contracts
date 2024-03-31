@@ -36,7 +36,7 @@ struct ActionRewards {
   uint16 guaranteedRewardRate3;
   // Random chance rewards
   uint16 randomRewardTokenId1;
-  uint16 randomRewardChance1; // out of 65335
+  uint16 randomRewardChance1; // out of 65535
   uint8 randomRewardAmount1; // out of 255
   uint16 randomRewardTokenId2;
   uint16 randomRewardChance2;
@@ -53,6 +53,28 @@ struct ActionRewards {
 struct XPThresholdReward {
   uint32 xpThreshold;
   Equipment[] rewards;
+}
+
+enum InstantVRFActionType {
+  NONE,
+  GENERIC,
+  FORGING,
+  EGG
+}
+
+struct InstantVRFActionInput {
+  uint16 actionId;
+  uint16[] inputTokenIds;
+  uint24[] inputAmounts;
+  bytes data;
+  InstantVRFActionType actionType;
+  bool isFullModeOnly;
+}
+
+struct InstantVRFRandomReward {
+  uint16 itemTokenId;
+  uint16 chance; // out of 65535
+  uint16 amount; // out of 65535
 }
 
 uint constant MAX_GUARANTEED_REWARDS_PER_ACTION = 3;

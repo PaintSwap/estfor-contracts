@@ -25,9 +25,15 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   event EditActionsV2(Action[] actions);
   event AddDynamicActions(uint16[] actionIds);
   event RemoveDynamicActions(uint16[] actionIds);
-  event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
-  event EditActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
+  event AddActionChoicesV4(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
+  event EditActionChoicesV4(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event RemoveActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds);
+
+  // Legacy for old live events
+  event AddActionChoicesV3(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV3[] choices);
+  event EditActionChoicesV3(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV3[] choices);
+  event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV2[] choices);
+  event EditActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV2[] choices);
 
   // Legacy, just for ABI reasons and old beta events
   event AddAction(ActionV1 action);
@@ -74,7 +80,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   uint40 public lastRandomWordsUpdatedTime;
   uint40 private startTime;
   uint40 private weeklyRewardCheckpoint;
-  bytes8 private thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
+  bytes8 public thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
   uint24 private callbackGasLimit;
 
   // The gas lane to use, which specifies the maximum gas price to bump to.
@@ -209,7 +215,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
 
   function getWeeklyReward(uint _tier, uint _playerId) public view returns (uint16 itemTokenId, uint24 amount) {
     uint day = 7;
-    uint index = _getRewardIndex(_playerId, day, weeklyRewardPool[_tier].length);
+    uint index = _getRewardIndex(_playerId, day, uint64(thisWeeksRandomWordSegment), weeklyRewardPool[_tier].length);
     Equipment storage equipment = weeklyRewardPool[_tier][index];
     return (equipment.itemTokenId, equipment.amount);
   }
@@ -217,9 +223,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function getSpecificDailyReward(
     uint _tier,
     uint _playerId,
-    uint _day
+    uint _day,
+    uint _randomWord
   ) public view returns (uint16 itemTokenId, uint24 amount) {
-    uint index = _getRewardIndex(_playerId, _day, dailyRewardPool[_tier].length);
+    uint index = _getRewardIndex(_playerId, _day, _randomWord, dailyRewardPool[_tier].length);
     Equipment storage equipment = dailyRewardPool[_tier][index];
     return (equipment.itemTokenId, equipment.amount);
   }
@@ -227,7 +234,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   function getDailyReward(uint _tier, uint _playerId) external view returns (uint itemTokenId, uint amount) {
     uint checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
     uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
-    return getSpecificDailyReward(_tier, _playerId, day);
+    return getSpecificDailyReward(_tier, _playerId, day, uint64(thisWeeksRandomWordSegment));
   }
 
   function getActiveDailyAndWeeklyRewards(
@@ -235,7 +242,12 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     uint _playerId
   ) external view returns (Equipment[8] memory rewards) {
     for (uint i; i < 7; ++i) {
-      (rewards[i].itemTokenId, rewards[i].amount) = getSpecificDailyReward(_tier, _playerId, i);
+      (rewards[i].itemTokenId, rewards[i].amount) = getSpecificDailyReward(
+        _tier,
+        _playerId,
+        i,
+        uint64(thisWeeksRandomWordSegment)
+      );
     }
     (rewards[7].itemTokenId, rewards[7].amount) = getWeeklyReward(_tier, _playerId);
   }
@@ -281,6 +293,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     return actionRewards[_actionId];
   }
 
+  // TODO Delete after upgrading the player impls
   function getPermissibleItemsForAction(
     uint _actionId
   )
@@ -306,6 +319,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     );
   }
 
+  function getActionInfo(uint _actionId) external view returns (ActionInfo memory info) {
+    return actions[_actionId];
+  }
+
   function getXPPerHour(uint16 _actionId, uint16 _actionChoiceId) external view returns (uint24 xpPerHour) {
     return _actionChoiceId != 0 ? actionChoices[_actionId][_actionChoiceId].xpPerHour : actions[_actionId].xpPerHour;
   }
@@ -318,8 +335,39 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     stats = actionCombatStats[_actionId];
   }
 
-  function getActionChoice(uint16 _actionId, uint16 _choiceId) external view returns (ActionChoice memory) {
-    return actionChoices[_actionId][_choiceId];
+  function getActionChoice(uint16 _actionId, uint16 _choiceId) external view returns (ActionChoice memory choice) {
+    ActionChoice storage actionChoice = actionChoices[_actionId][_choiceId];
+    choice.skill = actionChoice.skill;
+    choice.minXP = actionChoice.minXP;
+    choice.skillDiff = actionChoice.skillDiff;
+    choice.rate = actionChoice.rate;
+    choice.xpPerHour = actionChoice.xpPerHour;
+    choice.inputTokenId1 = actionChoice.inputTokenId1;
+    choice.inputAmount1 = actionChoice.inputAmount1;
+    choice.inputTokenId2 = actionChoice.inputTokenId2;
+    choice.inputAmount2 = actionChoice.inputAmount2;
+    choice.inputTokenId3 = actionChoice.inputTokenId3;
+    choice.inputAmount3 = actionChoice.inputAmount3;
+    choice.outputTokenId = actionChoice.outputTokenId;
+    choice.outputAmount = actionChoice.outputAmount;
+    choice.successPercent = actionChoice.successPercent;
+    choice.handItemTokenIdRangeMin = actionChoice.handItemTokenIdRangeMin;
+    choice.handItemTokenIdRangeMax = actionChoice.handItemTokenIdRangeMax;
+    choice.packedData = actionChoice.packedData;
+    // Only read second storage when needed
+    if (
+      (uint8(choice.packedData >> ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT) & 1 == 1) ||
+      (uint8(choice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT) & 1 == 1)
+    ) {
+      choice.minSkill2 = actionChoice.minSkill2;
+      choice.minXP2 = actionChoice.minXP2;
+      choice.minSkill3 = actionChoice.minSkill3;
+      choice.minXP3 = actionChoice.minXP3;
+
+      choice.newInputAmount1 = actionChoice.newInputAmount1;
+      choice.newInputAmount2 = actionChoice.newInputAmount2;
+      choice.newInputAmount3 = actionChoice.newInputAmount3;
+    }
   }
 
   function getActionSuccessPercentAndMinXP(
@@ -371,8 +419,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _setAction(_action);
   }
 
-  function _getRewardIndex(uint _playerId, uint _day, uint _length) private view returns (uint) {
-    return uint(keccak256(abi.encodePacked(thisWeeksRandomWordSegment, _playerId)) >> (_day * 8)) % _length;
+  function _getRewardIndex(uint _playerId, uint _day, uint _randomWord, uint _length) private pure returns (uint) {
+    return uint(keccak256(abi.encodePacked(_randomWord, _playerId)) >> (_day * 8)) % _length;
   }
 
   function _setAction(Action calldata _action) private {
@@ -418,26 +466,30 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function _addActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice memory _packedActionChoice) private {
+  function _addActionChoice(
+    uint16 _actionId,
+    uint16 _actionChoiceId,
+    ActionChoiceInput calldata _actionChoiceInput
+  ) private view {
     if (_actionChoiceId == 0) {
       revert ActionChoiceIdZeroNotAllowed();
     }
     if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
       revert ActionChoiceAlreadyExists();
     }
-    WorldLibrary.checkActionChoice(_packedActionChoice);
-
-    actionChoices[_actionId][_actionChoiceId] = _packedActionChoice;
+    WorldLibrary.checkActionChoice(_actionChoiceInput);
   }
 
-  function _editActionChoice(uint16 _actionId, uint16 _actionChoiceId, ActionChoice memory _actionChoice) private {
+  function _editActionChoice(
+    uint16 _actionId,
+    uint16 _actionChoiceId,
+    ActionChoiceInput calldata _actionChoiceInput
+  ) private view {
     if (actionChoices[_actionId][_actionChoiceId].skill == Skill.NONE) {
       revert ActionChoiceDoesNotExist();
     }
 
-    WorldLibrary.checkActionChoice(_actionChoice);
-
-    actionChoices[_actionId][_actionChoiceId] = _actionChoice;
+    WorldLibrary.checkActionChoice(_actionChoiceInput);
   }
 
   function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
@@ -445,28 +497,61 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   }
 
   function _packActionChoice(
-    ActionChoiceInput calldata _actionChoice
+    ActionChoiceInput calldata _actionChoiceInput
   ) private pure returns (ActionChoice memory actionChoice) {
-    bytes1 packedData = bytes1(uint8(_actionChoice.isFullModeOnly ? 1 : 0 << 7));
+    bytes1 packedData = bytes1(uint8(_actionChoiceInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    if (_actionChoiceInput.minSkills.length > 1) {
+      packedData |= bytes1(uint8(1)) << ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT;
+    }
+
+    bool anyInputExceedsStandardAmount = (_actionChoiceInput.inputAmounts.length > 0 &&
+      _actionChoiceInput.inputAmounts[0] > 255) ||
+      (_actionChoiceInput.inputAmounts.length > 1 && _actionChoiceInput.inputAmounts[1] > 255) ||
+      (_actionChoiceInput.inputAmounts.length > 2 && _actionChoiceInput.inputAmounts[2] > 255);
+
+    if (anyInputExceedsStandardAmount) {
+      packedData |= bytes1(uint8(1)) << ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT;
+    }
 
     actionChoice = ActionChoice({
-      skill: _actionChoice.skill,
-      minXP: _actionChoice.minXP,
-      skillDiff: _actionChoice.skillDiff,
-      rate: _actionChoice.rate,
-      xpPerHour: _actionChoice.xpPerHour,
-      inputTokenId1: _actionChoice.inputTokenId1,
-      inputAmount1: _actionChoice.inputAmount1,
-      inputTokenId2: _actionChoice.inputTokenId2,
-      inputAmount2: _actionChoice.inputAmount2,
-      inputTokenId3: _actionChoice.inputTokenId3,
-      inputAmount3: _actionChoice.inputAmount3,
-      outputTokenId: _actionChoice.outputTokenId,
-      outputAmount: _actionChoice.outputAmount,
-      successPercent: _actionChoice.successPercent,
-      handItemTokenIdRangeMin: _actionChoice.handItemTokenIdRangeMin,
-      handItemTokenIdRangeMax: _actionChoice.handItemTokenIdRangeMax,
-      packedData: packedData
+      skill: _actionChoiceInput.skill,
+      minXP: _actionChoiceInput.minXPs.length != 0 ? _actionChoiceInput.minXPs[0] : 0,
+      skillDiff: _actionChoiceInput.skillDiff,
+      rate: _actionChoiceInput.rate,
+      xpPerHour: _actionChoiceInput.xpPerHour,
+      inputTokenId1: _actionChoiceInput.inputTokenIds.length > 0 ? _actionChoiceInput.inputTokenIds[0] : NONE,
+      inputAmount1: _actionChoiceInput.inputAmounts.length > 0 && !anyInputExceedsStandardAmount
+        ? uint8(_actionChoiceInput.inputAmounts[0])
+        : 0,
+      inputTokenId2: _actionChoiceInput.inputTokenIds.length > 1 ? _actionChoiceInput.inputTokenIds[1] : NONE,
+      inputAmount2: _actionChoiceInput.inputAmounts.length > 1 && !anyInputExceedsStandardAmount
+        ? uint8(_actionChoiceInput.inputAmounts[1])
+        : 0,
+      inputTokenId3: _actionChoiceInput.inputTokenIds.length > 2 ? _actionChoiceInput.inputTokenIds[2] : NONE,
+      inputAmount3: _actionChoiceInput.inputAmounts.length > 2 && !anyInputExceedsStandardAmount
+        ? uint8(_actionChoiceInput.inputAmounts[2])
+        : 0,
+      outputTokenId: _actionChoiceInput.outputTokenId,
+      outputAmount: _actionChoiceInput.outputAmount,
+      successPercent: _actionChoiceInput.successPercent,
+      handItemTokenIdRangeMin: _actionChoiceInput.handItemTokenIdRangeMin,
+      handItemTokenIdRangeMax: _actionChoiceInput.handItemTokenIdRangeMax,
+      packedData: packedData,
+      reserved: bytes1(uint8(0)),
+      // Second storage slot
+      minSkill2: _actionChoiceInput.minSkills.length > 1 ? _actionChoiceInput.minSkills[1] : Skill.NONE,
+      minXP2: _actionChoiceInput.minXPs.length > 1 ? _actionChoiceInput.minXPs[1] : 0,
+      minSkill3: _actionChoiceInput.minSkills.length > 2 ? _actionChoiceInput.minSkills[2] : Skill.NONE,
+      minXP3: _actionChoiceInput.minXPs.length > 2 ? _actionChoiceInput.minXPs[2] : 0,
+      newInputAmount1: _actionChoiceInput.inputAmounts.length > 0 && anyInputExceedsStandardAmount
+        ? _actionChoiceInput.inputAmounts[0]
+        : 0,
+      newInputAmount2: _actionChoiceInput.inputAmounts.length > 1 && anyInputExceedsStandardAmount
+        ? _actionChoiceInput.inputAmounts[1]
+        : 0,
+      newInputAmount3: _actionChoiceInput.inputAmounts.length > 2 && anyInputExceedsStandardAmount
+        ? _actionChoiceInput.inputAmounts[2]
+        : 0
     });
   }
 
@@ -490,6 +575,30 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     emit EditActionsV2(_actions);
   }
 
+  function addActionChoices(
+    uint16 _actionId,
+    uint16[] calldata _actionChoiceIds,
+    ActionChoiceInput[] calldata _actionChoices
+  ) public onlyOwner {
+    emit AddActionChoicesV4(_actionId, _actionChoiceIds, _actionChoices);
+
+    U256 actionChoiceLength = _actionChoices.length.asU256();
+    if (actionChoiceLength.neq(_actionChoiceIds.length)) {
+      revert LengthMismatch();
+    }
+
+    if (_actionChoiceIds.length == 0) {
+      revert NoActionChoices();
+    }
+
+    for (U256 iter; iter < actionChoiceLength; iter = iter.inc()) {
+      uint16 i = iter.asUint16();
+      _addActionChoice(_actionId, _actionChoiceIds[i], _actionChoices[i]);
+      // TODO: Could set the first storage slot only in cases where appropriate (same as editing)
+      actionChoices[_actionId][_actionChoiceIds[i]] = _packActionChoice(_actionChoices[i]);
+    }
+  }
+
   // actionId of 0 means it is not tied to a specific action (combat)
   function addBulkActionChoices(
     uint16[] calldata _actionIds,
@@ -507,18 +616,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
       uint16 i = iter.asUint16();
       uint16 actionId = _actionIds[i];
-      emit AddActionChoicesV2(actionId, _actionChoiceIds[i], _actionChoices[i]);
-
-      U256 actionChoiceLength = _actionChoices[i].length.asU256();
-
-      if (actionChoiceLength.neq(_actionChoiceIds[i].length)) {
-        revert LengthMismatch();
-      }
-
-      for (U256 jter; jter < actionChoiceLength; jter = jter.inc()) {
-        uint16 j = jter.asUint16();
-        _addActionChoice(actionId, _actionChoiceIds[i][j], _packActionChoice(_actionChoices[i][j]));
-      }
+      addActionChoices(actionId, _actionChoiceIds[i], _actionChoices[i]);
     }
   }
 
@@ -537,10 +635,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     U256 actionIdsLength = _actionChoiceIds.length.asU256();
     for (U256 iter; iter < actionIdsLength; iter = iter.inc()) {
       uint16 i = iter.asUint16();
-      _editActionChoice(_actionId, _actionChoiceIds[i], _packActionChoice(_actionChoices[i]));
+      _editActionChoice(_actionId, _actionChoiceIds[i], _actionChoices[i]);
+      actionChoices[_actionId][_actionChoiceIds[i]] = _packActionChoice(_actionChoices[i]);
     }
 
-    emit EditActionChoicesV2(_actionId, _actionChoiceIds, _actionChoices);
+    emit EditActionChoicesV4(_actionId, _actionChoiceIds, _actionChoices);
   }
 
   function removeActionChoices(uint16 _actionId, uint16[] calldata _actionChoiceIds) external onlyOwner {

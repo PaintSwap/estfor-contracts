@@ -1,28 +1,27 @@
 import {ethers} from "hardhat";
 import {QUESTS_ADDRESS} from "./contractAddresses";
-import {Quest, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
+import {MinRequirementArray, QuestInput, allQuests, allQuestsMinRequirements} from "./data/quests";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {Quests} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit quest using account: ${owner.address}`);
+  console.log(`Edit quest using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  const quests = (await ethers.getContractAt("Quests", QUESTS_ADDRESS)) as Quests;
+  const questIndexes = allQuests
+    .map((q, index) =>
+      q.questId === EstforConstants.QUEST_NEW_ALCHEMY || q.questId === EstforConstants.QUEST_FLEX_THE_BOW ? index : ""
+    )
+    .filter(String) as number[];
+  if (questIndexes.length != 2) {
+    console.error("Could not find these quests");
+    return;
+  }
 
-  const Quests = await ethers.getContractFactory("Quests");
-  const quests = await Quests.attach(QUESTS_ADDRESS);
-
-  //  const tx = await quests.editQuests(allQuests, allQuestsMinRequirements);
-  //  await tx.wait();
-
-  // Single one
-  const questIndex = allQuests.findIndex((q) => q.questId === EstforConstants.QUEST_CLEAR_SKIES);
-  const quest = allQuests[questIndex];
-  const minRequirements = allQuestsMinRequirements[questIndex];
-  const tx = await quests.editQuest(quest, minRequirements);
-  await tx.wait();
+  const editedQuests: QuestInput[] = questIndexes.map((index) => allQuests[index]);
+  const minRequirements: MinRequirementArray[] = questIndexes.map((index) => allQuestsMinRequirements[index]);
+  await quests.editQuests(editedQuests, minRequirements);
 }
 
 main().catch((error) => {

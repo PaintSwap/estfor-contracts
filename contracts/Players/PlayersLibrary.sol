@@ -18,7 +18,7 @@ library PlayersLibrary {
   error InvalidXPSkill();
   error InvalidAction();
 
-  function getLevel(uint _xp) public pure returns (uint16) {
+  function _getLevel(uint _xp) internal pure returns (uint16) {
     U256 low;
     U256 high = XP_BYTES.length.asU256().div(4);
 
@@ -38,6 +38,10 @@ library PlayersLibrary {
     } else {
       return 1;
     }
+  }
+
+  function getLevel(uint _xp) external pure returns (uint16) {
+    return _getLevel(_xp);
   }
 
   function _getXP(uint256 _index) private pure returns (uint32) {
@@ -118,12 +122,19 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _baseInputItemsConsumedNum;
+
+    bool useSecondInputTokens = uint8(
+      _actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
+    ) &
+      1 ==
+      1;
+
     if (_baseInputItemsConsumedNum != 0) {
       if (_actionChoice.inputTokenId1 != 0) {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId1,
-          _actionChoice.inputAmount1,
+          useSecondInputTokens ? _actionChoice.newInputAmount1 : _actionChoice.inputAmount1,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -133,7 +144,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId2,
-          _actionChoice.inputAmount2,
+          useSecondInputTokens ? _actionChoice.newInputAmount2 : _actionChoice.inputAmount2,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -143,7 +154,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           _from,
           _actionChoice.inputTokenId3,
-          _actionChoice.inputAmount3,
+          useSecondInputTokens ? _actionChoice.newInputAmount3 : _actionChoice.inputAmount3,
           maxRequiredRatio,
           _itemNFT,
           _pendingQueuedActionEquipmentStates
@@ -155,7 +166,7 @@ library PlayersLibrary {
   function _getMaxRequiredRatioPartial(
     address _from,
     uint16 _inputTokenId,
-    uint16 _inputAmount,
+    uint _inputAmount,
     uint _prevConsumeMaxRatio,
     ItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
@@ -739,18 +750,18 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (CombatStats memory combatStats) {
     combatStats.melee = int16(
-      getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
     );
     combatStats.ranged = int16(
-      getLevel(getAbsoluteActionStartXP(Skill.RANGED, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(getAbsoluteActionStartXP(Skill.RANGED, _pendingQueuedActionProcessed, _packedXP))
     );
     combatStats.magic = int16(
-      getLevel(getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionProcessed, _packedXP))
     );
     combatStats.health = int16(
-      getLevel(getAbsoluteActionStartXP(Skill.HEALTH, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(getAbsoluteActionStartXP(Skill.HEALTH, _pendingQueuedActionProcessed, _packedXP))
     );
-    uint16 defenceLevel = getLevel(getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionProcessed, _packedXP));
+    uint16 defenceLevel = _getLevel(getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionProcessed, _packedXP));
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.rangedDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
@@ -926,6 +937,9 @@ library PlayersLibrary {
     }
     bool bothSet = _player.skillBoosted1 != Skill.NONE && _player.skillBoosted2 != Skill.NONE;
     bonusPercent = bothSet ? 5 : 10;
+    // Upgraded characters get double base bonus stats
+    bool isUpgraded = uint8(_player.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+    bonusPercent = isUpgraded ? bonusPercent * 2 : bonusPercent;
   }
 
   function _extraFromAvatar(
@@ -1026,8 +1040,8 @@ library PlayersLibrary {
         revert InvalidAction();
       }
 
-      uint minLevel = getLevel(minXP);
-      uint skillLevel = getLevel(getAbsoluteActionStartXP(_actionSkill, _pendingQueuedActionProcessed, _packedXP));
+      uint minLevel = _getLevel(minXP);
+      uint skillLevel = _getLevel(getAbsoluteActionStartXP(_actionSkill, _pendingQueuedActionProcessed, _packedXP));
       uint extraBoost = skillLevel - minLevel;
 
       successPercent = uint8(Math.min(_maxSuccessPercentChange, actionSuccessPercent + extraBoost));

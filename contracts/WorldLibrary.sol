@@ -12,58 +12,101 @@ library WorldLibrary {
   using UnsafeMath for uint;
 
   error InputSpecifiedWithoutAmount();
-  error PreviousInputTokenIdMustBeSpecified();
   error InputAmountsMustBeInOrder();
+  error TooManyInputItems();
+  error InvalidInputTokenId();
+  error LengthMismatch();
+  error InputItemNoDuplicates();
+  error InvalidSkill();
+  error MinimumSkillsNoDuplicates();
+  error TooManyMinSkills();
+  error OutputAmountCannotBeZero();
   error OutputSpecifiedWithoutAmount();
+  error OutputTokenIdCannotBeEmpty();
   error RandomRewardsMustBeInOrder(uint16 chance1, uint16 chance2);
   error RandomRewardNoDuplicates();
   error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
   error NotAFactorOf3600();
-  error PackedDataAlwaysZeroForNow();
   error TooManyGuaranteedRewards();
   error TooManyRandomRewards();
+  error FirstMinSkillMustBeActionSkill();
 
-  function checkActionChoice(ActionChoice calldata _actionChoice) external pure {
-    if (_actionChoice.inputTokenId1 != NONE && _actionChoice.inputAmount1 == 0) {
-      revert InputSpecifiedWithoutAmount();
+  function checkActionChoice(ActionChoiceInput calldata _actionChoiceInput) external pure {
+    uint16[] calldata inputTokenIds = _actionChoiceInput.inputTokenIds;
+    uint24[] calldata amounts = _actionChoiceInput.inputAmounts;
+
+    if (inputTokenIds.length > 3) {
+      revert TooManyInputItems();
     }
-    if (_actionChoice.inputTokenId2 != NONE) {
-      if (_actionChoice.inputAmount2 == 0) {
+    if (inputTokenIds.length != amounts.length) {
+      revert LengthMismatch();
+    }
+
+    if (_actionChoiceInput.outputTokenId != NONE && _actionChoiceInput.outputAmount == 0) {
+      revert OutputAmountCannotBeZero();
+    }
+    if (_actionChoiceInput.outputTokenId == NONE && _actionChoiceInput.outputAmount != 0) {
+      revert OutputTokenIdCannotBeEmpty();
+    }
+
+    for (uint i; i < inputTokenIds.length; ++i) {
+      if (inputTokenIds[i] == 0) {
+        revert InvalidInputTokenId();
+      }
+      if (amounts[i] == 0) {
         revert InputSpecifiedWithoutAmount();
       }
-      if (_actionChoice.inputTokenId1 == NONE) {
-        revert PreviousInputTokenIdMustBeSpecified();
-      }
-      if (_actionChoice.inputAmount2 < _actionChoice.inputAmount1) {
-        revert InputAmountsMustBeInOrder();
+
+      if (i != inputTokenIds.length - 1) {
+        if (amounts[i] > amounts[i + 1]) {
+          revert InputAmountsMustBeInOrder();
+        }
+        for (uint j; j < inputTokenIds.length; ++j) {
+          if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
+            revert InputItemNoDuplicates();
+          }
+        }
       }
     }
-    if (_actionChoice.inputTokenId3 != NONE) {
-      if (_actionChoice.inputAmount3 == 0) {
+
+    // Check minimum xp
+    Skill[] calldata minSkills = _actionChoiceInput.minSkills;
+    uint32[] calldata minXPs = _actionChoiceInput.minXPs;
+
+    if (minSkills.length > 3) {
+      revert TooManyMinSkills();
+    }
+    if (minSkills.length != minXPs.length) {
+      revert LengthMismatch();
+    }
+
+    if (minSkills.length != 0 && minSkills[0] != _actionChoiceInput.skill) {
+      revert FirstMinSkillMustBeActionSkill();
+    }
+
+    for (uint i; i < minSkills.length; ++i) {
+      if (minSkills[i] == Skill.NONE) {
+        revert InvalidSkill();
+      }
+      if (minXPs[i] == 0) {
         revert InputSpecifiedWithoutAmount();
       }
-      if (_actionChoice.inputTokenId2 == NONE) {
-        revert PreviousInputTokenIdMustBeSpecified();
-      }
-      if (_actionChoice.inputAmount3 < _actionChoice.inputAmount2) {
-        revert InputAmountsMustBeInOrder();
+
+      if (i != minSkills.length - 1) {
+        for (uint j; j < minSkills.length; ++j) {
+          if (j != i && minSkills[i] == minSkills[j]) {
+            revert MinimumSkillsNoDuplicates();
+          }
+        }
       }
     }
 
-    if (_actionChoice.outputTokenId != 0 && _actionChoice.outputAmount == 0) {
-      revert OutputSpecifiedWithoutAmount();
-    }
-
-    if (_actionChoice.rate != 0) {
+    if (_actionChoiceInput.rate != 0) {
       // Check that it is a factor of 3600
-      if ((3600 * RATE_MUL) % _actionChoice.rate != 0) {
+      if ((3600 * RATE_MUL) % _actionChoiceInput.rate != 0) {
         revert NotAFactorOf3600();
       }
-    }
-
-    if (_actionChoice.packedData != 0x0) {
-      revert PackedDataAlwaysZeroForNow();
     }
   }
 
@@ -102,7 +145,6 @@ library WorldLibrary {
         }
       }
     }
-
     if (guaranteedRewardsLength > 3) {
       revert TooManyGuaranteedRewards();
     }

@@ -45,7 +45,21 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       remainingAttire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
     }
 
-    _setActionQueue(msg.sender, _playerId, remainingQueuedActions, remainingAttire, block.timestamp);
+    QueuedActionExtra[] memory remainingQueuedActionsExtra = new QueuedActionExtra[](remainingQueuedActions.length);
+    for (uint i; i < remainingQueuedActions.length; ++i) {
+      if (_hasPet(remainingQueuedActions[i].packed)) {
+        remainingQueuedActionsExtra[i] = queuedActionsExtra[remainingQueuedActions[i].queueId];
+      }
+    }
+
+    _setActionQueue(
+      msg.sender,
+      _playerId,
+      remainingQueuedActions,
+      remainingQueuedActionsExtra,
+      remainingAttire,
+      block.timestamp
+    );
   }
 
   function processActions(
@@ -251,7 +265,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       emit DailyReward(
         _from,
         _playerId,
-        uint16(pendingQueuedActionState.dailyRewardItemTokenIds[0]),
+        pendingQueuedActionState.dailyRewardItemTokenIds[0],
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
 
@@ -259,7 +273,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         emit WeeklyReward(
           _from,
           _playerId,
-          uint16(pendingQueuedActionState.dailyRewardItemTokenIds[1]),
+          pendingQueuedActionState.dailyRewardItemTokenIds[1],
           pendingQueuedActionState.dailyRewardAmounts[1]
         );
       }
@@ -274,8 +288,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _clearPlayerBoostsIfExpired(_playerId);
 
     bytes1 packedData = player.packedData;
-    // Clear bottom half which holds the worldLocation
-    packedData &= bytes1(uint8(0x0F));
+    // Clear first 6 bits which holds the worldLocation
+    packedData &= bytes1(uint8(0xC0));
     packedData |= bytes1(pendingQueuedActionState.worldLocation);
     player.packedData = packedData;
   }
@@ -391,13 +405,14 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     LotteryWinnerInfo memory _lotteryWinner
   ) private {
-    _claimRandomRewards(_playerId, _pendingQueuedActionProcessed);
+    _claimRandomRewards(_from, _playerId, _pendingQueuedActionProcessed);
     _handleDailyRewards(_from, _playerId);
     _handleLotteryWinnings(_from, _playerId, _lotteryWinner);
     _clearPlayerBoostsIfExpired(_playerId);
   }
 
   function _claimRandomRewards(
+    address _from,
     uint _playerId,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
   ) private {
@@ -405,6 +420,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       implRewards,
       abi.encodeWithSelector(
         IPlayersRewardsDelegate.claimRandomRewards.selector,
+        _from,
         _playerId,
         _pendingQueuedActionProcessed
       )

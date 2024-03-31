@@ -36,7 +36,7 @@ const defaultConfig: SolcUserConfig = {
   },
 };
 
-const lowerRunsConfig: SolcUserConfig = {
+const mediumRunsConfig: SolcUserConfig = {
   ...defaultConfig,
   settings: {
     ...defaultConfig.settings,
@@ -47,15 +47,49 @@ const lowerRunsConfig: SolcUserConfig = {
   },
 };
 
+const lowRunsConfig: SolcUserConfig = {
+  ...defaultConfig,
+  settings: {
+    ...defaultConfig.settings,
+    optimizer: {
+      ...defaultConfig.settings.optimizer,
+      runs: 1000,
+    },
+  },
+};
+
+const lowestRunsConfig: SolcUserConfig = {
+  ...defaultConfig,
+  settings: {
+    ...defaultConfig.settings,
+    optimizer: {
+      ...defaultConfig.settings.optimizer,
+      runs: 320,
+    },
+  },
+};
+
 const config: HardhatUserConfig = {
   solidity: {
-    compilers: [defaultConfig, lowerRunsConfig],
+    compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, lowestRunsConfig],
     overrides: {
-      "contracts/Clans/Clans.sol": lowerRunsConfig,
+      "contracts/Clans/Clans.sol": mediumRunsConfig,
+      "contracts/Clans/LockedBankVaults.sol": mediumRunsConfig,
+      "contracts/Clans/Territories.sol": mediumRunsConfig,
+      "contracts/Players/Players.sol": lowRunsConfig,
+      "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplQueueActions.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplRewards.sol": mediumRunsConfig,
+      "contracts/Promotions.sol": mediumRunsConfig,
+      "contracts/World.sol": lowRunsConfig,
+      "contracts/ItemNFT.sol": mediumRunsConfig,
+      "contracts/PetNFT.sol": mediumRunsConfig,
     },
   },
   gasReporter: {
     enabled: true,
+    showMethodSig: true,
   },
   networks: {
     hardhat: {
@@ -66,13 +100,16 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("30", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("100", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
     },
+  },
+  mocha: {
+    timeout: 80 * 1000,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

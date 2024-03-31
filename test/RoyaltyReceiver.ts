@@ -1,28 +1,29 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
+import {MockTerritories, RoyaltyReceiver} from "../typechain-types";
 
 describe("RoyaltyReceiver", function () {
   async function deployContracts() {
     const [owner, alice, pool, dev] = await ethers.getSigners();
 
-    const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const brush = await MockBrushToken.deploy();
+    const brush = await ethers.deployContract("MockBrushToken");
 
     const wftm = owner.address; // doesn't matter
-    const buyPath: [string, string] = [wftm, brush.address];
 
-    const MockRouter = await ethers.getContractFactory("MockRouter");
-    const router = await MockRouter.deploy();
+    const router = await ethers.deployContract("MockRouter");
 
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
-    const royaltyReceiver = await upgrades.deployProxy(
+    const royaltyReceiver = (await upgrades.deployProxy(
       RoyaltyReceiver,
-      [router.address, pool.address, dev.address, brush.address, buyPath],
+      [router.address, pool.address, dev.address, brush.address, wftm],
       {
         kind: "uups",
       }
-    );
+    )) as RoyaltyReceiver;
+
+    const mockTerritories = (await ethers.deployContract("MockTerritories", [brush.address])) as MockTerritories;
+    await royaltyReceiver.setTerritories(mockTerritories.address);
 
     return {
       RoyaltyReceiver,
@@ -32,8 +33,9 @@ describe("RoyaltyReceiver", function () {
       pool,
       dev,
       brush,
-      buyPath,
+      wftm,
       router,
+      mockTerritories,
     };
   }
 
@@ -53,18 +55,21 @@ describe("RoyaltyReceiver", function () {
     expect(await brush.balanceOf(pool.address)).to.equal(6);
   });
 
-  it("Incorrect brush path", async function () {
-    const {pool, dev, router, buyPath, RoyaltyReceiver} = await loadFixture(deployContracts);
+  it("Distribute brush", async function () {
+    const {mockTerritories, brush, royaltyReceiver} = await loadFixture(deployContracts);
 
-    const incorrectBrushAddress = pool.address;
-    await expect(
-      upgrades.deployProxy(
-        RoyaltyReceiver,
-        [router.address, pool.address, dev.address, incorrectBrushAddress, buyPath],
-        {
-          kind: "uups",
-        }
-      )
-    ).to.be.revertedWithCustomError(RoyaltyReceiver, "IncorrectBrushPath");
+    const MIN_BRUSH_TO_DISTRIBUTE = await royaltyReceiver.MIN_BRUSH_TO_DISTRIBUTE();
+    await brush.mint(royaltyReceiver.address, MIN_BRUSH_TO_DISTRIBUTE.sub(1));
+    expect(await royaltyReceiver.canDistribute()).to.be.false;
+    expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(0);
+    await expect(royaltyReceiver.distributeBrush()).to.be.revertedWithCustomError(
+      royaltyReceiver,
+      "BrushTooLowToDistribute"
+    );
+    await brush.mint(royaltyReceiver.address, 1);
+    expect(await royaltyReceiver.canDistribute()).to.be.true;
+    await royaltyReceiver.distributeBrush();
+    expect(await royaltyReceiver.canDistribute()).to.be.false;
+    expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(1);
   });
 });

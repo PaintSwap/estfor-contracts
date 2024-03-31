@@ -3,7 +3,9 @@ import {ethers, upgrades} from "hardhat";
 import {
   BankFactory,
   Clans,
+  InstantActions,
   ItemNFT,
+  MockSWVRFOracleClient,
   MockBrushToken,
   MockOracleClient,
   MockPaintSwapMarketplaceWhitelist,
@@ -15,12 +17,25 @@ import {
   Promotions,
   Quests,
   Shop,
+  TestPaintSwapArtGallery,
+  TestPaintSwapDecorator,
   World,
+  InstantVRFActions,
+  VRFRequestInfo,
+  GenericInstantVRFActionStrategy,
+  PetNFT,
+  EggInstantVRFActionStrategy,
 } from "../typechain-types";
-import {deployPlayerImplementations, isDevNetwork, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
+import {
+  deployMockPaintSwapContracts,
+  deployPlayerImplementations,
+  isBeta,
+  isDevNetwork,
+  setDailyAndWeeklyRewards,
+  verifyContracts,
+} from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
-
 import {
   allActionChoicesFiremaking,
   allActionChoicesCooking,
@@ -31,6 +46,7 @@ import {
   allActionChoicesRanged,
   allActionChoicesAlchemy,
   allActionChoicesFletching,
+  allActionChoicesForging,
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsFiremaking,
@@ -42,17 +58,31 @@ import {
   allActionChoiceIdsRanged,
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
+  allActionChoiceIdsForging,
 } from "./data/actionChoiceIds";
-import {BRUSH_ADDRESS, WFTM_ADDRESS} from "./contractAddresses";
+import {
+  BAZAAR_ADDRESS,
+  BRUSH_ADDRESS,
+  DECORATOR_ADDRESS,
+  DEV_ADDRESS,
+  ORACLE_ADDRESS,
+  SAMWITCH_VRF_ADDRESS,
+  WFTM_ADDRESS,
+} from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {BigNumber} from "ethers";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
-import {avatarInfos} from "./data/avatars";
-import {allQuestsMinRequirements, allQuests, allQuestsRandomFlags} from "./data/quests";
+import {avatarIds, avatarInfos} from "./data/avatars";
+import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
+import {allInstantActions} from "./data/instantActions";
+import {allTerritories, allBattleSkills} from "./data/territories";
+import {allInstantVRFActions} from "./data/instantVRFActions";
+import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
+import {allBasePets} from "./data/pets";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -64,16 +94,22 @@ async function main() {
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
   let oracle: MockOracleClient;
+  let swvrfOracle: MockSWVRFOracleClient;
   let router: MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
+  let paintSwapDecorator: TestPaintSwapDecorator;
+  let paintSwapArtGallery: TestPaintSwapArtGallery;
   let tx;
-  let devAddress = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
+  let pid = 0;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
     const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
+    const MockSWVRFOracleClient = await ethers.getContractFactory("MockSWVRFOracleClient");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
+    const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
+    const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
@@ -81,32 +117,48 @@ async function main() {
       console.log("Minted brush");
       oracle = await MockOracleClient.deploy();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
+      swvrfOracle = await MockSWVRFOracleClient.deploy();
+      console.log(`mockSWVRFOracleClient = "${swvrfOracle.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
-      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
+        brush,
+        router,
+        wftm
+      ));
     } else if (network.chainId == 4002) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
+      await brush.deployed();
       tx = await brush.mint(owner.address, ethers.utils.parseEther("1000"));
       console.log("Minted brush");
       await tx.wait();
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
       oracle = await MockOracleClient.deploy();
+      await oracle.deployed();
       console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
+      swvrfOracle = await MockSWVRFOracleClient.deploy();
+      console.log(`mockSWVRFOracleClient = "${swvrfOracle.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
-      paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-      console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
+        brush,
+        router,
+        wftm
+      ));
     } else if (network.chainId == 250) {
       // Fantom mainnet
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
       oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
+      swvrfOracle = await MockSWVRFOracleClient.attach(SAMWITCH_VRF_ADDRESS);
       router = await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d");
       paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.attach(
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
       );
+      paintSwapArtGallery = await TestPaintSwapArtGallery.attach("0x9076C96e01F6F13e1eC4832354dF970d245e124F");
+      paintSwapDecorator = await TestPaintSwapDecorator.attach(DECORATOR_ADDRESS);
+      pid = 22;
     } else {
       throw Error("Not a supported network");
     }
@@ -132,7 +184,7 @@ async function main() {
   console.log(`world = "${world.address.toLowerCase()}"`);
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [brush.address, devAddress], {
+  const shop = (await upgrades.deployProxy(Shop, [brush.address, DEV_ADDRESS], {
     kind: "uups",
     timeout,
   })) as Shop;
@@ -140,11 +192,10 @@ async function main() {
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
 
-  const buyPath: [string, string] = [wftm.address, brush.address];
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, devAddress, brush.address, buyPath],
+    [router.address, shop.address, DEV_ADDRESS, brush.address, wftm.address],
     {
       kind: "uups",
       timeout,
@@ -169,25 +220,30 @@ async function main() {
 
   let itemsUri: string;
   let heroImageBaseUri: string;
+  let petImageBaseUri: string;
   let editNameBrushPrice: BigNumber;
+  let editPetNameBrushPrice: BigNumber;
   let upgradePlayerBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
-  const isBeta = process.env.IS_BETA == "true";
   if (isBeta) {
-    itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
-    heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
+    itemsUri = "ipfs://QmV4VMh59W6fkoNCEjytzEtbv8FTPiG3rWwyu4aadEpqfK/";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
     editNameBrushPrice = ethers.utils.parseEther("1");
+    editPetNameBrushPrice = ethers.utils.parseEther("1");
     upgradePlayerBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
   } else {
     // live version
-    itemsUri = "ipfs://QmQvWjU5KqNSjHipYdvGvF1wZh7kj2kkvbmEyv9zgbzhPK/";
-    heroImageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
+    itemsUri = "ipfs://QmeLS5w8gR1oSxTebz89MwMe7mc8o27nV4FYdkWUNQkbsD/";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
+    editPetNameBrushPrice = ethers.utils.parseEther("100");
     upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
@@ -195,8 +251,7 @@ async function main() {
   }
 
   // Create NFT contract which contains all items
-  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  const itemNFTLibrary = await ItemNFTLibrary.deploy();
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
   await itemNFTLibrary.deployed();
   console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
@@ -213,8 +268,7 @@ async function main() {
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
   // Create NFT contract which contains all the players
-  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
-  const estforLibrary = await EstforLibrary.deploy();
+  const estforLibrary = await ethers.deployContract("EstforLibrary");
   await estforLibrary.deployed();
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -225,7 +279,7 @@ async function main() {
     [
       brush.address,
       shop.address,
-      devAddress,
+      DEV_ADDRESS,
       royaltyReceiver.address,
       adminAccess.address,
       editNameBrushPrice,
@@ -242,18 +296,25 @@ async function main() {
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
-  const Promotions = await ethers.getContractFactory("Promotions");
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  await promotionsLibrary.deployed();
+  console.log(`promotionsLibrary = "${promotionsLibrary.address.toLowerCase()}"`);
+  const Promotions = await ethers.getContractFactory("Promotions", {
+    libraries: {PromotionsLibrary: promotionsLibrary.address},
+  });
   const promotions = (await upgrades.deployProxy(
     Promotions,
     [adminAccess.address, itemNFT.address, playerNFT.address, isBeta],
     {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
       timeout,
     }
   )) as Promotions;
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
 
+  const buyPath: [string, string] = [wftm.address, brush.address];
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
     kind: "uups",
@@ -271,7 +332,7 @@ async function main() {
       brush.address,
       playerNFT.address,
       shop.address,
-      devAddress,
+      DEV_ADDRESS,
       editNameBrushPrice,
       paintSwapMarketplaceWhitelist.address,
     ],
@@ -311,8 +372,34 @@ async function main() {
   await bank.deployed();
   console.log(`bank = "${bank.address.toLowerCase()}"`);
 
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.deploy();
+  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
+  await petNFTLibrary.deployed();
+  console.log(`petNFTLibrary = "${petNFTLibrary.address.toLowerCase()}"`);
+
+  const PetNFT = await ethers.getContractFactory("PetNFT", {
+    libraries: {EstforLibrary: estforLibrary.address, PetNFTLibrary: petNFTLibrary.address},
+  });
+  const petNFT = (await upgrades.deployProxy(
+    PetNFT,
+    [
+      brush.address,
+      royaltyReceiver.address,
+      petImageBaseUri,
+      DEV_ADDRESS,
+      editPetNameBrushPrice,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+      timeout,
+    }
+  )) as PetNFT;
+  await petNFT.deployed();
+  console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
+
+  const playersLibrary = await ethers.deployContract("PlayersLibrary");
   await playersLibrary.deployed();
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
@@ -326,6 +413,7 @@ async function main() {
     [
       itemNFT.address,
       playerNFT.address,
+      petNFT.address,
       world.address,
       adminAccess.address,
       quests.address,
@@ -362,6 +450,7 @@ async function main() {
   const BankFactory = await ethers.getContractFactory("BankFactory");
   const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bank.address], {
     kind: "uups",
+    timeout,
   })) as BankFactory;
   await bankFactory.deployed();
   console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
@@ -379,7 +468,128 @@ async function main() {
     }
   )) as PassiveActions;
   await passiveActions.deployed();
-  console.log(`PassiveActions = "${passiveActions.address.toLowerCase()}"`);
+  console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
+
+  const InstantActions = await ethers.getContractFactory("InstantActions");
+  const instantActions = (await upgrades.deployProxy(InstantActions, [players.address, itemNFT.address], {
+    kind: "uups",
+    timeout,
+  })) as InstantActions;
+  await instantActions.deployed();
+  console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
+
+  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
+  const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
+    kind: "uups",
+    timeout,
+  })) as VRFRequestInfo;
+  await instantActions.deployed();
+  console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
+
+  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+  const instantVRFActions = (await upgrades.deployProxy(
+    InstantVRFActions,
+    [players.address, itemNFT.address, petNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
+    {
+      kind: "uups",
+      timeout,
+    }
+  )) as InstantVRFActions;
+  await instantVRFActions.deployed();
+  console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+
+  const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
+  const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
+    GenericInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as GenericInstantVRFActionStrategy;
+  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
+
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
+    EggInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as EggInstantVRFActionStrategy;
+
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
+  const lockedBankVaults = await upgrades.deployProxy(
+    LockedBankVaults,
+    [
+      players.address,
+      clans.address,
+      brush.address,
+      bankFactory.address,
+      itemNFT.address,
+      shop.address,
+      DEV_ADDRESS,
+      ORACLE_ADDRESS,
+      swvrfOracle.address,
+      allBattleSkills,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+  console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
+
+  const Territories = await ethers.getContractFactory("Territories");
+  const territories = await upgrades.deployProxy(
+    Territories,
+    [
+      allTerritories,
+      players.address,
+      clans.address,
+      brush.address,
+      lockedBankVaults.address,
+      itemNFT.address,
+      ORACLE_ADDRESS,
+      swvrfOracle.address,
+      allBattleSkills,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+  console.log(`territories = "${territories.address.toLowerCase()}"`);
+
+  const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
+  const combatantsHelper = await upgrades.deployProxy(
+    CombatantsHelper,
+    [players.address, clans.address, territories.address, lockedBankVaults.address, adminAccess.address, isBeta],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    }
+  );
+
+  const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
+  const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
+    paintSwapDecorator.address,
+    paintSwapArtGallery.address,
+    territories.address,
+    brush.address,
+    playerNFT.address,
+    DEV_ADDRESS,
+    pid,
+  ]);
+  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250) {
@@ -397,6 +607,7 @@ async function main() {
         wishingWell.address,
         itemNFTLibrary.address,
         itemNFT.address,
+        petNFT.address,
         adminAccess.address,
         shop.address,
         worldLibrary.address,
@@ -410,6 +621,13 @@ async function main() {
         bankRegistry.address,
         bankFactory.address,
         passiveActions.address,
+        instantActions.address,
+        instantVRFActions.address,
+        lockedBankVaults.address,
+        territories.address,
+        decoratorProvider.address,
+        combatantsHelper.address,
+        vrfRequestInfo.address,
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -433,6 +651,9 @@ async function main() {
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
   console.log("playerNFT setPlayers");
+  tx = await petNFT.setPlayers(players.address);
+  await tx.wait();
+  console.log("petNFT setPlayers");
   tx = await quests.setPlayers(players.address);
   await tx.wait();
   console.log("quests setPlayers");
@@ -458,16 +679,75 @@ async function main() {
   await tx.wait();
   console.log("itemNFT setPassiveActions");
 
+  tx = await itemNFT.setInstantActions(instantActions.address);
+  await tx.wait();
+  console.log("itemNFT setInstantActions");
+
+  tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
+  await tx.wait();
+  console.log("itemNFT setInstantVRFActions");
+  tx = await petNFT.setInstantVRFActions(instantVRFActions.address);
+  await tx.wait();
+  console.log("petNFT setInstantVRFActions");
+
+  tx = await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
+  await tx.wait();
+  console.log("petNFT setBrushDistributionPercentages");
+
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
-  console.log("setItemNFT");
+  console.log("shop.setItemNFT");
+
+  tx = await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await tx.wait();
+  console.log("clans.setTerritoriesAndLockedBankVaults");
+  tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  await tx.wait();
+  console.log("itemNFT.setTerritoriesAndLockedBankVaults");
+  tx = await lockedBankVaults.setTerritories(territories.address);
+  await tx.wait();
+  console.log("lockedBankVaults.setTerritories");
+  tx = await royaltyReceiver.setTerritories(territories.address);
+  await tx.wait();
+  console.log("royaltyReceiver.setTerritories");
+  tx = await petNFT.setTerritories(territories.address);
+  await tx.wait();
+  console.log("petNFT.setTerritories");
+
+  tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
+  console.log("Set Bazaar");
+
+  const clanWars = [lockedBankVaults, territories];
+  for (const clanWar of clanWars) {
+    try {
+      tx = await clanWar.setCombatantsHelper(combatantsHelper.address);
+      await tx.wait();
+      console.log("setCombatantsHelper");
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  }
+
+  tx = await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
+  await tx.wait();
+  console.log("bankRegistry.setLockedBankVaults");
+
+  tx = await instantVRFActions.addStrategies(
+    [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],
+    [
+      genericInstantVRFActionStrategy.address,
+      genericInstantVRFActionStrategy.address,
+      eggInstantVRFActionStrategy.address,
+    ]
+  );
+  await tx.wait();
+  console.log("instantVRFActions.addStrategies");
 
   tx = await players.setDailyRewardsEnabled(true);
   await tx.wait();
   console.log("Set daily rewards enabled");
 
-  const startAvatarId = 1;
-  tx = await playerNFT.setAvatars(startAvatarId, avatarInfos);
+  tx = await playerNFT.setAvatars(avatarIds, avatarInfos);
   await tx.wait();
   console.log("Add avatars");
 
@@ -477,19 +757,12 @@ async function main() {
 
   const chunkSize = 100;
   for (let i = 0; i < allItems.length; i += chunkSize) {
-    const tokenIds: number[] = [];
-    const amounts: number[] = [];
     const chunk = allItems.slice(i, i + chunkSize);
-    chunk.forEach((item) => {
-      tokenIds.push(item.tokenId);
-      amounts.push(200);
-    });
     tx = await itemNFT.addItems(chunk);
     await tx.wait();
     console.log("Add items chunk ", i);
   }
 
-  // Add full equipment bonuses
   tx = await players.addFullAttireBonuses(allFullAttireBonuses);
   await tx.wait();
   console.log("Add full attire bonuses");
@@ -506,6 +779,7 @@ async function main() {
   const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
   const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM;
   const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
+  const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
   const genericCombatActionId = EstforConstants.NONE;
 
   tx = await world.addBulkActionChoices(
@@ -517,11 +791,11 @@ async function main() {
   await tx.wait();
   console.log("Add action choices1");
 
-  // Add new ones here
+  // Add new ones here for gas reasons
   tx = await world.addBulkActionChoices(
-    [fletchingActionId, alchemyActionId],
-    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy],
-    [allActionChoicesFletching, allActionChoicesAlchemy]
+    [fletchingActionId, alchemyActionId, forgingActionId],
+    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
+    [allActionChoicesFletching, allActionChoicesAlchemy, allActionChoicesForging]
   );
 
   await tx.wait();
@@ -542,7 +816,7 @@ async function main() {
   console.log("Add shopping items");
 
   // Add quests
-  tx = await quests.addQuests(allQuests, allQuestsRandomFlags, allQuestsMinRequirements);
+  tx = await quests.addQuests(allQuests, allQuestsMinRequirements);
   await tx.wait();
   console.log("Add quests");
 
@@ -550,6 +824,58 @@ async function main() {
   tx = await clans.addTiers(isBeta ? allClanTiersBeta : allClanTiers);
   await tx.wait();
   console.log("Add clan tiers");
+
+  // Add instant actions
+  for (let i = 0; i < allInstantActions.length; i += chunkSize) {
+    const chunk = allInstantActions.slice(i, i + chunkSize);
+    tx = await instantActions.addActions(chunk);
+    await tx.wait();
+    console.log("Add instant actions chunk ", i);
+  }
+
+  // Add instant vrf actions
+  for (let i = 0; i < allInstantVRFActions.length; i += chunkSize) {
+    const chunk = allInstantVRFActions.slice(i, i + chunkSize);
+    tx = await instantVRFActions.addActions(chunk);
+    await tx.wait();
+    console.log("Add instant vrf actions chunk ", i);
+  }
+
+  // Add base pets
+  const basePetChunkSize = 20;
+  for (let i = 0; i < allBasePets.length; i += basePetChunkSize) {
+    const chunk = allBasePets.slice(i, i + basePetChunkSize);
+    tx = await petNFT.addBasePets(chunk);
+    await tx.wait();
+    console.log("Add base pets chunk ", i);
+  }
+
+  // Add unsellable items
+  const items = [
+    EstforConstants.INFUSED_ORICHALCUM_HELMET,
+    EstforConstants.INFUSED_ORICHALCUM_ARMOR,
+    EstforConstants.INFUSED_ORICHALCUM_TASSETS,
+    EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS,
+    EstforConstants.INFUSED_ORICHALCUM_BOOTS,
+    EstforConstants.INFUSED_ORICHALCUM_SHIELD,
+    EstforConstants.INFUSED_DRAGONSTONE_AMULET,
+    EstforConstants.INFUSED_MASTER_HAT,
+    EstforConstants.INFUSED_MASTER_BODY,
+    EstforConstants.INFUSED_MASTER_TROUSERS,
+    EstforConstants.INFUSED_MASTER_BRACERS,
+    EstforConstants.INFUSED_MASTER_BOOTS,
+    EstforConstants.INFUSED_ORICHALCUM_SWORD,
+    EstforConstants.INFUSED_DRAGONSTONE_STAFF,
+    EstforConstants.INFUSED_GODLY_BOW,
+    EstforConstants.INFUSED_SCORCHING_COWL,
+    EstforConstants.INFUSED_SCORCHING_BODY,
+    EstforConstants.INFUSED_SCORCHING_CHAPS,
+    EstforConstants.INFUSED_SCORCHING_BRACERS,
+    EstforConstants.INFUSED_SCORCHING_BOOTS,
+  ];
+
+  // Only works if not trying to sell anything
+  //  await shop.addUnsellableItems(items);
 
   // Add test data for the game
   if (isBeta) {

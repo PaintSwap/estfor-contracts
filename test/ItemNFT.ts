@@ -3,17 +3,14 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {World} from "../typechain-types";
+import {ItemNFT, World} from "../typechain-types";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
     const [owner, alice, dev] = await ethers.getSigners();
 
-    const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const brush = await MockBrushToken.deploy();
-
-    const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-    const mockOracleClient = await MockOracleClient.deploy();
+    const brush = await ethers.deployContract("MockBrushToken");
+    const mockOracleClient = await ethers.deployContract("MockOracleClient");
 
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
@@ -25,8 +22,7 @@ describe("ItemNFT", function () {
     }
 
     // Create the world
-    const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
-    const worldLibrary = await WorldLibrary.deploy();
+    const worldLibrary = await ethers.deployContract("WorldLibrary");
     const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
     const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
@@ -41,13 +37,11 @@ describe("ItemNFT", function () {
       kind: "uups",
     });
 
-    const buyPath: [string, string] = [alice.address, brush.address];
-    const MockRouter = await ethers.getContractFactory("MockRouter");
-    const router = await MockRouter.deploy();
+    const router = await ethers.deployContract("MockRouter");
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = await upgrades.deployProxy(
       RoyaltyReceiver,
-      [router.address, shop.address, dev.address, brush.address, buyPath],
+      [router.address, shop.address, dev.address, brush.address, alice.address],
       {
         kind: "uups",
       }
@@ -63,18 +57,17 @@ describe("ItemNFT", function () {
     await adminAccess.deployed();
 
     const isBeta = true;
-    const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-    const itemNFTLibrary = await ItemNFTLibrary.deploy();
+    const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
-    const itemNFT = await upgrades.deployProxy(
+    const itemNFT = (await upgrades.deployProxy(
       ItemNFT,
       [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
       }
-    );
+    )) as ItemNFT;
 
     return {
       itemNFT,
@@ -86,28 +79,29 @@ describe("ItemNFT", function () {
       shop,
       royaltyReceiver,
       adminAccess,
+      itemNFTLibrary,
     };
   }
 
   describe("supportsInterface", async function () {
     it("IERC165", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0x01ffc9a7")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0x01ffc9a7")).to.be.true;
     });
 
     it("IERC1155", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0xd9b67a26")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0xd9b67a26")).to.be.true;
     });
 
     it("IERC1155Metadata", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0x0e89341c")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0x0e89341c")).to.be.true;
     });
 
     it("IERC2981 royalties", async function () {
       const {itemNFT} = await loadFixture(deployContracts);
-      expect(await itemNFT.supportsInterface("0x2a55205a")).to.equal(true);
+      expect(await itemNFT.supportsInterface("0x2a55205a")).to.be.true;
     });
   });
 
@@ -232,19 +226,20 @@ describe("ItemNFT", function () {
     ).to.be.revertedWithCustomError(itemNFT, "ItemNotTransferable");
 
     // Allow it to be burnt
-    await expect(itemNFT.connect(alice).burn(EstforConstants.BRONZE_AXE, 1));
+    await expect(itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1)).to.not.be.reverted;
   });
 
   it("totalSupply", async function () {
     const {itemNFT, alice} = await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 3);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
+    expect(await itemNFT["totalSupply(uint256)"](EstforConstants.BRONZE_AXE)).to.be.eq(3);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_ARMOR, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
-    await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 3);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
     await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
@@ -256,6 +251,7 @@ describe("ItemNFT", function () {
     expect(await itemNFT["totalSupply()"]()).to.be.eq(0);
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_ARMOR, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
+    expect(await itemNFT["totalSupply(uint256)"](EstforConstants.BRONZE_ARMOR)).to.be.eq(1);
   });
 
   it("airdrop", async function () {
@@ -276,14 +272,26 @@ describe("ItemNFT", function () {
     ).to.be.revertedWithCustomError(itemNFT, "CallerIsNotOwner");
   });
 
+  it("IsApprovedForAll override", async function () {
+    const {itemNFT, owner, alice} = await loadFixture(deployContracts);
+
+    await itemNFT.testMint(owner.address, EstforConstants.BRONZE_AXE, 3);
+    await expect(
+      itemNFT.connect(alice).safeTransferFrom(owner.address, alice.address, EstforConstants.BRONZE_AXE, 1, "0x")
+    ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferFromNotApproved");
+
+    await itemNFT.setBazaar(alice.address);
+    await expect(
+      itemNFT.connect(alice).safeTransferFrom(owner.address, alice.address, EstforConstants.BRONZE_AXE, 1, "0x")
+    ).to.not.be.reverted;
+  });
+
   it("name & symbol", async function () {
-    const {itemNFT, world, shop, royaltyReceiver, adminAccess} = await loadFixture(deployContracts);
+    const {itemNFT, world, shop, royaltyReceiver, adminAccess, itemNFTLibrary} = await loadFixture(deployContracts);
     expect(await itemNFT.name()).to.be.eq("Estfor Items (Beta)");
     expect(await itemNFT.symbol()).to.be.eq("EK_IB");
 
     const isBeta = false;
-    const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-    const itemNFTLibrary = await ItemNFTLibrary.deploy();
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
     const itemsUri = "ipfs://";
     const itemNFTNotBeta = await upgrades.deployProxy(

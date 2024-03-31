@@ -1,23 +1,25 @@
 import {ethers} from "hardhat";
 import {allItems} from "./data/items";
-import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {ItemNFT} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit items using account: ${owner.address}`);
+  console.log(`Edit items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
 
-  const ItemNFT = (
-    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}})
-  ).connect(owner);
-  const itemNFT = ItemNFT.attach(ITEM_NFT_ADDRESS);
+  const itemsToEdit = new Set([
+    EstforConstants.SECRET_EGG_1_TIER1,
+    EstforConstants.SECRET_EGG_2_TIER1,
+    EstforConstants.SECRET_EGG_3_TIER1,
+    EstforConstants.SECRET_EGG_4_TIER1,
+  ]);
 
-  const items = await allItems.filter((item) => item.tokenId === EstforConstants.RUNITE_PICKAXE);
+  const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
 
-  if (items.length !== 1) {
+  if (items.length !== itemsToEdit.size) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.editItems(items);

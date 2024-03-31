@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
 import {World} from "../World.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
@@ -16,7 +17,7 @@ import "../globals/all.sol";
 interface IPlayersDelegate {
   function startActions(
     uint playerId,
-    QueuedActionInput[] calldata queuedActions,
+    QueuedActionInputV2[] calldata queuedActions,
     uint16 boostItemTokenId,
     uint40 boostStartTime,
     uint questId,
@@ -47,6 +48,7 @@ interface IPlayersDelegate {
   function initialize(
     ItemNFT itemNFT,
     PlayerNFT playerNFT,
+    PetNFT petNFT,
     World world,
     AdminAccess adminAccess,
     Quests quests,
@@ -74,7 +76,11 @@ interface IPlayersProcessActionsDelegate {
 }
 
 interface IPlayersRewardsDelegate {
-  function claimRandomRewards(uint playerId, PendingQueuedActionProcessed memory pendingQueuedActionProcessed) external;
+  function claimRandomRewards(
+    address from,
+    uint playerId,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed
+  ) external;
 }
 
 // External view functions that are in other implementation files
@@ -134,13 +140,13 @@ interface IPlayersQueuedActionsDelegateView {
   function validateActionsImpl(
     address owner,
     uint playerId,
-    QueuedActionInput[] memory queuedActions
+    QueuedActionInputV2[] memory queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons);
 
   function checkAddToQueue(
     address from,
     uint playerId,
-    QueuedActionInput memory queuedAction,
+    QueuedActionInputV2 memory queuedAction,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory pendingQuestState
   ) external view returns (bool setAttire);

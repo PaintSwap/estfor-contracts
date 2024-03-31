@@ -1,21 +1,15 @@
 import {ethers} from "hardhat";
 import {BRUSH_ADDRESS, WISHING_WELL_ADDRESS, PLAYERS_ADDRESS} from "./contractAddresses";
+import {Players, WishingWell} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Donating using account: ${owner.address}`);
+  console.log(`Donating using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
 
-  const Players = await ethers.getContractFactory("Players");
-  const players = Players.attach(PLAYERS_ADDRESS);
-
-  const WishingWell = await ethers.getContractFactory("WishingWell");
-  const wishingWell = WishingWell.attach(WISHING_WELL_ADDRESS);
-
+  const wishingWell = (await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS)) as WishingWell;
   const raffleCost = await wishingWell.getRaffleEntryCost();
-
   const brush = await ethers.getContractAt("IERC20", BRUSH_ADDRESS);
   let tx = await brush.approve(wishingWell.address, ethers.utils.parseEther("1000"));
   await tx.wait();
