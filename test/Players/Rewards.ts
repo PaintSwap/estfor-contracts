@@ -2304,8 +2304,6 @@ describe("Rewards", function () {
 
     // Might fail as relies on random chance
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit once", async function () {
-      this.retries(10);
-
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {

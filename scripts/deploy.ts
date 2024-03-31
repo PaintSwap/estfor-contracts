@@ -371,7 +371,13 @@ async function main() {
   await bank.deployed();
   console.log(`bank = "${bank.address.toLowerCase()}"`);
 
-  const PetNFT = await ethers.getContractFactory("PetNFT", {libraries: {EstforLibrary: estforLibrary.address}});
+  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
+  await petNFTLibrary.deployed();
+  console.log(`petNFTLibrary = "${petNFTLibrary.address.toLowerCase()}"`);
+
+  const PetNFT = await ethers.getContractFactory("PetNFT", {
+    libraries: {EstforLibrary: estforLibrary.address, PetNFTLibrary: petNFTLibrary.address},
+  });
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
     [

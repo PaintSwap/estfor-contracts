@@ -115,14 +115,11 @@ describe("PetNFT", function () {
   });
 
   it("external_url when not in beta", async function () {
-    const {adminAccess, brush, dev, royaltyReceiver, estforLibrary, alice} = await loadFixture(deployContracts);
+    const {adminAccess, brush, dev, royaltyReceiver, alice, PetNFT} = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
     const isBeta = false;
     const editNameCost = ethers.utils.parseEther("1");
-    const PetNFT = await ethers.getContractFactory("PetNFT", {
-      libraries: {EstforLibrary: estforLibrary.address},
-    });
     const imageBaseUri = "ipfs://";
     const petNFTNotBeta = (await upgrades.deployProxy(
       PetNFT,
@@ -170,15 +167,12 @@ describe("PetNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {petNFT, adminAccess, brush, dev, royaltyReceiver, estforLibrary} = await loadFixture(deployContracts);
+    const {petNFT, adminAccess, brush, dev, royaltyReceiver, PetNFT} = await loadFixture(deployContracts);
     expect(await petNFT.name()).to.be.eq("Estfor Pets (Beta)");
     expect(await petNFT.symbol()).to.be.eq("EK_PETS_B");
 
     const isBeta = false;
     const editNameCost = ethers.utils.parseEther("1");
-    const PetNFT = await ethers.getContractFactory("PetNFT", {
-      libraries: {EstforLibrary: estforLibrary.address},
-    });
     const imageBaseUri = "ipfs://";
     const petNFTNotBeta = (await upgrades.deployProxy(
       PetNFT,

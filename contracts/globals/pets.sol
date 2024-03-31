@@ -36,3 +36,26 @@ struct Pet {
   // 1 byte left in this storage slot
   uint24 baseId;
 }
+
+struct BasePetMetadata {
+  string description;
+  uint8 tier;
+  PetSkin skin;
+  PetEnhancementType enhancementType;
+  Skill skillEnhancement1;
+  uint8 skillFixedMin1;
+  uint8 skillFixedMax1;
+  uint8 skillFixedIncrement1;
+  uint8 skillPercentageMin1;
+  uint8 skillPercentageMax1;
+  uint8 skillPercentageIncrement1;
+  uint8 skillMinLevel1;
+  Skill skillEnhancement2;
+  uint8 skillFixedMin2;
+  uint8 skillFixedMax2;
+  uint8 skillFixedIncrement2;
+  uint8 skillPercentageMin2;
+  uint8 skillPercentageMax2;
+  uint8 skillPercentageIncrement2;
+  uint8 skillMinLevel2;
+}

@@ -7,7 +7,6 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {AdminAccess} from "./AdminAccess.sol";
@@ -15,10 +14,11 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
+import {PetNFTLibrary} from "./PetNFTLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import {Skill} from "./globals/misc.sol";
-import {Pet, PetSkin, PetEnhancementType} from "./globals/pets.sol";
+import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.sol";
 
 // The NFT contract contains data related to the pets and who owns them.
 // It does not use the standard OZ _balances for tracking, instead it packs the owner
@@ -28,7 +28,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
   using UnsafeMath for uint40;
-  using Strings for uint256;
 
   event NewPet(uint petId, Pet pet, string name, address from);
   event NewPets(uint startPetId, Pet[] pets, string[] names, address from);
@@ -69,8 +68,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   error SkillEnhancementIncorrectlyFilled();
   error MustHaveAtLeastPercentageOrFixedSet();
   error LengthMismatch();
-  error InvalidSkin(PetSkin skin);
-  error InvalidPetEnahncementType(PetEnhancementType petEnhancementType);
   error LevelNotHighEnough(Skill skill, uint level);
   error SkillFixedIncrementCannotBeZero();
   error SkillFixedMustBeAFactorOfIncrement();
@@ -92,29 +89,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     uint8[2] skillPercentageMaxs;
     uint8[2] skillPercentageIncrements;
     uint8[2] skillMinLevels;
-  }
-
-  struct BasePetMetadata {
-    string description;
-    uint8 tier;
-    PetSkin skin;
-    PetEnhancementType enhancementType;
-    Skill skillEnhancement1;
-    uint8 skillFixedMin1;
-    uint8 skillFixedMax1;
-    uint8 skillFixedIncrement1;
-    uint8 skillPercentageMin1;
-    uint8 skillPercentageMax1;
-    uint8 skillPercentageIncrement1;
-    uint8 skillMinLevel1;
-    Skill skillEnhancement2;
-    uint8 skillFixedMin2;
-    uint8 skillFixedMax2;
-    uint8 skillFixedIncrement2;
-    uint8 skillPercentageMin2;
-    uint8 skillPercentageMax2;
-    uint8 skillPercentageIncrement2;
-    uint8 skillMinLevel2;
   }
 
   // From base class uint40 _totalSupplyAll
@@ -147,7 +121,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   address private players;
   //  address private shop;
 
-  string private constant PET_NAME_PREFIX = "Pet ";
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
   modifier onlyMinters() {
@@ -250,27 +223,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     emit EditPlayerPet(_playerId, _petId, msg.sender, trimmedName);
   }
 
-  function _pay(uint _brushCost) private {
-    uint brushCost = _brushCost;
-    if (brushPoolPercentage != 0) {
-      revert NotSupportedYet();
-    }
-
-    if (brushTerritoriesPercentage != 0) {
-      brush.transferFrom(msg.sender, territories, (brushCost * brushTerritoriesPercentage) / 100);
-    }
-
-    if (brushDevPercentage != 0) {
-      brush.transferFrom(msg.sender, dev, (brushCost * brushDevPercentage) / 100);
-    }
-
-    if (brushBurntPercentage != 0) {
-      uint amountBurnt = (brushCost * brushBurntPercentage) / 100;
-      brush.transferFrom(msg.sender, address(this), amountBurnt);
-      brush.burn(amountBurnt);
-    }
-  }
-
   function assignPet(address _from, uint _playerId, uint _petId, uint _timestamp) external onlyPlayersOrAdminAndBeta {
     // If pet is already assigned then don't change timestamp
     Pet storage pet = pets[_petId];
@@ -311,30 +263,30 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
     tokenIds = new uint[](_basePetIds.length);
     uint[] memory amounts = new uint[](_basePetIds.length);
-    string[] memory trimmedNames = new string[](_basePetIds.length);
+    string[] memory _names = new string[](_basePetIds.length);
     Pet[] memory _pets = new Pet[](_basePetIds.length);
 
     uint startPetId = nextPetId;
     for (uint i = 0; i < _pets.length; ++i) {
       uint petId = startPetId + i;
-      (Pet memory pet, string memory trimmedName) = _createPet(petId, _basePetIds[i], uint16(_randomWords[i]));
+      Pet memory pet = _createPet(petId, _basePetIds[i], uint16(_randomWords[i]));
       _pets[i] = pet;
       pets[petId] = pet;
       tokenIds[i] = petId;
       amounts[i] = 1;
-      trimmedNames[i] = trimmedName;
+      _names[i] = PetNFTLibrary._defaultPetName(petId);
     }
     // Mint first
     _mintBatch(_to, tokenIds, amounts, "");
     nextPetId = uint40(startPetId + _pets.length);
-    emit NewPets(startPetId, _pets, trimmedNames, _to);
+    emit NewPets(startPetId, _pets, _names, _to);
   }
 
   function mint(address _to, uint _basePetId, uint _randomWord) external onlyMinters {
     uint petId = nextPetId++;
-    (Pet memory pet, string memory trimmedName) = _createPet(petId, _basePetId, uint16(_randomWord));
+    Pet memory pet = _createPet(petId, _basePetId, uint16(_randomWord));
     _mint(_to, petId, 1, "");
-    emit NewPet(petId, pet, trimmedName, _msgSender());
+    emit NewPet(petId, pet, PetNFTLibrary._defaultPetName(petId), _msgSender());
   }
 
   function burnBatch(address _from, uint[] memory _tokenIds) external onlyBurners(_from) {
@@ -346,11 +298,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _burn(_from, _tokenId, 1);
   }
 
-  function _createPet(
-    uint _petId,
-    uint _basePetId,
-    uint16 _randomWord
-  ) private returns (Pet memory pet, string memory defaultName) {
+  function _createPet(uint _petId, uint _basePetId, uint16 _randomWord) private returns (Pet memory pet) {
     if (basePetMetadatas[_basePetId].skillEnhancement1 == Skill.NONE) {
       revert PetDoesNotExist();
     }
@@ -421,7 +369,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     );
 
     pets[_petId] = pet;
-    (defaultName, , ) = _setName(_petId, string(abi.encodePacked(PET_NAME_PREFIX, _petId.toString())));
   }
 
   function _setName(
@@ -453,6 +400,27 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       }
       lowercaseNames[trimmedAndLowercaseName] = true;
       names[_petId] = trimmedName;
+    }
+  }
+
+  function _pay(uint _brushCost) private {
+    uint brushCost = _brushCost;
+    if (brushPoolPercentage != 0) {
+      revert NotSupportedYet();
+    }
+
+    if (brushTerritoriesPercentage != 0) {
+      brush.transferFrom(msg.sender, territories, (brushCost * brushTerritoriesPercentage) / 100);
+    }
+
+    if (brushDevPercentage != 0) {
+      brush.transferFrom(msg.sender, dev, (brushCost * brushDevPercentage) / 100);
+    }
+
+    if (brushBurntPercentage != 0) {
+      uint amountBurnt = (brushCost * brushBurntPercentage) / 100;
+      brush.transferFrom(msg.sender, address(this), amountBurnt);
+      brush.burn(amountBurnt);
     }
   }
 
@@ -580,68 +548,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     );
   }
 
-  function _getTraitStringJSON(string memory _traitType, string memory _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), '"', _value, '"}');
-  }
-
-  function _getTraitNumberJSON(string memory _traitType, uint _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), _value.toString(), "}");
-  }
-
-  function _getTraitTypeJSON(string memory _traitType) private pure returns (bytes memory) {
-    return abi.encodePacked('{"trait_type":"', _traitType, '","value":');
-  }
-
   function getPet(uint _tokenId) external view returns (Pet memory) {
     return pets[_tokenId];
-  }
-
-  function _skinToString(PetSkin _skin) private pure returns (string memory) {
-    if (_skin == PetSkin.DEFAULT) {
-      return "Default";
-    }
-    if (_skin == PetSkin.OG) {
-      return "OG";
-    }
-    if (_skin == PetSkin.ONEKIN) {
-      return "OneKin";
-    }
-    if (_skin == PetSkin.FROST) {
-      return "Frost";
-    }
-    if (_skin == PetSkin.CRYSTAL) {
-      return "Crystal";
-    }
-    revert InvalidSkin(_skin);
-  }
-
-  function _petEnhancementTypeToString(PetEnhancementType _petEnhancementType) private pure returns (string memory) {
-    if (_petEnhancementType == PetEnhancementType.MELEE) {
-      return "Melee";
-    }
-    if (_petEnhancementType == PetEnhancementType.MAGIC) {
-      return "Magic";
-    }
-    if (_petEnhancementType == PetEnhancementType.RANGED) {
-      return "Ranged";
-    }
-    if (_petEnhancementType == PetEnhancementType.HEALTH) {
-      return "Health";
-    }
-    if (_petEnhancementType == PetEnhancementType.DEFENCE) {
-      return "Defence";
-    }
-    if (_petEnhancementType == PetEnhancementType.MELEE_AND_DEFENCE) {
-      return "MeleeAndDefence";
-    }
-    if (_petEnhancementType == PetEnhancementType.MAGIC_AND_DEFENCE) {
-      return "MagicAndDefence";
-    }
-    if (_petEnhancementType == PetEnhancementType.RANGED_AND_DEFENCE) {
-      return "RangedAndDefence";
-    }
-
-    revert InvalidPetEnahncementType(_petEnhancementType);
   }
 
   function getOwner(uint _tokenId) public view override returns (address) {
@@ -653,60 +561,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
 
-    BasePetMetadata storage basePetMetadata = basePetMetadatas[pets[_tokenId].baseId];
     Pet storage pet = pets[_tokenId];
-    string memory skin = _skinToString(basePetMetadata.skin);
-    uint tier = basePetMetadata.tier;
-    string memory petEnhancementType = _petEnhancementTypeToString(basePetMetadata.enhancementType);
+    BasePetMetadata storage basePetMetadata = basePetMetadatas[pet.baseId];
 
-    // Create whole JSON
-    string memory imageURI = string(
-      abi.encodePacked(imageBaseUri, skin, "_", tier.toString(), "_", petEnhancementType, ".jpg")
-    );
-
-    string memory attributes = string(
-      abi.encodePacked(
-        _getTraitStringJSON("Skin", skin),
-        ",",
-        _getTraitNumberJSON("Tier", tier),
-        ",",
-        _getTraitStringJSON("Enhancement type", petEnhancementType),
-        ",",
-        _getTraitStringJSON("Skill bonus #1", EstforLibrary.skillToString(pet.skillEnhancement1)),
-        ",",
-        _getTraitNumberJSON("Fixed increase #1", pet.skillFixedEnhancement1),
-        ",",
-        _getTraitNumberJSON("Percent increase #1", pet.skillPercentageEnhancement1),
-        ",",
-        _getTraitStringJSON("Skill bonus #2", EstforLibrary.skillToString(pet.skillEnhancement2)),
-        ",",
-        _getTraitNumberJSON("Fixed increase #2", pet.skillFixedEnhancement2),
-        ",",
-        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2)
-      )
-    );
-
-    bytes memory fullName = abi.encodePacked(names[_tokenId], " (T", tier.toString(), ")");
-    bytes memory externalURL = abi.encodePacked("https://", isBeta ? "beta." : "", "estfor.com");
-    string memory description = basePetMetadatas[pet.baseId].description;
-
-    string memory json = Base64.encode(
-      abi.encodePacked(
-        '{"name":"',
-        fullName,
-        '","description":"',
-        description,
-        '","attributes":[',
-        attributes,
-        '],"image":"',
-        imageURI,
-        '", "external_url":"',
-        externalURL,
-        '"}'
-      )
-    );
-
-    return string(abi.encodePacked("data:application/json;base64,", json));
+    return PetNFTLibrary.uri(basePetMetadata, pet, _tokenId, imageBaseUri, names[_tokenId], isBeta);
   }
 
   /**

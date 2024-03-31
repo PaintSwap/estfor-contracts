@@ -36,6 +36,7 @@ let combatantsHelper;
 let oracle;
 let samWitchVRF;
 let bazaar;
+let petNFTLibrary;
 let petNFT;
 
 if (!isBeta) {
@@ -75,6 +76,7 @@ if (!isBeta) {
   oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
+  petNFTLibrary = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
   petNFT = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
 } else {
   worldLibrary = "0x10f6512db26681700a027b5bd8e3f852351000c4";
@@ -114,6 +116,7 @@ if (!isBeta) {
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
+  petNFTLibrary = "0xc5ceb4e668c5956e68e7a52eb796ab9e701de25f";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
 }
 
@@ -154,6 +157,7 @@ export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const TERRITORIES_ADDRESS = territories;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
+export const PET_NFT_LIBRARY_ADDRESS = petNFTLibrary;
 export const PET_NFT_ADDRESS = petNFT;
 
 // Only chain 250 (ftm)

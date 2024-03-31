@@ -97,8 +97,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   ISamWitchVRF private samWitchVRF;
   PetNFT private petNFT;
 
-  uint public constant MAX_ACTION_AMOUNT = 96;
-  uint private constant CALLBACK_GAS_LIMIT = 2_000_000;
+  uint public constant MAX_ACTION_AMOUNT = 64;
+  uint private constant CALLBACK_GAS_LIMIT = 5_000_000;
   uint private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -137,7 +137,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     oracle = _oracle;
     samWitchVRF = _samWitchVRF;
     vrfRequestInfo = _vrfRequestInfo;
-    setGasCostPerUnit(10_000);
+    setGasCostPerUnit(15_000);
   }
 
   function doInstantVRFActions(

@@ -184,7 +184,11 @@ export const playersFixture = async function () {
       kind: "uups",
     }
   )) as WishingWell;
-  const PetNFT = await ethers.getContractFactory("PetNFT", {libraries: {EstforLibrary: estforLibrary.address}});
+
+  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
+  const PetNFT = await ethers.getContractFactory("PetNFT", {
+    libraries: {EstforLibrary: estforLibrary.address, PetNFTLibrary: petNFTLibrary.address},
+  });
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
     [
@@ -492,5 +496,6 @@ export const playersFixture = async function () {
     eggInstantVRFActionStrategy,
     oracleAddress,
     petNFT,
+    PetNFT,
   };
 };

@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {EstforLibrary, PromotionsLibrary, RoyaltyReceiver, WorldLibrary} from "../typechain-types";
+import {EstforLibrary, PetNFTLibrary, PromotionsLibrary, RoyaltyReceiver, WorldLibrary} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -26,6 +26,7 @@ import {
   VRF_REQUEST_INFO_ADDRESS,
   GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
   EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+  PET_NFT_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 import {verify} from "crypto";
@@ -36,7 +37,7 @@ async function main() {
   console.log(`Deploying upgradeable contracts with the account: ${owner.address} on chain ${network.chainId}`);
 
   const timeout = 600 * 1000; // 10 minutes
-  const newEstforLibrary = true;
+  const newEstforLibrary = false;
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
   let estforLibrary: EstforLibrary;
   if (newEstforLibrary) {
@@ -256,8 +257,21 @@ async function main() {
   await eggInstantVRFActionStrategy.deployed();
   console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
 
+  const newPetNFTLibrary = false;
+  let petNFTLibrary: PetNFTLibrary;
+  if (newPetNFTLibrary) {
+    petNFTLibrary = (await ethers.deployContract("PetNFTLibrary")) as PetNFTLibrary;
+    await petNFTLibrary.deployed();
+    console.log(`petNFTLibrary = "${petNFTLibrary.address.toLowerCase()}"`);
+  } else {
+    petNFTLibrary = (await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS)) as PetNFTLibrary;
+  }
+  console.log(`petNFTLibrary = "${petNFTLibrary.address.toLowerCase()}"`);
+
   const PetNFT = (
-    await ethers.getContractFactory("PetNFT", {libraries: {EstforLibrary: estforLibrary.address}})
+    await ethers.getContractFactory("PetNFT", {
+      libraries: {EstforLibrary: estforLibrary.address, PetNFTLibrary: petNFTLibrary.address},
+    })
   ).connect(owner);
   const petNFT = await upgrades.upgradeProxy(PET_NFT_ADDRESS, PetNFT, {
     kind: "uups",
@@ -266,7 +280,7 @@ async function main() {
   });
   await petNFT.deployed();
   console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
-  
+
   const VRFRequestInfo = (await ethers.getContractFactory("VRFRequestInfo")).connect(owner);
   const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
     kind: "uups",
@@ -331,9 +345,9 @@ async function main() {
     await verifyContracts([quests.address]);
     await verifyContracts([clans.address]);
     await verifyContracts([world.address]);
-    await verifyContracts([worldLibrary.address]); */
+    await verifyContracts([worldLibrary.address]); 
     await verifyContracts([estforLibrary.address]);
-    /*    await verifyContracts([adminAccess.address]);
+    await verifyContracts([adminAccess.address]);
     await verifyContracts([bankRegistry.address]);
     await verifyContracts([wishingWell.address]);
     await verifyContracts([promotions.address]);

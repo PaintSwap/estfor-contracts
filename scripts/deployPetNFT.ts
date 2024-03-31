@@ -22,7 +22,14 @@ async function main() {
   const timeout = 600 * 1000; // 10 minutes
 
   const editPetNameBrushPrice = isBeta ? ethers.utils.parseEther("1") : ethers.utils.parseEther("100");
-  const PetNFT = await ethers.getContractFactory("PetNFT", {libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS}});
+
+  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
+  await petNFTLibrary.deployed();
+  console.log(`petNFTLibrary = "${petNFTLibrary.address.toLowerCase()}"`);
+
+  const PetNFT = await ethers.getContractFactory("PetNFT", {
+    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: petNFTLibrary.address},
+  });
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
     [
@@ -56,6 +63,9 @@ async function main() {
   tx = await instantVRFActions.setPetNFT(petNFT.address);
   await tx.wait();
   console.log("InstantVRFActions setPetNFT");
+  tx = await instantVRFActions.setGasCostPerUnit(15_000);
+  await tx.wait();
+  console.log("InstantVRFActions setGasCostPerUnit");
 
   tx = await petNFT.setInstantVRFActions(instantVRFActions.address);
   await tx.wait();
