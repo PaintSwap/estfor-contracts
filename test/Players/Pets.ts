@@ -22,8 +22,9 @@ describe("Pets", function () {
     const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
-    basePet.percentageMins = [100, 0];
-    basePet.percentageMaxs = [101, 0];
+    basePet.skillFixedMins = [0, 0];
+    basePet.skillPercentageMins = [100, 0];
+    basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
     await petNFT.mint(alice.address, basePet.baseId, 0);
 
@@ -42,8 +43,9 @@ describe("Pets", function () {
     const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
-    basePet.percentageMins = [100, 0];
-    basePet.percentageMaxs = [101, 0];
+    basePet.skillFixedMins = [0, 0];
+    basePet.skillPercentageMins = [100, 0];
+    basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
     await petNFT.mint(alice.address, basePet.baseId, 0);
 
@@ -67,8 +69,9 @@ describe("Pets", function () {
     const {players, playerId, petNFT, itemNFT, world, owner, alice} = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
-    basePet.percentageMins = [100, 0];
-    basePet.percentageMaxs = [101, 0];
+    basePet.skillFixedMins = [0, 0];
+    basePet.skillPercentageMins = [100, 0];
+    basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
     await petNFT.mint(alice.address, basePet.baseId, 0);
     const {timestamp: NOW} = await ethers.provider.getBlock("latest");
@@ -94,8 +97,9 @@ describe("Pets", function () {
     const {players, playerId, petNFT, itemNFT, world, owner, alice} = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
-    basePet.percentageMins = [100, 0];
-    basePet.percentageMaxs = [101, 0];
+    basePet.skillFixedMins = [0, 0];
+    basePet.skillPercentageMins = [100, 0];
+    basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
     await petNFT.mint(alice.address, basePet.baseId, 0);
 
@@ -130,8 +134,9 @@ describe("Pets", function () {
     const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
-    basePet.percentageMins = [100, 0];
-    basePet.percentageMaxs = [101, 0];
+    basePet.skillFixedMins = [0, 0];
+    basePet.skillPercentageMins = [100, 0];
+    basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
     await petNFT.mint(alice.address, basePet.baseId, 0);
 
@@ -153,6 +158,29 @@ describe("Pets", function () {
 
     await ethers.provider.send("evm_increaseTime", [72]);
     await players.connect(alice).processActions(playerId);
+    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
+  });
+
+  it("Queue a pet with combat, percentage + fixed", async function () {
+    const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const basePet = {...allBasePets[0]};
+    basePet.skillFixedMins = [2, 0];
+    basePet.skillFixedMaxs = [2, 0];
+    basePet.skillPercentageMins = [60, 0];
+    basePet.skillPercentageMaxs = [60, 0];
+    await petNFT.addBasePets([basePet]);
+    await petNFT.mint(alice.address, basePet.baseId, 0);
+
+    await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
+    const petId = 1;
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+
+    // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
+    await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [72]);
+    await players.connect(alice).processActions(playerId);
+    console.log(getXPFromLevel(2) + 36);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
 });

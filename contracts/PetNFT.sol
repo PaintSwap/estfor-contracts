@@ -12,6 +12,7 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IBrushToken} from "./interfaces/IBrushToken.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 
@@ -37,7 +38,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     uint brushDevPercentage,
     uint brushTerritoriesPercentage
   );
-  event EditPlayerPet(uint petId, address from, string newName);
+  event EditPlayerPet(uint playerId, uint petId, address from, string newName);
   event AddBasePets(BasePetInput[] basePetInputs);
   event EditBasePets(BasePetInput[] basePetInputs);
   event EditNameCost(uint newCost);
@@ -47,6 +48,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   error ERC1155Metadata_URIQueryForNonexistentToken();
   error NotAdminAndBeta();
   error PlayerDoesNotOwnPet();
+  error NotOwnerOfPet();
   error NotOwnerOfPlayer();
   error InvalidTimestamp();
   error StorageSlotIncorrect();
@@ -60,13 +62,21 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   error PercentNotTotal100();
   error InvalidAddress();
   error SkillEnhancementIncorrectOrder();
-  error SkillPercentIncrementCannotBeZero();
-  error SkillPercentsMustBeAFactorOfIncrement();
+  error SkillPercentageIncrementCannotBeZero();
+  error SkillPercentageMustBeAFactorOfIncrement();
+  error SkillEnhancementMinGreaterThanMax();
   error MustHaveOneSkillEnhancement();
   error SkillEnhancementIncorrectlyFilled();
+  error MustHaveAtLeastPercentageOrFixedSet();
   error LengthMismatch();
   error InvalidSkin(PetSkin skin);
   error InvalidPetEnahncementType(PetEnhancementType petEnhancementType);
+  error LevelNotHighEnough(Skill skill, uint level);
+  error SkillFixedIncrementCannotBeZero();
+  error SkillFixedMustBeAFactorOfIncrement();
+  error NotPlayersOrAdminAndBeta();
+  error IllegalNameStart();
+  error SameName();
 
   struct BasePetInput {
     string description;
@@ -75,9 +85,13 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     PetEnhancementType enhancementType;
     uint24 baseId;
     Skill[2] skillEnhancements;
-    uint8[2] percentageMins;
-    uint8[2] percentageMaxs;
-    uint8[2] percentageIncrements;
+    uint8[2] skillFixedMins;
+    uint8[2] skillFixedMaxs;
+    uint8[2] skillFixedIncrements;
+    uint8[2] skillPercentageMins;
+    uint8[2] skillPercentageMaxs;
+    uint8[2] skillPercentageIncrements;
+    uint8[2] skillMinLevels;
   }
 
   struct BasePetMetadata {
@@ -86,25 +100,33 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     PetSkin skin;
     PetEnhancementType enhancementType;
     Skill skillEnhancement1;
-    uint8 percentageMin1;
-    uint8 percentageMax1;
-    uint8 percentageIncrement1;
+    uint8 skillFixedMin1;
+    uint8 skillFixedMax1;
+    uint8 skillFixedIncrement1;
+    uint8 skillPercentageMin1;
+    uint8 skillPercentageMax1;
+    uint8 skillPercentageIncrement1;
+    uint8 skillMinLevel1;
     Skill skillEnhancement2;
-    uint8 percentageMin2;
-    uint8 percentageMax2;
-    uint8 percentageIncrement2;
+    uint8 skillFixedMin2;
+    uint8 skillFixedMax2;
+    uint8 skillFixedIncrement2;
+    uint8 skillPercentageMin2;
+    uint8 skillPercentageMax2;
+    uint8 skillPercentageIncrement2;
+    uint8 skillMinLevel2;
   }
 
   // From base class uint40 _totalSupplyAll
   uint40 public nextPetId;
-  address private players;
+  address private instantVRFActions;
 
   // What about the different skins?
-  mapping(uint basePetId => BasePetMetadata metadata) public basePetMetadatas;
+  mapping(uint basePetId => BasePetMetadata metadata) private basePetMetadatas;
   mapping(uint petId => Pet pet) private pets;
-  mapping(uint petId => string name) public names;
-  mapping(string name => bool exists) public lowercaseNames;
-  mapping(uint petId => uint40 lastAssignmentTimestamp) public lastAssignmentTimestamps;
+  mapping(uint petId => string name) private names;
+  mapping(string name => bool exists) private lowercaseNames;
+  mapping(uint petId => uint40 lastAssignmentTimestamp) private lastAssignmentTimestamps;
   string private imageBaseUri;
 
   // Royalties
@@ -115,20 +137,21 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   bool private isBeta;
 
   address private dev;
-  address private brush;
+  IBrushToken private brush;
   uint72 private editNameCost; // Max is 4700 BRUSH
   uint8 private brushBurntPercentage;
   uint8 private brushPoolPercentage;
   uint8 private brushDevPercentage;
   uint8 private brushTerritoriesPercentage;
   address private territories;
+  address private players;
+  //  address private shop;
 
   string private constant PET_NAME_PREFIX = "Pet ";
-
-  //  address private passiveActions; // TODO
+  string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
   modifier onlyMinters() {
-    if (_msgSender() != players && !(adminAccess.isAdmin(_msgSender()) && isBeta)) {
+    if (_msgSender() != instantVRFActions && !(adminAccess.isAdmin(_msgSender()) && isBeta)) {
       revert NotMinter();
     }
     _;
@@ -141,15 +164,22 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _;
   }
 
-  modifier onlyPlayers() {
-    if (_msgSender() != players) {
-      revert NotMinter();
+  modifier onlyPlayersOrAdminAndBeta() {
+    if (_msgSender() != players && !(adminAccess.isAdmin(_msgSender()) && isBeta)) {
+      revert NotPlayersOrAdminAndBeta();
     }
     _;
   }
 
   modifier isOwnerOfPet(uint _petId) {
-    if (balanceOf(_msgSender(), _petId) == 0) {
+    if (getOwner(_petId) != _msgSender()) {
+      revert NotOwnerOfPet();
+    }
+    _;
+  }
+
+  modifier isOwnerOfPlayer(uint _playerId) {
+    if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayer();
     }
     _;
@@ -161,7 +191,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function initialize(
-    address _brush,
+    IBrushToken _brush,
     address _royaltyReceiver,
     string calldata _imageBaseUri,
     address _dev,
@@ -192,17 +222,75 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _setEditNameCost(_editNameCost);
   }
 
-  function editPet(uint _petId, string calldata _name) external isOwnerOfPet(_petId) {
-    revert NotSupportedYet();
-    // TODO Check trimmed name does not start with "Pet #" as those are reserved
-    emit EditPlayerPet(_petId, msg.sender, _name);
+  function editPet(
+    uint _playerId,
+    uint _petId,
+    string calldata _name
+  ) external isOwnerOfPlayer(_playerId) isOwnerOfPet(_petId) {
+    (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) = _setName(_petId, _name);
+
+    if (nameChanged) {
+      _pay(editNameCost);
+    } else {
+      revert SameName();
+    }
+
+    // Check trimmed name does not start with "Pet " as those are reserved
+    if (bytes(trimmedAndLowercaseName).length > 3) {
+      if (
+        bytes(trimmedAndLowercaseName)[0] == bytes(PET_NAME_LOWERCASE_PREFIX)[0] &&
+        bytes(trimmedAndLowercaseName)[1] == bytes(PET_NAME_LOWERCASE_PREFIX)[1] &&
+        bytes(trimmedAndLowercaseName)[2] == bytes(PET_NAME_LOWERCASE_PREFIX)[2] &&
+        bytes(trimmedAndLowercaseName)[3] == bytes(PET_NAME_LOWERCASE_PREFIX)[3]
+      ) {
+        revert IllegalNameStart();
+      }
+    }
+
+    emit EditPlayerPet(_playerId, _petId, msg.sender, trimmedName);
   }
 
-  function assignPet(address _from, uint _petId, uint _timestamp) external onlyPlayers {
+  function _pay(uint _brushCost) private {
+    uint brushCost = _brushCost;
+    if (brushPoolPercentage != 0) {
+      revert NotSupportedYet();
+    }
+
+    if (brushTerritoriesPercentage != 0) {
+      brush.transferFrom(msg.sender, territories, (brushCost * brushTerritoriesPercentage) / 100);
+    }
+
+    if (brushDevPercentage != 0) {
+      brush.transferFrom(msg.sender, dev, (brushCost * brushDevPercentage) / 100);
+    }
+
+    if (brushBurntPercentage != 0) {
+      uint amountBurnt = (brushCost * brushBurntPercentage) / 100;
+      brush.transferFrom(msg.sender, address(this), amountBurnt);
+      brush.burn(amountBurnt);
+    }
+  }
+
+  function assignPet(address _from, uint _playerId, uint _petId, uint _timestamp) external onlyPlayersOrAdminAndBeta {
     // If pet is already assigned then don't change timestamp
     Pet storage pet = pets[_petId];
-    if (_getOwner(_petId) != _from) {
+    if (getOwner(_petId) != _from) {
       revert PlayerDoesNotOwnPet();
+    }
+
+    // Check skill minimum levels are met
+    Skill skillEnhancement1 = basePetMetadatas[pet.baseId].skillEnhancement1;
+    uint skillMinLevel1 = basePetMetadatas[pet.baseId].skillMinLevel1;
+    if (IPlayers(players).level(_playerId, skillEnhancement1) < skillMinLevel1) {
+      revert LevelNotHighEnough(skillEnhancement1, skillMinLevel1);
+    }
+
+    Skill skillEnhancement2 = basePetMetadatas[pet.baseId].skillEnhancement2;
+    if (skillEnhancement2 != Skill.NONE) {
+      uint skillMinLevel2 = basePetMetadatas[pet.baseId].skillMinLevel2;
+      if (IPlayers(players).level(_playerId, skillEnhancement2) < skillMinLevel2) {
+        revert LevelNotHighEnough(skillEnhancement2, skillMinLevel2);
+      }
     }
 
     if (pet.lastAssignmentTimestamp <= _timestamp) {
@@ -229,7 +317,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     uint startPetId = nextPetId;
     for (uint i = 0; i < _pets.length; ++i) {
       uint petId = startPetId + i;
-      (Pet memory pet, string memory trimmedName) = _createPet(petId, _basePetIds[i], _randomWords[i]);
+      (Pet memory pet, string memory trimmedName) = _createPet(petId, _basePetIds[i], uint16(_randomWords[i]));
       _pets[i] = pet;
       pets[petId] = pet;
       tokenIds[i] = petId;
@@ -244,7 +332,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function mint(address _to, uint _basePetId, uint _randomWord) external onlyMinters {
     uint petId = nextPetId++;
-    (Pet memory pet, string memory trimmedName) = _createPet(petId, _basePetId, _randomWord);
+    (Pet memory pet, string memory trimmedName) = _createPet(petId, _basePetId, uint16(_randomWord));
     _mint(_to, petId, 1, "");
     emit NewPet(petId, pet, trimmedName, _msgSender());
   }
@@ -261,43 +349,85 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   function _createPet(
     uint _petId,
     uint _basePetId,
-    uint _randomWord
+    uint16 _randomWord
   ) private returns (Pet memory pet, string memory defaultName) {
     if (basePetMetadatas[_basePetId].skillEnhancement1 == Skill.NONE) {
       revert PetDoesNotExist();
     }
 
-    uint percentMin1 = basePetMetadatas[_basePetId].percentageMin1;
-    uint percentMax1 = basePetMetadatas[_basePetId].percentageMax1;
+    // Fixed enhancement for skill 1
+    uint skillFixedMin1 = basePetMetadatas[_basePetId].skillFixedMin1;
+    uint skillFixedMax1 = basePetMetadatas[_basePetId].skillFixedMax1;
+    uint skillFixedEnhancement1 = skillFixedMin1;
+    if (skillFixedMax1 != skillFixedMin1) {
+      skillFixedEnhancement1 =
+        ((_randomWord >> 8) %
+          (((skillFixedMax1 - skillFixedMin1) / basePetMetadatas[_basePetId].skillFixedIncrement1))) +
+        skillFixedMin1;
+    }
 
-    uint skillEnhancementPercent1 = (_randomWord %
-      (((percentMax1 - percentMin1) / basePetMetadatas[_basePetId].percentageIncrement1))) + percentMin1;
+    // Percentage enhancement for skill 1
+    uint skillPercentageMin1 = basePetMetadatas[_basePetId].skillPercentageMin1;
+    uint skillPercentageMax1 = basePetMetadatas[_basePetId].skillPercentageMax1;
+    uint skillPercentageEnhancement1 = skillPercentageMin1;
+    if (skillPercentageMax1 != skillPercentageMin1) {
+      skillPercentageEnhancement1 =
+        (_randomWord %
+          (((skillPercentageMax1 - skillPercentageMin1) / basePetMetadatas[_basePetId].skillPercentageIncrement1))) +
+        skillPercentageMin1;
+    }
 
+    // Skill 2
     Skill skillEnhancement2 = basePetMetadatas[_basePetId].skillEnhancement2;
-    uint skillEnhancementPercent2;
+    uint skillFixedEnhancement2;
+    uint skillPercentageEnhancement2;
     if (skillEnhancement2 != Skill.NONE) {
-      uint percentMin2 = basePetMetadatas[_basePetId].percentageMin2;
-      uint percentMax2 = basePetMetadatas[_basePetId].percentageMax2;
+      uint otherRandomWord = uint(keccak256(abi.encodePacked(_randomWord)));
+      // Fixed enhancement
+      uint skillFixedMin2 = basePetMetadatas[_basePetId].skillFixedMin2;
+      uint skillFixedMax2 = basePetMetadatas[_basePetId].skillFixedMax2;
+      if (skillFixedMax2 != skillFixedMin2) {
+        skillFixedEnhancement2 =
+          (otherRandomWord %
+            (((skillFixedMax2 - skillFixedMin2) / basePetMetadatas[_basePetId].skillFixedIncrement2))) +
+          skillFixedMin2;
+      } else {
+        skillFixedEnhancement2 = skillFixedMin2;
+      }
 
-      skillEnhancementPercent2 =
-        ((_randomWord >> 8) % (((percentMax2 - percentMin2) / basePetMetadatas[_basePetId].percentageIncrement2))) +
-        percentMin1;
+      // Percentage enhancement
+      uint skillPercentageMin2 = basePetMetadatas[_basePetId].skillPercentageMin2;
+      uint skillPercentageMax2 = basePetMetadatas[_basePetId].skillPercentageMax2;
+      if (skillPercentageMax2 != skillPercentageMin2) {
+        skillPercentageEnhancement2 =
+          ((otherRandomWord >> 8) %
+            (((skillPercentageMax2 - skillPercentageMin2) / basePetMetadatas[_basePetId].skillPercentageIncrement2))) +
+          skillPercentageMin2;
+      } else {
+        skillPercentageEnhancement2 = skillPercentageMin2;
+      }
     }
 
     pet = Pet(
       basePetMetadatas[_basePetId].skillEnhancement1,
-      uint8(skillEnhancementPercent1),
+      uint8(skillFixedEnhancement1),
+      uint8(skillPercentageEnhancement1),
       skillEnhancement2,
-      uint8(skillEnhancementPercent2),
-      uint24(_basePetId),
+      uint8(skillFixedEnhancement2),
+      uint8(skillPercentageEnhancement2),
+      type(uint40).max,
       address(0), // Will be updated in _mint
-      type(uint40).max
+      uint24(_basePetId)
     );
+
     pets[_petId] = pet;
-    (defaultName, ) = _setName(_petId, string(abi.encodePacked(PET_NAME_PREFIX, _petId.toString())));
+    (defaultName, , ) = _setName(_petId, string(abi.encodePacked(PET_NAME_PREFIX, _petId.toString())));
   }
 
-  function _setName(uint _petId, string memory _name) private returns (string memory trimmedName, bool nameChanged) {
+  function _setName(
+    uint _petId,
+    string memory _name
+  ) private returns (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) {
     // Trimmed name cannot be empty
     trimmedName = EstforLibrary.trim(_name);
     if (bytes(trimmedName).length < 3) {
@@ -311,7 +441,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       revert NameInvalidCharacters();
     }
 
-    string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
+    trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
     string memory oldName = EstforLibrary.toLower(names[_petId]);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
@@ -350,53 +480,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       revert SkillEnhancementIncorrectOrder();
     }
 
-    if (
-      (_basePetInput.skillEnhancements[0] != Skill.NONE &&
-        (_basePetInput.percentageMins[0] == 0 || _basePetInput.percentageMaxs[0] == 0))
-    ) {
-      revert SkillEnhancementIncorrectlyFilled();
-    }
-
-    if (
-      (_basePetInput.skillEnhancements[1] != Skill.NONE &&
-        (_basePetInput.percentageMins[1] == 0 || _basePetInput.percentageMaxs[1] == 0))
-    ) {
-      revert SkillEnhancementIncorrectlyFilled();
-    }
-
-    // Check that the max is greater than the min
-    if (_basePetInput.percentageMins[0] >= _basePetInput.percentageMaxs[0]) {
-      revert SkillEnhancementIncorrectOrder();
-    }
-
-    if (
-      _basePetInput.skillEnhancements[1] != Skill.NONE &&
-      _basePetInput.percentageMins[1] >= _basePetInput.percentageMaxs[1]
-    ) {
-      revert SkillEnhancementIncorrectOrder();
-    }
-
-    if (
-      _basePetInput.percentageIncrements[0] == 0 ||
-      (_basePetInput.skillEnhancements[1] != Skill.NONE && _basePetInput.percentageIncrements[1] == 0)
-    ) {
-      revert SkillPercentIncrementCannotBeZero();
-    }
-
-    if (
-      _basePetInput.percentageMins[0] % _basePetInput.percentageIncrements[0] != 0 ||
-      _basePetInput.percentageMaxs[0] % _basePetInput.percentageIncrements[0] != 0
-    ) {
-      revert SkillPercentsMustBeAFactorOfIncrement();
-    }
-
-    if (
-      _basePetInput.skillEnhancements[1] != Skill.NONE &&
-      (_basePetInput.percentageMins[1] % _basePetInput.percentageIncrements[1] != 0 ||
-        _basePetInput.percentageMaxs[1] % _basePetInput.percentageIncrements[1] != 0)
-    ) {
-      revert SkillPercentsMustBeAFactorOfIncrement();
-    }
+    _checkBasePet(_basePetInput, 0);
+    _checkBasePet(_basePetInput, 1);
 
     basePetMetadatas[_basePetInput.baseId] = BasePetMetadata(
       _basePetInput.description,
@@ -404,14 +489,69 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       _basePetInput.skin,
       _basePetInput.enhancementType,
       _basePetInput.skillEnhancements[0],
-      _basePetInput.percentageMins[0],
-      _basePetInput.percentageMaxs[0],
-      _basePetInput.percentageIncrements[0],
+      _basePetInput.skillFixedMins[0],
+      _basePetInput.skillFixedMaxs[0],
+      _basePetInput.skillFixedIncrements[0],
+      _basePetInput.skillPercentageMins[0],
+      _basePetInput.skillPercentageMaxs[0],
+      _basePetInput.skillPercentageIncrements[0],
+      _basePetInput.skillMinLevels[0],
       _basePetInput.skillEnhancements[1],
-      _basePetInput.percentageMins[1],
-      _basePetInput.percentageMaxs[1],
-      _basePetInput.percentageIncrements[0]
+      _basePetInput.skillFixedMins[1],
+      _basePetInput.skillFixedMaxs[1],
+      _basePetInput.skillFixedIncrements[1],
+      _basePetInput.skillPercentageMins[1],
+      _basePetInput.skillPercentageMaxs[1],
+      _basePetInput.skillPercentageIncrements[1],
+      _basePetInput.skillMinLevels[1]
     );
+  }
+
+  function _checkBasePet(BasePetInput calldata _basePetInput, uint index) private pure {
+    bool isSkillSet = _basePetInput.skillEnhancements[index] != Skill.NONE;
+
+    if (!isSkillSet) {
+      return;
+    }
+    // Check percentage values are correct
+    if (_basePetInput.skillPercentageMaxs[index] == 0 && _basePetInput.skillFixedMaxs[index] == 0) {
+      revert MustHaveAtLeastPercentageOrFixedSet();
+    }
+
+    if (_basePetInput.skillPercentageMins[index] > _basePetInput.skillPercentageMaxs[index]) {
+      revert SkillEnhancementMinGreaterThanMax();
+    }
+
+    uint percentageIncrement = _basePetInput.skillPercentageIncrements[index];
+    if (
+      percentageIncrement != 0 &&
+      ((_basePetInput.skillPercentageMins[index] % percentageIncrement) != 0 ||
+        (_basePetInput.skillPercentageMaxs[index] % percentageIncrement) != 0)
+    ) {
+      revert SkillPercentageMustBeAFactorOfIncrement();
+    }
+
+    if (_basePetInput.skillPercentageMaxs[index] != 0 && _basePetInput.skillPercentageIncrements[index] == 0) {
+      revert SkillPercentageIncrementCannotBeZero();
+    }
+
+    // Check skill fixed values are correct.
+    if (_basePetInput.skillFixedMins[index] > _basePetInput.skillFixedMaxs[index]) {
+      revert SkillEnhancementMinGreaterThanMax();
+    }
+
+    uint fixedIncrement = _basePetInput.skillFixedIncrements[index];
+    if (_basePetInput.skillFixedMaxs[index] != 0 && fixedIncrement == 0) {
+      revert SkillFixedIncrementCannotBeZero();
+    }
+
+    if (
+      fixedIncrement != 0 &&
+      ((_basePetInput.skillFixedMins[index] % fixedIncrement) != 0 ||
+        (_basePetInput.skillFixedMaxs[index] % fixedIncrement) != 0)
+    ) {
+      revert SkillFixedMustBeAFactorOfIncrement();
+    }
   }
 
   function _basePetExists(BasePetInput calldata _basePetInput) private view returns (bool) {
@@ -460,17 +600,17 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     if (_skin == PetSkin.DEFAULT) {
       return "Default";
     }
-    if (_skin == PetSkin.TESTER) {
-      return "Tester";
+    if (_skin == PetSkin.OG) {
+      return "OG";
     }
     if (_skin == PetSkin.ONEKIN) {
       return "OneKin";
     }
-    if (_skin == PetSkin.FROST1) {
-      return "Frost1";
+    if (_skin == PetSkin.FROST) {
+      return "Frost";
     }
-    if (_skin == PetSkin.FROST2) {
-      return "Frost2";
+    if (_skin == PetSkin.CRYSTAL) {
+      return "Crystal";
     }
     revert InvalidSkin(_skin);
   }
@@ -504,12 +644,12 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     revert InvalidPetEnahncementType(_petEnhancementType);
   }
 
-  function _getOwner(uint _tokenId) public view override returns (address) {
+  function getOwner(uint _tokenId) public view override returns (address) {
     return pets[_tokenId].owner;
   }
 
   function uri(uint _tokenId) public view virtual override returns (string memory) {
-    if (!exists(_tokenId)) {
+    if (!_exists(_tokenId)) {
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
 
@@ -534,11 +674,15 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
         ",",
         _getTraitStringJSON("Skill bonus #1", EstforLibrary.skillToString(pet.skillEnhancement1)),
         ",",
-        _getTraitNumberJSON("Percent increase #1", pet.skillEnhancementPercent1),
+        _getTraitNumberJSON("Fixed increase #1", pet.skillFixedEnhancement1),
+        ",",
+        _getTraitNumberJSON("Percent increase #1", pet.skillPercentageEnhancement1),
         ",",
         _getTraitStringJSON("Skill bonus #2", EstforLibrary.skillToString(pet.skillEnhancement2)),
         ",",
-        _getTraitNumberJSON("Percent increase #2", pet.skillEnhancementPercent2)
+        _getTraitNumberJSON("Fixed increase #2", pet.skillFixedEnhancement2),
+        ",",
+        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2)
       )
     );
 
@@ -568,7 +712,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   /**
    * @dev Returns whether `_tokenId` exists.
    */
-  function exists(uint _tokenId) public view override returns (bool) {
+  function _exists(uint _tokenId) internal view override returns (bool) {
     return pets[_tokenId].owner != address(0);
   }
 
@@ -610,6 +754,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     territories = _territories;
   }
 
+  function setInstantVRFActions(address _instantVRFActions) external onlyOwner {
+    instantVRFActions = _instantVRFActions;
+  }
+
   function addBasePets(BasePetInput[] calldata _basePetInputs) external onlyOwner {
     for (uint i; i < _basePetInputs.length; ++i) {
       BasePetInput calldata basePetInput = _basePetInputs[i];
@@ -627,6 +775,15 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       if (!_basePetExists(basePetInput)) {
         revert PetDoesNotExist();
       }
+
+      // DO NOT change skills of existing pets
+      if (basePetMetadatas[basePetInput.baseId].skillEnhancement1 != basePetInput.skillEnhancements[0]) {
+        revert SkillEnhancementIncorrectlyFilled();
+      }
+      if (basePetMetadatas[basePetInput.baseId].skillEnhancement2 != basePetInput.skillEnhancements[1]) {
+        revert SkillEnhancementIncorrectlyFilled();
+      }
+
       _setBasePet(basePetInput);
     }
     emit EditBasePets(_basePetInputs);

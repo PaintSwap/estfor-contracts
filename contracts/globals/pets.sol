@@ -6,10 +6,10 @@ import {Skill} from "./misc.sol";
 enum PetSkin {
   NONE,
   DEFAULT,
-  TESTER,
+  OG,
   ONEKIN,
-  FROST1,
-  FROST2
+  FROST,
+  CRYSTAL
 }
 
 enum PetEnhancementType {
@@ -26,11 +26,13 @@ enum PetEnhancementType {
 
 struct Pet {
   Skill skillEnhancement1;
-  uint8 skillEnhancementPercent1;
+  uint8 skillFixedEnhancement1;
+  uint8 skillPercentageEnhancement1;
   Skill skillEnhancement2;
-  uint8 skillEnhancementPercent2;
-  uint24 baseId;
-  address owner; // Optimization to avoid having to look up the owner of the pet in another storage slot
+  uint8 skillFixedEnhancement2;
+  uint8 skillPercentageEnhancement2;
   uint40 lastAssignmentTimestamp;
-  // No space left in this storage slot
+  address owner; // Will be used as an optimzation to avoid having to look up the owner of the pet in another storage slot
+  // 1 byte left in this storage slot
+  uint24 baseId;
 }

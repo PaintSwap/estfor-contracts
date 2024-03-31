@@ -167,16 +167,18 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint prevProcessedTime = queuedAction.prevProcessedTime;
       uint veryStartTime = startTime.sub(prevProcessedTime);
 
-      // Update combat stats from the pet if it is still valid
+      // Update combat stats from the pet if it is still valid, make sure it's last to take percentage into account for everything else equipped
       if (_hasPet(queuedAction.packed)) {
         Pet memory pet = petNFT.getPet(queuedActionsExtra[queuedAction.queueId].petId);
         if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
           _updateCombatStatsFromPet(
             combatStats,
             pet.skillEnhancement1,
-            pet.skillEnhancementPercent1,
+            pet.skillFixedEnhancement1,
+            pet.skillPercentageEnhancement1,
             pet.skillEnhancement2,
-            pet.skillEnhancementPercent2
+            pet.skillFixedEnhancement2,
+            pet.skillPercentageEnhancement2
           );
         }
       }
@@ -1088,41 +1090,56 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   function _updateCombatStatsFromPet(
     CombatStats memory _combatStats,
     Skill _skillEnhancement1,
-    uint8 _skillEnhancementPercent1,
+    uint8 _skillFixedEnhancement1,
+    uint8 _skillPercentageEnhancement1,
     Skill _skillEnhancement2,
-    uint8 _skillEnhancementPercent2
+    uint8 _skillFixedEnhancement2,
+    uint8 _skillPercentageEnhancement2
   ) private pure {
-    bool handledSecondSkillAlready = false;
-    // For combinations of the combat attack skill and defence, makes it only apply to the same defence (i,e)
     if (_skillEnhancement1 == Skill.HEALTH) {
-      _combatStats.health += int16(uint16(_combatStats.health) * _skillEnhancementPercent1) / 100;
+      _combatStats.health += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.health) * _skillPercentageEnhancement1) / 100
+      );
     } else if (_skillEnhancement1 == Skill.MELEE) {
-      _combatStats.melee += int16(uint16(_combatStats.melee) * _skillEnhancementPercent1) / 100;
-      if (_skillEnhancement2 == Skill.DEFENCE) {
-        _combatStats.meleeDefence += int16(uint16(_combatStats.meleeDefence) * _skillEnhancementPercent2) / 100;
-        handledSecondSkillAlready = true;
-      }
+      _combatStats.melee += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.melee) * _skillPercentageEnhancement1) / 100
+      );
     } else if (_skillEnhancement1 == Skill.RANGED) {
-      _combatStats.ranged += int16(uint16(_combatStats.ranged) * _skillEnhancementPercent1) / 100;
-      if (_skillEnhancement2 == Skill.DEFENCE) {
-        _combatStats.rangedDefence += int16(uint16(_combatStats.rangedDefence) * _skillEnhancementPercent2) / 100;
-        handledSecondSkillAlready = true;
-      }
+      _combatStats.ranged += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.ranged) * _skillPercentageEnhancement1) / 100
+      );
     } else if (_skillEnhancement1 == Skill.MAGIC) {
-      _combatStats.magic += int16(uint16(_combatStats.magic) * _skillEnhancementPercent1) / 100;
-      if (_skillEnhancement2 == Skill.DEFENCE) {
-        _combatStats.magicDefence += int16(uint16(_combatStats.magicDefence) * _skillEnhancementPercent2) / 100;
-        handledSecondSkillAlready = true;
-      }
+      _combatStats.magic += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.magic) * _skillPercentageEnhancement1) / 100
+      );
     } else if (_skillEnhancement1 == Skill.DEFENCE) {
-      _combatStats.meleeDefence += int16(uint16(_combatStats.meleeDefence) * _skillEnhancementPercent1) / 100;
-      _combatStats.rangedDefence += int16(uint16(_combatStats.rangedDefence) * _skillEnhancementPercent1) / 100;
-      _combatStats.magicDefence += int16(uint16(_combatStats.magicDefence) * _skillEnhancementPercent1) / 100;
+      _combatStats.meleeDefence += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement1) / 100
+      );
+      _combatStats.rangedDefence += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.rangedDefence) * _skillPercentageEnhancement1) / 100
+      );
+      _combatStats.magicDefence += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.magicDefence) * _skillPercentageEnhancement1) / 100
+      );
+    } else {
+      revert SkillForPetNotHandledYet();
     }
 
-    if (handledSecondSkillAlready && _skillEnhancement2 != Skill.NONE) {
-      // Not handled yet
-      revert SecondSkillNotHandledYet();
+    if (_skillEnhancement2 != Skill.NONE) {
+      if (_skillEnhancement2 == Skill.DEFENCE) {
+        _combatStats.meleeDefence += int16(
+          _skillFixedEnhancement2 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement2) / 100
+        );
+        _combatStats.rangedDefence += int16(
+          _skillFixedEnhancement2 + (uint16(_combatStats.rangedDefence) * _skillPercentageEnhancement2) / 100
+        );
+        _combatStats.magicDefence += int16(
+          _skillFixedEnhancement2 + (uint16(_combatStats.magicDefence) * _skillPercentageEnhancement2) / 100
+        );
+      } else {
+        revert SkillForPetNotHandledYet();
+      }
     }
   }
 

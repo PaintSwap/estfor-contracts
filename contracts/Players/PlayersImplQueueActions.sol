@@ -398,7 +398,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       packed |= bytes1(uint8(1 << HAS_PET_BIT));
       queuedActionExtra.petId = _queuedActionInput.petId;
       queuedActionsExtra[_queueId] = queuedActionExtra;
-      petNFT.assignPet(_from, _queuedActionInput.petId, _startTime);
+      petNFT.assignPet(_from, _playerId, _queuedActionInput.petId, _startTime);
     }
     queuedAction.packed = packed;
     players_[_playerId].actionQueue.push(queuedAction);

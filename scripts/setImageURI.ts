@@ -3,10 +3,7 @@ import {PLAYER_NFT_ADDRESS, ESTFOR_LIBRARY_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Set nft image uri with: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(`Set player image uri with: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
     libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},

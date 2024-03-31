@@ -504,8 +504,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return activePlayer_[_owner];
   }
 
-  function xp(uint _playerId, Skill _skill) external view returns (uint) {
+  function xp(uint _playerId, Skill _skill) external view override returns (uint) {
     return PlayersLibrary.readXP(_skill, xp_[_playerId]);
+  }
+
+  function level(uint _playerId, Skill _skill) external view override returns (uint) {
+    return PlayersLibrary._getLevel(PlayersLibrary.readXP(_skill, xp_[_playerId]));
   }
 
   function totalXP(uint _playerId) external view override returns (uint) {

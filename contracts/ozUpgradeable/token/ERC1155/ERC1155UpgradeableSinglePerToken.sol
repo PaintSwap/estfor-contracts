@@ -63,7 +63,7 @@ contract ERC1155UpgradeableSinglePerToken is
   }
 
   function totalSupply(uint _tokenId) public view returns (uint) {
-    return exists(_tokenId) ? 1 : 0;
+    return _exists(_tokenId) ? 1 : 0;
   }
 
   function totalSupply() external view returns (uint) {
@@ -71,7 +71,7 @@ contract ERC1155UpgradeableSinglePerToken is
   }
 
   // Override this function is updateOwner is overrides
-  function exists(uint _tokenId) public view virtual returns (bool) {
+  function _exists(uint _tokenId) internal view virtual returns (bool) {
     return _owner[_tokenId] != address(0);
   }
 
@@ -112,13 +112,13 @@ contract ERC1155UpgradeableSinglePerToken is
     if (account == address(0)) {
       revert ERC1155ZeroAddressNotValidOwner();
     }
-    return _getOwner(id) == account ? 1 : 0;
+    return getOwner(id) == account ? 1 : 0;
   }
 
   /**
    * Override this function to return the owner of the token if you have a better packed implementation
    */
-  function _getOwner(uint256 id) public view virtual returns (address) {
+  function getOwner(uint256 id) public view virtual returns (address) {
     return _owner[id];
   }
 
@@ -215,7 +215,7 @@ contract ERC1155UpgradeableSinglePerToken is
 
     _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-    uint256 fromBalance = _getOwner(id) == from ? 1 : 0;
+    uint256 fromBalance = getOwner(id) == from ? 1 : 0;
     if (fromBalance < amount) {
       revert ERC1155InsufficientBalance();
     }
@@ -268,7 +268,7 @@ contract ERC1155UpgradeableSinglePerToken is
       uint256 id = ids[i];
       uint256 amount = amounts[i];
 
-      uint256 fromBalance = _getOwner(id) == from ? 1 : 0;
+      uint256 fromBalance = getOwner(id) == from ? 1 : 0;
       if (fromBalance < amount) {
         revert ERC1155InsufficientBalance();
       }
@@ -415,7 +415,7 @@ contract ERC1155UpgradeableSinglePerToken is
 
     _beforeTokenTransfer(operator, from, address(0), ids, amounts, ""); // This will handle burns
 
-    uint256 fromBalance = _getOwner(id) == from ? 1 : 0;
+    uint256 fromBalance = getOwner(id) == from ? 1 : 0;
     if (fromBalance < amount) {
       revert ERC115BurnAmountExceedsBalance();
     }
@@ -454,7 +454,7 @@ contract ERC1155UpgradeableSinglePerToken is
       uint256 id = ids[i];
       uint256 amount = amounts[i];
 
-      uint256 fromBalance = _getOwner(id) == from ? 1 : 0;
+      uint256 fromBalance = getOwner(id) == from ? 1 : 0;
       if (fromBalance < amount) {
         revert ERC115BurnAmountExceedsBalance();
       }

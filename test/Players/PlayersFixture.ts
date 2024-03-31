@@ -403,7 +403,11 @@ export const playersFixture = async function () {
 
   await itemNFT.setPromotions(promotions.address);
   await itemNFT.setInstantActions(instantActions.address);
+
   await itemNFT.setInstantVRFActions(instantVRFActions.address);
+  await petNFT.setInstantVRFActions(instantVRFActions.address);
+
+  await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
 
   await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
 

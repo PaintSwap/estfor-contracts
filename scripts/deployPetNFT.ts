@@ -2,23 +2,38 @@ import {ethers, upgrades} from "hardhat";
 import {
   ADMIN_ACCESS_ADDRESS,
   BRUSH_ADDRESS,
-  PET_NFT_ADDRESS,
+  DEV_ADDRESS,
+  ESTFOR_LIBRARY_ADDRESS,
+  INSTANT_VRF_ACTIONS_ADDRESS,
   PLAYERS_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
 } from "./contractAddresses";
 import {isBeta} from "./utils";
-import {PetNFT} from "../typechain-types";
+import {PetNFT, EggInstantVRFActionStrategy} from "../typechain-types";
+import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Set PetNFT on Players using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const petImageBaseUri = isBeta ? "ipfs://TODO" : "ipfs://TODO";
+  const petImageBaseUri = isBeta
+    ? "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/"
+    : "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
   const timeout = 600 * 1000; // 10 minutes
-  const PetNFT = await ethers.getContractFactory("PetNFT");
+
+  const editPetNameBrushPrice = isBeta ? ethers.utils.parseEther("1") : ethers.utils.parseEther("100");
+  const PetNFT = await ethers.getContractFactory("PetNFT", {libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS}});
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
-    [BRUSH_ADDRESS, ROYALTY_RECEIVER_ADDRESS, petImageBaseUri, ADMIN_ACCESS_ADDRESS, isBeta],
+    [
+      BRUSH_ADDRESS,
+      ROYALTY_RECEIVER_ADDRESS,
+      petImageBaseUri,
+      DEV_ADDRESS,
+      editPetNameBrushPrice,
+      ADMIN_ACCESS_ADDRESS,
+      isBeta,
+    ],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
@@ -33,8 +48,33 @@ async function main() {
   console.log("petNFT setPlayers");
 
   const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
-  tx = await players.setPetNFT(PET_NFT_ADDRESS);
+  tx = await players.setPetNFT(petNFT.address);
   await tx.wait();
+  console.log("Players setPetNFT");
+
+  const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
+  tx = await instantVRFActions.setPetNFT(petNFT.address);
+  await tx.wait();
+  console.log("InstantVRFActions setPetNFT");
+
+  tx = await petNFT.setInstantVRFActions(instantVRFActions.address);
+  await tx.wait();
+  console.log("petNFT setInstantVRFActions");
+
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
+    EggInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as EggInstantVRFActionStrategy;
+  await eggInstantVRFActionStrategy.deployed();
+  console.log("eggInstantVRFActionStrategy = ", eggInstantVRFActionStrategy.address);
+
+  tx = await instantVRFActions.addStrategies([InstantVRFActionType.EGG], [eggInstantVRFActionStrategy.address]);
+  await tx.wait();
+  console.log("InstantVRFActions addStrategies");
 }
 
 main().catch((error) => {

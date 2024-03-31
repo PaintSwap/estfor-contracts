@@ -81,6 +81,7 @@ import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills} from "./data/territories";
 import {allInstantVRFActions} from "./data/instantVRFActions";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
+import {allBasePets} from "./data/pets";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -226,9 +227,9 @@ async function main() {
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
   if (isBeta) {
-    itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
-    heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
-    petImageBaseUri = "ipfs://TODO/";
+    itemsUri = "ipfs://QmV4VMh59W6fkoNCEjytzEtbv8FTPiG3rWwyu4aadEpqfK/";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
     editNameBrushPrice = ethers.utils.parseEther("1");
     editPetNameBrushPrice = ethers.utils.parseEther("1");
     upgradePlayerBrushPrice = ethers.utils.parseEther("1");
@@ -237,9 +238,9 @@ async function main() {
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
   } else {
     // live version
-    itemsUri = "ipfs://QmQvWjU5KqNSjHipYdvGvF1wZh7kj2kkvbmEyv9zgbzhPK/";
-    heroImageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
-    petImageBaseUri = "ipfs://TODO/";
+    itemsUri = "ipfs://QmeLS5w8gR1oSxTebz89MwMe7mc8o27nV4FYdkWUNQkbsD/";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
     editPetNameBrushPrice = ethers.utils.parseEther("100");
     upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
@@ -658,6 +659,13 @@ async function main() {
   tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
   await tx.wait();
   console.log("itemNFT setInstantVRFActions");
+  tx = await petNFT.setInstantVRFActions(instantVRFActions.address);
+  await tx.wait();
+  console.log("petNFT setInstantVRFActions");
+
+  tx = await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
+  await tx.wait();
+  console.log("petNFT setBrushDistributionPercentages");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
@@ -804,6 +812,15 @@ async function main() {
     tx = await instantVRFActions.addActions(chunk);
     await tx.wait();
     console.log("Add instant vrf actions chunk ", i);
+  }
+
+  // Add base pets
+  const basePetChunkSize = 20;
+  for (let i = 0; i < allBasePets.length; i += basePetChunkSize) {
+    const chunk = allBasePets.slice(i, i + basePetChunkSize);
+    tx = await petNFT.addBasePets(chunk);
+    await tx.wait();
+    console.log("Add base pets chunk ", i);
   }
 
   // Add unsellable items

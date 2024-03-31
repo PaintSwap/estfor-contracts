@@ -138,7 +138,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _mintItem(_to, _tokenId, _amount);
   }
 
-  // Can't use Item[] array unfortunately as they don't support array casts
   function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external onlyMinters {
     _mintBatchItems(_to, _ids, _amounts);
   }

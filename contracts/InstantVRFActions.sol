@@ -326,7 +326,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       }
       for (uint j; j < producedPetBaseIds.length; ++j) {
         petBaseIds[actualPetLength] = producedPetBaseIds[j];
-        petRandomWords[actualPetLength] = producedPetRandomWords[j];
+        petRandomWords[actualPetLength++] = producedPetRandomWords[j];
       }
 
       randomWordStartIndex += actionAmount / 16 + (actionAmount % 16) == 0 ? 0 : 1;

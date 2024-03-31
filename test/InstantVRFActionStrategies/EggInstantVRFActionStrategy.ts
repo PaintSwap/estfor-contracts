@@ -15,7 +15,7 @@ describe("EggInstantVRFActionStrategy", function () {
 
   const defaultInstantVRFActionInput: InstantVRFActionInput = {
     actionType: InstantVRFActionType.EGG,
-    inputTokenIds: [EstforConstants.SECRET_EGG_1],
+    inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER1],
     inputAmounts: [1],
     actionId: 1,
     data: ethers.utils.defaultAbiCoder.encode(
