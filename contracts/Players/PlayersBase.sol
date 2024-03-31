@@ -5,6 +5,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
@@ -20,8 +21,15 @@ abstract contract PlayersBase {
   using UnsafeMath for uint256;
 
   event ClearAll(address from, uint playerId);
+  event SetActionQueueV2(
+    address from,
+    uint playerId,
+    QueuedAction[] queuedActions,
+    Attire[] attire,
+    uint startTime,
+    QueuedActionExtra[] queuedActionsExtra
+  );
   event AddXP(address from, uint playerId, Skill skill, uint points);
-  event SetActionQueue(address from, uint playerId, QueuedAction[] queuedActions, Attire[] attire, uint startTime);
   event ConsumeBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
   event ConsumeExtraBoostVial(address from, uint playerId, BoostInfo playerBoostInfo);
   event ConsumeGlobalBoostVial(address from, uint playerId, BoostInfo globalBoost);
@@ -63,6 +71,9 @@ abstract contract PlayersBase {
   event ClaimedXPThresholdRewards(address from, uint playerId, uint[] itemTokenIds, uint[] amounts);
   event LevelUp(address from, uint playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
+
+  // legacy
+  event SetActionQueue(address from, uint playerId, QueuedActionV1[] queuedActions, Attire[] attire, uint startTime);
 
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
@@ -129,6 +140,8 @@ abstract contract PlayersBase {
   error NonInstanceConsumeNotSupportedYet();
   error AlreadyUpgraded();
   error PlayerNotUpgraded();
+  error PetNotOwned();
+  error SkillForPetNotHandledYet();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;
@@ -188,6 +201,9 @@ abstract contract PlayersBase {
   mapping(uint clanId => PlayerBoostInfo clanBoost) internal clanBoosts_; // Clan specific boosts
 
   mapping(address user => WalletDailyInfo walletDailyInfo) internal walletDailyInfo;
+  mapping(uint queueId => QueuedActionExtra queuedActionExtra) internal queuedActionsExtra;
+
+  PetNFT internal petNFT;
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {
@@ -249,6 +265,7 @@ abstract contract PlayersBase {
     address _from,
     uint _playerId,
     QueuedAction[] memory _queuedActions,
+    QueuedActionExtra[] memory _queuedActionsExtra,
     Attire[] memory _attire,
     uint _startTime
   ) internal {
@@ -268,13 +285,12 @@ abstract contract PlayersBase {
     if (sameQueueIds && player.actionQueue.length == _queuedActions.length && _queuedActions.length != 0) {
       player.actionQueue[0] = _queuedActions[0];
     } else {
-      // Replace everything
       player.actionQueue = _queuedActions;
       for (uint i; i < _attire.length; ++i) {
         attire_[_playerId][player.actionQueue[i].queueId] = _attire[i];
       }
     }
-    emit SetActionQueue(_from, _playerId, _queuedActions, _attire, _startTime);
+    emit SetActionQueueV2(_from, _playerId, _queuedActions, _attire, _startTime, _queuedActionsExtra);
   }
 
   // This does not update player.totalXP!!
@@ -465,6 +481,10 @@ abstract contract PlayersBase {
     delete playerBoost.itemTokenId;
     delete playerBoost.boostType;
     emit BoostFinished(_playerId);
+  }
+
+  function _hasPet(bytes1 _packed) internal pure returns (bool) {
+    return uint8(_packed >> HAS_PET_BIT) & 1 == 1;
   }
 
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {

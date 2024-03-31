@@ -45,7 +45,21 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       remainingAttire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
     }
 
-    _setActionQueue(msg.sender, _playerId, remainingQueuedActions, remainingAttire, block.timestamp);
+    QueuedActionExtra[] memory remainingQueuedActionsExtra = new QueuedActionExtra[](remainingQueuedActions.length);
+    for (uint i; i < remainingQueuedActions.length; ++i) {
+      if (_hasPet(remainingQueuedActions[i].packed)) {
+        remainingQueuedActionsExtra[i] = queuedActionsExtra[remainingQueuedActions[i].queueId];
+      }
+    }
+
+    _setActionQueue(
+      msg.sender,
+      _playerId,
+      remainingQueuedActions,
+      remainingQueuedActionsExtra,
+      remainingAttire,
+      block.timestamp
+    );
   }
 
   function processActions(

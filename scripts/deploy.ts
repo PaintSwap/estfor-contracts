@@ -22,6 +22,8 @@ import {
   InstantVRFActions,
   VRFRequestInfo,
   GenericInstantVRFActionStrategy,
+  PetNFT,
+  EggInstantVRFActionStrategy,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -79,6 +81,7 @@ import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills} from "./data/territories";
 import {allInstantVRFActions} from "./data/instantVRFActions";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
+import {allBasePets} from "./data/pets";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -216,24 +219,30 @@ async function main() {
 
   let itemsUri: string;
   let heroImageBaseUri: string;
+  let petImageBaseUri: string;
   let editNameBrushPrice: BigNumber;
+  let editPetNameBrushPrice: BigNumber;
   let upgradePlayerBrushPrice: BigNumber;
   let raffleEntryCost: BigNumber;
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
   if (isBeta) {
-    itemsUri = "ipfs://Qmdzh1Z9bxW5yc7bR7AdQi4P9RNJkRyVRgELojWuKXp8qB/";
-    heroImageBaseUri = "ipfs://QmRKgkf5baZ6ET7ZWyptbzePRYvtEeomjdkYmurzo8donW/";
+    itemsUri = "ipfs://QmV4VMh59W6fkoNCEjytzEtbv8FTPiG3rWwyu4aadEpqfK/";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
     editNameBrushPrice = ethers.utils.parseEther("1");
+    editPetNameBrushPrice = ethers.utils.parseEther("1");
     upgradePlayerBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
   } else {
     // live version
-    itemsUri = "ipfs://QmQvWjU5KqNSjHipYdvGvF1wZh7kj2kkvbmEyv9zgbzhPK/";
-    heroImageBaseUri = "ipfs://QmQZZuMwTVNxz13aT3sKxvxCHgrNhqqtGqud8vxbEFhhoK/";
+    itemsUri = "ipfs://QmeLS5w8gR1oSxTebz89MwMe7mc8o27nV4FYdkWUNQkbsD/";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
+    editPetNameBrushPrice = ethers.utils.parseEther("100");
     upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
@@ -362,8 +371,34 @@ async function main() {
   await bank.deployed();
   console.log(`bank = "${bank.address.toLowerCase()}"`);
 
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.deploy();
+  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
+  await petNFTLibrary.deployed();
+  console.log(`petNFTLibrary = "${petNFTLibrary.address.toLowerCase()}"`);
+
+  const PetNFT = await ethers.getContractFactory("PetNFT", {
+    libraries: {EstforLibrary: estforLibrary.address, PetNFTLibrary: petNFTLibrary.address},
+  });
+  const petNFT = (await upgrades.deployProxy(
+    PetNFT,
+    [
+      brush.address,
+      royaltyReceiver.address,
+      petImageBaseUri,
+      DEV_ADDRESS,
+      editPetNameBrushPrice,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+      timeout,
+    }
+  )) as PetNFT;
+  await petNFT.deployed();
+  console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
+
+  const playersLibrary = await ethers.deployContract("PlayersLibrary");
   await playersLibrary.deployed();
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
@@ -377,6 +412,7 @@ async function main() {
     [
       itemNFT.address,
       playerNFT.address,
+      petNFT.address,
       world.address,
       adminAccess.address,
       quests.address,
@@ -437,7 +473,7 @@ async function main() {
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [players.address, itemNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
+    [players.address, itemNFT.address, petNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
     {
       kind: "uups",
       timeout,
@@ -455,6 +491,15 @@ async function main() {
     }
   )) as GenericInstantVRFActionStrategy;
   console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
+
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
+    EggInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as EggInstantVRFActionStrategy;
 
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const lockedBankVaults = await upgrades.deployProxy(
@@ -546,6 +591,7 @@ async function main() {
         wishingWell.address,
         itemNFTLibrary.address,
         itemNFT.address,
+        petNFT.address,
         adminAccess.address,
         shop.address,
         worldLibrary.address,
@@ -588,6 +634,9 @@ async function main() {
   tx = await playerNFT.setPlayers(players.address);
   await tx.wait();
   console.log("playerNFT setPlayers");
+  tx = await petNFT.setPlayers(players.address);
+  await tx.wait();
+  console.log("petNFT setPlayers");
   tx = await quests.setPlayers(players.address);
   await tx.wait();
   console.log("quests setPlayers");
@@ -616,6 +665,13 @@ async function main() {
   tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
   await tx.wait();
   console.log("itemNFT setInstantVRFActions");
+  tx = await petNFT.setInstantVRFActions(instantVRFActions.address);
+  await tx.wait();
+  console.log("petNFT setInstantVRFActions");
+
+  tx = await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
+  await tx.wait();
+  console.log("petNFT setBrushDistributionPercentages");
 
   tx = await shop.setItemNFT(itemNFT.address);
   await tx.wait();
@@ -632,6 +688,10 @@ async function main() {
   console.log("lockedBankVaults.setTerritories");
   tx = await royaltyReceiver.setTerritories(territories.address);
   await tx.wait();
+  console.log("royaltyReceiver.setTerritories");
+  tx = await petNFT.setTerritories(territories.address);
+  await tx.wait();
+  console.log("petNFT.setTerritories");
 
   tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
   console.log("Set Bazaar");
@@ -652,8 +712,12 @@ async function main() {
   console.log("bankRegistry.setLockedBankVaults");
 
   tx = await instantVRFActions.addStrategies(
-    [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING],
-    [genericInstantVRFActionStrategy.address, genericInstantVRFActionStrategy.address]
+    [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],
+    [
+      genericInstantVRFActionStrategy.address,
+      genericInstantVRFActionStrategy.address,
+      eggInstantVRFActionStrategy.address,
+    ]
   );
   await tx.wait();
   console.log("instantVRFActions.addStrategies");
@@ -754,6 +818,15 @@ async function main() {
     tx = await instantVRFActions.addActions(chunk);
     await tx.wait();
     console.log("Add instant vrf actions chunk ", i);
+  }
+
+  // Add base pets
+  const basePetChunkSize = 20;
+  for (let i = 0; i < allBasePets.length; i += basePetChunkSize) {
+    const chunk = allBasePets.slice(i, i + basePetChunkSize);
+    tx = await petNFT.addBasePets(chunk);
+    await tx.wait();
+    console.log("Add base pets chunk ", i);
   }
 
   // Add unsellable items

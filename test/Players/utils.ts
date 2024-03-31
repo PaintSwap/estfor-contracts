@@ -1,5 +1,5 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {Equipment, defaultActionChoice} from "@paintswap/estfor-definitions/types";
+import {Equipment, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {ItemNFT, World} from "../../typechain-types";
@@ -285,6 +285,81 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   ]);
 
   return {queuedAction, rate, numSpawned, choiceId, combatAction};
+};
+
+export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, petId: number) => {
+  const [owner, alice] = await ethers.getSigners();
+
+  const monsterCombatStats: EstforTypes.CombatStats = {
+    melee: 1,
+    magic: 0,
+    ranged: 0,
+    meleeDefence: 0,
+    magicDefence: 0,
+    rangedDefence: 0,
+    health: 36,
+  };
+
+  const dropRate = 1 * GUAR_MUL; // per monster
+  const numSpawned = 100 * SPAWN_MUL;
+  let tx = await world.addActions([
+    {
+      actionId: 1,
+      info: {
+        ...defaultActionInfo,
+        skill: EstforTypes.Skill.COMBAT,
+        xpPerHour: 3600,
+        minXP: 0,
+        isDynamic: false,
+        numSpawned,
+        handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+        handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+        isAvailable: true,
+        actionChoiceRequired: true,
+        successPercent: 100,
+      },
+      guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
+      randomRewards: [],
+      combatStats: monsterCombatStats,
+    },
+  ]);
+  const actionId = await getActionId(tx);
+  tx = await world.addActionChoices(
+    EstforConstants.NONE,
+    [1],
+    [
+      {
+        ...defaultActionChoice,
+        skill: EstforTypes.Skill.MELEE,
+      },
+    ]
+  );
+  const choiceId = await getActionChoiceId(tx);
+
+  const timespan = 3600;
+  const queuedAction: EstforTypes.QueuedActionInputV2 = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.ATTACK,
+    choiceId,
+    regenerateId: EstforConstants.COOKED_MINNUS,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId,
+  };
+
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultItemInput,
+      healthRestored: 12,
+      tokenId: EstforConstants.COOKED_MINNUS,
+      equipPosition: EstforTypes.EquipPosition.FOOD,
+    },
+  ]);
+  await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 20000);
+
+  return {queuedAction};
 };
 
 export const setupBasicCooking = async function (

@@ -28,7 +28,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function startActions(
     uint _playerId,
-    QueuedActionInput[] memory _queuedActions,
+    QueuedActionInputV2[] memory _queuedActionInputs,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
     uint _questId,
@@ -46,15 +46,14 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     if (_queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
-        QueuedAction[] memory queuedActions;
-        player.actionQueue = queuedActions;
+        delete player.actionQueue;
       }
       // Don't care about remaining actions
       assembly ("memory-safe") {
         mstore(remainingQueuedActions, 0)
       }
 
-      if (_queuedActions.length > 3) {
+      if (_queuedActionInputs.length > 3) {
         revert TooManyActionsQueued();
       }
     } else {
@@ -66,7 +65,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
 
       // Keep remaining actions
-      if (remainingQueuedActions.length + _queuedActions.length > 3) {
+      if (remainingQueuedActions.length + _queuedActionInputs.length > 3) {
         revert TooManyActionsQueuedSomeAlreadyExist();
       }
       player.actionQueue = remainingQueuedActions;
@@ -86,21 +85,30 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _clearCurrentActionProcessed(_playerId);
     }
 
-    uint prevEndTime = block.timestamp.add(totalTimespan);
-
     U256 queueId = nextQueueId.asU256();
-    U256 queuedActionsLength = _queuedActions.length.asU256();
+    U256 queuedActionsLength = _queuedActionInputs.length.asU256();
 
-    if (remainingQueuedActions.length != 0 || _queuedActions.length != 0) {
+    if (remainingQueuedActions.length != 0 || _queuedActionInputs.length != 0) {
       player.currentActionStartTime = uint40(block.timestamp);
     } else {
       player.currentActionStartTime = 0;
     }
 
+    uint totalLength = remainingQueuedActions.length + _queuedActionInputs.length;
+    QueuedAction[] memory queuedActions = new QueuedAction[](totalLength);
+
+    QueuedActionExtra[] memory _queuedActionsExtra = new QueuedActionExtra[](totalLength);
+
+    for (uint i; i != remainingQueuedActions.length; ++i) {
+      queuedActions[i] = remainingQueuedActions[i];
+      _queuedActionsExtra[i] = queuedActionsExtra[i];
+    }
+
+    uint startTimeNewActions = block.timestamp - totalTimespan;
     for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
 
-      if (totalTimespan.add(_queuedActions[i].timespan) > MAX_TIME_) {
+      if (totalTimespan.add(_queuedActionInputs[i].timespan) > MAX_TIME_) {
         // Must be the last one which will exceed the max time
         if (iter != queuedActionsLength.dec()) {
           revert ActionTimespanExceedsMaxTime();
@@ -111,29 +119,37 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         if (remainingQueuedActions.length > 0) {
           remainder = remainingQueuedActions[0].timespan % 1 hours;
         } else {
-          remainder = _queuedActions[0].timespan % 1 hours;
+          remainder = _queuedActionInputs[0].timespan % 1 hours;
         }
-        _queuedActions[i].timespan = uint24(MAX_TIME_.add(remainder).sub(totalTimespan));
+        _queuedActionInputs[i].timespan = uint24(MAX_TIME_.add(remainder).sub(totalTimespan));
       }
 
-      _addToQueue(from, _playerId, _queuedActions[i], queueId.asUint64());
+      (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) = _addToQueue(
+        from,
+        _playerId,
+        _queuedActionInputs[i],
+        queueId.asUint64(),
+        uint40(startTimeNewActions)
+      );
+      queuedActions[remainingQueuedActions.length.add(i)] = queuedAction;
+      _queuedActionsExtra[remainingQueuedActions.length.add(i)] = queuedActionExtra;
 
       queueId = queueId.inc();
-      totalTimespan += _queuedActions[i].timespan;
-      prevEndTime += _queuedActions[i].timespan;
+      totalTimespan += _queuedActionInputs[i].timespan;
+      startTimeNewActions += _queuedActionInputs[i].timespan;
     }
 
     // Create an array from remainingAttire and queuedActions passed in
-    uint length = remainingQueuedActions.length + _queuedActions.length;
+    uint length = remainingQueuedActions.length + _queuedActionInputs.length;
     Attire[] memory attire = new Attire[](length);
     for (uint i = 0; i < remainingQueuedActions.length; ++i) {
       attire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
     }
-    for (uint i = 0; i < _queuedActions.length; ++i) {
-      attire[i + remainingQueuedActions.length] = _queuedActions[i].attire;
+    for (uint i = 0; i < _queuedActionInputs.length; ++i) {
+      attire[i + remainingQueuedActions.length] = _queuedActionInputs[i].attire;
     }
 
-    emit SetActionQueue(from, _playerId, player.actionQueue, attire, player.currentActionStartTime);
+    emit SetActionQueueV2(from, _playerId, queuedActions, attire, player.currentActionStartTime, _queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
     nextQueueId = queueId.asUint64();
@@ -194,23 +210,23 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function checkAddToQueue(
     address _from,
     uint _playerId,
-    QueuedActionInput memory _queuedAction,
+    QueuedActionInputV2 memory _queuedActionInput,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _pendingQuestState
   ) public view returns (bool setAttire) {
-    if (_queuedAction.attire.ring != NONE) {
+    if (_queuedActionInput.attire.ring != NONE) {
       revert UnsupportedAttire();
     }
-    if (_queuedAction.attire.reserved1 != NONE) {
+    if (_queuedActionInput.attire.reserved1 != NONE) {
       revert UnsupportedAttire();
     }
-    if (_queuedAction.regenerateId != NONE) {
-      if (itemNFT.getItem(_queuedAction.regenerateId).equipPosition != EquipPosition.FOOD) {
+    if (_queuedActionInput.regenerateId != NONE) {
+      if (itemNFT.getItem(_queuedActionInput.regenerateId).equipPosition != EquipPosition.FOOD) {
         revert UnsupportedRegenerateItem();
       }
     }
 
-    uint16 actionId = _queuedAction.actionId;
+    uint16 actionId = _queuedActionInput.actionId;
     ActionInfo memory actionInfo = world.getActionInfo(actionId);
     if (!actionInfo.isAvailable) {
       revert ActionNotAvailable();
@@ -228,10 +244,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
     if (actionInfo.actionChoiceRequired) {
-      if (_queuedAction.choiceId == NONE) {
+      if (_queuedActionInput.choiceId == NONE) {
         revert ActionChoiceIdRequired();
       }
-      actionChoice = world.getActionChoice(isCombat ? NONE : _queuedAction.actionId, _queuedAction.choiceId);
+      actionChoice = world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
 
       if (
         _getRealXP(actionChoice.skill, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
@@ -262,7 +278,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
       if (actionInfo.skill == Skill.TRAVELING) {
-        if (_queuedAction.timespan != (RATE_MUL * 3600) / actionChoice.rate) {
+        if (_queuedActionInput.timespan != (RATE_MUL * 3600) / actionChoice.rate) {
           revert InvalidTravellingTimespan();
         }
       }
@@ -271,7 +287,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       if (actionChoiceFullModeOnly && !_isPlayerFullMode(_playerId)) {
         revert PlayerNotUpgraded();
       }
-    } else if (_queuedAction.choiceId != NONE) {
+    } else if (_queuedActionInput.choiceId != NONE) {
       revert ActionChoiceIdNotRequired();
     } else {
       // Check if the action requires full mode. Done here as don't want to check if both action and actionChoice are full mode only
@@ -280,19 +296,19 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
     }
 
-    if (_queuedAction.timespan == 0) {
+    if (_queuedActionInput.timespan == 0) {
       revert EmptyTimespan();
     }
 
     {
       // Check combatStyle is only selected if queuedAction is combat
-      bool combatStyleSelected = _queuedAction.combatStyle != CombatStyle.NONE;
+      bool combatStyleSelected = _queuedActionInput.combatStyle != CombatStyle.NONE;
       if (isCombat != combatStyleSelected) {
         revert InvalidCombatStyle();
       }
     }
 
-    Attire memory attire = _queuedAction.attire;
+    Attire memory attire = _queuedActionInput.attire;
     if (
       attire.head != NONE ||
       attire.neck != NONE ||
@@ -309,7 +325,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     _checkHandEquipments(
       _from,
       _playerId,
-      [_queuedAction.leftHandEquipmentTokenId, _queuedAction.rightHandEquipmentTokenId],
+      [_queuedActionInput.leftHandEquipmentTokenId, _queuedActionInput.rightHandEquipmentTokenId],
       actionInfo.handItemTokenIdRangeMin,
       actionInfo.handItemTokenIdRangeMax,
       isCombat,
@@ -318,7 +334,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _pendingQuestState
     );
 
-    _checkFood(_playerId, _queuedAction, _pendingQueuedActionProcessed, _pendingQuestState);
+    _checkFood(_playerId, _queuedActionInput, _pendingQueuedActionProcessed, _pendingQuestState);
+
+    _checkPet(_from, _queuedActionInput.petId);
   }
 
   // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
@@ -344,38 +362,64 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function _addToQueue(address _from, uint _playerId, QueuedActionInput memory _queuedAction, uint64 _queueId) private {
+  function _addToQueue(
+    address _from,
+    uint _playerId,
+    QueuedActionInputV2 memory _queuedActionInput,
+    uint64 _queueId,
+    uint40 _startTime
+  ) private returns (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed; // Empty
     QuestState memory pendingQuestState; // Empty
-    bool setAttire = checkAddToQueue(_from, _playerId, _queuedAction, pendingQueuedActionProcessed, pendingQuestState);
+    bool setAttire = checkAddToQueue(
+      _from,
+      _playerId,
+      _queuedActionInput,
+      pendingQueuedActionProcessed,
+      pendingQuestState
+    );
     if (setAttire) {
-      attire_[_playerId][_queueId] = _queuedAction.attire;
+      attire_[_playerId][_queueId] = _queuedActionInput.attire;
     }
 
-    QueuedAction memory queuedAction;
-    queuedAction.isValid = true;
-    queuedAction.timespan = _queuedAction.timespan;
+    queuedAction.timespan = _queuedActionInput.timespan;
     queuedAction.queueId = _queueId;
-    queuedAction.actionId = _queuedAction.actionId;
-    queuedAction.regenerateId = _queuedAction.regenerateId;
-    queuedAction.choiceId = _queuedAction.choiceId;
-    queuedAction.rightHandEquipmentTokenId = _queuedAction.rightHandEquipmentTokenId;
-    queuedAction.leftHandEquipmentTokenId = _queuedAction.leftHandEquipmentTokenId;
-    queuedAction.combatStyle = _queuedAction.combatStyle;
+    queuedAction.actionId = _queuedActionInput.actionId;
+    queuedAction.regenerateId = _queuedActionInput.regenerateId;
+    queuedAction.choiceId = _queuedActionInput.choiceId;
+    queuedAction.rightHandEquipmentTokenId = _queuedActionInput.rightHandEquipmentTokenId;
+    queuedAction.leftHandEquipmentTokenId = _queuedActionInput.leftHandEquipmentTokenId;
+    queuedAction.combatStyle = _queuedActionInput.combatStyle;
+
+    bytes1 packed = bytes1(uint8(1)); // isValid
+    // Only set variables in the second storage slot if it's necessary
+    if (_queuedActionInput.petId != 0) {
+      packed |= bytes1(uint8(1 << HAS_PET_BIT));
+      queuedActionExtra.petId = _queuedActionInput.petId;
+      queuedActionsExtra[_queueId] = queuedActionExtra;
+      petNFT.assignPet(_from, _playerId, _queuedActionInput.petId, _startTime);
+    }
+    queuedAction.packed = packed;
     players_[_playerId].actionQueue.push(queuedAction);
   }
 
   function _checkFood(
     uint _playerId,
-    QueuedActionInput memory _queuedAction,
+    QueuedActionInputV2 memory _queuedActionInput,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _questState
   ) private view {
-    if (_queuedAction.regenerateId != NONE) {
-      (Skill skill, uint32 minXP, , ) = itemNFT.getEquipPositionAndMinRequirement(_queuedAction.regenerateId);
+    if (_queuedActionInput.regenerateId != NONE) {
+      (Skill skill, uint32 minXP, , ) = itemNFT.getEquipPositionAndMinRequirement(_queuedActionInput.regenerateId);
       if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
         revert ConsumableMinimumXPNotReached();
       }
+    }
+  }
+
+  function _checkPet(address _from, uint _petId) private view {
+    if (_petId != 0 && petNFT.balanceOf(_from, _petId) == 0) {
+      revert PetNotOwned();
     }
   }
 
@@ -548,9 +592,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _clearActionQueue(address _from, uint _playerId) private {
     QueuedAction[] memory queuedActions;
+    QueuedActionExtra[] memory queuedActionsExtra;
     Attire[] memory attire;
     uint startTime = 0;
-    _setActionQueue(_from, _playerId, queuedActions, attire, startTime);
+    _setActionQueue(_from, _playerId, queuedActions, queuedActionsExtra, attire, startTime);
   }
 
   function _clearCurrentActionProcessed(uint _playerId) private {
@@ -593,18 +638,18 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function validateActionsImpl(
     address owner,
     uint _playerId,
-    QueuedActionInput[] memory _queuedActions
+    QueuedActionInputV2[] memory _queuedActionInputs
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
     PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(owner, _playerId);
-    successes = new bool[](_queuedActions.length);
-    reasons = new bytes[](_queuedActions.length);
+    successes = new bool[](_queuedActionInputs.length);
+    reasons = new bytes[](_queuedActionInputs.length);
 
-    for (uint i; i < _queuedActions.length; ++i) {
+    for (uint i; i < _queuedActionInputs.length; ++i) {
       try
         this.checkAddToQueue(
           owner,
           _playerId,
-          _queuedActions[i],
+          _queuedActionInputs[i],
           pendingQueuedActionState.processedData,
           pendingQueuedActionState.quests
         )

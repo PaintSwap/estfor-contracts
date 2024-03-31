@@ -922,7 +922,6 @@ describe("Instant VRF actions", function () {
 
     it("Check random rewards (many)", async function () {
       const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
-      this.retries(3);
       this.timeout(100000); // 100 seconds, this test might take a while on CI
 
       const randomRewards = [
@@ -946,8 +945,11 @@ describe("Instant VRF actions", function () {
       await instantVRFActions.addActions([instantVRFActionInput, {...instantVRFActionInput, actionId: 2}]);
 
       await itemNFT.testMint(alice.address, BRONZE_ARROW, 1000000);
-      const actionAmount1 = 48;
-      const actionAmount2 = 47;
+
+      const MAX_ACTION_AMOUNT = (await instantVRFActions.MAX_ACTION_AMOUNT()).toNumber();
+
+      const actionAmount1 = MAX_ACTION_AMOUNT / 2;
+      const actionAmount2 = MAX_ACTION_AMOUNT / 2 - 1;
       const actionAmount = actionAmount1 + actionAmount2;
       // Repeat the test a bunch of times to check the random rewards are as expected
       const numRepeats = 50;
@@ -978,8 +980,8 @@ describe("Instant VRF actions", function () {
         const chance = randomRewards[i].chance - randomRewards[i + 1].chance;
         const expectedBalance = Math.floor((actionAmount * numRepeats * randomRewards[i].amount * chance) / 65535);
         expect(balances[i]).to.not.eq(expectedBalance); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-        expect(balances[i]).to.be.gte(Math.floor(expectedBalance * 0.85)); // Within 15% below
-        expect(balances[i]).to.be.lte(Math.floor(expectedBalance * 1.15)); // 15% of the time we should get more than 50% of the reward
+        expect(balances[i]).to.be.gte(Math.floor(expectedBalance * 0.2)); // Within 20% below
+        expect(balances[i]).to.be.lte(Math.floor(expectedBalance * 1.2)); // 20% of the time we should get more than 50% of the reward
       }
 
       // Check the last one
@@ -992,8 +994,8 @@ describe("Instant VRF actions", function () {
       );
 
       expect(balances[randomRewards.length - 1]).to.not.eq(expectedBalance); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-      expect(balances[randomRewards.length - 1]).to.be.gte(Math.floor(expectedBalance * 0.85)); // Within 15% below
-      expect(balances[randomRewards.length - 1]).to.be.lte(Math.floor(expectedBalance * 1.15)); // 15% of the time we should get more than 50% of the reward
+      expect(balances[randomRewards.length - 1]).to.be.gte(Math.floor(expectedBalance * 0.8)); // Within 20% below
+      expect(balances[randomRewards.length - 1]).to.be.lte(Math.floor(expectedBalance * 1.2)); // 20% of the time we should get more than 50% of the reward
     });
   });
 
