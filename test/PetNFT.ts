@@ -331,7 +331,6 @@ describe("PetNFT", function () {
         "NotOwnerOfPet"
       );
       await petNFT.safeTransferFrom(owner.address, alice.address, petId, 1, "0x");
-      console.log("CHEESE");
       await expect(petNFT.connect(alice).editPet(playerId, petId, name))
         .to.emit(petNFT, "EditPlayerPet")
         .withArgs(playerId, petId, alice.address, name);

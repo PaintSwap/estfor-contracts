@@ -180,7 +180,6 @@ describe("Pets", function () {
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [72]);
     await players.connect(alice).processActions(playerId);
-    console.log(getXPFromLevel(2) + 36);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
 });
