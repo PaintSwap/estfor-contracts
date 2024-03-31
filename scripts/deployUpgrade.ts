@@ -256,7 +256,6 @@ async function main() {
   await eggInstantVRFActionStrategy.deployed();
   console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
 
-
   const PetNFT = (
     await ethers.getContractFactory("PetNFT", {libraries: {EstforLibrary: estforLibrary.address}})
   ).connect(owner);

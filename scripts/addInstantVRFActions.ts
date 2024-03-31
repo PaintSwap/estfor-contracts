@@ -1,7 +1,6 @@
 import {ethers} from "hardhat";
 import {INSTANT_VRF_ACTIONS_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-//import {allInstantVRFActions} from "./data/instantVRFActions";
 import {allInstantVRFActions} from "./data/instantVRFActions";
 
 async function main() {
@@ -11,13 +10,6 @@ async function main() {
   const instantVRFActions = (await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS)).connect(
     owner
   );
-  /*  const actions = allInstantVRFActions.filter((action) => {
-    if (action) {
-      return (
-        action.actionId == EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_HELMET
-      );
-    }
-  }); */
 
   const actionsToUpdate = new Set([
     EstforConstants.INSTANT_VRF_ACTION_EGG_TIER1,

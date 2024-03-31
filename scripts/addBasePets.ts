@@ -1,7 +1,6 @@
 import {ethers} from "hardhat";
 import {PET_NFT_ADDRESS} from "./contractAddresses";
 import {allBasePets} from "./data/pets";
-import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
   const [owner] = await ethers.getSigners();

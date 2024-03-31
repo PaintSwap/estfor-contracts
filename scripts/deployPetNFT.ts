@@ -14,7 +14,7 @@ import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Set PetNFT on Players using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Deploy PetNFT using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const petImageBaseUri = isBeta
     ? "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/"

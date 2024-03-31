@@ -114,7 +114,7 @@ if (!isBeta) {
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
-  petNFT = "0x61d7c73b69b0ff7dbb626097e66076833e93ebe3";
+  petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;

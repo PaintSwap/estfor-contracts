@@ -391,7 +391,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     queuedAction.leftHandEquipmentTokenId = _queuedActionInput.leftHandEquipmentTokenId;
     queuedAction.combatStyle = _queuedActionInput.combatStyle;
 
-    // Only set variables in the second storage slot if it's necessary
     bytes1 packed = bytes1(uint8(1)); // isValid
     // Only set variables in the second storage slot if it's necessary
     if (_queuedActionInput.petId != 0) {
