@@ -754,12 +754,12 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     RandomReward[] memory _randomRewards,
     uint8 _successPercent,
     uint8 _fullAttireBonusRewardsPercent,
-    bytes memory randomBytes
+    bytes memory _randomBytes
   ) private pure returns (uint length) {
     U256 randomRewardsLength = _randomRewards.length.asU256();
     for (U256 iter = _start.asU256(); iter.lt(_end); iter = iter.inc()) {
       uint i = iter.asUint256();
-      uint operation = (uint(_getSlice(randomBytes, i)) * 100) / _successPercent;
+      uint operation = (uint(_getSlice(_randomBytes, i)) * 100) / _successPercent;
 
       // If there is above MAX_UNIQUE_TICKETS_ tickets we need to mint more if a ticket is hit unless it
       // is a rare item in which case we just increase the change that it can get get

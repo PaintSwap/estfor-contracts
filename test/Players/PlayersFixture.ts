@@ -19,6 +19,7 @@ import {
   MockBrushToken,
   MockOracleClient,
   MockRouter,
+  PassiveActions,
   PetNFT,
   PlayerNFT,
   Players,
@@ -392,6 +393,18 @@ export const playersFixture = async function () {
     }
   )) as CombatantsHelper;
 
+  const PassiveActions = await ethers.getContractFactory("PassiveActions", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
+  const passiveActions = (await upgrades.deployProxy(
+    PassiveActions,
+    [players.address, itemNFT.address, world.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    }
+  )) as PassiveActions;
+
   await world.setQuests(quests.address);
   await world.setWishingWell(wishingWell.address);
 
@@ -406,6 +419,7 @@ export const playersFixture = async function () {
   await clans.setBankFactory(bankFactory.address);
 
   await itemNFT.setPromotions(promotions.address);
+  await itemNFT.setPassiveActions(passiveActions.address);
   await itemNFT.setInstantActions(instantActions.address);
 
   await itemNFT.setInstantVRFActions(instantVRFActions.address);
@@ -479,6 +493,7 @@ export const playersFixture = async function () {
     bankFactory,
     estforLibrary,
     paintSwapMarketplaceWhitelist,
+    passiveActions,
     playersLibrary,
     instantActions,
     clanBattleLibrary,

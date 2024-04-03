@@ -11,6 +11,7 @@ import {
   MockPaintSwapMarketplaceWhitelist,
   MockRouter,
   MockWrappedFantom,
+  PassiveActions,
   PlayerNFT,
   Players,
   Promotions,
@@ -454,6 +455,21 @@ async function main() {
   await bankFactory.deployed();
   console.log(`bankFactory = "${bankFactory.address.toLowerCase()}"`);
 
+  const PassiveActions = await ethers.getContractFactory("PassiveActions", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
+  const passiveActions = (await upgrades.deployProxy(
+    PassiveActions,
+    [players.address, itemNFT.address, world.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+      timeout,
+    }
+  )) as PassiveActions;
+  await passiveActions.deployed();
+  console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
+
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(InstantActions, [players.address, itemNFT.address], {
     kind: "uups",
@@ -604,6 +620,7 @@ async function main() {
         await upgrades.beacon.getImplementationAddress(bank.address),
         bankRegistry.address,
         bankFactory.address,
+        passiveActions.address,
         instantActions.address,
         instantVRFActions.address,
         lockedBankVaults.address,
@@ -657,6 +674,10 @@ async function main() {
   tx = await itemNFT.setPromotions(promotions.address);
   await tx.wait();
   console.log("itemNFT setPromotions");
+
+  tx = await itemNFT.setPassiveActions(passiveActions.address);
+  await tx.wait();
+  console.log("itemNFT setPassiveActions");
 
   tx = await itemNFT.setInstantActions(instantActions.address);
   await tx.wait();

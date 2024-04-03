@@ -27,6 +27,7 @@ import {
   GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
   EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
   PET_NFT_ADDRESS,
+  PASSIVE_ACTIONS_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 import {verify} from "crypto";
@@ -228,6 +229,7 @@ async function main() {
   });
   await instantVRFActions.deployed();
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+
   /*
   // Instant VRF strategies
   const GenericInstantVRFActionStrategy = (await ethers.getContractFactory("GenericInstantVRFActionStrategy")).connect(
@@ -336,7 +338,18 @@ async function main() {
   })) as RoyaltyReceiver;
   await royaltyReceiver.deployed();
   console.log(`royaltyReceiver = "${royaltyReceiver.address.toLowerCase()}"`);
-*/
+
+  const PassiveActions = (
+    await ethers.getContractFactory("PassiveActions", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}})
+  ).connect(owner);
+  const passiveActions = await upgrades.upgradeProxy(PASSIVE_ACTIONS_ADDRESS, PassiveActions, {
+    kind: "uups",
+    unsafeAllow: ["delegatecall", "external-library-linking"],
+    timeout,
+  });
+  await passiveActions.deployed();
+  console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
+  */
   if (network.chainId == 250) {
     await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]);
@@ -361,7 +374,8 @@ async function main() {
     await verifyContracts([territories.address]);
     await verifyContracts([decoratorProvider.address]);
     await verifyContracts([combatantsHelper.address]);
-    await verifyContracts([royaltyReceiver.address]); */
+    await verifyContracts([royaltyReceiver.address]);
+    await verifyContracts([passiveActions.address]) */
   }
 }
 

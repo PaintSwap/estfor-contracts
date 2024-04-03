@@ -147,7 +147,6 @@ abstract contract PlayersBase {
   uint internal constant START_XP_ = 374;
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
   uint internal constant MAX_SUCCESS_PERCENT_CHANCE_ = 90;
-  uint internal constant MAX_UNIQUE_TICKETS_ = 64;
   // The random chance where the odds are increased when there are dice roll overflows.
   // Don't set this above 1747 otherwise it can result in 100% chance for anything around that value
   uint internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1328;

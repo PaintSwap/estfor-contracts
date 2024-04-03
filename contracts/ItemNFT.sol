@@ -71,6 +71,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   address private lockedBankVaults;
   address private bazaar;
   address private instantVRFActions;
+  address private passiveActions;
 
   modifier onlyMinters() {
     if (
@@ -78,7 +79,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       _msgSender() != shop &&
       _msgSender() != promotions &&
       _msgSender() != instantActions &&
-      _msgSender() != instantVRFActions
+      _msgSender() != instantVRFActions &&
+      _msgSender() != passiveActions
     ) {
       revert NotMinter();
     }
@@ -94,7 +96,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       _msgSender() != instantActions &&
       _msgSender() != instantVRFActions &&
       _msgSender() != territories &&
-      _msgSender() != lockedBankVaults
+      _msgSender() != lockedBankVaults &&
+      _msgSender() != passiveActions
     ) {
       revert NotBurner();
     }
@@ -475,6 +478,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function setPromotions(address _promotions) external onlyOwner {
     promotions = _promotions;
+  }
+
+  function setPassiveActions(address _passiveActions) external onlyOwner {
+    passiveActions = _passiveActions;
   }
 
   function setInstantActions(address _instantActions) external onlyOwner {

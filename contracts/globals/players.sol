@@ -409,6 +409,7 @@ struct ItemInput {
   string name;
 }
 
+uint constant MAX_UNIQUE_TICKETS_ = 64;
 uint constant IS_FULL_MODE_BIT = 7;
 
 // Queued action
