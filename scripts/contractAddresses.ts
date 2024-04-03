@@ -38,6 +38,7 @@ let samWitchVRF;
 let bazaar;
 let petNFTLibrary;
 let petNFT;
+let passiveActions;
 
 if (!isBeta) {
   worldLibrary = "0x7aa43aa55d7cc9c1ec5cbde71d841331e536c426";
@@ -78,8 +79,9 @@ if (!isBeta) {
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
   petNFTLibrary = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
   petNFT = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
+  passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6"; // TODO
 } else {
-  worldLibrary = "0x10f6512db26681700a027b5bd8e3f852351000c4";
+  worldLibrary = "0x17581c8e57fcca1be58dc109b0e275f4c24eb50f";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
@@ -118,6 +120,7 @@ if (!isBeta) {
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
   petNFTLibrary = "0xc5ceb4e668c5956e68e7a52eb796ab9e701de25f";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
+  passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -157,8 +160,10 @@ export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const TERRITORIES_ADDRESS = territories;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
+
 export const PET_NFT_LIBRARY_ADDRESS = petNFTLibrary;
 export const PET_NFT_ADDRESS = petNFT;
+export const PASSIVE_ACTIONS_ADDRESS = passiveActions;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

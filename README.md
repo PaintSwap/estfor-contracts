@@ -95,7 +95,7 @@ Bazaar [0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE](https://ftmscan.com/address/
 
 ### Fantom mainnet beta deployed contract addresses:
 
-WorldLibrary [0x10f6512db26681700a027b5bd8e3f852351000c4](https://ftmscan.com/address/0x10f6512db26681700a027b5bd8e3f852351000c4)  
+WorldLibrary [0x17581c8e57fcca1be58dc109b0e275f4c24eb50f](https://ftmscan.com/address/0x17581c8e57fcca1be58dc109b0e275f4c24eb50f)  
 World [0xe2f0b5cb118da85be68de1801d40726ce48009aa](https://ftmscan.com/address/0xe2f0b5cb118da85be68de1801d40726ce48009aa)  
 Shop [0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30](https://ftmscan.com/address/0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30)  
 RoyaltyReceiver [0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e](https://ftmscan.com/address/0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e)  

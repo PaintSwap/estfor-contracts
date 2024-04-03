@@ -43,7 +43,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   error DurationCannotBeZero();
   error DurationTooLong();
   error PlayerNotUpgraded();
-  error MinimumXPNotReached(Skill minSkill, uint minXP);
+  error MinimumLevelNotReached(Skill minSkill, uint minLevel);
   error InputSpecifiedWithoutAmount();
   error InputAmountsMustBeInOrder();
   error PreviousInputTokenIdMustBeSpecified();
@@ -58,6 +58,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   error InvalidSkill();
   error TooManyInputItems();
   error InvalidInputTokenId();
+  error NoInputItemsSpecified();
 
   struct PassiveActionInput {
     uint16 actionId;
@@ -69,9 +70,9 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   struct PassiveActionInfoInput {
     uint8 durationDays;
     uint16[] inputTokenIds;
-    uint16[] inputAmounts;
+    uint24[] inputAmounts;
     Skill[] minSkills;
-    uint32[] minXPs;
+    uint16[] minLevels;
     uint8 skipSuccessPercent; // 0-100 (% chance of skipping a day)
     uint8 worldLocation; // 0 is the main starting world
     bool isFullModeOnly;
@@ -80,18 +81,19 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   struct PassiveAction {
     uint8 durationDays; // Up to 64 days
     uint16 inputTokenId1;
-    uint16 inputAmount1;
+    uint24 inputAmount1;
     uint16 inputTokenId2;
-    uint16 inputAmount2;
+    uint24 inputAmount2;
     uint16 inputTokenId3;
-    uint16 inputAmount3;
+    uint24 inputAmount3;
     Skill minSkill1;
-    uint32 minXP1;
+    uint16 minLevel1;
     Skill minSkill2;
-    uint32 minXP2;
+    uint16 minLevel2;
     Skill minSkill3;
-    uint32 minXP3;
+    uint16 minLevel3;
     uint8 skipSuccessPercent;
+    bool hasRandomRewards;
     bytes1 packedData; // worldLocation first bit, last bit isFullModeOnly
   }
 
@@ -144,7 +146,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   ) external isOwnerOfPlayerAndActive(_playerId) {
     // Has one already started?
     if (activePassiveActions[_playerId].actionId != NONE) {
-      (bool finished, , , ) = finishedInfo(_playerId);
+      (bool finished, , , , ) = finishedInfo(_playerId);
       if (finished) {
         _claim(_playerId, activePassiveActions[_playerId].queueId, true);
       } else {
@@ -153,11 +155,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
 
     PassiveAction storage action = actions[_actionId];
-    if (action.durationDays == 0) {
+    if (action.inputTokenId1 == NONE) {
       revert InvalidActionId();
     }
 
-    _checkMinXPRequirements(_playerId, _actionId);
+    _checkMinLevelRequirements(_playerId, _actionId);
 
     if (_isActionFullMode(_actionId) && !players.isPlayerUpgraded(_playerId)) {
       revert PlayerNotUpgraded();
@@ -188,8 +190,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     if (queueId == NONE) {
       revert NoActivePassiveAction();
     }
-    (bool finished, bool oracleReady, , ) = finishedInfo(_playerId);
-    if (!finished || !oracleReady) {
+    (bool finished, bool oracleCalled, bool hasRandomRewards, , ) = finishedInfo(_playerId);
+    if (!finished || (hasRandomRewards && !oracleCalled)) {
       revert PassiveActionNotReadyToBeClaimed();
     }
 
@@ -203,7 +205,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       revert NoActivePassiveAction();
     }
 
-    (bool finished, , , ) = finishedInfo(_playerId);
+    (bool finished, , , , ) = finishedInfo(_playerId);
     if (finished) {
       revert ActionAlreadyFinished();
     }
@@ -217,8 +219,10 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint _playerId
   ) public view returns (PendingPassiveActionState memory _pendingPassiveActionState) {
     // If it's not finished then you get nothing
-    (bool finished, bool oracleCalled, uint numWinners, bool skippedToday) = finishedInfo(_playerId);
-    _pendingPassiveActionState.isReady = finished && oracleCalled;
+    (bool finished, bool oracleCalled, bool hasRandomRewards, uint numWinners, bool skippedToday) = finishedInfo(
+      _playerId
+    );
+    _pendingPassiveActionState.isReady = finished && (oracleCalled || !hasRandomRewards);
     _pendingPassiveActionState.numDaysSkipped = numWinners;
     _pendingPassiveActionState.skippedToday = skippedToday;
     if (!finished) {
@@ -291,18 +295,18 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
   }
 
-  function _checkMinXPRequirements(uint _playerId, uint _actionId) private view {
+  function _checkMinLevelRequirements(uint _playerId, uint _actionId) private view {
     PassiveAction storage action = actions[_actionId];
-    if (action.minSkill1 != Skill.NONE && players.xp(_playerId, action.minSkill1) < action.minXP1) {
-      revert MinimumXPNotReached(action.minSkill1, action.minXP1);
+    if (action.minSkill1 != Skill.NONE && players.level(_playerId, action.minSkill1) < action.minLevel1) {
+      revert MinimumLevelNotReached(action.minSkill1, action.minLevel1);
     }
 
-    if (action.minSkill2 != Skill.NONE && players.xp(_playerId, action.minSkill2) < action.minXP2) {
-      revert MinimumXPNotReached(action.minSkill2, action.minXP2);
+    if (action.minSkill2 != Skill.NONE && players.level(_playerId, action.minSkill2) < action.minLevel2) {
+      revert MinimumLevelNotReached(action.minSkill2, action.minLevel2);
     }
 
-    if (action.minSkill3 != Skill.NONE && players.xp(_playerId, action.minSkill3) < action.minXP3) {
-      revert MinimumXPNotReached(action.minSkill3, action.minXP3);
+    if (action.minSkill3 != Skill.NONE && players.level(_playerId, action.minSkill3) < action.minLevel3) {
+      revert MinimumLevelNotReached(action.minSkill3, action.minLevel3);
     }
   }
 
@@ -349,14 +353,16 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   /// @param _playerId The player id
   /// @return finished If the action has finished
   /// @return oracleCalled If the oracle has been called for the previous day of the finished passive action
+  /// @return hasRandomRewards If the passive action has random rewards
   /// @return numWinners The number of winners
+  /// @return skippedToday If the player has skipped today
   function finishedInfo(
     uint _playerId
-  ) public view returns (bool finished, bool oracleCalled, uint numWinners, bool skippedToday) {
+  ) public view returns (bool finished, bool oracleCalled, bool hasRandomRewards, uint numWinners, bool skippedToday) {
     // Check random reward results which may lower the time remaining (e.g. oracle speed boost)
     ActivePassiveInfo storage passiveAction = activePassiveActions[_playerId];
     if (passiveAction.actionId == NONE) {
-      return (false, false, 0, false);
+      return (false, false, false, 0, false);
     }
 
     PassiveAction storage action = actions[passiveAction.actionId];
@@ -366,27 +372,37 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint timespan = Math.min(duration, (block.timestamp - startTime));
     uint numDays = timespan / 1 days;
 
-    for (uint timestamp = startTime; timestamp < startTime + numDays * 1 days; timestamp += 1 days) {
-      uint16 boostIncrease;
-      if (passiveAction.boostItemTokenId != NONE) {
-        boostIncrease = itemNFT.getItem(passiveAction.boostItemTokenId).boostValue;
-      }
+    hasRandomRewards = action.hasRandomRewards;
+    // Special case
+    if (duration == 0) {
+      finished = true;
+    }
 
-      oracleCalled = world.hasRandomWord(timestamp);
+    for (uint timestamp = startTime; timestamp <= startTime + numDays * 1 days; timestamp += 1 days) {
+      // Work out how many days we can skip
+      if (action.skipSuccessPercent != 0 && timestamp < startTime + numDays * 1 days) {
+        uint16 boostIncrease;
+        if (passiveAction.boostItemTokenId != NONE) {
+          boostIncrease = itemNFT.getItem(passiveAction.boostItemTokenId).boostValue;
+        }
 
-      if (oracleCalled && _isWinner(_playerId, timestamp, boostIncrease, action.skipSuccessPercent)) {
-        ++numWinners;
+        oracleCalled = world.hasRandomWord(timestamp);
 
-        // Is this yesterday's oracle?
-        if (timestamp / 1 days == (block.timestamp / 1 days - 1)) {
-          // This is the last day, so we can return
-          skippedToday = true;
+        if (oracleCalled && _isWinner(_playerId, timestamp, boostIncrease, action.skipSuccessPercent)) {
+          ++numWinners;
+
+          // Is this yesterday's oracle?
+          if (timestamp / 1 days == (block.timestamp / 1 days - 1)) {
+            // This is the last day, so we can return
+            skippedToday = true;
+          }
         }
       }
+      // Take the number of winners for skipping and see if that oracle has been called
       if ((startTime + duration - numWinners * 1 days <= block.timestamp)) {
         finished = true;
-        // Actually check if it has the random word
-        if (timestamp != startTime + duration - numWinners * 1 days - 1 days) {
+        // Actually check if it has the random word for this day
+        if (action.hasRandomRewards && timestamp != startTime + duration - numWinners * 1 days - 1 days) {
           oracleCalled = world.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
         }
         break;
@@ -468,21 +484,22 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   function _isActionFullMode(uint16 _actionId) private view returns (bool) {
-    return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) == 1;
+    return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _packAction(
-    PassiveActionInfoInput calldata _actionInfo
+    PassiveActionInfoInput calldata _actionInfo,
+    bool _hasRandomRewards
   ) private pure returns (PassiveAction memory passiveAction) {
     bytes1 packedData = bytes1(uint8(_actionInfo.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     passiveAction = PassiveAction({
       durationDays: _actionInfo.durationDays,
       minSkill1: _actionInfo.minSkills.length > 0 ? _actionInfo.minSkills[0] : Skill.NONE,
-      minXP1: _actionInfo.minXPs.length > 0 ? _actionInfo.minXPs[0] : 0,
+      minLevel1: _actionInfo.minLevels.length > 0 ? _actionInfo.minLevels[0] : 0,
       minSkill2: _actionInfo.minSkills.length > 1 ? _actionInfo.minSkills[1] : Skill.NONE,
-      minXP2: _actionInfo.minXPs.length > 1 ? _actionInfo.minXPs[1] : 0,
+      minLevel2: _actionInfo.minLevels.length > 1 ? _actionInfo.minLevels[1] : 0,
       minSkill3: _actionInfo.minSkills.length > 2 ? _actionInfo.minSkills[2] : Skill.NONE,
-      minXP3: _actionInfo.minXPs.length > 2 ? _actionInfo.minXPs[2] : 0,
+      minLevel3: _actionInfo.minLevels.length > 2 ? _actionInfo.minLevels[2] : 0,
       inputTokenId1: _actionInfo.inputTokenIds.length > 0 ? _actionInfo.inputTokenIds[0] : NONE,
       inputAmount1: _actionInfo.inputAmounts.length > 0 ? _actionInfo.inputAmounts[0] : 0,
       inputTokenId2: _actionInfo.inputTokenIds.length > 1 ? _actionInfo.inputTokenIds[1] : NONE,
@@ -490,6 +507,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       inputTokenId3: _actionInfo.inputTokenIds.length > 2 ? _actionInfo.inputTokenIds[2] : NONE,
       inputAmount3: _actionInfo.inputAmounts.length > 2 ? _actionInfo.inputAmounts[2] : 0,
       skipSuccessPercent: _actionInfo.skipSuccessPercent,
+      hasRandomRewards: _hasRandomRewards,
       packedData: packedData
     });
   }
@@ -499,15 +517,19 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       revert ActionIdZeroNotAllowed();
     }
     PassiveActionInfoInput calldata actionInfo = _passiveActionInput.info;
-    if (_passiveActionInput.info.durationDays == 0) {
-      revert DurationCannotBeZero();
-    }
+    // Allow for the beta for initial testing
+    //    if (_passiveActionInput.info.durationDays == 0) {
+    //      revert DurationCannotBeZero();
+    //    }
     if (_passiveActionInput.info.durationDays > MAX_UNIQUE_TICKETS_) {
       revert DurationTooLong();
     }
 
     _checkInfo(actionInfo);
-    actions[_passiveActionInput.actionId] = _packAction(_passiveActionInput.info);
+    actions[_passiveActionInput.actionId] = _packAction(
+      _passiveActionInput.info,
+      _passiveActionInput.randomRewards.length != 0
+    );
 
     // Set the rewards
     ActionRewards storage actionReward = actionRewards[_passiveActionInput.actionId];
@@ -518,13 +540,18 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   function _checkInfo(PassiveActionInfoInput calldata _actionInfo) private pure {
     uint16[] calldata inputTokenIds = _actionInfo.inputTokenIds;
-    uint16[] calldata amounts = _actionInfo.inputAmounts;
+    uint24[] calldata amounts = _actionInfo.inputAmounts;
 
     if (inputTokenIds.length > 3) {
       revert TooManyInputItems();
     }
     if (inputTokenIds.length != amounts.length) {
       revert LengthMismatch();
+    }
+
+    // Must have at least 1 input
+    if (inputTokenIds.length == 0) {
+      revert NoInputItemsSpecified();
     }
 
     for (uint i; i < inputTokenIds.length; ++i) {
@@ -549,19 +576,19 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
     // Check minimum xp
     Skill[] calldata minSkills = _actionInfo.minSkills;
-    uint32[] calldata minXPs = _actionInfo.minXPs;
+    uint16[] calldata minLevels = _actionInfo.minLevels;
 
     if (minSkills.length > 3) {
       revert TooManyMinSkills();
     }
-    if (minSkills.length != minXPs.length) {
+    if (minSkills.length != minLevels.length) {
       revert LengthMismatch();
     }
     for (uint i; i < minSkills.length; ++i) {
       if (minSkills[i] == Skill.NONE) {
         revert InvalidSkill();
       }
-      if (minXPs[i] == 0) {
+      if (minLevels[i] == 0) {
         revert InputSpecifiedWithoutAmount();
       }
 
@@ -577,7 +604,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   function addActions(PassiveActionInput[] calldata _passiveActionInputs) external onlyOwner {
     for (uint i; i < _passiveActionInputs.length; ++i) {
-      if (actions[_passiveActionInputs[i].actionId].durationDays != 0) {
+      if (actions[_passiveActionInputs[i].actionId].inputTokenId1 != 0) {
         revert ActionAlreadyExists(_passiveActionInputs[i].actionId);
       }
       _setAction(_passiveActionInputs[i]);
@@ -587,7 +614,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   function editActions(PassiveActionInput[] calldata _passiveActionInputs) external onlyOwner {
     for (uint i = 0; i < _passiveActionInputs.length; ++i) {
-      if (actions[_passiveActionInputs[i].actionId].durationDays == 0) {
+      if (actions[_passiveActionInputs[i].actionId].inputTokenId1 == NONE) {
         revert ActionDoesNotExist();
       }
       _setAction(_passiveActionInputs[i]);
