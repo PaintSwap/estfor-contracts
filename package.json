@@ -109,6 +109,7 @@
     "removeTerritories": "npx hardhat run scripts/removeTerritories.ts",
     "addUnsellableShopItems": "npx hardhat run scripts/addUnsellableShopItems.ts",
     "addBasePets": "npx hardhat run scripts/addBasePets.ts",
+    "editBasePets": "npx hardhat run scripts/editBasePets.ts",
     "addPassiveActions": "npx hardhat run scripts/addPassiveActions.ts",
     "editPassiveActions": "npx hardhat run scripts/editPassiveActions.ts",
     "removeUnsellableShopItems": "npx hardhat run scripts/removeUnsellableShopItems.ts",

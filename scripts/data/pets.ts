@@ -644,7 +644,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER1,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE,
@@ -660,7 +660,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER2,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE,
@@ -676,7 +676,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER3,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE,
@@ -692,7 +692,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER4,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE,
@@ -708,7 +708,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER5,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE,
@@ -724,7 +724,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER1,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC,
@@ -740,7 +740,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER2,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC,
@@ -756,7 +756,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER3,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC,
@@ -772,7 +772,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER4,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC,
@@ -788,7 +788,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER5,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC,
@@ -804,7 +804,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER1,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED,
@@ -820,7 +820,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER2,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED,
@@ -836,7 +836,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER3,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED,
@@ -852,7 +852,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER4,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED,
@@ -868,7 +868,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER5,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED,
@@ -884,7 +884,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER1,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -900,7 +900,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER2,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -916,7 +916,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER3,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -932,7 +932,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER4,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -948,7 +948,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER5,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -964,7 +964,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER1,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.HEALTH,
@@ -980,7 +980,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER2,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.HEALTH,
@@ -996,7 +996,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER3,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1012,7 +1012,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER4,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1028,7 +1028,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER5,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1044,7 +1044,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER1,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1060,7 +1060,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER2,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1076,7 +1076,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER3,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1092,7 +1092,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER4,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1108,7 +1108,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER5,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1124,7 +1124,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER1,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1140,7 +1140,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER2,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1156,7 +1156,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER3,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1172,7 +1172,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER4,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1188,7 +1188,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER5,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1204,7 +1204,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER1,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
     tier: 1,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1220,7 +1220,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER2,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
     tier: 2,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1236,7 +1236,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER3,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
     tier: 3,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1252,7 +1252,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER4,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
     tier: 4,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1268,7 +1268,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER5,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
     tier: 5,
     skin: PetSkin.OG,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1284,7 +1284,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER1,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE,
@@ -1300,7 +1300,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER2,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE,
@@ -1316,7 +1316,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER3,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE,
@@ -1332,7 +1332,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER4,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE,
@@ -1348,7 +1348,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER5,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE,
@@ -1364,7 +1364,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER1,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC,
@@ -1380,7 +1380,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER2,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC,
@@ -1396,7 +1396,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER3,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC,
@@ -1412,7 +1412,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER4,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC,
@@ -1428,7 +1428,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER5,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC,
@@ -1444,7 +1444,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER1,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED,
@@ -1460,7 +1460,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER2,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED,
@@ -1476,7 +1476,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER3,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED,
@@ -1492,7 +1492,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER4,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED,
@@ -1508,7 +1508,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER5,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED,
@@ -1524,7 +1524,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER1,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -1540,7 +1540,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER2,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -1556,7 +1556,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER3,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -1572,7 +1572,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER4,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -1588,7 +1588,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER5,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -1604,7 +1604,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER1,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1620,7 +1620,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER2,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1636,7 +1636,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER3,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1652,7 +1652,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER4,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1668,7 +1668,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER5,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.HEALTH,
@@ -1684,7 +1684,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER1,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1700,7 +1700,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER2,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1716,7 +1716,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER3,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1732,7 +1732,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER4,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1748,7 +1748,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER5,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -1764,7 +1764,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER1,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1780,7 +1780,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER2,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1796,7 +1796,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER3,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1812,7 +1812,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER4,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1828,7 +1828,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER5,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -1844,7 +1844,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER1,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
     tier: 1,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1860,7 +1860,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER2,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
     tier: 2,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1876,7 +1876,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER3,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
     tier: 3,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1892,7 +1892,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER4,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
     tier: 4,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1908,7 +1908,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER5,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
     tier: 5,
     skin: PetSkin.ONEKIN,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -1924,7 +1924,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER1,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE,
@@ -1940,7 +1940,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER2,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE,
@@ -1956,7 +1956,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER3,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE,
@@ -1972,7 +1972,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER4,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE,
@@ -1988,7 +1988,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER5,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE,
@@ -2004,7 +2004,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER1,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2020,7 +2020,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER2,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2036,7 +2036,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER3,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2052,7 +2052,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER4,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2068,7 +2068,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER5,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2084,7 +2084,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER1,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED,
@@ -2100,7 +2100,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER2,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED,
@@ -2116,7 +2116,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER3,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED,
@@ -2132,7 +2132,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER4,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED,
@@ -2148,7 +2148,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER5,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED,
@@ -2164,7 +2164,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER1,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2180,7 +2180,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER2,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2196,7 +2196,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER3,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2212,7 +2212,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER4,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2228,7 +2228,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER5,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2244,7 +2244,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER1,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2260,7 +2260,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER2,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2276,7 +2276,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER3,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2292,7 +2292,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER4,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2308,7 +2308,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER5,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2324,7 +2324,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER1,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -2340,7 +2340,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER2,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -2356,7 +2356,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER3,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -2372,7 +2372,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER4,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -2388,7 +2388,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER5,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -2404,7 +2404,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER1,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -2420,7 +2420,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER2,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -2436,7 +2436,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER3,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -2452,7 +2452,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER4,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -2468,7 +2468,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER5,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -2484,7 +2484,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER1,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
     tier: 1,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -2500,7 +2500,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER2,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
     tier: 2,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -2516,7 +2516,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER3,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
     tier: 3,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -2532,7 +2532,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER4,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
     tier: 4,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -2548,7 +2548,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER5,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
     tier: 5,
     skin: PetSkin.FROST,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -2564,7 +2564,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER1,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE,
@@ -2580,7 +2580,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER2,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE,
@@ -2596,7 +2596,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER3,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE,
@@ -2612,7 +2612,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER4,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE,
@@ -2628,7 +2628,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER5,
     description:
-      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE,
@@ -2644,7 +2644,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER1,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2660,7 +2660,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER2,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2676,7 +2676,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER3,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2692,7 +2692,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER4,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2708,7 +2708,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER5,
     description:
-      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC,
@@ -2724,7 +2724,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER1,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED,
@@ -2740,7 +2740,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER2,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED,
@@ -2756,7 +2756,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER3,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED,
@@ -2772,7 +2772,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER4,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED,
@@ -2788,7 +2788,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER5,
     description:
-      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED,
@@ -2804,7 +2804,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER1,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2820,7 +2820,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER2,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2836,7 +2836,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER3,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2852,7 +2852,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER4,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2868,7 +2868,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER5,
     description:
-      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.DEFENCE,
@@ -2884,7 +2884,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER1,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2900,7 +2900,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER2,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2916,7 +2916,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER3,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2932,7 +2932,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER4,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2948,7 +2948,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER5,
     description:
-      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.HEALTH,
@@ -2964,7 +2964,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER1,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -2980,7 +2980,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER2,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -2996,7 +2996,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER3,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -3012,7 +3012,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER4,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -3028,7 +3028,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER5,
     description:
-      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
@@ -3044,7 +3044,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER1,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -3060,7 +3060,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER2,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -3076,7 +3076,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER3,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -3092,7 +3092,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER4,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -3108,7 +3108,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER5,
     description:
-      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
@@ -3124,7 +3124,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER1,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
     tier: 1,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -3140,7 +3140,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER2,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
     tier: 2,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -3156,7 +3156,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER3,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
     tier: 3,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -3172,7 +3172,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER4,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
     tier: 4,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
@@ -3188,7 +3188,7 @@ export const allBasePets: BasePetInput[] = [
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER5,
     description:
-      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
     tier: 5,
     skin: PetSkin.CRYSTAL,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
