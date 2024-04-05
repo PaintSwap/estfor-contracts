@@ -1,0 +1,4 @@
+[
+  "function doBattleLib(address,uint48[],uint48[],uint8[],uint256,uint256,uint256,uint256) view returns (uint8[], uint48[], uint48[], bool)",
+  "function shuffleArray(uint48[],uint256) pure returns (uint48[])"
+]

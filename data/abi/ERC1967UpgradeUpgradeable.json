@@ -1,0 +1,6 @@
+[
+  "event AdminChanged(address,address)",
+  "event BeaconUpgraded(address indexed)",
+  "event Initialized(uint8)",
+  "event Upgraded(address indexed)"
+]

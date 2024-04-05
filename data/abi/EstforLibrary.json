@@ -1,0 +1,9 @@
+[
+  "function binarySearchMemory(uint48[],uint256) pure returns (uint256)",
+  "function containsBaselineSocialNameCharacters(string) pure returns (bool)",
+  "function containsValidDiscordCharacters(string) pure returns (bool)",
+  "function containsValidNameCharacters(string) pure returns (bool)",
+  "function containsValidTelegramCharacters(string) pure returns (bool)",
+  "function containsValidTwitterCharacters(string) pure returns (bool)",
+  "function trim(string) pure returns (string)"
+]

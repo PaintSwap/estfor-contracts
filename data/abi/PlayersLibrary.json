@@ -1,0 +1,14 @@
+[
+  "error InvalidAction()",
+  "error InvalidXPSkill()",
+  "function dmg(int256,int256,uint8,uint8,uint256) pure returns (uint32)",
+  "function getAttireWithBalance(address,tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16),ItemNFT,bool,tuple(uint256[],uint256[],uint256[],uint256[])[]) view returns (uint16[], uint256[])",
+  "function getBoostedTime(uint256,uint256,uint40,uint24) pure returns (uint24)",
+  "function getCombatAdjustedElapsedTimes(address,ItemNFT,World,uint256,tuple(Skill,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8,uint16,uint16,bytes1,bytes1,Skill,uint32,Skill,uint32,uint24,uint24,uint24),uint16,tuple(uint16,uint16,uint16,uint16,uint16,uint24,CombatStyle,uint24,uint24,uint64,bytes1,uint24),tuple(int16,int16,int16,int16,int16,int16,int16),tuple(int16,int16,int16,int16,int16,int16,int16),uint8,uint8,tuple(uint256[],uint256[],uint256[],uint256[])[]) view returns (uint256, uint256, uint16, uint16, bool)",
+  "function getLevel(uint256) pure returns (uint16)",
+  "function getNonCombatAdjustedElapsedTime(address,ItemNFT,uint256,tuple(Skill,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8,uint16,uint16,bytes1,bytes1,Skill,uint32,Skill,uint32,uint24,uint24,uint24),tuple(uint256[],uint256[],uint256[],uint256[])[]) view returns (uint256, uint16)",
+  "function getRealBalance(address,uint256,ItemNFT,tuple(uint256[],uint256[],uint256[],uint256[])[]) view returns (uint256)",
+  "function getRealBalances(address,uint16[],ItemNFT,tuple(uint256[],uint256[],uint256[],uint256[])[]) view returns (uint256[])",
+  "function subtractMatchingRewards(uint256[],uint256[],uint256[],uint256[]) pure returns (uint256[], uint256[])",
+  "function updateStatsFromHandEquipment(address,ItemNFT,uint16[2],tuple(int16,int16,int16,int16,int16,int16,int16),bool,tuple(uint256[],uint256[],uint256[],uint256[])[],tuple(Skill,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8,uint16,uint16,bytes1,bytes1,Skill,uint32,Skill,uint32,uint24,uint24,uint24)) view returns (bool, tuple(int16,int16,int16,int16,int16,int16,int16))"
+]

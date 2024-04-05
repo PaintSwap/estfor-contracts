@@ -1,0 +1,15 @@
+[
+  "error InvalidBrushCost()",
+  "error InvalidMultidayPromotionTimeInterval()",
+  "error InvalidNumDaysHitNeededForStreakBonus()",
+  "error InvalidPromotion()",
+  "error InvalidStreakBonus()",
+  "error LengthMismatch()",
+  "error MultidaySpecified()",
+  "error NoItemsToPickFrom()",
+  "error NoNumItemsToPick()",
+  "error PickingTooManyItems()",
+  "error PromotionAlreadyAdded()",
+  "error PromotionNotSet()",
+  "error StartTimeMustBeHigherEndTime()"
+]

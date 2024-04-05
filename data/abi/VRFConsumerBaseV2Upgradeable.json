@@ -1,0 +1,8 @@
+[
+  "error AlreadyInitialized()",
+  "error IsInitializing()",
+  "error NotInitializing()",
+  "error OnlyCoordinatorCanFulfill(address,address)",
+  "event Initialized(uint8)",
+  "function rawFulfillRandomWords(uint256,uint256[])"
+]

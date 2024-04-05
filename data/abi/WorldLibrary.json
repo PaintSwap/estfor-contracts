@@ -1,0 +1,23 @@
+[
+  "error FirstMinSkillMustBeActionSkill()",
+  "error GuaranteedRewardsMustBeInOrder()",
+  "error GuaranteedRewardsNoDuplicates()",
+  "error InputAmountsMustBeInOrder()",
+  "error InputItemNoDuplicates()",
+  "error InputSpecifiedWithoutAmount()",
+  "error InvalidInputTokenId()",
+  "error InvalidSkill()",
+  "error LengthMismatch()",
+  "error MinimumSkillsNoDuplicates()",
+  "error NotAFactorOf3600()",
+  "error OutputAmountCannotBeZero()",
+  "error OutputSpecifiedWithoutAmount()",
+  "error OutputTokenIdCannotBeEmpty()",
+  "error RandomRewardNoDuplicates()",
+  "error RandomRewardsMustBeInOrder(uint16,uint16)",
+  "error TooManyGuaranteedRewards()",
+  "error TooManyInputItems()",
+  "error TooManyMinSkills()",
+  "error TooManyRandomRewards()",
+  "function checkActionChoice(tuple(Skill,int16,uint24,uint24,uint16[],uint24[],uint16,uint8,uint8,uint16,uint16,bool,Skill[],uint32[])) pure"
+]
