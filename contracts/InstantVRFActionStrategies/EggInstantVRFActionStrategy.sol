@@ -68,7 +68,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     bytes memory randomBytes = abi.encodePacked(_randomWords[_randomWordStartIndex:_randomWordStartIndex + numWords]);
 
     bytes memory randomBytes1;
-    for (uint i = 0; i < numWords; i++) {
+    for (uint i = 0; i < numWords; ++i) {
       randomBytes1 = abi.encodePacked(
         randomBytes1,
         keccak256(abi.encodePacked(_randomWords[_randomWordStartIndex + i]))
