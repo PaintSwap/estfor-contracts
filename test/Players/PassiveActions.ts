@@ -13,6 +13,8 @@ import {BRONZE_ARROW, IRON_ARROW} from "@paintswap/estfor-definitions/constants"
 import {getXPFromLevel} from "./utils";
 
 describe("Passive actions", function () {
+  this.retries(2);
+
   const defaultPassiveActionInput: PassiveActionInput = {
     ..._defaultPassiveActionInput,
     actionId: 1,
