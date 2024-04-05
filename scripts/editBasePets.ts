@@ -13,7 +13,7 @@ async function main() {
     const chunk = allBasePets.slice(i, i + chunkSize);
     const tx = await petNFT.editBasePets(chunk);
     await tx.wait();
-    console.log("Add base pets chunk ", i);
+    console.log("Edit base pets chunk ", i);
   }
 }
 

@@ -89,6 +89,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     uint8[2] skillPercentageMaxs;
     uint8[2] skillPercentageIncrements;
     uint8[2] skillMinLevels;
+    uint16 fixedStarThreshold;
+    uint16 percentageStarThreshold;
   }
 
   // From base class uint40 _totalSupplyAll
@@ -471,7 +473,9 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       _basePetInput.skillPercentageMins[1],
       _basePetInput.skillPercentageMaxs[1],
       _basePetInput.skillPercentageIncrements[1],
-      _basePetInput.skillMinLevels[1]
+      _basePetInput.skillMinLevels[1],
+      _basePetInput.fixedStarThreshold,
+      _basePetInput.percentageStarThreshold
     );
   }
 

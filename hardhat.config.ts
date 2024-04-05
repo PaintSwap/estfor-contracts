@@ -12,6 +12,7 @@ import "@openzeppelin/hardhat-upgrades";
 import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
 import "hardhat-storage-layout";
+import "hardhat-abi-exporter";
 import "solidity-coverage";
 import {ethers} from "ethers";
 import {SolcUserConfig} from "hardhat/types";
@@ -84,7 +85,7 @@ const config: HardhatUserConfig = {
       "contracts/Promotions.sol": mediumRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
-      "contracts/PetNFT.sol": mediumRunsConfig,
+      "contracts/PetNFT.sol": lowRunsConfig,
     },
   },
   gasReporter: {
@@ -100,7 +101,7 @@ const config: HardhatUserConfig = {
     ftm: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("30", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("100", "gwei").toNumber(),
     },
     ftm_testnet: {
       url: process.env.FTM_RPC_TESTNET,
@@ -118,6 +119,15 @@ const config: HardhatUserConfig = {
     alphaSort: true,
     runOnCompile: true,
     disambiguatePaths: false,
+  },
+  abiExporter: {
+    path: "./data/abi",
+    runOnCompile: true,
+    clear: true,
+    flat: true,
+    spacing: 2,
+    format: "minimal",
+    except: ["/ozUpgradeable", "/interfaces", "/test", "/helper", "/debug"],
   },
 };
 

@@ -31,6 +31,8 @@ describe("PetNFT", function () {
     skillPercentageMaxs: [10, 20],
     skillPercentageIncrements: [1, 1],
     skillMinLevels: [1, 0],
+    fixedStarThreshold: 1,
+    percentageStarThreshold: 1,
   };
 
   it("Must be a minter to mint", async function () {
@@ -47,8 +49,6 @@ describe("PetNFT", function () {
     expect(await petNFT.nextPetId()).to.eq(2);
     expect(await petNFT.balanceOf(alice.address, petId)).to.eq(1);
   });
-
-  it("TODO Edit Name, check that it cannot start with PET_PREFIX", async function () {});
 
   it("uri", async function () {
     const {petNFT, alice} = await loadFixture(deployContracts);
@@ -68,7 +68,7 @@ describe("PetNFT", function () {
     expect(metadata.image).to.eq(`ipfs://${skin}_${tier}_${enhancementType}.jpg`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");
-    expect(metadata.attributes).to.have.length(9);
+    expect(metadata.attributes).to.have.length(11);
     expect(metadata.attributes[0]).to.have.property("trait_type");
     expect(metadata.attributes[0].trait_type).to.equal("Skin");
     expect(metadata.attributes[0]).to.have.property("value");
@@ -100,6 +100,12 @@ describe("PetNFT", function () {
     expect(metadata.attributes[8].trait_type).to.equal("Percent increase #2");
     expect(metadata.attributes[8]).to.have.property("value");
     expect(metadata.attributes[8].value).to.equal(15);
+    expect(metadata.attributes[9].trait_type).to.equal("Fixed Star");
+    expect(metadata.attributes[9]).to.have.property("value");
+    expect(metadata.attributes[9].value).to.equal("false");
+    expect(metadata.attributes[10].trait_type).to.equal("Percent Star");
+    expect(metadata.attributes[10]).to.have.property("value");
+    expect(metadata.attributes[10].value).to.equal("true");
 
     expect(metadata).to.have.property("external_url");
     expect(metadata.external_url).to.eq(`https://beta.estfor.com`);

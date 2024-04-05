@@ -58,4 +58,6 @@ struct BasePetMetadata {
   uint8 skillPercentageMax2;
   uint8 skillPercentageIncrement2;
   uint8 skillMinLevel2;
+  uint16 fixedStarThreshold;
+  uint16 percentageStarThreshold;
 }

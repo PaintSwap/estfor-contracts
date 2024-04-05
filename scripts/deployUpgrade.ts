@@ -264,7 +264,6 @@ async function main() {
   if (newPetNFTLibrary) {
     petNFTLibrary = (await ethers.deployContract("PetNFTLibrary")) as PetNFTLibrary;
     await petNFTLibrary.deployed();
-    console.log(`petNFTLibrary = "${petNFTLibrary.address.toLowerCase()}"`);
   } else {
     petNFTLibrary = (await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS)) as PetNFTLibrary;
   }

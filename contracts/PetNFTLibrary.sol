@@ -28,6 +28,10 @@ library PetNFTLibrary {
     uint tier = basePetMetadata.tier;
     string memory petEnhancementType = _petEnhancementTypeToString(basePetMetadata.enhancementType);
 
+    bool hasFixedStar = (pet.skillFixedEnhancement1 + pet.skillFixedEnhancement2) >= basePetMetadata.fixedStarThreshold;
+    bool hasPercentageStar = (pet.skillPercentageEnhancement1 + pet.skillPercentageEnhancement2) >=
+      basePetMetadata.percentageStarThreshold;
+
     // Create whole JSON
     string memory imageURI = string(
       abi.encodePacked(imageBaseUri, skin, "_", tier.toString(), "_", petEnhancementType, ".jpg")
@@ -51,7 +55,11 @@ library PetNFTLibrary {
         ",",
         _getTraitNumberJSON("Fixed increase #2", pet.skillFixedEnhancement2),
         ",",
-        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2)
+        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2),
+        ",",
+        _getTraitStringJSON("Fixed Star", hasFixedStar ? "true" : "false"),
+        ",",
+        _getTraitStringJSON("Percent Star", hasPercentageStar ? "true" : "false")
       )
     );
 
