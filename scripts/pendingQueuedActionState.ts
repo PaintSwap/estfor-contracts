@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {PLAYERS_ADDRESS, PLAYERS_LIBRARY_ADDRESS} from "./contractAddresses";
+import {PLAYERS_ADDRESS} from "./contractAddresses";
 
 // When you need to fork a chain and debug
 async function main() {

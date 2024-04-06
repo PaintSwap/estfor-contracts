@@ -141,7 +141,6 @@ abstract contract PlayersBase {
   error AlreadyUpgraded();
   error PlayerNotUpgraded();
   error PetNotOwned();
-  error SkillForPetNotHandledYet();
 
   uint32 internal constant MAX_TIME_ = 1 days;
   uint internal constant START_XP_ = 374;

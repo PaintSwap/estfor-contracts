@@ -135,22 +135,43 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         continue;
       }
 
-      CombatStats memory combatStats;
+      uint prevProcessedTime = queuedAction.prevProcessedTime;
+      uint veryStartTime = startTime.sub(prevProcessedTime);
+
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
+      ActionChoice memory actionChoice;
+      if (queuedAction.choiceId != 0) {
+        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+      }
+
+      CombatStats memory combatStats;
       if (isCombat) {
-        combatStats = PlayersLibrary.getCombatStats(
-          pendingQueuedActionProcessed,
-          xp_[_playerId],
+        combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, xp_[_playerId]);
+
+        // Update combat stats from the pet if it is still valid.
+        // The pet enhancements only take into account base hero stats, not any bonuses from equipment.
+        if (_hasPet(queuedAction.packed)) {
+          Pet memory pet = petNFT.getPet(queuedActionsExtra[queuedAction.queueId].petId);
+          if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
+            combatStats = PlayersLibrary.updateCombatStatsFromPet(
+              combatStats,
+              pet.skillEnhancement1,
+              pet.skillFixedEnhancement1,
+              pet.skillPercentageEnhancement1,
+              pet.skillEnhancement2,
+              pet.skillFixedEnhancement2,
+              pet.skillPercentageEnhancement2
+            );
+          }
+        }
+
+        combatStats = PlayersLibrary.updateCombatStatsFromAttire(
+          combatStats,
           from,
           itemNFT,
           attire_[_playerId][queuedAction.queueId],
           pendingQueuedActionState.equipmentStates
         );
-      }
-
-      ActionChoice memory actionChoice;
-      if (queuedAction.choiceId != 0) {
-        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
       }
 
       bool missingRequiredHandEquipment;
@@ -163,25 +184,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         pendingQueuedActionState.equipmentStates,
         actionChoice
       );
-
-      uint prevProcessedTime = queuedAction.prevProcessedTime;
-      uint veryStartTime = startTime.sub(prevProcessedTime);
-
-      // Update combat stats from the pet if it is still valid, make sure it's last to take percentage into account for everything else equipped
-      if (_hasPet(queuedAction.packed)) {
-        Pet memory pet = petNFT.getPet(queuedActionsExtra[queuedAction.queueId].petId);
-        if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
-          _updateCombatStatsFromPet(
-            combatStats,
-            pet.skillEnhancement1,
-            pet.skillFixedEnhancement1,
-            pet.skillPercentageEnhancement1,
-            pet.skillEnhancement2,
-            pet.skillFixedEnhancement2,
-            pet.skillPercentageEnhancement2
-          );
-        }
-      }
 
       if (missingRequiredHandEquipment) {
         if (i == 0) {
@@ -1085,62 +1087,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     // Get bonus health points from avatar starting skills
     uint bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(players_[_playerId], Skill.HEALTH);
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
-  }
-
-  function _updateCombatStatsFromPet(
-    CombatStats memory _combatStats,
-    Skill _skillEnhancement1,
-    uint8 _skillFixedEnhancement1,
-    uint8 _skillPercentageEnhancement1,
-    Skill _skillEnhancement2,
-    uint8 _skillFixedEnhancement2,
-    uint8 _skillPercentageEnhancement2
-  ) private pure {
-    if (_skillEnhancement1 == Skill.HEALTH) {
-      _combatStats.health += int16(
-        _skillFixedEnhancement1 + (uint16(_combatStats.health) * _skillPercentageEnhancement1) / 100
-      );
-    } else if (_skillEnhancement1 == Skill.MELEE) {
-      _combatStats.melee += int16(
-        _skillFixedEnhancement1 + (uint16(_combatStats.melee) * _skillPercentageEnhancement1) / 100
-      );
-    } else if (_skillEnhancement1 == Skill.RANGED) {
-      _combatStats.ranged += int16(
-        _skillFixedEnhancement1 + (uint16(_combatStats.ranged) * _skillPercentageEnhancement1) / 100
-      );
-    } else if (_skillEnhancement1 == Skill.MAGIC) {
-      _combatStats.magic += int16(
-        _skillFixedEnhancement1 + (uint16(_combatStats.magic) * _skillPercentageEnhancement1) / 100
-      );
-    } else if (_skillEnhancement1 == Skill.DEFENCE) {
-      _combatStats.meleeDefence += int16(
-        _skillFixedEnhancement1 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement1) / 100
-      );
-      _combatStats.rangedDefence += int16(
-        _skillFixedEnhancement1 + (uint16(_combatStats.rangedDefence) * _skillPercentageEnhancement1) / 100
-      );
-      _combatStats.magicDefence += int16(
-        _skillFixedEnhancement1 + (uint16(_combatStats.magicDefence) * _skillPercentageEnhancement1) / 100
-      );
-    } else {
-      revert SkillForPetNotHandledYet();
-    }
-
-    if (_skillEnhancement2 != Skill.NONE) {
-      if (_skillEnhancement2 == Skill.DEFENCE) {
-        _combatStats.meleeDefence += int16(
-          _skillFixedEnhancement2 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement2) / 100
-        );
-        _combatStats.rangedDefence += int16(
-          _skillFixedEnhancement2 + (uint16(_combatStats.rangedDefence) * _skillPercentageEnhancement2) / 100
-        );
-        _combatStats.magicDefence += int16(
-          _skillFixedEnhancement2 + (uint16(_combatStats.magicDefence) * _skillPercentageEnhancement2) / 100
-        );
-      } else {
-        revert SkillForPetNotHandledYet();
-      }
-    }
   }
 
   function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private pure {

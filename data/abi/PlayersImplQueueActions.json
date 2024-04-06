@@ -47,7 +47,6 @@
   "error PetNotOwned()",
   "error PlayerAlreadyActive()",
   "error PlayerNotUpgraded()",
-  "error SkillForPetNotHandledYet()",
   "error StartTimeTooFarInTheFuture()",
   "error TestInvalidXP()",
   "error TooManyActionsQueued()",
