@@ -1,15 +1,67 @@
 [
-  "error InvalidBrushCost()",
-  "error InvalidMultidayPromotionTimeInterval()",
-  "error InvalidNumDaysHitNeededForStreakBonus()",
-  "error InvalidPromotion()",
-  "error InvalidStreakBonus()",
-  "error LengthMismatch()",
-  "error MultidaySpecified()",
-  "error NoItemsToPickFrom()",
-  "error NoNumItemsToPick()",
-  "error PickingTooManyItems()",
-  "error PromotionAlreadyAdded()",
-  "error PromotionNotSet()",
-  "error StartTimeMustBeHigherEndTime()"
+  {
+    "inputs": [],
+    "name": "InvalidBrushCost",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidMultidayPromotionTimeInterval",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidNumDaysHitNeededForStreakBonus",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidPromotion",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidStreakBonus",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MultidaySpecified",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoItemsToPickFrom",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoNumItemsToPick",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PickingTooManyItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PromotionAlreadyAdded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PromotionNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StartTimeMustBeHigherEndTime",
+    "type": "error"
+  }
 ]

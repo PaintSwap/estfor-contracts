@@ -1,114 +1,4180 @@
 [
-  "constructor()",
-  "error ActionAlreadyExists(uint16)",
-  "error ActionChoiceAlreadyExists()",
-  "error ActionChoiceDoesNotExist()",
-  "error ActionChoiceIdZeroNotAllowed()",
-  "error ActionDoesNotExist()",
-  "error ActionIdZeroNotAllowed()",
-  "error AddressIsNotContract()",
-  "error AlreadyInitialized()",
-  "error BeaconImplementationIsNotAContract()",
-  "error CallbackGasLimitTooHigh()",
-  "error CallerIsNotOwner()",
-  "error CanOnlyRequestAfter1DayHasPassed()",
-  "error CanOnlyRequestAfterTheNextCheckpoint(uint256,uint256)",
-  "error DynamicActionsCannotBeAdded()",
-  "error DynamicActionsCannotBeSet()",
-  "error FunctionMustBeCalledThroughActiveProxy()",
-  "error FunctionMustBeCalledThroughDelegateCall()",
-  "error FunctionMustNotBeCalledThroughDelegateCall()",
-  "error InvalidReward()",
-  "error IsInitializing()",
-  "error LengthMismatch()",
-  "error MinCannotBeGreaterThanMax()",
-  "error NewAdminIsZeroAddress()",
-  "error NewBeaconIsNotAContract()",
-  "error NewImplementationIsNotAContract()",
-  "error NewImplementationNotUUPS()",
-  "error NewOwnerIsZeroAddress()",
-  "error NoActionChoices()",
-  "error NoValidRandomWord()",
-  "error NonCombatCannotHaveBothGuaranteedAndRandomRewards()",
-  "error NotAFactorOf3600()",
-  "error NotInitializing()",
-  "error OnlyCombatMultipleGuaranteedRewards()",
-  "error OnlyCoordinatorCanFulfill(address,address)",
-  "error RandomWordsCannotBeUpdatedYet()",
-  "error RequestAlreadyFulfilled()",
-  "error TooManyRewardsInPool()",
-  "error UnsupportedProxiableUUID()",
-  "event AddAction(tuple(uint16,tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[],tuple(int16,int16,int16,int16,int16,int16,int16)))",
-  "event AddActionChoice(uint16,uint16,tuple(uint8,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8))",
-  "event AddActionChoices(uint16,uint16[],tuple(uint8,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8)[])",
-  "event AddActionChoicesV2(uint16,uint16[],tuple(uint8,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8,uint16,uint16,bool)[])",
-  "event AddActionChoicesV3(uint16,uint16[],tuple(uint8,int16,uint24,uint24,uint16[],uint8[],uint16,uint8,uint8,uint16,uint16,bool,uint8[],uint32[])[])",
-  "event AddActionChoicesV4(uint16,uint16[],tuple(uint8,int16,uint24,uint24,uint16[],uint24[],uint16,uint8,uint8,uint16,uint16,bool,uint8[],uint32[])[])",
-  "event AddActions(tuple(uint16,tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[],tuple(int16,int16,int16,int16,int16,int16,int16))[])",
-  "event AddActionsV2(tuple(uint16,tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[],tuple(int16,int16,int16,int16,int16,int16,int16))[])",
-  "event AddDynamicActions(uint16[])",
-  "event AdminChanged(address,address)",
-  "event BeaconUpgraded(address indexed)",
-  "event EditActionChoice(uint16,uint16,tuple(uint8,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8))",
-  "event EditActionChoicesV2(uint16,uint16[],tuple(uint8,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8,uint16,uint16,bool)[])",
-  "event EditActionChoicesV3(uint16,uint16[],tuple(uint8,int16,uint24,uint24,uint16[],uint8[],uint16,uint8,uint8,uint16,uint16,bool,uint8[],uint32[])[])",
-  "event EditActionChoicesV4(uint16,uint16[],tuple(uint8,int16,uint24,uint24,uint16[],uint24[],uint16,uint8,uint8,uint16,uint16,bool,uint8[],uint32[])[])",
-  "event EditActionChoices_(uint16[],uint16[],tuple(uint8,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8)[])",
-  "event EditActions(tuple(uint16,tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[],tuple(int16,int16,int16,int16,int16,int16,int16))[])",
-  "event EditActionsV2(tuple(uint16,tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[],tuple(int16,int16,int16,int16,int16,int16,int16))[])",
-  "event Initialized(uint8)",
-  "event OwnershipTransferred(address indexed,address indexed)",
-  "event RemoveActionChoicesV2(uint16,uint16[])",
-  "event RemoveDynamicActions(uint16[])",
-  "event RequestFulfilled(uint256,uint256[3])",
-  "event RequestFulfilledV2(uint256,uint256)",
-  "event RequestSent(uint256,uint32,uint256)",
-  "event Upgraded(address indexed)",
-  "function MIN_RANDOM_WORDS_UPDATE_TIME() view returns (uint32)",
-  "function NUM_DAYS_RANDOM_WORDS_INITIALIZED() view returns (uint32)",
-  "function actions(uint256) view returns (uint8, bool, bool, bool, uint24, uint32, uint24, uint16, uint16, uint8, uint8, bool)",
-  "function addActionChoices(uint16,uint16[],tuple(uint8,int16,uint24,uint24,uint16[],uint24[],uint16,uint8,uint8,uint16,uint16,bool,uint8[],uint32[])[])",
-  "function addActions(tuple(uint16,tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[],tuple(int16,int16,int16,int16,int16,int16,int16))[])",
-  "function addBulkActionChoices(uint16[],uint16[][],tuple(uint8,int16,uint24,uint24,uint16[],uint24[],uint16,uint8,uint8,uint16,uint16,bool,uint8[],uint32[])[][])",
-  "function dailyRewardPool(uint256,uint256) view returns (uint16, uint24)",
-  "function editActionChoices(uint16,uint16[],tuple(uint8,int16,uint24,uint24,uint16[],uint24[],uint16,uint8,uint8,uint16,uint16,bool,uint8[],uint32[])[])",
-  "function editActions(tuple(uint16,tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[],tuple(int16,int16,int16,int16,int16,int16,int16))[])",
-  "function getActionChoice(uint16,uint16) view returns (tuple(uint8,uint32,int16,uint24,uint24,uint16,uint8,uint16,uint8,uint16,uint8,uint16,uint8,uint8,uint16,uint16,bytes1,bytes1,uint8,uint32,uint8,uint32,uint24,uint24,uint24))",
-  "function getActionInfo(uint256) view returns (tuple(uint8,bool,bool,bool,uint24,uint32,uint24,uint16,uint16,uint8,uint8,bool))",
-  "function getActionRewards(uint256) view returns (tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint8,uint16,uint16,uint8,uint16,uint16,uint8))",
-  "function getActionSuccessPercentAndMinXP(uint16) view returns (uint8, uint32)",
-  "function getActiveDailyAndWeeklyRewards(uint256,uint256) view returns (tuple(uint16,uint24)[8])",
-  "function getCombatStats(uint16) view returns (tuple(int16,int16,int16,int16,int16,int16,int16))",
-  "function getDailyReward(uint256,uint256) view returns (uint256, uint256)",
-  "function getMultipleWords(uint256) view returns (uint256[4])",
-  "function getNumSpawn(uint16) view returns (uint256)",
-  "function getPermissibleItemsForAction(uint256) view returns (uint16, uint16, bool, uint8, uint32, bool)",
-  "function getRandomBytes(uint256,uint256,uint256) view returns (bytes)",
-  "function getRandomWord(uint256) view returns (uint256)",
-  "function getRewardsHelper(uint16) view returns (tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint8,uint16,uint16,uint8,uint16,uint16,uint8), uint8, uint256, uint8)",
-  "function getSkill(uint256) view returns (uint8)",
-  "function getSpecificDailyReward(uint256,uint256,uint256,uint256) view returns (uint16, uint24)",
-  "function getWeeklyReward(uint256,uint256) view returns (uint16, uint24)",
-  "function getXPPerHour(uint16,uint16) view returns (uint24)",
-  "function hasRandomWord(uint256) view returns (bool)",
-  "function initialize(address,uint64)",
-  "function lastRandomWordsUpdatedTime() view returns (uint40)",
-  "function owner() view returns (address)",
-  "function proxiableUUID() view returns (bytes32)",
-  "function randomWords(uint256) view returns (uint256)",
-  "function rawFulfillRandomWords(uint256,uint256[])",
-  "function removeActionChoices(uint16,uint16[])",
-  "function renounceOwnership()",
-  "function requestIds(uint256) view returns (uint256)",
-  "function requestRandomWords() returns (uint256)",
-  "function setChainlinkCallbackGasLimit(uint256)",
-  "function setDailyRewardPool(uint256,tuple(uint16,uint24)[])",
-  "function setQuests(address)",
-  "function setWeeklyRewardPool(uint256,tuple(uint16,uint24)[])",
-  "function setWishingWell(address)",
-  "function thisWeeksRandomWordSegment() view returns (bytes8)",
-  "function transferOwnership(address)",
-  "function upgradeTo(address)",
-  "function upgradeToAndCall(address,bytes) payable",
-  "function weeklyRewardPool(uint256,uint256) view returns (uint16, uint24)"
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "ActionAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionChoiceAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionChoiceDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionChoiceIdZeroNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionIdZeroNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallbackGasLimitTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CanOnlyRequestAfter1DayHasPassed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "checkpoint",
+        "type": "uint256"
+      }
+    ],
+    "name": "CanOnlyRequestAfterTheNextCheckpoint",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DynamicActionsCannotBeAdded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DynamicActionsCannotBeSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidReward",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MinCannotBeGreaterThanMax",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoActionChoices",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoValidRandomWord",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NonCombatCannotHaveBothGuaranteedAndRandomRewards",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAFactorOf3600",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyCombatMultipleGuaranteedRewards",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "have",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "want",
+        "type": "address"
+      }
+    ],
+    "name": "OnlyCoordinatorCanFulfill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RandomWordsCannotBeUpdatedYet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RequestAlreadyFulfilled",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyRewardsInPool",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isDynamic",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "actionChoiceRequired",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpPerHour",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint32",
+                "name": "minXP",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint24",
+                "name": "numSpawned",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMin",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMax",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "successPercent",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct ActionInfoV1",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionV1",
+        "name": "action",
+        "type": "tuple"
+      }
+    ],
+    "name": "AddAction",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionChoiceId",
+        "type": "uint16"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceV1",
+        "name": "choice",
+        "type": "tuple"
+      }
+    ],
+    "name": "AddActionChoice",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceV1[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddActionChoices",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceInputV2[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddActionChoicesV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "inputAmounts",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceInputV3[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddActionChoicesV3",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceInput[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddActionChoicesV4",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isDynamic",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "actionChoiceRequired",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpPerHour",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint32",
+                "name": "minXP",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint24",
+                "name": "numSpawned",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMin",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMax",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "successPercent",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct ActionInfoV1",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionV1[]",
+        "name": "actions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isDynamic",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "actionChoiceRequired",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpPerHour",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint32",
+                "name": "minXP",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint24",
+                "name": "numSpawned",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMin",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMax",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "successPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct ActionInfo",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Action[]",
+        "name": "actions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddActionsV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "AddDynamicActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionChoiceId",
+        "type": "uint16"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceV1",
+        "name": "choice",
+        "type": "tuple"
+      }
+    ],
+    "name": "EditActionChoice",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceInputV2[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditActionChoicesV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint8[]",
+            "name": "inputAmounts",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceInputV3[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditActionChoicesV3",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceInput[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditActionChoicesV4",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionIds",
+        "type": "uint16[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionChoiceV1[]",
+        "name": "choices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditActionChoices_",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isDynamic",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "actionChoiceRequired",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpPerHour",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint32",
+                "name": "minXP",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint24",
+                "name": "numSpawned",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMin",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMax",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "successPercent",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct ActionInfoV1",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ActionV1[]",
+        "name": "actions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isDynamic",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "actionChoiceRequired",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpPerHour",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint32",
+                "name": "minXP",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint24",
+                "name": "numSpawned",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMin",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMax",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "successPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct ActionInfo",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Action[]",
+        "name": "actions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditActionsV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionChoiceIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "RemoveActionChoicesV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "RemoveDynamicActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[3]",
+        "name": "randomWords",
+        "type": "uint256[3]"
+      }
+    ],
+    "name": "RequestFulfilled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "randomWord",
+        "type": "uint256"
+      }
+    ],
+    "name": "RequestFulfilledV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "numWords",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lastRandomWordsUpdatedTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "RequestSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "MIN_RANDOM_WORDS_UPDATE_TIME",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "NUM_DAYS_RANDOM_WORDS_INITIALIZED",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "actionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "actions",
+    "outputs": [
+      {
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "isAvailable",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isDynamic",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "actionChoiceRequired",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint24",
+        "name": "xpPerHour",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minXP",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint24",
+        "name": "numSpawned",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint16",
+        "name": "handItemTokenIdRangeMin",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "handItemTokenIdRangeMax",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "successPercent",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "worldLocation",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "isFullModeOnly",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "internalType": "struct ActionChoiceInput[]",
+        "name": "_actionChoices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addActionChoices",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isDynamic",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "actionChoiceRequired",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpPerHour",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint32",
+                "name": "minXP",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint24",
+                "name": "numSpawned",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMin",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMax",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "successPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct ActionInfo",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct Action[]",
+        "name": "_actions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "_actionIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint16[][]",
+        "name": "_actionChoiceIds",
+        "type": "uint16[][]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "internalType": "struct ActionChoiceInput[][]",
+        "name": "_actionChoices",
+        "type": "tuple[][]"
+      }
+    ],
+    "name": "addBulkActionChoices",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "dailyRewardPool",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "amount",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_actionChoiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "internalType": "struct ActionChoiceInput[]",
+        "name": "_actionChoices",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editActionChoices",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isDynamic",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "actionChoiceRequired",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpPerHour",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint32",
+                "name": "minXP",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint24",
+                "name": "numSpawned",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMin",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "handItemTokenIdRangeMax",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "successPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct ActionInfo",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct Action[]",
+        "name": "_actions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_choiceId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getActionChoice",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "reserved",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP2",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount2",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount3",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct ActionChoice",
+        "name": "choice",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_actionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getActionInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isDynamic",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "actionChoiceRequired",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint24",
+            "name": "numSpawned",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "worldLocation",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct ActionInfo",
+        "name": "info",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_actionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getActionRewards",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId4",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance4",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount4",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ActionRewards",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getActionSuccessPercentAndMinXP",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "successPercent",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minXP",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getActiveDailyAndWeeklyRewards",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment[8]",
+        "name": "rewards",
+        "type": "tuple[8]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getCombatStats",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "stats",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getDailyReward",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemTokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMultipleWords",
+    "outputs": [
+      {
+        "internalType": "uint256[4]",
+        "name": "words",
+        "type": "uint256[4]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getNumSpawn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "numSpawned",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_actionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPermissibleItemsForAction",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "handItemTokenIdRangeMin",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "handItemTokenIdRangeMax",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "actionChoiceRequired",
+        "type": "bool"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minXP",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bool",
+        "name": "actionAvailable",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_numTickets",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_timestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRandomBytes",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "b",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRandomWord",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "randomWord",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getRewardsHelper",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId4",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance4",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount4",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ActionRewards",
+        "name": "",
+        "type": "tuple"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numSpanwed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "worldLocation",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_actionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSkill",
+    "outputs": [
+      {
+        "internalType": "enum Skill",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_day",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_randomWord",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSpecificDailyReward",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "amount",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getWeeklyReward",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "amount",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_actionChoiceId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getXPPerHour",
+    "outputs": [
+      {
+        "internalType": "uint24",
+        "name": "xpPerHour",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "hasRandomWord",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract VRFCoordinatorV2Interface",
+        "name": "_coordinator",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "_subscriptionId",
+        "type": "uint64"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastRandomWordsUpdatedTime",
+    "outputs": [
+      {
+        "internalType": "uint40",
+        "name": "",
+        "type": "uint40"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "randomWords",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "randomWord",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "randomWords",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "rawFulfillRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_actionChoiceIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "removeActionChoices",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestIds",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "requestRandomWords",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_gasLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "setChainlinkCallbackGasLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tier",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment[]",
+        "name": "_dailyRewards",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setDailyRewardPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOracleRewardCB",
+        "name": "_quests",
+        "type": "address"
+      }
+    ],
+    "name": "setQuests",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tier",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment[]",
+        "name": "_weeklyRewards",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setWeeklyRewardPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOracleRewardCB",
+        "name": "_wishingWell",
+        "type": "address"
+      }
+    ],
+    "name": "setWishingWell",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "thisWeeksRandomWordSegment",
+    "outputs": [
+      {
+        "internalType": "bytes8",
+        "name": "",
+        "type": "bytes8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "weeklyRewardPool",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "amount",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
 ]

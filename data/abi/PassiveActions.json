@@ -1,75 +1,1309 @@
 [
-  "constructor()",
-  "error ActionAlreadyExists(uint16)",
-  "error ActionAlreadyFinished()",
-  "error ActionDoesNotExist()",
-  "error ActionIdZeroNotAllowed()",
-  "error AddressIsNotContract()",
-  "error AlreadyInitialized()",
-  "error BeaconImplementationIsNotAContract()",
-  "error CallerIsNotOwner()",
-  "error DurationCannotBeZero()",
-  "error DurationTooLong()",
-  "error FunctionMustBeCalledThroughActiveProxy()",
-  "error FunctionMustBeCalledThroughDelegateCall()",
-  "error FunctionMustNotBeCalledThroughDelegateCall()",
-  "error InputAmountsMustBeInOrder()",
-  "error InputItemNoDuplicates()",
-  "error InputSpecifiedWithoutAmount()",
-  "error InvalidActionId()",
-  "error InvalidInputTokenId()",
-  "error InvalidSkill()",
-  "error IsInitializing()",
-  "error LengthMismatch()",
-  "error MinimumLevelNotReached(uint8,uint256)",
-  "error MinimumSkillsNoDuplicates()",
-  "error NewAdminIsZeroAddress()",
-  "error NewBeaconIsNotAContract()",
-  "error NewImplementationIsNotAContract()",
-  "error NewImplementationNotUUPS()",
-  "error NewOwnerIsZeroAddress()",
-  "error NoActivePassiveAction()",
-  "error NoInputItemsSpecified()",
-  "error NotInitializing()",
-  "error NotOwnerOfPlayerAndActive()",
-  "error NotPassiveVial()",
-  "error PassiveActionNotReadyToBeClaimed()",
-  "error PlayerNotUpgraded()",
-  "error PreviousActionNotFinished()",
-  "error PreviousInputTokenIdMustBeSpecified()",
-  "error ReentrantCall()",
-  "error TooManyInputItems()",
-  "error TooManyMinSkills()",
-  "error UnsupportedProxiableUUID()",
-  "event AddPassiveActions(tuple(uint16,tuple(uint8,uint16[],uint24[],uint8[],uint16[],uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[])[])",
-  "event AdminChanged(address,address)",
-  "event BeaconUpgraded(address indexed)",
-  "event ClaimPassiveAction(uint256,address,uint256,uint256[],uint256[],bool)",
-  "event EarlyEndPassiveAction(uint256,address,uint256)",
-  "event EditPassiveActions(tuple(uint16,tuple(uint8,uint16[],uint24[],uint8[],uint16[],uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[])[])",
-  "event Initialized(uint8)",
-  "event OwnershipTransferred(address indexed,address indexed)",
-  "event StartPassiveAction(uint256,address,uint256,uint256,uint16)",
-  "event Upgraded(address indexed)",
-  "function actions(uint256) view returns (uint8, uint16, uint24, uint16, uint24, uint16, uint24, uint8, uint16, uint8, uint16, uint8, uint16, uint8, bool, bytes1)",
-  "function addActions(tuple(uint16,tuple(uint8,uint16[],uint24[],uint8[],uint16[],uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[])[])",
-  "function claim(uint256)",
-  "function editActions(tuple(uint16,tuple(uint8,uint16[],uint24[],uint8[],uint16[],uint8,uint8,bool),tuple(uint16,uint16)[],tuple(uint16,uint16,uint8)[])[])",
-  "function endEarly(uint256)",
-  "function finishedInfo(uint256) view returns (bool, bool, bool, uint256, bool)",
-  "function initialize(address,address,address)",
-  "function itemNFT() view returns (address)",
-  "function onERC1155BatchReceived(address,address,uint256[],uint256[],bytes) returns (bytes4)",
-  "function onERC1155Received(address,address,uint256,uint256,bytes) returns (bytes4)",
-  "function owner() view returns (address)",
-  "function pendingPassiveActionState(uint256) view returns (tuple(uint256[],uint256[],uint256[],uint256[],uint256,bool,bool))",
-  "function players() view returns (address)",
-  "function proxiableUUID() view returns (bytes32)",
-  "function renounceOwnership()",
-  "function startAction(uint256,uint16,uint16)",
-  "function supportsInterface(bytes4) view returns (bool)",
-  "function transferOwnership(address)",
-  "function upgradeTo(address)",
-  "function upgradeToAndCall(address,bytes) payable",
-  "function world() view returns (address)"
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "ActionAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionAlreadyFinished",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionIdZeroNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DurationCannotBeZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DurationTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputAmountsMustBeInOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputItemNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputSpecifiedWithoutAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidActionId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInputTokenId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minLevel",
+        "type": "uint256"
+      }
+    ],
+    "name": "MinimumLevelNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MinimumSkillsNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoActivePassiveAction",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoInputItemsSpecified",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotPassiveVial",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PassiveActionNotReadyToBeClaimed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerNotUpgraded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PreviousActionNotFinished",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PreviousInputTokenIdMustBeSpecified",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReentrantCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyInputItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyMinSkills",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8",
+                "name": "durationDays",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "inputTokenIds",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint24[]",
+                "name": "inputAmounts",
+                "type": "uint24[]"
+              },
+              {
+                "internalType": "enum Skill[]",
+                "name": "minSkills",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "minLevels",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint8",
+                "name": "skipSuccessPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "name": "passiveActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddPassiveActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "startingAnother",
+        "type": "bool"
+      }
+    ],
+    "name": "ClaimPassiveAction",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      }
+    ],
+    "name": "EarlyEndPassiveAction",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8",
+                "name": "durationDays",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "inputTokenIds",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint24[]",
+                "name": "inputAmounts",
+                "type": "uint24[]"
+              },
+              {
+                "internalType": "enum Skill[]",
+                "name": "minSkills",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "minLevels",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint8",
+                "name": "skipSuccessPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "name": "passiveActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditPassiveActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "actionId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "boostItemTokenId",
+        "type": "uint16"
+      }
+    ],
+    "name": "StartPassiveAction",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "actionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "actions",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "durationDays",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "inputAmount1",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "inputAmount2",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId3",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "inputAmount3",
+        "type": "uint24"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill1",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "minLevel1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill2",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "minLevel2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill3",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "minLevel3",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "skipSuccessPercent",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "hasRandomRewards",
+        "type": "bool"
+      },
+      {
+        "internalType": "bytes1",
+        "name": "packedData",
+        "type": "bytes1"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8",
+                "name": "durationDays",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "inputTokenIds",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint24[]",
+                "name": "inputAmounts",
+                "type": "uint24[]"
+              },
+              {
+                "internalType": "enum Skill[]",
+                "name": "minSkills",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "minLevels",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint8",
+                "name": "skipSuccessPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "name": "_passiveActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8",
+                "name": "durationDays",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "inputTokenIds",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint24[]",
+                "name": "inputAmounts",
+                "type": "uint24[]"
+              },
+              {
+                "internalType": "enum Skill[]",
+                "name": "minSkills",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint16[]",
+                "name": "minLevels",
+                "type": "uint16[]"
+              },
+              {
+                "internalType": "uint8",
+                "name": "skipSuccessPercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "worldLocation",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isFullModeOnly",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct PassiveActions.PassiveActionInfoInput",
+            "name": "info",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "rate",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct GuaranteedReward[]",
+            "name": "guaranteedRewards",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "chance",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint8",
+                "name": "amount",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RandomReward[]",
+            "name": "randomRewards",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct PassiveActions.PassiveActionInput[]",
+        "name": "_passiveActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "endEarly",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "finishedInfo",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "finished",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "oracleCalled",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "hasRandomRewards",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numWinners",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "skippedToday",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "_players",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract World",
+        "name": "_world",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "itemNFT",
+    "outputs": [
+      {
+        "internalType": "contract ItemNFT",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "onERC1155BatchReceived",
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "onERC1155Received",
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "pendingPassiveActionState",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedRandomRewardItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedRandomRewardAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "numDaysSkipped",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "skippedToday",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isReady",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct PassiveActions.PendingPassiveActionState",
+        "name": "_pendingPassiveActionState",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "players",
+    "outputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_actionId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_boostItemTokenId",
+        "type": "uint16"
+      }
+    ],
+    "name": "startAction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "world",
+    "outputs": [
+      {
+        "internalType": "contract World",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
 ]

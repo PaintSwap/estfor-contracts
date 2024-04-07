@@ -1,47 +1,440 @@
 [
-  "constructor()",
-  "error AddressIsNotContract()",
-  "error AlreadyInitialized()",
-  "error BeaconImplementationIsNotAContract()",
-  "error CallerIsNotOwner()",
-  "error FunctionMustBeCalledThroughActiveProxy()",
-  "error FunctionMustBeCalledThroughDelegateCall()",
-  "error FunctionMustNotBeCalledThroughDelegateCall()",
-  "error IsInitializing()",
-  "error NewAdminIsZeroAddress()",
-  "error NewBeaconIsNotAContract()",
-  "error NewImplementationIsNotAContract()",
-  "error NewImplementationNotUUPS()",
-  "error NewOwnerIsZeroAddress()",
-  "error NotAdminAndBeta()",
-  "error NotInitializing()",
-  "error NotLeader()",
-  "error NotMemberOfClan()",
-  "error NotOwnerOfPlayerAndActive()",
-  "error NotSettingCombatants()",
-  "error PlayerAlreadyExistingCombatant()",
-  "error PlayerCombatantCooldownTimestamp()",
-  "error PlayerIdsNotSortedOrDuplicates()",
-  "error PlayerOnTerritoryAndLockedVault()",
-  "error SetCombatantsIncorrectly()",
-  "error UnsupportedProxiableUUID()",
-  "event AdminChanged(address,address)",
-  "event BeaconUpgraded(address indexed)",
-  "event Initialized(uint8)",
-  "event OwnershipTransferred(address indexed,address indexed)",
-  "event Upgraded(address indexed)",
-  "function COMBATANT_COOLDOWN() view returns (uint256)",
-  "function assignCombatants(uint256,bool,uint48[],bool,uint48[],uint256)",
-  "function clans() view returns (address)",
-  "function clearCooldowns(uint48[])",
-  "function initialize(address,address,address,address,address,bool)",
-  "function lockedVaults() view returns (address)",
-  "function owner() view returns (address)",
-  "function players() view returns (address)",
-  "function proxiableUUID() view returns (bytes32)",
-  "function renounceOwnership()",
-  "function territories() view returns (address)",
-  "function transferOwnership(address)",
-  "function upgradeTo(address)",
-  "function upgradeToAndCall(address,bytes) payable"
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAdminAndBeta",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotLeader",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotMemberOfClan",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotSettingCombatants",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerAlreadyExistingCombatant",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerCombatantCooldownTimestamp",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerIdsNotSortedOrDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerOnTerritoryAndLockedVault",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SetCombatantsIncorrectly",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "COMBATANT_COOLDOWN",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_setTerritoryCombatants",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint48[]",
+        "name": "_territoryPlayerIds",
+        "type": "uint48[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "_setLockedVaultCombatants",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint48[]",
+        "name": "_lockedVaultPlayerIds",
+        "type": "uint48[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_leaderPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "assignCombatants",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "clans",
+    "outputs": [
+      {
+        "internalType": "contract IClans",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint48[]",
+        "name": "_playerIds",
+        "type": "uint48[]"
+      }
+    ],
+    "name": "clearCooldowns",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "_players",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IClans",
+        "name": "_clans",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ICombatants",
+        "name": "_territories",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ICombatants",
+        "name": "_lockedVaults",
+        "type": "address"
+      },
+      {
+        "internalType": "contract AdminAccess",
+        "name": "_adminAccess",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isBeta",
+        "type": "bool"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lockedVaults",
+    "outputs": [
+      {
+        "internalType": "contract ICombatants",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "players",
+    "outputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "territories",
+    "outputs": [
+      {
+        "internalType": "contract ICombatants",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ]

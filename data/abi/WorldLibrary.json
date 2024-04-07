@@ -1,23 +1,198 @@
 [
-  "error FirstMinSkillMustBeActionSkill()",
-  "error GuaranteedRewardsMustBeInOrder()",
-  "error GuaranteedRewardsNoDuplicates()",
-  "error InputAmountsMustBeInOrder()",
-  "error InputItemNoDuplicates()",
-  "error InputSpecifiedWithoutAmount()",
-  "error InvalidInputTokenId()",
-  "error InvalidSkill()",
-  "error LengthMismatch()",
-  "error MinimumSkillsNoDuplicates()",
-  "error NotAFactorOf3600()",
-  "error OutputAmountCannotBeZero()",
-  "error OutputSpecifiedWithoutAmount()",
-  "error OutputTokenIdCannotBeEmpty()",
-  "error RandomRewardNoDuplicates()",
-  "error RandomRewardsMustBeInOrder(uint16,uint16)",
-  "error TooManyGuaranteedRewards()",
-  "error TooManyInputItems()",
-  "error TooManyMinSkills()",
-  "error TooManyRandomRewards()",
-  "function checkActionChoice(tuple(Skill,int16,uint24,uint24,uint16[],uint24[],uint16,uint8,uint8,uint16,uint16,bool,Skill[],uint32[])) pure"
+  {
+    "inputs": [],
+    "name": "FirstMinSkillMustBeActionSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "GuaranteedRewardsMustBeInOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "GuaranteedRewardsNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputAmountsMustBeInOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputItemNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputSpecifiedWithoutAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInputTokenId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MinimumSkillsNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAFactorOf3600",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutputAmountCannotBeZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutputSpecifiedWithoutAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutputTokenIdCannotBeEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RandomRewardNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "chance1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "chance2",
+        "type": "uint16"
+      }
+    ],
+    "name": "RandomRewardsMustBeInOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyGuaranteedRewards",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyInputItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyMinSkills",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyRandomRewards",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "Skill"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "Skill[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          }
+        ],
+        "internalType": "struct ActionChoiceInput",
+        "name": "_actionChoiceInput",
+        "type": "tuple"
+      }
+    ],
+    "name": "checkActionChoice",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  }
 ]

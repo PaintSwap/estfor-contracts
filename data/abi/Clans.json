@@ -1,148 +1,2233 @@
 [
-  "constructor()",
-  "error AddressIsNotContract()",
-  "error AlreadyInClan()",
-  "error AlreadyInitialized()",
-  "error AlreadySentInvite()",
-  "error AlreadySentJoinRequest()",
-  "error BankCapacityTooLow()",
-  "error BeaconImplementationIsNotAContract()",
-  "error CallerIsNotOwner()",
-  "error CannotDowngradeTier()",
-  "error CannotRenounceToSelf()",
-  "error CannotSetSameRank()",
-  "error ChangingRankEqualOrHigherThanSelf()",
-  "error ChangingRankOfPlayerEqualOrHigherThanSelf()",
-  "error ChangingRankOfPlayerHigherThanSelf()",
-  "error ClanDestroyFailedHasMembers()",
-  "error ClanDoesNotExist()",
-  "error ClanIsFull()",
-  "error DiscordInvalidCharacters()",
-  "error DiscordTooLong()",
-  "error DiscordTooShort()",
-  "error FunctionMustBeCalledThroughActiveProxy()",
-  "error FunctionMustBeCalledThroughDelegateCall()",
-  "error FunctionMustNotBeCalledThroughDelegateCall()",
-  "error ImageIdTooLow()",
-  "error InvalidImageId()",
-  "error InvalidNFTType()",
-  "error InviteDoesNotExist()",
-  "error IsInitializing()",
-  "error JoinRequestsDisabled()",
-  "error MemberCapacityTooLow()",
-  "error MessageTooLong()",
-  "error NFTNotWhitelistedOnMarketplace()",
-  "error NameAlreadyExists()",
-  "error NameInvalidCharacters()",
-  "error NameTooLong()",
-  "error NameTooShort()",
-  "error NewAdminIsZeroAddress()",
-  "error NewBeaconIsNotAContract()",
-  "error NewImplementationIsNotAContract()",
-  "error NewImplementationNotUUPS()",
-  "error NewOwnerIsZeroAddress()",
-  "error NoGateKeptNFTFound()",
-  "error NoInvitesToDelete()",
-  "error NoJoinRequest()",
-  "error NoJoinRequestsToDelete()",
-  "error NotInitializing()",
-  "error NotMemberOfClan()",
-  "error NotOwnerOfPlayer()",
-  "error NotOwnerOfPlayerAndActive()",
-  "error OwnerExists()",
-  "error PriceTooLow()",
-  "error RankMustBeLowerRenounce()",
-  "error RankNotHighEnough()",
-  "error TelegramInvalidCharacters()",
-  "error TelegramTooLong()",
-  "error TierAlreadyExists()",
-  "error TierDoesNotExist()",
-  "error TooManyNFTs()",
-  "error TwitterInvalidCharacters()",
-  "error TwitterTooLong()",
-  "error UnsupportedNFTType()",
-  "error UnsupportedProxiableUUID()",
-  "event AddTiers(tuple(uint8,uint16,uint16,uint24,uint40,uint80)[])",
-  "event AdminChanged(address,address)",
-  "event BeaconUpgraded(address indexed)",
-  "event ClanCreated(uint256,uint256,string[],uint256,uint256)",
-  "event ClanDestroyed(uint256)",
-  "event ClanEdited(uint256,uint256,string[],uint256)",
-  "event ClanOwnerLeft(uint256,uint256)",
-  "event ClanOwnershipTransferred(uint256,uint256)",
-  "event ClanUpgraded(uint256,uint256,uint256)",
-  "event EditNameCost(uint256)",
-  "event EditTiers(tuple(uint8,uint16,uint16,uint24,uint40,uint80)[])",
-  "event GateKeepNFTs(uint256,address[],uint256)",
-  "event Initialized(uint8)",
-  "event InviteAccepted(uint256,uint256)",
-  "event InviteSent(uint256,uint256,uint256)",
-  "event InvitesDeletedByClan(uint256,uint256[],uint256)",
-  "event InvitesDeletedByPlayer(uint256[],uint256)",
-  "event InvitesSent(uint256,uint256[],uint256)",
-  "event JoinRequestAccepted(uint256,uint256,uint256)",
-  "event JoinRequestRemoved(uint256,uint256)",
-  "event JoinRequestSent(uint256,uint256)",
-  "event JoinRequestsAccepted(uint256,uint256[],uint256)",
-  "event JoinRequestsEnabled(uint256,bool,uint256)",
-  "event JoinRequestsRemovedByClan(uint256,uint256[],uint256)",
-  "event MemberLeft(uint256,uint256)",
-  "event MemberLeftV2(uint256,uint256,uint256)",
-  "event OwnershipTransferred(address indexed,address indexed)",
-  "event PinMessage(uint256,string,uint256)",
-  "event PlayerRankUpdated(uint256,uint256,uint8,uint256)",
-  "event SetClanRank(uint256,uint256,uint8)",
-  "event Upgraded(address indexed)",
-  "function acceptInvite(uint256,uint256,uint256)",
-  "function acceptJoinRequest(uint256,uint256,uint256)",
-  "function acceptJoinRequests(uint256,uint256[],uint256)",
-  "function addTiers(tuple(uint8,uint16,uint16,uint24,uint40,uint80)[])",
-  "function bankFactory() view returns (address)",
-  "function canWithdraw(uint256,uint256) view returns (bool)",
-  "function changeRank(uint256,uint256,uint8,uint256)",
-  "function changeRanks(uint256,uint256[],uint8[],uint256)",
-  "function claimOwnership(uint256,uint256)",
-  "function clans(uint256) view returns (uint80, uint16, uint16, uint40, uint8, bool, string)",
-  "function createClan(uint256,string,string,string,string,uint16,uint8)",
-  "function deleteInvitesAsClan(uint256,uint256[],uint256)",
-  "function deleteInvitesAsPlayer(uint256[],uint256)",
-  "function editClan(uint256,string,string,string,string,uint256,uint256)",
-  "function editNameCost() view returns (uint80)",
-  "function editTiers(tuple(uint8,uint16,uint16,uint24,uint40,uint80)[])",
-  "function gateKeep(uint256,tuple(address,uint80)[],uint256)",
-  "function getClanId(uint256) view returns (uint256)",
-  "function getClanNameOfPlayer(uint256) view returns (string)",
-  "function getClanTierMembership(uint256) view returns (uint8)",
-  "function getRank(uint256,uint256) view returns (uint8)",
-  "function hasInviteRequest(uint256,uint256) view returns (bool)",
-  "function initialize(address,address,address,address,uint80,address)",
-  "function inviteMember(uint256,uint256,uint256)",
-  "function inviteMembers(uint256,uint256[],uint256)",
-  "function isClanMember(uint256,uint256) view returns (bool)",
-  "function isMemberOfAnyClan(uint256) view returns (bool)",
-  "function lowercaseNames(string) view returns (bool)",
-  "function maxBankCapacity(uint256) view returns (uint16)",
-  "function maxMemberCapacity(uint256) view returns (uint16)",
-  "function nextClanId() view returns (uint80)",
-  "function owner() view returns (address)",
-  "function ownerlessClanTimestamps(uint256) view returns (uint40)",
-  "function pinMessage(uint256,string,uint256)",
-  "function playerInfo(uint256) view returns (uint32, uint8, uint32)",
-  "function proxiableUUID() view returns (bytes32)",
-  "function removeJoinRequest(uint256,uint256)",
-  "function removeJoinRequestsAsClan(uint256,uint256[],uint256)",
-  "function renounceOwnership()",
-  "function renounceOwnershipTo(uint256,uint256,uint8)",
-  "function requestToJoin(uint256,uint256,uint256)",
-  "function setBankFactory(address)",
-  "function setEditNameCost(uint72)",
-  "function setJoinRequestsEnabled(uint256,bool,uint256)",
-  "function setPaintSwapMarketplaceWhitelist(address)",
-  "function setPlayers(address)",
-  "function setTerritoriesAndLockedBankVaults(address,address)",
-  "function tiers(uint256) view returns (uint8, uint16, uint16, uint24, uint40, uint80)",
-  "function transferOwnership(address)",
-  "function upgradeClan(uint256,uint256,uint8)",
-  "function upgradeTo(address)",
-  "function upgradeToAndCall(address,bytes) payable"
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInClan",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadySentInvite",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadySentJoinRequest",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BankCapacityTooLow",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotDowngradeTier",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotRenounceToSelf",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotSetSameRank",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ChangingRankEqualOrHigherThanSelf",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ChangingRankOfPlayerEqualOrHigherThanSelf",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ChangingRankOfPlayerHigherThanSelf",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanDestroyFailedHasMembers",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanIsFull",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DiscordInvalidCharacters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DiscordTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DiscordTooShort",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ImageIdTooLow",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidImageId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidNFTType",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InviteDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "JoinRequestsDisabled",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MemberCapacityTooLow",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MessageTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NFTNotWhitelistedOnMarketplace",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameInvalidCharacters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameTooShort",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoGateKeptNFTFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoInvitesToDelete",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoJoinRequest",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoJoinRequestsToDelete",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotMemberOfClan",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OwnerExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PriceTooLow",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RankMustBeLowerRenounce",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RankNotHighEnough",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TelegramInvalidCharacters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TelegramTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TierAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TierDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyNFTs",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TwitterInvalidCharacters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TwitterTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedNFTType",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxMemberCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxBankCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "maxImageId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "minimumAge",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Clans.Tier[]",
+        "name": "tiers",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddTiers",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string[]",
+        "name": "clanInfo",
+        "type": "string[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "imageId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClanCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClanDestroyed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string[]",
+        "name": "clanInfo",
+        "type": "string[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "imageId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClanEdited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClanOwnerLeft",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClanOwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClanUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newCost",
+        "type": "uint256"
+      }
+    ],
+    "name": "EditNameCost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxMemberCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxBankCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "maxImageId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "minimumAge",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Clans.Tier[]",
+        "name": "tiers",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditTiers",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "nfts",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "GateKeepNFTs",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InviteAccepted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InviteSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "invitedPlayerIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "deletedInvitesPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvitesDeletedByClan",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "clanIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvitesDeletedByPlayer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "playerIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvitesSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "acceptedByPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "JoinRequestAccepted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "JoinRequestRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "JoinRequestSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "playerIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "acceptedByPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "JoinRequestsAccepted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "joinRequestsEnabled",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "JoinRequestsEnabled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "joinRequestPlayerIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "removingJoinRequestsPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "JoinRequestsRemovedByClan",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "MemberLeft",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "removedByPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "MemberLeftV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "message",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "PinMessage",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "memberId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ClanRank",
+        "name": "rank",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "PlayerRankUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ClanRank",
+        "name": "clan",
+        "type": "uint8"
+      }
+    ],
+    "name": "SetClanRank",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_gateKeepTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "acceptInvite",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newMemberPlayedId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "acceptJoinRequest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_newMemberPlayedIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "acceptJoinRequests",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxMemberCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxBankCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "maxImageId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "minimumAge",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          }
+        ],
+        "internalType": "struct Clans.Tier[]",
+        "name": "_tiers",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addTiers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "bankFactory",
+    "outputs": [
+      {
+        "internalType": "contract IBankFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "canWithdraw",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_memberId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum ClanRank",
+        "name": "_rank",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeRank",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_memberIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "enum ClanRank[]",
+        "name": "_ranks",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeRanks",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "clans",
+    "outputs": [
+      {
+        "internalType": "uint80",
+        "name": "owner",
+        "type": "uint80"
+      },
+      {
+        "internalType": "uint16",
+        "name": "imageId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "memberCount",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint40",
+        "name": "createdTimestamp",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint8",
+        "name": "tierId",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "disableJoinRequests",
+        "type": "bool"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_discord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_telegram",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_imageId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_tierId",
+        "type": "uint8"
+      }
+    ],
+    "name": "createClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_invitedPlayerIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteInvitesAsClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_clanIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteInvitesAsPlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_discord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_telegram",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_imageId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "editClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "editNameCost",
+    "outputs": [
+      {
+        "internalType": "uint80",
+        "name": "",
+        "type": "uint80"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxMemberCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxBankCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "maxImageId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "minimumAge",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          }
+        ],
+        "internalType": "struct Clans.Tier[]",
+        "name": "_tiers",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editTiers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint80",
+            "name": "nftType",
+            "type": "uint80"
+          }
+        ],
+        "internalType": "struct Clans.NFTInfo[]",
+        "name": "_nftInfos",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "gateKeep",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getClanId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getClanNameOfPlayer",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getClanTierMembership",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRank",
+    "outputs": [
+      {
+        "internalType": "enum ClanRank",
+        "name": "rank",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "hasInviteRequest",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IBrushToken",
+        "name": "_brush",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC1155",
+        "name": "_playerNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_pool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_dev",
+        "type": "address"
+      },
+      {
+        "internalType": "uint80",
+        "name": "_editNameCost",
+        "type": "uint80"
+      },
+      {
+        "internalType": "address",
+        "name": "_paintswapMarketplaceWhitelist",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_member",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "inviteMember",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_memberPlayerIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "inviteMembers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isClanMember",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isMemberOfAnyClan",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "lowercaseNames",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "exists",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "maxBankCapacity",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "maxMemberCapacity",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextClanId",
+    "outputs": [
+      {
+        "internalType": "uint80",
+        "name": "",
+        "type": "uint80"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ownerlessClanTimestamps",
+    "outputs": [
+      {
+        "internalType": "uint40",
+        "name": "timestampLeft",
+        "type": "uint40"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_message",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "pinMessage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "playerInfo",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "clanId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "enum ClanRank",
+        "name": "rank",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "requestedClanId",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeJoinRequest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_joinRequestPlayerIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeJoinRequestsAsClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newOwner",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum ClanRank",
+        "name": "_newRank",
+        "type": "uint8"
+      }
+    ],
+    "name": "renounceOwnershipTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_gateKeepTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestToJoin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IBankFactory",
+        "name": "_bankFactory",
+        "type": "address"
+      }
+    ],
+    "name": "setBankFactory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint72",
+        "name": "_editNameCost",
+        "type": "uint72"
+      }
+    ],
+    "name": "setEditNameCost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_joinRequestsEnabled",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setJoinRequestsEnabled",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_paintswapMarketplaceWhitelist",
+        "type": "address"
+      }
+    ],
+    "name": "setPaintSwapMarketplaceWhitelist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "_players",
+        "type": "address"
+      }
+    ],
+    "name": "setPlayers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IClanMemberLeftCB",
+        "name": "_territories",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IClanMemberLeftCB",
+        "name": "_lockedBankVaults",
+        "type": "address"
+      }
+    ],
+    "name": "setTerritoriesAndLockedBankVaults",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "tiers",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "id",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "maxMemberCapacity",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "maxBankCapacity",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "maxImageId",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint40",
+        "name": "minimumAge",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint80",
+        "name": "price",
+        "type": "uint80"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_newTierId",
+        "type": "uint8"
+      }
+    ],
+    "name": "upgradeClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ]

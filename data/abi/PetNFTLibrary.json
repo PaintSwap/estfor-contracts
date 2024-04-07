@@ -1,1 +1,24 @@
-["error InvalidPetEnhancementType(uint8)", "error InvalidSkin(uint8)"]
+[
+  {
+    "inputs": [
+      {
+        "internalType": "enum PetEnhancementType",
+        "name": "petEnhancementType",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidPetEnhancementType",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum PetSkin",
+        "name": "skin",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidSkin",
+    "type": "error"
+  }
+]

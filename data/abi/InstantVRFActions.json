@@ -1,71 +1,912 @@
 [
-  "constructor()",
-  "error ActionAlreadyExists()",
-  "error ActionDoesNotExist()",
-  "error ActionIdZeroNotAllowed()",
-  "error AddressIsNotContract()",
-  "error AlreadyInitialized()",
-  "error AlreadyProcessing()",
-  "error BeaconImplementationIsNotAContract()",
-  "error CallerIsNotOwner()",
-  "error CallerNotSamWitchVRF()",
-  "error FunctionMustBeCalledThroughActiveProxy()",
-  "error FunctionMustBeCalledThroughDelegateCall()",
-  "error FunctionMustNotBeCalledThroughDelegateCall()",
-  "error IncorrectInputAmounts()",
-  "error InputAmountsMustBeInOrder()",
-  "error InputItemNoDuplicates()",
-  "error InputSpecifiedWithoutAmount()",
-  "error InvalidInputTokenId()",
-  "error InvalidStrategy()",
-  "error IsInitializing()",
-  "error LengthMismatch()",
-  "error NewAdminIsZeroAddress()",
-  "error NewBeaconIsNotAContract()",
-  "error NewImplementationIsNotAContract()",
-  "error NewImplementationNotUUPS()",
-  "error NewOwnerIsZeroAddress()",
-  "error NotDoingAnyActions()",
-  "error NotEnoughFTM()",
-  "error NotInitializing()",
-  "error NotOwnerOfPlayerAndActive()",
-  "error PlayerNotUpgraded()",
-  "error RequestDoesNotExist()",
-  "error StrategyAlreadyExists()",
-  "error TooManyActionAmounts()",
-  "error TooManyInputItems()",
-  "error TransferFailed()",
-  "error UnsupportedProxiableUUID()",
-  "event AddInstantVRFActions(tuple(uint16,uint16[],uint24[],bytes,uint8,bool)[])",
-  "event AddStrategies(uint8[],address[])",
-  "event AdminChanged(address,address)",
-  "event BeaconUpgraded(address indexed)",
-  "event CompletedInstantVRFActions(address,uint256,uint256,uint256[],uint256[],uint256[])",
-  "event DoInstantVRFActions(address,uint256,uint256,uint16[],uint256[],uint256[],uint256[])",
-  "event EditInstantVRFActions(tuple(uint16,uint16[],uint24[],bytes,uint8,bool)[])",
-  "event Initialized(uint8)",
-  "event OwnershipTransferred(address indexed,address indexed)",
-  "event RemoveInstantVRFActions(uint16[])",
-  "event SetGasCostPerUnit(uint256)",
-  "event Upgraded(address indexed)",
-  "function MAX_ACTION_AMOUNT() view returns (uint256)",
-  "function actions(uint256) view returns (uint16, uint8, uint16, uint8, uint16, uint24, bytes1, address)",
-  "function addActions(tuple(uint16,uint16[],uint24[],bytes,uint8,bool)[])",
-  "function addStrategies(uint8[],address[])",
-  "function doInstantVRFActions(uint256,uint16[],uint256[]) payable",
-  "function editActions(tuple(uint16,uint16[],uint24[],bytes,uint8,bool)[])",
-  "function fulfillRandomWords(bytes32,uint256[])",
-  "function gasCostPerUnit() view returns (uint64)",
-  "function initialize(address,address,address,address,address,address)",
-  "function owner() view returns (address)",
-  "function proxiableUUID() view returns (bytes32)",
-  "function removeActions(uint16[])",
-  "function renounceOwnership()",
-  "function requestCost(uint256) view returns (uint256)",
-  "function setGasCostPerUnit(uint256)",
-  "function setPetNFT(address)",
-  "function strategies(uint8) view returns (address)",
-  "function transferOwnership(address)",
-  "function upgradeTo(address)",
-  "function upgradeToAndCall(address,bytes) payable"
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ActionAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionIdZeroNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyProcessing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerNotSamWitchVRF",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IncorrectInputAmounts",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputAmountsMustBeInOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputItemNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputSpecifiedWithoutAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInputTokenId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidStrategy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotDoingAnyActions",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotEnoughFTM",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerNotUpgraded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RequestDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StrategyAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyActionAmounts",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyInputItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TransferFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum InstantVRFActionType",
+            "name": "actionType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct InstantVRFActionInput[]",
+        "name": "instantVRFActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddInstantVRFActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "enum InstantVRFActionType[]",
+        "name": "actionTypes",
+        "type": "uint8[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "strategies",
+        "type": "address[]"
+      }
+    ],
+    "name": "AddStrategies",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "producedItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "producedItemAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "producedPetTokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "CompletedInstantVRFActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionIds",
+        "type": "uint16[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "consumedItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "consumedAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "DoInstantVRFActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum InstantVRFActionType",
+            "name": "actionType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct InstantVRFActionInput[]",
+        "name": "instantVRFActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditInstantVRFActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "RemoveInstantVRFActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gasCostPerUnit",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetGasCostPerUnit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_ACTION_AMOUNT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "actionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "actions",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "inputAmount1",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "inputAmount2",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId3",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "inputAmount3",
+        "type": "uint24"
+      },
+      {
+        "internalType": "bytes1",
+        "name": "packedData",
+        "type": "bytes1"
+      },
+      {
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum InstantVRFActionType",
+            "name": "actionType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct InstantVRFActionInput[]",
+        "name": "_instantVRFActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum InstantVRFActionType[]",
+        "name": "_instantVRFActionTypes",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_strategies",
+        "type": "address[]"
+      }
+    ],
+    "name": "addStrategies",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_actionIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_actionAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "doInstantVRFActions",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum InstantVRFActionType",
+            "name": "actionType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct InstantVRFActionInput[]",
+        "name": "_instantVRFActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_requestId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_randomWords",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "fulfillRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gasCostPerUnit",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract Players",
+        "name": "_players",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract PetNFT",
+        "name": "_petNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_oracle",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ISamWitchVRF",
+        "name": "_samWitchVRF",
+        "type": "address"
+      },
+      {
+        "internalType": "contract VRFRequestInfo",
+        "name": "_vrfRequestInfo",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "_instantVRFActionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "removeActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_actionAmounts",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestCost",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_gasCostPerUnit",
+        "type": "uint256"
+      }
+    ],
+    "name": "setGasCostPerUnit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract PetNFT",
+        "name": "_petNFT",
+        "type": "address"
+      }
+    ],
+    "name": "setPetNFT",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum InstantVRFActionType",
+        "name": "actionType",
+        "type": "uint8"
+      }
+    ],
+    "name": "strategies",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ]

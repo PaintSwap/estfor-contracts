@@ -1,87 +1,1986 @@
 [
-  "constructor()",
-  "error ActivatingQuestAlreadyActivated()",
-  "error AddressIsNotContract()",
-  "error AlreadyInitialized()",
-  "error BeaconImplementationIsNotAContract()",
-  "error CallerIsNotOwner()",
-  "error CannotChangeBackToFullMode()",
-  "error CannotStartFullModeQuest()",
-  "error DependentQuestNotCompleted(uint16)",
-  "error FunctionMustBeCalledThroughActiveProxy()",
-  "error FunctionMustBeCalledThroughDelegateCall()",
-  "error FunctionMustNotBeCalledThroughDelegateCall()",
-  "error InvalidActionChoiceNum()",
-  "error InvalidActionNum()",
-  "error InvalidActiveQuest()",
-  "error InvalidBrushAmount()",
-  "error InvalidBurnAmount()",
-  "error InvalidFTMAmount()",
-  "error InvalidMinimumRequirement()",
-  "error InvalidQuestId()",
-  "error InvalidRewardAmount()",
-  "error InvalidSkillXPGained()",
-  "error IsInitializing()",
-  "error LengthMismatch()",
-  "error NewAdminIsZeroAddress()",
-  "error NewBeaconIsNotAContract()",
-  "error NewImplementationIsNotAContract()",
-  "error NewImplementationNotUUPS()",
-  "error NewOwnerIsZeroAddress()",
-  "error NoActiveQuest()",
-  "error NotInitializing()",
-  "error NotOwnerOfPlayerAndActive()",
-  "error NotPlayers()",
-  "error NotSupported()",
-  "error NotWorld()",
-  "error QuestCompletedAlready()",
-  "error QuestDoesntExist()",
-  "error QuestWithIdAlreadyExists()",
-  "error RefundFailed()",
-  "error UnsupportedProxiableUUID()",
-  "event ActivateNewQuest(uint256,uint256)",
-  "event ActivateQuest(address,uint256,uint256)",
-  "event AddFixedQuest(tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,bool),tuple(uint8,uint64)[3])",
-  "event AddQuests(tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,bool,uint8)[],tuple(uint8,uint64)[3][])",
-  "event AdminChanged(address,address)",
-  "event BeaconUpgraded(address indexed)",
-  "event DeactivateQuest(uint256,uint256)",
-  "event EditQuest(tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,bool),tuple(uint8,uint64)[3])",
-  "event EditQuests(tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,bool,uint8)[],tuple(uint8,uint64)[3][])",
-  "event Initialized(uint8)",
-  "event OwnershipTransferred(address indexed,address indexed)",
-  "event QuestCompleted(address,uint256,uint256)",
-  "event RemoveQuest(uint256)",
-  "event UpdateQuestProgress(uint256,tuple(uint32,uint16,uint16,uint16,uint16,bool))",
-  "event Upgraded(address indexed)",
-  "function activateQuest(address,uint256,uint256)",
-  "function activeQuests(uint256) view returns (uint32, uint16, uint16, uint16, uint16, bool)",
-  "function addQuests(tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,bool,uint8)[],tuple(uint8,uint64)[3][])",
-  "function allFixedQuests(uint256) view returns (uint16, uint16, uint16, uint16, uint16, uint16, uint16, uint8, uint16, uint16, uint16, uint16, uint16, uint16, uint16, uint16, bytes1)",
-  "function buyBrush(address,uint256,bool) payable returns (uint256[])",
-  "function buyBrushQuest(address,address,uint256,uint256,bool) payable returns (bool)",
-  "function deactivateQuest(uint256)",
-  "function editQuests(tuple(uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint8,uint16,uint16,uint16,uint16,uint16,uint16,uint16,uint16,bool,uint8)[],tuple(uint8,uint64)[3][])",
-  "function getActiveQuestBurnedItemTokenId(uint256) view returns (uint256)",
-  "function getActiveQuestId(uint256) view returns (uint256)",
-  "function getQuestCompletedRewards(uint256) view returns (uint256[], uint256[], uint8, uint32)",
-  "function inProgressFixedQuests(uint256,uint256) view returns (uint32, uint16, uint16, uint16, uint16, bool)",
-  "function inProgressRandomQuests(uint256) view returns (uint32, uint16, uint16, uint16, uint16, bool)",
-  "function initialize(address,address,address[2])",
-  "function isQuestCompleted(uint256,uint256) view returns (bool)",
-  "function newOracleRandomWords(uint256)",
-  "function numTotalQuests() view returns (uint16)",
-  "function owner() view returns (address)",
-  "function playerInfo(uint256) view returns (uint32)",
-  "function processQuests(address,uint256,tuple(uint32,uint16,uint16,uint16,uint16,bool)[],uint256[])",
-  "function processQuestsView(uint256,uint256[],uint256[],uint256[],uint256[],uint256) view returns (uint256[], uint256[], uint256[], uint256[], uint8[], uint32[], uint256[], tuple(uint32,uint16,uint16,uint16,uint16,bool)[])",
-  "function proxiableUUID() view returns (bytes32)",
-  "function randomQuestId() view returns (uint40)",
-  "function removeQuest(uint256)",
-  "function renounceOwnership()",
-  "function sellBrush(address,uint256,uint256,bool)",
-  "function setPlayers(address)",
-  "function transferOwnership(address)",
-  "function upgradeTo(address)",
-  "function upgradeToAndCall(address,bytes) payable"
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ActivatingQuestAlreadyActivated",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotChangeBackToFullMode",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotStartFullModeQuest",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "dependentQuestId",
+        "type": "uint16"
+      }
+    ],
+    "name": "DependentQuestNotCompleted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidActionChoiceNum",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidActionNum",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidActiveQuest",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidBrushAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidBurnAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidFTMAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidMinimumRequirement",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidQuestId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidRewardAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSkillXPGained",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoActiveQuest",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotPlayers",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotSupported",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotWorld",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "QuestCompletedAlready",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "QuestDoesntExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "QuestWithIdAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RefundFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ActivateNewQuest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ActivateQuest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "dependentQuestId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillReward",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "skillXPGained",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct QuestV1",
+        "name": "quest",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Quests.MinimumRequirement[3]",
+        "name": "minimumRequirements",
+        "type": "tuple[3]"
+      }
+    ],
+    "name": "AddFixedQuest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "dependentQuestId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillReward",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "skillXPGained",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint8",
+            "name": "worldLocation",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct QuestInput[]",
+        "name": "quests",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "name": "minimumRequirements",
+        "type": "tuple[3][]"
+      }
+    ],
+    "name": "AddQuests",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "DeactivateQuest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "dependentQuestId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillReward",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "skillXPGained",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct QuestV1",
+        "name": "quest",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Quests.MinimumRequirement[3]",
+        "name": "minimumRequirements",
+        "type": "tuple[3]"
+      }
+    ],
+    "name": "EditQuest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "dependentQuestId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillReward",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "skillXPGained",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint8",
+            "name": "worldLocation",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct QuestInput[]",
+        "name": "quests",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "name": "minimumRequirements",
+        "type": "tuple[3][]"
+      }
+    ],
+    "name": "EditQuests",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "QuestCompleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RemoveQuest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "questId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceCompletedNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnCompletedAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFixed",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct PlayerQuest",
+        "name": "playerQuest",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateQuestProgress",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "activateQuest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "activeQuests",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "questId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionCompletedNum1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionCompletedNum2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionChoiceCompletedNum",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "burnCompletedAmount",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "isFixed",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "dependentQuestId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillReward",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "skillXPGained",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint8",
+            "name": "worldLocation",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct QuestInput[]",
+        "name": "_quests",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "name": "_minimumRequirements",
+        "type": "tuple[3][]"
+      }
+    ],
+    "name": "addQuests",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "allFixedQuests",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "dependentQuestId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionId1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionNum1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionId2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionNum2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionChoiceId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionChoiceNum",
+        "type": "uint16"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "skillReward",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "skillXPGained",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "rewardItemTokenId1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "rewardAmount1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "rewardItemTokenId2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "rewardAmount2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "burnItemTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "burnAmount",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "reserved",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes1",
+        "name": "packedData",
+        "type": "bytes1"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minimumBrushExpected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_useExactETH",
+        "type": "bool"
+      }
+    ],
+    "name": "buyBrush",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minimumBrushBack",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_useExactETH",
+        "type": "bool"
+      }
+    ],
+    "name": "buyBrushQuest",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "deactivateQuest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "dependentQuestId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillReward",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "skillXPGained",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint8",
+            "name": "worldLocation",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct QuestInput[]",
+        "name": "_quests",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct Quests.MinimumRequirement[3][]",
+        "name": "_minimumRequirements",
+        "type": "tuple[3][]"
+      }
+    ],
+    "name": "editQuests",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getActiveQuestBurnedItemTokenId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_player",
+        "type": "uint256"
+      }
+    ],
+    "name": "getActiveQuestId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getQuestCompletedRewards",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "skillGained",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "xpGained",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      }
+    ],
+    "name": "inProgressFixedQuests",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "questId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionCompletedNum1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionCompletedNum2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionChoiceCompletedNum",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "burnCompletedAmount",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "isFixed",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "inProgressRandomQuests",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "questId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionCompletedNum1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionCompletedNum2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionChoiceCompletedNum",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "burnCompletedAmount",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "isFixed",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_world",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IRouterV2",
+        "name": "_router",
+        "type": "address"
+      },
+      {
+        "internalType": "address[2]",
+        "name": "_buyPath",
+        "type": "address[2]"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isQuestCompleted",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_randomWord",
+        "type": "uint256"
+      }
+    ],
+    "name": "newOracleRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "numTotalQuests",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "playerInfo",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "numFixedQuestsCompleted",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "questId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceCompletedNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnCompletedAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFixed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct PlayerQuest[]",
+        "name": "_activeQuestInfo",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_questsCompleted",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "processQuests",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_actionIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_actionAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_choiceIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_choiceAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_burnedAmountOwned",
+        "type": "uint256"
+      }
+    ],
+    "name": "processQuestsView",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "itemTokenIdsBurned",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amountsBurned",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "enum Skill[]",
+        "name": "skillsGained",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint32[]",
+        "name": "xpGained",
+        "type": "uint32[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_questsCompleted",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "questId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceCompletedNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnCompletedAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFixed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct PlayerQuest[]",
+        "name": "activeQuestsCompletionInfo",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "randomQuestId",
+    "outputs": [
+      {
+        "internalType": "uint40",
+        "name": "",
+        "type": "uint40"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeQuest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_brushAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minFTM",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_useExactETH",
+        "type": "bool"
+      }
+    ],
+    "name": "sellBrush",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "_players",
+        "type": "address"
+      }
+    ],
+    "name": "setPlayers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  }
 ]
