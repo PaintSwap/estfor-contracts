@@ -1,4 +1,5 @@
 [
+  "constructor()",
   "error ActionAlreadyExists(uint16)",
   "error ActionAlreadyFinished()",
   "error ActionDoesNotExist()",
