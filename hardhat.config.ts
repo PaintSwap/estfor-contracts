@@ -126,7 +126,7 @@ const config: HardhatUserConfig = {
     clear: true,
     flat: true,
     spacing: 2,
-    format: "minimal",
+    format: "json",
     except: ["/ozUpgradeable", "/interfaces", "/test", "/helper", "/debug"],
   },
 };
