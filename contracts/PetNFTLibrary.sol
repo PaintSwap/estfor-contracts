@@ -17,24 +17,25 @@ library PetNFTLibrary {
   string private constant PET_NAME_PREFIX = "Pet ";
 
   function uri(
-    BasePetMetadata storage basePetMetadata,
-    Pet storage pet,
-    uint tokenId,
-    string storage imageBaseUri,
-    string memory name,
-    bool isBeta
+    BasePetMetadata storage _basePetMetadata,
+    Pet storage _pet,
+    uint _tokenId,
+    string storage _imageBaseUri,
+    string memory _name,
+    bool _isBeta
   ) external view returns (string memory) {
-    string memory skin = _skinToString(basePetMetadata.skin);
-    uint tier = basePetMetadata.tier;
-    string memory petEnhancementType = _petEnhancementTypeToString(basePetMetadata.enhancementType);
+    string memory skin = _skinToString(_basePetMetadata.skin);
+    uint tier = _basePetMetadata.tier;
+    string memory petEnhancementType = _petEnhancementTypeToString(_basePetMetadata.enhancementType);
 
-    bool hasFixedStar = (pet.skillFixedEnhancement1 + pet.skillFixedEnhancement2) >= basePetMetadata.fixedStarThreshold;
-    bool hasPercentageStar = (pet.skillPercentageEnhancement1 + pet.skillPercentageEnhancement2) >=
-      basePetMetadata.percentageStarThreshold;
+    bool hasFixedStar = (_pet.skillFixedEnhancement1 + _pet.skillFixedEnhancement2) >=
+      _basePetMetadata.fixedStarThreshold;
+    bool hasPercentageStar = (_pet.skillPercentageEnhancement1 + _pet.skillPercentageEnhancement2) >=
+      _basePetMetadata.percentageStarThreshold;
 
     // Create whole JSON
     string memory imageURI = string(
-      abi.encodePacked(imageBaseUri, skin, "_", tier.toString(), "_", petEnhancementType, ".jpg")
+      abi.encodePacked(_imageBaseUri, skin, "_", tier.toString(), "_", petEnhancementType, ".jpg")
     );
 
     string memory attributes = string(
@@ -45,17 +46,17 @@ library PetNFTLibrary {
         ",",
         _getTraitStringJSON("Enhancement type", petEnhancementType),
         ",",
-        _getTraitStringJSON("Skill bonus #1", _skillToString(pet.skillEnhancement1)),
+        _getTraitStringJSON("Skill bonus #1", _skillToString(_pet.skillEnhancement1)),
         ",",
-        _getTraitNumberJSON("Fixed increase #1", pet.skillFixedEnhancement1),
+        _getTraitNumberJSON("Fixed increase #1", _pet.skillFixedEnhancement1),
         ",",
-        _getTraitNumberJSON("Percent increase #1", pet.skillPercentageEnhancement1),
+        _getTraitNumberJSON("Percent increase #1", _pet.skillPercentageEnhancement1),
         ",",
-        _getTraitStringJSON("Skill bonus #2", _skillToString(pet.skillEnhancement2)),
+        _getTraitStringJSON("Skill bonus #2", _skillToString(_pet.skillEnhancement2)),
         ",",
-        _getTraitNumberJSON("Fixed increase #2", pet.skillFixedEnhancement2),
+        _getTraitNumberJSON("Fixed increase #2", _pet.skillFixedEnhancement2),
         ",",
-        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2),
+        _getTraitNumberJSON("Percent increase #2", _pet.skillPercentageEnhancement2),
         ",",
         _getTraitStringJSON("Fixed Star", hasFixedStar ? "true" : "false"),
         ",",
@@ -63,18 +64,18 @@ library PetNFTLibrary {
       )
     );
 
-    // Set default name if they don't have one
-    if (bytes(name).length == 0) {
-      name = _defaultPetName(tokenId);
+    // Set default _name if they don't have one
+    if (bytes(_name).length == 0) {
+      _name = _defaultPetName(_tokenId);
     }
 
-    bytes memory fullName = abi.encodePacked(name, " (T", tier.toString(), ")");
-    bytes memory externalURL = abi.encodePacked("https://", isBeta ? "beta." : "", "estfor.com");
-    string memory description = basePetMetadata.description;
+    bytes memory fullName = abi.encodePacked(_name, " (T", tier.toString(), ")");
+    bytes memory externalURL = abi.encodePacked("https://", _isBeta ? "beta." : "", "estfor.com");
+    string memory description = _basePetMetadata.description;
 
     string memory json = Base64.encode(
       abi.encodePacked(
-        '{"name":"',
+        '{"_name":"',
         fullName,
         '","description":"',
         description,
