@@ -129,6 +129,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     _;
   }
 
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
   function initialize(IPlayers _players, ItemNFT _itemNFT, World _world) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
