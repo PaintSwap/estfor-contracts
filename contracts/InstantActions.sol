@@ -102,6 +102,11 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     _;
   }
 
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
   function initialize(IPlayers _players, ItemNFT _itemNFT) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
