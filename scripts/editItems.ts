@@ -12,9 +12,25 @@ async function main() {
 
   const itemsToEdit = new Set([
     EstforConstants.SECRET_EGG_1_TIER1,
+    EstforConstants.SECRET_EGG_1_TIER2,
+    EstforConstants.SECRET_EGG_1_TIER3,
+    EstforConstants.SECRET_EGG_1_TIER4,
+    EstforConstants.SECRET_EGG_1_TIER5,
     EstforConstants.SECRET_EGG_2_TIER1,
+    EstforConstants.SECRET_EGG_2_TIER2,
+    EstforConstants.SECRET_EGG_2_TIER3,
+    EstforConstants.SECRET_EGG_2_TIER4,
+    EstforConstants.SECRET_EGG_2_TIER5,
     EstforConstants.SECRET_EGG_3_TIER1,
+    EstforConstants.SECRET_EGG_3_TIER2,
+    EstforConstants.SECRET_EGG_3_TIER3,
+    EstforConstants.SECRET_EGG_3_TIER4,
+    EstforConstants.SECRET_EGG_3_TIER5,
     EstforConstants.SECRET_EGG_4_TIER1,
+    EstforConstants.SECRET_EGG_4_TIER2,
+    EstforConstants.SECRET_EGG_4_TIER3,
+    EstforConstants.SECRET_EGG_4_TIER4,
+    EstforConstants.SECRET_EGG_4_TIER5,
   ]);
 
   const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
