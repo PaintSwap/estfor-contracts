@@ -42431,7 +42431,7 @@
             "label": "tokenInfos",
             "offset": 0,
             "slot": "201",
-            "type": "t_mapping(t_uint256,t_struct(TokenInfo)39269_storage)",
+            "type": "t_mapping(t_uint256,t_struct(TokenInfo)39267_storage)",
             "contract": "Shop",
             "src": "contracts\\Shop.sol:64"
           },
@@ -42439,7 +42439,7 @@
             "label": "brush",
             "offset": 0,
             "slot": "202",
-            "type": "t_contract(IBrushToken)57451",
+            "type": "t_contract(IBrushToken)57521",
             "contract": "Shop",
             "src": "contracts\\Shop.sol:66"
           },
@@ -42447,7 +42447,7 @@
             "label": "itemNFT",
             "offset": 0,
             "slot": "203",
-            "type": "t_contract(ItemNFT)26284",
+            "type": "t_contract(ItemNFT)26282",
             "contract": "Shop",
             "src": "contracts\\Shop.sol:67"
           },
@@ -42493,15 +42493,15 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(IBrushToken)57451": {
+          "t_contract(IBrushToken)57521": {
             "label": "contract IBrushToken",
             "numberOfBytes": "20"
           },
-          "t_contract(ItemNFT)26284": {
+          "t_contract(ItemNFT)26282": {
             "label": "contract ItemNFT",
             "numberOfBytes": "20"
           },
-          "t_mapping(t_uint256,t_struct(TokenInfo)39269_storage)": {
+          "t_mapping(t_uint256,t_struct(TokenInfo)39267_storage)": {
             "label": "mapping(uint256 => struct Shop.TokenInfo)",
             "numberOfBytes": "32"
           },
@@ -42509,7 +42509,7 @@
             "label": "mapping(uint256 => uint256)",
             "numberOfBytes": "32"
           },
-          "t_struct(TokenInfo)39269_storage": {
+          "t_struct(TokenInfo)39267_storage": {
             "label": "struct Shop.TokenInfo",
             "members": [
               {
@@ -46119,6 +46119,204 @@
           "t_uint8": {
             "label": "uint8",
             "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "411a52e1fe26f95f3989aa3785e0b3cd7ca9b3d81e9b512b9c79832a276282aa": {
+      "address": "0x62eE04EDF8452a7e9d9cF3CE9A76C4Cc48E7791E",
+      "txHash": "0x6e2dc339bef2ea3fd7a2f182427291e8bc961f1818637415adea831bc4c486b5",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "tokenInfos",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_uint256,t_struct(TokenInfo)7965_storage)",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:64"
+          },
+          {
+            "label": "brush",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(IBrushToken)16502",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:66"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_contract(ItemNFT)7592",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:67"
+          },
+          {
+            "label": "numUnsellableItems",
+            "offset": 20,
+            "slot": "203",
+            "type": "t_uint16",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:68"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_address",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:69"
+          },
+          {
+            "label": "shopItems",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:70"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IBrushToken)16502": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)7592": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_struct(TokenInfo)7965_storage)": {
+            "label": "mapping(uint256 => struct Shop.TokenInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(TokenInfo)7965_storage": {
+            "label": "struct Shop.TokenInfo",
+            "members": [
+              {
+                "label": "allocationRemaining",
+                "type": "t_uint80",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint80",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "checkpointTimestamp",
+                "type": "t_uint40",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "unsellable",
+                "type": "t_bool",
+                "offset": 25,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
           }
         }
       }

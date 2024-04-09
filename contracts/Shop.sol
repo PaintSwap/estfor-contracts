@@ -239,7 +239,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       price = uint80(tokenInfo.price);
     }
 
-    if (totalOfThisItem < 100 || tokenInfo.unsellable) {
+    if (totalOfThisItem < 500 || tokenInfo.unsellable) {
       // Needs to have a minimum of an item before any can be sold, and the item must be sellable
       price = 0;
     }
