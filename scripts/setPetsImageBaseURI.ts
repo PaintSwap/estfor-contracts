@@ -6,7 +6,7 @@ async function main() {
   console.log(`Set pet base uri with: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const petNFT = await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS);
-  await petNFT.setImageBaseUri("ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/");
+  await petNFT.setImageBaseUri("ipfs://QmPp8cAsVKA8PduHR4suA7GNKKyh5R4ADyyjGobwmUiUEv/");
 }
 
 main().catch((error) => {
