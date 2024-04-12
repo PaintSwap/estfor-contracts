@@ -17,7 +17,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
   }
 
   address private instantVRFActions;
-  uint32[65535] private actions;
+  uint32[65535] private actions; // actionId => rewardBasePetIdMax | rewardBasePetIdMin
 
   modifier onlyInstantVRFActions() {
     if (instantVRFActions != _msgSender()) {
@@ -81,7 +81,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
       uint16 rewardBasePetIdMin = uint16(packedBasePetIdExtremes >> 16);
       uint16 rewardBasePetIdMax = uint16(packedBasePetIdExtremes);
 
-      uint16 producedPetBaseId = rewardBasePetIdMin + (slice % (rewardBasePetIdMax - rewardBasePetIdMin));
+      uint16 producedPetBaseId = rewardBasePetIdMin + (slice % (rewardBasePetIdMax - rewardBasePetIdMin + 1));
       producedPetBaseIds[i] = producedPetBaseId;
       producedPetRandomWords[i] = _getSlice(randomBytes1, i);
     }

@@ -312,7 +312,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     if (skillFixedMax1 != skillFixedMin1) {
       skillFixedEnhancement1 =
         ((_randomWord >> 8) %
-          (((skillFixedMax1 - skillFixedMin1) / basePetMetadatas[_basePetId].skillFixedIncrement1))) +
+          (((skillFixedMax1 - skillFixedMin1 + 1) / basePetMetadatas[_basePetId].skillFixedIncrement1))) +
         skillFixedMin1;
     }
 
@@ -323,7 +323,9 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     if (skillPercentageMax1 != skillPercentageMin1) {
       skillPercentageEnhancement1 =
         (_randomWord %
-          (((skillPercentageMax1 - skillPercentageMin1) / basePetMetadatas[_basePetId].skillPercentageIncrement1))) +
+          (
+            ((skillPercentageMax1 - skillPercentageMin1 + 1) / basePetMetadatas[_basePetId].skillPercentageIncrement1)
+          )) +
         skillPercentageMin1;
     }
 
@@ -339,7 +341,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       if (skillFixedMax2 != skillFixedMin2) {
         skillFixedEnhancement2 =
           (otherRandomWord %
-            (((skillFixedMax2 - skillFixedMin2) / basePetMetadatas[_basePetId].skillFixedIncrement2))) +
+            (((skillFixedMax2 - skillFixedMin2 + 1) / basePetMetadatas[_basePetId].skillFixedIncrement2))) +
           skillFixedMin2;
       } else {
         skillFixedEnhancement2 = skillFixedMin2;
@@ -351,7 +353,9 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       if (skillPercentageMax2 != skillPercentageMin2) {
         skillPercentageEnhancement2 =
           ((otherRandomWord >> 8) %
-            (((skillPercentageMax2 - skillPercentageMin2) / basePetMetadatas[_basePetId].skillPercentageIncrement2))) +
+            (
+              ((skillPercentageMax2 - skillPercentageMin2 + 1) / basePetMetadatas[_basePetId].skillPercentageIncrement2)
+            )) +
           skillPercentageMin2;
       } else {
         skillPercentageEnhancement2 = skillPercentageMin2;

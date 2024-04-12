@@ -64,7 +64,7 @@ describe("EggInstantVRFActionStrategy", function () {
     randomWord = parseInt(bytes.slice(2, 6), 16);
 
     res = await eggInstantVRFActionStrategy.getRandomRewards(actionId, actionAmount, [paddedHex], 0);
-    expect(res.producedPetBaseIds).to.be.deep.eq([rewardBasePetIdMin + 1]);
+    expect(res.producedPetBaseIds).to.be.deep.eq([rewardBasePetIdMin]);
   });
 
   it("Multiple action amount", async function () {

@@ -99,7 +99,7 @@ describe("PetNFT", function () {
     expect(metadata.attributes[7].value).to.equal(0);
     expect(metadata.attributes[8].trait_type).to.equal("Percent increase #2");
     expect(metadata.attributes[8]).to.have.property("value");
-    expect(metadata.attributes[8].value).to.equal(15);
+    expect(metadata.attributes[8].value).to.equal(10);
     expect(metadata.attributes[9].trait_type).to.equal("Fixed Star");
     expect(metadata.attributes[9]).to.have.property("value");
     expect(metadata.attributes[9].value).to.equal("false");
@@ -466,6 +466,8 @@ describe("PetNFT", function () {
     expect(await petNFT["totalSupply()"]()).to.be.eq(0);
     expect(await petNFT["totalSupply(uint256)"](2)).to.be.eq(0);
   });
+
+  // TODO: mintBatch and check random words are used correctly
 
   function deepClonePet(pet: BasePetInput): BasePetInput {
     return JSON.parse(JSON.stringify(pet));
