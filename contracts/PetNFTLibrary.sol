@@ -75,7 +75,7 @@ library PetNFTLibrary {
 
     string memory json = Base64.encode(
       abi.encodePacked(
-        '{"_name":"',
+        '{"name":"',
         fullName,
         '","description":"',
         description,
