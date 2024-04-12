@@ -541,6 +541,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "minItemQuantityBeforeSellsAllowed",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMinItemQuantityBeforeSellsAllowed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -793,6 +806,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "minItemQuantityBeforeSellsAllowed",
+    "outputs": [
+      {
+        "internalType": "uint24",
+        "name": "",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes[]",
@@ -925,6 +951,19 @@
       }
     ],
     "name": "setItemNFT",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24",
+        "name": "_minItemQuantityBeforeSellsAllowed",
+        "type": "uint24"
+      }
+    ],
+    "name": "setMinItemQuantityBeforeSellsAllowed",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
