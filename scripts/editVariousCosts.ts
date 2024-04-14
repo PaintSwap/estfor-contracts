@@ -1,5 +1,13 @@
-import {ethers} from "hardhat";
-import {CLANS_ADDRESS, PLAYER_NFT_ADDRESS, SHOP_ADDRESS, WISHING_WELL_ADDRESS} from "./contractAddresses";
+import {ethers, upgrades} from "hardhat";
+import {
+  CLANS_ADDRESS,
+  ESTFOR_LIBRARY_ADDRESS,
+  PET_NFT_ADDRESS,
+  PET_NFT_LIBRARY_ADDRESS,
+  PLAYER_NFT_ADDRESS,
+  SHOP_ADDRESS,
+  WISHING_WELL_ADDRESS,
+} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {WishingWell} from "../typechain-types";
@@ -8,6 +16,8 @@ import {allClanTiers, allClanTiersBeta} from "./data/clans";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit various costs using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+
+  const isBeta = process.env.IS_BETA == "true";
 
   // Edit shop items
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
@@ -23,7 +33,6 @@ async function main() {
     EstforConstants.FLUX,
   ]);
 
-  const isBeta = process.env.IS_BETA == "true";
   const allShopItems_ = isBeta ? allShopItemsBeta : allShopItems;
   const shopItems = allShopItems_.filter((item) => shopItemIds.has(item.tokenId));
   let tx = await shop.editItems(shopItems);
@@ -58,6 +67,13 @@ async function main() {
   tx = await clans.setEditNameCost(editClanNameCost);
   await tx.wait();
   console.log("Clan edit name cost");
+
+  // Edit pet name cost
+  const petNFT = await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS);
+  const editPetNameCost = isBeta ? ethers.utils.parseEther("0") : ethers.utils.parseEther("0");
+  tx = await petNFT.setEditNameCost(editPetNameCost);
+  await tx.wait();
+  console.log("Pet edit name cost");
 }
 
 main().catch((error) => {

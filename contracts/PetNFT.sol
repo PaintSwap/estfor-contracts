@@ -410,21 +410,23 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function _pay(uint _brushCost) private {
-    uint brushCost = _brushCost;
+    if (_brushCost == 0) {
+      return;
+    }
     if (brushPoolPercentage != 0) {
       revert NotSupportedYet();
     }
 
     if (brushTerritoriesPercentage != 0) {
-      brush.transferFrom(msg.sender, territories, (brushCost * brushTerritoriesPercentage) / 100);
+      brush.transferFrom(msg.sender, territories, (_brushCost * brushTerritoriesPercentage) / 100);
     }
 
     if (brushDevPercentage != 0) {
-      brush.transferFrom(msg.sender, dev, (brushCost * brushDevPercentage) / 100);
+      brush.transferFrom(msg.sender, dev, (_brushCost * brushDevPercentage) / 100);
     }
 
     if (brushBurntPercentage != 0) {
-      uint amountBurnt = (brushCost * brushBurntPercentage) / 100;
+      uint amountBurnt = (_brushCost * brushBurntPercentage) / 100;
       brush.transferFrom(msg.sender, address(this), amountBurnt);
       brush.burn(amountBurnt);
     }

@@ -232,7 +232,7 @@ async function main() {
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
     editNameBrushPrice = ethers.utils.parseEther("1");
-    editPetNameBrushPrice = ethers.utils.parseEther("1");
+    editPetNameBrushPrice = ethers.utils.parseEther("0");
     upgradePlayerBrushPrice = ethers.utils.parseEther("1");
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
@@ -243,7 +243,7 @@ async function main() {
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
-    editPetNameBrushPrice = ethers.utils.parseEther("100");
+    editPetNameBrushPrice = ethers.utils.parseEther("0");
     upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
