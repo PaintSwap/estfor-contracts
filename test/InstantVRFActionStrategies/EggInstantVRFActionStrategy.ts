@@ -67,6 +67,22 @@ describe("EggInstantVRFActionStrategy", function () {
     expect(res.producedPetBaseIds).to.be.deep.eq([rewardBasePetIdMin]);
   });
 
+  it("Setting max < min should revert", async function () {
+    const {eggInstantVRFActionStrategy, alice} = await loadFixture(playersFixture);
+
+    await eggInstantVRFActionStrategy.setInstantVRFActions(alice.address);
+    const instantVRFActionInput = {
+      ...defaultInstantVRFActionInput,
+      data: ethers.utils.defaultAbiCoder.encode(
+        ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+        [0, {rewardBasePetIdMax, rewardBasePetIdMin}]
+      ),
+    };
+    await expect(
+      eggInstantVRFActionStrategy.connect(alice).setAction(instantVRFActionInput)
+    ).to.be.revertedWithCustomError(eggInstantVRFActionStrategy, "BasePetIdMinGreaterThanMax");
+  });
+
   it("Multiple action amount", async function () {
     const {eggInstantVRFActionStrategy, alice} = await loadFixture(playersFixture);
 

@@ -20,9 +20,27 @@ async function main() {
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER2,
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER2,
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER2,
+
+    EstforConstants.PASSIVE_ACTION_EGG_TIER3,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER3,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER3,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER3,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER3,
+
+    EstforConstants.PASSIVE_ACTION_EGG_TIER4,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER4,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER4,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER4,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER4,
+
+    EstforConstants.PASSIVE_ACTION_EGG_TIER5,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER5,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER5,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER5,
+    EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER5,
   ];
 
-  const values = [0, 2, 1, 1, 1, 1];
+  const values = [0, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   const map = new Map();
   actionsToReduce.forEach((key, index) => {
     map.set(key, values[index]);

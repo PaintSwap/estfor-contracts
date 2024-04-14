@@ -16,6 +16,11 @@
   },
   {
     "inputs": [],
+    "name": "BasePetIdMinGreaterThanMax",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "BeaconImplementationIsNotAContract",
     "type": "error"
   },
