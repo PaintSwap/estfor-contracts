@@ -75,7 +75,7 @@ describe("EggInstantVRFActionStrategy", function () {
       ...defaultInstantVRFActionInput,
       data: ethers.utils.defaultAbiCoder.encode(
         ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-        [0, {rewardBasePetIdMax, rewardBasePetIdMin}]
+        [0, {rewardBasePetIdMin: 2, rewardBasePetIdMax: 1}]
       ),
     };
     await expect(
