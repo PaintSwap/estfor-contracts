@@ -22,14 +22,19 @@ describe("Passive actions", function () {
       ..._defaultPassiveActionInput.info,
       inputTokenIds: [EstforConstants.POISON],
       inputAmounts: [1],
-      skipSuccessPercent: 1, // Just so that oracleCalled can be tested easier
     },
   };
 
   it("Simple", async function () {
     const {playerId, passiveActions, world, mockOracleClient, itemNFT, alice} = await loadFixture(playersFixture);
 
-    const passiveActionInput = defaultPassiveActionInput;
+    const passiveActionInput: PassiveActionInput = {
+      ...defaultPassiveActionInput,
+      info: {
+        ...defaultPassiveActionInput.info,
+        skipSuccessPercent: 1, // Just so that oracleCalled can be tested easier
+      },
+    };
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.testMint(alice.address, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
@@ -341,6 +346,7 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 2,
+        skipSuccessPercent: 1,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 10}],
       randomRewards: [
@@ -459,12 +465,17 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 2,
+        skipSuccessPercent: 1,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 10}],
       randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
     };
     const passiveActionInput1: PassiveActionInput = {
       ...defaultPassiveActionInput,
+      info: {
+        ...defaultPassiveActionInput.info,
+        skipSuccessPercent: 1,
+      },
       actionId: 2,
       guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}],
       randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}],
@@ -546,6 +557,7 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 2,
+        skipSuccessPercent: 1,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 10}],
       randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
