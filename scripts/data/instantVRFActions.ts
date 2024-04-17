@@ -402,4 +402,309 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
   },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.EGG_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER1,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER1, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER1},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.EGG_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER2,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER2, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER2},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.EGG_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER3,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER3, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER3},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.EGG_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER4,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER4, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER4},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.EGG_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER5,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER5, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER5},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER1,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER1, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER1}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER2,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER2, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER2}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER3,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER3, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER3}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER4,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER4, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER4}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER5,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER5, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER5}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER1,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER1, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER1}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER2,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER2, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER2}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER3,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER3, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER3}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER4,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER4, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER4}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER5,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER5}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER1,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER1, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER1}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER2,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER2, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER2}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER3,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER3, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER3}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER4,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER4, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER4}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER5,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER5, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER5}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER1,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER1, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER1},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER2,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER2, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER2},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER3,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER3, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER3},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER4,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER4, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER4},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER5,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER5, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER5},
+      ]
+    ),
+    isFullModeOnly: true,
+  },
 ];

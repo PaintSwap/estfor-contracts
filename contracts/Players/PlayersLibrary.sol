@@ -17,6 +17,7 @@ library PlayersLibrary {
 
   error InvalidXPSkill();
   error InvalidAction();
+  error SkillForPetNotHandledYet();
 
   function _getLevel(uint _xp) internal pure returns (uint16) {
     U256 low;
@@ -741,13 +742,9 @@ library PlayersLibrary {
     return uint40(slotVal >> (relativePos * 40));
   }
 
-  function getCombatStats(
+  function getCombatStatsFromHero(
     PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
-    PackedXP storage _packedXP,
-    address _from,
-    ItemNFT _itemNFT,
-    Attire storage _attire,
-    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+    PackedXP storage _packedXP
   ) external view returns (CombatStats memory combatStats) {
     combatStats.melee = int16(
       _getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
@@ -765,7 +762,16 @@ library PlayersLibrary {
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.rangedDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
+  }
 
+  function updateCombatStatsFromAttire(
+    CombatStats memory _combatStats,
+    address _from,
+    ItemNFT _itemNFT,
+    Attire storage _attire,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+  ) external view returns (CombatStats memory combatStats) {
+    combatStats = _combatStats;
     bool skipNeck;
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
       _from,
@@ -781,8 +787,66 @@ library PlayersLibrary {
         iter = iter.dec();
         uint i = iter.asUint256();
         if (balances[i] != 0) {
-          _updateCombatStatsFromItem(combatStats, items[i]);
+          _updateCombatStatsFromItem(_combatStats, items[i]);
         }
+      }
+    }
+  }
+
+  // none of the combat stats is allowed to be negative at this point
+  function updateCombatStatsFromPet(
+    CombatStats memory _combatStats,
+    Skill _skillEnhancement1,
+    uint8 _skillFixedEnhancement1,
+    uint8 _skillPercentageEnhancement1,
+    Skill _skillEnhancement2,
+    uint8 _skillFixedEnhancement2,
+    uint8 _skillPercentageEnhancement2
+  ) external pure returns (CombatStats memory combatStats) {
+    combatStats = _combatStats;
+    if (_skillEnhancement1 == Skill.HEALTH) {
+      _combatStats.health += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.health) * _skillPercentageEnhancement1) / 100
+      );
+    } else if (_skillEnhancement1 == Skill.MELEE) {
+      _combatStats.melee += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.melee) * _skillPercentageEnhancement1) / 100
+      );
+    } else if (_skillEnhancement1 == Skill.RANGED) {
+      _combatStats.ranged += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.ranged) * _skillPercentageEnhancement1) / 100
+      );
+    } else if (_skillEnhancement1 == Skill.MAGIC) {
+      _combatStats.magic += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.magic) * _skillPercentageEnhancement1) / 100
+      );
+    } else if (_skillEnhancement1 == Skill.DEFENCE) {
+      _combatStats.meleeDefence += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement1) / 100
+      );
+      _combatStats.rangedDefence += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.rangedDefence) * _skillPercentageEnhancement1) / 100
+      );
+      _combatStats.magicDefence += int16(
+        _skillFixedEnhancement1 + (uint16(_combatStats.magicDefence) * _skillPercentageEnhancement1) / 100
+      );
+    } else {
+      revert SkillForPetNotHandledYet();
+    }
+
+    if (_skillEnhancement2 != Skill.NONE) {
+      if (_skillEnhancement2 == Skill.DEFENCE) {
+        _combatStats.meleeDefence += int16(
+          _skillFixedEnhancement2 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement2) / 100
+        );
+        _combatStats.rangedDefence += int16(
+          _skillFixedEnhancement2 + (uint16(_combatStats.rangedDefence) * _skillPercentageEnhancement2) / 100
+        );
+        _combatStats.magicDefence += int16(
+          _skillFixedEnhancement2 + (uint16(_combatStats.magicDefence) * _skillPercentageEnhancement2) / 100
+        );
+      } else {
+        revert SkillForPetNotHandledYet();
       }
     }
   }

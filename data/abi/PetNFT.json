@@ -1,0 +1,1830 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155InsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155Metadata_URIQueryForNonexistentToken",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155MintToZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155MintingMoreThanOneSameNFT",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155ReceiverRejectedTokens",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155SettingApprovalStatusForSelf",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155TransferFromNotApproved",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155TransferToNonERC1155Receiver",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155TransferToZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1155ZeroAddressNotValidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC115BurnAmountExceedsBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC115BurnFromZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IllegalNameStart",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidTimestamp",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "level",
+        "type": "uint256"
+      }
+    ],
+    "name": "LevelNotHighEnough",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MustHaveAtLeastPercentageOrFixedSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MustHaveOneSkillEnhancement",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameInvalidCharacters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NameTooShort",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAdminAndBeta",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotBurner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotMinter",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotPlayersOrAdminAndBeta",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotSupportedYet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PercentNotTotal100",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PetAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PetDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerDoesNotOwnPet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SameName",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillEnhancementIncorrectOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillEnhancementIncorrectlyFilled",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillEnhancementMinGreaterThanMax",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillFixedIncrementCannotBeZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillFixedMustBeAFactorOfIncrement",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillPercentageIncrementCannotBeZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillPercentageMustBeAFactorOfIncrement",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StorageSlotIncorrect",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetSkin",
+            "name": "skin",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetEnhancementType",
+            "name": "enhancementType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "enum Skill[2]",
+            "name": "skillEnhancements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillMinLevels",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "fixedStarThreshold",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "percentageStarThreshold",
+            "type": "uint16"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct PetNFT.BasePetInput[]",
+        "name": "basePetInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddBasePets",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetSkin",
+            "name": "skin",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetEnhancementType",
+            "name": "enhancementType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "enum Skill[2]",
+            "name": "skillEnhancements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillMinLevels",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "fixedStarThreshold",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "percentageStarThreshold",
+            "type": "uint16"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct PetNFT.BasePetInput[]",
+        "name": "basePetInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditBasePets",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newCost",
+        "type": "uint256"
+      }
+    ],
+    "name": "EditNameCost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "petId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "newName",
+        "type": "string"
+      }
+    ],
+    "name": "EditPlayerPet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "petId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastAssignmentTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Pet",
+        "name": "pet",
+        "type": "tuple"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      }
+    ],
+    "name": "NewPet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startPetId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastAssignmentTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Pet[]",
+        "name": "pets",
+        "type": "tuple[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "string[]",
+        "name": "names",
+        "type": "string[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      }
+    ],
+    "name": "NewPets",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushBurntPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushPoolPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushDevPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushTerritoriesPercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetBrushDistributionPercentages",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "TransferBatch",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "TransferSingle",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "URI",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetSkin",
+            "name": "skin",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetEnhancementType",
+            "name": "enhancementType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "enum Skill[2]",
+            "name": "skillEnhancements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillMinLevels",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "fixedStarThreshold",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "percentageStarThreshold",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct PetNFT.BasePetInput[]",
+        "name": "_basePetInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addBasePets",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_petId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "assignPet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "accounts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "balanceOfBatch",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "burn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_tokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "burnBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetSkin",
+            "name": "skin",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetEnhancementType",
+            "name": "enhancementType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "enum Skill[2]",
+            "name": "skillEnhancements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillMinLevels",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "fixedStarThreshold",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "percentageStarThreshold",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct PetNFT.BasePetInput[]",
+        "name": "_basePetInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editBasePets",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_petId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "editPet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPet",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastAssignmentTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Pet",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IBrushToken",
+        "name": "_brush",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_royaltyReceiver",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "_imageBaseUri",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_dev",
+        "type": "address"
+      },
+      {
+        "internalType": "uint72",
+        "name": "_editNameCost",
+        "type": "uint72"
+      },
+      {
+        "internalType": "contract AdminAccess",
+        "name": "_adminAccess",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isBeta",
+        "type": "bool"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_basePetId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_randomWord",
+        "type": "uint256"
+      }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_basePetIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_randomWords",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "mintBatch",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "tokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextPetId",
+    "outputs": [
+      {
+        "internalType": "uint40",
+        "name": "",
+        "type": "uint40"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_salePrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "royaltyInfo",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "receiver",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "royaltyAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeBatchTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "_brushBurntPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_brushPoolPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_brushDevPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_brushTerritoriesPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "setBrushDistributionPercentages",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint72",
+        "name": "_editNameCost",
+        "type": "uint72"
+      }
+    ],
+    "name": "setEditNameCost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_imageBaseUri",
+        "type": "string"
+      }
+    ],
+    "name": "setImageBaseUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_instantVRFActions",
+        "type": "address"
+      }
+    ],
+    "name": "setInstantVRFActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_players",
+        "type": "address"
+      }
+    ],
+    "name": "setPlayers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_territories",
+        "type": "address"
+      }
+    ],
+    "name": "setTerritories",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "uri",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

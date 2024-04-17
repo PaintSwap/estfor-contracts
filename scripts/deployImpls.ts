@@ -41,6 +41,10 @@ async function main() {
   console.log(`PlayersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
   await playersImplMisc.deployed(); */
 
+  if (chainId == 250) {
+    await verifyContracts([playersImplMisc.address]);
+  }
+
   // Set the implementations
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
 
@@ -60,10 +64,6 @@ async function main() {
     playersImplMisc1.address
   );
   await tx.wait();
-
-  if (chainId == 250) {
-    await verifyContracts([playersImplMisc.address]);
-  }
 }
 
 main().catch((error) => {

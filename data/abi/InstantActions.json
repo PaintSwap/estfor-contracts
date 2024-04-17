@@ -1,0 +1,912 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ActionAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionIdZeroNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressIsNotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BeaconImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IncorrectInputAmounts",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputAmountsMustBeInOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputItemNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputSpecifiedWithoutAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidActionId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInputTokenId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidOutputTokenId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IsInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MinimumSkillsNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minXP",
+        "type": "uint256"
+      }
+    ],
+    "name": "MinimumXPNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewAdminIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewBeaconIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationIsNotAContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewImplementationNotUUPS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutputAmountCannotBeZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutputTokenIdCannotBeEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerNotUpgraded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyInputItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyMinSkills",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedActionType",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputAmounts",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum InstantActions.InstantActionType",
+            "name": "actionType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct InstantActions.InstantActionInput[]",
+        "name": "instantActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddInstantActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionIds",
+        "type": "uint16[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "consumedItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "consumedAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "producedItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "producedAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum InstantActions.InstantActionType",
+        "name": "actionType",
+        "type": "uint8"
+      }
+    ],
+    "name": "DoInstantActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputAmounts",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum InstantActions.InstantActionType",
+            "name": "actionType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct InstantActions.InstantActionInput[]",
+        "name": "instantActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditInstantActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "enum InstantActions.InstantActionType[]",
+        "name": "actionTypes",
+        "type": "uint8[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "actionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "RemoveInstantActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum InstantActions.InstantActionType",
+        "name": "actionType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "actions",
+    "outputs": [
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill1",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minXP1",
+        "type": "uint32"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill2",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minXP2",
+        "type": "uint32"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "minSkill3",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minXP3",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputAmount1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputAmount2",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputTokenId3",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "inputAmount3",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "outputTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "outputAmount",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes1",
+        "name": "packedData",
+        "type": "bytes1"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputAmounts",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum InstantActions.InstantActionType",
+            "name": "actionType",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct InstantActions.InstantActionInput[]",
+        "name": "_instantActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_actionIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "enum InstantActions.InstantActionType",
+        "name": "_actionType",
+        "type": "uint8"
+      }
+    ],
+    "name": "doInstantActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill[]",
+            "name": "minSkills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "minXPs",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputAmounts",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum InstantActions.InstantActionType",
+            "name": "actionType",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct InstantActions.InstantActionInput[]",
+        "name": "_instantActionInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_actionIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "enum InstantActions.InstantActionType",
+        "name": "_actionType",
+        "type": "uint8"
+      }
+    ],
+    "name": "getInstantActionState",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct InstantActions.InstantActionState",
+        "name": "instantActionState",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "_players",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "itemNFT",
+    "outputs": [
+      {
+        "internalType": "contract ItemNFT",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "players",
+    "outputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum InstantActions.InstantActionType[]",
+        "name": "_actionTypes",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_instantActionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "removeActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]

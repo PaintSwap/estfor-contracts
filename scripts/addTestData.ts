@@ -173,10 +173,12 @@ export const addTestData = async (
   await tx.wait();
   console.log("Transfer some brush");
 
+  const minItemQuantityBeforeSellsAllowed = await shop.minItemQuantityBeforeSellsAllowed();
+
   tx = await itemNFT.testMints(
     owner.address,
     [EstforConstants.MAGIC_FIRE_STARTER, EstforConstants.TITANIUM_ARMOR],
-    [100, 1]
+    [minItemQuantityBeforeSellsAllowed, 1]
   );
   await tx.wait();
   console.log("Mint enough magic fire starters that they can be sold");

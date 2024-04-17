@@ -2042,7 +2042,6 @@ describe("Non-Combat Actions", function () {
       startingAmount - Math.floor((queuedAction.timespan * rate * 2) / (3600 * RATE_MUL))
     );
     const outputBalance = await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL);
-    console.log(outputBalance);
     expect(outputBalance).to.eq(Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * RATE_MUL)));
     expect(outputBalance).to.be.greaterThan(65535);
   });

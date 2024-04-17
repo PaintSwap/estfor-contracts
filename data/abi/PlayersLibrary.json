@@ -1,0 +1,1340 @@
+[
+  {
+    "inputs": [],
+    "name": "InvalidAction",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidXPSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SkillForPetNotHandledYet",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int256",
+        "name": "_attack",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "_defence",
+        "type": "int256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_alphaCombat",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_betaCombat",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_elapsedTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "dmg",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "head",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "neck",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "body",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "arms",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "legs",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "feet",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "ring",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "reserved1",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct Attire",
+        "name": "_attire",
+        "type": "tuple"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "ItemNFT"
+      },
+      {
+        "internalType": "bool",
+        "name": "_skipNeck",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "_pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getAttireWithBalance",
+    "outputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "itemTokenIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "balances",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_actionStartTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_elapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint40",
+        "name": "_boostStartTime",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint24",
+        "name": "_boostDuration",
+        "type": "uint24"
+      }
+    ],
+    "name": "getBoostedTime",
+    "outputs": [
+      {
+        "internalType": "uint24",
+        "name": "boostedTime",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "ItemNFT"
+      },
+      {
+        "internalType": "contract World",
+        "name": "_world",
+        "type": "World"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_elapsedTime",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "reserved",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill2",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP2",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill3",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount2",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount3",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct ActionChoice",
+        "name": "_actionChoice",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_regenerateId",
+        "type": "uint16"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "regenerateId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "choiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rightHandEquipmentTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "leftHandEquipmentTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "timespan",
+            "type": "uint24"
+          },
+          {
+            "internalType": "enum CombatStyle",
+            "name": "combatStyle",
+            "type": "CombatStyle"
+          },
+          {
+            "internalType": "uint24",
+            "name": "prevProcessedTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "prevProcessedXPTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint64",
+            "name": "queueId",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packed",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "uint24",
+            "name": "reserved",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct QueuedAction",
+        "name": "_queuedAction",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "_combatStats",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "_enemyCombatStats",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_alphaCombat",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_betaCombat",
+        "type": "uint8"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "_pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getCombatAdjustedElapsedTimes",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "xpElapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "combatElapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "baseInputItemsConsumedNum",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "foodConsumed",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "died",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_xp",
+        "type": "uint256"
+      }
+    ],
+    "name": "getLevel",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "ItemNFT"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_elapsedTime",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "reserved",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill2",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP2",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill3",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount2",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount3",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct ActionChoice",
+        "name": "_actionChoice",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "_pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getNonCombatAdjustedElapsedTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "xpElapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "baseInputItemsConsumedNum",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_itemId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "ItemNFT"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "_pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getRealBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_itemIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "ItemNFT"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "_pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getRealBalances",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "balances",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "newIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "newAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "prevNewIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "prevNewAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "subtractMatchingRewards",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "_combatStats",
+        "type": "tuple"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "_skillEnhancement1",
+        "type": "Skill"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_skillFixedEnhancement1",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_skillPercentageEnhancement1",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "_skillEnhancement2",
+        "type": "Skill"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_skillFixedEnhancement2",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_skillPercentageEnhancement2",
+        "type": "uint8"
+      }
+    ],
+    "name": "updateCombatStatsFromPet",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "combatStats",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "_itemNFT",
+        "type": "ItemNFT"
+      },
+      {
+        "internalType": "uint16[2]",
+        "name": "_handEquipmentTokenIds",
+        "type": "uint16[2]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "_combatStats",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bool",
+        "name": "isCombat",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "_pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "reserved",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill2",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP2",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill3",
+            "type": "Skill"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount2",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "newInputAmount3",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct ActionChoice",
+        "name": "_actionChoice",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateStatsFromHandEquipment",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "missingRequiredHandEquipment",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "combatStats",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

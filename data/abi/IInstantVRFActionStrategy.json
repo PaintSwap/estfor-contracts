@@ -1,0 +1,96 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "actionId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actionAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "randomWords",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "randomWordStartIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRandomRewards",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "producedItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "producedItemsAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "producedPetBaseIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "producedPetRandomWords",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "inputTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint24[]",
+            "name": "inputAmounts",
+            "type": "uint24[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum InstantVRFActionType",
+            "name": "actionType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct InstantVRFActionInput",
+        "name": "input",
+        "type": "tuple"
+      }
+    ],
+    "name": "setAction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

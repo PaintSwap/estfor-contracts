@@ -36,6 +36,9 @@ let combatantsHelper;
 let oracle;
 let samWitchVRF;
 let bazaar;
+let petNFTLibrary;
+let petNFT;
+let passiveActions;
 
 if (!isBeta) {
   worldLibrary = "0x7aa43aa55d7cc9c1ec5cbde71d841331e536c426";
@@ -74,15 +77,18 @@ if (!isBeta) {
   oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
+  petNFTLibrary = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
+  petNFT = "0x4e9cbcb9ac26c80e55804535a5112ab54d77e75d"; // TODO
+  passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6"; // TODO
 } else {
-  worldLibrary = "0x10f6512db26681700a027b5bd8e3f852351000c4";
+  worldLibrary = "0x17581c8e57fcca1be58dc109b0e275f4c24eb50f";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
   itemNFTLibrary = "0xd24b6994c179817391466372fb2a26440fcc0dd7";
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
-  estforLibrary = "0x26f6ad6b30bd8e4203d9be780ce05b44275db929";
+  estforLibrary = "0x52ecba8c563f686f9d7964a89fbc1956523ce105";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
@@ -90,12 +96,12 @@ if (!isBeta) {
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
-  playersLibrary = "0x4f672d0ada398e4cb8c87d01362616223254d3eb";
-  playersImplQueueActions = "0xff96dd0a32e12004c5f23dd00fd9c842315fe493";
-  playersImplProcessActions = "0xe29b9da0fc1a427b2d6d01d80e128660d609da5f";
-  playersImplRewards = "0x0338981446c868028f19d1f776a1e0e0afdd8867";
-  playersImplMisc = "0xa9ca9cafe864171b0c0a159b5e822bc92ab9df51";
-  playersImplMisc1 = "0x4a84c8ff6039823cca4a226bbc531e348f7bdfb2";
+  playersLibrary = "0x227846c11f3bd29a2a0628cc6bb73b141a1e9614";
+  playersImplQueueActions = "0x108413aa863a130b2ac1d604369097c4e23fac1a";
+  playersImplProcessActions = "0xa8dba2a93e88b21fab8d4248c1fc04adf95f1d43";
+  playersImplRewards = "0x8716228a74d157860697dd178786e191a4f0bf14";
+  playersImplMisc = "0x861908dd206b236ea3ffbfc86cc8afd6a7078e5a";
+  playersImplMisc1 = "0x40804aced48c6599d6417f4c9fb0c8a4fc0f3383";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
@@ -104,7 +110,7 @@ if (!isBeta) {
   instantVRFActions = "0xe297508ff83ba7a984ec8778ea67d82e049eda58";
   vrfRequestInfo = "0x9bcf94e6c067c575dd6a748e45330b4ae4dc0483";
   genericInstantVRFActionStrategy = "0x2ea7d26184188ec7495acaa84a7de1292e8a1794";
-  eggInstantVRFActionStrategy = "";
+  eggInstantVRFActionStrategy = "0x141234B4071e2D40e24F69788522127658285a49";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
@@ -112,6 +118,9 @@ if (!isBeta) {
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
+  petNFTLibrary = "0x31e0988f0e565d2292c5a4361bfbf4551fcedc92";
+  petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
+  passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -151,6 +160,10 @@ export const LOCKED_BANK_VAULT_ADDRESS = lockedBankVaults;
 export const TERRITORIES_ADDRESS = territories;
 export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
 export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
+
+export const PET_NFT_LIBRARY_ADDRESS = petNFTLibrary;
+export const PET_NFT_ADDRESS = petNFT;
+export const PASSIVE_ACTIONS_ADDRESS = passiveActions;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

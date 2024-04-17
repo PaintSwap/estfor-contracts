@@ -1,0 +1,95 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_players",
+        "type": "address"
+      },
+      {
+        "internalType": "uint48[]",
+        "name": "_clanMembersA",
+        "type": "uint48[]"
+      },
+      {
+        "internalType": "uint48[]",
+        "name": "_clanMembersB",
+        "type": "uint48[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_skills",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_randomWordA",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_randomWordB",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_extraRollsA",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_extraRollsB",
+        "type": "uint256"
+      }
+    ],
+    "name": "doBattleLib",
+    "outputs": [
+      {
+        "internalType": "uint8[]",
+        "name": "battleResults",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint48[]",
+        "name": "shuffledClanMembersA",
+        "type": "uint48[]"
+      },
+      {
+        "internalType": "uint48[]",
+        "name": "shuffledClanMembersB",
+        "type": "uint48[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "didAWin",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint48[]",
+        "name": "_array",
+        "type": "uint48[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_randomNumber",
+        "type": "uint256"
+      }
+    ],
+    "name": "shuffleArray",
+    "outputs": [
+      {
+        "internalType": "uint48[]",
+        "name": "",
+        "type": "uint48[]"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

@@ -30,6 +30,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   event NewAllocation(uint16 tokenId, uint allocation);
   event AddUnsellableItems(uint16[] tokenIds);
   event RemoveUnsellableItems(uint16[] tokenIds);
+  event SetMinItemQuantityBeforeSellsAllowed(uint minItemQuantityBeforeSellsAllowed);
 
   error LengthMismatch();
   error LengthEmpty();
@@ -66,6 +67,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   IBrushToken public brush;
   ItemNFT public itemNFT;
   uint16 private numUnsellableItems;
+  uint24 public minItemQuantityBeforeSellsAllowed;
   address public dev;
   mapping(uint itemId => uint price) public shopItems;
 
@@ -79,6 +81,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     __Ownable_init();
     brush = _brush;
     dev = _dev;
+
+    setMinItemQuantityBeforeSellsAllowed(500);
   }
 
   function liquidatePrice(uint16 _tokenId) public view returns (uint80 price) {
@@ -239,7 +243,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       price = uint80(tokenInfo.price);
     }
 
-    if (totalOfThisItem < 100 || tokenInfo.unsellable) {
+    if (totalOfThisItem < minItemQuantityBeforeSellsAllowed || tokenInfo.unsellable) {
       // Needs to have a minimum of an item before any can be sold, and the item must be sellable
       price = 0;
     }
@@ -329,6 +333,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
 
   function setItemNFT(ItemNFT _itemNFT) external onlyOwner {
     itemNFT = _itemNFT;
+  }
+
+  function setMinItemQuantityBeforeSellsAllowed(uint24 _minItemQuantityBeforeSellsAllowed) public onlyOwner {
+    minItemQuantityBeforeSellsAllowed = _minItemQuantityBeforeSellsAllowed;
+    emit SetMinItemQuantityBeforeSellsAllowed(_minItemQuantityBeforeSellsAllowed);
   }
 
   // solhint-disable-next-line no-empty-blocks

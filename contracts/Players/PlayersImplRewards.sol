@@ -135,22 +135,43 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         continue;
       }
 
-      CombatStats memory combatStats;
+      uint prevProcessedTime = queuedAction.prevProcessedTime;
+      uint veryStartTime = startTime.sub(prevProcessedTime);
+
       bool isCombat = _isCombatStyle(queuedAction.combatStyle);
+      ActionChoice memory actionChoice;
+      if (queuedAction.choiceId != 0) {
+        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+      }
+
+      CombatStats memory combatStats;
       if (isCombat) {
-        combatStats = PlayersLibrary.getCombatStats(
-          pendingQueuedActionProcessed,
-          xp_[_playerId],
+        combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, xp_[_playerId]);
+
+        // Update combat stats from the pet if it is still valid.
+        // The pet enhancements only take into account base hero stats, not any bonuses from equipment.
+        if (_hasPet(queuedAction.packed)) {
+          Pet memory pet = petNFT.getPet(queuedActionsExtra[queuedAction.queueId].petId);
+          if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
+            combatStats = PlayersLibrary.updateCombatStatsFromPet(
+              combatStats,
+              pet.skillEnhancement1,
+              pet.skillFixedEnhancement1,
+              pet.skillPercentageEnhancement1,
+              pet.skillEnhancement2,
+              pet.skillFixedEnhancement2,
+              pet.skillPercentageEnhancement2
+            );
+          }
+        }
+
+        combatStats = PlayersLibrary.updateCombatStatsFromAttire(
+          combatStats,
           from,
           itemNFT,
           attire_[_playerId][queuedAction.queueId],
           pendingQueuedActionState.equipmentStates
         );
-      }
-
-      ActionChoice memory actionChoice;
-      if (queuedAction.choiceId != 0) {
-        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
       }
 
       bool missingRequiredHandEquipment;
@@ -335,8 +356,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       }
 
       uint pointsAccruedExclBaseBoost;
-      uint prevProcessedTime = queuedAction.prevProcessedTime;
-      uint veryStartTime = startTime.sub(prevProcessedTime);
       uint prevPointsAccrued;
       uint prevPointsAccruedExclBaseBoost;
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
@@ -888,7 +907,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     Skill _skill,
     uint _xpElapsedTime,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
-  ) internal view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
+  ) private view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     (pointsAccrued, pointsAccruedExclBaseBoost) = PlayersLibrary.getPointsAccrued(
       _from,
       players_[_playerId],
@@ -1062,7 +1081,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   function _getHealthPointsFromCombat(
     uint _playerId,
     uint _combatPoints
-  ) internal view returns (uint32 healthPointsAccured) {
+  ) private view returns (uint32 healthPointsAccured) {
     // Get 1/3 of the combat points as health
     healthPointsAccured = uint32(_combatPoints / 3);
     // Get bonus health points from avatar starting skills
@@ -1085,7 +1104,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   function _dailyRewardsView(
     address _from,
     uint _playerId
-  ) internal view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
+  ) private view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(IPlayersMiscDelegateView.dailyRewardsViewImpl.selector, _from, _playerId)

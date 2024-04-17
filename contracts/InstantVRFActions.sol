@@ -7,12 +7,12 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 import {IInstantVRFActionStrategy} from "./InstantVRFActionStrategies/IInstantVRFActionStrategy.sol";
 import {ItemNFT} from "./ItemNFT.sol";
-//import {PetNFT} from "./PetNFT.sol";
+import {PetNFT} from "./PetNFT.sol";
 import {Players} from "./Players/Players.sol";
 import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 
 import {Skill, EquipPosition, IS_FULL_MODE_BIT} from "./globals/players.sol";
-import {InstantVRFActionInput, InstantVRFActionType, MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION} from "./globals/rewards.sol";
+import {InstantVRFActionInput, InstantVRFActionType} from "./globals/rewards.sol";
 import {NONE} from "./globals/items.sol";
 
 contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
@@ -95,10 +95,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
   address private oracle;
   ISamWitchVRF private samWitchVRF;
-  //  address private petNFT;
+  PetNFT private petNFT;
 
-  uint public constant MAX_ACTION_AMOUNT = 96;
-  uint private constant CALLBACK_GAS_LIMIT = 2_000_000;
+  uint public constant MAX_ACTION_AMOUNT = 64;
+  uint private constant CALLBACK_GAS_LIMIT = 5_000_000;
   uint private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -124,7 +124,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   function initialize(
     Players _players,
     ItemNFT _itemNFT,
-    //    PetNFT _petNFT,
+    PetNFT _petNFT,
     address _oracle,
     ISamWitchVRF _samWitchVRF,
     VRFRequestInfo _vrfRequestInfo
@@ -133,11 +133,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     __Ownable_init();
     players = _players;
     itemNFT = _itemNFT;
-    //    petNFT = _petNFT;
+    petNFT = _petNFT;
     oracle = _oracle;
     samWitchVRF = _samWitchVRF;
     vrfRequestInfo = _vrfRequestInfo;
-    setGasCostPerUnit(25_000);
+    setGasCostPerUnit(15_000);
   }
 
   function doInstantVRFActions(
@@ -267,11 +267,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
     uint[] memory petTokenIds;
     if (petBaseIds.length != 0) {
-      /*      try petNFT.mintBatch(from, petBaseIds, randomWords) returns (uint[] memory newPetTokenIds) {
+      try petNFT.mintBatch(from, petBaseIds, randomWords) returns (uint[] memory newPetTokenIds) {
         petTokenIds = newPetTokenIds;
       } catch {
         // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
-      } */
+      }
     }
 
     emit CompletedInstantVRFActions(from, playerId, uint(_requestId), itemTokenIds, itemAmounts, petTokenIds);
@@ -292,10 +292,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   {
     uint16[10] storage _playerActionInfos = playerActionInfos[_playerId].actionIdAmountPairs;
     uint playerActionInfoLength = _playerActionInfos.length;
-    itemTokenIds = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
-    itemAmounts = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
-    petBaseIds = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
-    petRandomWords = new uint[](MAX_ACTION_AMOUNT * MAX_INSTANT_VRF_RANDOM_REWARDS_PER_ACTION);
+    itemTokenIds = new uint[](MAX_ACTION_AMOUNT);
+    itemAmounts = new uint[](MAX_ACTION_AMOUNT);
+    petBaseIds = new uint[](MAX_ACTION_AMOUNT);
+    petRandomWords = new uint[](MAX_ACTION_AMOUNT);
 
     uint actualItemLength;
     uint actualPetLength;
@@ -307,7 +307,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       if (actionId == 0 || !_actionExists(actionId)) {
         continue;
       }
-
       (
         uint[] memory producedItemTokenIds,
         uint[] memory producedItemsAmounts,
@@ -321,13 +320,13 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
         );
 
       // Copy into main arrays
-      for (uint j = 0; j < producedItemTokenIds.length; ++j) {
+      for (uint j; j < producedItemTokenIds.length; ++j) {
         itemTokenIds[actualItemLength] = producedItemTokenIds[j];
         itemAmounts[actualItemLength++] = producedItemsAmounts[j];
       }
-      for (uint j = 0; j < producedPetBaseIds.length; ++j) {
+      for (uint j; j < producedPetBaseIds.length; ++j) {
         petBaseIds[actualPetLength] = producedPetBaseIds[j];
-        petRandomWords[actualPetLength] = producedPetRandomWords[j];
+        petRandomWords[actualPetLength++] = producedPetRandomWords[j];
       }
 
       randomWordStartIndex += actionAmount / 16 + (actionAmount % 16) == 0 ? 0 : 1;
@@ -489,11 +488,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     emit SetGasCostPerUnit(_gasCostPerUnit);
   }
 
-  /*
   function setPetNFT(PetNFT _petNFT) external onlyOwner {
     petNFT = _petNFT;
   }
-*/
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

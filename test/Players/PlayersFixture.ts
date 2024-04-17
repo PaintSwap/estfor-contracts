@@ -10,6 +10,7 @@ import {
   Clans,
   CombatantsHelper,
   EstforLibrary,
+  EggInstantVRFActionStrategy,
   GenericInstantVRFActionStrategy,
   InstantActions,
   InstantVRFActions,
@@ -18,6 +19,8 @@ import {
   MockBrushToken,
   MockOracleClient,
   MockRouter,
+  PassiveActions,
+  PetNFT,
   PlayerNFT,
   Players,
   Promotions,
@@ -183,34 +186,45 @@ export const playersFixture = async function () {
     }
   )) as WishingWell;
 
+  const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
+  const PetNFT = await ethers.getContractFactory("PetNFT", {
+    libraries: {EstforLibrary: estforLibrary.address, PetNFTLibrary: petNFTLibrary.address},
+  });
+  const petNFT = (await upgrades.deployProxy(
+    PetNFT,
+    [
+      brush.address,
+      royaltyReceiver.address,
+      imageBaseUri,
+      dev.address,
+      editNameBrushPrice,
+      adminAccess.address,
+      isBeta,
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    }
+  )) as PetNFT;
+  await petNFT.deployed();
+
   // This contains all the player data
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.deploy();
-
-  const PlayersImplQueueActions = await ethers.getContractFactory("PlayersImplQueueActions", {
+  const playersLibrary = await ethers.deployContract("PlayersLibrary");
+  const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  const playersImplQueueActions = await PlayersImplQueueActions.deploy();
-
-  const PlayersImplProcessActions = await ethers.getContractFactory("PlayersImplProcessActions", {
+  const playersImplProcessActions = await ethers.deployContract("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  const playersImplProcessActions = await PlayersImplProcessActions.deploy();
-
-  const PlayersImplRewards = await ethers.getContractFactory("PlayersImplRewards", {
+  const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  const playersImplRewards = await PlayersImplRewards.deploy();
-
-  const PlayersImplMisc = await ethers.getContractFactory("PlayersImplMisc", {
+  const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  const playersImplMisc = await PlayersImplMisc.deploy();
-
-  const PlayersImplMisc1 = await ethers.getContractFactory("PlayersImplMisc1", {
+  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  const playersImplMisc1 = await PlayersImplMisc1.deploy();
 
   const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.deployProxy(
@@ -218,6 +232,7 @@ export const playersFixture = async function () {
     [
       itemNFT.address,
       playerNFT.address,
+      petNFT.address,
       world.address,
       adminAccess.address,
       quests.address,
@@ -269,7 +284,14 @@ export const playersFixture = async function () {
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [players.address, itemNFT.address, oracleAddress, mockSWVRFOracleClient.address, vrfRequestInfo.address],
+    [
+      players.address,
+      itemNFT.address,
+      petNFT.address,
+      oracleAddress,
+      mockSWVRFOracleClient.address,
+      vrfRequestInfo.address,
+    ],
     {
       kind: "uups",
     }
@@ -283,6 +305,15 @@ export const playersFixture = async function () {
       kind: "uups",
     }
   )) as GenericInstantVRFActionStrategy;
+
+  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
+    EggInstantVRFActionStrategy,
+    [instantVRFActions.address],
+    {
+      kind: "uups",
+    }
+  )) as EggInstantVRFActionStrategy;
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
@@ -362,11 +393,24 @@ export const playersFixture = async function () {
     }
   )) as CombatantsHelper;
 
+  const PassiveActions = await ethers.getContractFactory("PassiveActions", {
+    libraries: {WorldLibrary: worldLibrary.address},
+  });
+  const passiveActions = (await upgrades.deployProxy(
+    PassiveActions,
+    [players.address, itemNFT.address, world.address],
+    {
+      kind: "uups",
+      unsafeAllow: ["delegatecall", "external-library-linking"],
+    }
+  )) as PassiveActions;
+
   await world.setQuests(quests.address);
   await world.setWishingWell(wishingWell.address);
 
   await itemNFT.setPlayers(players.address);
   await playerNFT.setPlayers(players.address);
+  await petNFT.setPlayers(players.address);
   await quests.setPlayers(players.address);
   await clans.setPlayers(players.address);
   await wishingWell.setPlayers(players.address);
@@ -375,14 +419,21 @@ export const playersFixture = async function () {
   await clans.setBankFactory(bankFactory.address);
 
   await itemNFT.setPromotions(promotions.address);
+  await itemNFT.setPassiveActions(passiveActions.address);
   await itemNFT.setInstantActions(instantActions.address);
+
   await itemNFT.setInstantVRFActions(instantVRFActions.address);
+  await petNFT.setInstantVRFActions(instantVRFActions.address);
+
+  await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
 
   await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
 
   await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await lockedBankVaults.setTerritories(territories.address);
+  await royaltyReceiver.setTerritories(territories.address);
+  await petNFT.setTerritories(territories.address);
   await territories.setCombatantsHelper(combatantsHelper.address);
   await lockedBankVaults.setCombatantsHelper(combatantsHelper.address);
 
@@ -442,6 +493,7 @@ export const playersFixture = async function () {
     bankFactory,
     estforLibrary,
     paintSwapMarketplaceWhitelist,
+    passiveActions,
     playersLibrary,
     instantActions,
     clanBattleLibrary,
@@ -456,6 +508,9 @@ export const playersFixture = async function () {
     vrfRequestInfo,
     instantVRFActions,
     genericInstantVRFActionStrategy,
+    eggInstantVRFActionStrategy,
     oracleAddress,
+    petNFT,
+    PetNFT,
   };
 };
