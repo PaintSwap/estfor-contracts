@@ -185,7 +185,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IERC1155",
+        "internalType": "contract ItemNFT",
         "name": "_itemNFT",
         "type": "address"
       },
@@ -215,7 +215,7 @@
     "name": "itemNFT",
     "outputs": [
       {
-        "internalType": "contract IERC1155",
+        "internalType": "contract ItemNFT",
         "name": "",
         "type": "address"
       }

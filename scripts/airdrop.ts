@@ -13,7 +13,7 @@ async function main() {
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: ITEM_NFT_LIBRARY_ADDRESS}});
   const itemNFT = await ItemNFT.attach(ITEM_NFT_ADDRESS);
 
-  const tokenId = EstforConstants.SECRET_EGG_1;
+  const tokenId = EstforConstants.SECRET_EGG_1_TIER1;
   const chunkSize = 100;
   for (let i = 0; i < addresses.length; i += chunkSize) {
     const accounts: string[] = [];
