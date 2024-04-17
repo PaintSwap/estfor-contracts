@@ -58,7 +58,6 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true,
   });
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
@@ -105,7 +104,6 @@ async function main() {
   const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
     kind: "uups",
     timeout,
-    unsafeSkipStorageCheck: true,
   });
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);

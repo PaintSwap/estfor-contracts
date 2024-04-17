@@ -8,7 +8,7 @@ import {
   PLAYERS_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
 } from "./contractAddresses";
-import {isBeta} from "./utils";
+import {isBeta, verifyContracts} from "./utils";
 import {PetNFT, EggInstantVRFActionStrategy} from "../typechain-types";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
@@ -17,8 +17,8 @@ async function main() {
   console.log(`Deploy PetNFT using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const petImageBaseUri = isBeta
-    ? "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/"
-    : "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
+    ? "ipfs://QmPp8cAsVKA8PduHR4suA7GNKKyh5R4ADyyjGobwmUiUEv/"
+    : "ipfs://QmbKhQHaUWSsPUTHwTUdSDbkT4HoMzF3PBYxYfLSw4YJSC/";
   const timeout = 600 * 1000; // 10 minutes
 
   const editPetNameBrushPrice = isBeta ? ethers.utils.parseEther("1") : ethers.utils.parseEther("100");
@@ -80,7 +80,7 @@ async function main() {
     }
   )) as EggInstantVRFActionStrategy;
   await eggInstantVRFActionStrategy.deployed();
-  console.log("eggInstantVRFActionStrategy = ", eggInstantVRFActionStrategy.address);
+  console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
 
   tx = await instantVRFActions.addStrategies([InstantVRFActionType.EGG], [eggInstantVRFActionStrategy.address]);
   await tx.wait();

@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {PlayersLibrary} from "../typechain-types";
+import {Players, PlayersLibrary} from "../typechain-types";
 import {
   PLAYERS_ADDRESS,
   PLAYERS_IMPL_MISC_ADDRESS,
@@ -35,14 +35,20 @@ async function main() {
     await deployPlayerImplementations(playersLibrary.address);
 
   // Single
-  /*  const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
+  /* const playersImplMisc = await ethers.deployContract("PlayersImplMisc1", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
   console.log(`PlayersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
   await playersImplMisc.deployed(); */
 
   if (chainId == 250) {
-    await verifyContracts([playersImplMisc.address]);
+    await verifyContracts([
+      playersImplQueueActions.address,
+      playersImplProcessActions.address,
+      playersImplRewards.address,
+      playersImplMisc.address,
+      playersImplMisc1.address,
+    ]);
   }
 
   // Set the implementations
@@ -55,7 +61,7 @@ async function main() {
     PLAYERS_IMPL_MISC_ADDRESS,
     PLAYERS_IMPL_MISC1_ADDRESS
   */
-  const players = Players.attach(PLAYERS_ADDRESS);
+  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)).connect(owner) as Players;
   const tx = await players.setImpls(
     playersImplQueueActions.address,
     playersImplProcessActions.address,

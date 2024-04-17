@@ -1,6 +1,7 @@
 import {ethers, upgrades} from "hardhat";
 import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS, PLAYERS_ADDRESS, WORLD_ADDRESS} from "./contractAddresses";
 import {PassiveActions} from "../typechain-types";
+import {verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -52,6 +53,8 @@ async function main() {
   let tx = await itemNFT.setPassiveActions(passiveActions.address);
   await tx.wait();
   console.log("itemNFT setPassiveActions");
+
+  await verifyContracts([passiveActions.address, itemNFT.address]);
 }
 
 main().catch((error) => {
