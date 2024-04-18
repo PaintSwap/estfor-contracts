@@ -7,10 +7,11 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import {IClans} from "../interfaces/IClans.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
+import {ItemNFT} from "../ItemNFT.sol";
 
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   address public bankImpl; // Keep this same as it's used by the deleted BankProxy which is used by some old banks
-  IERC1155 public itemNFT;
+  ItemNFT public itemNFT;
   IERC1155 public playerNFT;
   IClans public clans;
   IPlayers public players;
@@ -21,7 +22,7 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(IERC1155 _itemNFT, IERC1155 _playerNFT, IClans _clans, IPlayers _players) external initializer {
+  function initialize(ItemNFT _itemNFT, IERC1155 _playerNFT, IClans _clans, IPlayers _players) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 

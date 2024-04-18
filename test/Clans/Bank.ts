@@ -155,7 +155,6 @@ describe("Bank", function () {
     const {clans, playerId, alice, bob, clanName, discord, telegram, twitter, Bank, bankFactory, itemNFT} =
       await loadFixture(bankFixture);
 
-    // Send directly
     const clanId = 1;
     const clanBankAddress = ethers.utils.getContractAddress({
       from: bankFactory.address,
@@ -168,6 +167,92 @@ describe("Bank", function () {
     await expect(bank.connect(alice).withdrawItems(bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "WithdrawItems")
       .withArgs(alice.address, bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
+  });
+
+  it("Withdraw (Distribute) to many users", async function () {
+    const {clans, playerId, alice, bob, clanName, discord, telegram, twitter, Bank, bankFactory, itemNFT} =
+      await loadFixture(bankFixture);
+
+    const clanId = 1;
+    const clanBankAddress = ethers.utils.getContractAddress({
+      from: bankFactory.address,
+      nonce: clanId,
+    });
+
+    // Upgrade tier of clan
+    await clans.addTiers([
+      {
+        id: 2,
+        maxMemberCapacity: 5,
+        maxBankCapacity: 6,
+        maxImageId: 16,
+        price: 0,
+        minimumAge: 0,
+      },
+    ]);
+    await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 2);
+
+    // Send directly
+    await itemNFT.testMint(clanBankAddress, EstforConstants.TITANIUM_AXE, 2); // to alice
+    await itemNFT.testMint(clanBankAddress, EstforConstants.IRON_AXE, 3); // to bob
+    await itemNFT.testMint(clanBankAddress, EstforConstants.MITHRIL_AXE, 1); // Don't transfer this
+
+    await itemNFT.testMint(clanBankAddress, EstforConstants.ADAMANTINE_AXE, 4); // to bob
+    await itemNFT.testMint(clanBankAddress, EstforConstants.RUNITE_AXE, 3); // to alice (only send 1)
+    await itemNFT.testMint(clanBankAddress, EstforConstants.ORICHALCUM_AXE, 2); // to alice
+
+    const tokenIds = [
+      EstforConstants.TITANIUM_AXE,
+      EstforConstants.IRON_AXE,
+      EstforConstants.ADAMANTINE_AXE,
+      EstforConstants.RUNITE_AXE,
+      EstforConstants.ORICHALCUM_AXE,
+    ];
+    const tos = [alice.address, bob.address, bob.address, alice.address, alice.address];
+    const amounts = [2, 3, 4, 1, 2];
+
+    // Turn this into expected transfer nft object
+    const nftInfos = [];
+    for (let i = 0; i < tokenIds.length; ++i) {
+      const tokenId = tokenIds[i];
+      const to = tos[i];
+      const amount = amounts[i];
+
+      let exists = false;
+      for (let j = 0; j < nftInfos.length; ++j) {
+        const nftInfo: any = nftInfos[j];
+        if (to == nftInfo.to) {
+          // Already exists
+          exists = true;
+          nftInfo.tokenIds.push(tokenId);
+          nftInfo.amounts.push(amount);
+          break;
+        }
+      }
+
+      if (!exists) {
+        nftInfos.push({tokenIds: [tokenId], amounts: [amount], to: to});
+      }
+    }
+
+    const bank = await Bank.attach(clanBankAddress);
+
+    await expect(bank.connect(alice).withdrawItemsBulk(nftInfos, playerId)).to.emit(bank, "WithdrawItemsBulk");
+
+    // Check balances of the NFTs are as expected
+    expect(
+      await itemNFT.balanceOfs(alice.address, [
+        EstforConstants.TITANIUM_AXE,
+        EstforConstants.RUNITE_AXE,
+        EstforConstants.ORICHALCUM_AXE,
+      ])
+    ).to.deep.eq([2, 1, 2]);
+
+    expect(
+      await itemNFT.balanceOfs(bob.address, [EstforConstants.IRON_AXE, EstforConstants.ADAMANTINE_AXE])
+    ).to.deep.eq([3, 4]);
+
+    expect(await itemNFT.balanceOf(clanBankAddress, EstforConstants.MITHRIL_AXE)).to.eq(1);
   });
 
   it("Should be able to withdraw non-transferable boosts", async function () {

@@ -1,8 +1,13 @@
 import {ethers, upgrades} from "hardhat";
 import {
   CLANS_ADDRESS,
+  EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+  ESTFOR_LIBRARY_ADDRESS,
+  INSTANT_VRF_ACTIONS_ADDRESS,
   ITEM_NFT_ADDRESS,
   LOCKED_BANK_VAULT_ADDRESS,
+  PET_NFT_ADDRESS,
+  PET_NFT_LIBRARY_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
   PROMOTIONS_ADDRESS,
@@ -12,7 +17,16 @@ import {
   WORLD_ADDRESS,
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
-import {Clans, EstforLibrary, PlayersLibrary, Quests, Shop, WorldLibrary} from "../typechain-types";
+import {
+  Clans,
+  EstforLibrary,
+  InstantVRFActions,
+  PetNFTLibrary,
+  PlayersLibrary,
+  Quests,
+  Shop,
+  WorldLibrary,
+} from "../typechain-types";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -23,7 +37,6 @@ async function main() {
   const player = await ethers.getImpersonatedSigner("0xe13894604b6dc9523a9822dfa2909c2a9cd084a6");
   const playerId = 892;
   const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
-
   // Players
   const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as PlayersLibrary;
 
@@ -126,6 +139,36 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
+
+  const petNFTLibrary = (await ethers.deployContract("PetNFTLibrary")) as PetNFTLibrary;
+  const PetNFT = (
+    await ethers.getContractFactory("PetNFT", {
+      libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: petNFTLibrary.address},
+    })
+  ).connect(owner);
+  const petNFT = await upgrades.upgradeProxy(PET_NFT_ADDRESS, PetNFT, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout: 10000,
+  });
+  await petNFT.deployed();
+
+  const EggInstantVRFActionStrategy = (await ethers.getContractFactory("EggInstantVRFActionStrategy")).connect(owner);
+  const eggInstantVRFActionStrategy = await upgrades.upgradeProxy(
+    EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
+    EggInstantVRFActionStrategy,
+    {
+      kind: "uups",
+      timeout: 100000,
+    }
+  );
+  await eggInstantVRFActionStrategy.deployed();
+
+  const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(owner);
+  const instantVRFActions = (await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
+    kind: "uups",
+    timeout: 100000,
+  })) as InstantVRFActions;
 
   //  const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
   //  console.log(pendingQueuedActionState);
