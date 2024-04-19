@@ -1692,6 +1692,11 @@
       },
       {
         "internalType": "uint40",
+        "name": "_startTimestamp",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
         "name": "_skillSentinelTime",
         "type": "uint40"
       },

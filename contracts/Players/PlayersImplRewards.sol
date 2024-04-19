@@ -707,6 +707,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     if (actionSkill == Skill.THIEVING) {
       (randomIds, randomAmounts, ) = _getRandomRewards(
         _playerId,
+        _startTime,
         _startTime + uint24(_elapsedTime),
         _xpElapsedTime / 3600,
         actionRewards,
@@ -850,6 +851,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint[] memory randomAmounts;
       (randomIds, randomAmounts, processedAny) = _getRandomRewards(
         _playerId,
+        pendingRandomReward.startTime,
         pendingRandomReward.startTime + pendingRandomReward.sentinelElapsedTime,
         numTickets,
         actionRewards,
@@ -1017,6 +1019,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
   function _getRandomRewards(
     uint _playerId,
+    uint40 _startTime,
     uint40 _sentinelTimestamp,
     uint _numTickets,
     ActionRewards memory _actionRewards,
@@ -1028,6 +1031,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       abi.encodeWithSelector(
         IPlayersMiscDelegateView.getRandomRewards.selector,
         _playerId,
+        _startTime,
         _sentinelTimestamp,
         _numTickets,
         _actionRewards,

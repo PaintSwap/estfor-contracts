@@ -1915,17 +1915,17 @@ describe("Rewards", function () {
       const {playerId, world, mockOracleClient} = await loadFixture(playersFixture);
       const {timestamp} = await ethers.provider.getBlock("latest");
       let numTickets = 16; // 240
-      await expect(world.getRandomBytes(numTickets, timestamp - 86400, playerId)).to.be.reverted;
+      await expect(world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId)).to.be.reverted;
       await requestAndFulfillRandomWords(world, mockOracleClient);
-      let randomBytes = await world.getRandomBytes(numTickets, timestamp - 86400, playerId);
+      let randomBytes = await world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId);
       expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32);
       numTickets = MAX_UNIQUE_TICKETS;
 
-      randomBytes = await world.getRandomBytes(numTickets, timestamp - 86400, playerId);
+      randomBytes = await world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId);
       expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32 * 4);
 
       numTickets = MAX_UNIQUE_TICKETS + 1;
-      await expect(world.getRandomBytes(numTickets, timestamp - 86400, playerId)).to.be.reverted;
+      await expect(world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId)).to.be.reverted;
     });
 
     it("Check past random rewards which are claimed the following day don't cause issues (many)", async function () {
