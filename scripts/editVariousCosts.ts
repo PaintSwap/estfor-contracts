@@ -70,8 +70,8 @@ async function main() {
 
   // Edit pet name cost
   const petNFT = await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS);
-  const editPetNameCost = isBeta ? ethers.utils.parseEther("0") : ethers.utils.parseEther("0");
-  tx = await petNFT.setEditNameCost(editPetNameCost);
+  const editPetNameCost = isBeta ? ethers.utils.parseEther("0") : ethers.utils.parseEther("1");
+  const tx = await petNFT.setEditNameCost(editPetNameCost);
   await tx.wait();
   console.log("Pet edit name cost");
 }

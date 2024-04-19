@@ -8,7 +8,7 @@ import {
   PLAYERS_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
 } from "./contractAddresses";
-import {isBeta, verifyContracts} from "./utils";
+import {isBeta} from "./utils";
 import {PetNFT, EggInstantVRFActionStrategy} from "../typechain-types";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
@@ -21,7 +21,7 @@ async function main() {
     : "ipfs://QmbKhQHaUWSsPUTHwTUdSDbkT4HoMzF3PBYxYfLSw4YJSC/";
   const timeout = 600 * 1000; // 10 minutes
 
-  const editPetNameBrushPrice = isBeta ? ethers.utils.parseEther("1") : ethers.utils.parseEther("100");
+  const editPetNameBrushPrice = isBeta ? ethers.utils.parseEther("1") : ethers.utils.parseEther("1");
 
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   await petNFTLibrary.deployed();

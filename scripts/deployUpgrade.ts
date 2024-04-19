@@ -148,7 +148,7 @@ async function main() {
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
 
   // World
-  const newWorldLibrary = true;
+  const newWorldLibrary = false;
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   let worldLibrary: WorldLibrary;
   if (newWorldLibrary) {
@@ -343,7 +343,7 @@ async function main() {
   });
   await passiveActions.deployed();
   console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
-  
+
   if (network.chainId == 250) {
     await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]);
@@ -352,7 +352,7 @@ async function main() {
     await verifyContracts([quests.address]);
     await verifyContracts([clans.address]);
     await verifyContracts([world.address]);
-    await verifyContracts([worldLibrary.address]); 
+    await verifyContracts([worldLibrary.address]);
     await verifyContracts([estforLibrary.address]);
     await verifyContracts([adminAccess.address]);
     await verifyContracts([bankRegistry.address]);
