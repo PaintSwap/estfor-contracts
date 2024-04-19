@@ -87,7 +87,7 @@ CombatantsHelper [0x8fedf83c55012acff7115b8fa164095721953c39](https://ftmscan.co
 DecoratorProvider [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.com/address/0xba2f8cff9ea18f3687eb685f0c1bcd509b539963)
 
 PetNFTLibrary [0xf842b81350e8ac973bf7c7f32183cc1e1545e76d](https://ftmscan.com/address/0xf842b81350e8ac973bf7c7f32183cc1e1545e76d)  
-PetNFT [0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3](https://ftmscan.com/address/0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3)
+PetNFT [0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3](https://ftmscan.com/address/0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3)  
 PassiveActions [0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4](https://ftmscan.com/address/0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4)
 
 Oracle [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)  
@@ -136,7 +136,7 @@ CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.co
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
 PetNFTLibrary [0x31e0988f0e565d2292c5a4361bfbf4551fcedc92](https://ftmscan.com/address/0x31e0988f0e565d2292c5a4361bfbf4551fcedc92)  
-PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/0xa6489181b24e966402891225c65f8e2d136ddd2e)
+PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/0xa6489181b24e966402891225c65f8e2d136ddd2e)  
 PassiveActions [0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6](https://ftmscan.com/address/0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6)
 
 Oracle [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)  
