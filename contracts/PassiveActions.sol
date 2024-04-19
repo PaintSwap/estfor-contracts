@@ -268,7 +268,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     if (oracleCalled) {
       RandomReward[] memory randomRewards = _setupRandomRewards(_actionRewards);
       uint endTime = passiveAction.startTime + (action.durationDays - numWinners) * 1 days - 1 days;
-      bytes memory randomBytes = world.getRandomBytes(numIterations, endTime, _playerId);
+      bytes memory randomBytes = world.getRandomBytes(numIterations, passiveAction.startTime, endTime, _playerId);
 
       _pendingPassiveActionState.producedRandomRewardItemTokenIds = new uint[](randomRewards.length);
       _pendingPassiveActionState.producedRandomRewardAmounts = new uint[](randomRewards.length);
@@ -346,11 +346,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   function _isWinner(
     uint _playerId,
-    uint _timestamp,
+    uint _startTimestamp,
+    uint _endTimestamp,
     uint16 _boostIncrease,
     uint8 _skipSuccessPercent
   ) private view returns (bool winner) {
-    bytes memory randomBytes = world.getRandomBytes(1, _timestamp, _playerId);
+    bytes memory randomBytes = world.getRandomBytes(1, _startTimestamp, _endTimestamp, _playerId);
     uint16 word = _getSlice(randomBytes, 0);
     return word < ((type(uint16).max * (uint(_skipSuccessPercent) + _boostIncrease)) / 100);
   }
@@ -393,7 +394,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
         oracleCalled = world.hasRandomWord(timestamp);
 
-        if (oracleCalled && _isWinner(_playerId, timestamp, boostIncrease, action.skipSuccessPercent)) {
+        if (oracleCalled && _isWinner(_playerId, startTime, timestamp, boostIncrease, action.skipSuccessPercent)) {
           ++numWinners;
 
           // Is this yesterday's oracle?

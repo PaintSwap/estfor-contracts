@@ -618,6 +618,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   // Random rewards
   function getRandomRewards(
     uint _playerId,
+    uint40 _startTimestamp,
     uint40 _skillSentinelTime, // Can be skill end time or the current time that the action was actually processed
     uint _numTickets,
     ActionRewards memory _actionRewards,
@@ -634,7 +635,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       if (hasRandomWord) {
         uint numIterations = Math.min(MAX_UNIQUE_TICKETS_, _numTickets);
 
-        bytes memory randomBytes = world.getRandomBytes(numIterations, _skillSentinelTime, _playerId);
+        bytes memory randomBytes = world.getRandomBytes(numIterations, _startTimestamp, _skillSentinelTime, _playerId);
         uint multiplier = _numTickets / MAX_UNIQUE_TICKETS_;
 
         // Cache some values for later

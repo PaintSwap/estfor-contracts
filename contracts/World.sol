@@ -387,17 +387,24 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     );
   }
 
-  function getRandomBytes(uint _numTickets, uint _timestamp, uint _playerId) external view returns (bytes memory b) {
+  function getRandomBytes(
+    uint _numTickets,
+    uint _startTimestamp,
+    uint _endTimestamp,
+    uint _playerId
+  ) external view returns (bytes memory b) {
     if (_numTickets <= 16) {
       // 32 bytes
-      bytes32 word = bytes32(getRandomWord(_timestamp));
-      b = abi.encodePacked(_getRandomComponent(word, _timestamp, _playerId));
+      bytes32 word = bytes32(getRandomWord(_endTimestamp));
+      b = abi.encodePacked(_getRandomComponent(word, _startTimestamp, _endTimestamp, _playerId));
     } else if (_numTickets <= MAX_UNIQUE_TICKETS_) {
       // 4 * 32 bytes
-      uint[4] memory multipleWords = getMultipleWords(_timestamp);
+      uint[4] memory multipleWords = getMultipleWords(_endTimestamp);
       for (U256 iter; iter.lt(4); iter = iter.inc()) {
         uint i = iter.asUint256();
-        multipleWords[i] = uint(_getRandomComponent(bytes32(multipleWords[i]), _timestamp, _playerId));
+        multipleWords[i] = uint(
+          _getRandomComponent(bytes32(multipleWords[i]), _startTimestamp, _endTimestamp, _playerId)
+        );
         // XOR all the words with the first fresh random number to give more randomness to the existing random words
         if (i != 0) {
           multipleWords[i] = uint(keccak256(abi.encodePacked(multipleWords[i] ^ multipleWords[0])));
@@ -492,8 +499,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     WorldLibrary.checkActionChoice(_actionChoiceInput);
   }
 
-  function _getRandomComponent(bytes32 _word, uint _skillEndTime, uint _playerId) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(_word, _skillEndTime, _playerId));
+  function _getRandomComponent(
+    bytes32 _word,
+    uint _startTimestamp,
+    uint _endTimestamp,
+    uint _playerId
+  ) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(_word, _startTimestamp, _endTimestamp, _playerId));
   }
 
   function _packActionChoice(

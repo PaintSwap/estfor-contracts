@@ -3546,7 +3546,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "_timestamp",
+        "name": "_startTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_endTimestamp",
         "type": "uint256"
       },
       {

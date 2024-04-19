@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./contractAddresses";
+import {WORLD_ADDRESS} from "./contractAddresses";
 import {World} from "../typechain-types";
 
 async function main() {
