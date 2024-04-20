@@ -70,7 +70,7 @@ contract ERC1155UpgradeableSinglePerToken is
     return _totalSupplyAll;
   }
 
-  // Override this function is updateOwner is overrides
+  // Override this function if updateOwner is overriden
   function _exists(uint _tokenId) internal view virtual returns (bool) {
     return _owner[_tokenId] != address(0);
   }
@@ -113,13 +113,6 @@ contract ERC1155UpgradeableSinglePerToken is
       revert ERC1155ZeroAddressNotValidOwner();
     }
     return getOwner(id) == account ? 1 : 0;
-  }
-
-  /**
-   * Override this function to return the owner of the token if you have a better packed implementation
-   */
-  function getOwner(uint256 id) public view virtual returns (address) {
-    return _owner[id];
   }
 
   /**
@@ -588,14 +581,21 @@ contract ERC1155UpgradeableSinglePerToken is
     }
   }
 
-  function _updateOwner(uint256 id, address to) internal virtual {
-    _owner[id] = to;
-  }
-
   function _asSingletonArray(uint256 element) private pure returns (uint256[] memory) {
     uint256[] memory array = new uint256[](1);
     array[0] = element;
 
     return array;
+  }
+
+  /**
+   * Override this function to return the owner of the token if you have a better packed implementation
+   */
+  function getOwner(uint256 id) public view virtual returns (address) {
+    return _owner[id];
+  }
+
+  function _updateOwner(uint256 id, address to) internal virtual {
+    _owner[id] = to;
   }
 }
