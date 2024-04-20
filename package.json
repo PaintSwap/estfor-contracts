@@ -126,6 +126,7 @@
     "setItemsBaseURI": "npx hardhat run scripts/setItemsBaseURI.ts",
     "setPetsImageBaseURI": "npx hardhat run scripts/setPetsImageBaseURI.ts",
     "setPlayersImageBaseURI": "npx hardhat run scripts/setPlayersImageBaseURI.ts",
+    "setMinItemQuantityBeforeSellsAllowed": "npx hardhat run scripts/setMinItemQuantityBeforeSellsAllowed.ts",
     "pauseGame": "npx hardhat run scripts/pauseGame.ts",
     "setAvatars": "npx hardhat run scripts/setAvatars.ts",
     "overhaulUpgrade": "npx hardhat run scripts/overhaulUpgrade.ts",

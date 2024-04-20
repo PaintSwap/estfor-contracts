@@ -219,7 +219,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(0);
       expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
 
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, secondTokenId, secondAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mintBatch(owner.address, secondTokenId, secondAmount, "0x");
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(2);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(1);
@@ -244,7 +244,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x");
       await expect(
-        erc1155UpgradeableSinglePerToken.mint(owner.address, [firstTokenId], [firstAmount], "0x")
+        erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 

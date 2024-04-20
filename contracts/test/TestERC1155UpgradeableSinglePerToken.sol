@@ -6,6 +6,11 @@ import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol"
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 
 contract TestERC1155UpgradeableSinglePerToken is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSinglePerToken {
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
   function initialize() external initializer {
     __ERC1155_init("");
     __UUPSUpgradeable_init();
