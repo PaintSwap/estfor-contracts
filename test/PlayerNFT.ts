@@ -333,7 +333,6 @@ describe("PlayerNFT", function () {
         shop.address,
         dev.address,
         royaltyReceiver.address,
-        adminAccess.address,
         editNameBrushPrice,
         upgradePlayerBrushPrice,
         imageBaseUri,
@@ -407,9 +406,7 @@ describe("PlayerNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {playerNFT, adminAccess, brush, shop, dev, royaltyReceiver, estforLibrary} = await loadFixture(
-      deployContracts
-    );
+    const {playerNFT, brush, shop, dev, royaltyReceiver, estforLibrary} = await loadFixture(deployContracts);
     expect(await playerNFT.name()).to.be.eq("Estfor Players (Beta)");
     expect(await playerNFT.symbol()).to.be.eq("EK_PB");
 
@@ -429,7 +426,6 @@ describe("PlayerNFT", function () {
         shop.address,
         dev.address,
         royaltyReceiver.address,
-        adminAccess.address,
         editNameBrushPrice,
         upgradePlayerBrushPrice,
         imageBaseUri,
