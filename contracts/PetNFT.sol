@@ -121,7 +121,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   uint8 private brushTerritoriesPercentage;
   address private territories;
   address private players;
-  //  address private shop;
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 

@@ -181,16 +181,6 @@
   },
   {
     "inputs": [],
-    "name": "NotAdmin",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotAdminOrLive",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotInWhitelist",
     "type": "error"
   },
@@ -970,11 +960,6 @@
       {
         "internalType": "address",
         "name": "_royaltyReceiver",
-        "type": "address"
-      },
-      {
-        "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
         "type": "address"
       },
       {

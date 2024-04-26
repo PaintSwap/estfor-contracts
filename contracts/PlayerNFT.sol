@@ -53,8 +53,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   event SetAvatars(uint startAvatarId, AvatarInfo[] avatarInfos);
 
   error NotOwnerOfPlayer();
-  error NotAdmin();
-  error NotAdminOrLive();
   error NotPlayers();
   error BaseAvatarNotExists();
   error NameTooShort();
@@ -102,7 +100,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   bytes32 private merkleRoot; // Unused now (was for alpha/beta whitelisting)
   mapping(address whitelistedUser => uint amount) private numMintedFromWhitelist; // Unused now
-  AdminAccess private adminAccess;
+  AdminAccess private adminAccess; // Unused but is set
   uint32 numBurned;
   uint constant NUM_BASE_AVATARS = 8;
 
@@ -120,13 +118,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _;
   }
 
-  modifier isAdmin() {
-    if (!adminAccess.isAdmin(_msgSender())) {
-      revert NotAdmin();
-    }
-    _;
-  }
-
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -137,7 +128,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     address _pool,
     address _dev,
     address _royaltyReceiver,
-    AdminAccess _adminAccess,
     uint72 _editNameCost,
     uint80 _upgradePlayerCost,
     string calldata _imageBaseUri,
@@ -156,7 +146,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     upgradePlayerCost = _upgradePlayerCost;
     royaltyFee = 30; // 3%
     royaltyReceiver = _royaltyReceiver;
-    adminAccess = _adminAccess;
     isBeta = _isBeta;
 
     emit EditNameCost(_editNameCost);

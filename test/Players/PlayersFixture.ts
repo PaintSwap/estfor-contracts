@@ -115,7 +115,6 @@ export const playersFixture = async function () {
       shop.address,
       dev.address,
       royaltyReceiver.address,
-      adminAccess.address,
       editNameBrushPrice,
       upgradePlayerBrushPrice,
       imageBaseUri,

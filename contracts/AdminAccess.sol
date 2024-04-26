@@ -68,6 +68,10 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
     _updatePromotionalAdmins(_admins, true);
   }
 
+  function removePromotionalAdmins(address[] calldata _admins) external onlyOwner {
+    _updatePromotionalAdmins(_admins, false);
+  }
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

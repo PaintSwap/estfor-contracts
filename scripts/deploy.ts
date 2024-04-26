@@ -281,7 +281,6 @@ async function main() {
       shop.address,
       DEV_ADDRESS,
       royaltyReceiver.address,
-      adminAccess.address,
       editNameBrushPrice,
       upgradePlayerBrushPrice,
       heroImageBaseUri,
