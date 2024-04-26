@@ -28,6 +28,7 @@ import {
   EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
   PET_NFT_ADDRESS,
   PASSIVE_ACTIONS_ADDRESS,
+  PET_NFT_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
