@@ -197,18 +197,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   function newOracleRandomWords(uint _randomWord) external override onlyWorld {
-    // Pick a random quest which is assigned to everyone (could be random later)
-    /*    uint length = randomQuests.length;
-    if (length == 0) {
-      return; // Don't revert as this would mess up the chainlink callback
-    }
-
-    uint index = uint8(_randomWord) % length;
-    randomQuest = randomQuests[index];
-    uint oldQuestId = randomQuest.questId;
-    uint newQuestId = randomQuestId++;
-    randomQuest.questId = uint16(newQuestId); // Update to a unique one so we can distinguish the same quests
-    emit NewRandomQuest(randomQuest, oldQuestId); */
+    // For later
   }
 
   function processQuests(
