@@ -10,11 +10,9 @@ async function main() {
 
   const quests = (await ethers.getContractAt("Quests", QUESTS_ADDRESS)) as Quests;
   const questIndexes = allQuests
-    .map((q, index) =>
-      q.questId === EstforConstants.QUEST_NEW_ALCHEMY || q.questId === EstforConstants.QUEST_FLEX_THE_BOW ? index : ""
-    )
+    .map((q, index) => (q.questId === EstforConstants.QUEST_DRAGON_SLAYER ? index : ""))
     .filter(String) as number[];
-  if (questIndexes.length != 2) {
+  if (questIndexes.length != 1) {
     console.error("Could not find these quests");
     return;
   }
