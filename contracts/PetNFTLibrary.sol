@@ -64,10 +64,7 @@ library PetNFTLibrary {
       )
     );
 
-    // Set default _name if they don't have one
-    if (bytes(_name).length == 0) {
-      _name = _defaultPetName(_tokenId);
-    }
+    _name = _getPetName(_tokenId, _name);
 
     bytes memory fullName = abi.encodePacked(_name, " (T", tier.toString(), ")");
     bytes memory externalURL = abi.encodePacked("https://", _isBeta ? "beta." : "", "estfor.com");
@@ -90,6 +87,13 @@ library PetNFTLibrary {
     );
 
     return string(abi.encodePacked("data:application/json;base64,", json));
+  }
+
+  function _getPetName(uint _tokenId, string memory _name) internal pure returns (string memory) {
+    if (bytes(_name).length == 0) {
+      _name = PetNFTLibrary._defaultPetName(_tokenId);
+    }
+    return _name;
   }
 
   function _defaultPetName(uint _petId) internal pure returns (string memory) {

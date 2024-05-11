@@ -203,11 +203,11 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   ) external isOwnerOfPlayer(_playerId) isOwnerOfPet(_petId) {
     (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) = _setName(_petId, _name);
 
-    if (nameChanged) {
-      _pay(editNameCost);
-    } else {
+    if (!nameChanged) {
       revert SameName();
     }
+
+    _pay(editNameCost);
 
     // Check trimmed name does not start with "Pet " as those are reserved
     if (bytes(trimmedAndLowercaseName).length > 3) {
@@ -394,7 +394,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     }
 
     trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
-    string memory oldName = EstforLibrary.toLower(names[_petId]);
+    string memory oldName = EstforLibrary.toLower(PetNFTLibrary._getPetName(_petId, names[_petId]));
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
       if (lowercaseNames[trimmedAndLowercaseName]) {
@@ -557,6 +557,13 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     );
   }
 
+  /**
+   * @dev Returns whether `_tokenId` exists.
+   */
+  function _exists(uint _tokenId) internal view override returns (bool) {
+    return pets[_tokenId].owner != address(0);
+  }
+
   function getPet(uint _tokenId) external view returns (Pet memory) {
     return pets[_tokenId];
   }
@@ -574,13 +581,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     BasePetMetadata storage basePetMetadata = basePetMetadatas[pet.baseId];
 
     return PetNFTLibrary.uri(basePetMetadata, pet, _tokenId, imageBaseUri, names[_tokenId], isBeta);
-  }
-
-  /**
-   * @dev Returns whether `_tokenId` exists.
-   */
-  function _exists(uint _tokenId) internal view override returns (bool) {
-    return pets[_tokenId].owner != address(0);
   }
 
   function royaltyInfo(
