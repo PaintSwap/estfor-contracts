@@ -18,7 +18,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
   }
 
   address private instantVRFActions;
-  uint32[65535] private actions; // actionId => rewardBasePetIdMax | rewardBasePetIdMin
+  uint32[65535] private actions; // actionId => rewardBasePetIdMin | rewardBasePetIdMax
 
   modifier onlyInstantVRFActions() {
     if (instantVRFActions != _msgSender()) {
