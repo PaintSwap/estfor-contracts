@@ -7,7 +7,7 @@ async function main() {
 
   const wishingWell = await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS);
   //  await wishingWell.setClanDonationThresholdIncrement(ethers.utils.parseEther("5000"));
-  await wishingWell.setGlobalDonationThresholdIncrement(ethers.utils.parseEther("200000"));
+  await wishingWell.setGlobalDonationThresholdIncrement(ethers.utils.parseEther("75000"));
 }
 
 main().catch((error) => {

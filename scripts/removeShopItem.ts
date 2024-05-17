@@ -4,10 +4,7 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Remove shop item using account: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(`Remove shop item using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const Shop = (await ethers.getContractFactory("Shop")).connect(owner);
   const shop = Shop.attach(SHOP_ADDRESS);
