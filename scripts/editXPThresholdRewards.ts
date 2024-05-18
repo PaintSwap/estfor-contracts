@@ -1,16 +1,13 @@
 import {ethers} from "hardhat";
 import {PLAYERS_ADDRESS} from "./contractAddresses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
+import {Players} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit xp threshold rewards using account: ${owner.address}`);
+  console.log(`Edit xp threshold rewards using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
-
-  const Players = await ethers.getContractFactory("Players");
-  const players = Players.attach(PLAYERS_ADDRESS);
+  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
 
   /*
   // Single

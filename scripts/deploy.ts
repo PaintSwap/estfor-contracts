@@ -86,10 +86,8 @@ import {allBasePets} from "./data/pets";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Deploying contracts with the account: ${owner.address}`);
-
+  console.log(`Deploying contracts with the account: ${owner.address} on chain: ${await owner.getChainId()}`);
   const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
 
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;

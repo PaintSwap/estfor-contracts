@@ -1,11 +1,11 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
+import {PlayersLibrary} from "../../typechain-types";
 
 describe("PlayersLibrary", function () {
   async function deployContracts() {
-    const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-    const playersLibrary = await PlayersLibrary.deploy();
+    const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as PlayersLibrary;
     return {playersLibrary};
   }
 

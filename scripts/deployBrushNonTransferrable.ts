@@ -4,10 +4,9 @@ import {WFTM_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Deploying non transferrable brush with the account: ${owner.address}`);
-
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
+  console.log(
+    `Deploying non transferrable brush with the account: ${owner.address} on chain id ${await owner.getChainId()}`
+  );
 
   const BrushNonTransferrable = await ethers.getContractFactory("BrushNonTransferrable");
   const brushNonTransferrable = await upgrades.deployProxy(BrushNonTransferrable);
