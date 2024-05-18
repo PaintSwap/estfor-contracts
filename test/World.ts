@@ -6,15 +6,14 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId, RATE_MUL, requestAndFulfillRandomWords, SPAWN_MUL} from "./utils";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {World} from "../typechain-types";
+import {MockOracleClient, World} from "../typechain-types";
 
 describe("World", function () {
   const deployContracts = async function () {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice] = await ethers.getSigners();
 
-    const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-    const mockOracleClient = await MockOracleClient.deploy();
+    const mockOracleClient = (await ethers.deployContract("MockOracleClient")) as MockOracleClient;
 
     // Add some dummy blocks so that world can access them
     for (let i = 0; i < 5; ++i) {

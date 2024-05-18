@@ -1,16 +1,12 @@
 import {ethers} from "hardhat";
 import {PLAYERS_ADDRESS} from "./contractAddresses";
+import {Players} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Pause game using account: ${owner.address}`);
+  console.log(`Pause game using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
-
-  const Players = await ethers.getContractFactory("Players");
-  const players = await Players.attach(PLAYERS_ADDRESS);
-
+  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
   await players.pauseGame(true);
 }
 

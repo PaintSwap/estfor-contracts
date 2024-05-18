@@ -1,17 +1,13 @@
 import {ethers} from "hardhat";
-import {WORLD_ADDRESS, WORLD_LIBRARY_ADDRESS} from "./contractAddresses";
-import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
+import {WORLD_ADDRESS} from "./contractAddresses";
 import {setDailyAndWeeklyRewards} from "./utils";
+import {World} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Set daily rewards using account: ${owner.address}`);
+  console.log(`Set daily rewards using account: ${owner.address} as owner on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
-
-  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: WORLD_LIBRARY_ADDRESS}});
-  const world = await World.attach(WORLD_ADDRESS);
+  const world = (await ethers.getContractAt("World", WORLD_ADDRESS)) as World;
   /*
   const tier1 = 1;
   let tx = await world.setDailyRewardPool(tier1, allDailyRewards[tier1]);

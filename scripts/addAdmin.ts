@@ -1,15 +1,12 @@
 import {ethers} from "hardhat";
 import {ADMIN_ACCESS_ADDRESS} from "./contractAddresses";
+import {AdminAccess} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add admins using account: ${owner.address}`);
+  console.log(`Add admins using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  const network = await ethers.provider.getNetwork();
-  console.log(`ChainId: ${network.chainId}`);
-
-  const AdminAccess = await ethers.getContractFactory("AdminAccess");
-  const adminAccess = AdminAccess.attach(ADMIN_ACCESS_ADDRESS);
+  const adminAccess = (await ethers.getContractAt("AdminAccess", ADMIN_ACCESS_ADDRESS)) as AdminAccess;
 
   await adminAccess.addAdmins([
     "0xb4dda75e5dee0a9e999152c3b72816fc1004d1dd",

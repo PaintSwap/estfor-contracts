@@ -14,8 +14,7 @@ async function main() {
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  let tx = await itemNFT.setInstantActions(instantActions.address);
-  await tx.wait();
+  await itemNFT.setInstantActions(instantActions.address);
 }
 
 main().catch((error) => {

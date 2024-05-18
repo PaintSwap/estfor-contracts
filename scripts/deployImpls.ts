@@ -51,9 +51,6 @@ async function main() {
     ]);
   }
 
-  // Set the implementations
-  const Players = (await ethers.getContractFactory("Players")).connect(owner);
-
   /* Use these when keeping old implementations
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
     PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
