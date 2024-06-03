@@ -1,12 +1,12 @@
 import {ethers} from "hardhat";
-import {ITEM_NFT_LIBRARY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {addresses, quantities} from "./data/alphaBetaTesters";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ItemNFT} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Deploying contracts with the account: ${owner.address} on chain: ${await owner.getChainId()}`);
+  console.log(`Airdrop some items: ${owner.address} on chain: ${await owner.getChainId()}`);
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
 

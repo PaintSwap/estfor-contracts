@@ -9,16 +9,7 @@ async function main() {
   const Shop = (await ethers.getContractFactory("Shop")).connect(owner);
   const shop = Shop.attach(SHOP_ADDRESS);
 
-  // Remove all scrolls
-  const shopItems = [
-    EstforConstants.FREEZE_SCROLL,
-    EstforConstants.SHADOW_SCROLL,
-    EstforConstants.NATURE_SCROLL,
-    EstforConstants.AQUA_SCROLL,
-    EstforConstants.HELL_SCROLL,
-    EstforConstants.AIR_SCROLL,
-    EstforConstants.BARRAGE_SCROLL,
-  ];
+  const shopItems = [EstforConstants.CAGE, EstforConstants.LARGE_NET];
 
   for (const shopItem of shopItems) {
     const tx = await shop.removeItem(shopItem);

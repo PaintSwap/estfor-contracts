@@ -10,12 +10,7 @@ async function main() {
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
 
-  const itemsToEdit = new Set([
-    EstforConstants.SECRET_EGG_1_TIER1,
-    EstforConstants.SECRET_EGG_2_TIER1,
-    EstforConstants.SECRET_EGG_3_TIER1,
-    EstforConstants.SECRET_EGG_4_TIER1,
-  ]);
+  const itemsToEdit = new Set([EstforConstants.LARGE_NET, EstforConstants.CAGE]);
 
   const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
 
