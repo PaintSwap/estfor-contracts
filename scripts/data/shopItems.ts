@@ -40,16 +40,16 @@ export const allShopItems: ShopItem[] = [
     price: ethers.utils.parseEther("40"),
   },
   {
-    tokenId: EstforConstants.LARGE_NET,
-    price: ethers.utils.parseEther("240"),
-  },
-  {
     tokenId: EstforConstants.WOOD_FISHING_ROD,
     price: ethers.utils.parseEther("80"),
   },
   {
     tokenId: EstforConstants.CAGE,
     price: ethers.utils.parseEther("120"),
+  },
+  {
+    tokenId: EstforConstants.LARGE_NET,
+    price: ethers.utils.parseEther("240"),
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
