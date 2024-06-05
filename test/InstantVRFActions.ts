@@ -617,8 +617,6 @@ describe("Instant VRF actions", function () {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [IRON_ARROW, ADAMANTINE_ARROW],
         inputAmounts: [1, 2],
-        outputTokenId: RUNITE_ARROW,
-        outputAmount: 2,
       };
 
       const instantVRFActionInput1: InstantVRFActionInput = {
@@ -626,8 +624,6 @@ describe("Instant VRF actions", function () {
         actionId: 2,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
         inputAmounts: [3, 5, 7],
-        outputTokenId: ORICHALCUM_ARROW,
-        outputAmount: 3,
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
@@ -899,6 +895,11 @@ describe("Instant VRF actions", function () {
         {itemTokenId: EstforConstants.IRON_ARROW, chance: 7, amount: 1},
         {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 6, amount: 1},
         {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 5, amount: 1},
+        {itemTokenId: EstforConstants.ADAMANTINE_BAR, chance: 4, amount: 1},
+        {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 3, amount: 1},
+        {itemTokenId: EstforConstants.RUNITE_BAR, chance: 2, amount: 1},
+        {itemTokenId: EstforConstants.ORICHALCUM_BAR, chance: 1, amount: 1},
+        {itemTokenId: EstforConstants.ADAMANTINE_ORE, chance: 1, amount: 1},
       ];
 
       instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(

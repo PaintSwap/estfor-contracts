@@ -214,9 +214,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _pendingQuestState
   ) public view returns (bool setAttire) {
-    if (_queuedActionInput.attire.ring != NONE) {
-      revert UnsupportedAttire();
-    }
     if (_queuedActionInput.attire.reserved1 != NONE) {
       revert UnsupportedAttire();
     }
@@ -425,8 +422,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _checkEquipPosition(Attire memory _attire) private view {
     uint attireLength;
-    uint16[] memory itemTokenIds = new uint16[](6);
-    EquipPosition[] memory expectedEquipPositions = new EquipPosition[](6);
+    uint16[] memory itemTokenIds = new uint16[](7);
+    EquipPosition[] memory expectedEquipPositions = new EquipPosition[](7);
     if (_attire.head != NONE) {
       itemTokenIds[attireLength] = _attire.head;
       expectedEquipPositions[attireLength] = EquipPosition.HEAD;
@@ -457,6 +454,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       expectedEquipPositions[attireLength] = EquipPosition.FEET;
       attireLength = attireLength.inc();
     }
+    if (_attire.ring != NONE) {
+      itemTokenIds[attireLength] = _attire.ring;
+      expectedEquipPositions[attireLength] = EquipPosition.RING;
+      attireLength = attireLength.inc();
+    }
 
     assembly ("memory-safe") {
       mstore(itemTokenIds, attireLength)
@@ -485,13 +487,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Check the user has these items
     _checkEquipPosition(_attire);
 
-    bool skipNeck;
+    bool skipNonFullAttire;
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
     (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithBalance(
       _from,
       _attire,
       itemNFT,
-      skipNeck,
+      skipNonFullAttire,
       pendingQueuedActionEquipmentStates
     );
     if (itemTokenIds.length != 0) {

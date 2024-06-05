@@ -703,8 +703,8 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       (ids, amounts) = PlayersLibrary.subtractMatchingRewards(ids, amounts, prevNewIds, prevNewAmounts);
     }
 
-    // Any random rewards unlocked. Only thieving because it doesn't have any dynamic components
-    if (actionSkill == Skill.THIEVING) {
+    // Any random rewards unlocked. Exclude any that have dynamic components (combat and crafting etc)
+    if (actionSkill != Skill.COMBAT && actionRewards.randomRewardTokenId1 != NONE) {
       (randomIds, randomAmounts, ) = _getRandomRewards(
         _playerId,
         _startTime,

@@ -114,7 +114,7 @@
       },
       {
         "internalType": "bool",
-        "name": "_skipNeck",
+        "name": "_skipNonFullAttire",
         "type": "bool"
       },
       {

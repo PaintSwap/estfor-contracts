@@ -772,12 +772,12 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (CombatStats memory combatStats) {
     combatStats = _combatStats;
-    bool skipNeck;
+    bool skipNonFullAttire;
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
       _itemNFT,
-      skipNeck,
+      skipNonFullAttire,
       _pendingQueuedActionEquipmentStates
     );
     if (itemTokenIds.length != 0) {
@@ -857,15 +857,15 @@ library PlayersLibrary {
     address _from,
     Attire calldata _attire,
     ItemNFT _itemNFT,
-    bool _skipNeck,
+    bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
     uint attireLength;
-    itemTokenIds = new uint16[](6);
+    itemTokenIds = new uint16[](7);
     if (_attire.head != NONE) {
       itemTokenIds[attireLength++] = _attire.head;
     }
-    if (_attire.neck != NONE && !_skipNeck) {
+    if (_attire.neck != NONE && !_skipNonFullAttire) {
       itemTokenIds[attireLength++] = _attire.neck;
     }
     if (_attire.body != NONE) {
@@ -879,6 +879,9 @@ library PlayersLibrary {
     }
     if (_attire.feet != NONE) {
       itemTokenIds[attireLength++] = _attire.feet;
+    }
+    if (_attire.ring != NONE && !_skipNonFullAttire) {
+      itemTokenIds[attireLength++] = _attire.ring;
     }
 
     assembly ("memory-safe") {
@@ -894,15 +897,15 @@ library PlayersLibrary {
     address _from,
     Attire storage _attire,
     ItemNFT _itemNFT,
-    bool _skipNeck,
+    bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
     uint attireLength;
-    itemTokenIds = new uint16[](6);
+    itemTokenIds = new uint16[](7);
     if (_attire.head != NONE) {
       itemTokenIds[attireLength++] = _attire.head;
     }
-    if (_attire.neck != NONE && !_skipNeck) {
+    if (_attire.neck != NONE && !_skipNonFullAttire) {
       itemTokenIds[attireLength++] = _attire.neck;
     }
     if (_attire.body != NONE) {
@@ -916,6 +919,9 @@ library PlayersLibrary {
     }
     if (_attire.feet != NONE) {
       itemTokenIds[attireLength++] = _attire.feet;
+    }
+    if (_attire.ring != NONE && !_skipNonFullAttire) {
+      itemTokenIds[attireLength++] = _attire.ring;
     }
 
     assembly ("memory-safe") {
@@ -1072,14 +1078,13 @@ library PlayersLibrary {
     if (_bonusPercent == 0) {
       return 0;
     }
-
     // Check if they have the full equipment set, if so they can get some bonus
-    bool skipNeck = true;
+    bool skipNonFullAttire = true;
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
       _itemNFT,
-      skipNeck,
+      skipNonFullAttire,
       _pendingQueuedActionEquipmentStates
     );
     bool hasFullAttire = _extraBoostFromFullAttire(itemTokenIds, balances, _expectedItemTokenIds);
@@ -1120,21 +1125,23 @@ library PlayersLibrary {
     uint8 _bonusRewardsPercent,
     uint16[5] calldata fullAttireBonusItemTokenIds
   ) external view returns (uint8 fullAttireBonusRewardsPercent) {
-    if (_bonusRewardsPercent != 0) {
-      // Check if they have the full equipment set, if so they can get some bonus
-      bool skipNeck = true;
-      (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
-        _from,
-        _attire,
-        _itemNFT,
-        skipNeck,
-        _pendingQueuedActionEquipmentStates
-      );
-      bool hasFullAttire = _extraBoostFromFullAttire(itemTokenIds, balances, fullAttireBonusItemTokenIds);
+    if (_bonusRewardsPercent == 0) {
+      return 0;
+    }
 
-      if (hasFullAttire) {
-        fullAttireBonusRewardsPercent = _bonusRewardsPercent;
-      }
+    // Check if they have the full equipment set, if so they can get some bonus
+    bool skipNonFullAttire = true;
+    (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
+      _from,
+      _attire,
+      _itemNFT,
+      skipNonFullAttire,
+      _pendingQueuedActionEquipmentStates
+    );
+    bool hasFullAttire = _extraBoostFromFullAttire(itemTokenIds, balances, fullAttireBonusItemTokenIds);
+
+    if (hasFullAttire) {
+      fullAttireBonusRewardsPercent = _bonusRewardsPercent;
     }
   }
 }

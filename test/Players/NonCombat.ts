@@ -138,8 +138,8 @@ describe("Non-Combat Actions", function () {
           arms: EstforConstants.NATURE_BRACERS,
           legs: EstforConstants.NATURE_TROUSERS,
           feet: EstforConstants.NATURE_BOOTS,
-          ring: EstforConstants.NONE, // Always NONE for now
-          reserved1: EstforConstants.NONE, // Always NONE for now
+          ring: EstforConstants.NONE,
+          reserved1: EstforConstants.NONE,
         },
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -1351,8 +1351,8 @@ describe("Non-Combat Actions", function () {
           arms: EstforConstants.NATUOW_BRACERS,
           legs: EstforConstants.NATUOW_TASSETS,
           feet: EstforConstants.NATUOW_BOOTS,
-          ring: EstforConstants.NONE, // Always NONE for now
-          reserved1: EstforConstants.NONE, // Always NONE for now
+          ring: EstforConstants.NONE,
+          reserved1: EstforConstants.NONE,
         },
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
