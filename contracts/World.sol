@@ -63,7 +63,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error ActionChoiceDoesNotExist();
   error OnlyCombatMultipleGuaranteedRewards();
   error NotAFactorOf3600();
-  error NonCombatCannotHaveBothGuaranteedAndRandomRewards();
+  error NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards();
   error InvalidReward();
   error TooManyRewardsInPool();
   error CallbackGasLimitTooHigh();
@@ -467,8 +467,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     } else {
       bool actionHasGuaranteedRewards = _action.guaranteedRewards.length != 0;
       bool actionHasRandomRewards = _action.randomRewards.length != 0;
-      if (actionHasGuaranteedRewards && actionHasRandomRewards) {
-        revert NonCombatCannotHaveBothGuaranteedAndRandomRewards();
+      if (actionHasGuaranteedRewards && actionHasRandomRewards && _action.info.actionChoiceRequired) {
+        revert NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards();
       }
     }
   }

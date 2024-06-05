@@ -336,7 +336,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
         uint numActionsCompleted;
         if (actionSkill == Skill.THIEVING) {
-          // Hours thieving
+          // Hours thieving (there are no guaranteed rewards for thieving)
           uint prevNumActionsCompleted = prevXPElapsedTime / 3600;
           numActionsCompleted = ((xpElapsedTime + prevXPElapsedTime) / 3600) - prevNumActionsCompleted;
         } else {

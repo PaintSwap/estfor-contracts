@@ -168,7 +168,7 @@
   },
   {
     "inputs": [],
-    "name": "NonCombatCannotHaveBothGuaranteedAndRandomRewards",
+    "name": "NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards",
     "type": "error"
   },
   {

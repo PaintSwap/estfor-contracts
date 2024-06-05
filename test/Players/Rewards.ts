@@ -672,6 +672,76 @@ describe("Rewards", function () {
     // TODO
   });
 
+  it("Non-combat guaranteed reward & Random rewards", async function () {
+    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+
+    const randomChance = 65535; // 100% chance
+    const tx = await world.addActions([
+      {
+        actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
+        info: {
+          skill: EstforTypes.Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [{itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 40 * 10}],
+        randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+
+    const actionId = await getActionId(tx);
+
+    const timespan = 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [1800]);
+    await ethers.provider.send("evm_mine", []);
+    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
+    await ethers.provider.send("evm_increaseTime", [1800]);
+    await ethers.provider.send("evm_mine", []);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(1);
+    await ethers.provider.send("evm_increaseTime", [86400]);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockOracleClient);
+    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
+    expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).is.eq(EstforConstants.ENCHANTED_LOG);
+    expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).is.eq(EstforConstants.BRONZE_ARROW);
+    await players.connect(alice).processActions(playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(1);
+  });
+
   describe("Random rewards", function () {
     it("Random rewards (many)", async function () {
       const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);

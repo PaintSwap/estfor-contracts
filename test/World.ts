@@ -900,13 +900,13 @@ describe("World", function () {
       await expect(world.addActions([action])).to.not.be.reverted;
     });
 
-    it("Only combat can have both guaranteed and random rewards", async function () {
+    it("Only combat and actions without choices can have both guaranteed and random rewards", async function () {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {
         actionId: 1,
         info: {
-          skill: EstforTypes.Skill.COOKING,
+          skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
@@ -924,11 +924,15 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
+      await expect(world.addActions([action])).to.not.be.reverted;
+      action.actionId = 2;
+      action.info.skill = EstforTypes.Skill.COOKING;
+
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         world,
-        "NonCombatCannotHaveBothGuaranteedAndRandomRewards"
+        "NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards"
       );
-      action.info.skill = EstforTypes.Skill.COMBAT;
+      action.info.actionChoiceRequired = false;
       await expect(world.addActions([action])).to.not.be.reverted;
     });
   });
