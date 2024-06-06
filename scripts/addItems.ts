@@ -1,6 +1,6 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers, upgrades} from "hardhat";
-import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses";
+import {ethers} from "hardhat";
+import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {allItems} from "./data/items";
 
 async function main() {
