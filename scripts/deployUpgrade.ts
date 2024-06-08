@@ -100,7 +100,6 @@ async function main() {
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
 
-  /*
   // Shop
   const Shop = (await ethers.getContractFactory("Shop")).connect(owner);
   const shop = await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
@@ -109,7 +108,7 @@ async function main() {
   });
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
-
+  /*
   // WishingWell
   const WishingWell = (await ethers.getContractFactory("WishingWell")).connect(owner);
   const wishingWell = await upgrades.upgradeProxy(WISHING_WELL_ADDRESS, WishingWell, {
@@ -352,8 +351,8 @@ async function main() {
     /*    await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]); */
     //    await verifyContracts([itemNFT.address]);
-    /*    await verifyContracts([shop.address]);
-    await verifyContracts([quests.address]);
+    await verifyContracts([shop.address]);
+    /*   await verifyContracts([quests.address]);
     await verifyContracts([clans.address]); */
     await verifyContracts([world.address]);
     await verifyContracts([worldLibrary.address]);
