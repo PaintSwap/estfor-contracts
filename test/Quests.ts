@@ -246,7 +246,7 @@ describe("Quests", function () {
   describe("Brush buying quest", function () {
     it("Quest not activated", async function () {
       const {alice, playerId, quests, players} = await loadFixture(questsFixture);
-      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
       await quests.addQuests([quest], [defaultMinRequirements]);
       await expect(
         players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 10})

@@ -30,7 +30,6 @@ library WorldLibrary {
   error NotAFactorOf3600();
   error TooManyGuaranteedRewards();
   error TooManyRandomRewards();
-  error FirstMinSkillMustBeActionSkill();
 
   function checkActionChoice(ActionChoiceInput calldata _actionChoiceInput) external pure {
     uint16[] calldata inputTokenIds = _actionChoiceInput.inputTokenIds;
@@ -79,10 +78,6 @@ library WorldLibrary {
     }
     if (minSkills.length != minXPs.length) {
       revert LengthMismatch();
-    }
-
-    if (minSkills.length != 0 && minSkills[0] != _actionChoiceInput.skill) {
-      revert FirstMinSkillMustBeActionSkill();
     }
 
     for (uint i; i < minSkills.length; ++i) {

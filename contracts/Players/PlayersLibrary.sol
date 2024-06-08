@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-import {ItemNFT} from "../ItemNFT.sol";
+import {IItemNFT} from "../interfaces/IItemNFT.sol";
 import {World} from "../World.sol";
 
 // solhint-disable-next-line no-global-import
@@ -94,7 +94,7 @@ library PlayersLibrary {
   function getRealBalance(
     address _from,
     uint _itemId,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint balance) {
     balance = _getRealBalance(_itemNFT.balanceOf(_from, _itemId), _itemId, _pendingQueuedActionEquipmentStates);
@@ -103,7 +103,7 @@ library PlayersLibrary {
   function getRealBalances(
     address _from,
     uint16[] memory _itemIds,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint[] memory balances) {
     balances = _itemNFT.balanceOfs(_from, _itemIds);
@@ -119,7 +119,7 @@ library PlayersLibrary {
     address _from,
     ActionChoice memory _actionChoice,
     uint16 _baseInputItemsConsumedNum,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     maxRequiredRatio = _baseInputItemsConsumedNum;
@@ -169,7 +169,7 @@ library PlayersLibrary {
     uint16 _inputTokenId,
     uint _inputAmount,
     uint _prevConsumeMaxRatio,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
     uint balance = getRealBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
@@ -292,7 +292,7 @@ library PlayersLibrary {
 
   function getCombatAdjustedElapsedTimes(
     address _from,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     World _world,
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
@@ -506,7 +506,7 @@ library PlayersLibrary {
     uint16 _regenerateId,
     uint32 _totalHealthLost,
     uint32 _totalHealthLostKilling,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint16 foodConsumed, uint totalFoodRequiredKilling, bool died) {
     uint healthRestored;
@@ -542,7 +542,7 @@ library PlayersLibrary {
 
   function getNonCombatAdjustedElapsedTime(
     address _from,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
@@ -767,7 +767,7 @@ library PlayersLibrary {
   function updateCombatStatsFromAttire(
     CombatStats memory _combatStats,
     address _from,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     Attire storage _attire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (CombatStats memory combatStats) {
@@ -856,7 +856,7 @@ library PlayersLibrary {
   function getAttireWithBalance(
     address _from,
     Attire calldata _attire,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
@@ -896,7 +896,7 @@ library PlayersLibrary {
   function getAttireWithBalance(
     address _from,
     Attire storage _attire,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
@@ -961,7 +961,7 @@ library PlayersLibrary {
 
   function updateStatsFromHandEquipment(
     address _from,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     uint16[2] calldata _handEquipmentTokenIds,
     CombatStats calldata _combatStats,
     bool isCombat,
@@ -1033,7 +1033,7 @@ library PlayersLibrary {
     PlayerBoostInfo storage _activeBoost,
     PlayerBoostInfo storage _globalBoost,
     PlayerBoostInfo storage _clanBoost,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     World _world,
     uint8 _bonusAttirePercent,
     uint16[5] calldata _expectedItemTokenIds,
@@ -1070,7 +1070,7 @@ library PlayersLibrary {
     Attire storage _attire,
     uint _elapsedTime,
     uint24 _xpPerHour,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     uint8 _bonusPercent,
     uint16[5] calldata _expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
@@ -1120,7 +1120,7 @@ library PlayersLibrary {
   function getFullAttireBonusRewardsPercent(
     address _from,
     Attire storage _attire,
-    ItemNFT _itemNFT,
+    IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
     uint8 _bonusRewardsPercent,
     uint16[5] calldata fullAttireBonusItemTokenIds

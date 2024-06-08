@@ -174,6 +174,65 @@ describe("Non-Combat Actions", function () {
     });
   });
 
+  it("Multiple guaranteed rewards should be allowed", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const rate = 100 * GUAR_MUL; // per hour
+    const tx = await world.addActions([
+      {
+        actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
+        info: {
+          skill: EstforTypes.Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [
+          {itemTokenId: EstforConstants.LOG, rate},
+          {itemTokenId: EstforConstants.OAK_LOG, rate: rate * 2},
+        ],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    const timespan = 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+
+    // Check how many logs they have now, 100 logs burnt per hour
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(rate / GUAR_MUL);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.OAK_LOG)).to.eq((rate * 2) / GUAR_MUL);
+  });
+
   it("Firemaking", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
     const rate = 100 * RATE_MUL; // per hour

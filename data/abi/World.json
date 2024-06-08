@@ -182,11 +182,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "OnlyCombatMultipleGuaranteedRewards",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",

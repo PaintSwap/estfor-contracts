@@ -1,11 +1,6 @@
 [
   {
     "inputs": [],
-    "name": "FirstMinSkillMustBeActionSkill",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "GuaranteedRewardsMustBeInOrder",
     "type": "error"
   },
