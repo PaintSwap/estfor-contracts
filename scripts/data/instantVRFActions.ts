@@ -418,7 +418,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.IRON_ARROW, chance: 13107, amount: 50},
           {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 1966, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1311, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 328, amount: 1},
         ],
       ]
@@ -442,7 +442,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 13762, amount: 50},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
           {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 1311, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 328, amount: 1},
         ],
       ]
@@ -467,8 +467,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 6554, amount: 1},
           {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 3277, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 721, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
         ],
       ]
     ),
@@ -492,8 +492,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_MASTER_BOOTS_FRAGMENT, chance: 8520, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD_FRAGMENT, chance: 5243, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 131, amount: 1},
-          {itemTokenId: EstforConstants.RING_3, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.ETCHED_RING, chance: 66, amount: 1},
         ],
       ]
     ),
@@ -517,8 +517,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_SCORCHING_BOOTS_FRAGMENT, chance: 8520, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS_FRAGMENT, chance: 5243, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 459, amount: 1},
-          {itemTokenId: EstforConstants.RING_3, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
+          {itemTokenId: EstforConstants.ETCHED_RING, chance: 131, amount: 1},
         ],
       ]
     ),
@@ -540,7 +540,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.IRON_ARROW, chance: 14418, amount: 50},
           {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
           {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 1311, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 328, amount: 1},
         ],
       ]
@@ -564,7 +564,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 14418, amount: 50},
           {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
           {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 1311, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 328, amount: 1},
         ],
       ]
@@ -589,8 +589,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 6554, amount: 1},
           {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 3277, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 721, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
         ],
       ]
     ),
@@ -614,8 +614,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_SCORCHING_BODY_FRAGMENT, chance: 8520, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_MASTER_TROUSERS_FRAGMENT, chance: 5243, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 131, amount: 1},
-          {itemTokenId: EstforConstants.RING_4, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 66, amount: 1},
         ],
       ]
     ),
@@ -639,8 +639,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_MASTER_HAT_FRAGMENT, chance: 8520, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS_FRAGMENT, chance: 5243, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 3},
-          {itemTokenId: EstforConstants.RING_2, chance: 459, amount: 1},
-          {itemTokenId: EstforConstants.RING_4, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
+          {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 131, amount: 1},
         ],
       ]
     ),
@@ -663,7 +663,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.IRON_ARROW, chance: 13762, amount: 50},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
           {itemTokenId: EstforConstants.BAT_WING, chance: 1311, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 328, amount: 1},
         ],
       ]
@@ -687,7 +687,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 13762, amount: 50},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
           {itemTokenId: EstforConstants.BAT_WING, chance: 1311, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 328, amount: 1},
         ],
       ]
@@ -712,8 +712,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 6554, amount: 1},
           {itemTokenId: EstforConstants.BAT_WING, chance: 3277, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_1, chance: 721, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
         ],
       ]
     ),
@@ -737,8 +737,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_SCORCHING_COWL_FRAGMENT, chance: 8520, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_SCORCHING_CHAPS_FRAGMENT, chance: 5243, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 131, amount: 1},
-          {itemTokenId: EstforConstants.RING_5, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.OCULITE_RING, chance: 66, amount: 1},
         ],
       ]
     ),
@@ -762,8 +762,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_MASTER_BRACERS_FRAGMENT, chance: 8520, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_SCORCHING_BRACERS_FRAGMENT, chance: 5243, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
-          {itemTokenId: EstforConstants.RING_2, chance: 459, amount: 1},
-          {itemTokenId: EstforConstants.RING_5, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
+          {itemTokenId: EstforConstants.OCULITE_RING, chance: 131, amount: 1},
         ],
       ]
     ),
@@ -788,7 +788,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD_FRAGMENT, chance: 14418, amount: 1},
           {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 5898, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
-          {itemTokenId: EstforConstants.RING_6, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.NOVIAN_RING, chance: 66, amount: 1},
         ],
       ]
     ),
@@ -813,7 +813,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS_FRAGMENT, chance: 14418, amount: 1},
           {itemTokenId: EstforConstants.VENOM_POUCH, chance: 5898, amount: 1},
           {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
-          {itemTokenId: EstforConstants.RING_6, chance: 66, amount: 1},
+          {itemTokenId: EstforConstants.NOVIAN_RING, chance: 66, amount: 1},
         ],
       ]
     ),

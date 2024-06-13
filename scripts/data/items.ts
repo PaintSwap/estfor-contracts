@@ -10752,7 +10752,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 0,
       health: 0,
     },
-    tokenId: EstforConstants.RING_1,
+    tokenId: EstforConstants.PANGSTEN_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10762,8 +10762,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "RING_1.json",
-    name: "Ring_1",
+    metadataURI: "PANGSTEN_RING.json",
+    name: "Pangsten Ring",
   },
   {
     combatStats: {
@@ -10775,7 +10775,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 2,
       health: 30,
     },
-    tokenId: EstforConstants.RING_2,
+    tokenId: EstforConstants.CANVITE_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10785,8 +10785,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "RING_2.json",
-    name: "Ring_2",
+    metadataURI: "CANVITE_RING.json",
+    name: "Canvite Ring",
   },
   {
     combatStats: {
@@ -10798,7 +10798,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 2,
       health: 0,
     },
-    tokenId: EstforConstants.RING_3,
+    tokenId: EstforConstants.ETCHED_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10808,8 +10808,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "RING_3.json",
-    name: "Ring_3",
+    metadataURI: "ETCHED_RING.json",
+    name: "Etched Ring",
   },
   {
     combatStats: {
@@ -10821,7 +10821,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 10,
       health: 0,
     },
-    tokenId: EstforConstants.RING_4,
+    tokenId: EstforConstants.PRIMDIAT_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10831,8 +10831,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "RING_4.json",
-    name: "Ring_4",
+    metadataURI: "PRIMDIAT_RING.json",
+    name: "Primdiat Ring",
   },
   {
     combatStats: {
@@ -10844,7 +10844,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 2,
       health: 0,
     },
-    tokenId: EstforConstants.RING_5,
+    tokenId: EstforConstants.OCULITE_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10854,8 +10854,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "RING_5.json",
-    name: "Ring_5",
+    metadataURI: "OCULITE_RING.json",
+    name: "Oculite Ring",
   },
   {
     combatStats: {
@@ -10867,7 +10867,7 @@ export const allItems: ItemInput[] = [
       rangedDefence: 10,
       health: 60,
     },
-    tokenId: EstforConstants.RING_6,
+    tokenId: EstforConstants.NOVIAN_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
     isFullModeOnly: true,
@@ -10877,8 +10877,8 @@ export const allItems: ItemInput[] = [
     boostType: BoostType.NONE,
     boostValue: 0,
     boostDuration: 0,
-    metadataURI: "RING_6.json",
-    name: "Ring_6",
+    metadataURI: "NOVIAN_RING.json",
+    name: "Novian Ring",
   },
   {
     combatStats: {
@@ -11361,7 +11361,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_1.json",
-    name: "Fishing Chest 1",
+    name: "Fishing Chest Tier 1",
   },
   {
     combatStats: {
@@ -11384,7 +11384,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_2.json",
-    name: "Fishing Chest 2",
+    name: "Fishing Chest Tier 2",
   },
   {
     combatStats: {
@@ -11407,7 +11407,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_3.json",
-    name: "Fishing Chest 3",
+    name: "Fishing Chest Tier 3",
   },
   {
     combatStats: {
@@ -11430,7 +11430,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_4.json",
-    name: "Fishing Chest 4",
+    name: "Fishing Chest Tier 4",
   },
   {
     combatStats: {
@@ -11453,7 +11453,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_5.json",
-    name: "Fishing Chest 5",
+    name: "Fishing Chest Tier 5",
   },
   {
     combatStats: {
@@ -11476,7 +11476,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_1.json",
-    name: "Woodcutting Chest 1",
+    name: "Woodcutting Chest Tier 1",
   },
   {
     combatStats: {
@@ -11499,7 +11499,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_2.json",
-    name: "Woodcutting Chest 2",
+    name: "Woodcutting Chest Tier 2",
   },
   {
     combatStats: {
@@ -11522,7 +11522,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_3.json",
-    name: "Woodcutting Chest 3",
+    name: "Woodcutting Chest Tier 3",
   },
   {
     combatStats: {
@@ -11545,7 +11545,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_4.json",
-    name: "Woodcutting Chest 4",
+    name: "Woodcutting Chest Tier 4",
   },
   {
     combatStats: {
@@ -11568,7 +11568,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_5.json",
-    name: "Woodcutting Chest 5",
+    name: "Woodcutting Chest Tier 5",
   },
   {
     combatStats: {
@@ -11591,7 +11591,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_1.json",
-    name: "Mining Chest 1",
+    name: "Mining Chest Tier 1",
   },
   {
     combatStats: {
@@ -11614,7 +11614,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_2.json",
-    name: "Mining Chest 2",
+    name: "Mining Chest Tier 2",
   },
   {
     combatStats: {
@@ -11637,7 +11637,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_3.json",
-    name: "Mining Chest 3",
+    name: "Mining Chest Tier 3",
   },
   {
     combatStats: {
@@ -11660,7 +11660,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_4.json",
-    name: "Mining Chest 4",
+    name: "Mining Chest Tier 4",
   },
   {
     combatStats: {
@@ -11683,7 +11683,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_5.json",
-    name: "Mining Chest 5",
+    name: "Mining Chest Tier 5",
   },
   {
     combatStats: {

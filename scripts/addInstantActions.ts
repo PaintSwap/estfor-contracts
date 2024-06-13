@@ -10,12 +10,12 @@ async function main() {
   const instantActions = (await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)).connect(owner);
 
   const actionIds = new Set([
-    EstforConstants.INSTANT_ACTION_FORGING_RING_1,
-    EstforConstants.INSTANT_ACTION_FORGING_RING_2,
-    EstforConstants.INSTANT_ACTION_FORGING_RING_3,
-    EstforConstants.INSTANT_ACTION_FORGING_RING_4,
-    EstforConstants.INSTANT_ACTION_FORGING_RING_5,
-    EstforConstants.INSTANT_ACTION_FORGING_RING_6,
+    EstforConstants.INSTANT_ACTION_FORGING_PANGSTEN_RING,
+    EstforConstants.INSTANT_ACTION_FORGING_CANVITE_RING,
+    EstforConstants.INSTANT_ACTION_FORGING_ETCHED_RING,
+    EstforConstants.INSTANT_ACTION_FORGING_PRIMDIAT_RING,
+    EstforConstants.INSTANT_ACTION_FORGING_OCULITE_RING,
+    EstforConstants.INSTANT_ACTION_FORGING_NOVIAN_RING,
     EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_HELMET,
     EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_ARMOR,
     EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_TASSETS,
