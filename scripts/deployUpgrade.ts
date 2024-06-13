@@ -350,7 +350,7 @@ async function main() {
   if (network.chainId == 250) {
     /*    await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]); */
-    //    await verifyContracts([itemNFT.address]);
+    await verifyContracts([itemNFT.address]);
     await verifyContracts([shop.address]);
     /*   await verifyContracts([quests.address]);
     await verifyContracts([clans.address]); */

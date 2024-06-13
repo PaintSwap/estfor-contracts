@@ -270,8 +270,8 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
       {itemTokenId: EstforConstants.LOG, rate: 40 * 10},
+      {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_1, chance: 27307, amount: 1},
@@ -305,9 +305,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.WILLOW_LOG, rate: 30 * 10},
-      {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
       {itemTokenId: EstforConstants.LOG, rate: 40 * 10},
+      {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
+      {itemTokenId: EstforConstants.WILLOW_LOG, rate: 30 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_2, chance: 27307, amount: 1},
@@ -341,9 +341,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.MAPLE_LOG, rate: 25 * 10},
-      {itemTokenId: EstforConstants.WILLOW_LOG, rate: 30 * 10},
       {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
+      {itemTokenId: EstforConstants.WILLOW_LOG, rate: 30 * 10},
+      {itemTokenId: EstforConstants.MAPLE_LOG, rate: 25 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_3, chance: 27307, amount: 1},
@@ -377,9 +377,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 24 * 10},
       {itemTokenId: EstforConstants.MAPLE_LOG, rate: 25 * 10},
       {itemTokenId: EstforConstants.REDWOOD_LOG, rate: 25 * 10},
+      {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 24 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_4, chance: 27307, amount: 1},
@@ -413,9 +413,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.ASH_LOG, rate: 20 * 10},
-      {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 24 * 10},
       {itemTokenId: EstforConstants.REDWOOD_LOG, rate: 25 * 10},
+      {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 24 * 10},
+      {itemTokenId: EstforConstants.ASH_LOG, rate: 20 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_5, chance: 27307, amount: 1},
@@ -869,9 +869,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.SAPPHIRE, rate: 16 * 10},
       {itemTokenId: EstforConstants.TIN_ORE, rate: 40 * 10},
       {itemTokenId: EstforConstants.IRON_ORE, rate: 40 * 10},
+      {itemTokenId: EstforConstants.SAPPHIRE, rate: 16 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_1, chance: 27307, amount: 1},
@@ -905,9 +905,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.EMERALD, rate: 15 * 10},
       {itemTokenId: EstforConstants.MITHRIL_ORE, rate: 30 * 10},
       {itemTokenId: EstforConstants.COAL_ORE, rate: 30 * 10},
+      {itemTokenId: EstforConstants.EMERALD, rate: 15 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_2, chance: 27307, amount: 1},
@@ -941,9 +941,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.RUBY, rate: 12 * 10},
       {itemTokenId: EstforConstants.ADAMANTINE_ORE, rate: 25 * 10},
       {itemTokenId: EstforConstants.COAL_ORE, rate: 30 * 10},
+      {itemTokenId: EstforConstants.RUBY, rate: 12 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_3, chance: 27307, amount: 1},
@@ -977,9 +977,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.DIAMOND, rate: 10 * 10},
-      {itemTokenId: EstforConstants.COAL_ORE, rate: 36 * 10},
       {itemTokenId: EstforConstants.RUNITE_ORE, rate: 45 * 10},
+      {itemTokenId: EstforConstants.COAL_ORE, rate: 36 * 10},
+      {itemTokenId: EstforConstants.DIAMOND, rate: 10 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_4, chance: 27307, amount: 1},
@@ -1013,9 +1013,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 6 * 10},
       {itemTokenId: EstforConstants.TITANIUM_ORE, rate: 20 * 10},
       {itemTokenId: EstforConstants.COAL_ORE, rate: 36 * 10},
+      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 6 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_5, chance: 27307, amount: 1},
@@ -1693,9 +1693,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.RAW_FEOLA, rate: 36 * 10},
       {itemTokenId: EstforConstants.RAW_BLEKK, rate: 40 * 10},
       {itemTokenId: EstforConstants.RAW_SKRIMP, rate: 40 * 10},
+      {itemTokenId: EstforConstants.RAW_FEOLA, rate: 36 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FISHING_CHEST_1, chance: 27307, amount: 1},
@@ -1801,9 +1801,9 @@ export const allActions: ActionInput[] = [
       isFullModeOnly: true,
     },
     guaranteedRewards: [
+      {itemTokenId: EstforConstants.RAW_ROXA, rate: 16 * 10},
       {itemTokenId: EstforConstants.RAW_QUAFFER, rate: 15 * 10},
       {itemTokenId: EstforConstants.RAW_RAZORFISH, rate: 15 * 10},
-      {itemTokenId: EstforConstants.RAW_ROXA, rate: 16 * 10},
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FISHING_CHEST_4, chance: 27307, amount: 1},

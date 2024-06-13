@@ -1,11 +1,6 @@
 [
   {
     "inputs": [],
-    "name": "GuaranteedRewardsMustBeInOrder",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "GuaranteedRewardsNoDuplicates",
     "type": "error"
   },

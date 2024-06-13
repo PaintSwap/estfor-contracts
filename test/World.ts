@@ -706,52 +706,6 @@ describe("World", function () {
   });
 
   describe("ActionRewards", function () {
-    it("Guaranteed reward order", async function () {
-      const {world, worldLibrary} = await loadFixture(deployContracts);
-      const actionAvailable = false;
-      const action: ActionInput = {
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 1 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [
-          {itemTokenId: EstforConstants.SHADOW_SCROLL, rate: 300},
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
-          {itemTokenId: EstforConstants.HELL_SCROLL, rate: 100},
-        ],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      };
-
-      await expect(world.addActions([action])).to.be.revertedWithCustomError(
-        worldLibrary,
-        "GuaranteedRewardsMustBeInOrder"
-      );
-      action.guaranteedRewards[0].rate = 50;
-      await expect(world.addActions([action])).to.be.revertedWithCustomError(
-        worldLibrary,
-        "GuaranteedRewardsMustBeInOrder"
-      );
-      action.guaranteedRewards[1].rate = 150;
-      await expect(world.addActions([action])).to.be.revertedWithCustomError(
-        worldLibrary,
-        "GuaranteedRewardsMustBeInOrder"
-      );
-      action.guaranteedRewards[2].rate = 150;
-      await expect(world.addActions([action])).to.not.be.reverted;
-    });
-
     it("Guaranteed reward duplicates not allowed", async function () {
       const {world, worldLibrary} = await loadFixture(deployContracts);
       const actionAvailable = false;
