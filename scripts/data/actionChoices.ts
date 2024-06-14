@@ -4405,7 +4405,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
   {
     skill: Skill.RANGED,
     handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
-    handItemTokenIdRangeMax: EstforConstants.GODLY_BOW,
+    handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_5,
     isFullModeOnly: false,
     skillDiff: 25,
     rate: 100 * 1000,
@@ -4612,8 +4612,8 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
   },
   {
     skill: Skill.RANGED,
-    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
-    handItemTokenIdRangeMax: EstforConstants.GODLY_BOW,
+    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW_5,
+    handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_5,
     isFullModeOnly: true,
     skillDiff: 28,
     rate: 100 * 1000,
@@ -4628,8 +4628,8 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
   },
   {
     skill: Skill.RANGED,
-    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
-    handItemTokenIdRangeMax: EstforConstants.GODLY_BOW,
+    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW_5,
+    handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_5,
     isFullModeOnly: true,
     skillDiff: 30,
     rate: 100 * 1000,
