@@ -10,11 +10,7 @@ async function main() {
 
   const world = await ethers.getContractAt("World", WORLD_ADDRESS);
 
-  const actionChoicesToUpdate = new Set([
-    EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW,
-    EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_FIRE,
-    EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_POISON,
-  ]);
+  const actionChoicesToUpdate = new Set([EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW]);
 
   const actionChoiceIndices = allActionChoiceIdsRanged.reduce((indices: number[], actionChoiceId, index) => {
     if (actionChoicesToUpdate.has(actionChoiceId)) {
