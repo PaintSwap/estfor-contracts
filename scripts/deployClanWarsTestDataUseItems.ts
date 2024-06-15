@@ -2,7 +2,7 @@ import {ethers, upgrades} from "hardhat";
 import {
   COMBATANTS_HELPER_ADDRESS,
   ITEM_NFT_ADDRESS,
-  LOCKED_BANK_VAULT_ADDRESS,
+  LOCKED_BANK_VAULTS_ADDRESS,
   TERRITORIES_ADDRESS,
 } from "./contractAddresses";
 import {CombatantsHelper, ItemNFT, LockedBankVaults, Territories} from "../typechain-types";
@@ -17,7 +17,7 @@ async function main() {
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
   const lockedBankVaults = (await ethers.getContractAt(
     "LockedBankVaults",
-    LOCKED_BANK_VAULT_ADDRESS
+    LOCKED_BANK_VAULTS_ADDRESS
   )) as LockedBankVaults;
   const combatantsHelper = (await ethers.getContractAt(
     "CombatantsHelper",

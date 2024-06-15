@@ -11,4 +11,6 @@ interface IItemNFT {
   function getItem(uint16 tokenId) external view returns (Item memory);
 
   function getItems(uint16[] calldata tokenIds) external view returns (Item[] memory);
+
+  function burn(address from, uint tokenId, uint amount) external;
 }

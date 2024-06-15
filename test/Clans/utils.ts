@@ -41,6 +41,13 @@ export async function clanFixture() {
     .and.to.emit(bankFactory, "BankContractCreated")
     .withArgs(alice.address, clanId, bankAddress);
 
+  const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
+  // All these must match the constants inside LockedBankVaults.sol
+  const MAX_LOCKED_VAULTS = 100;
+  const LOCK_PERIOD = 7 * 86400; // 7 days
+  const ATTACKING_COOLDOWN = 4 * 3600; // 4 hours
+  const MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 * 86400; // 3 days
+
   const editNameCost = await clans.editNameCost();
   return {
     ...fixture,
@@ -55,6 +62,11 @@ export async function clanFixture() {
     tier,
     editNameCost,
     bankAddress,
+    LockedBankVaultsLibrary,
+    MAX_LOCKED_VAULTS,
+    LOCK_PERIOD,
+    ATTACKING_COOLDOWN,
+    MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN,
   };
 }
 

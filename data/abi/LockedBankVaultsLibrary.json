@@ -1,0 +1,102 @@
+[
+  {
+    "inputs": [],
+    "name": "BlockAttacksCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotAttackSelf",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotAttackWhileStillAttacking",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotChangeCombatantsDuringAttack",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotReattackAndSuperAttackSameTime",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanAttackingCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanAttackingSameClanCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanCombatantsChangeCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanIsBlockingAttacks",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanSuperAttackingCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MaxLockedVaultsReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoBrushToAttack",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoCombatants",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotALockedVaultAttackItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotALockedVaultDefenceItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NothingToClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutsideMMRRange",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SpecifyingItemWhenNotReattackingOrSuperAttacking",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyCombatants",
+    "type": "error"
+  }
+]

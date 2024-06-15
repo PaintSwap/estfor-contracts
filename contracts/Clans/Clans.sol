@@ -101,6 +101,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error NFTNotWhitelistedOnMarketplace();
   error UnsupportedNFTType();
   error MessageTooLong();
+  error NotMMRSetter();
 
   struct Clan {
     uint80 owner;
@@ -109,6 +110,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint40 createdTimestamp;
     uint8 tierId;
     bool disableJoinRequests;
+    uint16 mmr;
     string name;
     mapping(uint playerId => bool invited) inviteRequests;
     NFTInfo[] gateKeptNFTs;
@@ -169,6 +171,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _;
   }
 
+  modifier onlyMMRSetter() {
+    if (msg.sender != address(lockedBankVaults)) {
+      revert NotMMRSetter();
+    }
+    _;
+  }
+
   IBrushToken private brush;
   IPlayers private players;
   IBankFactory public bankFactory;
@@ -185,6 +194,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   address private paintswapMarketplaceWhitelist;
   IClanMemberLeftCB private territories;
   IClanMemberLeftCB private lockedBankVaults;
+
+  uint16 private constant INITIAL_MMR = 500;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -244,6 +255,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     clan.imageId = _imageId;
     clan.memberCount = 1;
     clan.createdTimestamp = uint40(block.timestamp);
+    clan.mmr = INITIAL_MMR;
 
     player.clanId = uint32(clanId);
     player.rank = ClanRank.OWNER;
@@ -634,6 +646,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit PinMessage(_clanId, _message, _playerId);
   }
 
+  function setMMR(uint _clanId, uint16 _mmr) external onlyMMRSetter {
+    clans[_clanId].mmr = _mmr;
+  }
+
   function getClanNameOfPlayer(uint _playerId) external view returns (string memory) {
     uint clanId = playerInfo[_playerId].clanId;
     return clans[clanId].name;
@@ -657,6 +673,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function getClanId(uint _playerId) external view returns (uint) {
     return playerInfo[_playerId].clanId;
+  }
+
+  function getMMR(uint _clanId) external view returns (uint16 mmr) {
+    mmr = clans[_clanId].mmr;
+    if (mmr == 0) {
+      mmr = INITIAL_MMR;
+    }
   }
 
   function hasInviteRequest(uint _clanId, uint _playerId) external view returns (bool) {

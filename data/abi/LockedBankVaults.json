@@ -21,11 +21,6 @@
   },
   {
     "inputs": [],
-    "name": "BlockAttacksCooldown",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "CallerIsNotOwner",
     "type": "error"
   },
@@ -36,47 +31,12 @@
   },
   {
     "inputs": [],
-    "name": "CannotAttackSelf",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CannotAttackWhileStillAttacking",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "CannotChangeCombatantsDuringAttack",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "CannotReattackAndSuperAttackSameTime",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ClanAttackingCooldown",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ClanAttackingSameClanCooldown",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "ClanCombatantsChangeCooldown",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ClanIsBlockingAttacks",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ClanSuperAttackingCooldown",
     "type": "error"
   },
   {
@@ -117,11 +77,6 @@
   },
   {
     "inputs": [],
-    "name": "MaxLockedVaultsReached",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NewAdminIsZeroAddress",
     "type": "error"
   },
@@ -143,26 +98,6 @@
   {
     "inputs": [],
     "name": "NewOwnerIsZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NoBrushToAttack",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NoCombatants",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotALockedVaultAttackItem",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotALockedVaultDefenceItem",
     "type": "error"
   },
   {
@@ -197,11 +132,6 @@
   },
   {
     "inputs": [],
-    "name": "NothingToClaim",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "OnlyClans",
     "type": "error"
   },
@@ -223,11 +153,6 @@
   {
     "inputs": [],
     "name": "RequestIdNotKnown",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "SpecifyingItemWhenNotReattackingOrSuperAttacking",
     "type": "error"
   },
   {
@@ -545,6 +470,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256[]",
+        "name": "clanIdsToDelete",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "ForceMMRUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint8",
         "name": "version",
         "type": "uint8"
@@ -673,6 +611,38 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "mmrAttackDistance",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMMRAttackDistance",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "clanId",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "mmr",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "SetMMRs",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "clanId",
         "type": "uint256"
       },
@@ -684,6 +654,31 @@
       }
     ],
     "name": "SuperAttackCooldown",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "attackingMMRDiff",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "defendingMMRDiff",
+        "type": "int256"
+      }
+    ],
+    "name": "UpdateMMR",
     "type": "event"
   },
   {
@@ -711,58 +706,6 @@
     ],
     "name": "Upgraded",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "ATTACKING_COOLDOWN",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "LOCK_PERIOD",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_LOCKED_VAULTS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [
@@ -831,19 +774,6 @@
     "name": "attackVaults",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "baseAttackCost",
-    "outputs": [
-      {
-        "internalType": "uint88",
-        "name": "",
-        "type": "uint88"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -924,16 +854,16 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "expectedGasLimitFulfill",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "uint24",
-        "name": "",
-        "type": "uint24"
+        "internalType": "uint256[]",
+        "name": "_clanIds",
+        "type": "uint256[]"
       }
     ],
-    "stateMutability": "view",
+    "name": "forceMMRUpdate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1012,6 +942,11 @@
             "type": "uint8"
           },
           {
+            "internalType": "bool",
+            "name": "isInMMRArray",
+            "type": "bool"
+          },
+          {
             "internalType": "uint48[]",
             "name": "playerIds",
             "type": "uint48[]"
@@ -1044,7 +979,7 @@
                 "type": "uint80"
               }
             ],
-            "internalType": "struct LockedBankVaults.Vault[]",
+            "internalType": "struct Vault[]",
             "name": "defendingVaults",
             "type": "tuple[]"
           },
@@ -1054,9 +989,35 @@
             "type": "uint40"
           }
         ],
-        "internalType": "struct LockedBankVaults.ClanInfo",
+        "internalType": "struct ClanInfo",
         "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getSortedClanIdsByMMR",
+    "outputs": [
+      {
+        "internalType": "uint32[]",
+        "name": "",
+        "type": "uint32[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getSortedMMR",
+    "outputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "",
+        "type": "uint16[]"
       }
     ],
     "stateMutability": "view",
@@ -1115,6 +1076,11 @@
         "type": "uint8[]"
       },
       {
+        "internalType": "uint16",
+        "name": "_mmrAttackDistance",
+        "type": "uint16"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "_adminAccess",
         "type": "address"
@@ -1126,6 +1092,24 @@
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "clanIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "mmrs",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "initializeMMR",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1223,19 +1207,6 @@
   },
   {
     "inputs": [],
-    "name": "movingAverageGasPrice",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -1270,6 +1241,24 @@
   {
     "inputs": [
       {
+        "internalType": "contract ITerritories",
+        "name": "_territories",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_combatantsHelper",
+        "type": "address"
+      }
+    ],
+    "name": "setAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_requestId",
         "type": "uint256"
@@ -1289,19 +1278,6 @@
       }
     ],
     "name": "setBaseAttackCost",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_combatantsHelper",
-        "type": "address"
-      }
-    ],
-    "name": "setCombatantsHelper",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1335,40 +1311,14 @@
   {
     "inputs": [
       {
-        "internalType": "contract ISamWitchVRF",
-        "name": "_samWitchVRF",
-        "type": "address"
+        "internalType": "uint16",
+        "name": "_mmrAttackDistance",
+        "type": "uint16"
       }
     ],
-    "name": "setSamWitchVRF",
+    "name": "setMMRAttackDistance",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ITerritories",
-        "name": "_territories",
-        "type": "address"
-      }
-    ],
-    "name": "setTerritories",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "sponsorWallet",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

@@ -4,7 +4,7 @@ import {
   COMBATANTS_HELPER_ADDRESS,
   DECORATOR_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
-  LOCKED_BANK_VAULT_ADDRESS,
+  LOCKED_BANK_VAULTS_ADDRESS,
   TERRITORIES_ADDRESS,
 } from "./contractAddresses";
 import {
@@ -27,7 +27,7 @@ async function main() {
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
   const lockedBankVaults = (await ethers.getContractAt(
     "LockedBankVaults",
-    LOCKED_BANK_VAULT_ADDRESS
+    LOCKED_BANK_VAULTS_ADDRESS
   )) as LockedBankVaults;
   const decorator = (await ethers.getContractAt("TestPaintSwapDecorator", DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
   const combatantsHelper = (await ethers.getContractAt(
@@ -55,7 +55,7 @@ async function main() {
   console.log("Harvest");
 
   // Lock some brush in a vault
-  tx = await lockedBankVaults.connect(owner).setTerritories(owner.address);
+  tx = await lockedBankVaults.connect(owner).setAddresses(owner.address, combatantsHelper.address);
   await tx.wait();
   console.log("set territories");
   tx = await brush.connect(owner).approve(lockedBankVaults.address, ethers.utils.parseEther("100"));
@@ -64,7 +64,7 @@ async function main() {
   tx = await lockedBankVaults.connect(owner).lockFunds(1, owner.address, 1, ethers.utils.parseEther("100"));
   await tx.wait();
   console.log("LockFunds");
-  tx = await lockedBankVaults.connect(owner).setTerritories(territories.address);
+  tx = await lockedBankVaults.connect(owner).setAddresses(territories.address, combatantsHelper.address);
   await tx.wait();
   console.log("SetTerritories");
 

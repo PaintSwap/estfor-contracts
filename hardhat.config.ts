@@ -75,7 +75,7 @@ const config: HardhatUserConfig = {
     compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, lowestRunsConfig],
     overrides: {
       "contracts/Clans/Clans.sol": mediumRunsConfig,
-      "contracts/Clans/LockedBankVaults.sol": mediumRunsConfig,
+      "contracts/Clans/LockedBankVaults.sol": lowRunsConfig,
       "contracts/Clans/Territories.sol": mediumRunsConfig,
       "contracts/Players/Players.sol": lowRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
@@ -98,12 +98,12 @@ const config: HardhatUserConfig = {
       initialBaseFeePerGas: 0,
       allowUnlimitedContractSize: true,
     },
-    ftm: {
+    fantom: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: ethers.utils.parseUnits("20", "gwei").toNumber(),
     },
-    ftm_testnet: {
+    fantom_testnet: {
       url: process.env.FTM_RPC_TESTNET,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
