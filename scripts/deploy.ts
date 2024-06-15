@@ -549,9 +549,7 @@ async function main() {
   );
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  const Territories = await ethers.getContractFactory("Territories", {
-    libraries: {EstforLibrary: estforLibrary.address},
-  });
+  const Territories = await ethers.getContractFactory("Territories");
   const territories = await upgrades.deployProxy(
     Territories,
     [

@@ -223,7 +223,7 @@ library EstforLibrary {
   }
 
   // This should match the one above
-  function binarySearch(uint48[] storage _arr, uint _target) external view returns (uint) {
+  function _binarySearch(uint48[] storage _arr, uint _target) internal view returns (uint) {
     uint low = 0;
     uint high = _arr.length - 1;
 
@@ -248,23 +248,7 @@ library EstforLibrary {
     return type(uint).max; // Element not found
   }
 
-  function upperBound(uint16[] storage _arr, uint _target) internal view returns (uint) {
-    if (_arr.length == 0) {
-      return 0;
-    }
-
-    uint low = 0;
-    uint high = _arr.length;
-
-    while (low < high) {
-      uint mid = (low + high) / 2;
-      if (_arr[mid] <= _target) {
-        low = mid + 1;
-      } else {
-        high = mid;
-      }
-    }
-
-    return low;
+  function binarySearch(uint48[] storage _arr, uint _target) external view returns (uint) {
+    return _binarySearch(_arr, _target);
   }
 }
