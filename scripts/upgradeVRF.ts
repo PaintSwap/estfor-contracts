@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {LOCKED_BANK_VAULT_ADDRESS, SAMWITCH_VRF_ADDRESS, TERRITORIES_ADDRESS} from "./contractAddresses";
+import {LOCKED_BANK_VAULTS_ADDRESS, SAMWITCH_VRF_ADDRESS, TERRITORIES_ADDRESS} from "./contractAddresses";
 import {LockedBankVaults, Territories} from "../typechain-types";
 import {verifyContracts} from "./utils";
 
@@ -7,13 +7,14 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Upgrading VRF using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
+  // TODO: Add libraries
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const Territories = await ethers.getContractFactory("Territories");
   {
     // Set base cost really high to prevent any attacks
     const lockedBankVaults = (await ethers.getContractAt(
       "LockedBankVaults",
-      LOCKED_BANK_VAULT_ADDRESS
+      LOCKED_BANK_VAULTS_ADDRESS
     )) as LockedBankVaults;
     let tx = await lockedBankVaults.setBaseAttackCost(ethers.utils.parseEther("300000000"));
     await tx.wait();
@@ -30,7 +31,7 @@ async function main() {
   console.log("Waiting 5 minutes");
 
   const timeout = 600 * 1000;
-  const lockedBankVaults = (await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
+  const lockedBankVaults = (await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
@@ -38,10 +39,10 @@ async function main() {
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  let tx = await lockedBankVaults.setSamWitchVRF(SAMWITCH_VRF_ADDRESS);
-  await tx.wait();
+  //  let tx = await lockedBankVaults.setSamWitchVRF(SAMWITCH_VRF_ADDRESS); // Replace with setAddresses and set it there if needed
+  //  await tx.wait();
   // Allow attacking again
-  tx = await lockedBankVaults.setBaseAttackCost(ethers.utils.parseEther("0.01"));
+  let tx = await lockedBankVaults.setBaseAttackCost(ethers.utils.parseEther("0.01"));
   await tx.wait();
 
   // Upgrade territories
@@ -53,8 +54,8 @@ async function main() {
   await territories.deployed();
   console.log(`territories = "${territories.address.toLowerCase()}"`);
 
-  tx = await territories.setSamWitchVRF(SAMWITCH_VRF_ADDRESS);
-  await tx.wait();
+  //  tx = await territories.setSamWitchVRF(SAMWITCH_VRF_ADDRESS);
+  //  await tx.wait();
   // Allow attacking again
   tx = await territories.setBaseAttackCost(ethers.utils.parseEther("0.01"));
   await tx.wait();

@@ -19,7 +19,7 @@ import {
   PROMOTIONS_LIBRARY_ADDRESS,
   TERRITORIES_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
-  LOCKED_BANK_VAULT_ADDRESS,
+  LOCKED_BANK_VAULTS_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
   INSTANT_VRF_ACTIONS_ADDRESS,
@@ -286,8 +286,10 @@ async function main() {
   await vrfRequestInfo.deployed();
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
 
-  const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults")).connect(owner);
-  const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
+  // TODO: Add LockedBankVaultsLibrary
+
+  const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults", { libraries: {EstforLibrary: estforLibrary.address} })).connect(owner);
+  const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
@@ -295,7 +297,7 @@ async function main() {
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
+  const Territories = (await ethers.getContractFactory("Territories", { libraries: {EstforLibrary: estforLibrary.address} })).connect(owner);
   const territories = await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],

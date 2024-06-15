@@ -1562,19 +1562,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "contract ISamWitchVRF",
-        "name": "_samWitchVRF",
-        "type": "address"
-      }
-    ],
-    "name": "setSamWitchVRF",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "sponsorWallet",
     "outputs": [

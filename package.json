@@ -128,6 +128,7 @@
     "setPlayersImageBaseURI": "npx hardhat run scripts/setPlayersImageBaseURI.ts",
     "setMinItemQuantityBeforeSellsAllowed": "npx hardhat run scripts/setMinItemQuantityBeforeSellsAllowed.ts",
     "addInstantVRFActionStrategies": "npx hardhat run scripts/addInstantVRFActionStrategies.ts",
+    "setMMRAttackDistance": "npx hardhat run scripts/setMMRAttackDistance.ts",
     "pauseGame": "npx hardhat run scripts/pauseGame.ts",
     "setAvatars": "npx hardhat run scripts/setAvatars.ts",
     "overhaulUpgrade": "npx hardhat run scripts/overhaulUpgrade.ts",

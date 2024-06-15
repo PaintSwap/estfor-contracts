@@ -236,6 +236,11 @@
   },
   {
     "inputs": [],
+    "name": "NotMMRSetter",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotMemberOfClan",
     "type": "error"
   },
@@ -1305,6 +1310,11 @@
         "type": "bool"
       },
       {
+        "internalType": "uint16",
+        "name": "mmr",
+        "type": "uint16"
+      },
+      {
         "internalType": "string",
         "name": "name",
         "type": "string"
@@ -1585,6 +1595,25 @@
         "internalType": "uint8",
         "name": "",
         "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMMR",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "mmr",
+        "type": "uint16"
       }
     ],
     "stateMutability": "view",
@@ -2071,6 +2100,24 @@
       }
     ],
     "name": "setJoinRequestsEnabled",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_mmr",
+        "type": "uint16"
+      }
+    ],
+    "name": "setMMR",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

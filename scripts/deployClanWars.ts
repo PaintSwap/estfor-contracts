@@ -83,7 +83,9 @@ async function main() {
 
   const isBeta = process.env.IS_BETA == "true";
 
-  const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults")).connect(signer);
+  const LockedBankVaults = (
+    await ethers.getContractFactory("LockedBankVaults", {libraries: {EstforLibrary: estforLibrary.address}})
+  ).connect(signer);
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -109,7 +111,9 @@ async function main() {
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
 
-  const Territories = (await ethers.getContractFactory("Territories")).connect(signer);
+  const Territories = (
+    await ethers.getContractFactory("Territories", {libraries: {EstforLibrary: estforLibrary.address}})
+  ).connect(signer);
   const territories = await upgrades.deployProxy(
     Territories,
     [
@@ -221,9 +225,6 @@ async function main() {
   tx = await itemNFT.connect(owner).setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
   console.log("itemNFT.setTerritoriesAndLockedBankVaults");
-  tx = await lockedBankVaults.connect(owner).setTerritories(territories.address);
-  await tx.wait();
-  console.log("lockedBankVaults.setTerritories");
 
   // Add the new items (if not added yet)
   const items = allItems.filter(
@@ -266,9 +267,9 @@ async function main() {
   const clanWars = [lockedBankVaults, territories];
   for (const clanWar of clanWars) {
     try {
-      tx = await clanWar.connect(owner).setCombatantsHelper(combatantsHelper.address);
+      tx = await clanWar.connect(owner).setAddresses(territories.address, combatantsHelper.address);
       await tx.wait();
-      console.log("setCombatantsHelper");
+      console.log("setAddresses");
     } catch (error) {
       console.error(`Error: ${error}`);
     }

@@ -715,11 +715,6 @@ contract Territories is
     combatantsHelper = _combatantsHelper;
   }
 
-  // Can be removed if needed, only needed for new VRF contract
-  function setSamWitchVRF(ISamWitchVRF _samWitchVRF) external onlyOwner {
-    samWitchVRF = _samWitchVRF;
-  }
-
   function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
     baseAttackCost = _baseAttackCost;
     emit SetBaseAttackCost(_baseAttackCost);

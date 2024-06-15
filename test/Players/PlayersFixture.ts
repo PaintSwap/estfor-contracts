@@ -335,7 +335,11 @@ export const playersFixture = async function () {
 
   await artGallery.transferOwnership(decorator.address);
 
-  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
+  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
+  const mmrAttackDistance = 4;
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
+    libraries: {EstforLibrary: estforLibrary.address, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
+  });
   const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -349,6 +353,7 @@ export const playersFixture = async function () {
       oracleAddress,
       mockSWVRFOracleClient.address,
       allBattleSkills,
+      mmrAttackDistance,
       adminAccess.address,
       isBeta,
     ],
@@ -358,7 +363,9 @@ export const playersFixture = async function () {
     }
   )) as LockedBankVaults;
 
-  const Territories = await ethers.getContractFactory("Territories");
+  const Territories = await ethers.getContractFactory("Territories", {
+    libraries: {EstforLibrary: estforLibrary.address},
+  });
   const territories = (await upgrades.deployProxy(
     Territories,
     [
@@ -430,11 +437,10 @@ export const playersFixture = async function () {
 
   await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
-  await lockedBankVaults.setTerritories(territories.address);
   await royaltyReceiver.setTerritories(territories.address);
   await petNFT.setTerritories(territories.address);
   await territories.setCombatantsHelper(combatantsHelper.address);
-  await lockedBankVaults.setCombatantsHelper(combatantsHelper.address);
+  await lockedBankVaults.setAddresses(territories.address, combatantsHelper.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -501,6 +507,7 @@ export const playersFixture = async function () {
     decorator,
     brushPerSecond,
     mockSWVRFOracleClient,
+    mmrAttackDistance,
     lockedBankVaults,
     territories,
     combatantsHelper,
