@@ -144,9 +144,7 @@ contract LockedBankVaults is
   address private oracle;
   uint16 private mmrAttackDistance;
   ISamWitchVRF private samWitchVRF;
-  // TODO: Combine these into a uint48 or not? saves writing to 2 storage slots and 2 lengths potentially, but mades reading slower.
-  uint32[] private sortedClanIdsByMMR;
-  uint16[] private sortedMMR;
+  uint48[] private sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
 
   uint private constant NUM_WORDS = 3;
   uint private constant CALLBACK_GAS_LIMIT = 3_000_000;
@@ -274,11 +272,10 @@ contract LockedBankVaults is
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
-  // Some vaults may no longer be attackable if they don't have any funds, so force the MMR
+  // Some vaults may no longer be attackable if they don't have any funds, so force the MMR to be re-calculated.
   function forceMMRUpdate(uint[] calldata _clanIds) external {
     uint[] memory clanIdsToDelete = LockedBankVaultsLibrary.forceMMRUpdate(
-      sortedClanIdsByMMR,
-      sortedMMR,
+      sortedClansByMMR,
       clans,
       clanInfos,
       _clanIds
@@ -322,8 +319,7 @@ contract LockedBankVaults is
 
     // Check MMRs are within the list, 4 above and 4 below. However at the extremes add it to the other end
     LockedBankVaultsLibrary.updateMMRArray(
-      sortedClanIdsByMMR,
-      sortedMMR,
+      sortedClansByMMR,
       _clanId,
       _defendingClanId,
       clans,
@@ -449,8 +445,7 @@ contract LockedBankVaults is
     _updateAverageGasPrice();
 
     (int256 attackingMMRDiff, int256 defendingMMRDiff) = LockedBankVaultsLibrary.fulfillUpdateMMR(
-      sortedClanIdsByMMR,
-      sortedMMR,
+      sortedClansByMMR,
       clans,
       attackingClanId,
       defendingClanId,
@@ -496,8 +491,7 @@ contract LockedBankVaults is
 
   function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
     (uint256 total, uint256 numLocksClaimed) = LockedBankVaultsLibrary.claimFunds(
-      sortedClanIdsByMMR,
-      sortedMMR,
+      sortedClansByMMR,
       clanInfos[_clanId],
       _clanId
     );
@@ -520,7 +514,7 @@ contract LockedBankVaults is
     _lockFunds(_clanId, _from, _playerId, _amount, LOCK_PERIOD);
     ClanInfo storage clanInfo = clanInfos[_clanId];
     if (!clanInfo.isInMMRArray) {
-      LockedBankVaultsLibrary.insertMMRArray(sortedClanIdsByMMR, sortedMMR, clans.getMMR(_clanId), uint32(_clanId));
+      LockedBankVaultsLibrary.insertMMRArray(sortedClansByMMR, clans.getMMR(_clanId), uint32(_clanId));
       clanInfo.isInMMRArray = true;
     }
     if (_amount != 0 && !brush.transferFrom(msg.sender, address(this), _amount)) {
@@ -643,11 +637,11 @@ contract LockedBankVaults is
   }
 
   function getSortedClanIdsByMMR() external view returns (uint32[] memory) {
-    return sortedClanIdsByMMR;
+    return LockedBankVaultsLibrary.getSortedClanIdsByMMR(sortedClansByMMR);
   }
 
   function getSortedMMR() external view returns (uint16[] memory) {
-    return sortedMMR;
+    return LockedBankVaultsLibrary.getSortedMMR(sortedClansByMMR);
   }
 
   function setComparableSkills(Skill[] calldata _skills) public onlyOwner {
@@ -682,7 +676,7 @@ contract LockedBankVaults is
 
   // TODO Can delete after setting initial MMR
   function initializeMMR(uint[] calldata clanIds, uint16[] calldata mmrs) external onlyOwner {
-    LockedBankVaultsLibrary.initializeMMR(sortedClanIdsByMMR, sortedMMR, clans, clanInfos, clanIds, mmrs);
+    LockedBankVaultsLibrary.initializeMMR(sortedClansByMMR, clans, clanInfos, clanIds, mmrs);
     emit SetMMRs(clanIds, mmrs);
   }
 

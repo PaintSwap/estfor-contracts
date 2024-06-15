@@ -152,9 +152,7 @@ async function main() {
     unsafeAllow: ["external-library-linking"],
   })) as LockedBankVaults;
 
-  const Territories = (
-    await ethers.getContractFactory("Territories", {libraries: {EstforLibrary: estforLibrary.address}})
-  ).connect(owner);
+  const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
   const territories = (await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
