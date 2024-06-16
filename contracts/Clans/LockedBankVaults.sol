@@ -144,6 +144,11 @@ contract LockedBankVaults is
   address private oracle;
   uint16 private mmrAttackDistance;
   ISamWitchVRF private samWitchVRF;
+  // Clans are sorted as follows:
+  // 1 - From lower MMR to higher MMR
+  // 2 - If there are multiple clans with the same MMR, they are sorted by:
+  //   2.1 - Whoever was there first gets a higher rank (higher index)
+  //   2.2 - The attacker is always ranked higher than the defender whether they win or lose as they are placed in the array first
   uint48[] private sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
 
   uint private constant NUM_WORDS = 3;
