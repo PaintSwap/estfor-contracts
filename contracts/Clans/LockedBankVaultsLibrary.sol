@@ -448,7 +448,7 @@ library LockedBankVaultsLibrary {
     return mmrs;
   }
 
-  function _upperBound(uint48[] storage _sortedClansByMMR, uint _targetMMR) internal view returns (uint) {
+  function _lowerBound(uint48[] storage _sortedClansByMMR, uint _targetMMR) internal view returns (uint) {
     if (_sortedClansByMMR.length == 0) {
       return 0;
     }
@@ -459,7 +459,7 @@ library LockedBankVaultsLibrary {
     while (low < high) {
       uint mid = (low + high) / 2;
       uint clanMMR = _getMMR(_sortedClansByMMR[mid]);
-      if (clanMMR <= _targetMMR) {
+      if (clanMMR < _targetMMR) {
         low = mid + 1;
       } else {
         high = mid;
@@ -541,17 +541,18 @@ library LockedBankVaultsLibrary {
     uint i = _currentIndex;
     if (_upward) {
       // Shift elements left if newMMR is greater
-      while (i < _sortedClansByMMR.length - 1 && _getMMR(_sortedClansByMMR[i + 1]) <= _newMMR) {
+      while (i < _sortedClansByMMR.length - 1 && _getMMR(_sortedClansByMMR[i + 1]) < _newMMR) {
         _sortedClansByMMR[i] = _sortedClansByMMR[i + 1];
         ++i;
       }
     } else {
       // Shift elements right if newMMR is less
-      while (i > 0 && _getMMR(_sortedClansByMMR[i - 1]) > _newMMR) {
+      while (i > 0 && _getMMR(_sortedClansByMMR[i - 1]) >= _newMMR) {
         _sortedClansByMMR[i] = _sortedClansByMMR[i - 1];
         --i;
       }
     }
+
     _setPackedClanIdAndMMR(_sortedClansByMMR, i, _clanId, _newMMR);
     return i;
   }
@@ -566,7 +567,7 @@ library LockedBankVaultsLibrary {
     uint32 _clanId
   ) private returns (uint index) {
     // Find where to insert it into the array
-    index = _upperBound(_sortedClansByMMR, _mmr);
+    index = _lowerBound(_sortedClansByMMR, _mmr);
     _sortedClansByMMR.push(); // expand array
     // Shift array to the right
     for (uint i = _sortedClansByMMR.length - 1; i > index; --i) {
