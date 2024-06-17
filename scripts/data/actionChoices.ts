@@ -4612,7 +4612,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
   },
   {
     skill: Skill.RANGED,
-    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW_5,
+    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
     handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_5,
     isFullModeOnly: true,
     skillDiff: 28,
@@ -4628,7 +4628,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
   },
   {
     skill: Skill.RANGED,
-    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW_5,
+    handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
     handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_5,
     isFullModeOnly: true,
     skillDiff: 30,
