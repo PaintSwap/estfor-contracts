@@ -6,7 +6,7 @@ async function main() {
   console.log(`Set base uri with: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  await itemNFT.setBaseURI("ipfs://QmSTBgkAxfscg8cVHnv9pkMu25hpVhLq1hSvF2Mkh59Abb/");
+  await itemNFT.setBaseURI("ipfs://QmVDdbXtEDXh5AGEuHCEEjmAiEZJaMSpC4W36N3aZ3ToQd/");
 }
 
 main().catch((error) => {
