@@ -174,8 +174,10 @@ async function main() {
   let startGlobalDonationThresholdRewards: BigNumber;
   let clanDonationThresholdRewardIncrement: BigNumber;
   let mmrAttackDistance;
+  // Some of these base uris likely out of date
   if (!isBeta) {
-    itemsUri = "ipfs://QmeLS5w8gR1oSxTebz89MwMe7mc8o27nV4FYdkWUNQkbsD/";
+    // live version
+    itemsUri = "ipfs://QmVDdbXtEDXh5AGEuHCEEjmAiEZJaMSpC4W36N3aZ3ToQd /";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
     editNameBrushPrice = ethers.utils.parseEther("1000");
@@ -184,10 +186,9 @@ async function main() {
     raffleEntryCost = ethers.utils.parseEther("12");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("5000");
-    mmrAttackDistance = 2;
+    mmrAttackDistance = 4;
   } else {
-    // live version
-    itemsUri = "ipfs://QmV4VMh59W6fkoNCEjytzEtbv8FTPiG3rWwyu4aadEpqfK/";
+    itemsUri = "ipfs://QmZBtZ6iF7shuRxPc4q4cM3wNnDyJeqNgP7EkSWQqSgKnM/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
     editNameBrushPrice = ethers.utils.parseEther("1");
@@ -196,7 +197,7 @@ async function main() {
     raffleEntryCost = ethers.utils.parseEther("5");
     startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
     clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
-    mmrAttackDistance = 4;
+    mmrAttackDistance = 1;
   }
 
   const initialMMR = 500;
@@ -524,6 +525,7 @@ async function main() {
   await lockedBankVaultsLibrary.deployed();
   console.log(`lockedBankVaultsLibrary = "${lockedBankVaultsLibrary.address.toLowerCase()}"`);
 
+  const lockedFundsPeriod = (isBeta ? 1 : 7) * 86400; // 7 days
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {EstforLibrary: estforLibrary.address, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
   });
@@ -541,6 +543,7 @@ async function main() {
       swvrfOracle.address,
       allBattleSkills,
       mmrAttackDistance,
+      lockedFundsPeriod,
       adminAccess.address,
       isBeta,
     ],

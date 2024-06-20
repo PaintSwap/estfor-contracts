@@ -315,6 +315,7 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
+    call: "setLockFundsUpgrade", // TODO: Remove after prod deployment
   });
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);

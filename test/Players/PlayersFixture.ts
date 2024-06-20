@@ -339,6 +339,7 @@ export const playersFixture = async function () {
 
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   const mmrAttackDistance = 4;
+  const lockedFundsPeriod = 7 * 86400; // 7 days
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {EstforLibrary: estforLibrary.address, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
   });
@@ -356,6 +357,7 @@ export const playersFixture = async function () {
       mockSWVRFOracleClient.address,
       allBattleSkills,
       mmrAttackDistance,
+      lockedFundsPeriod,
       adminAccess.address,
       isBeta,
     ],

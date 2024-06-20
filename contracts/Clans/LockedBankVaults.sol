@@ -150,6 +150,7 @@ contract LockedBankVaults is
   uint8 private Kd; // defender K-factor
 
   ISamWitchVRF private samWitchVRF;
+  uint24 private lockFundsPeriod;
   // Clans are sorted as follows:
   // 1 - From lower MMR to higher MMR
   // 2 - If there are multiple clans with the same MMR, they are sorted by:
@@ -163,7 +164,6 @@ contract LockedBankVaults is
   uint private constant MIN_REATTACKING_COOLDOWN = 1 days;
   uint private constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint private constant MAX_LOCKED_VAULTS = 100;
-  uint private constant LOCK_PERIOD = 7 days;
   uint private constant NUM_PACKED_VAULTS = 2;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -240,6 +240,7 @@ contract LockedBankVaults is
     ISamWitchVRF _samWitchVRF,
     Skill[] calldata _comparableSkills,
     uint16 _mmrAttackDistance,
+    uint24 _lockFundsPeriod,
     AdminAccess _adminAccess,
     bool _isBeta
   ) external initializer {
@@ -254,7 +255,7 @@ contract LockedBankVaults is
     dev = _dev;
     oracle = _oracle;
     samWitchVRF = _samWitchVRF;
-
+    lockFundsPeriod = _lockFundsPeriod;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
 
@@ -507,7 +508,7 @@ contract LockedBankVaults is
     emit UpdateMMR(uint(_requestId), attackingMMRDiff, defendingMMRDiff);
 
     if (didAttackersWin) {
-      _lockFunds(attackingClanId, address(0), 0, totalWon, LOCK_PERIOD);
+      _lockFunds(attackingClanId, address(0), 0, totalWon);
     }
   }
 
@@ -533,7 +534,7 @@ contract LockedBankVaults is
   }
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
-    _lockFunds(_clanId, _from, _playerId, _amount, LOCK_PERIOD);
+    _lockFunds(_clanId, _from, _playerId, _amount);
     ClanInfo storage clanInfo = clanInfos[_clanId];
     if (!clanInfo.isInMMRArray) {
       LockedBankVaultsLibrary.insertMMRArray(sortedClansByMMR, clans.getMMR(_clanId), uint32(_clanId));
@@ -608,14 +609,14 @@ contract LockedBankVaults is
     emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
   }
 
-  function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount, uint _lockPeriod) private {
+  function _lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) private {
     if (_amount == 0) {
       return;
     }
     ClanInfo storage clanInfo = clanInfos[_clanId];
     uint totalBrushLocked = clanInfo.totalBrushLocked;
     clanInfo.totalBrushLocked = uint96(totalBrushLocked + _amount);
-    uint40 lockingTimestamp = uint40(block.timestamp + _lockPeriod);
+    uint40 lockingTimestamp = uint40(block.timestamp + lockFundsPeriod);
     uint length = clanInfo.defendingVaults.length;
     if (length == 0 || (clanInfo.defendingVaults[length - 1].timestamp1 != 0)) {
       // Start a new one
@@ -715,6 +716,11 @@ contract LockedBankVaults is
     }
     LockedBankVaultsLibrary.initializeMMR(sortedClansByMMR, clans, clanInfos, _clanIds, _mmrs);
     emit SetMMRs(_clanIds, _mmrs);
+  }
+
+  // TODO: Remove after initial upgrade
+  function setLockFundsUpgrade() external {
+    lockFundsPeriod = isBeta ? 1 days : 7 days;
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {

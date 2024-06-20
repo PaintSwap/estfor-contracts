@@ -1,6 +1,7 @@
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS, LOCKED_BANK_VAULTS_ADDRESS} from "./contractAddresses";
 import {LockedBankVaults} from "../typechain-types";
+import {isBeta} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -40,7 +41,7 @@ async function main() {
   await tx.wait();
   console.log("Set K values");
 
-  const mmrAttackDistance = 4;
+  const mmrAttackDistance = isBeta ? 1 : 4;
   tx = await lockedBankVaults.setMMRAttackDistance(mmrAttackDistance);
   await tx.wait();
   console.log("Set MMR attack distance");
