@@ -11766,7 +11766,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.COIN,
     equipPosition: EquipPosition.NONE,
-    isTransferable: false,
+    isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
