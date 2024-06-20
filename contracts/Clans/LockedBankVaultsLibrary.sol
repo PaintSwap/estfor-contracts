@@ -34,17 +34,17 @@ library LockedBankVaultsLibrary {
     uint48[] storage _sortedClansByMMR,
     IClans _clans,
     mapping(uint clanId => ClanInfo _clanInfo) storage _clanInfos,
-    uint[] calldata clanIds,
-    uint16[] calldata mmrs
+    uint[] calldata _clanIds,
+    uint16[] calldata _mmrs
   ) external {
-    if (clanIds.length != mmrs.length) {
+    if (_clanIds.length != _mmrs.length) {
       revert LengthMismatch();
     }
 
-    for (uint i = 0; i < clanIds.length; ++i) {
-      _clans.setMMR(clanIds[i], mmrs[i]);
-      _insertMMRArray(_sortedClansByMMR, mmrs[i], uint32(clanIds[i]));
-      _clanInfos[clanIds[i]].isInMMRArray = true;
+    for (uint i = 0; i < _clanIds.length; ++i) {
+      _clans.setMMR(_clanIds[i], _mmrs[i]);
+      _insertMMRArray(_sortedClansByMMR, _mmrs[i], uint32(_clanIds[i]));
+      _clanInfos[_clanIds[i]].isInMMRArray = true;
     }
   }
 
@@ -182,7 +182,7 @@ library LockedBankVaultsLibrary {
     }
   }
 
-  function _hasLockedFunds(ClanInfo storage _clanInfo) private view returns (bool) {
+  function _hasLockedFunds(ClanInfo storage _clanInfo) internal view returns (bool) {
     uint length = _clanInfo.defendingVaults.length;
     if (length == 0) {
       return false;
@@ -265,7 +265,37 @@ library LockedBankVaultsLibrary {
     _itemNFT.burn(msg.sender, _itemTokenId, 1);
   }
 
+  function getNewMMRs(
+    uint256 _Ka,
+    uint256 _Kd,
+    uint16 _attackingMMR,
+    uint16 _defendingMMR,
+    bool _didAttackersWin
+  ) public pure returns (uint16 newAttackerMMR, uint16 newDefenderMMR) {
+    uint256 Sa = _didAttackersWin ? 100 : 0; // attacker score variable scaled up
+    uint256 Sd = _didAttackersWin ? 0 : 100; // defender score variable scaled up
+
+    (uint changeA, bool negativeA) = _ratingChange(_attackingMMR, _defendingMMR, Sa, _Ka);
+    (uint changeD, bool negativeD) = _ratingChange(_defendingMMR, _attackingMMR, Sd, _Kd);
+
+    int _newAttackerMMR = int24(uint24(_attackingMMR)) + (negativeA ? -int(changeA) : int(changeA));
+    int _newDefenderMMR = int24(uint24(_defendingMMR)) + (negativeD ? -int(changeD) : int(changeD));
+
+    if (_newAttackerMMR < 0) {
+      _newAttackerMMR = 0;
+    }
+
+    if (_newDefenderMMR < 0) {
+      _newDefenderMMR = 0;
+    }
+
+    newAttackerMMR = uint16(uint24(int24(_newAttackerMMR)));
+    newDefenderMMR = uint16(uint24(int24(_newDefenderMMR)));
+  }
+
   function fulfillUpdateMMR(
+    uint256 _Ka,
+    uint256 _Kd,
     uint48[] storage _sortedClansByMMR,
     IClans _clans,
     uint256 _attackingClanId,
@@ -285,17 +315,16 @@ library LockedBankVaultsLibrary {
       ? _getMMR(_sortedClansByMMR[defendingClanIndex])
       : _clans.getMMR(_defendingClanId);
 
-    // TODO: Update later (Get a minimum of 1?)
-    int256 diff = int256(attackingMMR) - int256(defendingMMR);
-    uint256 absDiff = uint256(diff > 0 ? diff : -diff); // Absolute value of diff
+    (uint newAttackingMMR, uint newDefendingMMR) = getNewMMRs(
+      _Ka,
+      _Kd,
+      uint16(attackingMMR),
+      uint16(defendingMMR),
+      _didAttackersWin
+    );
 
-    if (_didAttackersWin) {
-      attackingMMRDiff = int256(Math.max(absDiff / 10, 1));
-      defendingMMRDiff = -int256(Math.max(absDiff / 5, 1));
-    } else {
-      attackingMMRDiff = -int256(Math.max(absDiff / 10, 1));
-      defendingMMRDiff = int256(Math.max(absDiff / 5, 1));
-    }
+    attackingMMRDiff = int256(newAttackingMMR) - int256(attackingMMR);
+    defendingMMRDiff = int256(newDefendingMMR) - int256(defendingMMR);
 
     // Tried to use a struct but got "Could not create stack layout after 1000 iterations" error
     uint[] memory indices = new uint[](2);
@@ -305,8 +334,6 @@ library LockedBankVaultsLibrary {
     uint length;
 
     if (attackingMMRDiff != 0 && defendingMMR != 0) {
-      uint newAttackingMMR = uint(int(attackingMMR) + attackingMMRDiff);
-
       _clans.setMMR(_attackingClanId, uint16(newAttackingMMR));
 
       if (clanInArray) {
@@ -323,7 +350,6 @@ library LockedBankVaultsLibrary {
     }
 
     if (defendingMMRDiff != 0 && attackingMMR != 0) {
-      uint newDefendingMMR = uint(int(defendingMMR) + defendingMMRDiff);
       _clans.setMMR(_defendingClanId, uint16(newDefendingMMR));
 
       bool defendingClanInArray = defendingClanIndex != type(uint256).max;
@@ -430,22 +456,41 @@ library LockedBankVaultsLibrary {
     }
   }
 
-  function getSortedClanIdsByMMR(uint48[] storage _sortedClansByMMR) external view returns (uint32[] memory) {
+  function getSortedClanIdsByMMR(uint48[] storage _sortedClansByMMR) external view returns (uint32[] memory clanIds) {
     uint length = _sortedClansByMMR.length;
-    uint32[] memory clanIds = new uint32[](length);
+    clanIds = new uint32[](length);
     for (uint i; i < length; ++i) {
       clanIds[i] = uint32(_getClanId(_sortedClansByMMR[i]));
     }
-    return clanIds;
   }
 
-  function getSortedMMR(uint48[] storage _sortedClansByMMR) external view returns (uint16[] memory) {
+  function getSortedMMR(uint48[] storage _sortedClansByMMR) external view returns (uint16[] memory mmrs) {
     uint length = _sortedClansByMMR.length;
-    uint16[] memory mmrs = new uint16[](length);
+    mmrs = new uint16[](length);
     for (uint i; i < length; ++i) {
       mmrs[i] = uint16(_getMMR(_sortedClansByMMR[i]));
     }
-    return mmrs;
+  }
+
+  function getIdleClans(
+    uint48[] storage _sortedClansByMMR,
+    mapping(uint clanId => ClanInfo _clanInfo) storage _clanInfos,
+    IClans _clans
+  ) external view returns (uint256[] memory clanIds) {
+    uint256 origLength = _sortedClansByMMR.length;
+    clanIds = new uint256[](origLength);
+    uint256 length;
+
+    for (uint i; i < origLength; ++i) {
+      uint clanId = _getClanId(_sortedClansByMMR[i]);
+      if (!_hasLockedFunds(_clanInfos[clanId]) || _clans.maxMemberCapacity(clanId) == 0) {
+        clanIds[length++] = uint32(clanId);
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(clanIds, length)
+    }
   }
 
   function _lowerBound(uint48[] storage _sortedClansByMMR, uint _targetMMR) internal view returns (uint) {
@@ -622,5 +667,72 @@ library LockedBankVaultsLibrary {
 
   function _getClanId(uint48 _packed) private pure returns (uint) {
     return uint32(_packed >> 16);
+  }
+
+  // This function is adapted from the solidity ELO library
+  /// @notice Get the 16th root of a number, used in MMR calculations
+  /// @dev MMR calculations require the 400th root (10 ^ (x / 400)), however this can be simplified to the 16th root (10 ^ ((x / 25) / 16))
+  function _sixteenthRoot(uint256 x) internal pure returns (uint256) {
+    return Math.sqrt(Math.sqrt(Math.sqrt(Math.sqrt(x))));
+  }
+
+  // This function is adapted from the solidity ELO library
+  /// @notice Calculates the change in MMR rating, after a given outcome.
+  /// @param _ratingA the MMR rating of the clan A
+  /// @param _ratingD the MMR rating of the clan D
+  /// @param _score the _score of the clan A, scaled by 100. 100 = win, 0 = loss
+  /// @param _kFactor the k-factor or development multiplier used to calculate the change in MMR rating. 20 is the typical value
+  /// @return change the change in MMR rating of clan D
+  /// @return isNegative the directional change of clan A's MMR. Opposite sign for clan D
+  function _ratingChange(
+    uint256 _ratingA,
+    uint256 _ratingD,
+    uint256 _score,
+    uint256 _kFactor
+  ) internal pure returns (uint256 change, bool isNegative) {
+    uint256 kFactor; // scaled up `_kFactor` by 100
+    bool negative = _ratingD < _ratingA;
+    uint256 ratingDiff; // absolute value difference between `_ratingA` and `_ratingD`
+
+    unchecked {
+      // scale up the inputs by a factor of 100
+      // since our MMR math is scaled up by 100 (to avoid low precision integer division)
+      kFactor = _kFactor * 10_000;
+      ratingDiff = negative ? _ratingA - _ratingD : _ratingD - _ratingA;
+    }
+
+    // checks against overflow/underflow, discovered via fuzzing
+    // large rating diffs leads to 10^ratingDiff being too large to fit in a uint256
+    if (ratingDiff >= 800) {
+      ratingDiff = 799;
+    }
+
+    // ----------------------------------------------------------------------
+    // Below, we'll be running simplified versions of the following formulas:
+    // expected _score = 1 / (1 + 10 ^ (ratingDiff / 400))
+    // MMR change = _kFactor * (_score - expectedScore)
+
+    uint256 n; // numerator of the power, with scaling, (numerator of `ratingDiff / 400`)
+    uint256 _powered; // the value of 10 ^ numerator
+    uint256 powered; // the value of 16th root of 10 ^ numerator (fully resolved 10 ^ (ratingDiff / 400))
+    uint256 kExpectedScore; // the expected _score with K factor distributed
+    uint256 kScore; // the actual _score with K factor distributed
+
+    unchecked {
+      // Apply offset of 800 to scale the result by 100
+      n = negative ? 800 - ratingDiff : 800 + ratingDiff;
+
+      // (x / 400) is the same as ((x / 25) / 16))
+      _powered = 10 ** (n / 25); // divide by 25 to avoid reach uint256 max
+      powered = _sixteenthRoot(_powered); // x ^ (1 / 16) is the same as 16th root of x
+
+      // given `change = _kFactor * (_score - expectedScore)` we can distribute _kFactor to both terms
+      kExpectedScore = kFactor / (100 + powered); // both numerator and denominator scaled up by 100
+      kScore = _kFactor * _score; // input _score is already scaled up by 100
+
+      // determines the sign of the MMR change
+      isNegative = kScore < kExpectedScore;
+      change = (isNegative ? kExpectedScore - kScore : kScore - kExpectedScore) / 100;
+    }
   }
 }

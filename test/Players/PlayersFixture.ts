@@ -363,6 +363,9 @@ export const playersFixture = async function () {
     }
   )) as LockedBankVaults;
 
+  // Set K values to 3, 3 to make it easier to get consistent values close to each for same MMR testing
+  await lockedBankVaults.setKValues(3, 3);
+
   const Territories = await ethers.getContractFactory("Territories");
   const territories = (await upgrades.deployProxy(
     Territories,
@@ -516,5 +519,6 @@ export const playersFixture = async function () {
     oracleAddress,
     petNFT,
     PetNFT,
+    lockedBankVaultsLibrary,
   };
 };

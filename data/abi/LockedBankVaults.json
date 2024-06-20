@@ -16,6 +16,11 @@
   },
   {
     "inputs": [],
+    "name": "AttacksPrevented",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "BeaconImplementationIsNotAContract",
     "type": "error"
   },
@@ -611,6 +616,25 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "Ka",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "Kd",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetKValues",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "mmrAttackDistance",
         "type": "uint256"
       }
@@ -624,13 +648,13 @@
       {
         "indexed": false,
         "internalType": "uint256[]",
-        "name": "clanId",
+        "name": "clanIds",
         "type": "uint256[]"
       },
       {
         "indexed": false,
         "internalType": "uint16[]",
-        "name": "mmr",
+        "name": "mmrs",
         "type": "uint16[]"
       }
     ],
@@ -999,6 +1023,19 @@
   },
   {
     "inputs": [],
+    "name": "getIdleClans",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "clanIds",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getSortedClanIdsByMMR",
     "outputs": [
       {
@@ -1100,13 +1137,18 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "clanIds",
+        "name": "_clanIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint16[]",
-        "name": "mmrs",
+        "name": "_mmrs",
         "type": "uint16[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "_clear",
+        "type": "bool"
       }
     ],
     "name": "initializeMMR",
@@ -1311,12 +1353,43 @@
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "_Ka",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_Kd",
+        "type": "uint8"
+      }
+    ],
+    "name": "setKValues",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint16",
         "name": "_mmrAttackDistance",
         "type": "uint16"
       }
     ],
     "name": "setMMRAttackDistance",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_preventAttacks",
+        "type": "bool"
+      }
+    ],
+    "name": "setPreventAttacks",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
