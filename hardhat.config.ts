@@ -127,7 +127,7 @@ const config: HardhatUserConfig = {
     flat: true,
     spacing: 2,
     format: "json",
-    except: ["/ozUpgradeable", "/interfaces", "/test", "/helper", "/debug"],
+    except: ["/ozUpgradeable", "/interfaces", "/test", "/helper", "/debug", "@openzeppelin"],
   },
 };
 
