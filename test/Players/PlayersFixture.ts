@@ -146,6 +146,7 @@ export const playersFixture = async function () {
   })) as Quests;
 
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
+  const initialMMR = 500;
 
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
@@ -159,6 +160,7 @@ export const playersFixture = async function () {
       dev.address,
       editNameBrushPrice,
       paintSwapMarketplaceWhitelist.address,
+      initialMMR,
     ],
     {
       kind: "uups",
@@ -520,5 +522,6 @@ export const playersFixture = async function () {
     petNFT,
     PetNFT,
     lockedBankVaultsLibrary,
+    initialMMR,
   };
 };

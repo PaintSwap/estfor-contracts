@@ -199,6 +199,8 @@ async function main() {
     mmrAttackDistance = 4;
   }
 
+  const initialMMR = 500;
+
   // Create the world
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   const worldLibrary = await WorldLibrary.deploy();
@@ -335,6 +337,7 @@ async function main() {
       DEV_ADDRESS,
       editNameBrushPrice,
       paintSwapMarketplaceWhitelist.address,
+      initialMMR,
     ],
     {
       kind: "uups",

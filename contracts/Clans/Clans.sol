@@ -50,6 +50,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event JoinRequestsEnabled(uint clanId, bool joinRequestsEnabled, uint playerId);
   event GateKeepNFTs(uint clanId, address[] nfts, uint playerId);
   event PinMessage(uint clanId, string message, uint playerId);
+  event SetInitialMMR(uint mmr);
 
   // legacy for ABI reasons on old beta version
   event MemberLeft(uint clanId, uint playerId);
@@ -183,6 +184,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IBankFactory public bankFactory;
   IERC1155 private playerNFT;
   uint80 public nextClanId;
+  uint16 private initialMMR;
   address private pool;
   uint80 public editNameCost;
   address private dev;
@@ -195,8 +197,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IClanMemberLeftCB private territories;
   IClanMemberLeftCB private lockedBankVaults;
 
-  uint16 private constant INITIAL_MMR = 500;
-
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -208,7 +208,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     address _pool,
     address _dev,
     uint80 _editNameCost,
-    address _paintswapMarketplaceWhitelist
+    address _paintswapMarketplaceWhitelist,
+    uint16 _initialMMR
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
@@ -220,6 +221,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     editNameCost = _editNameCost;
     paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
     emit EditNameCost(_editNameCost);
+    setInitialMMR(_initialMMR);
   }
 
   function _checkTierExists(uint _tierId) private view {
@@ -255,7 +257,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     clan.imageId = _imageId;
     clan.memberCount = 1;
     clan.createdTimestamp = uint40(block.timestamp);
-    clan.mmr = INITIAL_MMR;
+    clan.mmr = initialMMR;
 
     player.clanId = uint32(clanId);
     player.rank = ClanRank.OWNER;
@@ -677,9 +679,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function getMMR(uint _clanId) external view returns (uint16 mmr) {
     mmr = clans[_clanId].mmr;
-    if (mmr == 0) {
-      mmr = INITIAL_MMR;
-    }
   }
 
   function hasInviteRequest(uint _clanId, uint _playerId) external view returns (bool) {
@@ -694,6 +693,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function maxMemberCapacity(uint _clanId) external view override returns (uint16) {
     Tier storage tier = tiers[clans[_clanId].tierId];
     return tier.maxMemberCapacity;
+  }
+
+  function getRank(uint _clanId, uint _playerId) external view returns (ClanRank rank) {
+    if (playerInfo[_playerId].clanId == _clanId) {
+      return playerInfo[_playerId].rank;
+    }
+    return ClanRank.NONE;
   }
 
   function _checkClanImage(uint _imageId, uint _maxImageId) private pure {
@@ -986,11 +992,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     lockedBankVaults = _lockedBankVaults;
   }
 
-  function getRank(uint _clanId, uint _playerId) external view returns (ClanRank rank) {
-    if (playerInfo[_playerId].clanId == _clanId) {
-      return playerInfo[_playerId].rank;
-    }
-    return ClanRank.NONE;
+  function setInitialMMR(uint16 _mmr) public onlyOwner {
+    initialMMR = _mmr;
+    emit SetInitialMMR(_mmr);
   }
 
   // solhint-disable-next-line no-empty-blocks
