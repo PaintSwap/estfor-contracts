@@ -1035,6 +1035,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "mmr",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetInitialMMR",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -1698,6 +1711,11 @@
         "internalType": "address",
         "name": "_paintswapMarketplaceWhitelist",
         "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_initialMMR",
+        "type": "uint16"
       }
     ],
     "name": "initialize",
@@ -2077,6 +2095,19 @@
       }
     ],
     "name": "setEditNameCost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_mmr",
+        "type": "uint16"
+      }
+    ],
+    "name": "setInitialMMR",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

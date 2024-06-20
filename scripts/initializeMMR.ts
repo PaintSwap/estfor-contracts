@@ -1,7 +1,6 @@
 import {ethers} from "hardhat";
-import {LOCKED_BANK_VAULTS_ADDRESS} from "./contractAddresses";
+import {CLANS_ADDRESS, LOCKED_BANK_VAULTS_ADDRESS} from "./contractAddresses";
 import {LockedBankVaults} from "../typechain-types";
-import {isBeta} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -17,6 +16,10 @@ async function main() {
   // Just to clear any that might have been added before
   let clear = true;
   tx = await lockedBankVaults.initializeMMR([], [], clear);
+  await tx.wait();
+
+  const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);
+  tx = await clans.setInitialMMR(500);
   await tx.wait();
 
   const clanIds = [1, 2, 3, 4];
