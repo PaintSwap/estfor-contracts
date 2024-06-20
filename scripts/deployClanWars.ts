@@ -83,6 +83,8 @@ async function main() {
 
   const isBeta = process.env.IS_BETA == "true";
 
+  const mmrAttackDistance = isBeta ? 1 : 4;
+  const lockedFundsPeriod = (isBeta ? 1 : 7) * 86400; // 7 days
   const LockedBankVaults = (
     await ethers.getContractFactory("LockedBankVaults", {libraries: {EstforLibrary: estforLibrary.address}})
   ).connect(signer);
@@ -99,6 +101,8 @@ async function main() {
       ORACLE_ADDRESS,
       SAMWITCH_VRF_ADDRESS,
       allBattleSkills,
+      mmrAttackDistance,
+      lockedFundsPeriod,
       ADMIN_ACCESS_ADDRESS,
       isBeta,
     ],

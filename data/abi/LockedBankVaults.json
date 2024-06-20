@@ -1118,6 +1118,11 @@
         "type": "uint16"
       },
       {
+        "internalType": "uint24",
+        "name": "_lockFundsPeriod",
+        "type": "uint24"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "_adminAccess",
         "type": "address"
@@ -1364,6 +1369,13 @@
       }
     ],
     "name": "setKValues",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "setLockFundsUpgrade",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
