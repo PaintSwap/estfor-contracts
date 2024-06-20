@@ -8,8 +8,6 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add instant VRF actions using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
-  //  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-
   const instantVRFActions = (await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS)).connect(
     owner
   ) as InstantVRFActions;

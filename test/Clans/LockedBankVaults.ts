@@ -1296,6 +1296,49 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(2);
   });
 
+  it("When attacksPrevented is enabled no attacks can be done", async () => {
+    const {
+      clans,
+      lockedBankVaults,
+      combatantsHelper,
+      territories,
+      clanId,
+      playerId,
+      playerNFT,
+      avatarId,
+      origName,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      twitter,
+      imageId,
+      tierId,
+      brush,
+    } = await loadFixture(clanFixture);
+
+    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+
+    // Create a new clan to attack
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
+    const bobClanId = clanId + 1;
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories, combatantsHelper);
+    await lockedBankVaults.setPreventAttacks(true);
+    await expect(
+      lockedBankVaults
+        .connect(alice)
+        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()})
+    ).to.be.revertedWithCustomError(lockedBankVaults, "AttacksPrevented");
+    await lockedBankVaults.setPreventAttacks(false);
+    await expect(
+      lockedBankVaults
+        .connect(alice)
+        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()})
+    ).to.not.be.reverted;
+  });
+
   it("Cannot attack a clan twice within the cooldown", async () => {});
 
   it("Player has an attack cooldown if transferring to another clan", async () => {});
@@ -1499,7 +1542,7 @@ describe("LockedBankVaults", function () {
         .connect(erin)
         .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
       await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
-      // Erin wins again alice (more likely at least)
+      // Erin wins against alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 501, 501]);
@@ -1535,7 +1578,7 @@ describe("LockedBankVaults", function () {
         .connect(erin)
         .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
       await fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient);
-
+      // Erin wins against alice (most likely)
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 500, 501, 502]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
 
@@ -1578,6 +1621,9 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, erinClanId]);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+
+      const idleClanIds = await lockedBankVaults.getIdleClans();
+      expect(idleClanIds).to.deep.eq([bobClanId, erinClanId]);
 
       await expect(lockedBankVaults.forceMMRUpdate([clanId, bobClanId, erinClanId]))
         .to.emit(lockedBankVaults, "ForceMMRUpdate")
@@ -1783,6 +1829,9 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
 
+      const idleClanIds = await lockedBankVaults.getIdleClans();
+      expect(idleClanIds).to.deep.eq([clanId]);
+
       await expect(lockedBankVaults.forceMMRUpdate([clanId]))
         .to.emit(lockedBankVaults, "ForceMMRUpdate")
         .withArgs([clanId]);
@@ -1847,6 +1896,9 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
 
+      const idleClanIds = await lockedBankVaults.getIdleClans();
+      expect(idleClanIds).to.deep.eq([clanId, bobClanId]);
+
       await expect(lockedBankVaults.forceMMRUpdate([clanId, bobClanId]))
         .to.emit(lockedBankVaults, "ForceMMRUpdate")
         .withArgs([clanId, bobClanId]);
@@ -1904,6 +1956,9 @@ describe("LockedBankVaults", function () {
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
+
+      const idleClanIds = await lockedBankVaults.getIdleClans();
+      expect(idleClanIds).to.deep.eq([clanId, bobClanId]);
 
       await expect(lockedBankVaults.forceMMRUpdate([clanId, bobClanId]))
         .to.emit(lockedBankVaults, "ForceMMRUpdate")
@@ -1963,6 +2018,9 @@ describe("LockedBankVaults", function () {
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([501]); // Still gets the points for winning
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId]);
+
+      const idleClanIds = await lockedBankVaults.getIdleClans();
+      expect(idleClanIds).to.deep.eq([bobClanId]);
 
       await expect(lockedBankVaults.forceMMRUpdate([clanId, bobClanId]))
         .to.emit(lockedBankVaults, "ForceMMRUpdate")
@@ -2219,6 +2277,68 @@ describe("LockedBankVaults", function () {
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]); // Attacker is higher rank even if losing
+    });
+
+    it("Force updating MMR should correctly cleanse any initialized clans which do not have any locked vaults", async () => {
+      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} = await loadFixture(
+        clanFixture
+      );
+
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+
+      const clanIds = [1, 2, 3, 4];
+      const mmrs = [1000, 2000, 3000, 4000];
+      const clear = true;
+      await lockedBankVaults.initializeMMR(clanIds, mmrs, clear);
+
+      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([1000, 2000, 3000, 4000]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([1, 2, 3, 4]);
+
+      const idleClans = await lockedBankVaults.getIdleClans();
+      expect(idleClans).to.deep.eq([2, 3, 4]);
+      await lockedBankVaults.forceMMRUpdate(idleClans);
+
+      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([1000]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId]);
+    });
+
+    it("Try not clearing with initializeMMR", async () => {
+      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} = await loadFixture(
+        clanFixture
+      );
+
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+
+      let clanIds = [1, 2, 3, 4];
+      let mmrs = [1000, 2000, 3000, 4000];
+      let clear = true;
+      await lockedBankVaults.initializeMMR(clanIds, mmrs, clear);
+
+      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([1000, 2000, 3000, 4000]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([1, 2, 3, 4]);
+
+      clear = false;
+      clanIds = [7, 8];
+      mmrs = [1000, 2000];
+      await lockedBankVaults.initializeMMR(clanIds, mmrs, clear);
+      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([1000, 1000, 2000, 2000, 3000, 4000]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([7, 1, 8, 2, 3, 4]);
+    });
+
+    it("Gas used getIdleClans() for many clans should be below max", async () => {
+      const {lockedBankVaults} = await loadFixture(clanFixture);
+
+      const clanIds = [...Array(100).keys()].map((i) => i + 1);
+      const mmrs = clanIds;
+      const clear = false;
+      let tx = await lockedBankVaults.initializeMMR(clanIds, mmrs, clear);
+      let receipt = await tx.wait();
+      expect(receipt.gasUsed).to.be.below(6000000);
+
+      const idleClans = await lockedBankVaults.getIdleClans();
+      tx = await lockedBankVaults.forceMMRUpdate(idleClans);
+      receipt = await tx.wait();
+      expect(receipt.gasUsed).to.be.below(6000000);
     });
   });
 });

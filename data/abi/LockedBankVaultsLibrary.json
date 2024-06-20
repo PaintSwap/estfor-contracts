@@ -98,5 +98,49 @@
     "inputs": [],
     "name": "TooManyCombatants",
     "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_Ka",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_Kd",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_attackingMMR",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_defendingMMR",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "_didAttackersWin",
+        "type": "bool"
+      }
+    ],
+    "name": "getNewMMRs",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "newAttackerMMR",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "newDefenderMMR",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
   }
 ]

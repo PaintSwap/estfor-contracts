@@ -83,7 +83,8 @@ contract LockedBankVaults is
   event SetMMRAttackDistance(uint256 mmrAttackDistance);
   event ForceMMRUpdate(uint256[] clanIdsToDelete);
   event UpdateMMR(uint requestId, int attackingMMRDiff, int defendingMMRDiff);
-  event SetMMRs(uint256[] clanId, uint16[] mmr);
+  event SetMMRs(uint256[] clanIds, uint16[] mmrs);
+  event SetKValues(uint256 Ka, uint256 Kd);
 
   error PlayerOnTerritory();
   error TooManyCombatants();
@@ -102,6 +103,7 @@ contract LockedBankVaults is
   error NotEnoughFTM();
   error RequestIdNotKnown();
   error CallerNotSamWitchVRF();
+  error AttacksPrevented();
 
   struct PendingAttack {
     uint40 clanId;
@@ -113,6 +115,7 @@ contract LockedBankVaults is
 
   Skill[] private comparableSkills;
   uint64 private nextPendingAttackId;
+  bool private preventAttacks;
   mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
   mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
   mapping(bytes32 requestId => uint pendingAttackId) private requestToPendingAttackIds;
@@ -143,6 +146,9 @@ contract LockedBankVaults is
 
   address private oracle;
   uint16 private mmrAttackDistance;
+  uint8 private Ka; // attacker K-factor
+  uint8 private Kd; // defender K-factor
+
   ISamWitchVRF private samWitchVRF;
   // Clans are sorted as follows:
   // 1 - From lower MMR to higher MMR
@@ -259,6 +265,7 @@ contract LockedBankVaults is
     setBaseAttackCost(0.01 ether);
     _setExpectedGasLimitFulfill(1_500_000);
 
+    setKValues(32, 32);
     setComparableSkills(_comparableSkills);
     setMMRAttackDistance(_mmrAttackDistance);
     nextPendingAttackId = 1;
@@ -290,6 +297,10 @@ contract LockedBankVaults is
     }
   }
 
+  function getIdleClans() external view returns (uint256[] memory clanIds) {
+    return LockedBankVaultsLibrary.getIdleClans(sortedClansByMMR, clanInfos, clans);
+  }
+
   // This needs to call the oracle VRF on-demand and calls the callback
   function attackVaults(
     uint _clanId,
@@ -297,6 +308,10 @@ contract LockedBankVaults is
     uint16 _itemTokenId,
     uint _leaderPlayerId
   ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
+    if (preventAttacks) {
+      revert AttacksPrevented();
+    }
+
     // Check they are paying enough
     if (msg.value < attackCost()) {
       revert NotEnoughFTM();
@@ -450,6 +465,8 @@ contract LockedBankVaults is
     _updateAverageGasPrice();
 
     (int256 attackingMMRDiff, int256 defendingMMRDiff) = LockedBankVaultsLibrary.fulfillUpdateMMR(
+      Ka,
+      Kd,
       sortedClansByMMR,
       clans,
       attackingClanId,
@@ -660,6 +677,12 @@ contract LockedBankVaults is
     emit SetComparableSkills(_skills);
   }
 
+  function setKValues(uint8 _Ka, uint8 _Kd) public onlyOwner {
+    Ka = _Ka;
+    Kd = _Kd;
+    emit SetKValues(_Ka, _Kd);
+  }
+
   function setAddresses(ITerritories _territories, address _combatantsHelper) external onlyOwner {
     territories = _territories;
     combatantsHelper = _combatantsHelper;
@@ -679,10 +702,19 @@ contract LockedBankVaults is
     _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
+  // TODO: Can delete if necessary
+  function setPreventAttacks(bool _preventAttacks) external onlyOwner {
+    preventAttacks = _preventAttacks;
+  }
+
   // TODO Can delete after setting initial MMR
-  function initializeMMR(uint[] calldata clanIds, uint16[] calldata mmrs) external onlyOwner {
-    LockedBankVaultsLibrary.initializeMMR(sortedClansByMMR, clans, clanInfos, clanIds, mmrs);
-    emit SetMMRs(clanIds, mmrs);
+  function initializeMMR(uint[] calldata _clanIds, uint16[] calldata _mmrs, bool _clear) external onlyOwner {
+    // First clean up any in it, that isn't part of the
+    if (_clear) {
+      delete sortedClansByMMR;
+    }
+    LockedBankVaultsLibrary.initializeMMR(sortedClansByMMR, clans, clanInfos, _clanIds, _mmrs);
+    emit SetMMRs(_clanIds, _mmrs);
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {
