@@ -164,6 +164,44 @@ async function main() {
 
   const timeout = 600 * 1000; // 10 minutes
 
+  let itemsUri: string;
+  let heroImageBaseUri: string;
+  let petImageBaseUri: string;
+  let editNameBrushPrice: BigNumber;
+  let editPetNameBrushPrice: BigNumber;
+  let upgradePlayerBrushPrice: BigNumber;
+  let raffleEntryCost: BigNumber;
+  let startGlobalDonationThresholdRewards: BigNumber;
+  let clanDonationThresholdRewardIncrement: BigNumber;
+  let mmrAttackDistance;
+  // Some of these base uris likely out of date
+  if (!isBeta) {
+    // live version
+    itemsUri = "ipfs://QmVDdbXtEDXh5AGEuHCEEjmAiEZJaMSpC4W36N3aZ3ToQd /";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
+    editNameBrushPrice = ethers.utils.parseEther("1000");
+    editPetNameBrushPrice = ethers.utils.parseEther("1");
+    upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
+    raffleEntryCost = ethers.utils.parseEther("12");
+    startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
+    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("5000");
+    mmrAttackDistance = 4;
+  } else {
+    itemsUri = "ipfs://QmZBtZ6iF7shuRxPc4q4cM3wNnDyJeqNgP7EkSWQqSgKnM/";
+    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
+    petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
+    editNameBrushPrice = ethers.utils.parseEther("1");
+    editPetNameBrushPrice = ethers.utils.parseEther("1");
+    upgradePlayerBrushPrice = ethers.utils.parseEther("1");
+    raffleEntryCost = ethers.utils.parseEther("5");
+    startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
+    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
+    mmrAttackDistance = 1;
+  }
+
+  const initialMMR = 500;
+
   // Create the world
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   const worldLibrary = await WorldLibrary.deploy();
@@ -215,38 +253,6 @@ async function main() {
   });
   await adminAccess.deployed();
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
-
-  let itemsUri: string;
-  let heroImageBaseUri: string;
-  let petImageBaseUri: string;
-  let editNameBrushPrice: BigNumber;
-  let editPetNameBrushPrice: BigNumber;
-  let upgradePlayerBrushPrice: BigNumber;
-  let raffleEntryCost: BigNumber;
-  let startGlobalDonationThresholdRewards: BigNumber;
-  let clanDonationThresholdRewardIncrement: BigNumber;
-  if (isBeta) {
-    itemsUri = "ipfs://QmV4VMh59W6fkoNCEjytzEtbv8FTPiG3rWwyu4aadEpqfK/";
-    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
-    petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
-    editNameBrushPrice = ethers.utils.parseEther("1");
-    editPetNameBrushPrice = ethers.utils.parseEther("1");
-    upgradePlayerBrushPrice = ethers.utils.parseEther("1");
-    raffleEntryCost = ethers.utils.parseEther("5");
-    startGlobalDonationThresholdRewards = ethers.utils.parseEther("1000");
-    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("50");
-  } else {
-    // live version
-    itemsUri = "ipfs://QmeLS5w8gR1oSxTebz89MwMe7mc8o27nV4FYdkWUNQkbsD/";
-    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
-    petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
-    editNameBrushPrice = ethers.utils.parseEther("1000");
-    editPetNameBrushPrice = ethers.utils.parseEther("1");
-    upgradePlayerBrushPrice = ethers.utils.parseEther("2000");
-    raffleEntryCost = ethers.utils.parseEther("12");
-    startGlobalDonationThresholdRewards = ethers.utils.parseEther("300000");
-    clanDonationThresholdRewardIncrement = ethers.utils.parseEther("5000");
-  }
 
   // Create NFT contract which contains all items
   const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
@@ -332,6 +338,7 @@ async function main() {
       DEV_ADDRESS,
       editNameBrushPrice,
       paintSwapMarketplaceWhitelist.address,
+      initialMMR,
     ],
     {
       kind: "uups",
@@ -514,7 +521,14 @@ async function main() {
     }
   )) as EggInstantVRFActionStrategy;
 
-  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
+  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
+  await lockedBankVaultsLibrary.deployed();
+  console.log(`lockedBankVaultsLibrary = "${lockedBankVaultsLibrary.address.toLowerCase()}"`);
+
+  const lockedFundsPeriod = (isBeta ? 1 : 7) * 86400; // 7 days
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
+    libraries: {EstforLibrary: estforLibrary.address, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
+  });
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -528,6 +542,8 @@ async function main() {
       ORACLE_ADDRESS,
       swvrfOracle.address,
       allBattleSkills,
+      mmrAttackDistance,
+      lockedFundsPeriod,
       adminAccess.address,
       isBeta,
     ],
@@ -701,9 +717,6 @@ async function main() {
   tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await tx.wait();
   console.log("itemNFT.setTerritoriesAndLockedBankVaults");
-  tx = await lockedBankVaults.setTerritories(territories.address);
-  await tx.wait();
-  console.log("lockedBankVaults.setTerritories");
   tx = await royaltyReceiver.setTerritories(territories.address);
   await tx.wait();
   console.log("royaltyReceiver.setTerritories");
@@ -717,9 +730,9 @@ async function main() {
   const clanWars = [lockedBankVaults, territories];
   for (const clanWar of clanWars) {
     try {
-      tx = await clanWar.setCombatantsHelper(combatantsHelper.address);
+      tx = await clanWar.setAddresses(territories.address, combatantsHelper.address);
       await tx.wait();
-      console.log("setCombatantsHelper");
+      console.log("clanWar setAddresses");
     } catch (error) {
       console.error(`Error: ${error}`);
     }

@@ -13,4 +13,8 @@ interface IClans {
   function maxMemberCapacity(uint clanId) external view returns (uint16);
 
   function getRank(uint clanId, uint playerId) external view returns (ClanRank);
+
+  function setMMR(uint clanId, uint16 mmr) external;
+
+  function getMMR(uint clanId) external view returns (uint16);
 }

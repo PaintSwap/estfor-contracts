@@ -146,6 +146,7 @@ export const playersFixture = async function () {
   })) as Quests;
 
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
+  const initialMMR = 500;
 
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: estforLibrary.address},
@@ -159,6 +160,7 @@ export const playersFixture = async function () {
       dev.address,
       editNameBrushPrice,
       paintSwapMarketplaceWhitelist.address,
+      initialMMR,
     ],
     {
       kind: "uups",
@@ -335,7 +337,12 @@ export const playersFixture = async function () {
 
   await artGallery.transferOwnership(decorator.address);
 
-  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
+  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
+  const mmrAttackDistance = 4;
+  const lockedFundsPeriod = 7 * 86400; // 7 days
+  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
+    libraries: {EstforLibrary: estforLibrary.address, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
+  });
   const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
     [
@@ -349,6 +356,8 @@ export const playersFixture = async function () {
       oracleAddress,
       mockSWVRFOracleClient.address,
       allBattleSkills,
+      mmrAttackDistance,
+      lockedFundsPeriod,
       adminAccess.address,
       isBeta,
     ],
@@ -357,6 +366,9 @@ export const playersFixture = async function () {
       unsafeAllow: ["external-library-linking"],
     }
   )) as LockedBankVaults;
+
+  // Set K values to 3, 3 to make it easier to get consistent values close to each for same MMR testing
+  await lockedBankVaults.setKValues(3, 3);
 
   const Territories = await ethers.getContractFactory("Territories");
   const territories = (await upgrades.deployProxy(
@@ -430,11 +442,10 @@ export const playersFixture = async function () {
 
   await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
   await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
-  await lockedBankVaults.setTerritories(territories.address);
   await royaltyReceiver.setTerritories(territories.address);
   await petNFT.setTerritories(territories.address);
   await territories.setCombatantsHelper(combatantsHelper.address);
-  await lockedBankVaults.setCombatantsHelper(combatantsHelper.address);
+  await lockedBankVaults.setAddresses(territories.address, combatantsHelper.address);
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -501,6 +512,7 @@ export const playersFixture = async function () {
     decorator,
     brushPerSecond,
     mockSWVRFOracleClient,
+    mmrAttackDistance,
     lockedBankVaults,
     territories,
     combatantsHelper,
@@ -511,5 +523,7 @@ export const playersFixture = async function () {
     oracleAddress,
     petNFT,
     PetNFT,
+    lockedBankVaultsLibrary,
+    initialMMR,
   };
 };

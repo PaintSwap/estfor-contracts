@@ -5,7 +5,7 @@ import {
   ESTFOR_LIBRARY_ADDRESS,
   INSTANT_VRF_ACTIONS_ADDRESS,
   ITEM_NFT_ADDRESS,
-  LOCKED_BANK_VAULT_ADDRESS,
+  LOCKED_BANK_VAULTS_ADDRESS,
   PET_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
@@ -23,6 +23,7 @@ import {
   InstantVRFActions,
   ItemNFT,
   LockedBankVaults,
+  LockedBankVaultsLibrary,
   PetNFT,
   PetNFTLibrary,
   PlayerNFT,
@@ -34,6 +35,7 @@ import {
   Territories,
   WorldLibrary,
 } from "../typechain-types";
+import {LockedBankVault} from "@paintswap/estfor-definitions/types";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -41,8 +43,8 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  const player = await ethers.getImpersonatedSigner("0xe13894604b6dc9523a9822dfa2909c2a9cd084a6");
-  const playerId = 892;
+  const player = await ethers.getImpersonatedSigner("0x8ca12fb5438252ab8efa25d3fb34166eda1c17ed");
+  const playerId = 3;
   const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
   // Players
   const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as PlayersLibrary;
@@ -67,7 +69,7 @@ async function main() {
       playersImplMisc1.address
     );
   await tx.wait();
-
+  /*
   // PlayerNFT
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
@@ -104,7 +106,6 @@ async function main() {
   });
 
   // ItemNFT
-
   const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
 
   const ItemNFT = (
@@ -136,8 +137,17 @@ async function main() {
     unsafeAllow: ["external-library-linking"],
   })) as Clans;
 
-  const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults")).connect(owner);
-  const lockedBankVaults = (await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
+  const lockedBankVaultsLibrary = (await ethers.deployContract("LockedBankVaultsLibrary")) as LockedBankVaultsLibrary;
+
+  const LockedBankVaults = (
+    await ethers.getContractFactory("LockedBankVaults", {
+      libraries: {
+        EstforLibrary: estforLibrary.address,
+        LockedBankVaultsLibrary: lockedBankVaultsLibrary.address,
+      },
+    })
+  ).connect(owner);
+  const lockedBankVaults = (await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   })) as LockedBankVaults;
@@ -177,9 +187,11 @@ async function main() {
     kind: "uups",
     timeout: 100000,
   })) as InstantVRFActions;
+*/
+  //  await players.connect(player).testModifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, true);
 
-  //  const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
-  //  console.log(pendingQueuedActionState);
+  const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
+  console.log(pendingQueuedActionState);
 }
 
 main().catch((error) => {

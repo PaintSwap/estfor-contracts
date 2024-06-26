@@ -1,5 +1,12 @@
 import {ethers, upgrades} from "hardhat";
-import {EstforLibrary, PetNFTLibrary, PromotionsLibrary, RoyaltyReceiver, WorldLibrary} from "../typechain-types";
+import {
+  EstforLibrary,
+  LockedBankVaultsLibrary,
+  PetNFTLibrary,
+  PromotionsLibrary,
+  RoyaltyReceiver,
+  WorldLibrary,
+} from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -19,7 +26,7 @@ import {
   PROMOTIONS_LIBRARY_ADDRESS,
   TERRITORIES_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
-  LOCKED_BANK_VAULT_ADDRESS,
+  LOCKED_BANK_VAULTS_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
   INSTANT_VRF_ACTIONS_ADDRESS,
@@ -29,6 +36,7 @@ import {
   PET_NFT_ADDRESS,
   PASSIVE_ACTIONS_ADDRESS,
   PET_NFT_LIBRARY_ADDRESS,
+  LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -38,7 +46,7 @@ async function main() {
   console.log(`Deploying upgradeable contracts with the account: ${owner.address} on chain ${network.chainId}`);
 
   const timeout = 600 * 1000; // 10 minutes
-  const newEstforLibrary = false;
+  const newEstforLibrary = true;
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
   let estforLibrary: EstforLibrary;
   if (newEstforLibrary) {
@@ -87,7 +95,7 @@ async function main() {
     itemNFTLibrary = await ItemNFTLibrary.attach(ITEM_NFT_LIBRARY_ADDRESS);
   }
   console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
-
+  /*
   const ItemNFT = (
     await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
   ).connect(owner);
@@ -95,7 +103,6 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true, // TODO: Remove later
   });
   await itemNFT.deployed();
   console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
@@ -108,7 +115,7 @@ async function main() {
   });
   await shop.deployed();
   console.log(`shop = "${shop.address.toLowerCase()}"`);
-  /*
+  
   // WishingWell
   const WishingWell = (await ethers.getContractFactory("WishingWell")).connect(owner);
   const wishingWell = await upgrades.upgradeProxy(WISHING_WELL_ADDRESS, WishingWell, {
@@ -125,7 +132,7 @@ async function main() {
   });
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
-
+*/
   // Clan
   const Clans = (
     await ethers.getContractFactory("Clans", {
@@ -139,7 +146,7 @@ async function main() {
   });
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
-
+  /*
   // Bank Registry
   const BankRegistry = (await ethers.getContractFactory("BankRegistry")).connect(owner);
   const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
@@ -148,9 +155,9 @@ async function main() {
   });
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
-*/
+
   // World
-  const newWorldLibrary = true;
+  const newWorldLibrary = false;
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   let worldLibrary: WorldLibrary;
   if (newWorldLibrary) {
@@ -173,7 +180,7 @@ async function main() {
   });
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
-  /*
+  
   // AdminAccess
   const AdminAccess = (await ethers.getContractFactory("AdminAccess")).connect(owner);
   const adminAccess = await upgrades.upgradeProxy(ADMIN_ACCESS_ADDRESS, AdminAccess, {
@@ -228,7 +235,7 @@ async function main() {
   });
   await instantVRFActions.deployed();
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
-*/
+
   // Instant VRF strategies
   const GenericInstantVRFActionStrategy = (await ethers.getContractFactory("GenericInstantVRFActionStrategy")).connect(
     owner
@@ -239,12 +246,11 @@ async function main() {
     {
       kind: "uups",
       timeout,
-      unsafeSkipStorageCheck: true, // TODO: Remove later
     }
   );
   await genericInstantVRFActionStrategy.deployed();
   console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
-  /*
+  
   const EggInstantVRFActionStrategy = (await ethers.getContractFactory("EggInstantVRFActionStrategy")).connect(owner);
   const eggInstantVRFActionStrategy = await upgrades.upgradeProxy(
     EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
@@ -287,12 +293,29 @@ async function main() {
   });
   await vrfRequestInfo.deployed();
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
+*/
+  // LockedBankVaults
+  const newLockedBankVaultsLibrary = true;
+  const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
+  let lockedBankVaultsLibrary: LockedBankVaultsLibrary;
+  if (newLockedBankVaultsLibrary) {
+    lockedBankVaultsLibrary = await LockedBankVaultsLibrary.deploy();
+    await lockedBankVaultsLibrary.deployed();
+  } else {
+    lockedBankVaultsLibrary = await LockedBankVaultsLibrary.attach(LOCKED_BANK_VAULTS_LIBRARY_ADDRESS);
+  }
+  console.log(`lockedBankVaultsLibrary = "${lockedBankVaultsLibrary.address.toLowerCase()}"`);
 
-  const LockedBankVaults = (await ethers.getContractFactory("LockedBankVaults")).connect(owner);
-  const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULT_ADDRESS, LockedBankVaults, {
+  const LockedBankVaults = (
+    await ethers.getContractFactory("LockedBankVaults", {
+      libraries: {EstforLibrary: estforLibrary.address, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
+    })
+  ).connect(owner);
+  const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
+    call: "setLockFundsUpgrade", // TODO: Remove after prod deployment
   });
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
@@ -305,7 +328,7 @@ async function main() {
   });
   await territories.deployed();
   console.log(`territories = "${territories.address.toLowerCase()}"`);
-
+  /*
   const DecoratorProvider = (await ethers.getContractFactory("DecoratorProvider")).connect(owner);
   const decoratorProvider = await upgrades.upgradeProxy(DECORATOR_PROVIDER_ADDRESS, DecoratorProvider, {
     kind: "uups",
@@ -348,16 +371,17 @@ async function main() {
   console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
 */
   if (network.chainId == 250) {
-    /*    await verifyContracts([players.address]);
-    await verifyContracts([playerNFT.address]); */
+    /*        await verifyContracts([players.address]);
+    await verifyContracts([playerNFT.address]);
     await verifyContracts([itemNFT.address]);
     await verifyContracts([shop.address]);
-    /*   await verifyContracts([quests.address]);
-    await verifyContracts([clans.address]); */
-    await verifyContracts([world.address]);
+       await verifyContracts([quests.address]); */
+    await verifyContracts([clans.address]);
+    /*    await verifyContracts([world.address]);
     await verifyContracts([worldLibrary.address]);
-    /*
+  */
     await verifyContracts([estforLibrary.address]);
+    /*
         await verifyContracts([adminAccess.address]);
     await verifyContracts([bankRegistry.address]);
     await verifyContracts([wishingWell.address]);
@@ -365,12 +389,12 @@ async function main() {
     await verifyContracts([instantActions.address]);
     await verifyContracts([vrfRequestInfo.address]);
     await verifyContracts([instantVRFActions.address]);
-    */
+    
     await verifyContracts([genericInstantVRFActionStrategy.address]);
-    /*    await verifyContracts([eggInstantVRFActionStrategy.address]);
-    await verifyContracts([petNFT.address]);
+        await verifyContracts([eggInstantVRFActionStrategy.address]);
+    await verifyContracts([petNFT.address]); */
     await verifyContracts([lockedBankVaults.address]);
-    await verifyContracts([territories.address]);
+    await verifyContracts([territories.address]); /*
     await verifyContracts([decoratorProvider.address]);
     await verifyContracts([combatantsHelper.address]);
     await verifyContracts([royaltyReceiver.address]);

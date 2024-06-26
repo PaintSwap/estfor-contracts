@@ -170,14 +170,13 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint16[] calldata _actionIds,
     uint[] calldata _amounts
   ) private view returns (InstantActionState memory instantActionState) {
-    // Forging actions only have 1 input, burn all those and mint the components back
+    // Burn all those and mint the components back
     uint MAX_INPUTS = 3;
     instantActionState.consumedTokenIds = new uint[](_actionIds.length * MAX_INPUTS);
     instantActionState.consumedAmounts = new uint[](_actionIds.length * MAX_INPUTS);
     instantActionState.producedTokenIds = new uint[](_actionIds.length);
     instantActionState.producedAmounts = new uint[](_actionIds.length);
     uint length;
-    // All producedTokenIds should be the same for forging
     for (uint i; i < _actionIds.length; ++i) {
       InstantAction storage instantAction = actions[InstantActionType.GENERIC][_actionIds[i]];
 

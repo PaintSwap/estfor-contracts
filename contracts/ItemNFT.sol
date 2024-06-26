@@ -150,7 +150,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _burnBatch(_from, _tokenIds, _amounts);
   }
 
-  function burn(address _from, uint _tokenId, uint _amount) external onlyBurners(_from) {
+  function burn(address _from, uint _tokenId, uint _amount) external override onlyBurners(_from) {
     _burn(_from, _tokenId, _amount);
   }
 

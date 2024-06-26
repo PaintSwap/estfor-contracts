@@ -12,7 +12,7 @@ describe("Clans", function () {
 
   describe("Create a clan", () => {
     it("New clan", async () => {
-      const {clans, playerId, clanId, imageId, tierId, tier, clanName} = await loadFixture(clanFixture);
+      const {clans, playerId, clanId, imageId, tierId, tier, clanName, initialMMR} = await loadFixture(clanFixture);
 
       // Check that the clan is created with the correct values
       const clan = await clans.clans(clanId);
@@ -21,6 +21,7 @@ describe("Clans", function () {
       expect(clan.imageId).to.eq(imageId);
       expect(clan.tierId).to.eq(tierId);
       expect(clan.name).to.eq(clanName);
+      expect(clan.mmr).to.eq(initialMMR);
       expect(tier.maxMemberCapacity).to.eq(3);
       expect(tier.maxBankCapacity).to.eq(3);
       expect(await clans.canWithdraw(clanId, playerId)).to.be.true;
