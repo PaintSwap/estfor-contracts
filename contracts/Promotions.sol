@@ -172,7 +172,12 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
     userPromotionsClaimed[_to].set(uint8(Promotion.STARTER));
 
-    itemNFT.mintBatch(_to, itemTokenIds, amounts);
+    try itemNFT.mintBatch(_to, itemTokenIds, amounts) {} catch {
+      assembly ("memory-safe") {
+        mstore(itemTokenIds, 0)
+        mstore(amounts, 0)
+      }
+    }
 
     for (uint i; i < daysToSet.length; ++i) {
       daysToSet[i] = FINAL_PROMOTION_DAY_INDEX;
@@ -224,7 +229,12 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       daysToSet[i] = FINAL_PROMOTION_DAY_INDEX;
     }
 
-    itemNFT.mintBatch(_to, itemTokenIds, amounts);
+    try itemNFT.mintBatch(_to, itemTokenIds, amounts) {} catch {
+      assembly ("memory-safe") {
+        mstore(itemTokenIds, 0)
+        mstore(amounts, 0)
+      }
+    }
     emit PromotionRedeemedV2(_to, _playerId, _promotion, _redeemCode, itemTokenIds, amounts, daysToSet, 0, 0, 0);
   }
 
