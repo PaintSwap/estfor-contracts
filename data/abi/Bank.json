@@ -21,6 +21,11 @@
   },
   {
     "inputs": [],
+    "name": "NFTTypeNotSupported",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotClanAdmin",
     "type": "error"
   },
@@ -37,6 +42,11 @@
   {
     "inputs": [],
     "name": "ToIsNotOwnerOfPlayer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UseWithdrawItemsForNFT",
     "type": "error"
   },
   {
@@ -283,6 +293,55 @@
       }
     ],
     "name": "WithdrawItemsBulk",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toPlayerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "nft",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawNFT",
     "type": "event"
   },
   {
@@ -690,6 +749,44 @@
       }
     ],
     "name": "withdrawItemsBulk",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_toPlayerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_nft",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawNFT",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

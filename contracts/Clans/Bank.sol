@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -28,6 +29,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   event DepositToken(address from, uint playerId, address token, uint amount);
   event WithdrawToken(address from, uint playerId, address to, uint toPlayerId, address token, uint amount);
   event WithdrawTokens(address from, uint playerId, address[] tos, uint[] toPlayerIds, address token, uint[] amounts);
+  event WithdrawNFT(address from, uint playerId, address to, uint toPlayerId, address nft, uint tokenId, uint amount);
 
   error MaxBankCapacityReached();
   error NotClanAdmin();
@@ -37,6 +39,8 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   error LengthMismatch();
   error ToIsNotOwnerOfPlayer();
   error ReentrancyGuardReentrantCall();
+  error UseWithdrawItemsForNFT();
+  error NFTTypeNotSupported();
 
   uint8 private constant NOT_ENTERED = 1;
   uint8 private constant ENTERED = 2;
@@ -267,6 +271,29 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     }
 
     emit WithdrawTokens(msg.sender, _playerId, _tos, _toPlayerIds, _token, _amounts);
+  }
+
+  function withdrawNFT(
+    uint _playerId,
+    address _to,
+    uint _toPlayerId,
+    address _nft,
+    uint _tokenId,
+    uint _amount
+  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
+    if (_nft == address(bankRegistry.itemNFT())) {
+      revert UseWithdrawItemsForNFT();
+    }
+    if (bankRegistry.playerNFT().balanceOf(_to, _toPlayerId) != 1) {
+      revert ToIsNotOwnerOfPlayer();
+    }
+
+    if (!IERC165(_nft).supportsInterface(type(IERC1155).interfaceId)) {
+      revert NFTTypeNotSupported();
+    }
+
+    IERC1155(_nft).safeTransferFrom(address(this), _to, _tokenId, _amount, "");
+    emit WithdrawNFT(msg.sender, _playerId, _to, _toPlayerId, _nft, _tokenId, _amount);
   }
 
   function _receivedItemUpdateUniqueItems(uint _id, uint _maxCapacity) private {
