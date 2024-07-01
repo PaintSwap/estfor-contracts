@@ -28,7 +28,6 @@ const actionIsAvailable = true;
 describe("Non-Combat Actions", function () {
   this.retries(5);
 
-  // Test isDynamic
   describe("Woodcutting", function () {
     it("Cut wood", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
@@ -138,8 +137,8 @@ describe("Non-Combat Actions", function () {
           arms: EstforConstants.NATURE_BRACERS,
           legs: EstforConstants.NATURE_TROUSERS,
           feet: EstforConstants.NATURE_BOOTS,
-          ring: EstforConstants.NONE, // Always NONE for now
-          reserved1: EstforConstants.NONE, // Always NONE for now
+          ring: EstforConstants.NONE,
+          reserved1: EstforConstants.NONE,
         },
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -173,6 +172,65 @@ describe("Non-Combat Actions", function () {
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
     });
+  });
+
+  it("Multiple guaranteed rewards should be allowed", async function () {
+    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const rate = 100 * GUAR_MUL; // per hour
+    const tx = await world.addActions([
+      {
+        actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
+        info: {
+          skill: EstforTypes.Skill.WOODCUTTING,
+          xpPerHour: 3600,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: false,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+          handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+          isAvailable: true,
+          actionChoiceRequired: false,
+          successPercent: 100,
+        },
+        guaranteedRewards: [
+          {itemTokenId: EstforConstants.LOG, rate},
+          {itemTokenId: EstforConstants.OAK_LOG, rate: rate * 2},
+        ],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+    const actionId = await getActionId(tx);
+
+    const timespan = 3600;
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      attire: EstforTypes.noAttire,
+      actionId,
+      combatStyle: EstforTypes.CombatStyle.NONE,
+      choiceId: EstforConstants.NONE,
+      regenerateId: EstforConstants.NONE,
+      timespan,
+      rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+    };
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        tokenId: EstforConstants.BRONZE_AXE,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
+    ]);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await players.connect(alice).processActions(playerId);
+
+    // Check how many logs they have now, 100 logs burnt per hour
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(rate / GUAR_MUL);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.OAK_LOG)).to.eq((rate * 2) / GUAR_MUL);
   });
 
   it("Firemaking", async function () {
@@ -1351,8 +1409,8 @@ describe("Non-Combat Actions", function () {
           arms: EstforConstants.NATUOW_BRACERS,
           legs: EstforConstants.NATUOW_TASSETS,
           feet: EstforConstants.NATUOW_BOOTS,
-          ring: EstforConstants.NONE, // Always NONE for now
-          reserved1: EstforConstants.NONE, // Always NONE for now
+          ring: EstforConstants.NONE,
+          reserved1: EstforConstants.NONE,
         },
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,

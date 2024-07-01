@@ -403,6 +403,424 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionType: InstantVRFActionType.FORGING,
   },
   {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_1,
+    inputTokenIds: [EstforConstants.FISHING_CHEST_1, EstforConstants.AQUA_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.RAW_BLEKK, chance: 65535, amount: 30},
+          {itemTokenId: EstforConstants.RAW_SKRIMP, chance: 51773, amount: 30},
+          {itemTokenId: EstforConstants.RAW_FEOLA, chance: 38010, amount: 25},
+          {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 24248, amount: 25},
+          {itemTokenId: EstforConstants.IRON_ARROW, chance: 13107, amount: 50},
+          {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1311, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 328, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_2,
+    inputTokenIds: [EstforConstants.FISHING_CHEST_2, EstforConstants.AQUA_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.RAW_ROJJA, chance: 65535, amount: 15},
+          {itemTokenId: EstforConstants.RAW_TROUT, chance: 51773, amount: 18},
+          {itemTokenId: EstforConstants.RAW_ANCHO, chance: 38666, amount: 23},
+          {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 25559, amount: 25},
+          {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 13762, amount: 50},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 1311, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 328, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_3,
+    inputTokenIds: [EstforConstants.FISHING_CHEST_3, EstforConstants.AQUA_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.RAW_GOLDFISH, chance: 65535, amount: 11},
+          {itemTokenId: EstforConstants.RAW_MYSTY_BLUE, chance: 52428, amount: 12},
+          {itemTokenId: EstforConstants.RAW_BOWFISH, chance: 39321, amount: 12},
+          {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 26214, amount: 25},
+          {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 16384, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 6554, amount: 1},
+          {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 3277, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_4,
+    inputTokenIds: [EstforConstants.FISHING_CHEST_4, EstforConstants.AQUA_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.RAW_AZACUDDA, chance: 65535, amount: 12},
+          {itemTokenId: EstforConstants.RAW_ROXA, chance: 53083, amount: 12},
+          {itemTokenId: EstforConstants.RAW_QUAFFER, chance: 40632, amount: 12},
+          {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 28180, amount: 50},
+          {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 18350, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_BOOTS_FRAGMENT, chance: 8520, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD_FRAGMENT, chance: 5243, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.ETCHED_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_5,
+    inputTokenIds: [EstforConstants.FISHING_CHEST_5, EstforConstants.AQUA_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.RAW_CHODFISH, chance: 65535, amount: 9},
+          {itemTokenId: EstforConstants.RAW_CRUSKAN, chance: 53083, amount: 11},
+          {itemTokenId: EstforConstants.RAW_STONECLAW, chance: 40632, amount: 11},
+          {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 28180, amount: 50},
+          {itemTokenId: EstforConstants.TITANIUM_ARROW, chance: 18350, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_BOOTS_FRAGMENT, chance: 8520, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS_FRAGMENT, chance: 5243, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
+          {itemTokenId: EstforConstants.ETCHED_RING, chance: 131, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_1,
+    inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_1, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.LOG, chance: 65535, amount: 40},
+          {itemTokenId: EstforConstants.OAK_LOG, chance: 45875, amount: 25},
+          {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 26214, amount: 25},
+          {itemTokenId: EstforConstants.IRON_ARROW, chance: 14418, amount: 50},
+          {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
+          {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 1311, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 328, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_2,
+    inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_2, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.LOG, chance: 65535, amount: 40},
+          {itemTokenId: EstforConstants.OAK_LOG, chance: 52428, amount: 25},
+          {itemTokenId: EstforConstants.WILLOW_LOG, chance: 39321, amount: 23},
+          {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 26214, amount: 25},
+          {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 14418, amount: 50},
+          {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
+          {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 1311, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 328, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_3,
+    inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_3, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.OAK_LOG, chance: 65535, amount: 40},
+          {itemTokenId: EstforConstants.WILLOW_LOG, chance: 52428, amount: 23},
+          {itemTokenId: EstforConstants.MAPLE_LOG, chance: 39321, amount: 20},
+          {itemTokenId: EstforConstants.HELL_SCROLL, chance: 26214, amount: 25},
+          {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 16384, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 6554, amount: 1},
+          {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 3277, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_4,
+    inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_4, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.MAPLE_LOG, chance: 65535, amount: 20},
+          {itemTokenId: EstforConstants.REDWOOD_LOG, chance: 53083, amount: 19},
+          {itemTokenId: EstforConstants.MAGICAL_LOG, chance: 40632, amount: 18},
+          {itemTokenId: EstforConstants.AIR_SCROLL, chance: 28180, amount: 25},
+          {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 18350, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_BODY_FRAGMENT, chance: 8520, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_TROUSERS_FRAGMENT, chance: 5243, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_5,
+    inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_5, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.REDWOOD_LOG, chance: 65535, amount: 19},
+          {itemTokenId: EstforConstants.MAGICAL_LOG, chance: 53083, amount: 18},
+          {itemTokenId: EstforConstants.ASH_LOG, chance: 40632, amount: 15},
+          {itemTokenId: EstforConstants.BARRAGE_SCROLL, chance: 28180, amount: 25},
+          {itemTokenId: EstforConstants.TITANIUM_ARROW, chance: 18350, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_HAT_FRAGMENT, chance: 8520, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS_FRAGMENT, chance: 5243, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 3},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
+          {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 131, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_1,
+    inputTokenIds: [EstforConstants.MINING_CHEST_1, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.IRON_ORE, chance: 65535, amount: 26},
+          {itemTokenId: EstforConstants.COPPER_ORE, chance: 51773, amount: 40},
+          {itemTokenId: EstforConstants.TIN_ORE, chance: 38666, amount: 40},
+          {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 25559, amount: 25},
+          {itemTokenId: EstforConstants.IRON_ARROW, chance: 13762, amount: 50},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.BAT_WING, chance: 1311, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 328, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_2,
+    inputTokenIds: [EstforConstants.MINING_CHEST_2, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.MITHRIL_ORE, chance: 65535, amount: 23},
+          {itemTokenId: EstforConstants.EMERALD, chance: 51773, amount: 11},
+          {itemTokenId: EstforConstants.COAL_ORE, chance: 38666, amount: 22},
+          {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 25559, amount: 25},
+          {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 13762, amount: 50},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.BAT_WING, chance: 1311, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 328, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_3,
+    inputTokenIds: [EstforConstants.MINING_CHEST_3, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.ADAMANTINE_ORE, chance: 65535, amount: 19},
+          {itemTokenId: EstforConstants.RUBY, chance: 52428, amount: 10},
+          {itemTokenId: EstforConstants.COAL_ORE, chance: 39321, amount: 24},
+          {itemTokenId: EstforConstants.HELL_SCROLL, chance: 26214, amount: 25},
+          {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 16384, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 6554, amount: 1},
+          {itemTokenId: EstforConstants.BAT_WING, chance: 3277, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_4,
+    inputTokenIds: [EstforConstants.MINING_CHEST_4, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.RUNITE_ORE, chance: 65535, amount: 18},
+          {itemTokenId: EstforConstants.DIAMOND, chance: 53083, amount: 8},
+          {itemTokenId: EstforConstants.COAL_ORE, chance: 40632, amount: 26},
+          {itemTokenId: EstforConstants.AIR_SCROLL, chance: 28180, amount: 25},
+          {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 18350, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_COWL_FRAGMENT, chance: 8520, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_CHAPS_FRAGMENT, chance: 5243, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
+          {itemTokenId: EstforConstants.OCULITE_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_5,
+    inputTokenIds: [EstforConstants.MINING_CHEST_5, EstforConstants.NATURE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.TITANIUM_ORE, chance: 65535, amount: 15},
+          {itemTokenId: EstforConstants.DRAGONSTONE, chance: 53083, amount: 5},
+          {itemTokenId: EstforConstants.COAL_ORE, chance: 40632, amount: 28},
+          {itemTokenId: EstforConstants.BARRAGE_SCROLL, chance: 28180, amount: 25},
+          {itemTokenId: EstforConstants.TITANIUM_ARROW, chance: 18350, amount: 50},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_BRACERS_FRAGMENT, chance: 8520, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_BRACERS_FRAGMENT, chance: 5243, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 1966, amount: 1},
+          {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
+          {itemTokenId: EstforConstants.OCULITE_RING, chance: 131, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_DRAGON_CHEST,
+    inputTokenIds: [EstforConstants.DRAGON_CHEST, EstforConstants.DRAGON_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.DRAGONSTONE_STAFF_FRAGMENT, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET_FRAGMENT, chance: 57015, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD_FRAGMENT, chance: 48496, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_COWL_FRAGMENT, chance: 39976, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_TROUSERS_FRAGMENT, chance: 31457, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_BOOTS_FRAGMENT, chance: 22937, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD_FRAGMENT, chance: 14418, amount: 1},
+          {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 5898, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
+          {itemTokenId: EstforConstants.NOVIAN_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_BONE_CHEST,
+    inputTokenIds: [EstforConstants.BONE_CHEST, EstforConstants.BONE_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.GODLY_BOW_FRAGMENT, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.DRAGONSTONE_STAFF_FRAGMENT, chance: 57015, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD_FRAGMENT, chance: 48496, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_MASTER_BRACERS_FRAGMENT, chance: 39976, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_BOOTS_FRAGMENT, chance: 31457, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_SCORCHING_BRACERS_FRAGMENT, chance: 22937, amount: 1},
+          {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS_FRAGMENT, chance: 14418, amount: 1},
+          {itemTokenId: EstforConstants.VENOM_POUCH, chance: 5898, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
+          {itemTokenId: EstforConstants.NOVIAN_RING, chance: 66, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
     actionType: InstantVRFActionType.EGG,
     inputTokenIds: [EstforConstants.EGG_TIER1],
     inputAmounts: [1],

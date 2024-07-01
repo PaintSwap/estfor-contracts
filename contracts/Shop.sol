@@ -168,6 +168,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     brush.transfer(msg.sender, totalBrush);
+    itemNFT.burn(msg.sender, _tokenId, _quantity);
     emit Sell(msg.sender, _tokenId, _quantity, price);
   }
 
@@ -193,9 +194,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
     }
     brush.transfer(msg.sender, totalBrush.asUint256());
+    itemNFT.burnBatch(msg.sender, _tokenIds, _quantities);
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
+  // Does not burn!
   function _sell(uint _tokenId, uint _quantity, uint _sellPrice) private {
     uint price = shopItems[_tokenId];
     if (price != 0 && price < _sellPrice) {
@@ -229,7 +232,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert NotEnoughAllocationRemaining(_tokenId, totalSold, allocationRemaining);
     }
     tokenInfo.allocationRemaining = uint80(allocationRemaining - totalSold);
-    itemNFT.burn(msg.sender, _tokenId, _quantity);
   }
 
   function _liquidatePrice(uint16 _tokenId, uint _totalBrushPerItem) private view returns (uint80 price) {

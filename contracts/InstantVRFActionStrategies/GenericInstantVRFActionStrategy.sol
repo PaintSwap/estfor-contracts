@@ -20,7 +20,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   error OnlyInstantVRFActions();
 
   struct InstantVRFAction {
-    uint16[15] randomRewardInfo; // Can have up to 5 different random reward tokens. Order is tokenId, chance, amount etc
+    uint16[30] randomRewardInfo; // Can have up to 5 different random reward tokens. Order is tokenId, chance, amount etc
   }
 
   mapping(uint actionId => InstantVRFAction action) private actions;
@@ -121,7 +121,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
 
   function _checkRandomRewards(InstantVRFRandomReward[] memory _randomRewards) private pure {
     // Check random rewards are correct
-    if (_randomRewards.length > 5) {
+    if (_randomRewards.length > 10) {
       revert TooManyRandomRewards();
     }
 
@@ -168,7 +168,22 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
         _randomRewards.length > 3 ? _randomRewards[3].amount : 0,
         _randomRewards.length > 4 ? _randomRewards[4].itemTokenId : NONE,
         _randomRewards.length > 4 ? _randomRewards[4].chance : 0,
-        _randomRewards.length > 4 ? _randomRewards[4].amount : 0
+        _randomRewards.length > 4 ? _randomRewards[4].amount : 0,
+        _randomRewards.length > 5 ? _randomRewards[5].itemTokenId : NONE,
+        _randomRewards.length > 5 ? _randomRewards[5].chance : 0,
+        _randomRewards.length > 5 ? _randomRewards[5].amount : 0,
+        _randomRewards.length > 6 ? _randomRewards[6].itemTokenId : NONE,
+        _randomRewards.length > 6 ? _randomRewards[6].chance : 0,
+        _randomRewards.length > 6 ? _randomRewards[6].amount : 0,
+        _randomRewards.length > 7 ? _randomRewards[7].itemTokenId : NONE,
+        _randomRewards.length > 7 ? _randomRewards[7].chance : 0,
+        _randomRewards.length > 7 ? _randomRewards[7].amount : 0,
+        _randomRewards.length > 8 ? _randomRewards[8].itemTokenId : NONE,
+        _randomRewards.length > 8 ? _randomRewards[8].chance : 0,
+        _randomRewards.length > 8 ? _randomRewards[8].amount : 0,
+        _randomRewards.length > 9 ? _randomRewards[9].itemTokenId : NONE,
+        _randomRewards.length > 9 ? _randomRewards[9].chance : 0,
+        _randomRewards.length > 9 ? _randomRewards[9].amount : 0
       ]
     });
   }

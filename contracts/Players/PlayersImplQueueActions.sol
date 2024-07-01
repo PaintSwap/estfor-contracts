@@ -214,9 +214,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _pendingQuestState
   ) public view returns (bool setAttire) {
-    if (_queuedActionInput.attire.ring != NONE) {
-      revert UnsupportedAttire();
-    }
     if (_queuedActionInput.attire.reserved1 != NONE) {
       revert UnsupportedAttire();
     }
@@ -240,6 +237,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     bool isCombat = actionInfo.skill == Skill.COMBAT;
+    bool isPlayerUpgraded = _isPlayerFullMode(_playerId);
 
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
@@ -284,14 +282,14 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
 
       bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
-      if (actionChoiceFullModeOnly && !_isPlayerFullMode(_playerId)) {
+      if (actionChoiceFullModeOnly && !isPlayerUpgraded) {
         revert PlayerNotUpgraded();
       }
     } else if (_queuedActionInput.choiceId != NONE) {
       revert ActionChoiceIdNotRequired();
     } else {
       // Check if the action requires full mode. Done here as don't want to check if both action and actionChoice are full mode only
-      if (actionInfo.isFullModeOnly && !_isPlayerFullMode(_playerId)) {
+      if (actionInfo.isFullModeOnly && !isPlayerUpgraded) {
         revert PlayerNotUpgraded();
       }
     }
@@ -318,13 +316,14 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire.feet != NONE ||
       attire.ring != NONE
     ) {
-      _checkAttire(_from, _playerId, attire, _pendingQueuedActionProcessed, _pendingQuestState);
+      _checkAttire(_from, _playerId, isPlayerUpgraded, attire, _pendingQueuedActionProcessed, _pendingQuestState);
       setAttire = true;
     }
 
     _checkHandEquipments(
       _from,
       _playerId,
+      isPlayerUpgraded,
       [_queuedActionInput.leftHandEquipmentTokenId, _queuedActionInput.rightHandEquipmentTokenId],
       actionInfo.handItemTokenIdRangeMin,
       actionInfo.handItemTokenIdRangeMax,
@@ -334,9 +333,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _pendingQuestState
     );
 
-    _checkFood(_playerId, _queuedActionInput, _pendingQueuedActionProcessed, _pendingQuestState);
+    _checkFood(_playerId, isPlayerUpgraded, _queuedActionInput, _pendingQueuedActionProcessed, _pendingQuestState);
 
-    _checkPet(_from, _queuedActionInput.petId);
+    _checkPet(_from, isPlayerUpgraded, _queuedActionInput.petId);
   }
 
   // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
@@ -405,28 +404,42 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _checkFood(
     uint _playerId,
+    bool _isPlayerUpgraded,
     QueuedActionInputV2 memory _queuedActionInput,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _questState
   ) private view {
     if (_queuedActionInput.regenerateId != NONE) {
-      (Skill skill, uint32 minXP, , ) = itemNFT.getEquipPositionAndMinRequirement(_queuedActionInput.regenerateId);
+      (Skill skill, uint32 minXP, , bool isFoodFullModeOnly) = itemNFT.getEquipPositionAndMinRequirement(
+        _queuedActionInput.regenerateId
+      );
       if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
         revert ConsumableMinimumXPNotReached();
+      }
+      // TODO: Untested
+      if (isFoodFullModeOnly && !_isPlayerUpgraded) {
+        revert PlayerNotUpgraded();
       }
     }
   }
 
-  function _checkPet(address _from, uint _petId) private view {
-    if (_petId != 0 && petNFT.balanceOf(_from, _petId) == 0) {
-      revert PetNotOwned();
+  function _checkPet(address _from, bool _isPlayerUpgraded, uint _petId) private view {
+    if (_petId != 0) {
+      // All pets are upgrade only
+      if (!_isPlayerUpgraded) {
+        revert PlayerNotUpgraded();
+      }
+
+      if (petNFT.balanceOf(_from, _petId) == 0) {
+        revert PetNotOwned();
+      }
     }
   }
 
   function _checkEquipPosition(Attire memory _attire) private view {
     uint attireLength;
-    uint16[] memory itemTokenIds = new uint16[](6);
-    EquipPosition[] memory expectedEquipPositions = new EquipPosition[](6);
+    uint16[] memory itemTokenIds = new uint16[](7);
+    EquipPosition[] memory expectedEquipPositions = new EquipPosition[](7);
     if (_attire.head != NONE) {
       itemTokenIds[attireLength] = _attire.head;
       expectedEquipPositions[attireLength] = EquipPosition.HEAD;
@@ -457,6 +470,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       expectedEquipPositions[attireLength] = EquipPosition.FEET;
       attireLength = attireLength.inc();
     }
+    if (_attire.ring != NONE) {
+      itemTokenIds[attireLength] = _attire.ring;
+      expectedEquipPositions[attireLength] = EquipPosition.RING;
+      attireLength = attireLength.inc();
+    }
 
     assembly ("memory-safe") {
       mstore(itemTokenIds, attireLength)
@@ -478,6 +496,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function _checkAttire(
     address _from,
     uint _playerId,
+    bool _isPlayerUpgraded,
     Attire memory _attire,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _questState
@@ -485,13 +504,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Check the user has these items
     _checkEquipPosition(_attire);
 
-    bool skipNeck;
+    bool skipNonFullAttire;
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
     (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithBalance(
       _from,
       _attire,
       itemNFT,
-      skipNeck,
+      skipNonFullAttire,
       pendingQueuedActionEquipmentStates
     );
     if (itemTokenIds.length != 0) {
@@ -499,7 +518,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         itemTokenIds
       );
       U256 iter = balances.length.asU256();
-      bool isPlayerUpgraded = _isPlayerFullMode(_playerId);
 
       while (iter.neq(0)) {
         iter = iter.dec();
@@ -510,7 +528,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
         }
-        if (!isPlayerUpgraded && isItemFullModeOnly[i]) {
+        if (!_isPlayerUpgraded && isItemFullModeOnly[i]) {
           revert PlayerNotUpgraded();
         }
       }
@@ -520,6 +538,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function _checkHandEquipments(
     address _from,
     uint _playerId,
+    bool _isPlayerUpgraded,
     uint16[2] memory _equippedItemTokenIds, // left, right
     uint16 _handItemTokenIdRangeMin,
     uint16 _handItemTokenIdRangeMax,
@@ -560,7 +579,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
           revert ItemMinimumXPNotReached();
         }
-        if (isItemFullModeOnly && !_isPlayerFullMode(_playerId)) {
+        if (isItemFullModeOnly && !_isPlayerUpgraded) {
           revert PlayerNotUpgraded();
         }
         if (isRightHand) {

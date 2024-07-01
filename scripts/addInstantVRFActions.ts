@@ -7,40 +7,35 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add instant VRF actions using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
+  //  const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
+
   const instantVRFActions = (await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS)).connect(
     owner
   );
 
   const actionsToUpdate = new Set([
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER5,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_1,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_2,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_3,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_4,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_5,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_1,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_2,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_3,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_4,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_5,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_1,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_2,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_3,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_4,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_5,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_DRAGON_CHEST,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_BONE_CHEST,
   ]);
 
   const actions = allInstantVRFActions.filter((action) => actionsToUpdate.has(action.actionId));
-  if (actions.length !== 25) {
+  console.log(actions.length);
+  if (actions.length !== actionsToUpdate.size) {
     console.log("Cannot find actions");
   } else {
     await instantVRFActions.addActions(actions);

@@ -305,14 +305,16 @@ describe("Shop", function () {
     await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, priceShield))
       .to.emit(shop, "Sell")
-      .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, 1, priceShield);
+      .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, 1, priceShield)
+      .and.to.emit(itemNFT, "TransferSingle")
+      .withArgs(shop.address, alice.address, ethers.constants.AddressZero, EstforConstants.BRONZE_SHIELD, 1);
 
     // Item should get burnt, and they should get the amount of brush expected.
     expect(await itemNFT.itemBalances(EstforConstants.BRONZE_SHIELD)).to.eq(minItemQuantityBeforeSellsAllowed * 2 - 1);
     expect(await brush.balanceOf(alice.address)).to.eq(priceShield);
   });
 
-  it("SellBatch", async function () {
+  it("Sell Batch", async function () {
     const {itemNFT, shop, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} = await loadFixture(
       deployContracts
     );
@@ -344,6 +346,14 @@ describe("Shop", function () {
         [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
         [1, 2],
         [priceShield, priceSapphireAmulet]
+      )
+      .and.to.emit(itemNFT, "TransferBatch")
+      .withArgs(
+        shop.address,
+        alice.address,
+        ethers.constants.AddressZero,
+        [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
+        [1, 2]
       );
 
     expect(await itemNFT.itemBalances(EstforConstants.BRONZE_SHIELD)).to.eq(minItemQuantityBeforeSellsAllowed * 2 - 1);

@@ -187,6 +187,11 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.legs = EstforConstants.NONE;
+    queuedAction.attire.ring = EstforConstants.BRONZE_GAUNTLETS;
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
+    queuedAction.attire.ring = EstforConstants.NONE;
     queuedAction.attire.arms = EstforConstants.BRONZE_GAUNTLETS; // Correct
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
   });
@@ -408,6 +413,7 @@ describe("Players", function () {
       expect(actionQueue[0].queueId).to.eq(3);
       expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
     });
+
     it("Remove in-progress but keep pending, add another pending", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -427,6 +433,7 @@ describe("Players", function () {
       expect(actionQueue[1].queueId).to.eq(4);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
     });
+
     it("Keep in-progress, remove 1 pending", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -442,6 +449,7 @@ describe("Players", function () {
       expect(actionQueue[0].queueId).to.eq(1);
       expect(actionQueue[0].timespan).to.be.oneOf([queuedAction.timespan / 2 - 1, queuedAction.timespan / 2]);
     });
+
     it("Keep in-progress, remove 1 pending, and add 1 pending", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -461,6 +469,7 @@ describe("Players", function () {
       expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);
     });
+
     it("Remove in-progress and any pending", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -474,6 +483,7 @@ describe("Players", function () {
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
     });
+
     it("Remove in-progress and pending, add 1 pending ", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -489,6 +499,7 @@ describe("Players", function () {
       expect(actionQueue[0].queueId).to.eq(3);
       expect(actionQueue[0].timespan).to.eq(queuedAction.timespan);
     });
+
     it("Append and pending, add another pending", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -505,6 +516,7 @@ describe("Players", function () {
       expect(actionQueue[1].queueId).to.eq(2);
       expect(actionQueue[2].queueId).to.eq(3);
     });
+
     it("Keep in progress, action is finished, queue 3", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
       const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -854,8 +866,9 @@ describe("Players", function () {
         EstforConstants.BRONZE_GAUNTLETS,
         EstforConstants.BRONZE_HELMET,
         EstforConstants.BRONZE_TASSETS,
+        EstforConstants.BRONZE_ARROW,
       ],
-      [1, 1, 1, 1, 1, 1, 1]
+      [1, 1, 1, 1, 1, 1, 1, 1]
     );
 
     const attireEquipped = [
@@ -901,11 +914,18 @@ describe("Players", function () {
         tokenId: EstforConstants.BRONZE_BOOTS,
         equipPosition: EstforTypes.EquipPosition.FEET,
       },
+      {
+        ...EstforTypes.defaultItemInput,
+        skill: EstforTypes.Skill.FORGING,
+        minXP,
+        tokenId: EstforConstants.BRONZE_ARROW,
+        equipPosition: EstforTypes.EquipPosition.RING,
+      },
     ];
 
     await itemNFT.addItems(attireEquipped);
 
-    const equips = ["head", "neck", "body", "arms", "legs", "feet"];
+    const equips = ["head", "neck", "body", "arms", "legs", "feet", "ring"];
     for (let i = 0; i < attireEquipped.length; ++i) {
       const attire: Attire = {...EstforTypes.noAttire};
       attire[equips[i] as keyof Attire] = attireEquipped[i].tokenId;

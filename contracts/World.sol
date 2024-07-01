@@ -61,9 +61,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
   error ActionChoiceDoesNotExist();
-  error OnlyCombatMultipleGuaranteedRewards();
   error NotAFactorOf3600();
-  error NonCombatCannotHaveBothGuaranteedAndRandomRewards();
+  error NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards();
   error InvalidReward();
   error TooManyRewardsInPool();
   error CallbackGasLimitTooHigh();
@@ -438,17 +437,13 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       revert MinCannotBeGreaterThanMax();
     }
 
-    if (_action.info.skill != Skill.COMBAT && _action.guaranteedRewards.length > 1) {
-      revert OnlyCombatMultipleGuaranteedRewards();
-    }
-
     if (_action.info.numSpawned != 0) {
       // Combat
       if ((3600 * SPAWN_MUL) % _action.info.numSpawned != 0) {
         revert NotAFactorOf3600();
       }
     } else if (_action.guaranteedRewards.length != 0) {
-      // Non-combat guaranteed rewards
+      // Non-combat guaranteed rewards. Only care about the first one as it's used for correctly taking into account partial loots.
       if ((3600 * GUAR_MUL) % _action.guaranteedRewards[0].rate != 0) {
         revert NotAFactorOf3600();
       }
@@ -467,8 +462,8 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     } else {
       bool actionHasGuaranteedRewards = _action.guaranteedRewards.length != 0;
       bool actionHasRandomRewards = _action.randomRewards.length != 0;
-      if (actionHasGuaranteedRewards && actionHasRandomRewards) {
-        revert NonCombatCannotHaveBothGuaranteedAndRandomRewards();
+      if (actionHasGuaranteedRewards && actionHasRandomRewards && _action.info.actionChoiceRequired) {
+        revert NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards();
       }
     }
   }

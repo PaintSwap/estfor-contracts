@@ -2456,6 +2456,77 @@ describe("Combat Actions", function () {
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
     });
 
+    it("Check expected bow is required for the actionChoice, forged godly bow", async function () {
+      // Bronze arrows can only be used with basic bow for instance
+      const {
+        playerId,
+        players,
+        itemNFT,
+        alice,
+        queuedAction: rangedQueuedAction,
+        world,
+      } = await loadFixture(playersFixtureRanged);
+
+      const arrowsConsumedRate = 1 * RATE_MUL; // per hour
+      const tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [2],
+
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.RANGED,
+            skillDiff: 2,
+            rate: arrowsConsumedRate,
+            inputTokenIds: [EstforConstants.BRONZE_ARROW],
+            inputAmounts: [1],
+            handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
+            handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_4,
+          },
+        ]
+      );
+
+      const choiceId = await getActionChoiceId(tx);
+      await itemNFT.addItems([
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.INFUSED_GODLY_BOW,
+          equipPosition: EstforTypes.EquipPosition.NONE,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.GODLY_BOW_4,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+        },
+        {
+          ...EstforTypes.defaultItemInput,
+          tokenId: EstforConstants.GODLY_BOW_5,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+        },
+      ]);
+      await itemNFT.testMint(alice.address, EstforConstants.GODLY_BOW_5, 1);
+      const queuedAction = {...rangedQueuedAction};
+      queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW_5;
+      queuedAction.choiceId = choiceId;
+
+      await expect(
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
+
+      // Cannot use INFUSED godly bow either
+      await itemNFT.testMint(alice.address, EstforConstants.INFUSED_GODLY_BOW, 1);
+      queuedAction.rightHandEquipmentTokenId = EstforConstants.INFUSED_GODLY_BOW;
+      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE))
+        .to.be.revertedWithCustomError(players, "IncorrectRightHandEquipment")
+        .withArgs(EstforConstants.INFUSED_GODLY_BOW);
+
+      await itemNFT.testMint(alice.address, EstforConstants.GODLY_BOW_4, 1);
+      queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW_4;
+
+      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+        .not.be.reverted;
+    });
+
     it("Remove bow after queuing, combat should be skipped", async function () {
       const {playerId, players, itemNFT, alice, queuedAction, startXP} = await loadFixture(playersFixtureRanged);
 
