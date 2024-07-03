@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {INSTANT_VRF_ACTIONS_ADDRESS} from "./contractAddresses";
+import {GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS, INSTANT_VRF_ACTIONS_ADDRESS} from "./contractAddresses";
 import {EggInstantVRFActionStrategy} from "../typechain-types";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 
@@ -10,7 +10,7 @@ async function main() {
   );
 
   const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
-  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
+  /*  const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
   const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
     EggInstantVRFActionStrategy,
     [instantVRFActions.address],
@@ -18,8 +18,8 @@ async function main() {
       kind: "uups",
     }
   )) as EggInstantVRFActionStrategy;
-
-  await instantVRFActions.addStrategies([InstantVRFActionType.EGG], [eggInstantVRFActionStrategy.address]);
+*/
+  await instantVRFActions.addStrategies([InstantVRFActionType.GENERIC], [GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS]);
 }
 
 main().catch((error) => {

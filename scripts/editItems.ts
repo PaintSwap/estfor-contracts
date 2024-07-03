@@ -1,4 +1,4 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers} from "hardhat";
 import {allItems} from "./data/items";
 import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
