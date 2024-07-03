@@ -509,7 +509,7 @@ contract Territories is
     // Remove a player combatant if they are currently assigned in this clan
     ClanInfo storage clanInfo = clanInfos[_clanId];
     if (clanInfo.playerIds.length != 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, _playerId);
+      uint searchIndex = EstforLibrary._binarySearch(clanInfo.playerIds, _playerId);
       if (searchIndex != type(uint).max) {
         // Shift the whole array to delete the element
         for (uint i = searchIndex; i < clanInfo.playerIds.length - 1; ++i) {
@@ -660,7 +660,7 @@ contract Territories is
   function isCombatant(uint _clanId, uint _playerId) external view override returns (bool combatant) {
     // Check if this player is in the defenders list and remove them if so
     if (clanInfos[_clanId].playerIds.length > 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+      uint searchIndex = EstforLibrary._binarySearch(clanInfos[_clanId].playerIds, _playerId);
       combatant = searchIndex != type(uint).max;
     }
   }
@@ -713,11 +713,6 @@ contract Territories is
 
   function setCombatantsHelper(address _combatantsHelper) external onlyOwner {
     combatantsHelper = _combatantsHelper;
-  }
-
-  // Can be removed if needed, only needed for new VRF contract
-  function setSamWitchVRF(ISamWitchVRF _samWitchVRF) external onlyOwner {
-    samWitchVRF = _samWitchVRF;
   }
 
   function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
