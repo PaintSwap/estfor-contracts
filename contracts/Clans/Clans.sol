@@ -142,6 +142,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IBankFactory public bankFactory;
   IERC1155 private playerNFT;
   uint80 public nextClanId;
+  uint16 private initialMMR;
   address private pool;
   uint80 public editNameCost;
   address private dev;
