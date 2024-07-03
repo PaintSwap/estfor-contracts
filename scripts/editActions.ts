@@ -21,12 +21,10 @@ async function main() {
   */
 
   const _actions = new Set([
-    EstforConstants.ACTION_COMBAT_SNAPPER_BUG,
-    EstforConstants.ACTION_COMBAT_OBGORA,
-    EstforConstants.ACTION_COMBAT_SQUIGGLE_EGG,
     EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE,
     EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON,
     EstforConstants.ACTION_COMBAT_ERKAD,
+    EstforConstants.ACTION_THIEVING_NEST,
   ]);
   const actions = allActions.filter((action) => _actions.has(action.actionId));
 

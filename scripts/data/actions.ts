@@ -2310,6 +2310,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 2},
       {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 664, amount: 1},
       {itemTokenId: EstforConstants.FLUX, chance: 60, amount: 1},
+      {itemTokenId: EstforConstants.SCORCHING_CHAPS, chance: 8, amount: 1},
     ],
     combatStats: {
       melee: 55,
@@ -2479,6 +2480,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGON_CHEST, chance: 2800, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 400, amount: 1},
       {itemTokenId: EstforConstants.SCORCHING_BOOTS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 2, amount: 1},
     ],
     combatStats: {
       melee: 200,
@@ -2515,6 +2517,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.BONE_CHEST, chance: 2800, amount: 1},
       {itemTokenId: EstforConstants.VENOM_POUCH, chance: 1328, amount: 1},
       {itemTokenId: EstforConstants.MASTER_TROUSERS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.GODLY_BOW, chance: 2, amount: 1},
     ],
     combatStats: {
       melee: 250,
@@ -3310,6 +3313,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 40959, amount: 1},
       {itemTokenId: EstforConstants.AQUA_KEY, chance: 40959, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 4096, amount: 1},
+      {itemTokenId: EstforConstants.BONE_KEY, chance: 4096, amount: 1},
     ],
     combatStats: {
       melee: 0,
