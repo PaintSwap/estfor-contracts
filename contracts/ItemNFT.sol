@@ -49,8 +49,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   string private baseURI;
 
   // How many of this item exist
-  mapping(uint itemId => uint amount) public itemBalances;
-  mapping(uint itemId => uint timestamp) public timestampFirstMint;
+  mapping(uint itemId => uint amount) public override itemBalances;
+  mapping(uint itemId => uint timestamp) public override timestampFirstMint;
 
   address public players;
   address private shop;
@@ -138,19 +138,23 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     isBeta = _isBeta;
   }
 
-  function mint(address _to, uint _tokenId, uint _amount) external onlyMinters {
+  function mint(address _to, uint _tokenId, uint _amount) external override onlyMinters {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external onlyMinters {
+  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external override onlyMinters {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
-  function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external onlyBurners(_from) {
+  function burnBatch(
+    address _from,
+    uint[] calldata _tokenIds,
+    uint[] calldata _amounts
+  ) external override onlyBurners(_from) {
     _burnBatch(_from, _tokenIds, _amounts);
   }
 
-  function burn(address _from, uint _tokenId, uint _amount) external onlyBurners(_from) {
+  function burn(address _from, uint _tokenId, uint _amount) external override onlyBurners(_from) {
     _burn(_from, _tokenId, _amount);
   }
 
@@ -327,7 +331,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
 
-  function exists(uint _tokenId) public view returns (bool) {
+  function exists(uint _tokenId) public view override returns (bool) {
     return items[_tokenId].packedData != 0;
   }
 
@@ -335,7 +339,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return itemBalances[_tokenId];
   }
 
-  function totalSupply() external view returns (uint) {
+  function totalSupply() external view override returns (uint) {
     return totalSupplyAll_;
   }
 
