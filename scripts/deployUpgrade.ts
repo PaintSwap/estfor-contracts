@@ -227,7 +227,7 @@ async function main() {
   });
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
-
+*/
   // Instant VRF actions
   const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(owner);
   const instantVRFActions = await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
@@ -236,7 +236,7 @@ async function main() {
   });
   await instantVRFActions.deployed();
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
-
+  /*
   // Instant VRF strategies
   const GenericInstantVRFActionStrategy = (await ethers.getContractFactory("GenericInstantVRFActionStrategy")).connect(
     owner
@@ -401,9 +401,9 @@ async function main() {
     await verifyContracts([promotions.address]);
     /*
     await verifyContracts([instantActions.address]);
-    await verifyContracts([vrfRequestInfo.address]);
+    await verifyContracts([vrfRequestInfo.address]); */
     await verifyContracts([instantVRFActions.address]);
-    await verifyContracts([genericInstantVRFActionStrategy.address]);
+    /*    await verifyContracts([genericInstantVRFActionStrategy.address]);
     await verifyContracts([eggInstantVRFActionStrategy.address]);
     await verifyContracts([petNFT.address]);
     await verifyContracts([genericInstantVRFActionStrategy.address]);
