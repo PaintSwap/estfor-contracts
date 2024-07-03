@@ -129,7 +129,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       if (actionMetadata.xpElapsedTime != 0 && hasRandomRewards) {
         uint24 sentinelElapsedTime = actionMetadata.elapsedTime;
         bool hasRandomWord = world.hasRandomWord(startTime.add(sentinelElapsedTime));
-        if (hasRandomWord && skill != Skill.THIEVING) {
+        if (hasRandomWord && isCombat) {
           // The elapsed time needs to be updated if the random words are known as other dynamic things
           // like changing food/scroll consumption can be used to modify the random reward outputs.
           sentinelElapsedTime = uint24(

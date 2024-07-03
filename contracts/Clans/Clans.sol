@@ -134,6 +134,23 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint80 nftType; // e.g erc721 or erc1155
   }
 
+  IBrushToken private brush;
+  IPlayers private players;
+  IBankFactory public bankFactory;
+  IERC1155 private playerNFT;
+  uint80 public nextClanId;
+  address private pool;
+  uint80 public editNameCost;
+  address private dev;
+  mapping(uint clanId => Clan clan) public clans;
+  mapping(uint playerId => PlayerInfo) public playerInfo;
+  mapping(uint id => Tier tier) public tiers;
+  mapping(string name => bool exists) public lowercaseNames;
+  mapping(uint clanId => uint40 timestampLeft) public ownerlessClanTimestamps; // timestamp
+  address private paintswapMarketplaceWhitelist;
+  IClanMemberLeftCB private territories;
+  IClanMemberLeftCB private lockedBankVaults;
+
   modifier isOwnerOfPlayer(uint _playerId) {
     if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
       revert NotOwnerOfPlayer();
@@ -168,23 +185,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
     _;
   }
-
-  IBrushToken private brush;
-  IPlayers private players;
-  IBankFactory public bankFactory;
-  IERC1155 private playerNFT;
-  uint80 public nextClanId;
-  address private pool;
-  uint80 public editNameCost;
-  address private dev;
-  mapping(uint clanId => Clan clan) public clans;
-  mapping(uint playerId => PlayerInfo) public playerInfo;
-  mapping(uint id => Tier tier) public tiers;
-  mapping(string name => bool exists) public lowercaseNames;
-  mapping(uint clanId => uint40 timestampLeft) public ownerlessClanTimestamps; // timestamp
-  address private paintswapMarketplaceWhitelist;
-  IClanMemberLeftCB private territories;
-  IClanMemberLeftCB private lockedBankVaults;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {

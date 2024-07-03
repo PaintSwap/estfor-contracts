@@ -21,11 +21,12 @@ async function main() {
   */
 
   const _actions = new Set([
-    EstforConstants.ACTION_FISHING_STONECLAW,
-    EstforConstants.ACTION_FISHING_CRUSKAN,
-    EstforConstants.ACTION_FISHING_DOUBTFISH,
-    EstforConstants.ACTION_FISHING_ROSEFIN,
-    EstforConstants.ACTION_FISHING_CHODFISH,
+    EstforConstants.ACTION_COMBAT_SNAPPER_BUG,
+    EstforConstants.ACTION_COMBAT_OBGORA,
+    EstforConstants.ACTION_COMBAT_SQUIGGLE_EGG,
+    EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE,
+    EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON,
+    EstforConstants.ACTION_COMBAT_ERKAD,
   ]);
   const actions = allActions.filter((action) => _actions.has(action.actionId));
 

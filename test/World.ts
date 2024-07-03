@@ -598,9 +598,10 @@ describe("World", function () {
       expect(actionChoice.inputAmount1).to.eq(10);
     });
 
-    it("First minimum skill should match skill of action choice", async function () {
-      const {world, worldLibrary} = await loadFixture(deployContracts);
+    it("First minimum skill does not need to skill of action choice", async function () {
+      const {world} = await loadFixture(deployContracts);
       const choiceId = 1;
+      // doesn't match
       await expect(
         world.addActionChoices(
           EstforConstants.NONE,
@@ -619,12 +620,13 @@ describe("World", function () {
             },
           ]
         )
-      ).to.be.revertedWithCustomError(worldLibrary, "FirstMinSkillMustBeActionSkill");
+      ).to.not.be.reverted;
 
+      // matches
       await expect(
         world.addActionChoices(
           EstforConstants.NONE,
-          [choiceId],
+          [choiceId + 1],
           [
             {
               ...defaultActionChoice,
@@ -704,52 +706,6 @@ describe("World", function () {
   });
 
   describe("ActionRewards", function () {
-    it("Guaranteed reward order", async function () {
-      const {world, worldLibrary} = await loadFixture(deployContracts);
-      const actionAvailable = false;
-      const action: ActionInput = {
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COMBAT,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 1 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
-          handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
-          isAvailable: actionAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [
-          {itemTokenId: EstforConstants.SHADOW_SCROLL, rate: 300},
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
-          {itemTokenId: EstforConstants.HELL_SCROLL, rate: 100},
-        ],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      };
-
-      await expect(world.addActions([action])).to.be.revertedWithCustomError(
-        worldLibrary,
-        "GuaranteedRewardsMustBeInOrder"
-      );
-      action.guaranteedRewards[0].rate = 50;
-      await expect(world.addActions([action])).to.be.revertedWithCustomError(
-        worldLibrary,
-        "GuaranteedRewardsMustBeInOrder"
-      );
-      action.guaranteedRewards[1].rate = 150;
-      await expect(world.addActions([action])).to.be.revertedWithCustomError(
-        worldLibrary,
-        "GuaranteedRewardsMustBeInOrder"
-      );
-      action.guaranteedRewards[2].rate = 150;
-      await expect(world.addActions([action])).to.not.be.reverted;
-    });
-
     it("Guaranteed reward duplicates not allowed", async function () {
       const {world, worldLibrary} = await loadFixture(deployContracts);
       const actionAvailable = false;
@@ -782,42 +738,6 @@ describe("World", function () {
         "GuaranteedRewardsNoDuplicates"
       );
       action.guaranteedRewards[0].itemTokenId = SHADOW_SCROLL;
-      await expect(world.addActions([action])).to.not.be.reverted;
-    });
-
-    it("Only multiple guaranteed rewards allowed for combat", async function () {
-      const {world} = await loadFixture(deployContracts);
-      const actionAvailable = false;
-      const action: ActionInput = {
-        actionId: 1,
-        info: {
-          skill: EstforTypes.Skill.COOKING,
-          xpPerHour: 3600,
-          minXP: 0,
-          isDynamic: false,
-          worldLocation: 0,
-          isFullModeOnly: false,
-          numSpawned: 1 * SPAWN_MUL,
-          handItemTokenIdRangeMin: EstforConstants.NONE,
-          handItemTokenIdRangeMax: EstforConstants.NONE,
-          isAvailable: actionAvailable,
-          actionChoiceRequired: true,
-          successPercent: 100,
-        },
-        guaranteedRewards: [
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 100},
-          {itemTokenId: EstforConstants.SHADOW_SCROLL, rate: 200},
-        ],
-        randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      };
-
-      await expect(world.addActions([action])).to.be.revertedWithCustomError(
-        world,
-        "OnlyCombatMultipleGuaranteedRewards"
-      );
-
-      action.info.skill = EstforTypes.Skill.COMBAT;
       await expect(world.addActions([action])).to.not.be.reverted;
     });
 
@@ -900,13 +820,13 @@ describe("World", function () {
       await expect(world.addActions([action])).to.not.be.reverted;
     });
 
-    it("Only combat can have both guaranteed and random rewards", async function () {
+    it("Only combat and actions without choices can have both guaranteed and random rewards", async function () {
       const {world} = await loadFixture(deployContracts);
       const actionAvailable = false;
       const action: ActionInput = {
         actionId: 1,
         info: {
-          skill: EstforTypes.Skill.COOKING,
+          skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
           isDynamic: false,
@@ -924,11 +844,15 @@ describe("World", function () {
         combatStats: EstforTypes.emptyCombatStats,
       };
 
+      await expect(world.addActions([action])).to.not.be.reverted;
+      action.actionId = 2;
+      action.info.skill = EstforTypes.Skill.COOKING;
+
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         world,
-        "NonCombatCannotHaveBothGuaranteedAndRandomRewards"
+        "NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards"
       );
-      action.info.skill = EstforTypes.Skill.COMBAT;
+      action.info.actionChoiceRequired = false;
       await expect(world.addActions([action])).to.not.be.reverted;
     });
   });

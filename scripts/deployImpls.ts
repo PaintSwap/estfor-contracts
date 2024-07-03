@@ -17,7 +17,7 @@ async function main() {
   console.log(`Deploying player implementation contracts with the account: ${owner.address} on chain id ${chainId}`);
 
   // Players
-  const newPlayersLibrary = false;
+  const newPlayersLibrary = true;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {

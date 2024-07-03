@@ -10,16 +10,21 @@ import {NO_DONATION_AMOUNT} from "../utils";
 
 describe("Pets", function () {
   it("Queue a pet which you don't have a balance for", async function () {
-    const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {players, playerId, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await expect(
       players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PetNotOwned");
   });
 
-  it("Queue a pet with combat", async function () {
-    const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+  it("Queue a pet with combat, should revert if you are not evolved", async function () {
+    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -32,15 +37,26 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
+    await expect(
+      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+
+    // Upgrade player, can now equip pet
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
     await ethers.provider.send("evm_increaseTime", [72]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
 
   it("Queue a pet with combat, partial action consumption", async function () {
-    const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -52,6 +68,10 @@ describe("Pets", function () {
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -66,7 +86,19 @@ describe("Pets", function () {
   });
 
   it("Transfer away and back and the pet should no longer be used", async function () {
-    const {players, playerId, petNFT, itemNFT, world, owner, alice} = await loadFixture(playersFixture);
+    const {
+      players,
+      playerId,
+      petNFT,
+      itemNFT,
+      world,
+      brush,
+      playerNFT,
+      upgradePlayerBrushPrice,
+      origName,
+      owner,
+      alice,
+    } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -79,6 +111,11 @@ describe("Pets", function () {
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     let pet = await petNFT.getPet(petId);
     expect(pet.lastAssignmentTimestamp).to.eq(NOW);
@@ -94,7 +131,19 @@ describe("Pets", function () {
   });
 
   it("Transfer away and back and the pet can should still be used for later queued actions", async function () {
-    const {players, playerId, petNFT, itemNFT, world, owner, alice} = await loadFixture(playersFixture);
+    const {
+      players,
+      playerId,
+      petNFT,
+      itemNFT,
+      world,
+      brush,
+      playerNFT,
+      upgradePlayerBrushPrice,
+      origName,
+      owner,
+      alice,
+    } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -106,6 +155,11 @@ describe("Pets", function () {
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+
     await players
       .connect(alice)
       .startActionsV2(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -131,7 +185,8 @@ describe("Pets", function () {
   });
 
   it("Queue a pet with combat and startActionsExtraV2", async function () {
-    const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -143,6 +198,10 @@ describe("Pets", function () {
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     await players
       .connect(alice)
@@ -162,7 +221,8 @@ describe("Pets", function () {
   });
 
   it("Queue a pet with combat, percentage + fixed", async function () {
-    const {players, playerId, petNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
+      await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [2, 0];
@@ -175,6 +235,10 @@ describe("Pets", function () {
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);

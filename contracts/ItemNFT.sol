@@ -7,6 +7,7 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+import {IItemNFT} from "./interfaces/IItemNFT.sol";
 import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
 import {World} from "./World.sol";
@@ -16,7 +17,7 @@ import {AdminAccess} from "./AdminAccess.sol";
 import "./globals/all.sol";
 
 // The NFT contract contains data related to the items and who owns them
-contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
+contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, IItemNFT {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
   using UnsafeMath for uint16;
@@ -48,8 +49,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   string private baseURI;
 
   // How many of this item exist
-  mapping(uint itemId => uint amount) public itemBalances;
-  mapping(uint itemId => uint timestamp) public timestampFirstMint;
+  mapping(uint itemId => uint amount) public override itemBalances;
+  mapping(uint itemId => uint timestamp) public override timestampFirstMint;
 
   address public players;
   address private shop;
@@ -137,19 +138,23 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     isBeta = _isBeta;
   }
 
-  function mint(address _to, uint _tokenId, uint _amount) external onlyMinters {
+  function mint(address _to, uint _tokenId, uint _amount) external override onlyMinters {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external onlyMinters {
+  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external override onlyMinters {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
-  function burnBatch(address _from, uint[] calldata _tokenIds, uint[] calldata _amounts) external onlyBurners(_from) {
+  function burnBatch(
+    address _from,
+    uint[] calldata _tokenIds,
+    uint[] calldata _amounts
+  ) external override onlyBurners(_from) {
     _burnBatch(_from, _tokenIds, _amounts);
   }
 
-  function burn(address _from, uint _tokenId, uint _amount) external onlyBurners(_from) {
+  function burn(address _from, uint _tokenId, uint _amount) external override onlyBurners(_from) {
     _burn(_from, _tokenId, _amount);
   }
 
@@ -326,7 +331,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
 
-  function exists(uint _tokenId) public view returns (bool) {
+  function exists(uint _tokenId) public view override returns (bool) {
     return items[_tokenId].packedData != 0;
   }
 
@@ -334,12 +339,21 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return itemBalances[_tokenId];
   }
 
-  function totalSupply() external view returns (uint) {
+  function totalSupply() external view override returns (uint) {
     return totalSupplyAll_;
   }
 
-  function getItem(uint16 _tokenId) external view returns (Item memory) {
+  function getItem(uint16 _tokenId) external view override returns (Item memory) {
     return _getItem(_tokenId);
+  }
+
+  function getItems(uint16[] calldata _tokenIds) external view override returns (Item[] memory _items) {
+    U256 tokenIdsLength = _tokenIds.length.asU256();
+    _items = new Item[](tokenIdsLength.asUint256());
+    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
+      uint i = iter.asUint256();
+      _items[i] = _getItem(_tokenIds[i]);
+    }
   }
 
   function getEquipPositionAndMinRequirement(
@@ -359,15 +373,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
       uint i = iter.asUint256();
       (skills[i], minXPs[i], isFullModeOnly[i]) = _getMinRequirement(_tokenIds[i]);
-    }
-  }
-
-  function getItems(uint16[] calldata _tokenIds) external view returns (Item[] memory _items) {
-    U256 tokenIdsLength = _tokenIds.length.asU256();
-    _items = new Item[](tokenIdsLength.asUint256());
-    for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
-      _items[i] = _getItem(_tokenIds[i]);
     }
   }
 
@@ -392,7 +397,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   /**
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
-  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint[] memory batchBalances) {
+  function balanceOfs(
+    address _account,
+    uint16[] memory _ids
+  ) external view override returns (uint[] memory batchBalances) {
     U256 iter = _ids.length.asU256();
     batchBalances = new uint[](iter.asUint256());
     while (iter.neq(0)) {
@@ -400,6 +408,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       uint i = iter.asUint256();
       batchBalances[i] = balanceOf(_account, _ids[i]);
     }
+  }
+
+  function balanceOf(address account, uint256 id) public view override(IItemNFT, ERC1155Upgradeable) returns (uint256) {
+    return ERC1155Upgradeable.balanceOf(account, id);
   }
 
   function royaltyInfo(

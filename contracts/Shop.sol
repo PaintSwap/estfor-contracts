@@ -3,17 +3,13 @@ pragma solidity ^0.8.20;
 
 import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
-import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
-import {ItemNFT} from "./ItemNFT.sol";
-
-// solhint-disable-next-line no-global-import
-import "./globals/items.sol";
+import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
 // The contract allows items to be bought/sold
-contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
+contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;
   using UnsafeMath for uint40;
   using UnsafeMath for uint80;
@@ -65,7 +61,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
   mapping(uint tokenId => TokenInfo) public tokenInfos;
 
   IBrushToken public brush;
-  ItemNFT public itemNFT;
+  IItemNFT public itemNFT;
   uint16 private numUnsellableItems;
   uint24 public minItemQuantityBeforeSellsAllowed;
   address public dev;
@@ -168,6 +164,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     brush.transfer(msg.sender, totalBrush);
+    itemNFT.burn(msg.sender, _tokenId, _quantity);
     emit Sell(msg.sender, _tokenId, _quantity, price);
   }
 
@@ -193,9 +190,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
     }
     brush.transfer(msg.sender, totalBrush.asUint256());
+    itemNFT.burnBatch(msg.sender, _tokenIds, _quantities);
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
+  // Does not burn!
   function _sell(uint _tokenId, uint _quantity, uint _sellPrice) private {
     uint price = shopItems[_tokenId];
     if (price != 0 && price < _sellPrice) {
@@ -229,7 +228,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
       revert NotEnoughAllocationRemaining(_tokenId, totalSold, allocationRemaining);
     }
     tokenInfo.allocationRemaining = uint80(allocationRemaining - totalSold);
-    itemNFT.burn(msg.sender, _tokenId, _quantity);
   }
 
   function _liquidatePrice(uint16 _tokenId, uint _totalBrushPerItem) private view returns (uint80 price) {
@@ -331,7 +329,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, Multicall {
     emit RemoveUnsellableItems(itemTokenIds);
   }
 
-  function setItemNFT(ItemNFT _itemNFT) external onlyOwner {
+  function setItemNFT(IItemNFT _itemNFT) external onlyOwner {
     itemNFT = _itemNFT;
   }
 

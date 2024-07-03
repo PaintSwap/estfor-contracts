@@ -344,7 +344,6 @@ async function main() {
   });
   await passiveActions.deployed();
   console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
-
   if (network.chainId == 250) {
     await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]);

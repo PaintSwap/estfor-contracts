@@ -25,12 +25,10 @@ library WorldLibrary {
   error OutputTokenIdCannotBeEmpty();
   error RandomRewardsMustBeInOrder(uint16 chance1, uint16 chance2);
   error RandomRewardNoDuplicates();
-  error GuaranteedRewardsMustBeInOrder();
   error GuaranteedRewardsNoDuplicates();
   error NotAFactorOf3600();
   error TooManyGuaranteedRewards();
   error TooManyRandomRewards();
-  error FirstMinSkillMustBeActionSkill();
 
   function checkActionChoice(ActionChoiceInput calldata _actionChoiceInput) external pure {
     uint16[] calldata inputTokenIds = _actionChoiceInput.inputTokenIds;
@@ -81,10 +79,6 @@ library WorldLibrary {
       revert LengthMismatch();
     }
 
-    if (minSkills.length != 0 && minSkills[0] != _actionChoiceInput.skill) {
-      revert FirstMinSkillMustBeActionSkill();
-    }
-
     for (uint i; i < minSkills.length; ++i) {
       if (minSkills[i] == Skill.NONE) {
         revert InvalidSkill();
@@ -122,9 +116,6 @@ library WorldLibrary {
     if (guaranteedRewardsLength > 1) {
       _actionRewards.guaranteedRewardTokenId2 = _guaranteedRewards[1].itemTokenId;
       _actionRewards.guaranteedRewardRate2 = _guaranteedRewards[1].rate;
-      if (_actionRewards.guaranteedRewardRate2 < _actionRewards.guaranteedRewardRate1) {
-        revert GuaranteedRewardsMustBeInOrder();
-      }
       if (_actionRewards.guaranteedRewardTokenId1 == _actionRewards.guaranteedRewardTokenId2) {
         revert GuaranteedRewardsNoDuplicates();
       }
@@ -132,10 +123,6 @@ library WorldLibrary {
     if (guaranteedRewardsLength > 2) {
       _actionRewards.guaranteedRewardTokenId3 = _guaranteedRewards[2].itemTokenId;
       _actionRewards.guaranteedRewardRate3 = _guaranteedRewards[2].rate;
-
-      if (_actionRewards.guaranteedRewardRate3 < _actionRewards.guaranteedRewardRate2) {
-        revert GuaranteedRewardsMustBeInOrder();
-      }
 
       U256 bounds = guaranteedRewardsLength.dec().asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
