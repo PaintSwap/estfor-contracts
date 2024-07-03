@@ -90,7 +90,7 @@ if (!isBeta) {
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
   itemNFTLibrary = "0x2d0b79a4d76d6fd86b8ba08acc68d3f35430aa7a";
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
-  estforLibrary = "0x52ecba8c563f686f9d7964a89fbc1956523ce105";
+  estforLibrary = "0xc74af3e5e5c2e1fcde9e0e9828190da06722a997";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
@@ -114,7 +114,7 @@ if (!isBeta) {
   genericInstantVRFActionStrategy = "0x2ea7d26184188ec7495acaa84a7de1292e8a1794";
   eggInstantVRFActionStrategy = "0x141234B4071e2D40e24F69788522127658285a49";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
-  lockedBankVaultsLibrary = "TODO";
+  lockedBankVaultsLibrary = "0x17760193a82d3f0344e552390769c3326ea0ca1d";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";

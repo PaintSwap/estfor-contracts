@@ -61,6 +61,7 @@ async function main() {
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
 
   // Players
+  /*
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
@@ -95,7 +96,7 @@ async function main() {
     itemNFTLibrary = await ItemNFTLibrary.attach(ITEM_NFT_LIBRARY_ADDRESS);
   }
   console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
-  /*
+  
   const ItemNFT = (
     await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
   ).connect(owner);
@@ -189,7 +190,7 @@ async function main() {
   });
   await adminAccess.deployed();
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
-
+*/
   const newPromotionsLibrary = false;
   const PromotionsLibrary = await ethers.getContractFactory("PromotionsLibrary");
   let promotionsLibrary: PromotionsLibrary;
@@ -217,7 +218,7 @@ async function main() {
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
-
+  /*
   // Instant actions
   const InstantActions = (await ethers.getContractFactory("InstantActions")).connect(owner);
   const instantActions = await upgrades.upgradeProxy(INSTANT_ACTIONS_ADDRESS, InstantActions, {
@@ -369,18 +370,20 @@ async function main() {
   });
   await passiveActions.deployed();
   console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
+  */
+
   if (network.chainId == 250) {
-    await verifyContracts([players.address]);
+    /* await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]);
-    await verifyContracts([itemNFT.address]);
+        await verifyContracts([itemNFT.address]);
     await verifyContracts([shop.address]);
-    await verifyContracts([quests.address]);
+    await verifyContracts([quests.address]); */
     await verifyContracts([clans.address]);
-    await verifyContracts([world.address]);
-    await verifyContracts([worldLibrary.address]);
+    /*    await verifyContracts([world.address]);
+    await verifyContracts([worldLibrary.address]); */
     await verifyContracts([estforLibrary.address]);
-    await verifyContracts([adminAccess.address]);
-    /*        await verifyContracts([players.address]);
+    /*    await verifyContracts([adminAccess.address]);
+           await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]);
     await verifyContracts([itemNFT.address]);
     await verifyContracts([shop.address]);
@@ -394,7 +397,9 @@ async function main() {
         await verifyContracts([adminAccess.address]);
     await verifyContracts([bankRegistry.address]);
     await verifyContracts([wishingWell.address]);
+    */
     await verifyContracts([promotions.address]);
+    /*
     await verifyContracts([instantActions.address]);
     await verifyContracts([vrfRequestInfo.address]);
     await verifyContracts([instantVRFActions.address]);
@@ -405,8 +410,9 @@ async function main() {
         await verifyContracts([eggInstantVRFActionStrategy.address]);
     await verifyContracts([petNFT.address]); */
     await verifyContracts([lockedBankVaults.address]);
-    await verifyContracts([territories.address]); /*
-    await verifyContracts([decoratorProvider.address]);
+    await verifyContracts([territories.address]);
+    await verifyContracts([lockedBankVaultsLibrary.address]);
+    /*    await verifyContracts([decoratorProvider.address]);
     await verifyContracts([combatantsHelper.address]);
     await verifyContracts([royaltyReceiver.address]);
     await verifyContracts([passiveActions.address]); */

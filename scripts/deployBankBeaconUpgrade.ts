@@ -18,7 +18,7 @@ async function main() {
 
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
   console.log("bankImplAddress", bankImplAddress);
-  await verifyContracts([bankImplAddress]);
+  await verifyContracts([bankImplAddress, bank.address]);
 
   if (isBeta) {
     // Also update the old first week's beta clans
