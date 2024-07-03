@@ -356,6 +356,69 @@ describe("Bank", function () {
     ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
   });
 
+  it("Should be able to deposit and withdraw other ERC1155 NFTs", async function () {
+    const {
+      clans,
+      playerId,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      twitter,
+      Bank,
+      bankFactory,
+      brush,
+      playerNFT,
+      avatarId,
+    } = await loadFixture(bankFixture);
+
+    const clanId = 1;
+    const clanBankAddress = ethers.utils.getContractAddress({
+      from: bankFactory.address,
+      nonce: clanId,
+    });
+    await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
+
+    await brush.mint(alice.address, 1000);
+    await brush.connect(alice).approve(clanBankAddress, 1000);
+
+    const bank = await Bank.attach(clanBankAddress);
+
+    const erc1155 = await ethers.deployContract("MockERC1155");
+    const tokenId = 1;
+    await erc1155.mintSpecific(bank.address, tokenId, 1000);
+
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+    await expect(bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, erc1155.address, tokenId, 400))
+      .to.emit(bank, "WithdrawNFT")
+      .withArgs(alice.address, playerId, bob.address, bobPlayerId, erc1155.address, tokenId, 400);
+
+    expect(await erc1155.balanceOf(bob.address, tokenId)).to.eq(400);
+    expect(await erc1155.balanceOf(bank.address, tokenId)).to.eq(600);
+
+    // Cannot send erc721s, so there's nothing to withdraw there
+    const erc721 = await ethers.deployContract("MockERC721");
+    await expect(erc721.mint(bank.address)).to.be.reverted;
+
+    await expect(
+      bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, erc721.address, tokenId, 1)
+    ).to.be.revertedWithCustomError(bank, "NFTTypeNotSupported");
+
+    await expect(
+      bank.connect(alice).withdrawNFT(playerId, alice.address, bobPlayerId, erc721.address, tokenId, 1)
+    ).to.be.revertedWithCustomError(bank, "ToIsNotOwnerOfPlayer");
+
+    // Cannot withdraw itemNFTs
+    await expect(bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, erc1155.address, tokenId, 400));
+
+    // Must be at least treasurer to withdraw
+    await clans.connect(alice).changeRank(clanId, playerId, ClanRank.SCOUT, playerId);
+    await expect(
+      bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, brush.address, 250)
+    ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
+  });
+
   describe("Withdraw tokens to many users", function () {
     it("Withdrawer is not owner of player", async function () {
       const {clans, playerId, alice, clanName, discord, telegram, twitter, Bank, bankFactory, brush} =

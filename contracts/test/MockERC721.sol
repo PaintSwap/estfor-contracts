@@ -13,6 +13,6 @@ contract MockERC721 is ERC721 {
   }
 
   function mint(address _to) external {
-    _mint(_to, ++currentId);
+    _safeMint(_to, ++currentId);
   }
 }
