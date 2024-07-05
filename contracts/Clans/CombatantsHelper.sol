@@ -40,9 +40,8 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   IClans public clans;
   IPlayers public players;
   ICombatants public territories;
+  uint24 private combatantChangeCooldown;
   ICombatants public lockedVaults;
-
-  uint public constant COMBATANT_COOLDOWN = 3 days;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -88,6 +87,8 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
 
     adminAccess = AdminAccess(_adminAccess);
     isBeta = _isBeta;
+
+    combatantChangeCooldown = _isBeta ? 1 minutes : 3 days;
   }
 
   function assignCombatants(
@@ -129,16 +130,16 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     bool _setCombatants,
     uint48[] calldata _playerIds,
     ICombatants _otherCombatants,
-    bool _setOtherCombantants,
+    bool _setOtherCombatants,
     uint48[] calldata _otherPlayerIds,
     uint _clanId,
     uint _leaderPlayerId
   ) private {
     if (_setCombatants) {
-      uint newCombatantCooldownTimestamp = block.timestamp + COMBATANT_COOLDOWN;
+      uint newCombatantCooldownTimestamp = block.timestamp + combatantChangeCooldown;
       // Check they are not being placed as a locked vault combatant
       for (uint i; i < _playerIds.length; ++i) {
-        if (_setOtherCombantants) {
+        if (_setOtherCombatants) {
           if (_otherPlayerIds.length != 0) {
             uint searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
             if (searchIndex != type(uint).max) {
@@ -173,6 +174,11 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     } else if (_playerIds.length > 0) {
       revert SetCombatantsIncorrectly();
     }
+  }
+
+  // TODO: Can delete after upgrade
+  function newUpgrade() external {
+    combatantChangeCooldown = isBeta ? 1 minutes : 3 days;
   }
 
   function clearCooldowns(uint48[] calldata _playerIds) public isAdminAndBeta {

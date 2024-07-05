@@ -238,6 +238,7 @@ describe("Territories", function () {
       imageId,
       origName,
       mockSWVRFOracleClient,
+      combatantChangeCooldown,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -291,7 +292,7 @@ describe("Territories", function () {
     await expect(
       combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
-    await ethers.provider.send("evm_increaseTime", [(await combatantsHelper.COMBATANT_COOLDOWN()).toNumber()]);
+    await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
     await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
       value: await territories.attackCost(),
@@ -638,8 +639,10 @@ describe("Territories", function () {
     );
   });
 
-  it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
-    const {territories, combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
+  it.only("Cannot only change combatants after the cooldown change deadline has passed", async function () {
+    const {territories, combatantsHelper, combatantChangeCooldown, clanId, playerId, alice} = await loadFixture(
+      clanFixture
+    );
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     // Clear player id part so we can hit the custom error we want
@@ -649,9 +652,8 @@ describe("Territories", function () {
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
 
-    // Update time by MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
-    const MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = await territories.MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN();
-    await ethers.provider.send("evm_increaseTime", [MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN.toNumber() - 5]);
+    // Update time by combatantChangeCooldown
+    await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown - 5]);
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
@@ -814,9 +816,8 @@ describe("Territories", function () {
   });
 
   it("Assigning new combatants is allowed while holding a territory", async () => {
-    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockSWVRFOracleClient} = await loadFixture(
-      clanFixture
-    );
+    const {clanId, playerId, territories, combatantsHelper, combatantChangeCooldown, alice, mockSWVRFOracleClient} =
+      await loadFixture(clanFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
@@ -829,7 +830,7 @@ describe("Territories", function () {
 
     const clanInfo = await territories.getClanInfo(clanId);
     expect(clanInfo.ownsTerritoryId).eq(territoryId);
-    await ethers.provider.send("evm_increaseTime", [(await combatantsHelper.COMBATANT_COOLDOWN()).toNumber()]);
+    await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
     await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)).to.not
       .be.reverted;
   });

@@ -524,6 +524,7 @@ export const playersFixture = async function () {
     petNFT,
     PetNFT,
     lockedBankVaultsLibrary,
+    lockedFundsPeriod,
     initialMMR,
   };
 };

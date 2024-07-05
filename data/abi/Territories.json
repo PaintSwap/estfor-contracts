@@ -801,19 +801,6 @@
   },
   {
     "inputs": [],
-    "name": "MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "PERCENTAGE_EMISSION_MUL",
     "outputs": [
       {
@@ -1403,6 +1390,13 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "newUpgrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

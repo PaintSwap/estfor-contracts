@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {playersFixture} from "../Players/PlayersFixture";
 import {ethers} from "hardhat";
 import {expect} from "chai";
+import {isBeta} from "../../scripts/utils";
 
 export async function clanFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -44,10 +45,10 @@ export async function clanFixture() {
   const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
   // All these must match the constants inside LockedBankVaults.sol
   const MAX_LOCKED_VAULTS = 100;
-  const LOCK_PERIOD = 7 * 86400; // 7 days
-  const ATTACKING_COOLDOWN = 4 * 3600; // 4 hours
-  const MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 * 86400; // 3 days
-
+  // This must match the constructor of LockedBankVaults.sol
+  const attackingCooldown = isBeta ? 60 : 4 * 3600;
+  const reattackCooldown = isBeta ? 3 * 60 : 24 * 3600;
+  const combatantChangeCooldown = isBeta ? 60 : 3 * 86400;
   const editNameCost = await clans.editNameCost();
   return {
     ...fixture,
@@ -64,9 +65,9 @@ export async function clanFixture() {
     bankAddress,
     LockedBankVaultsLibrary,
     MAX_LOCKED_VAULTS,
-    LOCK_PERIOD,
-    ATTACKING_COOLDOWN,
-    MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN,
+    attackingCooldown,
+    reattackCooldown,
+    combatantChangeCooldown,
   };
 }
 

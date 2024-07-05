@@ -59,9 +59,9 @@ async function main() {
     estforLibrary = await EstforLibrary.attach(ESTFOR_LIBRARY_ADDRESS);
   }
   console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
-
-  // Players
   /*
+  // Players
+  
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
@@ -218,7 +218,7 @@ async function main() {
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
-  /*
+
   // Instant actions
   const InstantActions = (await ethers.getContractFactory("InstantActions")).connect(owner);
   const instantActions = await upgrades.upgradeProxy(INSTANT_ACTIONS_ADDRESS, InstantActions, {
@@ -227,7 +227,7 @@ async function main() {
   });
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
-*/
+
   // Instant VRF actions
   const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(owner);
   const instantVRFActions = await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
@@ -316,7 +316,7 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    call: "setLockFundsUpgrade", // TODO: Remove after prod deployment
+    call: "newUpgrade", // TODO: Remove after prod deployment
   });
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
@@ -326,17 +326,10 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
+    call: "newUpgrade", // TODO: Remove after prod deployment
   });
   await territories.deployed();
   console.log(`territories = "${territories.address.toLowerCase()}"`);
-  /*
-  const DecoratorProvider = (await ethers.getContractFactory("DecoratorProvider")).connect(owner);
-  const decoratorProvider = await upgrades.upgradeProxy(DECORATOR_PROVIDER_ADDRESS, DecoratorProvider, {
-    kind: "uups",
-    timeout,
-  });
-  await decoratorProvider.deployed();
-  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
 
   const CombatantsHelper = (
     await ethers.getContractFactory("CombatantsHelper", {
@@ -347,10 +340,21 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
+    call: "newUpgrade", // TODO: Remove after prod deployment
   });
   await combatantsHelper.deployed();
   console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);
 
+  /*
+  const DecoratorProvider = (await ethers.getContractFactory("DecoratorProvider")).connect(owner);
+  const decoratorProvider = await upgrades.upgradeProxy(DECORATOR_PROVIDER_ADDRESS, DecoratorProvider, {
+    kind: "uups",
+    timeout,
+  });
+  await decoratorProvider.deployed();
+  console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+
+*
   const RoyaltyReceiver = (await ethers.getContractFactory("RoyaltyReceiver")).connect(owner);
   const royaltyReceiver = (await upgrades.upgradeProxy(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
     kind: "uups",
@@ -382,23 +386,10 @@ async function main() {
     /*    await verifyContracts([world.address]);
     await verifyContracts([worldLibrary.address]); */
     await verifyContracts([estforLibrary.address]);
-    /*    await verifyContracts([adminAccess.address]);
-           await verifyContracts([players.address]);
-    await verifyContracts([playerNFT.address]);
-    await verifyContracts([itemNFT.address]);
-    await verifyContracts([shop.address]);
-       await verifyContracts([quests.address]); */
-    await verifyContracts([clans.address]);
-    /*    await verifyContracts([world.address]);
-    await verifyContracts([worldLibrary.address]);
-  */
-    await verifyContracts([estforLibrary.address]);
-    /*
-        await verifyContracts([adminAccess.address]);
-    await verifyContracts([bankRegistry.address]);
-    await verifyContracts([wishingWell.address]);
-    */
-    await verifyContracts([promotions.address]);
+    /*       await verifyContracts([adminAccess.address]);
+       await verifyContracts([wishingWell.address]);
+     */
+    //  await verifyContracts([promotions.address]);
     /*
     await verifyContracts([instantActions.address]);
     await verifyContracts([vrfRequestInfo.address]); */
@@ -411,9 +402,9 @@ async function main() {
     await verifyContracts([petNFT.address]); */
     await verifyContracts([lockedBankVaults.address]);
     await verifyContracts([territories.address]);
+    await verifyContracts([combatantsHelper.address]);
     await verifyContracts([lockedBankVaultsLibrary.address]);
     /*    await verifyContracts([decoratorProvider.address]);
-    await verifyContracts([combatantsHelper.address]);
     await verifyContracts([royaltyReceiver.address]);
     await verifyContracts([passiveActions.address]); */
   }

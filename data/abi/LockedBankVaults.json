@@ -1254,6 +1254,13 @@
   },
   {
     "inputs": [],
+    "name": "newUpgrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -1369,13 +1376,6 @@
       }
     ],
     "name": "setKValues",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "setLockFundsUpgrade",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

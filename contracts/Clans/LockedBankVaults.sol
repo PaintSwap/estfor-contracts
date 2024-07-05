@@ -129,6 +129,7 @@ contract LockedBankVaults is
   bool private isBeta;
   IBankFactory private bankFactory;
   address private combatantsHelper;
+  uint24 private combatantChangeCooldown;
   address private pool;
   address private dev;
 
@@ -148,6 +149,8 @@ contract LockedBankVaults is
   uint16 private mmrAttackDistance;
   uint8 private Ka; // attacker K-factor
   uint8 private Kd; // defender K-factor
+  uint24 private attackingCooldown;
+  uint24 private reattackingCooldown;
 
   ISamWitchVRF private samWitchVRF;
   uint24 private lockFundsPeriod;
@@ -160,9 +163,6 @@ contract LockedBankVaults is
 
   uint private constant NUM_WORDS = 3;
   uint private constant CALLBACK_GAS_LIMIT = 3_000_000;
-  uint private constant ATTACKING_COOLDOWN = 4 hours;
-  uint private constant MIN_REATTACKING_COOLDOWN = 1 days;
-  uint private constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint private constant MAX_LOCKED_VAULTS = 100;
   uint private constant NUM_PACKED_VAULTS = 2;
 
@@ -258,6 +258,9 @@ contract LockedBankVaults is
     lockFundsPeriod = _lockFundsPeriod;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
+    attackingCooldown = _isBeta ? 1 minutes : 4 hours;
+    reattackingCooldown = _isBeta ? 3 minutes : 1 days;
+    combatantChangeCooldown = _isBeta ? 1 minutes : 3 days;
 
     for (uint i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
       prices[i] = uint64(tx.gasprice);
@@ -281,7 +284,7 @@ contract LockedBankVaults is
     ClanInfo storage clanInfo = clanInfos[_clanId];
     LockedBankVaultsLibrary.checkCanAssignCombatants(clanInfo, _playerIds);
     clanInfo.playerIds = _playerIds;
-    clanInfo.assignCombatantsCooldownTimestamp = uint40(block.timestamp + MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN);
+    clanInfo.assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
@@ -338,7 +341,7 @@ contract LockedBankVaults is
       itemNFT.burn(msg.sender, _itemTokenId, 1);
     }
 
-    // Check MMRs are within the list, 4 above and 4 below. However at the extremes add it to the other end
+    // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
     LockedBankVaultsLibrary.updateMMRArray(
       sortedClansByMMR,
       _clanId,
@@ -353,7 +356,7 @@ contract LockedBankVaults is
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
 
-    uint40 attackingCooldownTimestamp = uint40(block.timestamp + ATTACKING_COOLDOWN);
+    uint40 attackingCooldownTimestamp = uint40(block.timestamp + attackingCooldown);
     clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
     clanInfo.gasPaid = uint88(msg.value);
     if (isUsingSuperAttack) {
@@ -361,7 +364,7 @@ contract LockedBankVaults is
     }
 
     // Don't change the attacking timestamp if re-attacking
-    uint40 reattackingCooldownTimestamp = uint40(block.timestamp + MIN_REATTACKING_COOLDOWN);
+    uint40 reattackingCooldownTimestamp = uint40(block.timestamp + reattackingCooldown);
     uint lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
     uint higherClanId = _clanId < _defendingClanId ? _defendingClanId : _clanId;
     ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][higherClanId];
@@ -718,9 +721,12 @@ contract LockedBankVaults is
     emit SetMMRs(_clanIds, _mmrs);
   }
 
-  // TODO: Remove after initial upgrade
-  function setLockFundsUpgrade() external {
-    lockFundsPeriod = isBeta ? 1 days : 7 days;
+  // TODO: Can remove after upgrading
+  function newUpgrade() external {
+    lockFundsPeriod = isBeta ? 30 minutes : 7 days;
+    attackingCooldown = isBeta ? 1 minutes : 4 hours;
+    reattackingCooldown = isBeta ? 3 minutes : 1 days;
+    combatantChangeCooldown = isBeta ? 1 minutes : 3 days;
   }
 
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {

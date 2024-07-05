@@ -23,8 +23,14 @@ async function main() {
   tx = await clans.setInitialMMR(500);
   await tx.wait();
 
-  const clanIds = [1, 2, 3, 4];
-  const mmrs = [1000, 2000, 3000, 4000];
+  const clanIds = [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 24, 46, 49, 50];
+  const mmrs = [500, 800, 800, 1100, 1100, 1400, 1400, 1700, 1700, 2000, 1500, 700, 1500, 2300];
+
+  if (clanIds.length != mmrs.length) {
+    console.log("Length mismatch");
+    return;
+  }
+
   clear = false;
   const chunkSize = 100;
   for (let i = 0; i < clanIds.length; i += chunkSize) {
