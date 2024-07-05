@@ -283,7 +283,7 @@ contract Territories is
     setComparableSkills(_comparableSkills);
 
     brush.approve(address(_lockedBankVaults), type(uint).max);
-    combatantChangeCooldown = _isBeta ? 1 minutes : 3 days;
+    combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
 
     _addTerritories(_territories);
   }
@@ -725,7 +725,7 @@ contract Territories is
 
   // TODO: Remove later
   function newUpgrade() external {
-    combatantChangeCooldown = isBeta ? 1 minutes : 3 days;
+    combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
   }
 
   function clearCooldowns(uint _clanId) external isAdminAndBeta {

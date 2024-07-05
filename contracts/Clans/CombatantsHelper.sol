@@ -88,7 +88,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     adminAccess = AdminAccess(_adminAccess);
     isBeta = _isBeta;
 
-    combatantChangeCooldown = _isBeta ? 1 minutes : 3 days;
+    combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
   }
 
   function assignCombatants(
@@ -178,7 +178,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
 
   // TODO: Can delete after upgrade
   function newUpgrade() external {
-    combatantChangeCooldown = isBeta ? 1 minutes : 3 days;
+    combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
   }
 
   function clearCooldowns(uint48[] calldata _playerIds) public isAdminAndBeta {
