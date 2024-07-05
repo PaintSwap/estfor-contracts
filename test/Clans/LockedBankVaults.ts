@@ -2379,5 +2379,7 @@ describe("LockedBankVaults", function () {
       receipt = await tx.wait();
       expect(receipt.gasUsed).to.be.below(6000000);
     });
+
+    it("TODO - Test attacking vaults with a clan not in the ranking and which has a higher index that the attacking clan", async () => {});
   });
 });

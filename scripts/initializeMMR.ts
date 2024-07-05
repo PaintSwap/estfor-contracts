@@ -23,7 +23,6 @@ async function main() {
     COMBATANTS_HELPER_ADDRESS
   )) as CombatantsHelper;
 
-  /*
   let tx = await lockedBankVaults.setPreventAttacks(true);
   await tx.wait();
   // Just to clear any that might have been added before
@@ -33,10 +32,9 @@ async function main() {
 
   const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);
   tx = await clans.setInitialMMR(500);
-  await tx.wait(); */
+  await tx.wait();
 
-  const clanIds = [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 24, 46, 49, 50];
-
+  const clanIds = [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 24, 46, 49, 50, 48, 60, 7];
   for (const clanId of clanIds) {
     let tx = await lockedBankVaults.clearCooldowns(clanId, []);
     await tx.wait();
@@ -47,9 +45,7 @@ async function main() {
 
   let tx = await combatantsHelper.clearCooldowns(clanIds);
   await tx.wait();
-  /*
-
-  const mmrs = [500, 800, 800, 1100, 1100, 1400, 1400, 1700, 1700, 2000, 1500, 700, 1500, 2300];
+  const mmrs = [500, 800, 800, 1100, 1100, 1400, 1400, 1700, 1700, 2000, 1500, 700, 1500, 2300, 500, 500, 500];
 
   if (clanIds.length != mmrs.length) {
     console.log("Length mismatch");
@@ -78,7 +74,7 @@ async function main() {
   console.log("Set MMR attack distance");
 
   tx = await lockedBankVaults.setPreventAttacks(false);
-  await tx.wait(); */
+  await tx.wait();
 }
 
 main().catch((error) => {

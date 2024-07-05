@@ -175,6 +175,9 @@ library LockedBankVaultsLibrary {
     if (clanIndex == type(uint256).max) {
       clanIndex = _insertMMRArray(_sortedClansByMMR, _clans.getMMR(_clanId), uint32(_clanId));
       _clanInfos[_clanId].isInMMRArray = true;
+      if (clanIndex <= defendingClanIndex) {
+        ++defendingClanIndex;
+      }
     }
 
     if (!_isWithinRange(_sortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance)) {
