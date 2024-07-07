@@ -46,9 +46,9 @@ export async function clanFixture() {
   // All these must match the constants inside LockedBankVaults.sol
   const MAX_LOCKED_VAULTS = 100;
   // This must match the constructor of LockedBankVaults.sol
-  const attackingCooldown = isBeta ? 60 : 4 * 3600;
-  const reattackCooldown = isBeta ? 3 * 60 : 24 * 3600;
-  const combatantChangeCooldown = isBeta ? 60 : 3 * 86400;
+  const attackingCooldown = isBeta ? 1.5 * 60 : 4 * 3600;
+  const reattackingCooldown = isBeta ? 3 * 60 : 24 * 3600;
+  const combatantChangeCooldown = isBeta ? 5 * 60 : 3 * 86400;
   const editNameCost = await clans.editNameCost();
   return {
     ...fixture,
@@ -66,7 +66,7 @@ export async function clanFixture() {
     LockedBankVaultsLibrary,
     MAX_LOCKED_VAULTS,
     attackingCooldown,
-    reattackCooldown,
+    reattackingCooldown,
     combatantChangeCooldown,
   };
 }

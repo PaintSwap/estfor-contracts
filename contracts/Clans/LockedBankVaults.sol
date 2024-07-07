@@ -259,7 +259,7 @@ contract LockedBankVaults is
     adminAccess = _adminAccess;
     isBeta = _isBeta;
     attackingCooldown = _isBeta ? 1 minutes + 30 seconds : 4 hours;
-    reattackingCooldown = _isBeta ? 3 minutes : 1 days;
+    reattackingCooldown = _isBeta ? 6 minutes : 1 days;
     combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
 
     for (uint i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
@@ -725,7 +725,7 @@ contract LockedBankVaults is
   function newUpgrade() external {
     lockFundsPeriod = isBeta ? 7 days : 7 days;
     attackingCooldown = isBeta ? 1 minutes + 30 seconds : 4 hours;
-    reattackingCooldown = isBeta ? 3 minutes : 1 days;
+    reattackingCooldown = isBeta ? 6 minutes : 1 days;
     combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
   }
 

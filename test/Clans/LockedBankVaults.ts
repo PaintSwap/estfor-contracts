@@ -259,7 +259,7 @@ describe("LockedBankVaults", function () {
       mockSWVRFOracleClient,
       lockedFundsPeriod,
       attackingCooldown,
-      reattackCooldown,
+      reattackingCooldown,
       combatantChangeCooldown,
       players,
     } = await loadFixture(clanFixture);
@@ -349,7 +349,7 @@ describe("LockedBankVaults", function () {
     await combatantsHelper
       .connect(alice)
       .assignCombatants(clanId, false, [], true, [playerId, ownerPlayerId, erinPlayerId, frankPlayerId], playerId);
-    await ethers.provider.send("evm_increaseTime", [reattackCooldown]);
+    await ethers.provider.send("evm_increaseTime", [reattackingCooldown]);
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
@@ -835,6 +835,7 @@ describe("LockedBankVaults", function () {
       brush,
       mockSWVRFOracleClient,
       attackingCooldown,
+      reattackingCooldown,
     } = await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);

@@ -639,7 +639,7 @@ describe("Territories", function () {
     );
   });
 
-  it.only("Cannot only change combatants after the cooldown change deadline has passed", async function () {
+  it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
     const {territories, combatantsHelper, combatantChangeCooldown, clanId, playerId, alice} = await loadFixture(
       clanFixture
     );
