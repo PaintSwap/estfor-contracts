@@ -299,8 +299,8 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
         "0x"
       );
 
-      expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(firstAmount);
+      expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(firstAmount);
       expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
     });
 

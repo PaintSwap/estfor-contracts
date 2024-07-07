@@ -212,13 +212,7 @@ contract ERC1155UpgradeableSinglePerToken is
     if (fromBalance < amount) {
       revert ERC1155InsufficientBalance();
     }
-    bool isBurnt = to == 0x000000000000000000000000000000000000dEaD;
-    if (isBurnt) {
-      unchecked {
-        --_totalSupplyAll;
-      }
-      _updateOwner(id, address(0));
-    } else if (from != to) {
+    if (from != to) {
       _updateOwner(id, to);
     }
 
@@ -270,7 +264,7 @@ contract ERC1155UpgradeableSinglePerToken is
       }
     }
 
-    bool isBurnt = to == address(0) || to == 0x000000000000000000000000000000000000dEaD;
+    bool isBurnt = to == address(0);
     if (isBurnt) {
       unchecked {
         _totalSupplyAll = uint40(_totalSupplyAll - ids.length);
