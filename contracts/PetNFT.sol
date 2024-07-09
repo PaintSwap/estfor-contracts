@@ -432,7 +432,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function _updateOwner(uint256 _id, address _to) internal override {
-    bool isBurnt = _to == address(0) || _to == 0x000000000000000000000000000000000000dEaD;
+    bool isBurnt = _to == address(0);
     if (isBurnt) {
       delete pets[_id];
     } else {
