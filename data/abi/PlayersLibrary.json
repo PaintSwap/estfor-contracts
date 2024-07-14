@@ -516,6 +516,11 @@
         "type": "uint8"
       },
       {
+        "internalType": "uint8",
+        "name": "_alphaCombatHealing",
+        "type": "uint8"
+      },
+      {
         "components": [
           {
             "internalType": "uint256[]",

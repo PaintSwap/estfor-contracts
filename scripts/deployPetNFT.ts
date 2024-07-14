@@ -55,9 +55,9 @@ async function main() {
   console.log("petNFT setPlayers");
 
   const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
-  tx = await players.setPetNFT(petNFT.address);
-  await tx.wait();
-  console.log("Players setPetNFT");
+  //  tx = await players.setPetNFT(petNFT.address);
+  //  await tx.wait();
+  //  console.log("Players setPetNFT");
 
   const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
   tx = await instantVRFActions.setPetNFT(petNFT.address);

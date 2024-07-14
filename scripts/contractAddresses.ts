@@ -90,7 +90,7 @@ if (!isBeta) {
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
   itemNFTLibrary = "0x2d0b79a4d76d6fd86b8ba08acc68d3f35430aa7a";
   itemNFT = "0x1dae89b469d15b0ded980007dfdc8e68c363203d";
-  estforLibrary = "0xc74af3e5e5c2e1fcde9e0e9828190da06722a997";
+  estforLibrary = "0xAD4Fe5A1d43F986659F548Cc899dCD4045FA9974";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
   promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
@@ -98,12 +98,12 @@ if (!isBeta) {
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
-  playersLibrary = "0x6a6f367be4ff7cfb11d1f915555f8edb8213c132";
-  playersImplQueueActions = "0xcec1fb2cff1f60b328ea110b112ad3f82b81dabb";
-  playersImplProcessActions = "0x54be3ac792f05d98991a17df82eea9b71467d783";
-  playersImplRewards = "0x8d7ac7dc7854ce05ece312c35ec791d882b60598";
-  playersImplMisc = "0xc595c22c1fc62b5da2a84ed456172e54fc27e758";
-  playersImplMisc1 = "0xf94b24dd64f9a6906849b2b1f1fe98c0090d47ad";
+  playersLibrary = "0x0abc509929f6bfc27938f3709caf333bbae716cf";
+  playersImplQueueActions = "0xbbe4d7d9027e22562386cb794c618cde55ef04be";
+  playersImplProcessActions = "0xb42935f9a62dc3c6f6898d54400b8c6b68a29f22";
+  playersImplRewards = "0x45cac1133b81181af3d0543c33a3e7c568579592";
+  playersImplMisc = "0x55919fc7193d8c5fa409a1d2437ecda0eb395f17";
+  playersImplMisc1 = "0xae72aebfdd87f74aa9409ada0f64a6d9d41a2ec8";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
@@ -114,7 +114,7 @@ if (!isBeta) {
   genericInstantVRFActionStrategy = "0x2ea7d26184188ec7495acaa84a7de1292e8a1794";
   eggInstantVRFActionStrategy = "0x141234B4071e2D40e24F69788522127658285a49";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
-  lockedBankVaultsLibrary = "0x17760193a82d3f0344e552390769c3326ea0ca1d";
+  lockedBankVaultsLibrary = "0x90668ff9ce958c2931e280db465fda897ecd6569";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";

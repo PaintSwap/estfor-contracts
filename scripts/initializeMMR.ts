@@ -43,7 +43,7 @@ async function main() {
     await tx.wait();
   }
 
-  let tx = await combatantsHelper.clearCooldowns(clanIds);
+  tx = await combatantsHelper.clearCooldowns(clanIds);
   await tx.wait();
   const mmrs = [500, 800, 800, 1100, 1100, 1400, 1400, 1700, 1700, 2000, 1500, 700, 1500, 2300, 500, 500, 500];
 

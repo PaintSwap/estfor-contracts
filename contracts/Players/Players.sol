@@ -562,8 +562,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   // TODO: Can remove after integrated on live contracts
-  function setPetNFT(PetNFT _petNFT) external onlyOwner {
-    petNFT = _petNFT;
+  function setAlphaCombatHealing(uint8 _alphaCombatHealing) external onlyOwner {
+    alphaCombatHealing = _alphaCombatHealing;
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {

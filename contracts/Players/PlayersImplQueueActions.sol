@@ -19,6 +19,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint16;
   using UnsafeMath for uint32;
+  using UnsafeMath for uint56;
   using UnsafeMath for uint64;
   using UnsafeMath for uint256;
 
@@ -152,7 +153,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     emit SetActionQueueV2(from, _playerId, queuedActions, attire, player.currentActionStartTime, _queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
-    nextQueueId = queueId.asUint64();
+    nextQueueId = queueId.asUint56();
 
     if (_questId != 0) {
       quests.activateQuest(from, _playerId, _questId);

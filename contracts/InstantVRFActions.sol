@@ -98,7 +98,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   PetNFT private petNFT;
 
   uint public constant MAX_ACTION_AMOUNT = 64;
-  uint private constant CALLBACK_GAS_LIMIT_PER_ACTION = 70_000;
+  uint private constant CALLBACK_GAS_LIMIT_PER_ACTION = 80_000;
   uint private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {

@@ -30,6 +30,14 @@ describe("LockedBankVaultsLibrary", function () {
       expect(newAttackingMMR).to.equal(16);
       expect(newDefendingMMR).to.equal(0);
 
+      [newAttackingMMR, newDefendingMMR] = await lockedBankVaultsLibrary.getNewMMRs(Ka, Kd, 0, 0, true);
+      expect(newAttackingMMR).to.equal(16);
+      expect(newDefendingMMR).to.equal(0);
+
+      [newAttackingMMR, newDefendingMMR] = await lockedBankVaultsLibrary.getNewMMRs(Ka, Kd, 0, 0, false);
+      expect(newAttackingMMR).to.equal(0);
+      expect(newDefendingMMR).to.equal(16);
+
       // Max 65535, just check you can get close to it
       [newAttackingMMR, newDefendingMMR] = await lockedBankVaultsLibrary.getNewMMRs(Ka, Kd, 65000, 65000, true);
       expect(newAttackingMMR).to.equal(65016);

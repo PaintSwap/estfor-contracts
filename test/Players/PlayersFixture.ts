@@ -447,6 +447,8 @@ export const playersFixture = async function () {
   await territories.setCombatantsHelper(combatantsHelper.address);
   await lockedBankVaults.setAddresses(territories.address, combatantsHelper.address);
 
+  await players.setAlphaCombatHealing(0); // This was introduced later, so to not mess up existing tests reset this to 0
+
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
     name: "Name goes here",
