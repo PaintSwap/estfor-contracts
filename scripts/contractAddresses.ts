@@ -109,10 +109,10 @@ if (!isBeta) {
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
-  instantVRFActions = "0xe297508ff83ba7a984ec8778ea67d82e049eda58";
+  instantVRFActions = "0xbbcc13d2359ad6f2c02e172de46097a1c534ef89";
   vrfRequestInfo = "0x9bcf94e6c067c575dd6a748e45330b4ae4dc0483";
-  genericInstantVRFActionStrategy = "0x2ea7d26184188ec7495acaa84a7de1292e8a1794";
-  eggInstantVRFActionStrategy = "0x141234B4071e2D40e24F69788522127658285a49";
+  genericInstantVRFActionStrategy = "0xc4c92d3987cc0bad3219e696653eb87eddda78c6";
+  eggInstantVRFActionStrategy = "0x941369948CC8a4b5b8eFb1F688Eddfe26A736039";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   lockedBankVaultsLibrary = "0x90668ff9ce958c2931e280db465fda897ecd6569";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
