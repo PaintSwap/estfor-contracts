@@ -98,7 +98,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   PetNFT private petNFT;
 
   uint public constant MAX_ACTION_AMOUNT = 64;
-  uint private constant CALLBACK_GAS_LIMIT_PER_ACTION = 80_000;
+  uint private constant CALLBACK_GAS_LIMIT_PER_ACTION = 120_000;
   uint private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
@@ -356,7 +356,15 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _requestRandomWords(uint numRandomWords, uint numActions) private returns (bytes32 requestId) {
-    requestId = samWitchVRF.requestRandomWords(numRandomWords, CALLBACK_GAS_LIMIT_PER_ACTION * numActions);
+    uint callbackGasLimit = CALLBACK_GAS_LIMIT_PER_ACTION * numActions;
+    // Have both a minimum and maximum gas limit
+    if (callbackGasLimit < 200_000) {
+      callbackGasLimit = 200_000;
+    } else if (callbackGasLimit > 5_000_000) {
+      callbackGasLimit = 5_000_000;
+    }
+
+    requestId = samWitchVRF.requestRandomWords(numRandomWords, callbackGasLimit);
   }
 
   function _isActionFullMode(uint _actionId) private view returns (bool) {

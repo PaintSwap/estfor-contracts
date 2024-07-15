@@ -594,6 +594,993 @@
           }
         }
       }
+    },
+    "41559ca728c2286eee61abf05d1c62cce093e72645b33fce267b71bf97bc8a00": {
+      "address": "0x8d4c8FF9Eb2dcb7b6778f3Cdf32984b55edc4270",
+      "txHash": "0x933f4a575ae4478481f29c22c20d76ed94c1deaf5fbca5a6664772bf2bd2f5d7",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(ItemNFT)15234",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:86"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(Players)21649",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:87"
+          },
+          {
+            "label": "playerActionInfos",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_uint256,t_struct(PlayerActionInfo)11448_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:88"
+          },
+          {
+            "label": "actions",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)11465_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:89"
+          },
+          {
+            "label": "requestIdToPlayer",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_bytes32,t_struct(Player)11470_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:90"
+          },
+          {
+            "label": "strategies",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_enum(InstantVRFActionType)36929,t_address)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:91"
+          },
+          {
+            "label": "vrfRequestInfo",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_contract(VRFRequestInfo)30116",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:93"
+          },
+          {
+            "label": "gasCostPerUnit",
+            "offset": 20,
+            "slot": "207",
+            "type": "t_uint64",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:94"
+          },
+          {
+            "label": "oracle",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_address",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:96"
+          },
+          {
+            "label": "samWitchVRF",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_contract(ISamWitchVRF)37805",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:97"
+          },
+          {
+            "label": "petNFT",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_contract(PetNFT)17736",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:98"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint16)10_storage": {
+            "label": "uint16[10]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ISamWitchVRF)37805": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)15234": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)17736": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Players)21649": {
+            "label": "contract Players",
+            "numberOfBytes": "20"
+          },
+          "t_contract(VRFRequestInfo)30116": {
+            "label": "contract VRFRequestInfo",
+            "numberOfBytes": "20"
+          },
+          "t_enum(InstantVRFActionType)36929": {
+            "label": "enum InstantVRFActionType",
+            "members": ["NONE", "GENERIC", "FORGING", "EGG"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_struct(Player)11470_storage)": {
+            "label": "mapping(bytes32 => struct InstantVRFActions.Player)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(InstantVRFActionType)36929,t_address)": {
+            "label": "mapping(enum InstantVRFActionType => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)11465_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.InstantVRFAction)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerActionInfo)11448_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.PlayerActionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantVRFAction)11465_storage": {
+            "label": "struct InstantVRFActions.InstantVRFAction",
+            "members": [
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint8",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "strategy",
+                "type": "t_address",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Player)11470_storage": {
+            "label": "struct InstantVRFActions.Player",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "playerId",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerActionInfo)11448_storage": {
+            "label": "struct InstantVRFActions.PlayerActionInfo",
+            "members": [
+              {
+                "label": "actionIdAmountPairs",
+                "type": "t_array(t_uint16)10_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "4acca53533cc77a7d3509fa798320351e31934e36e26009d59a9f7b9d11985f2": {
+      "address": "0x526385E17236fF45423C36FCca22814EA4136324",
+      "txHash": "0x98c2798a88c2ef7a34ab67ee07929d1b5d176ebc93d827786520d7b209b7a220",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(ItemNFT)15198",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:86"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(Players)21613",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:87"
+          },
+          {
+            "label": "playerActionInfos",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_uint256,t_struct(PlayerActionInfo)11448_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:88"
+          },
+          {
+            "label": "actions",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)11465_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:89"
+          },
+          {
+            "label": "requestIdToPlayer",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_bytes32,t_struct(Player)11470_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:90"
+          },
+          {
+            "label": "strategies",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_enum(InstantVRFActionType)36893,t_address)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:91"
+          },
+          {
+            "label": "vrfRequestInfo",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_contract(VRFRequestInfo)30080",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:93"
+          },
+          {
+            "label": "gasCostPerUnit",
+            "offset": 20,
+            "slot": "207",
+            "type": "t_uint64",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:94"
+          },
+          {
+            "label": "oracle",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_address",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:96"
+          },
+          {
+            "label": "samWitchVRF",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_contract(ISamWitchVRF)37769",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:97"
+          },
+          {
+            "label": "petNFT",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_contract(PetNFT)17700",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:98"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint16)10_storage": {
+            "label": "uint16[10]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ISamWitchVRF)37769": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)15198": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)17700": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Players)21613": {
+            "label": "contract Players",
+            "numberOfBytes": "20"
+          },
+          "t_contract(VRFRequestInfo)30080": {
+            "label": "contract VRFRequestInfo",
+            "numberOfBytes": "20"
+          },
+          "t_enum(InstantVRFActionType)36893": {
+            "label": "enum InstantVRFActionType",
+            "members": ["NONE", "GENERIC", "FORGING", "EGG"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_struct(Player)11470_storage)": {
+            "label": "mapping(bytes32 => struct InstantVRFActions.Player)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(InstantVRFActionType)36893,t_address)": {
+            "label": "mapping(enum InstantVRFActionType => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)11465_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.InstantVRFAction)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerActionInfo)11448_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.PlayerActionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantVRFAction)11465_storage": {
+            "label": "struct InstantVRFActions.InstantVRFAction",
+            "members": [
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint8",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "strategy",
+                "type": "t_address",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Player)11470_storage": {
+            "label": "struct InstantVRFActions.Player",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "playerId",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerActionInfo)11448_storage": {
+            "label": "struct InstantVRFActions.PlayerActionInfo",
+            "members": [
+              {
+                "label": "actionIdAmountPairs",
+                "type": "t_array(t_uint16)10_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "771cccf6c71610d80d61f140eb90959e98898d2182114e64ec6e5187ddca12f2": {
+      "address": "0x56616a25dD6A156f0D49B44baA4e3D03E9A23828",
+      "txHash": "0xf73a88d85c16bb51c47a5a092019c528a450cc1067cbcabb095fb66a3809bc25",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(ItemNFT)15256",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:86"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(Players)21671",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:87"
+          },
+          {
+            "label": "playerActionInfos",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_uint256,t_struct(PlayerActionInfo)11448_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:88"
+          },
+          {
+            "label": "actions",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)11465_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:89"
+          },
+          {
+            "label": "requestIdToPlayer",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_bytes32,t_struct(Player)11470_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:90"
+          },
+          {
+            "label": "strategies",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_enum(InstantVRFActionType)36951,t_address)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:91"
+          },
+          {
+            "label": "vrfRequestInfo",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_contract(VRFRequestInfo)30138",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:93"
+          },
+          {
+            "label": "gasCostPerUnit",
+            "offset": 20,
+            "slot": "207",
+            "type": "t_uint64",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:94"
+          },
+          {
+            "label": "oracle",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_address",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:96"
+          },
+          {
+            "label": "samWitchVRF",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_contract(ISamWitchVRF)37827",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:97"
+          },
+          {
+            "label": "petNFT",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_contract(PetNFT)17758",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:98"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint16)10_storage": {
+            "label": "uint16[10]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ISamWitchVRF)37827": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)15256": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)17758": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Players)21671": {
+            "label": "contract Players",
+            "numberOfBytes": "20"
+          },
+          "t_contract(VRFRequestInfo)30138": {
+            "label": "contract VRFRequestInfo",
+            "numberOfBytes": "20"
+          },
+          "t_enum(InstantVRFActionType)36951": {
+            "label": "enum InstantVRFActionType",
+            "members": ["NONE", "GENERIC", "FORGING", "EGG"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_struct(Player)11470_storage)": {
+            "label": "mapping(bytes32 => struct InstantVRFActions.Player)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(InstantVRFActionType)36951,t_address)": {
+            "label": "mapping(enum InstantVRFActionType => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)11465_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.InstantVRFAction)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerActionInfo)11448_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.PlayerActionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantVRFAction)11465_storage": {
+            "label": "struct InstantVRFActions.InstantVRFAction",
+            "members": [
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint8",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "strategy",
+                "type": "t_address",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Player)11470_storage": {
+            "label": "struct InstantVRFActions.Player",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "playerId",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerActionInfo)11448_storage": {
+            "label": "struct InstantVRFActions.PlayerActionInfo",
+            "members": [
+              {
+                "label": "actionIdAmountPairs",
+                "type": "t_array(t_uint16)10_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
     }
   }
 }
