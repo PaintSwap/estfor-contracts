@@ -127,7 +127,17 @@ const config: HardhatUserConfig = {
     flat: true,
     spacing: 2,
     format: "json",
-    except: ["/ozUpgradeable", "/interfaces", "/test", "/helper", "/debug", "@openzeppelin"],
+    except: [
+      "/ozUpgradeable",
+      "/interfaces",
+      "/test",
+      "/helper",
+      "/debug",
+      "/legacy",
+      "SamWitchVRFConsumerUpgradeable",
+      "PlayersImpl*",
+      "@openzeppelin",
+    ],
   },
 };
 

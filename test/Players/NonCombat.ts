@@ -1014,7 +1014,7 @@ describe("Non-Combat Actions", function () {
     // All thieving rewards should be
     it("Steal Nothing", async function () {
       // Check pending rewards, also add a boost, make sure it is 0
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 0; // 0% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
@@ -1100,9 +1100,9 @@ describe("Non-Combat Actions", function () {
         );
       await ethers.provider.send("evm_increaseTime", [3 * 3600]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       await players.connect(alice).processActions(playerId);
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
@@ -1112,7 +1112,7 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Check pendingQueuedActionState().rolls", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChance = 65535;
       const successPercent = 100;
@@ -1150,8 +1150,8 @@ describe("Non-Combat Actions", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1192,7 +1192,7 @@ describe("Non-Combat Actions", function () {
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       await players.connect(alice).processActions(playerId);
       // Should get the loot (Should get rewards if waiting until the next day to claim)
@@ -1201,7 +1201,7 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Steal (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 50.0 / 100; // 50% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
@@ -1239,9 +1239,9 @@ describe("Non-Combat Actions", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1259,12 +1259,12 @@ describe("Non-Combat Actions", function () {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await players.connect(alice).processActions(playerId);
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
@@ -1278,7 +1278,7 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Steal, success percent (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 50.0 / 100; // 50% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
@@ -1318,9 +1318,9 @@ describe("Non-Combat Actions", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1338,12 +1338,12 @@ describe("Non-Combat Actions", function () {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await players.connect(alice).processActions(playerId);
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
@@ -1358,7 +1358,7 @@ describe("Non-Combat Actions", function () {
 
     // Gives +3% XP and +100% success chance
     it("Full natuow equipment", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 1 / 100; // 1% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
@@ -1396,9 +1396,9 @@ describe("Non-Combat Actions", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1479,12 +1479,12 @@ describe("Non-Combat Actions", function () {
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await players.connect(alice).processActions(playerId);
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(
@@ -1499,7 +1499,7 @@ describe("Non-Combat Actions", function () {
 
     it("successPercent not 100", async function () {
       // Check pending rewards, also add a boost, make sure it is 0
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 99 / 100; // 99% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
@@ -1556,9 +1556,9 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [3600]);
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       await players.connect(alice).processActions(playerId);
 

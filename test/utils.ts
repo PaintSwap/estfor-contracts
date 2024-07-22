@@ -1,6 +1,6 @@
 import {EstforTypes} from "@paintswap/estfor-definitions";
 import {BaseContract, ContractTransaction, ethers} from "ethers";
-import {MockOracleClient, MockSWVRFOracleClient, World} from "../typechain-types";
+import {MockVRF, World} from "../typechain-types";
 import {expect} from "chai";
 
 export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
@@ -35,20 +35,20 @@ export const getActionChoiceIds = async (tx: ContractTransaction): Promise<numbe
   return event?.actionChoiceIds;
 };
 
-export const requestAndFulfillRandomWords = async (world: World, mockOracleClient: MockOracleClient) => {
+export const requestAndFulfillRandomWords = async (world: World, mockVRF: MockVRF) => {
   const tx = await world.requestRandomWords();
   let requestId = await getRequestId(tx);
   expect(requestId).to.not.eq(0);
-  await fulfillRandomWords(requestId, world, mockOracleClient);
+  await fulfillRandomWords(requestId, world, mockVRF);
 };
 
 export const fulfillRandomWords = async (
   requestId: number,
   contract: BaseContract,
-  mockOracleClient: MockOracleClient | MockSWVRFOracleClient,
+  mockVRF: MockVRF,
   gasPrice = ethers.BigNumber.from(0)
 ): Promise<ContractTransaction> => {
-  return mockOracleClient.fulfill(requestId, contract.address, {gasPrice});
+  return mockVRF.fulfill(requestId, contract.address, {gasPrice});
 };
 
 export const bronzeHelmetStats: EstforTypes.CombatStats = {

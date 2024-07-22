@@ -5,7 +5,7 @@ import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol"
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {RrpRequesterV0Upgradeable} from "../RrpRequesterV0Upgradeable.sol";
+import {RrpRequesterV0Upgradeable} from "../legacy/RrpRequesterV0Upgradeable.sol";
 
 import {IClans} from "../interfaces/IClans.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";

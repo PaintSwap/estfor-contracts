@@ -23,9 +23,7 @@ describe("Territories", function () {
   });
 
   it("Claim an unoccupied territory", async () => {
-    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockSWVRFOracleClient} = await loadFixture(
-      clanFixture
-    );
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
@@ -39,7 +37,7 @@ describe("Territories", function () {
     expect((await territories.territories(territoryId)).clanIdOccupier).eq(0); // Still 0 until the oracle response is made
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
     expect((await territories.territories(territoryId)).clanIdOccupier).eq(territoryId);
 
     const clanInfo = await territories.getClanInfo(clanId);
@@ -55,9 +53,7 @@ describe("Territories", function () {
   });
 
   it("Cannot attack your own territory", async () => {
-    const {clanId, playerId, territories, combatantsHelper, alice, mockSWVRFOracleClient} = await loadFixture(
-      clanFixture
-    );
+    const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
@@ -65,7 +61,7 @@ describe("Territories", function () {
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     await ethers.provider.send("evm_increaseTime", [86400]);
     await expect(
@@ -74,9 +70,7 @@ describe("Territories", function () {
   });
 
   it("Can attack another territory if you already own one", async () => {
-    const {clanId, playerId, territories, combatantsHelper, alice, mockSWVRFOracleClient} = await loadFixture(
-      clanFixture
-    );
+    const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
@@ -87,12 +81,12 @@ describe("Territories", function () {
     await ethers.provider.send("evm_increaseTime", [86400]);
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId + 1, playerId, {value: await territories.attackCost()});
-    await fulfillRandomWords(requestId + 1, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 1, territories, mockVRF);
     // Old territory should be relinquished has no occupier now
     expect((await territories.territories(territoryId)).clanIdOccupier).eq(0);
     expect((await territories.territories(territoryId + 1)).clanIdOccupier).eq(clanId);
@@ -117,7 +111,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -129,7 +123,7 @@ describe("Territories", function () {
     let {timestamp: battleTimestampAlice} = await ethers.provider.getBlock("latest");
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
@@ -145,7 +139,7 @@ describe("Territories", function () {
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
     let {timestamp: battleTimestampBob} = await ethers.provider.getBlock("latest");
-    await fulfillRandomWords(requestId + 1, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
     const territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(clanId + 1);
@@ -176,7 +170,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -187,7 +181,7 @@ describe("Territories", function () {
     let {timestamp: battleTimestampAlice} = await ethers.provider.getBlock("latest");
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
@@ -203,7 +197,7 @@ describe("Territories", function () {
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
     let {timestamp: battleTimestampBob} = await ethers.provider.getBlock("latest");
-    await fulfillRandomWords(requestId + 1, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
     const territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(clanId);
@@ -237,7 +231,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
       combatantChangeCooldown,
     } = await loadFixture(clanFixture);
 
@@ -254,7 +248,7 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     // The other clan will have 3 players, so if you only have 1 defender you will you lose by default
     for (let i = 0; i < allBattleSkills.length; ++i) {
@@ -297,7 +291,7 @@ describe("Territories", function () {
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
       value: await territories.attackCost(),
     });
-    await fulfillRandomWords(requestId + 1, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
     // TODO: Rejoining the old clan does not add you back as a defender
 
@@ -308,7 +302,7 @@ describe("Territories", function () {
     await territories
       .connect(bob)
       .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()});
-    await fulfillRandomWords(requestId + 2, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 2, territories, mockVRF);
 
     territory = (await territories.getTerrorities())[0];
     expect(territory.clanIdOccupier).eq(bobClanId);
@@ -333,7 +327,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -343,7 +337,7 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a clan of 2 players
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
@@ -368,7 +362,7 @@ describe("Territories", function () {
     const clanInfo = await territories.getClanInfo(bobClanId);
     expect(clanInfo.playerIds.length).eq(0);
 
-    await fulfillRandomWords(requestId + 1, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 1, territories, mockVRF);
     const territory = await territories.territories(territoryId);
     expect(territory.clanIdOccupier).eq(clanId);
   });
@@ -391,7 +385,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -400,7 +394,7 @@ describe("Territories", function () {
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
@@ -420,7 +414,7 @@ describe("Territories", function () {
     const clanInfo = await territories.getClanInfo(bobClanId);
     expect(clanInfo.playerIds.length).eq(0);
 
-    await fulfillRandomWords(requestId + 1, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 1, territories, mockVRF);
     const territory = await territories.territories(territoryId);
     expect(territory.clanIdOccupier).eq(clanId);
   });
@@ -443,7 +437,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -452,7 +446,7 @@ describe("Territories", function () {
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
 
@@ -464,7 +458,7 @@ describe("Territories", function () {
     await territories
       .connect(bob)
       .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()});
-    await fulfillRandomWords(requestId + 1, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
     const territory = await territories.territories(territoryId);
     expect(territory.clanIdOccupier).eq(bobClanId);
@@ -524,17 +518,8 @@ describe("Territories", function () {
   });
 
   it("Occupied territories should emit brush", async () => {
-    const {
-      clanId,
-      playerId,
-      territories,
-      combatantsHelper,
-      brush,
-      alice,
-      bankFactory,
-      lockedBankVaults,
-      mockSWVRFOracleClient,
-    } = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, bankFactory, lockedBankVaults, mockVRF} =
+      await loadFixture(clanFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
@@ -542,7 +527,7 @@ describe("Territories", function () {
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     await brush.mint(alice.address, ethers.utils.parseEther("1000"));
     await brush.connect(alice).approve(territories.address, ethers.utils.parseEther("1000"));
@@ -566,9 +551,7 @@ describe("Territories", function () {
   });
 
   it("Can only claim emissions once every 8 hours", async () => {
-    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockSWVRFOracleClient} = await loadFixture(
-      clanFixture
-    );
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
@@ -577,7 +560,7 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     await brush.mint(alice.address, ethers.utils.parseEther("1000"));
     await brush.connect(alice).approve(territories.address, ethers.utils.parseEther("1000"));
@@ -602,7 +585,7 @@ describe("Territories", function () {
       combatantsHelper,
       brush,
       alice,
-      mockSWVRFOracleClient,
+      mockVRF,
       clans,
       bob,
       playerNFT,
@@ -623,7 +606,7 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     await brush.mint(alice.address, ethers.utils.parseEther("1000"));
     await brush.connect(alice).approve(territories.address, ethers.utils.parseEther("1000"));
@@ -742,7 +725,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -766,13 +749,13 @@ describe("Territories", function () {
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     const {gasPrice} = tx;
 
     // Useful to re-run a battle for testing
     await territories.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
     expect(await territories.movingAverageGasPrice()).to.eq(0);
 
     let attackCost = await territories.attackCost();
@@ -780,7 +763,7 @@ describe("Territories", function () {
     expect(attackCost).to.eq(baseAttackCost);
 
     await territories.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient, gasPrice?.add(1000));
+    await fulfillRandomWords(requestId, territories, mockVRF, gasPrice?.add(1000));
     const bigZero = BigNumber.from(0);
     expect(await territories.movingAverageGasPrice()).to.eq(
       bigZero
@@ -795,13 +778,13 @@ describe("Territories", function () {
     expect(attackCost).to.eq(baseAttackCost.add((await territories.movingAverageGasPrice()).mul(expectedGasLimit)));
 
     await territories.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient, gasPrice?.add(900));
+    await fulfillRandomWords(requestId, territories, mockVRF, gasPrice?.add(900));
     await territories.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient, gasPrice?.add(800));
+    await fulfillRandomWords(requestId, territories, mockVRF, gasPrice?.add(800));
     await territories.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient, gasPrice?.add(500));
+    await fulfillRandomWords(requestId, territories, mockVRF, gasPrice?.add(500));
     await territories.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient, gasPrice?.add(200));
+    await fulfillRandomWords(requestId, territories, mockVRF, gasPrice?.add(200));
 
     expect(await territories.movingAverageGasPrice()).to.eq(
       (gasPrice as BigNumber)
@@ -816,7 +799,7 @@ describe("Territories", function () {
   });
 
   it("Assigning new combatants is allowed while holding a territory", async () => {
-    const {clanId, playerId, territories, combatantsHelper, combatantChangeCooldown, alice, mockSWVRFOracleClient} =
+    const {clanId, playerId, territories, combatantsHelper, combatantChangeCooldown, alice, mockVRF} =
       await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -825,7 +808,7 @@ describe("Territories", function () {
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
     expect((await territories.territories(territoryId)).clanIdOccupier).eq(territoryId);
 
     const clanInfo = await territories.getClanInfo(clanId);
@@ -854,7 +837,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -865,7 +848,7 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
 
     const requestId = 1;
-    await fulfillRandomWords(requestId, territories, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);

@@ -12,7 +12,7 @@ describe("Shop", function () {
     const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
 
     const brush = await ethers.deployContract("MockBrushToken");
-    const mockOracleClient = await ethers.deployContract("MockOracleClient");
+    const mockVRF = await ethers.deployContract("MockVRF");
 
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
@@ -24,11 +24,10 @@ describe("Shop", function () {
     }
 
     // Create the world
-    const subscriptionId = 2;
     const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
     const worldLibrary = await WorldLibrary.deploy();
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+    const world = (await upgrades.deployProxy(World, [mockVRF.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     })) as World;

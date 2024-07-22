@@ -51,7 +51,7 @@ type PromotionInfoInput = {
 describe("Promotions", function () {
   const promotionFixture = async function () {
     const fixture = await loadFixture(playersFixture);
-    await requestAndFulfillRandomWords(fixture.world, fixture.mockOracleClient);
+    await requestAndFulfillRandomWords(fixture.world, fixture.mockVRF);
     return {...fixture};
   };
   describe("1kin", function () {
@@ -215,7 +215,7 @@ describe("Promotions", function () {
 
     // This test might fail if called around 00:00
     it("If an event starts at 00:00 it can use previous day's oracle", async function () {
-      const {promotions, playerId, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+      const {promotions, playerId, alice, world, mockVRF} = await loadFixture(promotionFixture);
 
       // Go to the next 00:00
       const oneDay = 24 * 3600;
@@ -225,7 +225,7 @@ describe("Promotions", function () {
       let promotion = await getBasicSingleMintPromotion();
       promotion = {...promotion, startTime: timestamp, endTime: timestamp + 24 * 3600};
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.addPromotion(promotion);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
     });
@@ -346,13 +346,11 @@ describe("Promotions", function () {
       });
 
       it("Brush cost to enter promotion", async function () {
-        const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(
-          playersFixture
-        );
+        const {promotions, playerId, brush, alice, shop, dev, world, mockVRF} = await loadFixture(playersFixture);
         let promotion = await getBasicSingleMintPromotion();
         promotion = {...promotion, brushCost: ethers.utils.parseEther("1").toString()};
         await promotions.addPromotion(promotion);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await brush.connect(alice).approve(promotions.address, ethers.utils.parseEther("1"));
         await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.be.revertedWith(
           "ERC20: transfer amount exceeds balance"
@@ -416,7 +414,7 @@ describe("Promotions", function () {
 
     describe("Paying for missed days", function () {
       it("Pay for 1 missed day", async function () {
-        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
@@ -432,7 +430,7 @@ describe("Promotions", function () {
 
         // Miss a day
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
         expect(mintView.daysToSet[0]).to.eq(1);
@@ -443,7 +441,7 @@ describe("Promotions", function () {
       });
 
       it("Pay for multiple missed days", async function () {
-        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
@@ -458,9 +456,9 @@ describe("Promotions", function () {
 
         // Miss a couple days
         await ethers.provider.send("evm_increaseTime", [3600 * 24 * 3]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
         expect(mintView.daysToSet[0]).to.eq(3);
@@ -474,9 +472,7 @@ describe("Promotions", function () {
       });
 
       it("Paying for a previous day should use a different random word (give different rewards)", async function () {
-        const {playerId, promotions, brush, alice, world, mockOracleClient, itemNFT} = await loadFixture(
-          promotionFixture
-        );
+        const {playerId, promotions, brush, alice, world, mockVRF, itemNFT} = await loadFixture(promotionFixture);
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
@@ -495,15 +491,15 @@ describe("Promotions", function () {
         ]);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24 * 9]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
         expect(mintView.daysToSet[0]).to.eq(9);
@@ -543,7 +539,7 @@ describe("Promotions", function () {
       });
 
       it("Cannot have duplicates or unsorted in the days array", async function () {
-        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
@@ -561,8 +557,8 @@ describe("Promotions", function () {
 
         // Miss a day
         await ethers.provider.send("evm_increaseTime", [3600 * 24 * 2]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         await expect(
           promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 0])
@@ -574,7 +570,7 @@ describe("Promotions", function () {
       });
 
       it("Cannot pay after the entire streak bonus deadline has passed", async function () {
-        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
           ...promotion,
@@ -586,15 +582,15 @@ describe("Promotions", function () {
         await brush.mint(alice.address, promotion.brushCostMissedDay);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24 * 2]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await expect(
           promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0])
         ).to.be.revertedWithCustomError(promotions, "PromotionFinished");
       });
 
       it("Cannot pay in the future", async function () {
-        const {playerId, promotions, brush, alice, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
         const {timestamp: NOW} = await ethers.provider.getBlock("latest");
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
@@ -617,9 +613,7 @@ describe("Promotions", function () {
     });
 
     it("Check tiered minting is working correctly based on XP", async function () {
-      const {promotions, alice, playerId, players, itemNFT, world, mockOracleClient} = await loadFixture(
-        promotionFixture
-      );
+      const {promotions, alice, playerId, players, itemNFT, world, mockVRF} = await loadFixture(promotionFixture);
       const {timestamp: NOW} = await ethers.provider.getBlock("latest");
       let promotion = await getBasicMultidayMintPromotion();
       promotion = {...promotion, startTime: NOW, endTime: NOW + 7 * 24 * 3600};
@@ -633,7 +627,7 @@ describe("Promotions", function () {
       await world.setDailyRewardPool(5, [{itemTokenId: EstforConstants.RUNITE_ARROW, amount: 10}]);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.IRON_ARROW)).to.eq(10);
@@ -646,7 +640,7 @@ describe("Promotions", function () {
         false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ARROW)).to.eq(10);
 
@@ -658,7 +652,7 @@ describe("Promotions", function () {
         false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.ADAMANTINE_ARROW)).to.eq(10);
 
@@ -670,7 +664,7 @@ describe("Promotions", function () {
         false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(10);
 
@@ -682,7 +676,7 @@ describe("Promotions", function () {
         false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(20);
 
@@ -695,7 +689,7 @@ describe("Promotions", function () {
       );
       // Just get more of runite for now
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(30);
     });
@@ -866,7 +860,7 @@ describe("Promotions", function () {
       });
 
       it("Check streak rewards are randomized", async function () {
-        const {promotions, playerNFT, players, itemNFT, alice, playerId, world, mockOracleClient} = await loadFixture(
+        const {promotions, playerNFT, players, itemNFT, alice, playerId, world, mockVRF} = await loadFixture(
           promotionFixture
         );
 
@@ -891,7 +885,7 @@ describe("Promotions", function () {
 
         // increase time 1 day
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        requestAndFulfillRandomWords(world, mockOracleClient);
+        requestAndFulfillRandomWords(world, mockVRF);
 
         // mint the streak bonus
         for (let i = 0; i < 25; ++i) {
@@ -976,9 +970,7 @@ describe("Promotions", function () {
       }
 
       it("Claim streak bonus", async function () {
-        const {players, promotions, itemNFT, alice, playerId, world, mockOracleClient} = await loadFixture(
-          promotionFixture
-        );
+        const {players, promotions, itemNFT, alice, playerId, world, mockVRF} = await loadFixture(promotionFixture);
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
@@ -989,12 +981,12 @@ describe("Promotions", function () {
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
         // Hit 2 check now
@@ -1004,10 +996,10 @@ describe("Promotions", function () {
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24 - 20]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         const balances = await itemNFT.balanceOfs(alice.address, [
           EstforConstants.HALLOWEEN_BONUS_1,
@@ -1019,7 +1011,7 @@ describe("Promotions", function () {
       });
 
       it("Cannot claim streak bonus twice", async function () {
-        const {players, playerId, alice, promotions, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {players, playerId, alice, promotions, world, mockVRF} = await loadFixture(promotionFixture);
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
@@ -1028,10 +1020,10 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [2 * 3600 * 24 - 20]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await expect(
@@ -1040,7 +1032,7 @@ describe("Promotions", function () {
       });
 
       it("Claim outside claim period", async function () {
-        const {players, playerId, alice, promotions, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {players, playerId, alice, promotions, world, mockVRF} = await loadFixture(promotionFixture);
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
@@ -1049,7 +1041,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [3 * 3600 * 24]); // Extra day has passed
 
@@ -1060,7 +1052,7 @@ describe("Promotions", function () {
       });
 
       it("Not claimed enough days to get streak bonus", async function () {
-        const {players, playerId, alice, promotions, world, mockOracleClient} = await loadFixture(promotionFixture);
+        const {players, playerId, alice, promotions, world, mockVRF} = await loadFixture(promotionFixture);
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
@@ -1068,7 +1060,7 @@ describe("Promotions", function () {
 
         await promotions.addPromotion(promotion);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [3 * 3600 * 24 - 20]);
 
@@ -1079,9 +1071,7 @@ describe("Promotions", function () {
       });
 
       it("The streak bonus rewards should not change during the claimable period", async function () {
-        const {players, playerId, alice, promotions, itemNFT, world, mockOracleClient} = await loadFixture(
-          promotionFixture
-        );
+        const {players, playerId, alice, promotions, itemNFT, world, mockVRF} = await loadFixture(promotionFixture);
 
         let promotion = await getStreakBonusPromotion();
         promotion = {...promotion, numDaysClaimablePeriodStreakBonus: 10};
@@ -1092,11 +1082,11 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await ethers.provider.send("evm_increaseTime", [2 * 3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         const promotionClaim = await promotions.mintPromotionViewNow(playerId, Promotion.XMAS_2023);
         expect(promotionClaim.itemTokenIds.length).to.eq(1);
@@ -1114,7 +1104,7 @@ describe("Promotions", function () {
         // For the remainder of the days the streak bonus should be the same
         for (let i = 0; i < promotion.numDaysClaimablePeriodStreakBonus - 2; ++i) {
           await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-          await requestAndFulfillRandomWords(world, mockOracleClient);
+          await requestAndFulfillRandomWords(world, mockVRF);
           expect(itemTokenId).to.eq(
             (await promotions.mintPromotionViewNow(playerId, Promotion.XMAS_2023)).itemTokenIds[0]
           );
@@ -1127,9 +1117,7 @@ describe("Promotions", function () {
       });
 
       it("Brush cost to enter promotion", async function () {
-        const {promotions, playerId, brush, alice, shop, dev, world, mockOracleClient} = await loadFixture(
-          promotionFixture
-        );
+        const {promotions, playerId, brush, alice, shop, dev, world, mockVRF} = await loadFixture(promotionFixture);
 
         let promotion = await getStreakBonusPromotion();
         promotion = {...promotion, brushCost: ethers.utils.parseEther("1").toString()};

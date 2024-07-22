@@ -17,7 +17,7 @@ import {
   ItemNFT,
   LockedBankVaults,
   MockBrushToken,
-  MockOracleClient,
+  MockVRF,
   MockRouter,
   PassiveActions,
   PetNFT,
@@ -41,7 +41,7 @@ export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
 
   const brush = (await ethers.deployContract("MockBrushToken")) as MockBrushToken;
-  const mockOracleClient = (await ethers.deployContract("MockOracleClient")) as MockOracleClient;
+  const mockVRF = (await ethers.deployContract("MockVRF")) as MockVRF;
 
   // Add some dummy blocks so that world can access previous blocks for random numbers
   for (let i = 0; i < 5; ++i) {
@@ -54,9 +54,8 @@ export const playersFixture = async function () {
 
   // Create the world
   const worldLibrary = (await ethers.deployContract("WorldLibrary")) as WorldLibrary;
-  const subscriptionId = 2;
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-  const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+  const world = (await upgrades.deployProxy(World, [mockVRF.address], {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   })) as World;
@@ -274,7 +273,6 @@ export const playersFixture = async function () {
     kind: "uups",
   })) as InstantActions;
 
-  const mockSWVRFOracleClient = (await ethers.deployContract("MockSWVRFOracleClient")) as MockOracleClient;
   const oracleAddress = dev.address;
 
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
@@ -285,14 +283,7 @@ export const playersFixture = async function () {
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [
-      players.address,
-      itemNFT.address,
-      petNFT.address,
-      oracleAddress,
-      mockSWVRFOracleClient.address,
-      vrfRequestInfo.address,
-    ],
+    [players.address, itemNFT.address, petNFT.address, oracleAddress, mockVRF.address, vrfRequestInfo.address],
     {
       kind: "uups",
     }
@@ -354,7 +345,7 @@ export const playersFixture = async function () {
       shop.address,
       dev.address,
       oracleAddress,
-      mockSWVRFOracleClient.address,
+      mockVRF.address,
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
@@ -381,7 +372,7 @@ export const playersFixture = async function () {
       lockedBankVaults.address,
       itemNFT.address,
       oracleAddress,
-      mockSWVRFOracleClient.address,
+      mockVRF.address,
       allBattleSkills,
       adminAccess.address,
       isBeta,
@@ -482,7 +473,7 @@ export const playersFixture = async function () {
     origName,
     editNameBrushPrice,
     upgradePlayerBrushPrice,
-    mockOracleClient,
+    mockVRF,
     avatarInfo,
     adminAccess,
     shop,
@@ -513,7 +504,6 @@ export const playersFixture = async function () {
     artGalleryLockPeriod,
     decorator,
     brushPerSecond,
-    mockSWVRFOracleClient,
     mmrAttackDistance,
     lockedBankVaults,
     territories,

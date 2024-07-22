@@ -5,9 +5,8 @@ import {
   Clans,
   InstantActions,
   ItemNFT,
-  MockSWVRFOracleClient,
+  MockVRF,
   MockBrushToken,
-  MockOracleClient,
   MockPaintSwapMarketplaceWhitelist,
   MockRouter,
   MockWrappedFantom,
@@ -91,8 +90,8 @@ async function main() {
 
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
-  let oracle: MockOracleClient;
-  let swvrfOracle: MockSWVRFOracleClient;
+  let oracleAddress: string;
+  let vrf: MockVRF;
   let router: MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   let paintSwapDecorator: TestPaintSwapDecorator;
@@ -102,8 +101,7 @@ async function main() {
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
     const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
-    const MockOracleClient = await ethers.getContractFactory("MockOracleClient");
-    const MockSWVRFOracleClient = await ethers.getContractFactory("MockSWVRFOracleClient");
+    const MockVRF = await ethers.getContractFactory("MockVRF");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
     const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
@@ -111,12 +109,12 @@ async function main() {
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
       await brush.mint(owner.address, ethers.utils.parseEther("1000"));
-      wftm = await MockWrappedFantom.deploy();
       console.log("Minted brush");
-      oracle = await MockOracleClient.deploy();
-      console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
-      swvrfOracle = await MockSWVRFOracleClient.deploy();
-      console.log(`mockSWVRFOracleClient = "${swvrfOracle.address.toLowerCase()}"`);
+      wftm = await MockWrappedFantom.deploy();
+      console.log("Minted WFTM");
+      oracleAddress = owner.address;
+      vrf = await MockVRF.deploy();
+      console.log(`mockVRF = "${vrf.address.toLowerCase()}"`);
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
@@ -132,11 +130,10 @@ async function main() {
       console.log("Minted brush");
       await tx.wait();
       wftm = await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621");
-      oracle = await MockOracleClient.deploy();
-      await oracle.deployed();
-      console.log(`mockOracleClient = "${oracle.address.toLowerCase()}"`);
-      swvrfOracle = await MockSWVRFOracleClient.deploy();
-      console.log(`mockSWVRFOracleClient = "${swvrfOracle.address.toLowerCase()}"`);
+      oracleAddress = "0x3d2341ADb2D31f1c5530cDC622016af293177AE0";
+      vrf = await MockVRF.deploy();
+      await vrf.deployed();
+      console.log(`mockVRF = "${vrf.address.toLowerCase()}"`);
       router = await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883");
       console.log(`mockRouter = "${router.address.toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
@@ -148,8 +145,8 @@ async function main() {
       // Fantom mainnet
       brush = await MockBrushToken.attach(BRUSH_ADDRESS);
       wftm = await MockWrappedFantom.attach(WFTM_ADDRESS);
-      oracle = await MockOracleClient.attach("0xd5d517abe5cf79b7e95ec98db0f0277788aff634");
-      swvrfOracle = await MockSWVRFOracleClient.attach(SAMWITCH_VRF_ADDRESS);
+      oracleAddress = ORACLE_ADDRESS;
+      vrf = await MockVRF.attach(SAMWITCH_VRF_ADDRESS);
       router = await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d");
       paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.attach(
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
@@ -207,11 +204,10 @@ async function main() {
   const worldLibrary = await WorldLibrary.deploy();
   await worldLibrary.deployed();
   console.log(`worldLibrary = "${worldLibrary.address.toLowerCase()}"`);
-  const subscriptionId = 62;
   const World = await ethers.getContractFactory("World", {
     libraries: {WorldLibrary: worldLibrary.address},
   });
-  const world = (await upgrades.deployProxy(World, [oracle.address, subscriptionId], {
+  const world = (await upgrades.deployProxy(World, [vrf.address], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
@@ -493,7 +489,7 @@ async function main() {
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [players.address, itemNFT.address, petNFT.address, oracle.address, SAMWITCH_VRF_ADDRESS, vrfRequestInfo.address],
+    [players.address, itemNFT.address, petNFT.address, ORACLE_ADDRESS, vrf.address, vrfRequestInfo.address],
     {
       kind: "uups",
       timeout,
@@ -540,7 +536,7 @@ async function main() {
       shop.address,
       DEV_ADDRESS,
       ORACLE_ADDRESS,
-      swvrfOracle.address,
+      vrf.address,
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
@@ -566,7 +562,7 @@ async function main() {
       lockedBankVaults.address,
       itemNFT.address,
       ORACLE_ADDRESS,
-      swvrfOracle.address,
+      vrf.address,
       allBattleSkills,
       adminAccess.address,
       isBeta,

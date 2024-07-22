@@ -37,6 +37,7 @@ import {
   PASSIVE_ACTIONS_ADDRESS,
   PET_NFT_LIBRARY_ADDRESS,
   LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
+  SAMWITCH_VRF_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -70,7 +71,7 @@ async function main() {
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
 
-  const tx = players.setAlphaCombatHealing(100);
+  let tx = await players.setAlphaCombatHealing(8);
   await tx.wait();
 
   /*
@@ -159,7 +160,7 @@ async function main() {
   });
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
-
+*/
   // World
   const newWorldLibrary = false;
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
@@ -181,10 +182,15 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
+    unsafeSkipStorageCheck: true, // TODO: Remove after
   });
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
 
+  tx = await world.setVRF(SAMWITCH_VRF_ADDRESS);
+  await tx.wait();
+
+  /*
   // AdminAccess
   const AdminAccess = (await ethers.getContractFactory("AdminAccess")).connect(owner);
   const adminAccess = await upgrades.upgradeProxy(ADMIN_ACCESS_ADDRESS, AdminAccess, {
@@ -380,14 +386,15 @@ async function main() {
   */
 
   if (network.chainId == 250) {
-    /* await verifyContracts([players.address]);
-    await verifyContracts([playerNFT.address]);
+    await verifyContracts([players.address]);
+    /*
+   await verifyContracts([playerNFT.address]);
         await verifyContracts([itemNFT.address]);
     await verifyContracts([shop.address]);
     await verifyContracts([quests.address]); */
     await verifyContracts([clans.address]);
-    /*    await verifyContracts([world.address]);
-    await verifyContracts([worldLibrary.address]); */
+    await verifyContracts([world.address]);
+    /*    await verifyContracts([worldLibrary.address]); */
     await verifyContracts([estforLibrary.address]);
     /*       await verifyContracts([adminAccess.address]);
        await verifyContracts([wishingWell.address]);

@@ -141,7 +141,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
       lockedFundsPeriod,
     } = await loadFixture(clanFixture);
 
@@ -166,7 +166,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockVRF);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
     // Should win as they have more players
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
@@ -256,7 +256,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
       lockedFundsPeriod,
       attackingCooldown,
       reattackingCooldown,
@@ -293,7 +293,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockVRF);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
@@ -302,7 +302,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(2, lockedBankVaults, mockVRF);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(855); // lost 5% for losing
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100); // // unchanged
 
@@ -353,7 +353,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(3, lockedBankVaults, mockVRF);
     const {timestamp: NOW2} = await ethers.provider.getBlock("latest");
 
     // Wait another day (check it's not just the clan cooldown)
@@ -453,7 +453,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
@@ -478,7 +478,7 @@ describe("LockedBankVaults", function () {
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
     const {gasPrice} = tx;
     const requestId = 1;
-    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
 
     let attackCost = await lockedBankVaults.attackCost();
     const slot = 221;
@@ -489,7 +489,7 @@ describe("LockedBankVaults", function () {
     expect(attackCost).to.eq(baseAttackCost);
 
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(1000));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice?.add(1000));
     oracleCostStorage = await ethers.provider.getStorageAt(lockedBankVaults.address, slot);
     movingAverageGasPrice = BigNumber.from(parseInt(oracleCostStorage.slice(48, 64), 16));
 
@@ -507,13 +507,13 @@ describe("LockedBankVaults", function () {
     expect(attackCost).to.eq(baseAttackCost.add(movingAverageGasPrice.mul(expectedGasLimit)));
 
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(900));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice?.add(900));
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(800));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice?.add(800));
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(500));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice?.add(500));
     await lockedBankVaults.setAttackInProgress(requestId);
-    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient, gasPrice?.add(200));
+    await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice?.add(200));
 
     oracleCostStorage = await ethers.provider.getStorageAt(lockedBankVaults.address, slot);
     movingAverageGasPrice = BigNumber.from(parseInt(oracleCostStorage.slice(48, 64), 16));
@@ -667,7 +667,7 @@ describe("LockedBankVaults", function () {
       twitter,
       imageId,
       tierId,
-      mockSWVRFOracleClient,
+      mockVRF,
       MAX_LOCKED_VAULTS,
     } = await loadFixture(clanFixture);
 
@@ -688,7 +688,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockVRF);
     await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
@@ -723,7 +723,7 @@ describe("LockedBankVaults", function () {
       twitter,
       imageId,
       tierId,
-      mockSWVRFOracleClient,
+      mockVRF,
       MAX_LOCKED_VAULTS,
     } = await loadFixture(clanFixture);
 
@@ -808,7 +808,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockVRF);
   });
 
   it("Allow re-attacking if the user has the appropriate item", async () => {
@@ -833,7 +833,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
       attackingCooldown,
       reattackingCooldown,
     } = await loadFixture(clanFixture);
@@ -852,7 +852,7 @@ describe("LockedBankVaults", function () {
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
 
-    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
     await ethers.provider.send("evm_increaseTime", [attackingCooldown]);
     await expect(
@@ -887,7 +887,7 @@ describe("LockedBankVaults", function () {
       value: await lockedBankVaults.attackCost(),
     });
 
-    await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(2, lockedBankVaults, mockVRF);
     battleInfo = await lockedBankVaults.lastClanBattles(clanId, bobClanId);
     expect(battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp).to.eq(beforeCooldownTimestamp);
     expect(battleInfo.numReattacks).to.eq(1);
@@ -923,7 +923,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -948,7 +948,7 @@ describe("LockedBankVaults", function () {
         value: await lockedBankVaults.attackCost(),
       });
 
-      const tx = await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient);
+      const tx = await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
       const receipt = await tx.wait();
       // If the attacker lost then some brush is sent which changes up the event ordering
       const log = lockedBankVaults.interface.parseLog(receipt.logs.length > 4 ? receipt.logs[4] : receipt.logs[1]);
@@ -984,7 +984,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
       attackingCooldown,
     } = await loadFixture(clanFixture);
 
@@ -1013,7 +1013,7 @@ describe("LockedBankVaults", function () {
       .to.emit(lockedBankVaults, "SuperAttackCooldown")
       .withArgs(clanId, NOW + 86400 + 1);
 
-    await fulfillRandomWords(requestId, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
 
     // Create a new clan to attack/defend
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
@@ -1175,7 +1175,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
       shop,
       players,
     } = await loadFixture(clanFixture);
@@ -1211,7 +1211,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(alice)
       .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(950); // lost 5%
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(800);
@@ -1243,7 +1243,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories, combatantsHelper);
@@ -1269,7 +1269,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults
       .connect(bob)
       .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-    await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+    await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900); // lost 10%
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
@@ -1298,7 +1298,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockSWVRFOracleClient,
+      mockVRF,
     } = await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -1313,7 +1313,7 @@ describe("LockedBankVaults", function () {
       .connect(alice)
       .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()});
 
-    await expect(fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient)).to.revertedWithCustomError(
+    await expect(fulfillRandomWords(3, lockedBankVaults, mockVRF)).to.revertedWithCustomError(
       lockedBankVaults,
       "RequestIdNotKnown"
     );
@@ -1444,7 +1444,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
       } = await loadFixture(clanFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
@@ -1473,7 +1473,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(bob)
         .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
       // Should win as they have more players
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
 
@@ -1511,7 +1511,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         lockedFundsPeriod,
         players,
       } = await loadFixture(clanFixture);
@@ -1565,7 +1565,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(bob)
         .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
       // Bob wins against alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
 
@@ -1581,7 +1581,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(erin)
         .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(2, lockedBankVaults, mockVRF);
       // Erin wins against alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810);
 
@@ -1617,7 +1617,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(erin)
         .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(3, lockedBankVaults, mockVRF);
       // Erin wins against alice (most likely)
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 500, 501, 502]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
@@ -1632,7 +1632,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(alice)
         .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(4, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(4, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([496, 500, 501, 503]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
@@ -1642,7 +1642,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(alice)
         .attackVaults(clanId, frankClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(5, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(5, lockedBankVaults, mockVRF);
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([495, 501, 501, 503]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
 
@@ -1695,7 +1695,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         players,
       } = await loadFixture(clanFixture);
 
@@ -1720,7 +1720,7 @@ describe("LockedBankVaults", function () {
         value: await lockedBankVaults.attackCost(),
       });
       let requestId = 1;
-      await fulfillRandomWords(requestId++, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
@@ -1749,7 +1749,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
         value: await lockedBankVaults.attackCost(),
       });
-      await fulfillRandomWords(requestId++, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
@@ -1763,7 +1763,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
         value: await lockedBankVaults.attackCost(),
       });
-      await fulfillRandomWords(requestId++, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
       expect(await clans.getMMR(clanId)).to.eq(501);
       expect(await clans.getMMR(bobClanId)).to.eq(499);
@@ -1781,7 +1781,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
         value: await lockedBankVaults.attackCost(),
       });
-      await fulfillRandomWords(requestId++, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
 
@@ -1790,7 +1790,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
         value: await lockedBankVaults.attackCost(),
       });
-      await fulfillRandomWords(requestId++, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
       expect(await clans.getMMR(clanId)).to.eq(499);
       expect(await clans.getMMR(bobClanId)).to.eq(501);
@@ -1806,7 +1806,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
         value: await lockedBankVaults.attackCost(),
       });
-      await fulfillRandomWords(requestId++, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
       expect(await clans.getMMR(clanId)).to.eq(500);
       expect(await clans.getMMR(bobClanId)).to.eq(500);
@@ -1834,7 +1834,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         players,
       } = await loadFixture(clanFixture);
 
@@ -1861,7 +1861,7 @@ describe("LockedBankVaults", function () {
       // Clan is deleted
       await clans.connect(alice).changeRank(clanId, clanId, ClanRank.NONE, playerId);
       expect(await clans.getClanId(playerId)).to.eq(0);
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await clans.getMMR(clanId)).to.eq(499);
       expect(await clans.getMMR(bobClanId)).to.eq(501);
@@ -1900,7 +1900,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         players,
       } = await loadFixture(clanFixture);
 
@@ -1928,7 +1928,7 @@ describe("LockedBankVaults", function () {
       await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
       await clans.connect(bob).changeRank(bobClanId, bobPlayerId, ClanRank.NONE, bobPlayerId);
       expect(await clans.getClanId(playerId)).to.eq(0);
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await clans.getMMR(clanId)).to.eq(499);
       expect(await clans.getMMR(bobClanId)).to.eq(501); // Attacker will win due to drawing
@@ -1967,7 +1967,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         lockedFundsPeriod,
       } = await loadFixture(clanFixture);
 
@@ -1989,7 +1989,7 @@ describe("LockedBankVaults", function () {
       await ethers.provider.send("evm_increaseTime", [lockedFundsPeriod + 1]);
 
       // Both clans are deleted
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await clans.getMMR(clanId)).to.eq(499);
       expect(await clans.getMMR(bobClanId)).to.eq(501); // Attacker will win due to drawing
@@ -2028,7 +2028,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         lockedFundsPeriod,
       } = await loadFixture(clanFixture);
 
@@ -2051,7 +2051,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.connect(alice).claimFunds(clanId, playerId);
 
       // Both clans are deleted
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await clans.getMMR(clanId)).to.eq(499);
       expect(await clans.getMMR(bobClanId)).to.eq(501); // Attacker will win due to drawing
@@ -2094,7 +2094,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         players,
       } = await loadFixture(clanFixture);
 
@@ -2147,7 +2147,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(bob)
         .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
       // Bob wins against alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
 
@@ -2163,7 +2163,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(erin)
         .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(2, lockedBankVaults, mockVRF);
       // Erin wins again alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810);
 
@@ -2197,7 +2197,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(alice)
         .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(3, lockedBankVaults, mockVRF);
       // Will lose (most likely)
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 500, 501, 502]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
@@ -2228,7 +2228,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(erin)
         .attackVaults(erinClanId, frankClanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(4, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(4, lockedBankVaults, mockVRF);
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 499, 501, 503]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
     });
@@ -2253,7 +2253,7 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush,
-        mockSWVRFOracleClient,
+        mockVRF,
         players,
       } = await loadFixture(clanFixture);
 
@@ -2275,7 +2275,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(bob)
         .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(1, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
@@ -2289,7 +2289,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(alice)
         .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(2, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(2, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
@@ -2300,7 +2300,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(alice)
         .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(3, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(3, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
@@ -2313,7 +2313,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(alice)
         .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(4, lockedBankVaults, mockSWVRFOracleClient);
+      await fulfillRandomWords(4, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]); // Attacker is higher rank even if losing

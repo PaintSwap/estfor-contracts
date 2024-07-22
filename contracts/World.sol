@@ -1,21 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-
 import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-import {VRFConsumerBaseV2Upgradeable} from "./VRFConsumerBaseV2Upgradeable.sol";
+import {SamWitchVRFConsumerUpgradeable} from "./SamWitchVRFConsumerUpgradeable.sol";
 
 import {WorldLibrary} from "./WorldLibrary.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
+import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
+contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;
   using UnsafeMath for uint;
 
@@ -68,10 +67,10 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   error CallbackGasLimitTooHigh();
 
   // solhint-disable-next-line var-name-mixedcase
-  VRFCoordinatorV2Interface private COORDINATOR;
+  address private COORDINATOR; // Not used anymore
 
   // Your subscription ID.
-  uint64 private subscriptionId;
+  uint64 private subscriptionId; // Not used anymore
 
   // Past request ids
   uint[] public requestIds; // Each one is a set of random words for 1 day
@@ -82,13 +81,6 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
   bytes8 public thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
   uint24 private callbackGasLimit;
 
-  // The gas lane to use, which specifies the maximum gas price to bump to.
-  // For a list of available gas lanes on each network, this is 10000gwei
-  // see https://docs.chain.link/docs/vrf/v2/subscription/supported-networks/#configurations
-  bytes32 private constant KEY_HASH = 0x5881eea62f9876043df723cf89f0c2bb6f950da25e9dfe66995c24f919c8f8ab;
-
-  uint16 private constant REQUEST_CONFIRMATIONS = 1;
-  // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
   uint32 private constant NUM_WORDS = 1;
 
   uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
@@ -120,13 +112,11 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     _disableInitializers();
   }
 
-  function initialize(VRFCoordinatorV2Interface _coordinator, uint64 _subscriptionId) external initializer {
-    __VRFConsumerBaseV2_init(address(_coordinator));
+  function initialize(address _vrf) external initializer {
+    __SamWitchVRFConsumerUpgradeable_init(ISamWitchVRF(_vrf));
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    COORDINATOR = _coordinator;
-    subscriptionId = _subscriptionId;
     startTime = uint40(
       (block.timestamp / MIN_RANDOM_WORDS_UPDATE_TIME) *
         MIN_RANDOM_WORDS_UPDATE_TIME -
@@ -148,7 +138,7 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
         blockhash(block.number - NUM_DAYS_RANDOM_WORDS_INITIALIZED + i) ^
           0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
       );
-      fulfillRandomWords(requestId, _randomWords);
+      _fulfillRandomWords(requestId, _randomWords);
     }
 
     thisWeeksRandomWordSegment = bytes8(uint64(randomWords[0]));
@@ -164,52 +154,15 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
       revert CanOnlyRequestAfterTheNextCheckpoint(block.timestamp, newLastRandomWordsUpdatedTime);
     }
 
-    // Will revert if subscription is not set and funded.
-    requestId = COORDINATOR.requestRandomWords(
-      KEY_HASH,
-      subscriptionId,
-      REQUEST_CONFIRMATIONS,
-      callbackGasLimit,
-      NUM_WORDS
-    );
-
+    requestId = uint256(samWitchVRF.requestRandomWords(NUM_WORDS, callbackGasLimit));
     requestIds.push(requestId);
     lastRandomWordsUpdatedTime = newLastRandomWordsUpdatedTime;
     emit RequestSent(requestId, NUM_WORDS, newLastRandomWordsUpdatedTime);
     return requestId;
   }
 
-  function fulfillRandomWords(uint _requestId, uint[] memory _randomWords) internal override {
-    if (randomWords[_requestId] != 0) {
-      revert RequestAlreadyFulfilled();
-    }
-
-    if (_randomWords.length != NUM_WORDS) {
-      revert LengthMismatch();
-    }
-
-    uint randomWord = _randomWords[0];
-    if (randomWord == 0) {
-      // Not sure if 0 can be selected, but in case use previous block hash as pseudo random number
-      randomWord = uint(blockhash(block.number - 1));
-    }
-
-    randomWords[_requestId] = randomWord;
-    if (address(quests) != address(0)) {
-      quests.newOracleRandomWords(randomWord);
-    }
-    if (address(wishingWell) != address(0)) {
-      wishingWell.newOracleRandomWords(randomWord);
-    }
-    emit RequestFulfilledV2(_requestId, randomWord);
-
-    // Are we at the threshold for a new week
-    if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
-      // Issue new daily rewards for each tier based on the new random words
-      thisWeeksRandomWordSegment = bytes8(uint64(randomWord));
-
-      weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
-    }
+  function fulfillRandomWords(bytes32 _requestId, uint[] memory _randomWords) external onlySamWitchVRF {
+    _fulfillRandomWords(uint(_requestId), _randomWords);
   }
 
   function getWeeklyReward(uint _tier, uint _playerId) public view returns (uint16 itemTokenId, uint24 amount) {
@@ -562,6 +515,39 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     });
   }
 
+  function _fulfillRandomWords(uint _requestId, uint[] memory _randomWords) internal {
+    if (randomWords[_requestId] != 0) {
+      revert RequestAlreadyFulfilled();
+    }
+
+    if (_randomWords.length != NUM_WORDS) {
+      revert LengthMismatch();
+    }
+
+    uint randomWord = _randomWords[0];
+    if (randomWord == 0) {
+      // Not sure if 0 can be selected, but in case use previous block hash as pseudo random number
+      randomWord = uint(blockhash(block.number - 1));
+    }
+
+    randomWords[_requestId] = randomWord;
+    if (address(quests) != address(0)) {
+      quests.newOracleRandomWords(randomWord);
+    }
+    if (address(wishingWell) != address(0)) {
+      wishingWell.newOracleRandomWords(randomWord);
+    }
+    emit RequestFulfilledV2(_requestId, randomWord);
+
+    // Are we at the threshold for a new week
+    if (weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
+      // Issue new daily rewards for each tier based on the new random words
+      thisWeeksRandomWordSegment = bytes8(uint64(randomWord));
+
+      weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
+    }
+  }
+
   function addActions(Action[] calldata _actions) external onlyOwner {
     U256 iter = _actions.length.asU256();
     while (iter.neq(0)) {
@@ -700,11 +686,15 @@ contract World is VRFConsumerBaseV2Upgradeable, UUPSUpgradeable, OwnableUpgradea
     }
   }
 
-  function setChainlinkCallbackGasLimit(uint _gasLimit) external onlyOwner {
+  function setCallbackGasLimit(uint _gasLimit) external onlyOwner {
     if (_gasLimit > 3_000_000) {
       revert CallbackGasLimitTooHigh();
     }
     callbackGasLimit = uint24(_gasLimit);
+  }
+
+  function setVRF(address _vrf) external onlyOwner {
+    samWitchVRF = ISamWitchVRF(_vrf);
   }
 
   // solhint-disable-next-line no-empty-blocks

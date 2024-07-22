@@ -438,6 +438,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     return baseRequestCost + (movingAverageGasPrice * _actionAmounts * gasCostPerUnit);
   }
 
+  // Delete later
+  function version() external view returns (uint) {
+    return 1;
+  }
+
   function addStrategies(
     InstantVRFActionType[] calldata _instantVRFActionTypes,
     address[] calldata _strategies

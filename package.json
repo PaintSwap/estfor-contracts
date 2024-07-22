@@ -7,7 +7,6 @@
   "license": "MIT",
   "devDependencies": {
     "@0xdoublesharp/unsafe-math": "0.0.16",
-    "@chainlink/contracts": "^0.6.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5",
     "@ethersproject/providers": "^5.7.2",
@@ -117,7 +116,7 @@
     "editVariousCosts": "npx hardhat run scripts/editVariousCosts.ts",
     "setDailyRewards": "npx hardhat run scripts/setDailyRewards.ts",
     "setDonationThresholds": "npx hardhat run scripts/setDonationThresholds.ts",
-    "setChainlinkCallbackGasLimit": "npx hardhat run scripts/setChainlinkCallbackGasLimit.ts",
+    "setCallbackGasLimit": "npx hardhat run scripts/setCallbackGasLimit.ts",
     "setPaintSwapMarketplaceWhitelist": "npx hardhat run scripts/setPaintSwapMarketplaceWhitelist.ts",
     "setBaseAttackCostAndGasLimitTerritories": "npx hardhat run scripts/setBaseAttackCostAndGasLimitTerritories.ts",
     "setBaseAttackCostAndGasLimitLockedVaults": "npx hardhat run scripts/setBaseAttackCostAndGasLimitLockedVaults.ts",
