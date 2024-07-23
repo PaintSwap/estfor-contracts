@@ -155,8 +155,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IClanMemberLeftCB private territories;
   IClanMemberLeftCB private lockedBankVaults;
 
-  uint16 private constant INITIAL_MMR = 500;
-
   modifier isOwnerOfPlayer(uint _playerId) {
     if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
       revert NotOwnerOfPlayer();
