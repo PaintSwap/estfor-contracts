@@ -713,7 +713,7 @@ contract LockedBankVaults is
 
   // TODO Can delete after setting initial MMR
   function initializeMMR(uint[] calldata _clanIds, uint16[] calldata _mmrs, bool _clear) external onlyOwner {
-    // First clean up any in it, that isn't part of the
+    // First clean up any in it
     if (_clear) {
       delete sortedClansByMMR;
     }

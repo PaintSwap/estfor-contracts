@@ -22,13 +22,14 @@ export async function clanFixture() {
 
   const clanName = "Clan 1";
 
-  const tierId = 1;
-  const imageId = 2;
   const clanId = 1;
-  const tier = await clans.tiers(tierId);
   const discord = "G4ZgtP52JK";
   const telegram = "fantomfoundation";
   const twitter = "fantomfdn";
+  const imageId = 2;
+  const tierId = 1;
+
+  const tier = await clans.tiers(tierId);
 
   // Figure out what the address would be
   const bankAddress = ethers.utils.getContractAddress({
