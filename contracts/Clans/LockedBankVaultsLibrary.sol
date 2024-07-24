@@ -593,7 +593,7 @@ library LockedBankVaultsLibrary {
     uint16[] memory _newMMRs,
     uint32[] memory _clanIds,
     bool[] memory _upwardFlags
-  ) public {
+  ) private {
     // Adjust each index, update one by one
     for (uint i = 0; i < _indices.length; ++i) {
       uint currentIndex = _indices[i];
