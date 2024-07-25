@@ -9,7 +9,7 @@ async function main() {
   console.log(`Edit items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
-
+  /*
   const itemsToEdit = new Set([
     EstforConstants.EGG_TIER1,
     EstforConstants.EGG_TIER2,
@@ -35,12 +35,22 @@ async function main() {
   ]);
 
   const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
+*/
+  const items = allItems;
 
-  if (items.length !== itemsToEdit.size) {
+  const chunkSize = 100;
+  for (let i = 0; i < allItems.length; i += chunkSize) {
+    const chunk = allItems.slice(i, i + chunkSize);
+    const tx = await itemNFT.editItems(chunk);
+    await tx.wait();
+    console.log("Add items chunk ", i);
+  }
+  /*
+  if (items) { // .length !== itemsToEdit.size) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.editItems(items);
-  }
+  } */
 }
 
 main().catch((error) => {
