@@ -342,7 +342,7 @@ contract LockedBankVaults is
     }
 
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
-    LockedBankVaultsLibrary.updateMMRArray(
+    LockedBankVaultsLibrary.checkWithinRange(
       sortedClansByMMR,
       _clanId,
       _defendingClanId,

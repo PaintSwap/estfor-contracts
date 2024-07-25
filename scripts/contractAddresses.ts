@@ -114,7 +114,7 @@ if (!isBeta) {
   genericInstantVRFActionStrategy = "0xc4c92d3987cc0bad3219e696653eb87eddda78c6";
   eggInstantVRFActionStrategy = "0x941369948CC8a4b5b8eFb1F688Eddfe26A736039";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
-  lockedBankVaultsLibrary = "0x90668ff9ce958c2931e280db465fda897ecd6569";
+  lockedBankVaultsLibrary = "0x6b83db9a324190046d83a180286f593ded02b53c";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";

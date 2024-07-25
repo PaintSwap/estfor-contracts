@@ -163,7 +163,7 @@ library LockedBankVaultsLibrary {
     _clanInfo.defendingVaultsOffset = uint24(defendingVaultsOffset);
   }
 
-  function updateMMRArray(
+  function checkWithinRange(
     uint48[] storage _sortedClansByMMR,
     uint _clanId,
     uint _defendingClanId,
@@ -187,7 +187,7 @@ library LockedBankVaultsLibrary {
       modifiedSortedClansByMMR = _sortedClansByMMR;
     }
 
-    if (!_isWithinRangeMemory(modifiedSortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance)) {
+    if (!_isWithinRange(modifiedSortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance)) {
       revert OutsideMMRRange();
     }
   }
@@ -201,6 +201,31 @@ library LockedBankVaultsLibrary {
     return
       (_clanInfo.defendingVaults[length - 1].timestamp > block.timestamp) ||
       (_clanInfo.defendingVaults[length - 1].timestamp1 > block.timestamp);
+  }
+
+  function _getClanIndicesMemory(
+    uint48[] memory _sortedClansByMMR,
+    uint _clanId,
+    uint _defendingClanId
+  ) private pure returns (uint clanIndex, uint defendingIndex) {
+    uint numFound;
+    clanIndex = type(uint256).max;
+    defendingIndex = type(uint256).max;
+    for (uint i = 0; i < _sortedClansByMMR.length; ++i) {
+      if (_getClanId(_sortedClansByMMR[i]) == _clanId) {
+        clanIndex = i;
+        ++numFound;
+      }
+
+      if (_getClanId(_sortedClansByMMR[i]) == _defendingClanId) {
+        defendingIndex = i;
+        ++numFound;
+      }
+
+      if (numFound == 2) {
+        break;
+      }
+    }
   }
 
   function _getClanIndices(
@@ -228,33 +253,31 @@ library LockedBankVaultsLibrary {
     }
   }
 
-  function _isWithinRange(
-    uint48[] storage _sortedClansByMMR,
-    uint256 _clanIdIndex,
-    uint256 _defendingClanIdIndex,
-    uint256 _mmrAttackDistance
-  ) private view returns (bool) {
-    // Calculate direct distance
-    uint256 directDistance = (_clanIdIndex > _defendingClanIdIndex)
-      ? _clanIdIndex - _defendingClanIdIndex
-      : _defendingClanIdIndex - _clanIdIndex;
+  // Useful for testing
+  function isWithinRange(
+    uint32[] calldata clanIds,
+    uint16[] calldata mmrs,
+    uint _clanId,
+    uint _defendingClanId,
+    uint _mmrAttackDistance
+  ) external pure returns (bool) {
+    uint48[] memory sortedClansByMMR = new uint48[](clanIds.length);
+    for (uint i = 0; i < clanIds.length; ++i) {
+      sortedClansByMMR[i] = (uint32(clanIds[i]) << 16) | mmrs[i];
+    }
+    (uint clanIndex, uint defendingClanIndex) = _getClanIndicesMemory(sortedClansByMMR, _clanId, _defendingClanId);
 
-    // Increase distance extending the array bounds
-    uint extraDistance = 0;
-    if (_clanIdIndex < _mmrAttackDistance) {
-      // At front
-      extraDistance = _mmrAttackDistance - _clanIdIndex;
-    } else {
-      uint length = _sortedClansByMMR.length;
-      if (_clanIdIndex + _mmrAttackDistance >= length) {
-        extraDistance = _clanIdIndex + _mmrAttackDistance - (length - 1);
-      }
+    if (clanIndex == type(uint256).max) {
+      revert OutsideMMRRange();
+    }
+    if (defendingClanIndex == type(uint256).max) {
+      revert OutsideMMRRange();
     }
 
-    return (_mmrAttackDistance + extraDistance) >= directDistance;
+    return _isWithinRange(sortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance);
   }
 
-  function _isWithinRangeMemory(
+  function _isWithinRange(
     uint48[] memory _sortedClansByMMR,
     uint256 _clanIdIndex,
     uint256 _defendingClanIdIndex,
@@ -277,7 +300,22 @@ library LockedBankVaultsLibrary {
       }
     }
 
-    return (_mmrAttackDistance + extraDistance) >= directDistance;
+    if (_mmrAttackDistance + extraDistance >= directDistance) {
+      return true;
+    }
+
+    // If outside range, check if MMR is the same as the MMR as that at the edge of the range
+    int256 rangeEdgeIndex = int256(
+      _defendingClanIdIndex > _clanIdIndex
+        ? _clanIdIndex + _mmrAttackDistance + extraDistance
+        : _clanIdIndex - _mmrAttackDistance - extraDistance
+    );
+
+    if (rangeEdgeIndex < 0 || rangeEdgeIndex >= int256(_sortedClansByMMR.length)) {
+      return false;
+    }
+
+    return _getMMR(_sortedClansByMMR[_defendingClanIdIndex]) == _getMMR(_sortedClansByMMR[uint256(rangeEdgeIndex)]);
   }
 
   function blockAttacks(
