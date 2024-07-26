@@ -721,14 +721,6 @@ contract LockedBankVaults is
     emit SetMMRs(_clanIds, _mmrs);
   }
 
-  // TODO: Can remove after upgrading
-  function newUpgrade() external {
-    lockFundsPeriod = isBeta ? 7 days : 7 days;
-    attackingCooldown = isBeta ? 1 minutes + 30 seconds : 4 hours;
-    reattackingCooldown = isBeta ? 6 minutes : 1 days;
-    combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
-  }
-
   function clearCooldowns(uint _clanId, uint[] calldata _otherClanIds) external isAdminAndBeta {
     LockedBankVaultsLibrary.clearCooldowns(_clanId, _otherClanIds, clanInfos[_clanId], lastClanBattles);
   }

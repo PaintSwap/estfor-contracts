@@ -176,11 +176,6 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  // TODO: Can delete after upgrade
-  function newUpgrade() external {
-    combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
-  }
-
   function clearCooldowns(uint48[] calldata _playerIds) public isAdminAndBeta {
     for (uint i; i < _playerIds.length; ++i) {
       playerInfos[_playerIds[i]].combatantCooldownTimestamp = 0;

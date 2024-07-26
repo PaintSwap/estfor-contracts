@@ -723,11 +723,6 @@ contract Territories is
     _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
-  // TODO: Remove later
-  function newUpgrade() external {
-    combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
-  }
-
   function clearCooldowns(uint _clanId) external isAdminAndBeta {
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.attackingCooldownTimestamp = 0;
