@@ -49,7 +49,7 @@ if (!isBeta) {
   adminAccess = "0xe63b7195b301b9313c9e337df4aceac436c3751e";
   itemNFTLibrary = "0x8d61639c830aaf82c8549c36e65a9aeef9a73b45";
   itemNFT = "0x4b9c90ebb1fa98d9724db46c4689994b46706f5a";
-  estforLibrary = "0x8213fCAD73187A1A4d4cf9a44BF87d919Ca32970";
+  estforLibrary = "0x804a530f41ecf0c40cd4e312a72e033c78a2c1fa";
   playerNFT = "0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9";
   promotions = "0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4";
   promotionsLibrary = "0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95";
@@ -58,11 +58,11 @@ if (!isBeta) {
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
   bank = "0xe183a43881eac74808c55bdb2a073929602af4db"; // beacon
   playersLibrary = "0x05dc512b2c33c5e68c8fad0badf8a4a0b12d0439";
-  playersImplQueueActions = "0x2e4f7dc35d8a75a9803b81f46d3981b421908335";
-  playersImplProcessActions = "0x2b009d7cd481905b93a3ce37ce0c85dde1e90bfd";
-  playersImplRewards = "0x8e0f5306ae180a16bdcbeae3fae66abd63875887";
-  playersImplMisc = "0x8f2c176942525838f9d545bb672db74f7500a6f8";
-  playersImplMisc1 = "0xfec3016434983daffca8795126f6097a7ce1d311";
+  playersImplQueueActions = "0xb86cadad55067e24540c6d781d16778f887bf62f";
+  playersImplProcessActions = "0xe2a9b8c9cee566ae94758510aeaca20476eff97f";
+  playersImplRewards = "0xfb2aa5afc0de399c76d570ac9bc446940367cfba";
+  playersImplMisc = "0xddf2bf45e270c1cd624a6ad479974dff24113500";
+  playersImplMisc1 = "0xc62bdaebc179b3f9cc83ac978db834457aea893b";
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
@@ -72,7 +72,7 @@ if (!isBeta) {
   genericInstantVRFActionStrategy = "0x6270b82049724ff6d7a78b71f2273bba03bfcdfc";
   eggInstantVRFActionStrategy = "0x7797fd3904fc399184d2a549dff025210d62e645";
   lockedBankVaults = "0x65e944795d00cc287bdace77d57571fc4deff3e0";
-  lockedBankVaultsLibrary = "TODO";
+  lockedBankVaultsLibrary = "0xbb1177a1c27487ec5725caf6974802233d88b84c";
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
   decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";

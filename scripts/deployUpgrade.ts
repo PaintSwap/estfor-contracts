@@ -74,7 +74,6 @@ async function main() {
   let tx = await players.setAlphaCombatHealing(8);
   await tx.wait();
 
-  /*
   // PlayerNFT
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
@@ -100,7 +99,6 @@ async function main() {
     itemNFTLibrary = await ItemNFTLibrary.attach(ITEM_NFT_LIBRARY_ADDRESS);
   }
   console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
-  
   const ItemNFT = (
     await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
   ).connect(owner);
@@ -137,7 +135,7 @@ async function main() {
   });
   await quests.deployed();
   console.log(`quests = "${quests.address.toLowerCase()}"`);
-*/
+
   // Clan
   const Clans = (
     await ethers.getContractFactory("Clans", {
@@ -151,7 +149,7 @@ async function main() {
   });
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
-  /*
+
   // Bank Registry
   const BankRegistry = (await ethers.getContractFactory("BankRegistry")).connect(owner);
   const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
@@ -160,7 +158,7 @@ async function main() {
   });
   await bankRegistry.deployed();
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
-*/
+
   // World
   const newWorldLibrary = true;
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
@@ -190,7 +188,6 @@ async function main() {
   tx = await world.setVRF(SAMWITCH_VRF_ADDRESS);
   await tx.wait();
 
-  /*
   // AdminAccess
   const AdminAccess = (await ethers.getContractFactory("AdminAccess")).connect(owner);
   const adminAccess = await upgrades.upgradeProxy(ADMIN_ACCESS_ADDRESS, AdminAccess, {
@@ -199,7 +196,7 @@ async function main() {
   });
   await adminAccess.deployed();
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
-*/
+
   const newPromotionsLibrary = false;
   const PromotionsLibrary = await ethers.getContractFactory("PromotionsLibrary");
   let promotionsLibrary: PromotionsLibrary;
@@ -227,7 +224,7 @@ async function main() {
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
-  /*
+
   // Instant actions
   const InstantActions = (await ethers.getContractFactory("InstantActions")).connect(owner);
   const instantActions = await upgrades.upgradeProxy(INSTANT_ACTIONS_ADDRESS, InstantActions, {
@@ -236,7 +233,7 @@ async function main() {
   });
   await instantActions.deployed();
   console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
-*/
+
   // Instant VRF actions
   const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(owner);
   const instantVRFActions = await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
@@ -246,7 +243,6 @@ async function main() {
   await instantVRFActions.deployed();
   console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
 
-  /*
   // Instant VRF strategies
   const GenericInstantVRFActionStrategy = (await ethers.getContractFactory("GenericInstantVRFActionStrategy")).connect(
     owner
@@ -273,7 +269,7 @@ async function main() {
   );
   await eggInstantVRFActionStrategy.deployed();
   console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
-*/
+
   const newPetNFTLibrary = false;
   let petNFTLibrary: PetNFTLibrary;
   if (newPetNFTLibrary) {
@@ -297,7 +293,6 @@ async function main() {
   await petNFT.deployed();
   console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
 
-  /*
   const VRFRequestInfo = (await ethers.getContractFactory("VRFRequestInfo")).connect(owner);
   const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
     kind: "uups",
@@ -305,7 +300,7 @@ async function main() {
   });
   await vrfRequestInfo.deployed();
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
-*/
+
   // LockedBankVaults
   const newLockedBankVaultsLibrary = true;
   const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
@@ -356,7 +351,6 @@ async function main() {
   await combatantsHelper.deployed();
   console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);
 
-  /*
   const DecoratorProvider = (await ethers.getContractFactory("DecoratorProvider")).connect(owner);
   const decoratorProvider = await upgrades.upgradeProxy(DECORATOR_PROVIDER_ADDRESS, DecoratorProvider, {
     kind: "uups",
@@ -364,7 +358,7 @@ async function main() {
   });
   await decoratorProvider.deployed();
   console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
-*
+
   const RoyaltyReceiver = (await ethers.getContractFactory("RoyaltyReceiver")).connect(owner);
   const royaltyReceiver = (await upgrades.upgradeProxy(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
     kind: "uups",
@@ -383,38 +377,34 @@ async function main() {
   });
   await passiveActions.deployed();
   console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
-  */
 
   if (network.chainId == 250) {
     await verifyContracts([players.address]);
-    /*
-   await verifyContracts([playerNFT.address]);
-        await verifyContracts([itemNFT.address]);
+    await verifyContracts([playerNFT.address]);
+    await verifyContracts([itemNFT.address]);
     await verifyContracts([shop.address]);
-    await verifyContracts([quests.address]); */
+    await verifyContracts([quests.address]);
     await verifyContracts([clans.address]);
     await verifyContracts([world.address]);
     await verifyContracts([worldLibrary.address]);
     await verifyContracts([estforLibrary.address]);
-    /*       await verifyContracts([adminAccess.address]);
-       await verifyContracts([wishingWell.address]);
-     */
+    await verifyContracts([adminAccess.address]);
+    await verifyContracts([wishingWell.address]);
     await verifyContracts([promotions.address]);
-    /*
     await verifyContracts([instantActions.address]);
-    await verifyContracts([vrfRequestInfo.address]); */
+    await verifyContracts([vrfRequestInfo.address]);
     await verifyContracts([instantVRFActions.address]);
-    /*    await verifyContracts([genericInstantVRFActionStrategy.address]);
-    await verifyContracts([eggInstantVRFActionStrategy.address]); */
+    await verifyContracts([genericInstantVRFActionStrategy.address]);
+    await verifyContracts([eggInstantVRFActionStrategy.address]);
     await verifyContracts([petNFT.address]);
-    //    await verifyContracts([petNFTLibrary.address]);
+    await verifyContracts([petNFTLibrary.address]);
     await verifyContracts([lockedBankVaults.address]);
     await verifyContracts([lockedBankVaultsLibrary.address]);
     await verifyContracts([territories.address]);
     await verifyContracts([combatantsHelper.address]);
-    /*    await verifyContracts([decoratorProvider.address]);
+    await verifyContracts([decoratorProvider.address]);
     await verifyContracts([royaltyReceiver.address]);
-    await verifyContracts([passiveActions.address]); */
+    await verifyContracts([passiveActions.address]);
   }
 }
 

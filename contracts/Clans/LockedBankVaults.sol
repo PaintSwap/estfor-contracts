@@ -162,7 +162,7 @@ contract LockedBankVaults is
   uint48[] private sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
 
   uint private constant NUM_WORDS = 3;
-  uint private constant CALLBACK_GAS_LIMIT = 3_000_000;
+  uint private constant CALLBACK_GAS_LIMIT = 3_500_000;
   uint private constant MAX_LOCKED_VAULTS = 100;
   uint private constant NUM_PACKED_VAULTS = 2;
 
