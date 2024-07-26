@@ -597,10 +597,9 @@ describe("World", function () {
       expect(actionChoice.inputAmount1).to.eq(10);
     });
 
-    it("First minimum skill does not need to skill of action choice", async function () {
-      const {world} = await loadFixture(deployContracts);
+    it("First minimum skill should match skill of action choice", async function () {
+      const {world, worldLibrary} = await loadFixture(deployContracts);
       const choiceId = 1;
-      // doesn't match
       await expect(
         world.addActionChoices(
           EstforConstants.NONE,
@@ -619,13 +618,12 @@ describe("World", function () {
             },
           ]
         )
-      ).to.not.be.reverted;
+      ).to.be.revertedWithCustomError(worldLibrary, "FirstMinSkillMustBeActionChoiceSkill");
 
-      // matches
       await expect(
         world.addActionChoices(
           EstforConstants.NONE,
-          [choiceId + 1],
+          [choiceId],
           [
             {
               ...defaultActionChoice,

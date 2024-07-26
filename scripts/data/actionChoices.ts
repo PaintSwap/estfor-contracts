@@ -4431,8 +4431,8 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
-    minSkills: [Skill.FLETCHING],
-    minXPs: [1021],
+    minSkills: [Skill.RANGED, Skill.FLETCHING],
+    minXPs: [0, 1021],
   },
   {
     skill: Skill.RANGED,
@@ -4447,8 +4447,8 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
-    minSkills: [Skill.FLETCHING],
-    minXPs: [1021],
+    minSkills: [Skill.RANGED, Skill.FLETCHING],
+    minXPs: [0, 1021],
   },
   {
     skill: Skill.RANGED,

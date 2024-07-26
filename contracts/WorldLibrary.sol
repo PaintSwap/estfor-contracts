@@ -29,6 +29,7 @@ library WorldLibrary {
   error NotAFactorOf3600();
   error TooManyGuaranteedRewards();
   error TooManyRandomRewards();
+  error FirstMinSkillMustBeActionChoiceSkill();
 
   function checkActionChoice(ActionChoiceInput calldata _actionChoiceInput) external pure {
     uint16[] calldata inputTokenIds = _actionChoiceInput.inputTokenIds;
@@ -72,6 +73,11 @@ library WorldLibrary {
     Skill[] calldata minSkills = _actionChoiceInput.minSkills;
     uint32[] calldata minXPs = _actionChoiceInput.minXPs;
 
+    // First minSkill must be the same as the action choice skill
+    if (minSkills.length > 0 && minSkills[0] != _actionChoiceInput.skill) {
+      revert FirstMinSkillMustBeActionChoiceSkill();
+    }
+
     if (minSkills.length > 3) {
       revert TooManyMinSkills();
     }
@@ -83,7 +89,8 @@ library WorldLibrary {
       if (minSkills[i] == Skill.NONE) {
         revert InvalidSkill();
       }
-      if (minXPs[i] == 0) {
+      // Can only be 0 if it's the first one and there is more than one
+      if (minXPs[i] == 0 && (i != 0 || minSkills.length == 1)) {
         revert InputSpecifiedWithoutAmount();
       }
 

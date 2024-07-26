@@ -162,7 +162,7 @@ async function main() {
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
 */
   // World
-  const newWorldLibrary = false;
+  const newWorldLibrary = true;
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   let worldLibrary: WorldLibrary;
   if (newWorldLibrary) {
@@ -394,7 +394,7 @@ async function main() {
     await verifyContracts([quests.address]); */
     await verifyContracts([clans.address]);
     await verifyContracts([world.address]);
-    /*    await verifyContracts([worldLibrary.address]); */
+    await verifyContracts([worldLibrary.address]);
     await verifyContracts([estforLibrary.address]);
     /*       await verifyContracts([adminAccess.address]);
        await verifyContracts([wishingWell.address]);

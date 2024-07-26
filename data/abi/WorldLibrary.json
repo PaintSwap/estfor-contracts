@@ -1,6 +1,11 @@
 [
   {
     "inputs": [],
+    "name": "FirstMinSkillMustBeActionChoiceSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "GuaranteedRewardsNoDuplicates",
     "type": "error"
   },

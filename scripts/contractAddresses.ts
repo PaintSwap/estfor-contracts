@@ -83,7 +83,7 @@ if (!isBeta) {
   petNFT = "0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3";
   passiveActions = "0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4";
 } else {
-  worldLibrary = "0xdc881c1b3b7f5143c3f4d59543c0667c6bd1bcd4";
+  worldLibrary = "0x31edace030c71d33bd8b6e53c1df123c0404e5ca";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
