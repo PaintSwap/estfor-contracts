@@ -365,15 +365,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _setActivePlayer(address _from, uint _playerId) private {
+    if (block.timestamp < activeBoosts_[_playerId].cooldown) {
+      revert PlayerLocked();
+    }
+
     uint existingActivePlayerId = activePlayer_[_from];
-    // All attire and actions can be made for this player
     activePlayer_[_from] = _playerId;
     if (existingActivePlayerId == _playerId) {
       revert PlayerAlreadyActive();
-    }
-
-    if (block.timestamp < activeBoosts_[_playerId].cooldown) {
-      revert PlayerLocked();
     }
 
     if (existingActivePlayerId != 0) {
@@ -562,8 +561,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   // TODO: Can remove after integrated on live contracts
-  function setPetNFT(PetNFT _petNFT) external onlyOwner {
-    petNFT = _petNFT;
+  function setAlphaCombatHealing(uint8 _alphaCombatHealing) external onlyOwner {
+    alphaCombatHealing = _alphaCombatHealing;
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {

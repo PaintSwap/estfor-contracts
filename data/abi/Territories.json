@@ -801,19 +801,6 @@
   },
   {
     "inputs": [],
-    "name": "MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "PERCENTAGE_EMISSION_MUL",
     "outputs": [
       {
@@ -1407,6 +1394,13 @@
   },
   {
     "inputs": [],
+    "name": "newUpgrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "nextPendingAttackId",
     "outputs": [
       {
@@ -1557,19 +1551,6 @@
       }
     ],
     "name": "setExpectedGasLimitFulfill",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ISamWitchVRF",
-        "name": "_samWitchVRF",
-        "type": "address"
-      }
-    ],
-    "name": "setSamWitchVRF",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

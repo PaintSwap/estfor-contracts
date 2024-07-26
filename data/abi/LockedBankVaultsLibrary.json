@@ -1,0 +1,185 @@
+[
+  {
+    "inputs": [],
+    "name": "BlockAttacksCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotAttackSelf",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotAttackWhileStillAttacking",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotChangeCombatantsDuringAttack",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotReattackAndSuperAttackSameTime",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanAttackingCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanAttackingSameClanCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanCombatantsChangeCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanIsBlockingAttacks",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanSuperAttackingCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MaxLockedVaultsReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoBrushToAttack",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoCombatants",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotALockedVaultAttackItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotALockedVaultDefenceItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NothingToClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OutsideMMRRange",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SpecifyingItemWhenNotReattackingOrSuperAttacking",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyCombatants",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_Ka",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_Kd",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_attackingMMR",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_defendingMMR",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "_didAttackersWin",
+        "type": "bool"
+      }
+    ],
+    "name": "getNewMMRs",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "newAttackerMMR",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "newDefenderMMR",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32[]",
+        "name": "clanIds",
+        "type": "uint32[]"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "mmrs",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_defendingClanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_mmrAttackDistance",
+        "type": "uint256"
+      }
+    ],
+    "name": "isWithinRange",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

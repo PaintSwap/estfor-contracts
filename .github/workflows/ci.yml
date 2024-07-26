@@ -1,5 +1,11 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - beta
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   Hardhat:

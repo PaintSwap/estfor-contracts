@@ -6,14 +6,14 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {getActionId, RATE_MUL, requestAndFulfillRandomWords, SPAWN_MUL} from "./utils";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {MockOracleClient, World} from "../typechain-types";
+import {MockVRF, World} from "../typechain-types";
 
 describe("World", function () {
   const deployContracts = async function () {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice] = await ethers.getSigners();
 
-    const mockOracleClient = (await ethers.deployContract("MockOracleClient")) as MockOracleClient;
+    const mockVRF = (await ethers.deployContract("MockVRF")) as MockVRF;
 
     // Add some dummy blocks so that world can access them
     for (let i = 0; i < 5; ++i) {
@@ -26,9 +26,8 @@ describe("World", function () {
     // Create the world
     const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
     const worldLibrary = await WorldLibrary.deploy();
-    const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+    const world = (await upgrades.deployProxy(World, [mockVRF.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     })) as World;
@@ -42,7 +41,7 @@ describe("World", function () {
     return {
       world,
       worldLibrary,
-      mockOracleClient,
+      mockVRF,
       minRandomWordsUpdateTime,
       numDaysRandomWordsInitialized,
       owner,
@@ -52,7 +51,7 @@ describe("World", function () {
 
   describe("Seed", function () {
     it("Requesting random words", async function () {
-      const {world, mockOracleClient, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
         deployContracts
       );
       await world.requestRandomWords();
@@ -65,12 +64,12 @@ describe("World", function () {
       expect(randomWord).to.eq(0);
 
       // Retrieve the random number
-      await mockOracleClient.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, world.address);
       randomWord = await world.randomWords(requestId);
       expect(randomWord).to.not.eq(0);
 
       // Try fulfill same request should fail
-      await expect(mockOracleClient.fulfill(requestId, world.address)).to.be.reverted;
+      await expect(mockVRF.fulfill(requestId, world.address)).to.be.reverted;
 
       // Requesting new random word too soon
       await expect(world.requestRandomWords()).to.be.reverted;
@@ -79,22 +78,22 @@ describe("World", function () {
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
       await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 1);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, world.address);
 
       // Increase it 2x more, should allow 2 random seeds to be requested
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime * 2]);
       await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 2);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, world.address);
       await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 3);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, world.address);
       await expect(world.requestRandomWords()).to.be.reverted;
       await expect(world.requestIds(startOffset + 4)).to.be.reverted;
     });
 
     it("getRandomWord", async function () {
-      const {world, mockOracleClient, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
         deployContracts
       );
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
@@ -103,11 +102,11 @@ describe("World", function () {
       await world.requestRandomWords();
       await expect(world.requestIds(numDaysRandomWordsInitialized + 1)).to.be.reverted;
       let requestId = await world.requestIds(numDaysRandomWordsInitialized);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, world.address);
       expect(await world.hasRandomWord(currentTimestamp)).to.be.false;
       await world.requestRandomWords();
       requestId = await world.requestIds(numDaysRandomWordsInitialized + 1);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, world.address);
       expect(await world.hasRandomWord(currentTimestamp)).to.be.true;
       await expect(world.getRandomWord(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
@@ -124,7 +123,7 @@ describe("World", function () {
     });
 
     it("Get multiple words", async function () {
-      const {world, mockOracleClient, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
         deployContracts
       );
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
@@ -132,15 +131,15 @@ describe("World", function () {
       await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
       await world.requestRandomWords();
       let requestId = await world.requestIds(numDaysRandomWordsInitialized);
-      await mockOracleClient.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, world.address);
       await expect(world.getMultipleWords(currentTimestamp)).to.be.revertedWithCustomError(world, "NoValidRandomWord");
       await world.requestRandomWords();
       requestId = await world.requestIds(numDaysRandomWordsInitialized + 1);
-      await expect(mockOracleClient.fulfill(requestId, world.address)).to.not.be.reverted;
+      await expect(mockVRF.fulfill(requestId, world.address)).to.not.be.reverted;
     });
 
     it("Test new random rewards", async function () {
-      const {world, mockOracleClient} = await loadFixture(deployContracts);
+      const {world, mockVRF} = await loadFixture(deployContracts);
 
       const playerId = 1;
 
@@ -156,7 +155,7 @@ describe("World", function () {
       let error = false;
       while (!error) {
         try {
-          await requestAndFulfillRandomWords(world, mockOracleClient);
+          await requestAndFulfillRandomWords(world, mockVRF);
         } catch {
           error = true;
         }
@@ -171,7 +170,7 @@ describe("World", function () {
       error = false;
       while (!error) {
         try {
-          await requestAndFulfillRandomWords(world, mockOracleClient);
+          await requestAndFulfillRandomWords(world, mockVRF);
         } catch {
           error = true;
         }
@@ -182,7 +181,7 @@ describe("World", function () {
     });
 
     it("Tiered random rewards", async function () {
-      const {world, mockOracleClient} = await loadFixture(deployContracts);
+      const {world, mockVRF} = await loadFixture(deployContracts);
 
       const playerId = 1;
       const oneDay = 24 * 3600;
@@ -194,7 +193,7 @@ describe("World", function () {
       // Keep requesting
       while (true) {
         try {
-          await requestAndFulfillRandomWords(world, mockOracleClient);
+          await requestAndFulfillRandomWords(world, mockVRF);
         } catch {
           break;
         }
@@ -598,10 +597,9 @@ describe("World", function () {
       expect(actionChoice.inputAmount1).to.eq(10);
     });
 
-    it("First minimum skill does not need to skill of action choice", async function () {
-      const {world} = await loadFixture(deployContracts);
+    it("First minimum skill should match skill of action choice", async function () {
+      const {world, worldLibrary} = await loadFixture(deployContracts);
       const choiceId = 1;
-      // doesn't match
       await expect(
         world.addActionChoices(
           EstforConstants.NONE,
@@ -620,13 +618,12 @@ describe("World", function () {
             },
           ]
         )
-      ).to.not.be.reverted;
+      ).to.be.revertedWithCustomError(worldLibrary, "FirstMinSkillMustBeActionChoiceSkill");
 
-      // matches
       await expect(
         world.addActionChoices(
           EstforConstants.NONE,
-          [choiceId + 1],
+          [choiceId],
           [
             {
               ...defaultActionChoice,

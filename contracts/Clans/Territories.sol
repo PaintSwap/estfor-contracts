@@ -5,7 +5,7 @@ import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol"
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {RrpRequesterV0Upgradeable} from "../RrpRequesterV0Upgradeable.sol";
+import {RrpRequesterV0Upgradeable} from "../legacy/RrpRequesterV0Upgradeable.sol";
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
@@ -181,13 +181,13 @@ contract Territories is
   uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
   address private oracle;
+  uint24 private combatantChangeCooldown;
   ISamWitchVRF private samWitchVRF;
 
   uint private constant NUM_WORDS = 3;
   uint private constant CALLBACK_GAS_LIMIT = 3_000_000;
   uint public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
-  uint public constant MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN = 3 days;
   uint public constant PERCENTAGE_EMISSION_MUL = 10;
   uint public constant HARVESTING_COOLDOWN = 8 hours;
 
@@ -283,6 +283,7 @@ contract Territories is
     setComparableSkills(_comparableSkills);
 
     brush.approve(address(_lockedBankVaults), type(uint).max);
+    combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
 
     _addTerritories(_territories);
   }
@@ -296,9 +297,7 @@ contract Territories is
     _checkCanAssignCombatants(_clanId, _playerIds);
 
     clanInfos[_clanId].playerIds = _playerIds;
-    clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(
-      block.timestamp + MIN_PLAYER_COMBANTANTS_CHANGE_COOLDOWN
-    );
+    clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
@@ -509,7 +508,7 @@ contract Territories is
     // Remove a player combatant if they are currently assigned in this clan
     ClanInfo storage clanInfo = clanInfos[_clanId];
     if (clanInfo.playerIds.length != 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, _playerId);
+      uint searchIndex = EstforLibrary._binarySearch(clanInfo.playerIds, _playerId);
       if (searchIndex != type(uint).max) {
         // Shift the whole array to delete the element
         for (uint i = searchIndex; i < clanInfo.playerIds.length - 1; ++i) {
@@ -660,7 +659,7 @@ contract Territories is
   function isCombatant(uint _clanId, uint _playerId) external view override returns (bool combatant) {
     // Check if this player is in the defenders list and remove them if so
     if (clanInfos[_clanId].playerIds.length > 0) {
-      uint searchIndex = EstforLibrary.binarySearch(clanInfos[_clanId].playerIds, _playerId);
+      uint searchIndex = EstforLibrary._binarySearch(clanInfos[_clanId].playerIds, _playerId);
       combatant = searchIndex != type(uint).max;
     }
   }
@@ -715,11 +714,6 @@ contract Territories is
     combatantsHelper = _combatantsHelper;
   }
 
-  // Can be removed if needed, only needed for new VRF contract
-  function setSamWitchVRF(ISamWitchVRF _samWitchVRF) external onlyOwner {
-    samWitchVRF = _samWitchVRF;
-  }
-
   function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
     baseAttackCost = _baseAttackCost;
     emit SetBaseAttackCost(_baseAttackCost);
@@ -727,6 +721,11 @@ contract Territories is
 
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
     _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  }
+
+  // TODO: Remove later
+  function newUpgrade() external {
+    combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
   }
 
   function clearCooldowns(uint _clanId) external isAdminAndBeta {

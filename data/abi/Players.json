@@ -3360,6 +3360,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "_alphaCombatHealing",
+        "type": "uint8"
+      }
+    ],
+    "name": "setAlphaCombatHealing",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bool",
         "name": "_dailyRewardsEnabled",
         "type": "bool"
@@ -3399,19 +3412,6 @@
       }
     ],
     "name": "setImpls",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract PetNFT",
-        "name": "_petNFT",
-        "type": "address"
-      }
-    ],
-    "name": "setPetNFT",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

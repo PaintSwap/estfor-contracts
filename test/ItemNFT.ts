@@ -10,7 +10,7 @@ describe("ItemNFT", function () {
     const [owner, alice, dev] = await ethers.getSigners();
 
     const brush = await ethers.deployContract("MockBrushToken");
-    const mockOracleClient = await ethers.deployContract("MockOracleClient");
+    const mockVRF = await ethers.deployContract("MockVRF");
 
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
@@ -23,9 +23,8 @@ describe("ItemNFT", function () {
 
     // Create the world
     const worldLibrary = await ethers.deployContract("WorldLibrary");
-    const subscriptionId = 2;
     const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = (await upgrades.deployProxy(World, [mockOracleClient.address, subscriptionId], {
+    const world = (await upgrades.deployProxy(World, [mockVRF.address], {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
     })) as World;
@@ -76,7 +75,7 @@ describe("ItemNFT", function () {
       alice,
       dev,
       world,
-      mockOracleClient,
+      mockVRF,
       shop,
       royaltyReceiver,
       adminAccess,

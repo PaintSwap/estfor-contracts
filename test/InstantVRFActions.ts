@@ -215,7 +215,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Do multiple instant actions at once", async function () {
-      const {playerId, instantVRFActions, itemNFT, mockSWVRFOracleClient, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, itemNFT, mockVRF, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -263,7 +263,7 @@ describe("Instant VRF actions", function () {
         4, 2, 0,
       ]);
 
-      await fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
 
       expect(await itemNFT.balanceOfs(alice.address, [BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR])).to.deep.eq([2, 1, 0]);
     });
@@ -464,7 +464,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Check amount > 1 burns and mints as expected", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -481,7 +481,7 @@ describe("Instant VRF actions", function () {
         });
 
       const requestId = 1;
-      await fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
 
       expect(
         await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])
@@ -489,7 +489,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("CompletedInstantVRFActions event should be emitted with correct produced item output", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -506,13 +506,13 @@ describe("Instant VRF actions", function () {
         });
 
       const requestId = 1;
-      await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
+      await expect(fulfillRandomWords(requestId, instantVRFActions, mockVRF))
         .to.emit(instantVRFActions, "CompletedInstantVRFActions")
         .withArgs(alice.address, playerId, requestId, [RUNITE_ARROW], [2], []);
     });
 
     it("Cannot make another request until the ongoing one is fulfilled", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -538,7 +538,7 @@ describe("Instant VRF actions", function () {
 
       // Fulfill the request and it should work
       const requestId = 1;
-      await fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient);
+      await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
       await expect(
         instantVRFActions
           .connect(alice)
@@ -549,7 +549,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Deleting an action before fulfillment should not revert", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -569,14 +569,15 @@ describe("Instant VRF actions", function () {
 
       await instantVRFActions.removeActions([instantVRFActionInput.actionId]);
       const requestId = 1;
-      await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
+      await expect(fulfillRandomWords(requestId, instantVRFActions, mockVRF))
         .to.emit(instantVRFActions, "CompletedInstantVRFActions")
         .withArgs(alice.address, playerId, requestId, [], [], []);
     });
 
     it("Reverting in the contract receiving the NFTs should not revert the oracle callback", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, playerNFT, players, alice} =
-        await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, playerNFT, players, alice} = await loadFixture(
+        forgingFixture
+      );
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -605,7 +606,7 @@ describe("Instant VRF actions", function () {
       await erc1155HolderRogue.setRevertOnReceive(true);
 
       const requestId = 1;
-      await expect(fulfillRandomWords(requestId, instantVRFActions, mockSWVRFOracleClient))
+      await expect(fulfillRandomWords(requestId, instantVRFActions, mockVRF))
         .to.emit(instantVRFActions, "CompletedInstantVRFActions")
         .withArgs(erc1155HolderRogue.address, playerId, requestId, [], [], []);
     });
@@ -922,7 +923,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Check random rewards (many)", async function () {
-      const {playerId, instantVRFActions, mockSWVRFOracleClient, itemNFT, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
       this.timeout(100000); // 100 seconds, this test might take a while on CI
 
       const randomRewards = [
@@ -967,7 +968,7 @@ describe("Instant VRF actions", function () {
             }
           );
 
-        await fulfillRandomWords(i + 1, instantVRFActions, mockSWVRFOracleClient);
+        await fulfillRandomWords(i + 1, instantVRFActions, mockVRF);
       }
 
       const balances = await itemNFT.balanceOfs(alice.address, [

@@ -207,19 +207,6 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "COMBATANT_COOLDOWN",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -332,6 +319,13 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "newUpgrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

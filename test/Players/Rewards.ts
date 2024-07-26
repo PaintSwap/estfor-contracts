@@ -242,7 +242,7 @@ describe("Rewards", function () {
 
   describe("Daily Rewards", function () {
     it("Daily & weekly reward when starting an action", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -253,12 +253,12 @@ describe("Rewards", function () {
 
       const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
       for (let i = 0; i < numDays; ++i) {
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
 
       // Get the new equipments for the next week
@@ -291,7 +291,7 @@ describe("Rewards", function () {
       for (let i = 0; i < 4; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -314,7 +314,7 @@ describe("Rewards", function () {
       const sundayReward = dailyRewards[dailyRewards.length - 2];
       let prevBalanceDailyReward = await itemNFT.balanceOf(alice.address, sundayReward.itemTokenId);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       // Check the last day of the week
       const pendingQueuedActionState = await players.connect(alice).pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.dailyRewardItemTokenIds.length).to.eq(1);
@@ -334,7 +334,7 @@ describe("Rewards", function () {
 
       // Next one should start the next round
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, false, false, false, false, false, false]);
 
@@ -359,7 +359,7 @@ describe("Rewards", function () {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         if (i != 6) {
           await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-          await requestAndFulfillRandomWords(world, mockOracleClient);
+          await requestAndFulfillRandomWords(world, mockVRF);
         }
       }
 
@@ -383,7 +383,7 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim per hero per day", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -394,12 +394,12 @@ describe("Rewards", function () {
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
       const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
       for (let i = 0; i < numDays; ++i) {
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
 
       // Get the new equipments for the next week
@@ -419,7 +419,7 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim per wallet per day", async function () {
-      const {playerId, players, itemNFT, playerNFT, avatarId, world, alice, mockOracleClient} = await loadFixture(
+      const {playerId, players, itemNFT, playerNFT, avatarId, world, alice, mockVRF} = await loadFixture(
         playersFixture
       );
 
@@ -432,12 +432,12 @@ describe("Rewards", function () {
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
       const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
       for (let i = 0; i < numDays; ++i) {
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
 
       // Get the new equipments for the next week
@@ -463,11 +463,11 @@ describe("Rewards", function () {
     });
 
     it("Check daily rewards not given when making a new hero", async function () {
-      const {players, playerNFT, itemNFT, alice, world, mockOracleClient} = await loadFixture(playersFixture);
+      const {players, playerNFT, itemNFT, alice, world, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
       await world.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
-      await requestAndFulfillRandomWords(world, mockOracleClient); // Add this to that if test is run on Monday the streak start condition is fulfilled
+      await requestAndFulfillRandomWords(world, mockVRF); // Add this to that if test is run on Monday the streak start condition is fulfilled
       await createPlayer(playerNFT, 1, alice, "name1", true);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
 
@@ -476,7 +476,7 @@ describe("Rewards", function () {
     });
 
     it("Update on process actions", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -487,12 +487,12 @@ describe("Rewards", function () {
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
       const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
       for (let i = 0; i < numDays; ++i) {
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -504,7 +504,7 @@ describe("Rewards", function () {
 
     it("Can only get Monday's reward if the oracle has been called", async function () {
       // So that people can't get last Monday's daily reward
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -517,13 +517,13 @@ describe("Rewards", function () {
 
       const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
       // Request all up to the last day
       for (let i = 0; i < numDays - 1; ++i) {
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
 
       // Get the new equipments for the next week
@@ -535,7 +535,7 @@ describe("Rewards", function () {
       // Do not get Monday reward yet
       expect(balanceBeforeMondayReward).eq(await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId));
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
@@ -546,7 +546,7 @@ describe("Rewards", function () {
     });
 
     it("Clan tier bonus reward upgrades", async function () {
-      const {playerId, players, itemNFT, world, alice, clans, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, clans, mockVRF} = await loadFixture(playersFixture);
 
       // Be a member of a clan
       await clans.addTiers([
@@ -582,12 +582,12 @@ describe("Rewards", function () {
 
       const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
       for (let i = 0; i < numDays; ++i) {
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
 
       const equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
@@ -624,7 +624,7 @@ describe("Rewards", function () {
     });
 
     it("Tiered rewards", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -635,12 +635,12 @@ describe("Rewards", function () {
       const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
       const timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay); // Start next monday
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
 
       const numDays = Math.floor(timestamp - currentTimestamp) / oneDay;
       for (let i = 0; i < numDays; ++i) {
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
       }
 
       // Get the new equipments for the next week
@@ -673,7 +673,7 @@ describe("Rewards", function () {
   });
 
   it("Non-combat guaranteed reward & Random rewards", async function () {
-    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100% chance
     const tx = await world.addActions([
@@ -737,8 +737,8 @@ describe("Rewards", function () {
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.ENCHANTED_LOG);
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(40);
     await ethers.provider.send("evm_increaseTime", [86400]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(world, mockVRF);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
@@ -749,7 +749,7 @@ describe("Rewards", function () {
   });
 
   it("Non-combat guaranteed reward & Random rewards, partial looting", async function () {
-    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100% chance
     const tx = await world.addActions([
@@ -811,8 +811,8 @@ describe("Rewards", function () {
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(1);
     await ethers.provider.send("evm_increaseTime", [86400]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(world, mockVRF);
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
@@ -825,7 +825,7 @@ describe("Rewards", function () {
 
   describe("Random rewards", function () {
     it("Random rewards (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       this.timeout(100000); // 100 seconds, this test can take a while on CI
 
@@ -877,8 +877,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -915,9 +915,9 @@ describe("Rewards", function () {
         let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
         expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         expect(await world.hasRandomWord(endTime)).to.be.true;
 
@@ -935,7 +935,7 @@ describe("Rewards", function () {
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       const expectedTotal = numRepeats * randomChanceFraction * numHours;
@@ -945,7 +945,7 @@ describe("Rewards", function () {
     });
 
     it("Multiple random rewards (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       this.timeout(100000); // 100 seconds, this test can take a while on CI
 
@@ -1005,8 +1005,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1054,7 +1054,7 @@ describe("Rewards", function () {
         let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
         expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
 
         expect(await world.hasRandomWord(endTime)).to.be.true;
 
@@ -1069,7 +1069,7 @@ describe("Rewards", function () {
       }
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       let i = 0;
@@ -1085,7 +1085,7 @@ describe("Rewards", function () {
     });
 
     it("No random rewards, check numPastRandomRewardInstancesToRemove is correct", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await itemNFT.addItems([
         {
@@ -1130,8 +1130,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1162,7 +1162,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
       expect(pendingQueuedActionState.numPastRandomRewardInstancesToRemove).to.eq(3);
@@ -1170,7 +1170,7 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving), after 00:00 before oracle is called", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for thieving 19:00, dice given for combat 20:00, dice given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
@@ -1214,8 +1214,8 @@ describe("Rewards", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const firstThievingNumHours = 19; // start at 19:00
 
@@ -1255,7 +1255,7 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.actionMetadatas[2].rolls).to.eq(3);
       await players.connect(alice).processActions(playerId);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
@@ -1275,7 +1275,7 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving), after 00:00 before oracle is called, process after", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for thieving 19:00, dice given for combat 00:01, dice given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
@@ -1319,8 +1319,8 @@ describe("Rewards", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const firstThievingNumHours = 19; // start at 19:00
 
@@ -1359,14 +1359,14 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.actionMetadatas[1].rolls).to.eq(numSpawned / SPAWN_MUL);
       expect(pendingQueuedActionState.actionMetadatas[2].rolls).to.eq(3);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       // Now combat works
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -1384,7 +1384,7 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving) after oracle is called", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 22:00. Looted at 00:02 (or whenever) after oracle is called. Loot given for thieving 19:00, dice given for combat 00:02, loot given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
@@ -1428,8 +1428,8 @@ describe("Rewards", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const firstThievingNumHours = 19; // start at 19:00
 
@@ -1460,7 +1460,7 @@ describe("Rewards", function () {
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
@@ -1472,7 +1472,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
       // Now combat can be unlocked
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
@@ -1488,7 +1488,7 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving) looting before 00:00", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 23:59(or whenever). Loot given for thieving 19:00, combat 20:00 & thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
@@ -1532,8 +1532,8 @@ describe("Rewards", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const firstThievingNumHours = 19; // start at 19:00
 
@@ -1585,7 +1585,7 @@ describe("Rewards", function () {
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
@@ -1605,7 +1605,7 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (combat, combat, thieving) looting after 00:00 but before oracle is called", async function () {
       // Combat ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for combat 19:00, dice given for combat 20:00, dice given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
 
@@ -1648,8 +1648,8 @@ describe("Rewards", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const firstCombatNumHours = 19; // start at 19:00
       const queuedActionCombat = {...queuedAction, timespan: 3600 * firstCombatNumHours};
@@ -1690,7 +1690,7 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.actionMetadatas[2].rolls).to.eq(thievingNumHours);
       await players.connect(alice).processActions(playerId);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
@@ -1714,7 +1714,7 @@ describe("Rewards", function () {
 
     it("Mixing combat/thieving over 48 hours, when queueing combat & thieving, then thieving in another 24 hours after first calling oracle.", async function () {
       // Combat starts 00:01 and ends 01:01, thieving ends 00:01 the following day. Looted at 00:02 after oracle by starting a new 24 hour thieving action
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
 
@@ -1757,8 +1757,8 @@ describe("Rewards", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const combatNumHours = 1; // start at 00:01
       const queuedActionCombat = {...queuedAction, timespan: 3600 * combatNumHours};
@@ -1800,9 +1800,9 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(secondThievingNumHours);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
@@ -1821,7 +1821,7 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (combat, thieving) looting after 00:00, before oracle is called", async function () {
       // Combat ends 19:00, Thieving ends 22:00. Looted at 00:01 before oracle. Dice given for combat 19:00, dice given for thieving 22:00
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
 
@@ -1864,8 +1864,8 @@ describe("Rewards", function () {
       const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
       await ethers.provider.send("evm_setNextBlockTimestamp", [nextCheckpoint + 1]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const combatNumHours = 19; // start at 19:00
       const queuedActionCombat = {...queuedAction, timespan: 3600 * combatNumHours};
@@ -1895,7 +1895,7 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.actionMetadatas[1].rolls).to.eq(thievingNumHours);
       await players.connect(alice).processActions(playerId);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
@@ -1914,7 +1914,7 @@ describe("Rewards", function () {
     });
 
     it("Multiple random rewards", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       this.timeout(100000); // 100 seconds, this test can take a while on CI
 
@@ -1970,8 +1970,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1987,13 +1987,13 @@ describe("Rewards", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
     });
 
     it("PendingRandomRewards should be added each time an action is processed", async function () {
-      const {playerId, players, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChance = 65535; // 100%
       let tx = await world.addActions([
@@ -2027,7 +2027,7 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp - (2 * 3600 - 2);
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       const timespan = 3600 * numHours;
 
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -2063,11 +2063,11 @@ describe("Rewards", function () {
     });
 
     it("Check random bytes", async function () {
-      const {playerId, world, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, world, mockVRF} = await loadFixture(playersFixture);
       const {timestamp} = await ethers.provider.getBlock("latest");
       let numTickets = 16; // 240
       await expect(world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId)).to.be.reverted;
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
       let randomBytes = await world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId);
       expect(ethers.utils.hexDataLength(randomBytes)).to.be.eq(32);
       numTickets = MAX_UNIQUE_TICKETS;
@@ -2080,7 +2080,7 @@ describe("Rewards", function () {
     });
 
     it("Check past random rewards which are claimed the following day don't cause issues (many)", async function () {
-      const {playerId, players, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChance = 32000; // 50%
       let tx = await world.addActions([
@@ -2120,7 +2120,7 @@ describe("Rewards", function () {
         leftHandEquipmentTokenId: EstforConstants.NONE,
       };
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       // Try many times as we are relying on random chance
       for (let i = 0; i < 20; ++i) {
@@ -2129,18 +2129,18 @@ describe("Rewards", function () {
         const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400 * 2;
         const durationToNextCheckpoint = nextCheckpoint - timestamp - (3 * 3600 + 10 + Math.floor(Math.random() * 10)); // 3 hours before the next checkpoint
         await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         await ethers.provider.send("evm_increaseTime", [7200 + 4]);
         await players.connect(alice).processActions(playerId); // Continues the action
         await ethers.provider.send("evm_increaseTime", [12 * 3600]); // Go to tomorrow
-        await requestAndFulfillRandomWords(world, mockOracleClient);
+        await requestAndFulfillRandomWords(world, mockVRF);
         await players.connect(alice).processActions(playerId); // Continues the action
       }
     });
 
     it("Ticket excess uses a mint multiplier", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
@@ -2202,8 +2202,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
       expect(numHours * (numSpawned / SPAWN_MUL)).to.be.gt(MAX_UNIQUE_TICKETS);
@@ -2256,7 +2256,7 @@ describe("Rewards", function () {
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
@@ -2267,7 +2267,7 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
@@ -2289,7 +2289,7 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
@@ -2303,7 +2303,7 @@ describe("Rewards", function () {
     });
 
     it("Ticket excess with rare items uses higher chance reward system", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
@@ -2372,8 +2372,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
 
@@ -2425,7 +2425,7 @@ describe("Rewards", function () {
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
@@ -2434,7 +2434,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
@@ -2455,7 +2455,7 @@ describe("Rewards", function () {
 
     // Might fail as relies on random chance
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit once", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
@@ -2520,8 +2520,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
 
@@ -2573,7 +2573,7 @@ describe("Rewards", function () {
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
@@ -2585,7 +2585,7 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.eq(0);
 
@@ -2599,7 +2599,7 @@ describe("Rewards", function () {
     });
 
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit none", async function () {
-      const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
@@ -2666,8 +2666,8 @@ describe("Rewards", function () {
       const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
       await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
 
@@ -2719,7 +2719,7 @@ describe("Rewards", function () {
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
-      await requestAndFulfillRandomWords(world, mockOracleClient);
+      await requestAndFulfillRandomWords(world, mockVRF);
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);

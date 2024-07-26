@@ -75,6 +75,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     nextQueueId = 1;
     alphaCombat = 1;
     betaCombat = 1;
+    alphaCombatHealing = 8;
     isBeta = _isBeta;
   }
 

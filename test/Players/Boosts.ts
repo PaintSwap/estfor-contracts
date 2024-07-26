@@ -1290,7 +1290,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, random rewards obtain same day", async function () {
-    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3600;
@@ -1341,9 +1341,9 @@ describe("Boosts", function () {
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
 
     const timespan = 3600 * numHours;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1374,9 +1374,9 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await players.connect(alice).processActions(playerId);
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -1385,7 +1385,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, check boosted time over multiple queued actions is correct", async function () {
-    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 12600; // 3 hour 30 mins
@@ -1434,9 +1434,9 @@ describe("Boosts", function () {
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
 
     const timespan = 3600 * 2;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1491,9 +1491,9 @@ describe("Boosts", function () {
     expect(pendingRandomRewards[2].xpElapsedTime).to.eq(7200);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
 
     await players
       .connect(alice)
@@ -1510,7 +1510,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, random rewards, obtain next day", async function () {
-    const {playerId, players, itemNFT, world, alice, mockOracleClient} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3600;
@@ -1561,9 +1561,9 @@ describe("Boosts", function () {
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
 
     const timespan = 3600 * numHours;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -1594,13 +1594,13 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await players.connect(alice).processActions(playerId);
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await requestAndFulfillRandomWords(world, mockOracleClient);
+    await requestAndFulfillRandomWords(world, mockVRF);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
       Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))

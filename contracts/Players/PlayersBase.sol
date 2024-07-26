@@ -163,7 +163,8 @@ abstract contract PlayersBase {
   // Constants for the damage formula
   uint8 internal alphaCombat;
   uint8 internal betaCombat;
-  uint64 internal nextQueueId; // Global queued action id
+  uint56 internal nextQueueId; // Global queued action id
+  uint8 internal alphaCombatHealing; // Healing formula constants
   bool internal dailyRewardsEnabled;
   bool internal isBeta;
 

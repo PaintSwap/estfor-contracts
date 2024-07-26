@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {LOCKED_BANK_VAULT_ADDRESS} from "./contractAddresses";
+import {LOCKED_BANK_VAULTS_ADDRESS} from "./contractAddresses";
 import {LockedBankVaults} from "../typechain-types";
 
 async function main() {
@@ -12,7 +12,7 @@ async function main() {
 
   const lockedBankVaults = (await ethers.getContractAt(
     "LockedBankVaults",
-    LOCKED_BANK_VAULT_ADDRESS
+    LOCKED_BANK_VAULTS_ADDRESS
   )) as LockedBankVaults;
   let tx = await lockedBankVaults.setBaseAttackCost(ethers.utils.parseEther("0"));
   await tx.wait();

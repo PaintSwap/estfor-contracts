@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {playersFixture} from "../Players/PlayersFixture";
 import {ethers} from "hardhat";
 import {expect} from "chai";
+import {isBeta} from "../../scripts/utils";
 
 export async function clanFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -21,13 +22,14 @@ export async function clanFixture() {
 
   const clanName = "Clan 1";
 
-  const tierId = 1;
-  const imageId = 2;
   const clanId = 1;
-  const tier = await clans.tiers(tierId);
   const discord = "G4ZgtP52JK";
   const telegram = "fantomfoundation";
   const twitter = "fantomfdn";
+  const imageId = 2;
+  const tierId = 1;
+
+  const tier = await clans.tiers(tierId);
 
   // Figure out what the address would be
   const bankAddress = ethers.utils.getContractAddress({
@@ -41,6 +43,13 @@ export async function clanFixture() {
     .and.to.emit(bankFactory, "BankContractCreated")
     .withArgs(alice.address, clanId, bankAddress);
 
+  const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
+  // All these must match the constants inside LockedBankVaults.sol
+  const MAX_LOCKED_VAULTS = 100;
+  // This must match the constructor of LockedBankVaults.sol
+  const attackingCooldown = isBeta ? 1.5 * 60 : 4 * 3600;
+  const reattackingCooldown = isBeta ? 3 * 60 : 24 * 3600;
+  const combatantChangeCooldown = isBeta ? 5 * 60 : 3 * 86400;
   const editNameCost = await clans.editNameCost();
   return {
     ...fixture,
@@ -55,6 +64,11 @@ export async function clanFixture() {
     tier,
     editNameCost,
     bankAddress,
+    LockedBankVaultsLibrary,
+    MAX_LOCKED_VAULTS,
+    attackingCooldown,
+    reattackingCooldown,
+    combatantChangeCooldown,
   };
 }
 

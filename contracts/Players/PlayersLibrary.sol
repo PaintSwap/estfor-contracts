@@ -19,6 +19,9 @@ library PlayersLibrary {
   error InvalidAction();
   error SkillForPetNotHandledYet();
 
+  // This is to prevent some precision loss in the healing calculations
+  uint256 constant HEALING_SCALE = 1_000_000;
+
   function _getLevel(uint _xp) internal pure returns (uint16) {
     U256 low;
     U256 high = XP_BYTES.length.asU256().div(4);
@@ -302,6 +305,7 @@ library PlayersLibrary {
     CombatStats calldata _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
+    uint8 _alphaCombatHealing,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   )
     external
@@ -404,9 +408,10 @@ library PlayersLibrary {
     // Step 3 - Work out how much food is needed. If you die then work out how many consumables you actually used as in combat you died before you could cast more.
     uint32 totalHealthLost = _fullDmg(_enemyCombatStats, _combatStats, _alphaCombat, _betaCombat, combatElapsedTime);
 
+    uint32 playerHealth = uint16(int16(_max(0, _combatStats.health)));
     if (int32(totalHealthLost) > _combatStats.health) {
       // Take away our health points from the total dealt
-      totalHealthLost -= uint16(int16(_max(0, _combatStats.health)));
+      totalHealthLost -= playerHealth;
     } else {
       totalHealthLost = 0;
     }
@@ -421,7 +426,7 @@ library PlayersLibrary {
 
     if (int32(totalHealthLostOnlyKilled) > _combatStats.health) {
       // Take away our health points from the total dealt
-      totalHealthLostOnlyKilled -= uint16(int16(_max(0, _combatStats.health)));
+      totalHealthLostOnlyKilled -= playerHealth;
     } else {
       totalHealthLostOnlyKilled = 0;
     }
@@ -432,6 +437,8 @@ library PlayersLibrary {
       _regenerateId,
       totalHealthLost,
       totalHealthLostOnlyKilled,
+      playerHealth,
+      _alphaCombatHealing,
       _itemNFT,
       _pendingQueuedActionEquipmentStates
     );
@@ -501,27 +508,59 @@ library PlayersLibrary {
     }
   }
 
+  function _calculateHealingDoneFromHealth(
+    uint256 _health,
+    uint256 _alphaCombatHealing
+  ) private pure returns (uint256 healingDoneFromHealth) {
+    // healing fraction = 1 + (alphaCombatHealing * health / 100)
+    uint256 scaledHealth = ((HEALING_SCALE * _alphaCombatHealing) / 100) * _health;
+    uint256 divisor = 100;
+    healingDoneFromHealth = HEALING_SCALE + scaledHealth / divisor;
+  }
+
+  function _calculateTotalFoodRequired(
+    uint256 _totalHealthLost,
+    uint256 _healthRestoredFromItem,
+    uint256 _healingDoneFromHealth
+  ) private pure returns (uint256 totalFoodRequired) {
+    // totalFoodRequired = (totalHealthLost * HEALING_SCALE) / (healthRestoredFromItem * healingDoneFromHealth)
+    uint256 numerator = _totalHealthLost * HEALING_SCALE;
+    uint256 denominator = _healthRestoredFromItem * _healingDoneFromHealth;
+    totalFoodRequired = Math.ceilDiv(numerator, denominator);
+  }
+
   function _getFoodConsumed(
     address _from,
     uint16 _regenerateId,
     uint32 _totalHealthLost,
     uint32 _totalHealthLostKilling,
+    uint32 _totalHealthPlayer,
+    uint256 _alphaCombatHealing,
     IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint16 foodConsumed, uint totalFoodRequiredKilling, bool died) {
-    uint healthRestored;
+    uint healthRestoredFromItem;
     if (_regenerateId != NONE) {
       Item memory item = _itemNFT.getItem(_regenerateId);
-      healthRestored = item.healthRestored;
+      healthRestoredFromItem = item.healthRestored;
     }
 
-    if (healthRestored == 0 || _totalHealthLost <= 0) {
+    if (healthRestoredFromItem == 0 || _totalHealthLost <= 0) {
       // No food attached or didn't lose any health
       died = _totalHealthLost > 0;
     } else {
-      // Round up
-      uint totalFoodRequired = Math.ceilDiv(uint32(_totalHealthLost), healthRestored);
-      totalFoodRequiredKilling = Math.ceilDiv(uint32(_totalHealthLostKilling), healthRestored);
+      // Equation used is totalFoodRequired = totalHealthLost / (healthRestoredFromItem * healingDoneFromHealth)
+      uint256 healingDoneFromHealth = _calculateHealingDoneFromHealth(_totalHealthPlayer, _alphaCombatHealing);
+      uint256 totalFoodRequired = _calculateTotalFoodRequired(
+        _totalHealthLost,
+        healthRestoredFromItem,
+        healingDoneFromHealth
+      );
+      totalFoodRequiredKilling = _calculateTotalFoodRequired(
+        _totalHealthLostKilling,
+        healthRestoredFromItem,
+        healingDoneFromHealth
+      );
 
       uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
 
