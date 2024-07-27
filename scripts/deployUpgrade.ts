@@ -37,7 +37,6 @@ import {
   PASSIVE_ACTIONS_ADDRESS,
   PET_NFT_LIBRARY_ADDRESS,
   LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
-  SAMWITCH_VRF_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -47,7 +46,7 @@ async function main() {
   console.log(`Deploying upgradeable contracts with the account: ${owner.address} on chain ${network.chainId}`);
 
   const timeout = 600 * 1000; // 10 minutes
-  const newEstforLibrary = true;
+  const newEstforLibrary = false;
   const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
   let estforLibrary: EstforLibrary;
   if (newEstforLibrary) {
@@ -70,9 +69,6 @@ async function main() {
   });
   await players.deployed();
   console.log(`players = "${players.address.toLowerCase()}"`);
-
-  let tx = await players.setAlphaCombatHealing(8);
-  await tx.wait();
 
   // PlayerNFT
   const PlayerNFT = (
@@ -160,7 +156,7 @@ async function main() {
   console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
 
   // World
-  const newWorldLibrary = true;
+  const newWorldLibrary = false;
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   let worldLibrary: WorldLibrary;
   if (newWorldLibrary) {
@@ -180,13 +176,9 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    unsafeSkipStorageCheck: true, // TODO: Remove after
   });
   await world.deployed();
   console.log(`world = "${world.address.toLowerCase()}"`);
-
-  tx = await world.setVRF(SAMWITCH_VRF_ADDRESS);
-  await tx.wait();
 
   // AdminAccess
   const AdminAccess = (await ethers.getContractFactory("AdminAccess")).connect(owner);
@@ -302,7 +294,7 @@ async function main() {
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
 
   // LockedBankVaults
-  const newLockedBankVaultsLibrary = true;
+  const newLockedBankVaultsLibrary = false;
   const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
   let lockedBankVaultsLibrary: LockedBankVaultsLibrary;
   if (newLockedBankVaultsLibrary) {
@@ -322,7 +314,6 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    call: "newUpgrade", // TODO: Remove after prod deployment
   });
   await lockedBankVaults.deployed();
   console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
@@ -332,7 +323,6 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    call: "newUpgrade", // TODO: Remove after prod deployment
   });
   await territories.deployed();
   console.log(`territories = "${territories.address.toLowerCase()}"`);
@@ -346,7 +336,6 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-    call: "newUpgrade", // TODO: Remove after prod deployment
   });
   await combatantsHelper.deployed();
   console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);

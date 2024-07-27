@@ -288,27 +288,13 @@ library LockedBankVaultsLibrary {
       ? _clanIdIndex - _defendingClanIdIndex
       : _defendingClanIdIndex - _clanIdIndex;
 
-    // Increase distance extending the array bounds
-    uint extraDistance = 0;
-    if (_clanIdIndex < _mmrAttackDistance) {
-      // At front
-      extraDistance = _mmrAttackDistance - _clanIdIndex;
-    } else {
-      uint length = _sortedClansByMMR.length;
-      if (_clanIdIndex + _mmrAttackDistance >= length) {
-        extraDistance = _clanIdIndex + _mmrAttackDistance - (length - 1);
-      }
-    }
-
-    if (_mmrAttackDistance + extraDistance >= directDistance) {
+    if (_mmrAttackDistance >= directDistance) {
       return true;
     }
 
     // If outside range, check if MMR is the same as the MMR as that at the edge of the range
     int256 rangeEdgeIndex = int256(
-      _defendingClanIdIndex > _clanIdIndex
-        ? _clanIdIndex + _mmrAttackDistance + extraDistance
-        : _clanIdIndex - _mmrAttackDistance - extraDistance
+      _defendingClanIdIndex > _clanIdIndex ? _clanIdIndex + _mmrAttackDistance : _clanIdIndex - _mmrAttackDistance
     );
 
     if (rangeEdgeIndex < 0 || rangeEdgeIndex >= int256(_sortedClansByMMR.length)) {

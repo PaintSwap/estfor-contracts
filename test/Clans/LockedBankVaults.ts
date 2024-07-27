@@ -2189,17 +2189,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.setMMRAttackDistance(1);
 
       // frank can attack alice due to duplicate MMRs at the edge, so don't try
-      // Attack at both extremes as well, alice can attack erin
-      await lockedBankVaults
-        .connect(alice)
-        .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(3, lockedBankVaults, mockVRF);
-      // Will lose (most likely)
-      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 500, 501, 502]);
-      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
-
-      await lockedBankVaults.clearCooldowns(clanId, [erinClanId]);
-
+      // Attack at both extremes as well, alice cannot attack erin
       await expect(
         lockedBankVaults
           .connect(alice)
@@ -2224,8 +2214,8 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults
         .connect(erin)
         .attackVaults(erinClanId, frankClanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
-      await fulfillRandomWords(4, lockedBankVaults, mockVRF);
-      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 499, 501, 503]);
+      await fulfillRandomWords(3, lockedBankVaults, mockVRF);
+      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 499, 501, 502]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
     });
 
